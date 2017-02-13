@@ -12,7 +12,7 @@ The GPU implementation can accept input from either CPU or GPU memory. On a serv
 
 ## Building 
 
-The library is mostly implemented in C++, with optional GPU support provided via CUDA, and an optional Python interface. It compiles with a Makefile. See INSTALL.md for details.
+The library is mostly implemented in C++, with optional GPU support provided via CUDA, and an optional Python interface. It compiles with a Makefile. See [INSTALL](INSTALL) for details.
 
 ## How Faiss works
 
@@ -26,14 +26,14 @@ Faiss is built around an index type that stores a set of vectors, and provides a
 
 ## Full documentation of Faiss
 
-The full documentation, including a tutorial can be found in the docs/ subdirectory
+The full documentation, including a tutorial can be found in the [wiki page](http://github.com/facebookresearch/faiss/wiki).
 
 ## Join the Faiss community
 
-We monitor the "issues" page of the repository. You can report bugs, ask questions, etc.
+We monitor the [issues page](http://github.com/facebookresearch/faiss/issues) of the repository. You can report bugs, ask questions, etc.
 
 ## License
 
 Faiss is licenced under CC-by-NC, see the LICENCE file for details. We also provide an additional patent grant, see PATENTS.
-
+This licence may be relaxed to BSD in the future.
 
