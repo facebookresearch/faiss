@@ -172,6 +172,7 @@ The nvcc-specific flags to pass to the compiler:
 
    -gencode arch=compute_35,code="compute_35"
    -gencode arch=compute_52,code="compute_52"
+   -gencode arch=compute_60,code="compute_60"
 
 Most other flags are related to the C++11 compiler used by nvcc to
 complile the actual C++ code. They are normally just transmitted by
@@ -182,6 +183,8 @@ prefixed with -Wl, should be passed with -Xlinker.
 Then compile with
 
   cd gpu; make
+
+You may want to add '-j 10' to use 10 threads during compile.
 
 Testing the GPU implementation
 ------------------------------

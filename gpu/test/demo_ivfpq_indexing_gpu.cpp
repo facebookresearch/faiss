@@ -63,7 +63,9 @@ int main ()
     faiss::gpu::GpuIndexIVFPQ index (
          &resources, dev_no, d,
          ncentroids, 4, 8, true,
-         faiss::gpu::INDICES_64_BIT, faiss::METRIC_L2);
+         faiss::gpu::INDICES_64_BIT,
+         false,
+         faiss::METRIC_L2);
 
 
     { // training
