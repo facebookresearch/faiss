@@ -27,6 +27,7 @@ Faiss is built around an index type that stores a set of vectors, and provides a
 ## Full documentation of Faiss
 
 The full documentation, including a tutorial can be found in the [wiki page](http://github.com/facebookresearch/faiss/wiki).
+See the [doxygen documentation](http://rawgithub.com/facebookresearch/faiss/blob/master/docs/html/index.html) for per-class information.
 
 ## Join the Faiss community
 
