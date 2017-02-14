@@ -56,7 +56,7 @@ FAISSSHAREDFLAGS=-shared
 # The library contains both BLAS and Lapack. About 30% slower than MKL.
 #
 BLASCFLAGS=-DFINTEGER=int
-BLASLDFLAGS=/usr/lib64/libopenblaso.so.0
+BLASLDFLAGS=/usr/lib64/libopenblas.so.0
 #
 
 #
@@ -94,7 +94,6 @@ SWIGEXEC=swig
 # python -c "import distutils.sysconfig; print distutils.sysconfig.get_python_inc()"
 # python -c "import numpy ; print numpy.get_include()"
 
-PYTHONCFLAGS=-I/usr/include/python2.6/ -I/usr/lib64/python2.6/site-packages/numpy/core/include/numpy/
+PYTHONCFLAGS=-I/usr/include/python2.7/ -I/usr/lib64/python2.7/site-packages/numpy/core/include/numpy/
 
 
-LUACFLAGS=-I/home/matthijs/fbsource/fbcode/third-party2//lua/5.1.4/src/lua-5.1.4/src              -I/home/matthijs/fbsource/fbcode/third-party2//torch7/trunk/gcc-4.9-glibc-2.20/cd0174b/include/
