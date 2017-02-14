@@ -4,8 +4,7 @@
  * All rights reserved.
  *
  * This source code is licensed under the CC-by-NC license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * LICENSE file in the root directory of this source tree.
  */
 
 // Copyright 2004-present Facebook. All Rights Reserved
@@ -13,8 +12,8 @@
 // Auxiliary index structures, that are used in indexes but that can
 // be forward-declared
 
-#ifndef AUX_INDEX_STRUCTURES_H
-#define AUX_INDEX_STRUCTURES_H
+#ifndef FAISS_AUX_INDEX_STRUCTURES_H
+#define FAISS_AUX_INDEX_STRUCTURES_H
 
 #include <vector>
 
@@ -78,7 +77,7 @@ struct IDSelectorRange: IDSelector {
 /** Remove ids from a set. Repetitions of ids in the indices set
  * passed to the constructor does not hurt performance. The hash
  * function used for the bloom filter and GCC's implementation of
- * unordered_set ar just the least significant bits of the id. This
+ * unordered_set are just the least significant bits of the id. This
  * works fine for random ids or ids in sequences but will produce many
  * hash collisions if lsb's are always the same */
 struct IDSelectorBatch: IDSelector {

@@ -4,8 +4,7 @@
  * All rights reserved.
  *
  * This source code is licensed under the CC-by-NC license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * LICENSE file in the root directory of this source tree.
  */
 
 // -*- C++ -*-
@@ -40,6 +39,8 @@ typedef int int32_t ;
 
 
 #include <stdint.h>
+#include <omp.h>
+
 
 #ifdef SWIGLUA
 
@@ -82,7 +83,7 @@ extern "C" {
 #include "utils.h"
 #include "Heap.h"
 #include "AuxIndexStructures.h"
-#include "knngraph_nndescent.h"
+
 #include "Clustering.h"
 
 #include "hamming.h"
@@ -90,7 +91,8 @@ extern "C" {
 #include "AutoTune.h"
 
 
-%}
+
+ %}
 
 /*******************************************************************
  * Types of vectors we want to manipulate at the scripting language
@@ -495,6 +497,9 @@ PyObject *swig_ptr (PyObject *a)
     if(PyArray_TYPE(ao) == NPY_INT32) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_int, 0);
     }
+    if(PyArray_TYPE(ao) == NPY_UINT8) {
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_uint8_t, 0);
+    }
     if(PyArray_TYPE(ao) == NPY_UINT64) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long, 0);
     }
@@ -575,7 +580,7 @@ TYPE_CONVERSION (uint8_t, ByteTensor)
 #endif
 
 /*******************************************************************
- * How should the template objects apprear in Lua?
+ * How should the template objects apprear in the scripting language?
  *******************************************************************/
 
 // answer: the same as the C++ typedefs, but we still have to redefine them
@@ -614,7 +619,6 @@ void *memcpy(void *dest, const void *src, size_t n);
 
 %include "AuxIndexStructures.h"
 
-%include "knngraph_nndescent.h"
 
 
 %{

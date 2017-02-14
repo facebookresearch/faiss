@@ -4,8 +4,7 @@
  * All rights reserved.
  *
  * This source code is licensed under the CC-by-NC license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * LICENSE file in the root directory of this source tree.
  */
 
 /* Copyright 2004-present Facebook. All Rights Reserved.
@@ -34,7 +33,6 @@
 #include <assert.h>
 #include <limits.h>
 
-#include "faiss.h"
 #include "Heap.h"
 #include "FaissAssert.h"
 
@@ -171,260 +169,6 @@ void hammings (
 
 
 
-/* Return closest neighbors w.r.t Hamming distance */
-template <size_t nbits>
-void hammings_knn_softheap (
-        int_maxheap_array_t * ha,
-        const uint64_t * bs1,
-        const uint64_t * bs2,
-        size_t n2,
-        size_t blocksize,
-        double delta,
-        bool order = true)
-{
-    const size_t nwords = nbits / 64;
-    size_t j, t, k = ha->k;
-    size_t n1 = ha->nh;
-    const size_t T = (long) ceill (n2 / (double) blocksize);
-    size_t * ki = new size_t[T];
-    size_t * ti = new size_t[T];
-    size_t * posused = new size_t[n1];
-    SET_NT (ha->nh);
-
-    if (blocksize > n2)
-        blocksize = n2;
-
-    /* Initialization */
-    for (t = 0; t < T; t++)
-        ti[t] = (t+1) * blocksize;
-    ti[T-1] = n2;
-    const size_t k0 = softheap_capacity (n2, k, T, ti, ki, delta);
-
-    size_t jstart;
-    for (jstart = 0 ; jstart < n1; jstart += BLOCKSIZE_QUERY) {
-        size_t jend = jstart + BLOCKSIZE_QUERY;
-        if (jend > n1)
-            jend = n1;
-
-        for (t = 0; t < T; t++) {
-            const size_t istart = (t > 0 ? ti[t-1] : k0);
-            const size_t iend = ti[t];
-            const size_t kit = ki[t];
-            if (iend <= istart && t > 0) continue;
-
-            #pragma omp parallel for private(j) num_threads(nt)
-            for (j = jstart; j < jend; j++) {
-                size_t i;
-                int * __restrict bh_val = ha->val + j * k;
-                long * __restrict bh_ids = ha->ids + j * k;
-                const uint64_t * bs1_ = bs1 + j * nwords;
-                hamdis_t dis;
-
-                /* Particular case of 1st block (heapify for initialization) */
-                if (t == 0) {
-                    maxheap_heapify<hamdis_t> (k, bh_val, bh_ids);
-                    for (i = 0 ; i < k0 ; i++) {
-                        size_t ii = i + istart;
-                        dis = hamming <nbits> (bs1_, bs2+ii * nwords);
-                        maxheap_push<hamdis_t> (i+1, bh_val, bh_ids, dis, ii);
-                    }
-                    for (i = k0 ; i < k ; i++) {
-                        bh_val[i] = INT_MAX;  /* ### check if not i+1 */
-                        bh_ids[i] = -1;
-                    }
-                    posused[j] = k0;
-                }
-
-                for (i = istart; i < iend; i++) {
-                    dis = hamming <nbits> (bs1_, bs2+i * nwords);
-                    if (dis <= bh_val[0]) {
-                        if (posused[j] < kit) {/* no extra -> incond. push */
-                            posused[j]++;
-                            maxheap_push<hamdis_t> (posused[j], bh_val, bh_ids,
-                                                    dis, i);
-                        }
-                        else if (dis < bh_val[0]) {
-                            maxheap_pop<hamdis_t> (kit, bh_val, bh_ids);
-                            maxheap_push<hamdis_t> (kit, bh_val, bh_ids,
-                                                    dis, i);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    delete [] ki;
-    delete [] ti;
-    delete [] posused;
-
-    ha->reorder ();
-}
-
-
-/* Return closest neighbors w.r.t Hamming distance */
-template <size_t nbits>
-void hammings_knn_softradix (
-        int_maxheap_array_t * ha,
-         const uint64_t * bs1,
-         const uint64_t * bs2,
-         size_t n2,
-         size_t blocksize,
-         double delta,
-         bool order = true)
-{
-    const size_t nwords = nbits / 64;
-    size_t j, k = ha->k;
-    size_t n1 = ha->nh;
-    SET_NT (n1);
-
-    const size_t T = (long) ceil (n2 / (double) blocksize);
-    const size_t maxbufel = k + softheap_maxel (n2, k, T, delta);
-
-    /* histograms counting number of elements for each Hamming distance,
-       and this for each of the n1 queries */
-    int M = nbits;
-    long * hist_all = new long [n1 * (M+1)]();
-
-    /* We maintain a threshold above which we do not consider the element */
-    hamdis_t * ht_all = new hamdis_t[n1]();
-
-    /* We also maintain in following table the number of elements that met
-       the threshold. This number will increase every time one element passes
-       the threshold, and will lowered every time the threshold is reduced */
-    size_t * hist_at_ht = new size_t[n1]();
-    for (size_t i = 0; i < n1; i++)
-        ht_all[i] = M;
-
-    /* We will be writing contiguously in buffers bufdis and bufids.
-       Curent position for each query is stored in bufpos */
-    hamdis_t * bufdis = new hamdis_t[n1 * maxbufel];
-    long * bufids = new long[n1 * maxbufel];
-    size_t * bufpos = new size_t[n1]();
-
-    size_t * ki = new size_t[T];
-    size_t * ti = new size_t[T];
-
-    if (blocksize > n2)
-        blocksize = n2;
-
-    /* Initialization */
-    size_t t;
-    for (t = 0; t < T; t++)
-        ti[t] = (t+1) * blocksize;
-    ti[T-1] = n2;
-    softheap_capacity (n2, k, T, ti, ki, delta);
-
-    for (t = 0; t < T; t++) {
-        const size_t istart = (t > 0 ? ti[t-1] : 0);
-        const size_t iend = ti[t];
-        const size_t kit = ki[t];
-
-        #pragma omp parallel for private(j) num_threads(nt)
-        for (j = 0; j < n1; j++) {
-            hamdis_t * __restrict bufdisj = bufdis + j * maxbufel;
-            long * __restrict bufidsj = bufids + j * maxbufel;
-            const uint64_t * bs1j = bs1 + j * nwords;
-
-            /* Use extra-variables to avoid de-referencing */
-            size_t posbufj = bufpos[j];
-            long * __restrict histj = hist_all + j * (M+1);
-            size_t hist_at_htj = hist_at_ht[j];
-            hamdis_t htj = ht_all[j];
-            hamdis_t disji;
-
-            size_t i;
-            for (i = istart; i < iend && posbufj < maxbufel; i++) {
-                disji = hamming <nbits> (bs1j, bs2 + i * nwords);
-                if (disji <= htj) {
-                    if (disji < htj || hist_at_htj < kit) {
-                      bufdisj[posbufj] = disji;
-                      bufidsj[posbufj++] = i;
-
-                      histj[disji]++;
-                      hist_at_htj++;
-
-                      if (hist_at_htj > kit) {
-                            /* Only useful at the initialization */
-                            while (histj[htj] == 0)
-                                htj--;
-                            histj[htj]--;
-                            hist_at_htj--;
-
-                            /* Lower threshold if next test is positive */
-                            while (histj[htj] == 0)
-                            htj--;
-                            assert (histj[htj] > 0);
-                        }
-                    }
-                }
-                assert (hist_at_htj <= kit);
-            }
-            hist_at_ht[j] = hist_at_htj;
-            ht_all[j] = htj;
-            bufpos[j] = posbufj;
-        }
-    }
-    delete [] ti;
-    delete [] ki;
-    delete [] hist_at_ht;
-
-    /* At this moment of the function,
-       - bufpos[j] contains the number of elements stored for each query
-       - hist contains the histogram (up to ham-distance disthres)
-       - ht_all[j] is the latest distance threshold used. Note that, possibly,
-         some elements with a larger distance may be kept in the buffer because
-         of ties.
-    */
-
-    /* post-processing: keep only the best elements and put them in order
-       We compute the cumulated histogram, which is used subsequently as
-       position counter in the output buffer */
-
-
-    #pragma omp parallel for private(j) num_threads(nt)
-    for (j = 0; j < n1; j++) {
-        long * __restrict histj = hist_all+j*(M+1);
-        hamdis_t htj = ht_all[j];
-
-        /* We cast the histogram to a cumulative histogram serving in turn as
-           a position pointer for each possible Hamming value */
-        size_t hprev = histj[0], hcur;
-        long h;
-        for (h = 1; h <= htj+1 ; h++) {
-            hcur = histj[h];
-            histj[h] = histj[h-1] + hprev;
-            hprev = hcur;
-        }
-
-        const hamdis_t * __restrict bufdisj = bufdis + j * maxbufel;
-        const long * __restrict bufidsj = bufids + j * maxbufel;
-        hamdis_t * __restrict outdisj = ha->val + j * k;
-        long * __restrict outidsj = ha->ids + j * k;
-
-        size_t i, bufposj = bufpos[j], posout;
-        hamdis_t disji;
-
-        for (i = 0; i < bufposj; i++) {
-            disji = bufdisj[i];
-            posout = histj[disji];
-            if (disji > htj)
-                continue;
-            if (posout >= k)
-                continue;
-            histj[disji]++;
-            outdisj[posout] = disji;
-            outidsj[posout] = bufidsj[i];
-        }
-    }
-    delete [] hist_all;
-    delete [] ht_all;
-    delete [] bufpos;
-    delete [] bufdis;
-    delete [] bufids;
-
-    ha->reorder ();
-}
-
 
 /* Count number of matches given a max threshold */
 template <size_t nbits>
@@ -533,8 +277,7 @@ void hammings_knn_hc (
     if (init_heap) ha->heapify ();
 
     /* The computation here does not involved any blockization,
-       which is suboptimal for many queries in parallel.
-       Invoke the softradix function with delta set to 1 to get it */
+       which is suboptimal for many queries in parallel. */
 #pragma omp parallel for
     for (size_t i = 0; i < ha->nh; i++) {
         HammingComputer hc (bs1 + i * bytes_per_code, bytes_per_code);
@@ -755,71 +498,6 @@ void hammings_knn (
 }
 
 
-void hammings_knn_softheap (
-         int_maxheap_array_t * ha,
-         const uint8_t * a,
-         const uint8_t * b,
-         size_t nb,
-         size_t ncodes,
-         int order,
-         size_t blocksize,
-         double delta)
-{
-
-    switch (ncodes) {
-        case 8:
-            faiss::hammings_knn_softheap <64>  (ha, C64(a), C64(b),
-                                         nb, blocksize, delta, order);
-            break;
-        case 16:
-            faiss::hammings_knn_softheap <128> (ha, C64(a), C64(b),
-                                         nb, blocksize, delta, order);
-            break;
-        case 32:
-            faiss::hammings_knn_softheap <256> (ha, C64(a), C64(b),
-                                         nb, blocksize, delta, order);
-            break;
-        case 64:
-            faiss::hammings_knn_softheap <512> (ha, C64(a), C64(b),
-                                         nb, blocksize, delta, order);
-            break;
-        default:
-            FAISS_ASSERT (!"not-implemented for this number of bits");
-    }
-}
-
-
-void hammings_knn_softradix (
-        int_maxheap_array_t * ha,
-        const uint8_t * a,
-        const uint8_t * b,
-        size_t nb,
-        size_t ncodes,
-        int order,
-        size_t blocksize,
-        double delta)
-{
-    switch (ncodes) {
-        case 8:
-            faiss::hammings_knn_softradix <64>  (ha, C64(a), C64(b),
-                                          nb, blocksize, delta, true);
-            break;
-        case 16:
-            faiss::hammings_knn_softradix <128> (ha, C64(a), C64(b),
-                                          nb, blocksize, delta, true);
-            break;
-        case 32:
-            faiss::hammings_knn_softradix <256> (ha, C64(a), C64(b),
-                                          nb, blocksize, delta, true);
-            break;
-        case 64:
-            faiss::hammings_knn_softradix <512> (ha, C64(a), C64(b),
-                                          nb, blocksize, delta, true);
-            break;
-        default:
-            FAISS_ASSERT (!"not-implemented for this number of bits");
-    }
-}
 
 
 /* Count number of matches given a max threshold            */

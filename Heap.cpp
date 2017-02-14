@@ -4,8 +4,7 @@
  * All rights reserved.
  *
  * This source code is licensed under the CC-by-NC license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * LICENSE file in the root directory of this source tree.
  */
 
 /* Copyright 2004-present Facebook. All Rights Reserved. */
@@ -22,69 +21,6 @@ namespace faiss {
 
 
 
-
-
-
-
-/* Return the scheduled capacity for soft heaps */
-size_t softheap_capacity (size_t N, size_t K, size_t T, size_t * ti,
-                          size_t * ki, double delta)
-{
-    size_t t;
-    double q = (double) K / (double) N;
-    size_t k0 = ceil (log (T / delta) / log (N/(K-1.0)));
-    if (k0 > K)
-        k0 = K;
-    if (k0 <= 0) k0 = 1;
-
-    for (t = 0; t < T; t++) {
-        double n = (double) ti[t];
-        double dn = delta / (double) T;
-        double gamp = (N-n+1.0)/N*q + (n-1.0)/N * sqrt (2.0*q*log(2.0/dn)/n);
-        double gamm = (N-n)/N * ((n+1.0) / n*q + (N-n-1.0)/n
-                      * sqrt (2.0*q*log (2.0/dn) / (N-n-1.0)));
-        double gam = (gamp < gamm ? gamp : gamm);
-        double A = q * n;
-        double B = 2.0/3.0 * log (2.0/dn);
-        double C = sqrt (B * B + 2*n*log(2.0/dn)*gam);
-
-        if (ti[t] < k0) {
-            ti[t] = k0;
-            ki[t] = k0;
-        }
-
-        if (ti[t] >= N) {
-            ti[t] = N;
-            ki[t] = K;
-        }
-        else {
-            ki[t] = ceil (A+B+C);
-            if (ki[t] > K)
-                ki[t] = K;
-            if (ki[t] < k0)
-                ki[t] = k0;
-        }
-    }
-    return k0;
-}
-
-
-/* Return the memory capacity that is theoretically required for writing
-   a buffer in a radix sort, assuming that the input is shuffled */
-size_t softheap_maxel (size_t N, size_t K, size_t T, double delta)
-{
-    double ln2T_delta = log (2.0 * T / delta);
-    double lnN_K = log (N / K);
-    double lnT = log (T);
-    double A = K * (1.0 + (lnT + lnN_K) / T)
-               + sqrt (2.0 * K * ln2T_delta)
-               * (M_PI_2 + (2.0 + lnN_K) / sqrt (T))
-               + 2.0 * (1.0 + lnN_K + lnT) * ln2T_delta;
-    double ln2T_delta_3 = ln2T_delta / 3.0;
-    double maxel = A + ln2T_delta_3
-                   + sqrt (ln2T_delta_3 * ln2T_delta_3 + 2.0 * A * ln2T_delta);
-    return (ceil(maxel));
-}
 
 
 template <typename C>

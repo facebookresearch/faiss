@@ -4,15 +4,14 @@
  * All rights reserved.
  *
  * This source code is licensed under the CC-by-NC license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * LICENSE file in the root directory of this source tree.
  */
 
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
-#ifndef INDEX_IVFPQ_H
-#define INDEX_IVFPQ_H
+#ifndef FAISS_INDEX_IVFPQ_H
+#define FAISS_INDEX_IVFPQ_H
 
 
 #include <vector>

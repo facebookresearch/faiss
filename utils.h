@@ -4,8 +4,7 @@
  * All rights reserved.
  *
  * This source code is licensed under the CC-by-NC license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * LICENSE file in the root directory of this source tree.
  */
 
 /** Copyright 2004-present Facebook. All Rights Reserved
@@ -20,10 +19,10 @@
 #ifndef FAISS_utils_h
 #define FAISS_utils_h
 
+#include <stdint.h>
 // for the random data struct
 #include <cstdlib>
 
-#include "faiss.h"
 #include "Heap.h"
 
 
@@ -38,7 +37,7 @@ namespace faiss {
 /// ms elapsed since some arbitrary epoch
 double getmillisecs ();
 
-/// get current RSS size in kB
+/// get current RSS usage in kB
 size_t get_mem_usage_kb ();
 
 
@@ -106,6 +105,7 @@ float  fvec_inner_product (
 /// a balanced assignment has a IF of 1
 double imbalance_factor (int n, int k, const long *assign);
 
+/// same, takes a histogram as input
 double imbalance_factor (int k, const int *hist);
 
 /** Compute pairwise distances between sets of vectors

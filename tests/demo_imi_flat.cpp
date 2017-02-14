@@ -4,8 +4,7 @@
  * All rights reserved.
  *
  * This source code is licensed under the CC-by-NC license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * LICENSE file in the root directory of this source tree.
  */
 
 // Copyright 2004-present Facebook. All Rights Reserved
@@ -18,10 +17,10 @@
 #include <sys/time.h>
 
 
-#include <deeplearning/projects/faiss/IndexPQ.h>
-#include <deeplearning/projects/faiss/IndexIVF.h>
-#include <deeplearning/projects/faiss/IndexFlat.h>
-#include <deeplearning/projects/faiss/index_io.h>
+#include <faiss/IndexPQ.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/index_io.h>
 
 double elapsed ()
 {

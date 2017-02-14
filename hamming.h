@@ -4,8 +4,7 @@
  * All rights reserved.
  *
  * This source code is licensed under the CC-by-NC license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -29,9 +28,10 @@
 #define FAISS_hamming_h
 
 
+#include <stdint.h>
+
 #include "Heap.h"
 
-#include <stdint.h>
 
 /* The Hamming distance type should be exportable to Lua Tensor, which
    excludes most unsigned type */
@@ -134,30 +134,6 @@ void crosshamming_count_thres (
         size_t ncodes,
         size_t * nptr);
 
-
-/* Approximate Hamming k-nearest neighbors with scheduled capacity.
-   The guarantee is at least delta to retrieve all k nearest neighbors.
-   if the data is random enough on input of the algorithm */
-void hammings_knn_softheap (
-        int_maxheap_array_t * ha,
-        const uint8_t * a,
-        const uint8_t * b,
-        size_t nb,
-        size_t ncodes,
-        int ordered,
-        size_t blocksize,
-        double delta);
-
-
-void hammings_knn_softradix (
-        int_maxheap_array_t * ha,
-        const uint8_t * a,
-        const uint8_t * b,
-        size_t nb,
-        size_t ncodes,
-        int ordered,
-        size_t blocksize,
-        double delta);
 
 /* compute the Hamming distances between two codewords of nwords*64 bits */
 hamdis_t hamming (

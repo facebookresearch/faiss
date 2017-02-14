@@ -4,14 +4,13 @@
  * All rights reserved.
  *
  * This source code is licensed under the CC-by-NC license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * LICENSE file in the root directory of this source tree.
  */
 
 /* Copyright 2004-present Facebook. All Rights Reserved.
  *
- * C++ support for heaps, in particular probabilistic heaps.
- * The set of functions is tailored for efficient similarity search.
+ * C++ support for heaps. The set of functions is tailored for
+ * efficient similarity search.
  *
  * There is no specific object for a heap, and the functions that
  * operate on a signle heap are inlined, because heaps are often
@@ -32,21 +31,6 @@
 
 #include <limits>
 
-
-
-
-/* some optional code that is used to benchmarks heaps (-DHEAPSTAT to activate).
-   Should be disabled, as they are not compatible with
-   with multi-threading (static counters)
- */
-#ifdef HEAPSTAT
-    #warning "Compiled with heap stats -> not compatible with multi-threading"
-    #define HEAPSTAT_NSWAP(action) {heap_nswap_ ## action++;}
-    #define HEAPSTAT_NOP(action) {heap_n ## action++;}
-#else
-    #define HEAPSTAT_NSWAP(action)      /* do {} while (0) */
-    #define HEAPSTAT_NOP(action)  /* do {} while (0) */
-#endif
 
 
 namespace faiss {
@@ -106,7 +90,6 @@ struct CMax {
 template <class C> inline
 void heap_pop (size_t k, typename C::T * bh_val, typename C::TI * bh_ids)
 {
-    HEAPSTAT_NOP (pop);
     bh_val--; /* Use 1-based indexing for easier node->child translation */
     bh_ids--;
     typename C::T val = bh_val[k];
@@ -119,7 +102,6 @@ void heap_pop (size_t k, typename C::T * bh_val, typename C::TI * bh_ids)
         if (i2 == k + 1 || C::cmp(bh_val[i1], bh_val[i2])) {
             if (C::cmp(val, bh_val[i1]))
                 break;
-            HEAPSTAT_NSWAP (pop);
             bh_val[i] = bh_val[i1];
             bh_ids[i] = bh_ids[i1];
             i = i1;
@@ -127,7 +109,6 @@ void heap_pop (size_t k, typename C::T * bh_val, typename C::TI * bh_ids)
         else {
             if (C::cmp(val, bh_val[i2]))
                 break;
-            HEAPSTAT_NSWAP (pop);
             bh_val[i] = bh_val[i2];
             bh_ids[i] = bh_ids[i2];
             i = i2;
@@ -147,7 +128,6 @@ void heap_push (size_t k,
                 typename C::T * bh_val, typename C::TI * bh_ids,
                 typename C::T val, typename C::TI ids)
 {
-    HEAPSTAT_NOP (push);
     bh_val--; /* Use 1-based indexing for easier node->child translation */
     bh_ids--;
     size_t i = k, i_father;
@@ -155,7 +135,6 @@ void heap_push (size_t k,
         i_father = i >> 1;
         if (!C::cmp (val, bh_val[i_father]))  /* the heap structure is ok */
             break;
-        HEAPSTAT_NSWAP (push);
         bh_val[i] = bh_val[i_father];
         bh_ids[i] = bh_ids[i_father];
         i = i_father;
@@ -201,7 +180,7 @@ void maxheap_push (size_t k, T * bh_val, long * bh_ids, T val, long ids)
  * Heap initialization
  *******************************************************************/
 
-/* Initialization phase for the heap (with inconditionnal pusshes).
+/* Initialization phase for the heap (with inconditionnal pushes).
  * Store k0 elements in a heap containing up to k values. Note that
  * (bh_val, bh_ids) can be the same as (x, ids) */
 template <class C> inline
@@ -427,7 +406,7 @@ typedef HeapArray<CMin<int, long> > int_minheap_array_t;
 typedef HeapArray<CMax<float, long> > float_maxheap_array_t;
 typedef HeapArray<CMax<int, long> > int_maxheap_array_t;
 
-
+// The heap templates are instanciated explicitly in Heap.cpp
 
 
 
@@ -466,7 +445,6 @@ void indirect_heap_pop (
     const typename C::T * bh_val,
     typename C::TI * bh_ids)
 {
-    HEAPSTAT_NOP (pop);
     bh_ids--; /* Use 1-based indexing for easier node->child translation */
     typename C::T val = bh_val[bh_ids[k]];
     size_t i = 1;
@@ -479,13 +457,11 @@ void indirect_heap_pop (
         if (i2 == k + 1 || C::cmp(bh_val[id1], bh_val[id2])) {
             if (C::cmp(val, bh_val[id1]))
                 break;
-            HEAPSTAT_NSWAP (pop);
             bh_ids[i] = id1;
             i = i1;
         } else {
             if (C::cmp(val, bh_val[id2]))
                 break;
-            HEAPSTAT_NSWAP (pop);
             bh_ids[i] = id2;
             i = i2;
         }
@@ -501,7 +477,6 @@ void indirect_heap_push (size_t k,
                          const typename C::T * bh_val, typename C::TI * bh_ids,
                          typename C::TI id)
 {
-    HEAPSTAT_NOP (push);
     bh_ids--; /* Use 1-based indexing for easier node->child translation */
     typename C::T val = bh_val[id];
     size_t i = k;
@@ -509,7 +484,6 @@ void indirect_heap_push (size_t k,
         size_t i_father = i >> 1;
         if (!C::cmp (val, bh_val[bh_ids[i_father]]))
             break;
-        HEAPSTAT_NSWAP (push);
         bh_ids[i] = bh_ids[i_father];
         i = i_father;
     }
@@ -517,49 +491,6 @@ void indirect_heap_push (size_t k,
 }
 
 
-
-
-/* Probabilistic heaps (based on research work by N. Usunier and H. Jegou,
-   assuming that they have not missed similar work in the literature (still
-   looking for it. Request the (draft) report for more explanation.
-
-  Return the schedulted capacity of the heap for
-  - finding K smallest/largest elements amongs N
-  - T updates (typically computed given a nb-elt-blocksize as T=N/blocksize)
-  - guarantee to have at most probability delta of failure (upper-bound)
-  Output is provided in arrays ti (timestamp for update) and ki (capacity)
-*/
-
-
-/* Return the schedulted capacity (for heap or radix sorting) for
-  - finding K smallest/largest elements amongs N
-  - T updates (typically computed given a nb-elt-blocksize as T=N/blocksize)
-  - guarantee to have at most probability delta of failure (upper-bound)
-  Output is provided in arrays ti (timestamp for update) and ki (capacity).
-  The returned value is the number of elements that should be inconditionnally
-  pushed when the selection algorithm starts.
- */
-
-size_t softheap_capacity (
-        size_t N,
-        size_t K,
-        size_t T,
-        size_t * ti,
-        size_t * ki,
-        double delta);
-
-/* Return the memory capacity that is theoretically required for writing
-   a buffer in a radix sort, assuming that the input is shuffled.
-   This computation assumes no ties, and one should
-   add K in case many of them are expected (like in Hamming distances).
-   The guarantee delta is a probability of failure for the whole algorithm.
-   It is an upper bound (true probability of failure is in fact much lower)
-*/
-size_t softheap_maxel (
-        size_t N,
-        size_t K,
-        size_t T,
-        double delta);
 
 
 } // namespace faiss

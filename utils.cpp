@@ -4,8 +4,7 @@
  * All rights reserved.
  *
  * This source code is licensed under the CC-by-NC license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * LICENSE file in the root directory of this source tree.
  */
 
 // Copyright 2004-present Facebook. All Rights Reserved
@@ -20,9 +19,13 @@
 #include <smmintrin.h>
 #include <mmintrin.h>
 
+
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <omp.h>
+
 
 #include <algorithm>
 #include <vector>
@@ -36,6 +39,11 @@
    non re-entrant functions random, which forces use to stop multi-threading */
 typedef struct {long a, b, c, d, e, f, g, h;} randstate_t;
 
+
+
+#ifndef FINTEGER
+#define FINTEGER long
+#endif
 
 
 extern "C" {
@@ -1331,13 +1339,11 @@ int km_update_centroids (const float * x,
             nsplit++;
         }
     }
-    /*
-    if (nsplit > 0)
-    fprintf (stderr, "Void clusters split: %ld\n", nsplit);*/
-
 
     return nsplit;
 }
+
+#undef EPS
 
 
 
@@ -1396,7 +1402,7 @@ size_t ranklist_intersection_size (size_t k1, const long *v1,
         }
     }
     delete [] v2;
-    //printf ("RL input %ld %ld -> %d\n", v1[0], v2_in[0], count);
+
     return count;
 }
 
@@ -1422,8 +1428,6 @@ double imbalance_factor (int n, int k, const long *assign) {
     return imbalance_factor (k, hist.data());
 }
 
-#undef EPS
-#undef SET_NT
 
 
 int ivec_hist (size_t n, const int * v, int vmax, int *hist) {
