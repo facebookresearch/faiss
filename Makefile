@@ -24,10 +24,10 @@ py: _swigfaiss.so
 
 LIBOBJ=hamming.o  utils.o \
        IndexFlat.o IndexIVF.o IndexLSH.o IndexPQ.o  \
-       IndexIVFPQ.o IndexNested.o  \
+       IndexIVFPQ.o   \
        Clustering.o Heap.o VectorTransform.o index_io.o \
        PolysemousTraining.o MetaIndexes.o Index.o \
-       ProductQuantizer.o AutoTune.o AuxIndexStructures.o BinaryCode.o
+       ProductQuantizer.o AutoTune.o AuxIndexStructures.o
 
 
 $(LIBNAME).a: $(LIBOBJ)
@@ -67,9 +67,9 @@ tests/demo_sift1M: tests/demo_sift1M.cpp $(LIBNAME).a
 # SWIG interfaces
 
 HFILES = IndexFlat.h Index.h IndexLSH.h IndexPQ.h IndexIVF.h \
-    IndexIVFPQ.h VectorTransform.h index_io.h utils.h IndexNested.h \
+    IndexIVFPQ.h VectorTransform.h index_io.h utils.h \
     PolysemousTraining.h Heap.h MetaIndexes.h AuxIndexStructures.h \
-    Clustering.h hamming.h AutoTune.h BinaryCode.h
+    Clustering.h hamming.h AutoTune.h 
 
 # also silently generates python/swigfaiss.py
 python/swigfaiss_wrap.cxx: swigfaiss.swig $(HFILES)

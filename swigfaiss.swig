@@ -70,12 +70,10 @@ extern "C" {
 
 #include "IndexFlat.h"
 #include "VectorTransform.h"
-#include "BinaryCode.h"
 #include "IndexLSH.h"
 #include "IndexPQ.h"
 #include "IndexIVF.h"
 #include "IndexIVFPQ.h"
-#include "IndexNested.h"
 #include "MetaIndexes.h"
 
 #include "index_io.h"
@@ -207,7 +205,6 @@ int get_num_gpus()
 %include "ProductQuantizer.h"
 
 %include "VectorTransform.h"
-%include "BinaryCode.h"
 %include "IndexFlat.h"
 %include "IndexLSH.h"
 %include "PolysemousTraining.h"
@@ -217,11 +214,6 @@ int get_num_gpus()
 %ignore faiss::IndexIVFPQ::alloc_type;
 %include "IndexIVFPQ.h"
 
-%newobject nested_ivf_raw;
-%newobject nested_ivf_pq;
-%newobject nested_ivf_pqr;
-
-%include "IndexNested.h"
 %include "MetaIndexes.h"
 
 
