@@ -231,3 +231,17 @@ The auto-tuning example above also runs on the GPU. Edit
   python/demo_auto_tune.py
 
 to enable and run it.
+
+Use the Python wrapper in another project
+-----------------------------------------
+
+To import Faiss in your own Python project:
+
+```
+make py
+mkdir -p ~/myfaissproject/faiss-py
+cp faiss.py swigfaiss.py _swigfaiss.so ~/myfaissproject/faiss-py
+cd ~/myfaissproject
+echo 'import faiss' > main.py
+PYTHONPATH="$PWD/faiss-py:$PYTHONPATH" python main.py
+```
