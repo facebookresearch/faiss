@@ -57,10 +57,10 @@ tests/test_blas: tests/test_blas.cpp
 
 
 tests/demo_ivfpq_indexing: tests/demo_ivfpq_indexing.cpp $(LIBNAME).a
-	$(CC) -o $@ $(CFLAGS) -g -O3 $< $(LIBNAME).a  $(BLASLDFLAGS)
+	$(CC) -o $@ $(CFLAGS) -g -O3 $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
 
 tests/demo_sift1M: tests/demo_sift1M.cpp $(LIBNAME).a
-	$(CC) -o $@ $(CFLAGS) $< $(LIBNAME).a  $(BLASLDFLAGS)
+	$(CC) -o $@ $(CFLAGS) $< $(LIBNAME).a $(BLASLDFLAGS)
 
 
 #############################
