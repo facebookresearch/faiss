@@ -7,15 +7,14 @@
 
 .SUFFIXES: .cpp .o
 
-include makefile.inc
+MAKEFILE_INC=makefile.inc
+-include $(MAKEFILE_INC)
 
 LIBNAME=libfaiss
 
-all: $(LIBNAME).a tests/demo_ivfpq_indexing
-
-lua: lua/swigfaiss.$(SHAREDEXT)
-py: _swigfaiss.so
-
+all: .env_ok $(LIBNAME).a tests/demo_ivfpq_indexing
+lua: .swig_ok lua/swigfaiss.$(SHAREDEXT)
+py: .swig_ok _swigfaiss.so
 
 
 #############################
@@ -134,3 +133,16 @@ clean:
 	   	lua/swigfaiss.so lua/swigfaiss_wrap.cxx \
 		python/_swigfaiss.so python/swigfaiss_wrap.cxx \
 		python/swigfaiss.py _swigfaiss.so swigfaiss.py
+
+.env_ok:
+ifeq ($(wildcard $(MAKEFILE_INC)),)
+	$(error Cannot find $(MAKEFILE_INC). Did you forget to copy the relevant file from ./example_makefiles?)
+endif
+ifeq ($(shell command -v $(CC) 2>/dev/null),)
+	$(error Cannot find $(CC), please refer to $(CURDIR)/makefile.inc to set up your environment)
+endif
+
+.swig_ok: .env_ok
+ifeq ($(shell command -v $(SWIGEXEC) 2>/dev/null),)
+	$(error Cannot find $(SWIGEXEC), please refer to $(CURDIR)/makefile.inc to set up your environment)
+endif
