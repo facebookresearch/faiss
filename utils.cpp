@@ -12,13 +12,14 @@
 
 #include "utils.h"
 
-#include <stdio.h>
-#include <assert.h>
-#include <string.h>
-#include <math.h>
+#include <cstdio>
+#include <cassert>
+#include <cstring>
+#include <cmath>
+#include <cmath>
+
 #include <smmintrin.h>
 #include <mmintrin.h>
-
 
 #include <sys/time.h>
 #include <sys/types.h>
@@ -32,12 +33,6 @@
 
 #include "AuxIndexStructures.h"
 #include "FaissAssert.h"
-
-
-/* The definition of random functions depends on the architecture.
-   For Linux, we rely on re-entrant functions. For Apple, we use the
-   non re-entrant functions random, which forces use to stop multi-threading */
-typedef struct {long a, b, c, d, e, f, g, h;} randstate_t;
 
 
 
@@ -81,6 +76,7 @@ double getmillisecs () {
 }
 
 
+#ifdef __linux__
 
 size_t get_mem_usage_kb ()
 {
@@ -99,7 +95,15 @@ size_t get_mem_usage_kb ()
     return sz;
 }
 
+#elif __APPLE__
 
+size_t get_mem_usage_kb ()
+{
+    fprintf(stderr, "WARN: get_mem_usage_kb not implemented on the mac\n"); 
+    return 0;    
+}
+
+#endif
 
 
 
@@ -107,9 +111,25 @@ size_t get_mem_usage_kb ()
  * Random data generation functions
  **************************************************/
 
+/**
+ * The definition of random functions depends on the architecture:
+ *
+ * - for Linux, we rely on re-entrant functions (random_r). This
+ *   provides good quality reproducible random sequences.
+ *
+ * - for Apple, we use rand_r. Apple is trying so hard to deprecate
+ *   this function that it removed its definition form stdlib.h, so we
+ *   re-declare it below. Fortunately, since it is deprecated, its
+ *   prototype should not change much in the forerseeable future.
+ *
+ * Unfortunately, system designers are more concerned with making the
+ * most unpredictable random sequences for cryptographic use, when in
+ * scientific contexts what acutally matters is having reproducible
+ * squences in multi-threaded contexts.
+ */
+
 
 #ifdef __linux__
-#define RAND_MULTITHREADED  1
 
 
 
@@ -145,34 +165,36 @@ RandomGenerator::RandomGenerator (const RandomGenerator & other)
 }
 
 
-#else
-// Just ignore the random state on the mac
+#elif __APPLE__
+
+extern "C" {
+int rand_r(unsigned *seed);
+}
 
 RandomGenerator::RandomGenerator (long seed)
 {
-    initstate (seed, rand_state, sizeof (rand_state));
+    rand_state = seed; 
 }
 
 
 RandomGenerator::RandomGenerator (const RandomGenerator & other)
 {
-    memcpy (rand_state, other.rand_state, sizeof(rand_state));
-    setstate (rand_state);
+    rand_state = other.rand_state; 
 }
 
 
 int RandomGenerator::rand_int ()
 {
-    return random ();
+    // RAND_MAX is 31 bits
+    // try to add more randomness in the lower bits
+    int lowbits = rand_r(&rand_state) >> 15;
+    return rand_r(&rand_state) ^ lowbits;
 }
 
 long RandomGenerator::rand_long ()
 {
     return long(random()) | long(random()) << 31;
 }
-
-
-#define RAND_MULTITHREADED  0
 
 
 
@@ -186,7 +208,7 @@ int RandomGenerator::rand_int (int max)
 
 float RandomGenerator::rand_float ()
 {
-    return rand_int() / float(RAND_MAX);
+    return rand_int() / float(1 << 31);
 }
 
 double RandomGenerator::rand_double ()
@@ -211,7 +233,7 @@ void float_rand (float * x, size_t n, long seed)
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
-#pragma omp parallel for if(RAND_MULTITHREADED)
+#pragma omp parallel for 
     for (size_t j = 0; j < nblock; j++) {
 
         RandomGenerator rng (a0 + j * b0);
@@ -233,7 +255,7 @@ void float_randn (float * x, size_t n, long seed)
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
-#pragma omp parallel for if(RAND_MULTITHREADED)
+#pragma omp parallel for 
     for (size_t j = 0; j < nblock; j++) {
         RandomGenerator rng (a0 + j * b0);
 
@@ -270,7 +292,7 @@ void long_rand (long * x, size_t n, long seed)
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
-#pragma omp parallel for if(RAND_MULTITHREADED)
+#pragma omp parallel for 
     for (size_t j = 0; j < nblock; j++) {
 
         RandomGenerator rng (a0 + j * b0);
@@ -307,7 +329,7 @@ void byte_rand (uint8_t * x, size_t n, long seed)
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
-#pragma omp parallel for if(RAND_MULTITHREADED)
+#pragma omp parallel for 
     for (size_t j = 0; j < nblock; j++) {
 
         RandomGenerator rng (a0 + j * b0);

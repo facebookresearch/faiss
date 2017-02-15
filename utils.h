@@ -47,11 +47,15 @@ size_t get_mem_usage_kb ();
 
 /// random generator that can be used in multithreaded contexts
 struct RandomGenerator {
+
+#ifdef __linux__
     char rand_state [8];
-
     struct random_data rand_data;
+#elif __APPLE__
+    unsigned rand_state;
+#endif
 
-    /// random integer < RAND_MAX
+    /// random 31-bit positive integer 
     int rand_int ();
 
     /// random long < 2 ^ 62

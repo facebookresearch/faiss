@@ -6,17 +6,18 @@
 # LICENSE file in the root directory of this source tree.
 
 # -*- makefile -*-
-# tested on Mac OS X 10.11.6 El Capitan with additional software installed via macports
+# tested on Mac OS X 10.12.2 Sierra with additional software installed via macports
+
 
 
 # The system default clang does not support openmp
 # You can install an openmp compatible g++ with macports:
-# port install clang-3.7
-# port install libomp-devel
-CC=/opt/local/bin/clang++-mp-3.7
+# port install g++-mp-6
+CC=/opt/local/bin/g++-mp-6
 
-CFLAGS=-fPIC -m64 -Wall -g -O3  -msse4 -mpopcnt -fopenmp -Wno-sign-compare -Dnullptr=NULL -Doverride= -I/opt/local/include/libomp -D_OPENMP
-LDFLAGS=-g -fPIC  -fopenmp -L/opt/local/lib/libomp -fopenmp
+CFLAGS=-fPIC -m64 -Wall -g -O3  -msse4 -mpopcnt -fopenmp -Wno-sign-compare -Doverride=
+LDFLAGS=-g -fPIC  -fopenmp
+
 
 # common linux flags
 SHAREDEXT=dylib
@@ -84,7 +85,8 @@ BLASLDFLAGS=-framework Accelerate
 ##########################################################################
 
 # SWIG executable. This should be at least version 3.x
-# port install swig
+# port install swig swig-python
+
 SWIGEXEC=/opt/local/bin/swig
 
 # The Python include directories for the current python executable can
@@ -99,4 +101,9 @@ PYTHONCFLAGS=-I/System/Library/Frameworks/Python.framework/Versions/2.7/include/
 -I/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/numpy/core/include
 
 
-LUACFLAGS=-I/home/matthijs/fbsource/fbcode/third-party2//lua/5.1.4/src/lua-5.1.4/src              -I/home/matthijs/fbsource/fbcode/third-party2//torch7/trunk/gcc-4.9-glibc-2.20/cd0174b/include/
+##########################################################################
+# Faiss GPU
+##########################################################################
+
+# As we don't have access to a Mac with nvidia GPUs installed, we
+# could not validate the GPU compile of Faiss.

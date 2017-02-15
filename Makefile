@@ -1,3 +1,4 @@
+
 # Copyright (c) 2015-present, Facebook, Inc.
 # All rights reserved.
 #
@@ -68,7 +69,7 @@ tests/demo_sift1M: tests/demo_sift1M.cpp $(LIBNAME).a
 HFILES = IndexFlat.h Index.h IndexLSH.h IndexPQ.h IndexIVF.h \
     IndexIVFPQ.h VectorTransform.h index_io.h utils.h \
     PolysemousTraining.h Heap.h MetaIndexes.h AuxIndexStructures.h \
-    Clustering.h hamming.h AutoTune.h 
+    Clustering.h hamming.h AutoTune.h
 
 # also silently generates python/swigfaiss.py
 python/swigfaiss_wrap.cxx: swigfaiss.swig $(HFILES)

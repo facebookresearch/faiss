@@ -544,7 +544,6 @@ void ProductQuantizer::search (const float * __restrict x,
                                float_maxheap_array_t * res,
                                bool init_finalize_heap) const
 {
-    size_t k = res->k;
     float * dis_tables = new float [nx * ksub * M];
     compute_distance_tables (nx, x, dis_tables);
     FAISS_ASSERT(nx == res->nh);
@@ -569,7 +568,6 @@ void ProductQuantizer::search_ip (const float * __restrict x,
                                float_minheap_array_t * res,
                                bool init_finalize_heap) const
 {
-    size_t k = res->k;
     float * dis_tables = new float [nx * ksub * M];
     compute_inner_prod_tables (nx, x, dis_tables);
     FAISS_ASSERT(nx == res->nh);
