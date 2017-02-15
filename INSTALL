@@ -128,6 +128,13 @@ able to load the Faiss dynamic library:
 
   python -c "import faiss"
 
+Normally it should display
+
+  Failed to load GPU Faiss: No module named swigfaiss_gpu
+  Faiss falling back to CPU-only.
+
+This is normal, since the GPU version was not compiled in.
+
 In case of failure, it reports the first missing symbol. To see all
 missing symbols (on Linux), use
 
