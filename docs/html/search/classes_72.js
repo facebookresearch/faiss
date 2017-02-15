@@ -2,7 +2,6 @@ var searchData=
 [
   ['randomgenerator',['RandomGenerator',['../structfaiss_1_1RandomGenerator.html',1,'faiss']]],
   ['randomrotationmatrix',['RandomRotationMatrix',['../structfaiss_1_1RandomRotationMatrix.html',1,'faiss']]],
-  ['randstate_5ft',['randstate_t',['../structrandstate__t.html',1,'']]],
   ['range',['Range',['../structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range.html',1,'faiss::gpu::StackDeviceMemory']]],
   ['rangesearchpartialresult',['RangeSearchPartialResult',['../structfaiss_1_1RangeSearchPartialResult.html',1,'faiss']]],
   ['rangesearchresult',['RangeSearchResult',['../structfaiss_1_1RangeSearchResult.html',1,'faiss']]],

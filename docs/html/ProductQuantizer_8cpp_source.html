@@ -629,127 +629,125 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;                               <a class="code" href="structfaiss_1_1HeapArray.html">float_maxheap_array_t</a> * res,</div>
 <div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;                               <span class="keywordtype">bool</span> init_finalize_heap)<span class="keyword"> const</span></div>
 <div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;    <span class="keywordtype">size_t</span> k = res-&gt;<a class="code" href="structfaiss_1_1HeapArray.html#a1ee98429c766c77235f78c6d9aa32bb4">k</a>;</div>
-<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;    <span class="keywordtype">float</span> * dis_tables = <span class="keyword">new</span> <span class="keywordtype">float</span> [nx * ksub * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a83600e328893ce5f41fe459f5a3acf41">M</a>];</div>
-<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;    <a class="code" href="structfaiss_1_1ProductQuantizer.html#a3521b9a36c28219fd6180cc7a9ce8207">compute_distance_tables</a> (nx, x, dis_tables);</div>
-<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;    FAISS_ASSERT(nx == res-&gt;<a class="code" href="structfaiss_1_1HeapArray.html#aad477a3907c3496159eaf4b375be4432">nh</a>);</div>
-<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;</div>
-<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1ProductQuantizer.html#a13bf69a0dc7b4e45792d10f458e4a92d">byte_per_idx</a> == 1) {</div>
-<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;</div>
-<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;        pq_knn_search_with_tables&lt;uint8_t, CMax&lt;float, long&gt; &gt; (</div>
-<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;             <span class="keyword">this</span>, dis_tables, codes, ncodes, res, init_finalize_heap);</div>
-<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;</div>
-<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1ProductQuantizer.html#a13bf69a0dc7b4e45792d10f458e4a92d">byte_per_idx</a> == 2) {</div>
-<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;        pq_knn_search_with_tables&lt;uint16_t, CMax&lt;float, long&gt; &gt; (</div>
-<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;             <span class="keyword">this</span>, dis_tables, codes, ncodes, res, init_finalize_heap);</div>
-<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;</div>
-<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;    }</div>
-<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;    <span class="keyword">delete</span> [] dis_tables;</div>
-<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;}</div>
-<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;</div>
-<div class="line"><a name="l00565"></a><span class="lineno"><a class="line" href="structfaiss_1_1ProductQuantizer.html#a66be226806ca2abcaaf1653cdc690aa6">  565</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1ProductQuantizer.html#a66be226806ca2abcaaf1653cdc690aa6">ProductQuantizer::search_ip</a> (<span class="keyword">const</span> <span class="keywordtype">float</span> * __restrict x,</div>
-<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;                               <span class="keywordtype">size_t</span> nx,</div>
-<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;                               <span class="keyword">const</span> uint8_t * codes,</div>
-<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;                               <span class="keyword">const</span> <span class="keywordtype">size_t</span> ncodes,</div>
-<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;                               <a class="code" href="structfaiss_1_1HeapArray.html">float_minheap_array_t</a> * res,</div>
-<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;                               <span class="keywordtype">bool</span> init_finalize_heap)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;    <span class="keywordtype">size_t</span> k = res-&gt;<a class="code" href="structfaiss_1_1HeapArray.html#a1ee98429c766c77235f78c6d9aa32bb4">k</a>;</div>
-<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;    <span class="keywordtype">float</span> * dis_tables = <span class="keyword">new</span> <span class="keywordtype">float</span> [nx * ksub * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a83600e328893ce5f41fe459f5a3acf41">M</a>];</div>
-<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;    compute_inner_prod_tables (nx, x, dis_tables);</div>
-<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;    FAISS_ASSERT(nx == res-&gt;<a class="code" href="structfaiss_1_1HeapArray.html#aad477a3907c3496159eaf4b375be4432">nh</a>);</div>
+<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;    <span class="keywordtype">float</span> * dis_tables = <span class="keyword">new</span> <span class="keywordtype">float</span> [nx * ksub * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a83600e328893ce5f41fe459f5a3acf41">M</a>];</div>
+<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;    <a class="code" href="structfaiss_1_1ProductQuantizer.html#a3521b9a36c28219fd6180cc7a9ce8207">compute_distance_tables</a> (nx, x, dis_tables);</div>
+<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;    FAISS_ASSERT(nx == res-&gt;<a class="code" href="structfaiss_1_1HeapArray.html#aad477a3907c3496159eaf4b375be4432">nh</a>);</div>
+<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;</div>
+<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1ProductQuantizer.html#a13bf69a0dc7b4e45792d10f458e4a92d">byte_per_idx</a> == 1) {</div>
+<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;</div>
+<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;        pq_knn_search_with_tables&lt;uint8_t, CMax&lt;float, long&gt; &gt; (</div>
+<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;             <span class="keyword">this</span>, dis_tables, codes, ncodes, res, init_finalize_heap);</div>
+<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;</div>
+<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1ProductQuantizer.html#a13bf69a0dc7b4e45792d10f458e4a92d">byte_per_idx</a> == 2) {</div>
+<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;        pq_knn_search_with_tables&lt;uint16_t, CMax&lt;float, long&gt; &gt; (</div>
+<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;             <span class="keyword">this</span>, dis_tables, codes, ncodes, res, init_finalize_heap);</div>
+<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;</div>
+<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;    }</div>
+<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;    <span class="keyword">delete</span> [] dis_tables;</div>
+<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;}</div>
+<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;</div>
+<div class="line"><a name="l00564"></a><span class="lineno"><a class="line" href="structfaiss_1_1ProductQuantizer.html#a66be226806ca2abcaaf1653cdc690aa6">  564</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1ProductQuantizer.html#a66be226806ca2abcaaf1653cdc690aa6">ProductQuantizer::search_ip</a> (<span class="keyword">const</span> <span class="keywordtype">float</span> * __restrict x,</div>
+<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;                               <span class="keywordtype">size_t</span> nx,</div>
+<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;                               <span class="keyword">const</span> uint8_t * codes,</div>
+<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;                               <span class="keyword">const</span> <span class="keywordtype">size_t</span> ncodes,</div>
+<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;                               <a class="code" href="structfaiss_1_1HeapArray.html">float_minheap_array_t</a> * res,</div>
+<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;                               <span class="keywordtype">bool</span> init_finalize_heap)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;    <span class="keywordtype">float</span> * dis_tables = <span class="keyword">new</span> <span class="keywordtype">float</span> [nx * ksub * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a83600e328893ce5f41fe459f5a3acf41">M</a>];</div>
+<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;    compute_inner_prod_tables (nx, x, dis_tables);</div>
+<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;    FAISS_ASSERT(nx == res-&gt;<a class="code" href="structfaiss_1_1HeapArray.html#aad477a3907c3496159eaf4b375be4432">nh</a>);</div>
+<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;</div>
+<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1ProductQuantizer.html#a13bf69a0dc7b4e45792d10f458e4a92d">byte_per_idx</a> == 1) {</div>
 <div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;</div>
-<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1ProductQuantizer.html#a13bf69a0dc7b4e45792d10f458e4a92d">byte_per_idx</a> == 1) {</div>
-<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;</div>
-<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;        pq_knn_search_with_tables&lt;uint8_t, CMin&lt;float, long&gt; &gt; (</div>
-<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;             <span class="keyword">this</span>, dis_tables, codes, ncodes, res, init_finalize_heap);</div>
-<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;</div>
-<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1ProductQuantizer.html#a13bf69a0dc7b4e45792d10f458e4a92d">byte_per_idx</a> == 2) {</div>
-<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;        pq_knn_search_with_tables&lt;uint16_t, CMin&lt;float, long&gt; &gt; (</div>
-<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;             <span class="keyword">this</span>, dis_tables, codes, ncodes, res, init_finalize_heap);</div>
-<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;    }</div>
-<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;    <span class="keyword">delete</span> [] dis_tables;</div>
-<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;}</div>
+<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;        pq_knn_search_with_tables&lt;uint8_t, CMin&lt;float, long&gt; &gt; (</div>
+<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;             <span class="keyword">this</span>, dis_tables, codes, ncodes, res, init_finalize_heap);</div>
+<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;</div>
+<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1ProductQuantizer.html#a13bf69a0dc7b4e45792d10f458e4a92d">byte_per_idx</a> == 2) {</div>
+<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;        pq_knn_search_with_tables&lt;uint16_t, CMin&lt;float, long&gt; &gt; (</div>
+<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;             <span class="keyword">this</span>, dis_tables, codes, ncodes, res, init_finalize_heap);</div>
+<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;    }</div>
+<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;    <span class="keyword">delete</span> [] dis_tables;</div>
+<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;}</div>
+<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;</div>
+<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;</div>
 <div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;</div>
-<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;</div>
-<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;</div>
-<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;<span class="keyword">static</span> <span class="keywordtype">float</span> sqr (<span class="keywordtype">float</span> x) {</div>
-<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;    <span class="keywordflow">return</span> x * x;</div>
-<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;}</div>
-<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;</div>
-<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;<span class="keywordtype">void</span> ProductQuantizer::compute_sdc_table ()</div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;{</div>
-<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;    <a class="code" href="structfaiss_1_1ProductQuantizer.html#a6bd65fb4407452f73acb7242931d09e4">sdc_table</a>.resize (M * ksub * ksub);</div>
+<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;<span class="keyword">static</span> <span class="keywordtype">float</span> sqr (<span class="keywordtype">float</span> x) {</div>
+<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;    <span class="keywordflow">return</span> x * x;</div>
+<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;}</div>
+<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;</div>
+<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;<span class="keywordtype">void</span> ProductQuantizer::compute_sdc_table ()</div>
+<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;{</div>
+<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;    <a class="code" href="structfaiss_1_1ProductQuantizer.html#a6bd65fb4407452f73acb7242931d09e4">sdc_table</a>.resize (M * ksub * ksub);</div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;</div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> m = 0; m &lt; <a class="code" href="structfaiss_1_1ProductQuantizer.html#a83600e328893ce5f41fe459f5a3acf41">M</a>; m++) {</div>
 <div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;</div>
-<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> m = 0; m &lt; <a class="code" href="structfaiss_1_1ProductQuantizer.html#a83600e328893ce5f41fe459f5a3acf41">M</a>; m++) {</div>
-<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;</div>
-<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> *cents = centroids.data() + m * ksub * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a467b451ca203544e42c250e4be65b983">dsub</a>;</div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;        <span class="keywordtype">float</span> * dis_tab = <a class="code" href="structfaiss_1_1ProductQuantizer.html#a6bd65fb4407452f73acb7242931d09e4">sdc_table</a>.data() + m * ksub * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>;</div>
-<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;</div>
-<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;        <span class="comment">// TODO optimize with BLAS</span></div>
-<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>; i++) {</div>
-<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> *centi = cents + i * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a467b451ca203544e42c250e4be65b983">dsub</a>;</div>
-<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>; j++) {</div>
-<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;                <span class="keywordtype">float</span> accu = 0;</div>
-<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">float</span> *centj = cents + j * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a467b451ca203544e42c250e4be65b983">dsub</a>;</div>
-<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; <a class="code" href="structfaiss_1_1ProductQuantizer.html#a467b451ca203544e42c250e4be65b983">dsub</a>; k++)</div>
-<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;                    accu += sqr (centi[k] - centj[k]);</div>
-<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;                dis_tab [i + j * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>] = accu;</div>
-<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;            }</div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;        }</div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;    }</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;}</div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;</div>
-<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;<span class="keywordtype">void</span> ProductQuantizer::search_sdc (<span class="keyword">const</span> uint8_t * qcodes,</div>
-<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;                     <span class="keywordtype">size_t</span> nq,</div>
-<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;                     <span class="keyword">const</span> uint8_t * bcodes,</div>
-<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;                     <span class="keyword">const</span> <span class="keywordtype">size_t</span> nb,</div>
-<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;                     float_maxheap_array_t * res,</div>
-<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;                     <span class="keywordtype">bool</span> init_finalize_heap)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;    FAISS_ASSERT (<a class="code" href="structfaiss_1_1ProductQuantizer.html#a6bd65fb4407452f73acb7242931d09e4">sdc_table</a>.size() == M * ksub * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>);</div>
-<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;    <span class="keywordtype">size_t</span> k = res-&gt;k;</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> *cents = centroids.data() + m * ksub * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a467b451ca203544e42c250e4be65b983">dsub</a>;</div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;        <span class="keywordtype">float</span> * dis_tab = <a class="code" href="structfaiss_1_1ProductQuantizer.html#a6bd65fb4407452f73acb7242931d09e4">sdc_table</a>.data() + m * ksub * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>;</div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;        <span class="comment">// TODO optimize with BLAS</span></div>
+<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>; i++) {</div>
+<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> *centi = cents + i * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a467b451ca203544e42c250e4be65b983">dsub</a>;</div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>; j++) {</div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;                <span class="keywordtype">float</span> accu = 0;</div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">float</span> *centj = cents + j * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a467b451ca203544e42c250e4be65b983">dsub</a>;</div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; <a class="code" href="structfaiss_1_1ProductQuantizer.html#a467b451ca203544e42c250e4be65b983">dsub</a>; k++)</div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;                    accu += sqr (centi[k] - centj[k]);</div>
+<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;                dis_tab [i + j * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>] = accu;</div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;            }</div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;        }</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;    }</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;}</div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;</div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;<span class="keywordtype">void</span> ProductQuantizer::search_sdc (<span class="keyword">const</span> uint8_t * qcodes,</div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;                     <span class="keywordtype">size_t</span> nq,</div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;                     <span class="keyword">const</span> uint8_t * bcodes,</div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;                     <span class="keyword">const</span> <span class="keywordtype">size_t</span> nb,</div>
+<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;                     float_maxheap_array_t * res,</div>
+<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;                     <span class="keywordtype">bool</span> init_finalize_heap)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;    FAISS_ASSERT (<a class="code" href="structfaiss_1_1ProductQuantizer.html#a6bd65fb4407452f73acb7242931d09e4">sdc_table</a>.size() == M * ksub * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>);</div>
+<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;    <span class="keywordtype">size_t</span> k = res-&gt;k;</div>
+<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;</div>
+<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;    FAISS_ASSERT (<a class="code" href="structfaiss_1_1ProductQuantizer.html#a13bf69a0dc7b4e45792d10f458e4a92d">byte_per_idx</a> == 1);</div>
 <div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;</div>
-<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;    FAISS_ASSERT (<a class="code" href="structfaiss_1_1ProductQuantizer.html#a13bf69a0dc7b4e45792d10f458e4a92d">byte_per_idx</a> == 1);</div>
-<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;</div>
-<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
-<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nq; i++) {</div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;</div>
-<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;        <span class="comment">/* Compute distances and keep smallest values */</span></div>
-<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;        <span class="keywordtype">long</span> * heap_ids = res-&gt;ids + i * k;</div>
-<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;        <span class="keywordtype">float</span> *  heap_dis = res-&gt;val + i * k;</div>
-<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;        <span class="keyword">const</span> uint8_t * qcode = qcodes + i * <a class="code" href="structfaiss_1_1ProductQuantizer.html#aa61330eadb84772b71018b093773a5f9">code_size</a>;</div>
-<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;</div>
-<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;        <span class="keywordflow">if</span> (init_finalize_heap)</div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;            maxheap_heapify (k, heap_dis, heap_ids);</div>
-<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;</div>
-<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;        <span class="keyword">const</span> uint8_t * bcode = bcodes;</div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; nb; j++) {</div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;            <span class="keywordtype">float</span> dis = 0;</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> * tab = <a class="code" href="structfaiss_1_1ProductQuantizer.html#a6bd65fb4407452f73acb7242931d09e4">sdc_table</a>.data();</div>
-<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> m = 0; m &lt; <a class="code" href="structfaiss_1_1ProductQuantizer.html#a83600e328893ce5f41fe459f5a3acf41">M</a>; m++) {</div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;                dis += tab[bcode[m] + qcode[m] * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>];</div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;                tab += ksub * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>;</div>
-<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;            }</div>
-<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;            <span class="keywordflow">if</span> (dis &lt; heap_dis[0]) {</div>
-<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;                maxheap_pop (k, heap_dis, heap_ids);</div>
-<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;                maxheap_push (k, heap_dis, heap_ids, dis, j);</div>
-<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;            }</div>
-<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;            bcode += <a class="code" href="structfaiss_1_1ProductQuantizer.html#aa61330eadb84772b71018b093773a5f9">code_size</a>;</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;        }</div>
-<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;</div>
-<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;        <span class="keywordflow">if</span> (init_finalize_heap)</div>
-<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;            maxheap_reorder (k, heap_dis, heap_ids);</div>
-<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;    }</div>
+<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nq; i++) {</div>
+<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;</div>
+<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;        <span class="comment">/* Compute distances and keep smallest values */</span></div>
+<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;        <span class="keywordtype">long</span> * heap_ids = res-&gt;ids + i * k;</div>
+<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;        <span class="keywordtype">float</span> *  heap_dis = res-&gt;val + i * k;</div>
+<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;        <span class="keyword">const</span> uint8_t * qcode = qcodes + i * <a class="code" href="structfaiss_1_1ProductQuantizer.html#aa61330eadb84772b71018b093773a5f9">code_size</a>;</div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;</div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;        <span class="keywordflow">if</span> (init_finalize_heap)</div>
+<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;            maxheap_heapify (k, heap_dis, heap_ids);</div>
+<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;</div>
+<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;        <span class="keyword">const</span> uint8_t * bcode = bcodes;</div>
+<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; nb; j++) {</div>
+<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;            <span class="keywordtype">float</span> dis = 0;</div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> * tab = <a class="code" href="structfaiss_1_1ProductQuantizer.html#a6bd65fb4407452f73acb7242931d09e4">sdc_table</a>.data();</div>
+<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> m = 0; m &lt; <a class="code" href="structfaiss_1_1ProductQuantizer.html#a83600e328893ce5f41fe459f5a3acf41">M</a>; m++) {</div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;                dis += tab[bcode[m] + qcode[m] * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>];</div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;                tab += ksub * <a class="code" href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">ksub</a>;</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;            }</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;            <span class="keywordflow">if</span> (dis &lt; heap_dis[0]) {</div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;                maxheap_pop (k, heap_dis, heap_ids);</div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;                maxheap_push (k, heap_dis, heap_ids, dis, j);</div>
+<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;            }</div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;            bcode += <a class="code" href="structfaiss_1_1ProductQuantizer.html#aa61330eadb84772b71018b093773a5f9">code_size</a>;</div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;        }</div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;</div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;        <span class="keywordflow">if</span> (init_finalize_heap)</div>
+<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;            maxheap_reorder (k, heap_dis, heap_ids);</div>
+<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;    }</div>
+<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;</div>
+<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;}</div>
 <div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;</div>
-<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;}</div>
+<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;</div>
 <div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;</div>
 <div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;</div>
 <div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;</div>
 <div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;</div>
-<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;</div>
-<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;</div>
-<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;} <span class="comment">// namespace faiss</span></div>
+<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;} <span class="comment">// namespace faiss</span></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_ad291f113c6d44a634ddc1972f9a3c775"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#ad291f113c6d44a634ddc1972f9a3c775">faiss::ProductQuantizer::set_params</a></div><div class="ttdeci">void set_params(const float *centroids, int m)</div><div class="ttdoc">Define the centroids for subquantizer m. </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8cpp_source.html#l00180">ProductQuantizer.cpp:180</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a3a41c6286095e731be744548d9535a35a6b330bc2cfa02a402d002d657f214931"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a3a41c6286095e731be744548d9535a35a6b330bc2cfa02a402d002d657f214931">faiss::ProductQuantizer::Train_hypercube_pca</a></div><div class="ttdoc">intialize centroids with nbits-D hypercube </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8h_source.html#l00046">ProductQuantizer.h:46</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_ac920fea11f02e8407d12cc99a09f5ea5"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#ac920fea11f02e8407d12cc99a09f5ea5">faiss::ProductQuantizer::nbits</a></div><div class="ttdeci">size_t nbits</div><div class="ttdoc">number of bits per quantization index </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8h_source.html#l00030">ProductQuantizer.h:30</a></div></div>
@@ -759,7 +757,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_ab3067f333b26811537a8519fb08292ce"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#ab3067f333b26811537a8519fb08292ce">faiss::ProductQuantizer::set_derived_values</a></div><div class="ttdeci">void set_derived_values()</div><div class="ttdoc">compute derived values when d, M and nbits have been set </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8cpp_source.html#l00167">ProductQuantizer.cpp:167</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a6bd65fb4407452f73acb7242931d09e4"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a6bd65fb4407452f73acb7242931d09e4">faiss::ProductQuantizer::sdc_table</a></div><div class="ttdeci">std::vector&lt; float &gt; sdc_table</div><div class="ttdoc">Symmetric Distance Table. </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8h_source.html#l00156">ProductQuantizer.h:156</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a3a41c6286095e731be744548d9535a35aa1aefc6c08f0ca974de9f59d9557aa0d"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a3a41c6286095e731be744548d9535a35aa1aefc6c08f0ca974de9f59d9557aa0d">faiss::ProductQuantizer::Train_shared</a></div><div class="ttdoc">share dictionary accross PQ segments </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8h_source.html#l00044">ProductQuantizer.h:44</a></div></div>
-<div class="ttc" id="structfaiss_1_1HeapArray_html_a1ee98429c766c77235f78c6d9aa32bb4"><div class="ttname"><a href="structfaiss_1_1HeapArray.html#a1ee98429c766c77235f78c6d9aa32bb4">faiss::HeapArray::k</a></div><div class="ttdeci">size_t k</div><div class="ttdoc">allocated size per heap </div><div class="ttdef"><b>Definition:</b> <a href="Heap_8h_source.html#l00356">Heap.h:356</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a467b451ca203544e42c250e4be65b983"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a467b451ca203544e42c250e4be65b983">faiss::ProductQuantizer::dsub</a></div><div class="ttdeci">size_t dsub</div><div class="ttdoc">dimensionality of each subvector </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8h_source.html#l00033">ProductQuantizer.h:33</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a3521b9a36c28219fd6180cc7a9ce8207"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a3521b9a36c28219fd6180cc7a9ce8207">faiss::ProductQuantizer::compute_distance_tables</a></div><div class="ttdeci">void compute_distance_tables(size_t nx, const float *x, float *dis_tables) const </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8cpp_source.html#l00439">ProductQuantizer.cpp:439</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a95060fedd7c09eb20e968fd2fdb4b316"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a95060fedd7c09eb20e968fd2fdb4b316">faiss::ProductQuantizer::compute_code_from_distance_table</a></div><div class="ttdeci">void compute_code_from_distance_table(const float *tab, uint8_t *code) const </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8cpp_source.html#l00363">ProductQuantizer.cpp:363</a></div></div>
@@ -769,8 +766,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_aa61330eadb84772b71018b093773a5f9"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#aa61330eadb84772b71018b093773a5f9">faiss::ProductQuantizer::code_size</a></div><div class="ttdeci">size_t code_size</div><div class="ttdoc">byte per indexed vector </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8h_source.html#l00035">ProductQuantizer.h:35</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a0feee45e4151547b7a0444c14bad398f"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">faiss::ProductQuantizer::ksub</a></div><div class="ttdeci">size_t ksub</div><div class="ttdoc">number of centroids for each subquantizer </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8h_source.html#l00036">ProductQuantizer.h:36</a></div></div>
 <div class="ttc" id="structfaiss_1_1HeapArray_html"><div class="ttname"><a href="structfaiss_1_1HeapArray.html">faiss::HeapArray</a></div><div class="ttdef"><b>Definition:</b> <a href="Heap_8h_source.html#l00351">Heap.h:351</a></div></div>
-<div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a66be226806ca2abcaaf1653cdc690aa6"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a66be226806ca2abcaaf1653cdc690aa6">faiss::ProductQuantizer::search_ip</a></div><div class="ttdeci">void search_ip(const float *x, size_t nx, const uint8_t *codes, const size_t ncodes, float_minheap_array_t *res, bool init_finalize_heap=true) const </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8cpp_source.html#l00565">ProductQuantizer.cpp:565</a></div></div>
-<div class="ttc" id="namespacefaiss_html_a3d9c7db82d43c1f0ab1d28b92bc9fe57"><div class="ttname"><a href="namespacefaiss.html#a3d9c7db82d43c1f0ab1d28b92bc9fe57">faiss::pairwise_L2sqr</a></div><div class="ttdeci">void pairwise_L2sqr(long d, long nq, const float *xq, long nb, const float *xb, float *dis, long ldq, long ldb, long ldd)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01207">utils.cpp:1207</a></div></div>
+<div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a66be226806ca2abcaaf1653cdc690aa6"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a66be226806ca2abcaaf1653cdc690aa6">faiss::ProductQuantizer::search_ip</a></div><div class="ttdeci">void search_ip(const float *x, size_t nx, const uint8_t *codes, const size_t ncodes, float_minheap_array_t *res, bool init_finalize_heap=true) const </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8cpp_source.html#l00564">ProductQuantizer.cpp:564</a></div></div>
+<div class="ttc" id="namespacefaiss_html_a3d9c7db82d43c1f0ab1d28b92bc9fe57"><div class="ttname"><a href="namespacefaiss.html#a3d9c7db82d43c1f0ab1d28b92bc9fe57">faiss::pairwise_L2sqr</a></div><div class="ttdeci">void pairwise_L2sqr(long d, long nq, const float *xq, long nb, const float *xb, float *dis, long ldq, long ldb, long ldd)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01229">utils.cpp:1229</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a08b130e3a21f2699a4e3bbec121fb838"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a08b130e3a21f2699a4e3bbec121fb838">faiss::ProductQuantizer::compute_code</a></div><div class="ttdeci">void compute_code(const float *x, uint8_t *code) const </div><div class="ttdoc">Quantize one vector with the product quantizer. </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8cpp_source.html#l00311">ProductQuantizer.cpp:311</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a3a41c6286095e731be744548d9535a35a4960d143d2aa49cf92028cf3470c47a0"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a3a41c6286095e731be744548d9535a35a4960d143d2aa49cf92028cf3470c47a0">faiss::ProductQuantizer::Train_hot_start</a></div><div class="ttdoc">the centroids are already initialized </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8h_source.html#l00043">ProductQuantizer.h:43</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_af265acf5aa1bcda60898002287e6a3d6"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#af265acf5aa1bcda60898002287e6a3d6">faiss::ProductQuantizer::cp</a></div><div class="ttdeci">ClusteringParameters cp</div><div class="ttdoc">parameters used during clustering </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8h_source.html#l00050">ProductQuantizer.h:50</a></div></div>
