@@ -284,8 +284,18 @@ We use the `-tempmem` option to reduce the temporary memory allocation to 1.5G, 
 The same script generates the GPU search results on Deep1B. 
 
 ```
+python bench_gpu_1bn.py  Deep1B OPQ20_80,IVF262144,PQ20 -nnn 10 -R 2 -ngpu 4 -altadd -noptables -tempmem $[1024*1024*1024]
+...
 
-
+0/10000 (0.115 s)      probe=1  : 0.239 s 1-R@1: 0.2387 1-R@10: 0.3420
+0/10000 (0.006 s)      probe=2  : 0.103 s 1-R@1: 0.3110 1-R@10: 0.4623
+0/10000 (0.005 s)      probe=4  : 0.105 s 1-R@1: 0.3772 1-R@10: 0.5862
+0/10000 (0.005 s)      probe=8  : 0.116 s 1-R@1: 0.4235 1-R@10: 0.6889
+0/10000 (0.005 s)      probe=16 : 0.133 s 1-R@1: 0.4517 1-R@10: 0.7693
+0/10000 (0.005 s)      probe=32 : 0.168 s 1-R@1: 0.4713 1-R@10: 0.8281
+0/10000 (0.005 s)      probe=64 : 0.238 s 1-R@1: 0.4841 1-R@10: 0.8649
+0/10000 (0.007 s)      probe=128: 0.384 s 1-R@1: 0.4900 1-R@10: 0.8816
+0/10000 (0.005 s)      probe=256: 0.736 s 1-R@1: 0.4933 1-R@10: 0.8912
 ```
 
 
