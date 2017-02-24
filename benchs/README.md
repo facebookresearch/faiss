@@ -24,7 +24,7 @@ and
 }
 ```
 
-Note that the numbers (especially timings) change slightly due to improvements in the implementation, different machines, etc.
+Note that the numbers (especially timings) change slightly due to changes in the implementation, different machines, etc.
 
 The scripts are self-contained. They depend only on Faiss and external training data that should be stored in sub-directories.
 
