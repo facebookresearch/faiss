@@ -6,8 +6,11 @@
 # LICENSE file in the root directory of this source tree.
 
 # -*- makefile -*-
-# tested on CentOS 7
+# tested on CentOS 7 and Ubuntu 
 
+# for Ubuntu: 
+# sudo apt-get install libopenblas-dev python-numpy
+# and change the path to libopenblas from /usr/lib64 to /usr/lib
 
 CC=g++
 
