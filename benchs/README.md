@@ -15,9 +15,14 @@ numbers reported in the two papers
 ```
 and
 
-ARXIV paper here
-
-
+```
+@inproceedings{JDJ17,
+   Author = {Jeff Johnson and Matthijs Douze and Herv{\'e} J{\'e}gou},
+   journal={arXiv preprint arXiv:XXXXXX},,
+   Title = {Billion-scale similarity search with GPUs},
+   Year = {2017},
+}
+```
 
 Note that the numbers (especially timings) change slightly due to improvements in the implementation, different machines, etc.
 
@@ -218,7 +223,7 @@ The run produces two warnings:
 
 - the clustering complains that it does not have enough training data, there is not much we can do about this.
 
-- the add() function complains that there is an inefficient memory allocation, but this is a concern only when it happens often.
+- the add() function complains that there is an inefficient memory allocation, but this is a concern only when it happens often, and we are not benchmarking the add time anyways.
 
 ### Clustering on MNIST8m
 
@@ -237,6 +242,32 @@ total runtime: 140.615 s
 ```
 
 ### search on SIFT1B
+
+The script [`bench_gpu_1bn.py`] runs multi-gpu searches on the two 1-billion vector datasets we considered. It is more complex than the previous scripts, because it supports many search options and decomposes the dataset build process in Python to exploit the best possible CPU/GPU parallelism and GPU distribution.
+
+The search results on SIFT1B in the "GPU paper" can be obtained with 
+
+<!-- see P57124181 -->
+
+```
+bench_gpu_1bn.par SIFT1000M OPQ8_32,IVF262144,PQ8 -nnn 10 -ngpu 1 -tempmem $[1536*1024*1024]
+...
+0/10000 (0.024 s)      probe=1  : 0.161 s 1-R@1: 0.0752 1-R@10: 0.1924
+0/10000 (0.005 s)      probe=2  : 0.150 s 1-R@1: 0.0964 1-R@10: 0.2693
+0/10000 (0.005 s)      probe=4  : 0.153 s 1-R@1: 0.1102 1-R@10: 0.3328
+0/10000 (0.005 s)      probe=8  : 0.170 s 1-R@1: 0.1220 1-R@10: 0.3827
+0/10000 (0.005 s)      probe=16 : 0.196 s 1-R@1: 0.1290 1-R@10: 0.4151
+0/10000 (0.006 s)      probe=32 : 0.244 s 1-R@1: 0.1314 1-R@10: 0.4345
+0/10000 (0.006 s)      probe=64 : 0.353 s 1-R@1: 0.1332 1-R@10: 0.4461
+0/10000 (0.005 s)      probe=128: 0.587 s 1-R@1: 0.1341 1-R@10: 0.4502
+0/10000 (0.006 s)      probe=256: 1.160 s 1-R@1: 0.1342 1-R@10: 0.4511
+```
+
+We use the `-tempmem` option to reduce the temporary memory allocation to 1.5G, otherwise the dataset does not fit in GPU memory
+
+### search on Deep1B
+
+
 
 
 ### knn-graph on Deep1B
