@@ -257,7 +257,7 @@ total runtime: 140.615 s
 
 ### search on SIFT1B
 
-The script [`bench_gpu_1bn.py`] runs multi-gpu searches on the two 1-billion vector datasets we considered. It is more complex than the previous scripts, because it supports many search options and decomposes the dataset build process in Python to exploit the best possible CPU/GPU parallelism and GPU distribution.
+The script [`bench_gpu_1bn.py`](bench_gpu_1bn.py) runs multi-gpu searches on the two 1-billion vector datasets we considered. It is more complex than the previous scripts, because it supports many search options and decomposes the dataset build process in Python to exploit the best possible CPU/GPU parallelism and GPU distribution.
 
 The search results on SIFT1B in the "GPU paper" can be obtained with 
 
@@ -281,8 +281,19 @@ We use the `-tempmem` option to reduce the temporary memory allocation to 1.5G, 
 
 ### search on Deep1B
 
+The same script generates the GPU search results on Deep1B. 
 
+```
+
+
+```
 
 
 ### knn-graph on Deep1B
 
+The same script generates the KNN-graph on Deep1B. 
+
+
+```
+
+```
