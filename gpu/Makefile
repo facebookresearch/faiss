@@ -63,6 +63,7 @@ CUOBJ=      impl/BroadcastSum.o \
             utils/BlockSelectHalf.o \
             utils/WarpSelectFloat.o \
             utils/WarpSelectHalf.o \
+	    utils/nvidia/fp16_emu.o \
 	    $(foreach v,$(INS),   \
 	        utils/blockselect/BlockSelectHalf$(v).o \
                 utils/blockselect/BlockSelectFloat$(v).o \
@@ -102,8 +103,8 @@ test/demo_ivfpq_indexing_gpu: test/demo_ivfpq_indexing_gpu.cpp \
 # extension is .so even on the mac
 ../python/_swigfaiss_gpu.so: ../python/swigfaiss_gpu_wrap.cxx \
              $(LIBNAME).a ../libfaiss.a
-	$(NVCC) $(NVCCFLAGS) $(PYTHONCFLAGS) -shared -o $@ $^ \
-	-Xcompiler -fopenmp -lcublas -I.. \
+	$(NVCC) -I.. $(NVCCFLAGS) $(PYTHONCFLAGS) -shared -o $@ $^ \
+	-Xcompiler -fopenmp -lcublas \
 	$(BLASLDFLAGSSONVCC)
 
 ../_swigfaiss_gpu.so: ../python/_swigfaiss_gpu.so
