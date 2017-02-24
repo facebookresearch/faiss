@@ -99,110 +99,54 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">// Copyright 2004-present Facebook. All Rights Reserved.</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;Float16.cuh&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;thrust/execution_policy.h&gt;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;thrust/transform.h&gt;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#ifdef FAISS_USE_FLOAT16</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>faiss { <span class="keyword">namespace </span>gpu {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keywordtype">bool</span> getDeviceSupportsFloat16Math(<span class="keywordtype">int</span> device) {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; prop = getDeviceProperties(device);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keywordflow">return</span> (prop.major &gt;= 6 ||</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;          (prop.major == 5 &amp;&amp; prop.minor &gt;= 3));</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;}</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">struct </span>FloatToHalf {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  __device__ half operator()(<span class="keywordtype">float</span> v)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> __float2half(v); }</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">struct </span>HalfToFloat {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  __device__ <span class="keywordtype">float</span> operator()(half v)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> __half2float(v); }</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;};</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keywordtype">void</span> runConvertToFloat16(half* out,</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                         <span class="keyword">const</span> <span class="keywordtype">float</span>* in,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                         <span class="keywordtype">size_t</span> num,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                         cudaStream_t stream) {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  thrust::transform(thrust::cuda::par.on(stream),</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                    in, in + num, out, FloatToHalf());</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;}</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">void</span> runConvertToFloat32(<span class="keywordtype">float</span>* out,</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                         <span class="keyword">const</span> half* in,</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                         <span class="keywordtype">size_t</span> num,</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                         cudaStream_t stream) {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  thrust::transform(thrust::cuda::par.on(stream),</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                    in, in + num, out, HalfToFloat());</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">// FIXME: replace</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">  Copyright (c) 2015, Norbert Juffa</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">  All rights reserved.</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">  Redistribution and use in source and binary forms, with or without</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">  modification, are permitted provided that the following conditions</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">  are met:</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">  1. Redistributions of source code must retain the above copyright</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">     notice, this list of conditions and the following disclaimer.</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">  2. Redistributions in binary form must reproduce the above copyright</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">     notice, this list of conditions and the following disclaimer in the</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">     documentation and/or other materials provided with the distribution.</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment">  &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">  HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment">  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment">  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment">*/</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;half hostFloat2Half(<span class="keywordtype">float</span> a) {</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  uint32_t ia;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  uint16_t ir;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  memcpy(&amp;ia, &amp;a, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  ir = (ia &gt;&gt; 16) &amp; 0x8000;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordflow">if</span> ((ia &amp; 0x7f800000) == 0x7f800000) {</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordflow">if</span> ((ia &amp; 0x7fffffff) == 0x7f800000) {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      ir |= 0x7c00; <span class="comment">/* infinity */</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      ir = 0x7fff; <span class="comment">/* canonical NaN */</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    }</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((ia &amp; 0x7f800000) &gt;= 0x33000000) {</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">int</span> shift = (int)((ia &gt;&gt; 23) &amp; 0xff) - 127;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordflow">if</span> (shift &gt; 15) {</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      ir |= 0x7c00; <span class="comment">/* infinity */</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;      ia = (ia &amp; 0x007fffff) | 0x00800000; <span class="comment">/* extract mantissa */</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      <span class="keywordflow">if</span> (shift &lt; -14) { <span class="comment">/* denormal */</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        ir |= ia &gt;&gt; (-1 - shift);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        ia = ia &lt;&lt; (32 - (-1 - shift));</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;      } <span class="keywordflow">else</span> { <span class="comment">/* normal */</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        ir |= ia &gt;&gt; (24 - 11);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        ia = ia &lt;&lt; (32 - (24 - 11));</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        ir = ir + ((14 + shift) &lt;&lt; 10);</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;      }</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="comment">/* IEEE-754 round to nearest of even */</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;      <span class="keywordflow">if</span> ((ia &gt; 0x80000000) || ((ia == 0x80000000) &amp;&amp; (ir &amp; 1))) {</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        ir++;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;      }</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    }</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  }</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  half ret;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  memcpy(&amp;ret, &amp;ir, <span class="keyword">sizeof</span>(half));</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordflow">return</span> ret;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;} } <span class="comment">// namespace</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor">#endif // FAISS_USE_FLOAT16</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;nvidia/fp16_emu.cuh&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;thrust/execution_policy.h&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;thrust/transform.h&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#ifdef FAISS_USE_FLOAT16</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>faiss { <span class="keyword">namespace </span>gpu {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keywordtype">bool</span> getDeviceSupportsFloat16Math(<span class="keywordtype">int</span> device) {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; prop = getDeviceProperties(device);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keywordflow">return</span> (prop.major &gt;= 6 ||</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;          (prop.major == 5 &amp;&amp; prop.minor &gt;= 3));</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;}</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">struct </span>FloatToHalf {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  __device__ half operator()(<span class="keywordtype">float</span> v)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> __float2half(v); }</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;};</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">struct </span>HalfToFloat {</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  __device__ <span class="keywordtype">float</span> operator()(half v)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> __half2float(v); }</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;};</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keywordtype">void</span> runConvertToFloat16(half* out,</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                         <span class="keyword">const</span> <span class="keywordtype">float</span>* in,</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                         <span class="keywordtype">size_t</span> num,</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                         cudaStream_t stream) {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  thrust::transform(thrust::cuda::par.on(stream),</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                    in, in + num, out, FloatToHalf());</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keywordtype">void</span> runConvertToFloat32(<span class="keywordtype">float</span>* out,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                         <span class="keyword">const</span> half* in,</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                         <span class="keywordtype">size_t</span> num,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                         cudaStream_t stream) {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  thrust::transform(thrust::cuda::par.on(stream),</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                    in, in + num, out, HalfToFloat());</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;half hostFloat2Half(<span class="keywordtype">float</span> a) {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  half h;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  h.x = cpu_float2half_rn(a).x;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keywordflow">return</span> h;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;} } <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor">#endif // FAISS_USE_FLOAT16</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

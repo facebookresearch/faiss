@@ -442,6 +442,14 @@ template&lt;typename T &gt; </td></tr>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:adb31108ab96628b124e5cd72d0183b2e"><td class="memTemplItemLeft" align="right" valign="top">size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>maxheap_reorder</b> (size_t k, T *bh_val, long *bh_ids)</td></tr>
 <tr class="separator:adb31108ab96628b124e5cd72d0183b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8023405f5360828c9a892510a5f4c4ec"><td class="memTemplParams" colspan="2"><a class="anchor" id="a8023405f5360828c9a892510a5f4c4ec"></a>
+template&lt;class C &gt; </td></tr>
+<tr class="memitem:a8023405f5360828c9a892510a5f4c4ec"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>indirect_heap_pop</b> (size_t k, const typename C::T *bh_val, typename C::TI *bh_ids)</td></tr>
+<tr class="separator:a8023405f5360828c9a892510a5f4c4ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ecaf37c77256e02a946e1572b992ed5"><td class="memTemplParams" colspan="2"><a class="anchor" id="a8ecaf37c77256e02a946e1572b992ed5"></a>
+template&lt;class C &gt; </td></tr>
+<tr class="memitem:a8ecaf37c77256e02a946e1572b992ed5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>indirect_heap_push</b> (size_t k, const typename C::T *bh_val, typename C::TI *bh_ids, typename C::TI id)</td></tr>
+<tr class="separator:a8ecaf37c77256e02a946e1572b992ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab39977a9b0d876f912d6d7b09f9f3d18"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab39977a9b0d876f912d6d7b09f9f3d18"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>write_VectorTransform</b> (const <a class="el" href="structfaiss_1_1VectorTransform.html">VectorTransform</a> *vt, FILE *f)</td></tr>
 <tr class="separator:ab39977a9b0d876f912d6d7b09f9f3d18"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -705,7 +713,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01466">1466</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01467">1467</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -761,7 +769,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01706">1706</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01707">1707</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -809,7 +817,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 <p>same as fvec_madd, also return index of the min of the result table </p>
 <dl class="section return"><dt>Returns</dt><dd>index of the min of table c </dd></dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01780">1780</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01781">1781</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -838,7 +846,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 </div><div class="memdoc">
 <p>squared norm of a vector </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00512">512</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00511">511</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -937,7 +945,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 </div><div class="memdoc">
 <p>generalized Hamming distances (= count number of code bytes that are the same) </p>
 
-<p>Definition at line <a class="el" href="hamming_8cpp_source.html#l00626">626</a> of file <a class="el" href="hamming_8cpp_source.html">hamming.cpp</a>.</p>
+<p>Definition at line <a class="el" href="hamming_8cpp_source.html#l00635">635</a> of file <a class="el" href="hamming_8cpp_source.html">hamming.cpp</a>.</p>
 
 </div>
 </div>
@@ -1060,7 +1068,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="hamming_8cpp_source.html#l00471">471</a> of file <a class="el" href="hamming_8cpp_source.html">hamming.cpp</a>.</p>
+<p>Definition at line <a class="el" href="hamming_8cpp_source.html#l00475">475</a> of file <a class="el" href="hamming_8cpp_source.html">hamming.cpp</a>.</p>
 
 </div>
 </div>
@@ -1250,7 +1258,7 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>For k-means: update stage. Returns nb of split clusters. </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01285">1285</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01286">1286</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1369,7 +1377,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00831">831</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00830">830</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1422,7 +1430,7 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>Same as knn_inner_product, for the L2 distance </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00851">851</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00850">850</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1487,7 +1495,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00871">871</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00870">870</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1528,7 +1536,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01207">1207</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01206">1206</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1611,7 +1619,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01229">1229</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01228">1228</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1722,7 +1730,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01152">1152</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01151">1151</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1757,7 +1765,7 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>distances are supposed to be sorted. Sorts indices with same distance </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01377">1377</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01378">1378</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1798,7 +1806,7 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>count the number of comon elements between v1 and v2 algorithm = sorting + bissection to avoid double-counting duplicates </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01393">1393</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01394">1394</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>

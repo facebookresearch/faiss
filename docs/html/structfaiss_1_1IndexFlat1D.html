@@ -124,7 +124,9 @@ Public Member Functions</h2></td></tr>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexFlat1D.html#aa205c4ffa6cbd50f49ef9cb6cc050000">reset</a> () override</td></tr>
 <tr class="memdesc:aa205c4ffa6cbd50f49ef9cb6cc050000"><td class="mdescLeft">&#160;</td><td class="mdescRight">removes all elements from the database. <br/></td></tr>
 <tr class="separator:aa205c4ffa6cbd50f49ef9cb6cc050000"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65736f2900865cd156faba4fcd260d05"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexFlat1D.html#a65736f2900865cd156faba4fcd260d05">search</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *labels) const override</td></tr>
+<tr class="memitem:a65736f2900865cd156faba4fcd260d05"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a65736f2900865cd156faba4fcd260d05"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexFlat1D.html#a65736f2900865cd156faba4fcd260d05">search</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *labels) const override</td></tr>
+<tr class="memdesc:a65736f2900865cd156faba4fcd260d05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Warn: the distances returned are L1 not L2. <br/></td></tr>
 <tr class="separator:a65736f2900865cd156faba4fcd260d05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structfaiss_1_1IndexFlatL2"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structfaiss_1_1IndexFlatL2')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structfaiss_1_1IndexFlatL2.html">faiss::IndexFlatL2</a></td></tr>
 <tr class="memitem:a4462b429fcb6afa74f654ab73a320b0b inherit pub_methods_structfaiss_1_1IndexFlatL2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4462b429fcb6afa74f654ab73a320b0b"></a>
@@ -260,72 +262,6 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>Reimplemented from <a class="el" href="structfaiss_1_1IndexFlat.html#a406f028c702edec72477eacc5733f59c">faiss::IndexFlat</a>.</p>
 
 <p>Definition at line <a class="el" href="IndexFlat_8cpp_source.html#l00293">293</a> of file <a class="el" href="IndexFlat_8cpp_source.html">IndexFlat.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a65736f2900865cd156faba4fcd260d05"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void faiss::IndexFlat1D::search </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const float *&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
-          <td class="paramname"><em>k</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float *&#160;</td>
-          <td class="paramname"><em>distances</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *&#160;</td>
-          <td class="paramname"><em>labels</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>query n vectors of dimension d to the index.</p>
-<p>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">x</td><td>input vectors to search, size n * d </td></tr>
-    <tr><td class="paramname">labels</td><td>output labels of the NNs, size n*k </td></tr>
-    <tr><td class="paramname">distances</td><td>output pairwise distances, size n*k </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Reimplemented from <a class="el" href="structfaiss_1_1IndexFlat.html#a85510d70f4675197df9988651e4692c9">faiss::IndexFlat</a>.</p>
-
-<p>Definition at line <a class="el" href="IndexFlat_8cpp_source.html#l00306">306</a> of file <a class="el" href="IndexFlat_8cpp_source.html">IndexFlat.cpp</a>.</p>
 
 </div>
 </div>

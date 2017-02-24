@@ -21,6 +21,7 @@ var searchData=
   ['loadcode32_3c_2056_20_3e',['LoadCode32&lt; 56 &gt;',['../structfaiss_1_1gpu_1_1LoadCode32_3_0156_01_4.html',1,'faiss::gpu']]],
   ['loadcode32_3c_2064_20_3e',['LoadCode32&lt; 64 &gt;',['../structfaiss_1_1gpu_1_1LoadCode32_3_0164_01_4.html',1,'faiss::gpu']]],
   ['loadcode32_3c_208_20_3e',['LoadCode32&lt; 8 &gt;',['../structfaiss_1_1gpu_1_1LoadCode32_3_018_01_4.html',1,'faiss::gpu']]],
+  ['loadcode32_3c_2096_20_3e',['LoadCode32&lt; 96 &gt;',['../structfaiss_1_1gpu_1_1LoadCode32_3_0196_01_4.html',1,'faiss::gpu']]],
   ['loadcodedistances',['LoadCodeDistances',['../structfaiss_1_1gpu_1_1LoadCodeDistances.html',1,'faiss::gpu']]],
   ['loadstore',['LoadStore',['../structfaiss_1_1gpu_1_1LoadStore.html',1,'faiss::gpu']]]
 ];
