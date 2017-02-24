@@ -177,10 +177,9 @@ The original results were obtained with `nprobe=1024,ht=66,max_codes=262144`.
 
 ## GPU experiments
 
-The benchmarks below run a Titan X GPU. They are also a good starting point for further optimization, because 
+The benchmarks below run 1 or 4 Titan X GPUs and reproduce the results of the "GPU paper". They are also a good starting point on how to use GPU Faiss. 
 
-
-### Exact search on SIFT1M
+### Search on SIFT1M
 
 See above on how to get SIFT1M into subdirectory sift1M/. The script [`bench_gpu_sift1m.py`](bench_gpu_sift1m.py) reproduces the "exact k-NN time" plot in the ArXiv paper, and the SIFT1M numbers. 
 
@@ -225,6 +224,21 @@ The run produces two warnings:
 
 - the add() function complains that there is an inefficient memory allocation, but this is a concern only when it happens often, and we are not benchmarking the add time anyways.
 
+To index small datasets, it is more efficient to use a `GpuIVFFlat`, which just stores the full vectors in the inverted lists. We did not mention this in the the paper because it is not as scalable. To experiment with this setting, change the `index_factory` string from "IVF4096,PQ64" to "IVF16384,Flat". This gives:
+
+```
+nprobe=   1 0.025 s recalls= 0.4084 0.4105 0.4105
+nprobe=   2 0.033 s recalls= 0.5235 0.5264 0.5264
+nprobe=   4 0.033 s recalls= 0.6332 0.6367 0.6367
+nprobe=   8 0.040 s recalls= 0.7358 0.7403 0.7403
+nprobe=  16 0.049 s recalls= 0.8273 0.8324 0.8324
+nprobe=  32 0.068 s recalls= 0.8957 0.9024 0.9024
+nprobe=  64 0.104 s recalls= 0.9477 0.9549 0.9549
+nprobe= 128 0.174 s recalls= 0.9760 0.9837 0.9837
+nprobe= 256 0.299 s recalls= 0.9866 0.9944 0.9944
+nprobe= 512 0.527 s recalls= 0.9907 0.9987 0.9987
+```
+
 ### Clustering on MNIST8m
 
 To get the "infinite MNIST dataset", follow the instructions on [Léon Bottou's website](http://leon.bottou.org/projects/infimnist). The script assumes the file `mnist8m-patterns-idx3-ubyte` is in subdirectory `mnist8m`
@@ -250,7 +264,7 @@ The search results on SIFT1B in the "GPU paper" can be obtained with
 <!-- see P57124181 -->
 
 ```
-bench_gpu_1bn.par SIFT1000M OPQ8_32,IVF262144,PQ8 -nnn 10 -ngpu 1 -tempmem $[1536*1024*1024]
+python bench_gpu_1bn.py SIFT1000M OPQ8_32,IVF262144,PQ8 -nnn 10 -ngpu 1 -tempmem $[1536*1024*1024]
 ...
 0/10000 (0.024 s)      probe=1  : 0.161 s 1-R@1: 0.0752 1-R@10: 0.1924
 0/10000 (0.005 s)      probe=2  : 0.150 s 1-R@1: 0.0964 1-R@10: 0.2693
