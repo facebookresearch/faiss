@@ -343,6 +343,9 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
       case 64:
         RUN_PQ(64);
         break;
+      case 96:
+        RUN_PQ(96);
+        break;
       default:
         FAISS_ASSERT(false);
         break;

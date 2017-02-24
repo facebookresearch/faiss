@@ -15,6 +15,9 @@ import types
 import sys
 import pdb
 
+
+# we import * so that the symbol X can be accessed as faiss.X
+
 try:
     from swigfaiss_gpu import *
 except ImportError as e:
@@ -29,6 +32,9 @@ except ImportError as e:
 ##################################################################
 # The functions below add or replace some methods for classes
 # this is to be able to pass in numpy arrays directly
+# The C++ version of the classnames will be suffixed with _c
+##################################################################
+
 
 
 def replace_method(the_class, name, replacement):
@@ -49,6 +55,32 @@ def handle_Clustering():
 
 handle_Clustering()
 
+def handle_ProductQuantizer():
+
+    def replacement_train(self, x):
+        n, d = x.shape
+        assert d == self.d
+        self.train_c(n, swig_ptr(x))
+
+    def replacement_compute_codes(self, x):
+        n, d = x.shape
+        assert d == self.d
+        codes = np.empty((n, self.code_size), dtype='uint8')
+        self.compute_codes_c(swig_ptr(x), swig_ptr(codes), n)
+        return codes
+
+    def replacement_decode(self, codes):
+        n, cs = codes.shape
+        assert cs == self.code_size
+        x = np.empty((n, self.d), dtype='float32')
+        self.decode_c(swig_ptr(codes), swig_ptr(x), n)
+        return x
+
+    replace_method(ProductQuantizer, 'train', replacement_train)
+    replace_method(ProductQuantizer, 'compute_codes', replacement_compute_codes)
+    replace_method(ProductQuantizer, 'decode', replacement_decode)
+
+handle_ProductQuantizer()
 
 def handle_Index(the_class):
 
@@ -153,6 +185,8 @@ for symbol in dir(this_module):
             handle_ParameterSpace(the_class)
 
 
+
+
 def vector_float_to_array(v):
     a = np.empty(v.size(), dtype='float32')
     memcpy(swig_ptr(a), v.data(), 4 * v.size())
@@ -241,7 +275,8 @@ def eval_intersection(I1, I2):
     k1, k2 = I1.shape[1], I2.shape[1]
     ninter = 0
     for i in range(n):
-        ninter += ranklist_intersection_size(k1, swig_ptr(I1[i]), k2, swig_ptr(I2[i]))
+        ninter += ranklist_intersection_size(
+            k1, swig_ptr(I1[i]), k2, swig_ptr(I2[i]))
     return ninter
 
 

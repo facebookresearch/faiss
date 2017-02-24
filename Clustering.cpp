@@ -166,8 +166,8 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
                                               assign, d, k, nx);
 
             if (verbose) {
-                printf ("  Iteration %d (%5g s, search %5g s): "
-                        "objective=%g imbalance=%g nsplit=%d       \r",
+                printf ("  Iteration %d (%.2f s, search %.2f s): "
+                        "objective=%g imbalance=%.3f nsplit=%d       \r",
                         i, (getmillisecs() - t0) / 1000.0,
                         t_search_tot / 1000,
                         err, imbalance_factor (nx, k, assign),

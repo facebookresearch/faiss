@@ -77,6 +77,7 @@ IVFBase::reset() {
   deviceListDataPointers_.clear();
   deviceListIndexPointers_.clear();
   deviceListLengths_.clear();
+  listOffsetToUserIndex_.clear();
 
   for (size_t i = 0; i < numLists_; ++i) {
     deviceListData_.emplace_back(

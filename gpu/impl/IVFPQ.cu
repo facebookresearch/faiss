@@ -85,6 +85,7 @@ IVFPQ::isSupportedPQCodeLength(int size) {
     case 48:
     case 56: // only supported with float16
     case 64: // only supported with float16
+    case 96: // only supported with float16
       return true;
     default:
       return false;

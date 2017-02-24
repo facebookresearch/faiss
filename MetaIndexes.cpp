@@ -211,6 +211,7 @@ void translate_labels (long n, idx_t *labels, long translation)
  * @param all_labels     idem
  * @param translartions  label translations to apply, size nshard
  */
+
 template <class C>
 void merge_tables (long n, long k, long nshard,
                    float *distances, idx_t *labels,
@@ -218,22 +219,55 @@ void merge_tables (long n, long k, long nshard,
                    idx_t *all_labels,
                    const long *translations)
 {
-    long shard_stride = n * k;
-#pragma omp parallel for
-    for (long i = 0; i < n; i++) {
-        float *D = distances + i * k;
-        idx_t *I = labels + i * k;
-        const float *Ds = all_distances + i * k;
-        idx_t *Is = all_labels + i * k;
-        translate_labels (k, Is, translations[0]);
-        heap_heapify<C>(k, D, I, Ds, Is, k);
-        for (int s = 1; s < nshard; s++) {
-            Ds += shard_stride;
-            Is += shard_stride;
-            translate_labels (k, Is, translations[s]);
-            heap_addn<C> (k, D, I, Ds, Is, k);
+    if(k == 0) {
+        return;
+    }
+
+    long stride = n * k;
+#pragma omp parallel
+    {
+        std::vector<int> buf (2 * nshard);
+        int * pointer = buf.data();
+        int * shard_ids = pointer + nshard;
+        std::vector<float> buf2 (nshard);
+        float * heap_vals = buf2.data();
+#pragma omp for
+        for (long i = 0; i < n; i++) {
+            // the heap maps values to the shard where they are
+            // produced.
+            const float *D_in = all_distances + i * k;
+            const idx_t *I_in = all_labels + i * k;
+            int heap_size = 0;
+
+            for (long s = 0; s < nshard; s++) {
+                pointer[s] = 0;
+                if (I_in[stride * s] >= 0)
+                    heap_push<C> (++heap_size, heap_vals, shard_ids,
+                                 D_in[stride * s], s);
+            }
+
+            float *D = distances + i * k;
+            idx_t *I = labels + i * k;
+
+            for (int j = 0; j < k; j++) {
+                if (heap_size == 0) {
+                    I[j] = -1;
+                    D[j] = C::neutral();
+                } else {
+                    // pop best element
+                    int s = shard_ids[0];
+                    int & p = pointer[s];
+                    D[j] = heap_vals[0];
+                    I[j] = I_in[stride * s + p] + translations[s];
+
+                    heap_pop<C> (heap_size--, heap_vals, shard_ids);
+                    p++;
+                    if (p < k && I_in[stride * s + p] >= 0)
+                        heap_push<C> (++heap_size, heap_vals, shard_ids,
+                                     D_in[stride * s + p], s);
+                }
+            }
         }
-        heap_reorder<C>(k, D, I);
     }
 }
 
@@ -360,6 +394,9 @@ void IndexShards::add_with_ids (idx_t n, const float * x, const long *xids)
 }
 
 
+
+
+
 void IndexShards::reset ()
 {
     for (int i = 0; i < shard_indexes.size(); i++) {
@@ -433,15 +470,14 @@ void IndexShards::search (
     }
 
     if (metric_type == METRIC_L2) {
-        merge_tables< CMax<float, idx_t> > (
+        merge_tables< CMin<float, int> > (
              n, k, nshard, distances, labels,
              all_distances, all_labels, translations.data ());
     } else {
-        merge_tables< CMin<float, idx_t> > (
+        merge_tables< CMax<float, int> > (
              n, k, nshard, distances, labels,
              all_distances, all_labels, translations.data ());
     }
-
     delete [] all_distances;
     delete [] all_labels;
 }

@@ -22,7 +22,11 @@
 
 
 void pickEncoding(int& codes, int& dim) {
-  std::vector<int> codeSizes{3, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64};
+  std::vector<int> codeSizes{
+    3, 4, 8, 12, 16, 20, 24,
+      28, 32, 40, 48, 56, 64, 96
+  };
+
   std::vector<int> dimSizes{4, 8, 16, 32};
 
   codes = codeSizes[faiss::gpu::randVal(0, codeSizes.size() - 1)];
@@ -55,8 +59,8 @@ struct Options {
         faiss::gpu::INDICES_CPU,
           faiss::gpu::INDICES_32_BIT,
           faiss::gpu::INDICES_64_BIT});
-    if (codes == 64) {
-      // 64x8 lookup can only fit using float16
+    if (codes > 48) {
+      // large codes can only fit using float16
       useFloat16 = true;
     } else {
       useFloat16 = faiss::gpu::randBool();

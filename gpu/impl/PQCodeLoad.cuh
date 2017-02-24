@@ -174,20 +174,14 @@ struct LoadCode32<24> {
                                      unsigned char* p,
                                      int offset) {
     p += offset * 24;
-    // FIXME: this is a non-coalesced, unaligned, non-vectorized load
+    // FIXME: this is a non-coalesced, unaligned, 2-vectorized load
     // unfortunately need to reorganize memory layout by warp
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 0];" :
-        "=r"(code32[0]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 4];" :
-        "=r"(code32[1]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 8];" :
-        "=r"(code32[2]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 12];" :
-        "=r"(code32[3]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 16];" :
-        "=r"(code32[4]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 20];" :
-        "=r"(code32[5]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 0];" :
+        "=r"(code32[0]), "=r"(code32[1]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 8];" :
+        "=r"(code32[2]), "=r"(code32[3]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 16];" :
+        "=r"(code32[4]), "=r"(code32[5]) : "l"(p));
   }
 };
 
@@ -239,28 +233,18 @@ struct LoadCode32<40> {
                                      unsigned char* p,
                                      int offset) {
     p += offset * 40;
-    // FIXME: this is a non-coalesced, unaligned, non-vectorized load
+    // FIXME: this is a non-coalesced, unaligned, 2-vectorized load
     // unfortunately need to reorganize memory layout by warp
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 0];" :
-        "=r"(code32[0]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 4];" :
-        "=r"(code32[1]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 8];" :
-        "=r"(code32[2]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 12];" :
-        "=r"(code32[3]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 16];" :
-        "=r"(code32[4]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 20];" :
-        "=r"(code32[5]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 24];" :
-        "=r"(code32[6]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 28];" :
-        "=r"(code32[7]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 32];" :
-        "=r"(code32[8]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 36];" :
-        "=r"(code32[9]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 0];" :
+        "=r"(code32[0]), "=r"(code32[1]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 8];" :
+        "=r"(code32[2]), "=r"(code32[3]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 16];" :
+        "=r"(code32[4]), "=r"(code32[5]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 24];" :
+        "=r"(code32[6]), "=r"(code32[7]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 32];" :
+        "=r"(code32[8]), "=r"(code32[9]) : "l"(p));
   }
 };
 
@@ -270,32 +254,17 @@ struct LoadCode32<48> {
                                      unsigned char* p,
                                      int offset) {
     p += offset * 48;
-    // FIXME: this is a non-coalesced, unaligned, non-vectorized load
+    // FIXME: this is a non-coalesced load
     // unfortunately need to reorganize memory layout by warp
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 0];" :
-        "=r"(code32[0]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 4];" :
-        "=r"(code32[1]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 8];" :
-        "=r"(code32[2]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 12];" :
-        "=r"(code32[3]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 16];" :
-        "=r"(code32[4]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 20];" :
-        "=r"(code32[5]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 24];" :
-        "=r"(code32[6]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 28];" :
-        "=r"(code32[7]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 32];" :
-        "=r"(code32[8]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 36];" :
-        "=r"(code32[9]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 40];" :
-        "=r"(code32[10]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 44];" :
-        "=r"(code32[11]) : "l"(p));
+    asm("ld.global.cs.nc.v4.u32 {%0, %1, %2, %3}, [%4];" :
+        "=r"(code32[0]), "=r"(code32[1]),
+        "=r"(code32[2]), "=r"(code32[3]) : "l"(p));
+    asm("ld.global.cs.nc.v4.u32 {%0, %1, %2, %3}, [%4 + 16];" :
+        "=r"(code32[4]), "=r"(code32[5]),
+        "=r"(code32[6]), "=r"(code32[7]) : "l"(p));
+    asm("ld.global.cs.nc.v4.u32 {%0, %1, %2, %3}, [%4 + 32];" :
+        "=r"(code32[8]), "=r"(code32[9]),
+        "=r"(code32[10]), "=r"(code32[11]) : "l"(p));
   }
 };
 
@@ -305,36 +274,22 @@ struct LoadCode32<56> {
                                      unsigned char* p,
                                      int offset) {
     p += offset * 56;
-    // FIXME: this is a non-coalesced, unaligned, non-vectorized load
+    // FIXME: this is a non-coalesced, unaligned, 2-vectorized load
     // unfortunately need to reorganize memory layout by warp
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 0];" :
-        "=r"(code32[0]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 4];" :
-        "=r"(code32[1]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 8];" :
-        "=r"(code32[2]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 12];" :
-        "=r"(code32[3]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 16];" :
-        "=r"(code32[4]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 20];" :
-        "=r"(code32[5]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 24];" :
-        "=r"(code32[6]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 28];" :
-        "=r"(code32[7]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 32];" :
-        "=r"(code32[8]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 36];" :
-        "=r"(code32[9]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 40];" :
-        "=r"(code32[10]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 44];" :
-        "=r"(code32[11]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 48];" :
-        "=r"(code32[12]) : "l"(p));
-    asm("ld.global.cs.nc.u32 {%0}, [%1 + 52];" :
-        "=r"(code32[13]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 0];" :
+        "=r"(code32[0]), "=r"(code32[1]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 8];" :
+        "=r"(code32[2]), "=r"(code32[3]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 16];" :
+        "=r"(code32[4]), "=r"(code32[5]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 24];" :
+        "=r"(code32[6]), "=r"(code32[7]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 32];" :
+        "=r"(code32[8]), "=r"(code32[9]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 40];" :
+        "=r"(code32[10]), "=r"(code32[11]) : "l"(p));
+    asm("ld.global.cs.nc.v2.u32 {%0, %1}, [%2 + 48];" :
+        "=r"(code32[12]), "=r"(code32[13]) : "l"(p));
   }
 };
 
@@ -358,6 +313,35 @@ struct LoadCode32<64> {
     asm("ld.global.cs.nc.v4.u32 {%0, %1, %2, %3}, [%4 + 48];" :
         "=r"(code32[12]), "=r"(code32[13]),
         "=r"(code32[14]), "=r"(code32[15]) : "l"(p));
+  }
+};
+
+template<>
+struct LoadCode32<96> {
+  static inline __device__ void load(unsigned int code32[24],
+                                     unsigned char* p,
+                                     int offset) {
+    p += offset * 96;
+    // FIXME: this is a non-coalesced load
+    // unfortunately need to reorganize memory layout by warp
+    asm("ld.global.cs.nc.v4.u32 {%0, %1, %2, %3}, [%4];" :
+        "=r"(code32[0]), "=r"(code32[1]),
+        "=r"(code32[2]), "=r"(code32[3]) : "l"(p));
+    asm("ld.global.cs.nc.v4.u32 {%0, %1, %2, %3}, [%4 + 16];" :
+        "=r"(code32[4]), "=r"(code32[5]),
+        "=r"(code32[6]), "=r"(code32[7]) : "l"(p));
+    asm("ld.global.cs.nc.v4.u32 {%0, %1, %2, %3}, [%4 + 32];" :
+        "=r"(code32[8]), "=r"(code32[9]),
+        "=r"(code32[10]), "=r"(code32[11]) : "l"(p));
+    asm("ld.global.cs.nc.v4.u32 {%0, %1, %2, %3}, [%4 + 48];" :
+        "=r"(code32[12]), "=r"(code32[13]),
+        "=r"(code32[14]), "=r"(code32[15]) : "l"(p));
+    asm("ld.global.cs.nc.v4.u32 {%0, %1, %2, %3}, [%4 + 64];" :
+        "=r"(code32[16]), "=r"(code32[17]),
+        "=r"(code32[18]), "=r"(code32[19]) : "l"(p));
+    asm("ld.global.cs.nc.v4.u32 {%0, %1, %2, %3}, [%4 + 80];" :
+        "=r"(code32[20]), "=r"(code32[21]),
+        "=r"(code32[22]), "=r"(code32[23]) : "l"(p));
   }
 };
 

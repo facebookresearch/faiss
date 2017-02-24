@@ -485,7 +485,7 @@ runPQCodeDistances(Tensor<float, 3, true>& pqCentroids,
       CODE_DISTANCE(10);
       break;
     case 12:
-      CODE_DISTANCE(10);
+      CODE_DISTANCE(12);
       break;
     case 16:
       CODE_DISTANCE(16);

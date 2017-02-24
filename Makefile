@@ -7,13 +7,17 @@
 
 .SUFFIXES: .cpp .o
 
+
 MAKEFILE_INC=makefile.inc
+
 -include $(MAKEFILE_INC)
 
 LIBNAME=libfaiss
 
 all: .env_ok $(LIBNAME).a tests/demo_ivfpq_indexing
+
 py: _swigfaiss.so
+
 
 
 #############################

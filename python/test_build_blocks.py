@@ -58,3 +58,22 @@ class TestPCA(testutil.BaseFacebookTestCase):
         for o in column_norm2:
             self.assertGreater(prev, o)
             prev = o
+
+
+class TestProductQuantizer(testutil.BaseFacebookTestCase):
+
+    def test_pq(self):
+        d = 64
+        n = 1000
+        cs = 4
+        np.random.seed(123)
+        x = np.random.random(size=(n, d)).astype('float32')
+        pq = faiss.ProductQuantizer(d, cs, 8)
+        pq.train(x)
+        codes = pq.compute_codes(x)
+        x2 = pq.decode(codes)
+        diff = ((x - x2)**2).sum()
+
+        # print "diff=", diff
+        # diff= 1807.98
+        self.assertGreater(2500, diff)

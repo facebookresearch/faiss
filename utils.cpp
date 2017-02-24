@@ -16,7 +16,6 @@
 #include <cassert>
 #include <cstring>
 #include <cmath>
-#include <cmath>
 
 #include <smmintrin.h>
 #include <mmintrin.h>
@@ -99,8 +98,8 @@ size_t get_mem_usage_kb ()
 
 size_t get_mem_usage_kb ()
 {
-    fprintf(stderr, "WARN: get_mem_usage_kb not implemented on the mac\n"); 
-    return 0;    
+    fprintf(stderr, "WARN: get_mem_usage_kb not implemented on the mac\n");
+    return 0;
 }
 
 #endif
@@ -173,13 +172,13 @@ int rand_r(unsigned *seed);
 
 RandomGenerator::RandomGenerator (long seed)
 {
-    rand_state = seed; 
+    rand_state = seed;
 }
 
 
 RandomGenerator::RandomGenerator (const RandomGenerator & other)
 {
-    rand_state = other.rand_state; 
+    rand_state = other.rand_state;
 }
 
 
@@ -208,7 +207,7 @@ int RandomGenerator::rand_int (int max)
 
 float RandomGenerator::rand_float ()
 {
-    return rand_int() / float(1 << 31);
+    return rand_int() / float(1L << 31);
 }
 
 double RandomGenerator::rand_double ()
@@ -233,7 +232,7 @@ void float_rand (float * x, size_t n, long seed)
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
-#pragma omp parallel for 
+#pragma omp parallel for
     for (size_t j = 0; j < nblock; j++) {
 
         RandomGenerator rng (a0 + j * b0);
@@ -255,7 +254,7 @@ void float_randn (float * x, size_t n, long seed)
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
-#pragma omp parallel for 
+#pragma omp parallel for
     for (size_t j = 0; j < nblock; j++) {
         RandomGenerator rng (a0 + j * b0);
 
@@ -292,7 +291,7 @@ void long_rand (long * x, size_t n, long seed)
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
-#pragma omp parallel for 
+#pragma omp parallel for
     for (size_t j = 0; j < nblock; j++) {
 
         RandomGenerator rng (a0 + j * b0);
@@ -329,7 +328,7 @@ void byte_rand (uint8_t * x, size_t n, long seed)
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
-#pragma omp parallel for 
+#pragma omp parallel for
     for (size_t j = 0; j < nblock; j++) {
 
         RandomGenerator rng (a0 + j * b0);
@@ -1278,7 +1277,9 @@ void pairwise_L2sqr (long d,
  * Kmeans subroutine
  ***************************************************************************/
 
-#define EPS 1e-7
+// a bit above machine epsilon for float16
+
+#define EPS (1 / 1024.)
 
 /* For k-means, compute centroids given assignment of vectors to centroids */
 /* NOTE: This could be multi-threaded (use histogram of indexes) */
@@ -1347,12 +1348,12 @@ int km_update_centroids (const float * x,
             /* small symmetric pertubation. Much better than  */
             for (size_t j = 0; j < d; j++)
                 if (j % 2 == 0) {
-                    centroids[ci * d + j] += EPS;
-                    centroids[cj * d + j] -= EPS;
+                    centroids[ci * d + j] *= 1 + EPS;
+                    centroids[cj * d + j] *= 1 - EPS;
                 }
                 else {
-                    centroids[ci * d + j] -= EPS;
-                    centroids[cj * d + j] += EPS;
+                    centroids[ci * d + j] *= 1 + EPS;
+                    centroids[cj * d + j] *= 1 - EPS;
                 }
 
             /* assume even split of the cluster */
