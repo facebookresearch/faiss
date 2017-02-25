@@ -310,5 +310,21 @@ The same script generates the KNN-graph on Deep1B. Note that the inverted file f
 ```
 python bench_gpu_1bn.py Deep1B OPQ20_80,IVF262144,PQ20 -nnn 10 -altadd -knngraph  -R 2 -noptables -tempmem $[1<<30] -ngpu 4
 ...
-
+CPU index contains 1000000000 vectors, move to GPU
+Copy CPU index to 2 sharded GPU indexes
+   dispatch to GPUs 0:2
+IndexShards shard 0 indices 0:500000000
+  IndexIVFPQ size 500000000 -> GpuIndexIVFPQ indicesOptions=0 usePrecomputed=0 useFloat16=0 reserveVecs=0
+IndexShards shard 1 indices 500000000:1000000000
+  IndexIVFPQ size 500000000 -> GpuIndexIVFPQ indicesOptions=0 usePrecomputed=0 useFloat16=0 reserveVecs=0
+   dispatch to GPUs 2:4
+IndexShards shard 0 indices 0:500000000
+  IndexIVFPQ size 500000000 -> GpuIndexIVFPQ indicesOptions=0 usePrecomputed=0 useFloat16=0 reserveVecs=0
+IndexShards shard 1 indices 500000000:1000000000
+  IndexIVFPQ size 500000000 -> GpuIndexIVFPQ indicesOptions=0 usePrecomputed=0 useFloat16=0 reserveVecs=0
+move to GPU done in 151.535 s
+search...
+999997440/1000000000 (8389.961 s, 0.3379)      probe=1  : 8389.990 s rank-10 intersection results: 0.3379
+999997440/1000000000 (9205.934 s, 0.4079)      probe=2  : 9205.966 s rank-10 intersection results: 0.4079
+999997440/1000000000 (9741.095 s, 0.4722)      probe=4  : 9741.128 s rank-10 intersection results: 0.4722
 ```
