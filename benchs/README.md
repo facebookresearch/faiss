@@ -327,4 +327,10 @@ search...
 999997440/1000000000 (8389.961 s, 0.3379)      probe=1  : 8389.990 s rank-10 intersection results: 0.3379
 999997440/1000000000 (9205.934 s, 0.4079)      probe=2  : 9205.966 s rank-10 intersection results: 0.4079
 999997440/1000000000 (9741.095 s, 0.4722)      probe=4  : 9741.128 s rank-10 intersection results: 0.4722
+999997440/1000000000 (10830.420 s, 0.5256)      probe=8  : 10830.455 s rank-10 intersection results: 0.5256
+999997440/1000000000 (12531.716 s, 0.5603)      probe=16 : 12531.758 s rank-10 intersection results: 0.5603
+999997440/1000000000 (15922.519 s, 0.5825)      probe=32 : 15922.571 s rank-10 intersection results: 0.5825
+999997440/1000000000 (22774.153 s, 0.5950)      probe=64 : 22774.220 s rank-10 intersection results: 0.5950
+999997440/1000000000 (36717.207 s, 0.6015)      probe=128: 36717.309 s rank-10 intersection results: 0.6015
+999997440/1000000000 (70616.392 s, 0.6047)      probe=256: 70616.581 s rank-10 intersection results: 0.6047
 ```
