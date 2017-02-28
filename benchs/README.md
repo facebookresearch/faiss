@@ -39,7 +39,7 @@ To run it, please download the ANN_SIFT1M dataset from
 
 http://corpus-texmex.irisa.fr/
 
-and unzip it to the sudirectory sift1M.
+and unzip it to the subdirectory sift1M.
 
 ### Result
 
@@ -89,11 +89,11 @@ database files to base.fvecs and the training files to learn.fvecs
 ### Running the experiments
 
 These experiments are quite long. To support resuming, the script
-stores the result of raining to a temporary directory, `/tmp/bench_polysemous`.
+stores the result of training to a temporary directory, `/tmp/bench_polysemous`.
 
-The script `bench_polysemous_1bn.py` takes at leas two arguments:
+The script `bench_polysemous_1bn.py` takes at least two arguments:
 
-- the dataset name: SIFT1000M (aka SIFT1B, aka BIGANN) or Deep1B. SIFT1M, SIFT2M,... are also supported to make subsets of for small experiments (note that SIFT1M is not the same as the SIFT1M above)
+- the dataset name: SIFT1000M (aka SIFT1B, aka BIGANN) or Deep1B. SIFT1M, SIFT2M,... are also supported to make subsets of for small experiments (note that SIFT1M as a subset of SIFT1B is not the same as the SIFT1M above)
 
 - the type of index to build, which should be a valid [index_factory key](https://github.com/facebookresearch/faiss/wiki/High-level-interface-and-auto-tuning#index-factory) (see below for examples)
 
@@ -157,6 +157,8 @@ nprobe=32,ht=28 	0.1256 0.3563 0.5026    0.561   52.61
 ...
 ```
 Here again the runs are not exactly the same but the original result was obtained from nprobe=32,ht=28.
+
+For Deep1B, we used a simple version of [auto-tuning](https://github.com/facebookresearch/faiss/wiki/High-level-interface-and-auto-tuning/_edit#auto-tuning-the-runtime-parameters) to sweep through the set of operating points:
 
 ```
 python bench_polysemous_1bn.py Deep1B OPQ20_80,IMI2x14,PQ20 autotune
