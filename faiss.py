@@ -5,7 +5,6 @@
 # This source code is licensed under the CC-by-NC license found in the
 # LICENSE file in the root directory of this source tree.
 
-#!/usr/bin/env python2
 
 # sorry for putting this in the main Faiss directory. This is to avoid
 # having to write from python import faiss
@@ -13,6 +12,7 @@
 import numpy as np
 import types
 import sys
+import inspect
 import pdb
 
 
@@ -23,8 +23,8 @@ try:
 except ImportError as e:
     if e.args[0] != 'ImportError: No module named swigfaiss_gpu':
         # swigfaiss_gpu is there but failed to load: Warn user about it.
-        print >> sys.stderr, "Failed to load GPU Faiss: %s" % e.args[0]
-        print >> sys.stderr, "Faiss falling back to CPU-only."
+        sys.stderr.write("Failed to load GPU Faiss: %s\n" % e.args[0])
+        sys.stderr.write("Faiss falling back to CPU-only.\n")
     from swigfaiss import *
 
 
@@ -170,7 +170,7 @@ this_module = sys.modules[__name__]
 for symbol in dir(this_module):
     obj = getattr(this_module, symbol)
     # print symbol, isinstance(obj, (type, types.ClassType))
-    if isinstance(obj, (type, types.ClassType)):
+    if inspect.isclass(obj):
         the_class = obj
         if issubclass(the_class, Index):
             handle_Index(the_class)
