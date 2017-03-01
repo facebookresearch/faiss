@@ -18,7 +18,7 @@ and
 ```
 @inproceedings{JDJ17,
    Author = {Jeff Johnson and Matthijs Douze and Herv{\'e} J{\'e}gou},
-   journal={arXiv preprint arXiv:XXXXXX},,
+   journal= {arXiv:1702.08734},,
    Title = {Billion-scale similarity search with GPUs},
    Year = {2017},
 }
