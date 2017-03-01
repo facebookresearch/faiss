@@ -1,16 +1,18 @@
 # Contributing to Faiss
 
 We want to make contributing to this project as easy and transparent as
-possible.
+possible. 
 
 ## Our Development Process
 
 We mainly develop Faiss within Facebook. Sometimes, we will sync the 
-github version of Faiss with the internal state.
+github version of Faiss with the internal state. 
 
 ## Pull Requests
 
-We welcome pull requests that add significant value to Faiss. 
+We welcome pull requests that add significant value to Faiss. If you plan to do
+a major development and contribute it back to Faiss, please contact us first before
+putting too much effort into it.
 
 1. Fork the repo and create your branch from `master`.
 2. If you've added code that should be tested, add tests.
@@ -39,14 +41,13 @@ disclosure of security bugs. In those cases, please go through the process
 outlined on that page and do not file a public issue.
 
 ## Coding Style  
+
 * 4 spaces for indentation rather than tabs
 * 80 character line length
-* C++03 for the main Faiss
-
+* C++03 for the main Faiss, C++11 for the GPU part
 
 ## License
+
 By contributing to Faiss, you agree that your contributions will be licensed
 under the LICENSE file in the root directory of this source tree.
-
-
 
