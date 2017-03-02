@@ -38,17 +38,18 @@ FAISSSHAREDFLAGS=-shared
 #
 #   https://software.intel.com/en-us/articles/intel-mkl-link-line-advisor
 #
-# for a start on setting the link flags. On version IntelComposerXE
-# 2015.0.090, the following flags work
+# The latest version can be downloaded here:
 #
-# MKLROOT=$(HOME)/fbsource/fbcode/third-party2//IntelComposerXE/2015.0.090/gcc-4.8.1-glibc-2.17/c3f970a/mkl
+#   https://registrationcenter.intel.com/en/forms/?productid=2558&licensetype=2
+#
+# The folloing settings are working on the latest version (as Mar. 17):
+#
+# MKLROOT=/opt/intel/compilers_and_libraries_2017.2.174/linux/mkl/
 #
 # BLASLDFLAGS=-Wl,--no-as-needed -L$(MKLROOT)/lib/intel64   -lmkl_intel_ilp64 \
 # -lmkl_core -lmkl_gnu_thread -ldl -lpthread
 #
-# the ilp64 means that the integers are 64-bit.
-#
-# BLASLDFLAGS=-DFINTEGER=long
+# BLASCFLAGS=-DFINTEGER=long
 #
 # you may have to set the LD_LIBRARY_PATH=$MKLROOT/lib/intel64 at runtime
 #
