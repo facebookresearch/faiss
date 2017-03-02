@@ -104,6 +104,13 @@ gives the best performance.
 Step 2: Compiling the Python interface
 ======================================
 
+The Python interface is compiled with 
+ 
+  make py 
+
+How it works
+------------
+
 The Python interface is provided via SWIG (Simple Wrapper and
 Interface Generator) and an additional level of manual wrappers (in faiss.py).
 
