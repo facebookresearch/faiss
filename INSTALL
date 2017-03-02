@@ -115,7 +115,9 @@ The Python interface is provided via SWIG (Simple Wrapper and
 Interface Generator) and an additional level of manual wrappers (in faiss.py).
 
 SWIG generates two wrapper files: a Python file (swigfaiss.py) and a
-C++ file that must be compiled to a dynamic library (_swigfaiss.so).
+C++ file that must be compiled to a dynamic library (_swigfaiss.so). These
+files are included in the repository, so running swig is only required when
+the C++ headers of Faiss are changed.
 
 The C++ compilation to the dynamic library requires to set:
 
