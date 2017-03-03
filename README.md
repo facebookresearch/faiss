@@ -32,7 +32,7 @@ The following are entry points for documentation:
 
 - the full documentation, including a tutorial can be found in the [wiki page](http://github.com/facebookresearch/faiss/wiki)
 - the [doxygen documentation](http://rawgithub.com/facebookresearch/faiss/master/docs/html/annotated.html) gives per-class information
-- to reproduce results from research papers, refer to the [benchmarks README](benchs/README.md).
+- to reproduce results from our research papers, [Polysemous codes](https://arxiv.org/abs/1609.01882) and [Billion-scale similarity search with GPUs](https://arxiv.org/abs/1702.08734), refer to the [benchmarks README](benchs/README.md).
 
 
 ## Join the Faiss community
