@@ -12,7 +12,7 @@ The GPU implementation can accept input from either CPU or GPU memory. On a serv
 
 ## Building 
 
-The library is mostly implemented in C++, with optional GPU support provided via CUDA, and an optional Python interface. It compiles with a Makefile. See [INSTALL](INSTALL) for details.
+The library is mostly implemented in C++, with optional GPU support provided via CUDA, and an optional Python interface. The CPU version requires a BLAS library. It compiles with a Makefile. See [INSTALL](INSTALL) for details.
 
 ## How Faiss works
 
