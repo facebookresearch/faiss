@@ -6,11 +6,8 @@
 # LICENSE file in the root directory of this source tree.
 
 # -*- makefile -*-
-# tested on CentOS 7 and Ubuntu 
+# tested on CentOS 7, Ubuntu 16 and Ubuntu 14, see below to adjust flags to distribution.
 
-# for Ubuntu: 
-# sudo apt-get install libopenblas-dev python-numpy
-# and change the path to libopenblas from /usr/lib64 to /usr/lib
 
 CC=g++
 
@@ -57,10 +54,19 @@ FAISSSHAREDFLAGS=-shared
 # 2. Openblas
 #
 # The library contains both BLAS and Lapack. About 30% slower than MKL.
-#
+
 BLASCFLAGS=-DFINTEGER=int
+
+# This is for Centos:
 BLASLDFLAGS=/usr/lib64/libopenblas.so.0
-#
+
+# for Ubuntu 16: 
+# sudo apt-get install libopenblas-dev python-numpy python-dev
+# BLASLDFLAGS=/usr/lib/libopenblas.so.0
+
+# for Ubuntu 14: 
+# sudo apt-get install libopenblas-dev liblapack3 python-numpy python-dev
+# BLASLDFLAGS=/usr/lib/libopenblas.so.0 /usr/lib/lapack/liblapack.so.3.0
 
 #
 # 3. Atlas
