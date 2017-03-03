@@ -64,7 +64,7 @@ class StandardGpuResources : public GpuResources {
   std::unordered_map<int, cudaStream_t> defaultStreams_;
 
   /// Other streams we can use, per each device
-  std::unordered_map<int, std::vector<cudaStream_t>> alternateStreams_;
+  std::unordered_map<int, std::vector<cudaStream_t> > alternateStreams_;
 
   /// Async copy stream to use for GPU <-> CPU pinned memory copies
   std::unordered_map<int, cudaStream_t> asyncCopyStreams_;
@@ -73,7 +73,7 @@ class StandardGpuResources : public GpuResources {
   std::unordered_map<int, cublasHandle_t> blasHandles_;
 
   /// Temporary memory provider, per each device
-  std::unordered_map<int, std::unique_ptr<StackDeviceMemory>> memory_;
+  std::unordered_map<int, std::unique_ptr<StackDeviceMemory> > memory_;
 
   /// Pinned memory allocation for use with this GPU
   void* pinnedMemAlloc_;

@@ -1,4 +1,5 @@
 
+
 # Doxyfile 1.8.5
 
 # This file describes the settings to be used by the documentation system
@@ -131,7 +132,7 @@ INLINE_INHERITED_MEMB  = NO
 # shortest path that makes the file name unique will be used
 # The default value is: YES.
 
-FULL_PATH_NAMES        = NO
+FULL_PATH_NAMES        = YES
 
 # The STRIP_FROM_PATH tag can be used to strip a user-defined part of the path.
 # Stripping is only done if one of the specified strings matches the left-hand

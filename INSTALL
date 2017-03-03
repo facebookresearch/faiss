@@ -177,7 +177,9 @@ requires:
 
 See the example makefile on how to set the flags.
 
-The nvcc-specific flags to pass to the compiler:
+The nvcc-specific flags to pass to the compiler, based on your desired
+compute capability. Only compute capability 3.5+ is supported. For
+example:
 
    -gencode arch=compute_35,code="compute_35"
    -gencode arch=compute_52,code="compute_52"
@@ -237,7 +239,7 @@ to enable and run it.
 Hot to use Faiss in your own projects
 =====================================
 
-C++ 
+C++
 ---
 
 The makefile generates a static and a dynamic library
@@ -245,20 +247,19 @@ The makefile generates a static and a dynamic library
   libfaiss.a
   libfaiss.so (or libfaiss.dylib)
 
-the executable should be linked to one of these. If you use 
+the executable should be linked to one of these. If you use
 the static version (.a), add the LDFLAGS found in the Makefile.
 
 Python
 ------
 
-To import Faiss in your own Python project, you need the files 
+To import Faiss in your own Python project, you need the files
 
-  faiss.py 
+  faiss.py
   swigfaiss.py  / swigfaiss_gpu.py
-  _swigfaiss.so / _swigfaiss_gpu.so 
+  _swigfaiss.so / _swigfaiss_gpu.so
 
-to be visible in the PYTHONPATH or in the current directory. 
+to be visible in the PYTHONPATH or in the current directory.
 Then Faiss can be used in python with
 
   import faiss
-

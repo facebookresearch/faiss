@@ -80,7 +80,7 @@ class IndexProxy : public faiss::Index {
  private:
   /// Collection of Index instances, with their managing worker thread
   mutable std::vector<std::pair<faiss::Index*,
-                                std::unique_ptr<WorkerThread>>> indices_;
+                                std::unique_ptr<WorkerThread> > > indices_;
 };
 
 
