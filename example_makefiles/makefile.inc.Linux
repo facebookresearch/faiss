@@ -91,11 +91,17 @@ BLASLDFLAGS=/usr/lib64/libopenblas.so.0
 # SWIG executable. This should be at least version 3.x
 SWIGEXEC=swig
 
-# The Python include directories for the current python executable can
+# The Python include directories for a given python executable can
 # typically be found with
 #
 # python -c "import distutils.sysconfig; print distutils.sysconfig.get_python_inc()"
 # python -c "import numpy ; print numpy.get_include()"
+# 
+# or, for Python 3, with 
+# 
+# python3 -c "import distutils.sysconfig; print(distutils.sysconfig.get_python_inc())"
+# python3 -c "import numpy ; print(numpy.get_include())"
+# 
 
 PYTHONCFLAGS=-I/usr/include/python2.7/ -I/usr/lib64/python2.7/site-packages/numpy/core/include/numpy/
 
