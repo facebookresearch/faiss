@@ -108,6 +108,10 @@ The Python interface is compiled with
  
   make py 
 
+If you want to compile it for another python version than the default 
+Python 2.7, in particular Python 3, the PYTHONCFLAGS must be adjusted in 
+makefile.inc, see the examples.
+
 How it works
 ------------
 
