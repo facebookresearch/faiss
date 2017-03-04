@@ -31,10 +31,14 @@ Faiss requires a C++ compiler that understands:
 
 There are a few models for makefile.inc in the example_makefiles/
 subdirectory. Copy the relevant one for your system and adjust to your
-needs.
+needs. There are also indications for specific configurations in the 
+troubleshooting section of the wiki.
+
+https://github.com/facebookresearch/faiss/wiki/Troubleshooting
 
 Faiss comes as a .a archive, that can be linked with executables or
 dynamic libraries (useful for the Python wrapper).
+
 
 Step 1: Compiling the C++ Faiss
 ===============================
