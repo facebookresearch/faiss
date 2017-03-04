@@ -111,7 +111,7 @@ SWIGEXEC=swig
 # python3 -c "import numpy ; print(numpy.get_include())"
 # 
 
-PYTHONCFLAGS=-I/usr/include/python2.7/ -I/usr/lib64/python2.7/site-packages/numpy/core/include/numpy/
+PYTHONCFLAGS=-I/usr/include/python2.7/ -I/usr/lib64/python2.7/site-packages/numpy/core/include/
 
 
 ###########################################################################
