@@ -68,7 +68,7 @@ BLASLDFLAGS=/usr/lib64/libopenblas.so.0
 
 # for Ubuntu 14: 
 # sudo apt-get install libopenblas-dev liblapack3 python-numpy python-dev
-# BLASLDFLAGS=/usr/lib/libopenblas.so.0 /usr/lib/lapack/liblapack.so.3.0
+# BLASLDFLAGS="/usr/lib/libopenblas.so.0 /usr/lib/lapack/liblapack.so.3.0"
 
 #
 # 3. Atlas
@@ -79,7 +79,7 @@ BLASLDFLAGS=/usr/lib64/libopenblas.so.0
 # directory name, eg. atlas-sse3 = optimized for SSE3 architecture.
 #
 # BLASCFLAGS=-DFINTEGER=int
-# BLASLDFLAGS=/usr/lib64/atlas-sse3/libptf77blas.so.3 /usr/lib64/atlas-sse3/liblapack.so
+# BLASLDFLAGS="/usr/lib64/atlas-sse3/libptf77blas.so.3 /usr/lib64/atlas-sse3/liblapack.so"
 
 #
 # 4. reference implementation
@@ -88,7 +88,7 @@ BLASLDFLAGS=/usr/lib64/libopenblas.so.0
 # implementation, that is not optimized at all.
 #
 # BLASCFLAGS=-DFINTEGER=int
-# BLASLDFLAGS=/usr/lib64/libblas.so.3 /usr/lib64/liblapack.so.3.2
+# BLASLDFLAGS="/usr/lib64/libblas.so.3 /usr/lib64/liblapack.so.3.2"
 #
 
 
