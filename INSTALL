@@ -162,7 +162,8 @@ Real-life test
 
 The following script extends the demo_sift1M test to several types of
 indexes:
-
+  
+  export PYTHONPATH=.   # needed because the script is in a subdirectory
   python python/demo_auto_tune.py
 
 It will cycle through a few types of indexes and find optimal
@@ -240,6 +241,7 @@ Python example with GPU support
 
 The auto-tuning example above also runs on the GPU. Edit
 
+  export PYTHONPATH=.
   python/demo_auto_tune.py
 
 to enable and run it.
@@ -256,7 +258,7 @@ The makefile generates a static and a dynamic library
   libfaiss.so (or libfaiss.dylib)
 
 the executable should be linked to one of these. If you use
-the static version (.a), add the LDFLAGS found in the Makefile.
+the static version (.a), add the LDFLAGS used in the Makefile.
 
 Python
 ------
