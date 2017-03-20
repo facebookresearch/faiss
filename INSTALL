@@ -164,6 +164,7 @@ The following script extends the demo_sift1M test to several types of
 indexes:
   
   export PYTHONPATH=.   # needed because the script is in a subdirectory
+  mkdir tmp             # some output will be written there
   python python/demo_auto_tune.py
 
 It will cycle through a few types of indexes and find optimal
