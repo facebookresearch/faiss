@@ -45,7 +45,10 @@ class EvalIVFPQAccuracy(testutil.BaseFacebookTestCase):
 
         res = faiss.StandardGpuResources()
 
-        gt_index = faiss.GpuIndexFlatL2(res, dev_no, d, False)
+        flat_config = faiss.GpuIndexFlatConfig()
+        flat_config.device = dev_no
+
+        gt_index = faiss.GpuIndexFlatL2(res, d, flat_config)
         gt_index.add(xb)
         D, gt_nns = gt_index.search(xq, 1)
 

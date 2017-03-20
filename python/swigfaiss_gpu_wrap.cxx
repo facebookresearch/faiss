@@ -3013,54 +3013,55 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_faiss__gpu__GpuClonerOptions swig_types[76]
 #define SWIGTYPE_p_faiss__gpu__GpuIndex swig_types[77]
 #define SWIGTYPE_p_faiss__gpu__GpuIndexFlat swig_types[78]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatIP swig_types[79]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatL2 swig_types[80]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVF swig_types[81]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat swig_types[82]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ swig_types[83]
-#define SWIGTYPE_p_faiss__gpu__GpuMultipleClonerOptions swig_types[84]
-#define SWIGTYPE_p_faiss__gpu__GpuParameterSpace swig_types[85]
-#define SWIGTYPE_p_faiss__gpu__GpuResources swig_types[86]
-#define SWIGTYPE_p_faiss__gpu__IndexProxy swig_types[87]
-#define SWIGTYPE_p_faiss__gpu__StandardGpuResources swig_types[88]
-#define SWIGTYPE_p_float swig_types[89]
-#define SWIGTYPE_p_idx_t swig_types[90]
-#define SWIGTYPE_p_int swig_types[91]
-#define SWIGTYPE_p_long swig_types[92]
-#define SWIGTYPE_p_p_faiss__LinearTransform swig_types[93]
-#define SWIGTYPE_p_p_faiss__OPQMatrix swig_types[94]
-#define SWIGTYPE_p_p_faiss__PCAMatrix swig_types[95]
-#define SWIGTYPE_p_p_faiss__RandomRotationMatrix swig_types[96]
-#define SWIGTYPE_p_p_faiss__RemapDimensionsTransform swig_types[97]
-#define SWIGTYPE_p_p_faiss__VectorTransform swig_types[98]
-#define SWIGTYPE_p_p_faiss__gpu__GpuResources swig_types[99]
-#define SWIGTYPE_p_p_faiss__gpu__StandardGpuResources swig_types[100]
-#define SWIGTYPE_p_std__functionT_void_ffaiss__Index_pF_t swig_types[101]
-#define SWIGTYPE_p_std__pairT_void_p_unsigned_long_t swig_types[102]
-#define SWIGTYPE_p_std__vectorT_cudaStream_t_t swig_types[103]
-#define SWIGTYPE_p_std__vectorT_double_t swig_types[104]
-#define SWIGTYPE_p_std__vectorT_faiss__BufferList__Buffer_t swig_types[105]
-#define SWIGTYPE_p_std__vectorT_faiss__Index_p_t swig_types[106]
-#define SWIGTYPE_p_std__vectorT_faiss__OperatingPoint_t swig_types[107]
-#define SWIGTYPE_p_std__vectorT_faiss__ParameterRange_t swig_types[108]
-#define SWIGTYPE_p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t swig_types[109]
-#define SWIGTYPE_p_std__vectorT_faiss__VectorTransform_p_t swig_types[110]
-#define SWIGTYPE_p_std__vectorT_faiss__gpu__GpuResources_p_t swig_types[111]
-#define SWIGTYPE_p_std__vectorT_float_t swig_types[112]
-#define SWIGTYPE_p_std__vectorT_int_t swig_types[113]
-#define SWIGTYPE_p_std__vectorT_long_t swig_types[114]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_float_t_t swig_types[115]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_long_t_t swig_types[116]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_uint8_t_t_t swig_types[117]
-#define SWIGTYPE_p_std__vectorT_uint8_t_t swig_types[118]
-#define SWIGTYPE_p_std__vectorT_unsigned_char_t swig_types[119]
-#define SWIGTYPE_p_std__vectorT_unsigned_long_t swig_types[120]
-#define SWIGTYPE_p_uint32_t swig_types[121]
-#define SWIGTYPE_p_uint8_t swig_types[122]
-#define SWIGTYPE_p_unsigned_long swig_types[123]
-#define SWIGTYPE_p_void swig_types[124]
-static swig_type_info *swig_types[126];
-static swig_module_info swig_module = {swig_types, 125, 0, 0, 0, 0};
+#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig swig_types[79]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatIP swig_types[80]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatL2 swig_types[81]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVF swig_types[82]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat swig_types[83]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ swig_types[84]
+#define SWIGTYPE_p_faiss__gpu__GpuMultipleClonerOptions swig_types[85]
+#define SWIGTYPE_p_faiss__gpu__GpuParameterSpace swig_types[86]
+#define SWIGTYPE_p_faiss__gpu__GpuResources swig_types[87]
+#define SWIGTYPE_p_faiss__gpu__IndexProxy swig_types[88]
+#define SWIGTYPE_p_faiss__gpu__StandardGpuResources swig_types[89]
+#define SWIGTYPE_p_float swig_types[90]
+#define SWIGTYPE_p_idx_t swig_types[91]
+#define SWIGTYPE_p_int swig_types[92]
+#define SWIGTYPE_p_long swig_types[93]
+#define SWIGTYPE_p_p_faiss__LinearTransform swig_types[94]
+#define SWIGTYPE_p_p_faiss__OPQMatrix swig_types[95]
+#define SWIGTYPE_p_p_faiss__PCAMatrix swig_types[96]
+#define SWIGTYPE_p_p_faiss__RandomRotationMatrix swig_types[97]
+#define SWIGTYPE_p_p_faiss__RemapDimensionsTransform swig_types[98]
+#define SWIGTYPE_p_p_faiss__VectorTransform swig_types[99]
+#define SWIGTYPE_p_p_faiss__gpu__GpuResources swig_types[100]
+#define SWIGTYPE_p_p_faiss__gpu__StandardGpuResources swig_types[101]
+#define SWIGTYPE_p_std__functionT_void_ffaiss__Index_pF_t swig_types[102]
+#define SWIGTYPE_p_std__pairT_void_p_unsigned_long_t swig_types[103]
+#define SWIGTYPE_p_std__vectorT_cudaStream_t_t swig_types[104]
+#define SWIGTYPE_p_std__vectorT_double_t swig_types[105]
+#define SWIGTYPE_p_std__vectorT_faiss__BufferList__Buffer_t swig_types[106]
+#define SWIGTYPE_p_std__vectorT_faiss__Index_p_t swig_types[107]
+#define SWIGTYPE_p_std__vectorT_faiss__OperatingPoint_t swig_types[108]
+#define SWIGTYPE_p_std__vectorT_faiss__ParameterRange_t swig_types[109]
+#define SWIGTYPE_p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t swig_types[110]
+#define SWIGTYPE_p_std__vectorT_faiss__VectorTransform_p_t swig_types[111]
+#define SWIGTYPE_p_std__vectorT_faiss__gpu__GpuResources_p_t swig_types[112]
+#define SWIGTYPE_p_std__vectorT_float_t swig_types[113]
+#define SWIGTYPE_p_std__vectorT_int_t swig_types[114]
+#define SWIGTYPE_p_std__vectorT_long_t swig_types[115]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_float_t_t swig_types[116]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_long_t_t swig_types[117]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_uint8_t_t_t swig_types[118]
+#define SWIGTYPE_p_std__vectorT_uint8_t_t swig_types[119]
+#define SWIGTYPE_p_std__vectorT_unsigned_char_t swig_types[120]
+#define SWIGTYPE_p_std__vectorT_unsigned_long_t swig_types[121]
+#define SWIGTYPE_p_uint32_t swig_types[122]
+#define SWIGTYPE_p_uint8_t swig_types[123]
+#define SWIGTYPE_p_unsigned_long swig_types[124]
+#define SWIGTYPE_p_void swig_types[125]
+static swig_type_info *swig_types[127];
+static swig_module_info swig_module = {swig_types, 126, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3523,6 +3524,20 @@ int get_num_gpus()
 
 
 
+SWIGINTERN int
+SWIG_AsVal_bool (PyObject *obj, bool *val)
+{
+  int r;
+  if (!PyBool_Check(obj))
+    return SWIG_ERROR;
+  r = PyObject_IsTrue(obj);
+  if (r == -1)
+    return SWIG_ERROR;
+  if (val) *val = r ? true : false;
+  return SWIG_OK;
+}
+
+
 SWIGINTERN swig_type_info*
 SWIG_pchar_descriptor(void)
 {
@@ -3672,20 +3687,6 @@ SWIGINTERNINLINE PyObject *
 SWIG_From_std_string  (const std::string& s)
 {
   return SWIG_FromCharPtrAndSize(s.data(), s.size());
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_bool (PyObject *obj, bool *val)
-{
-  int r;
-  if (!PyBool_Check(obj))
-    return SWIG_ERROR;
-  r = PyObject_IsTrue(obj);
-  if (r == -1)
-    return SWIG_ERROR;
-  if (val) *val = r ? true : false;
-  return SWIG_OK;
 }
 
 
@@ -12616,6 +12617,309 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_fvecs_maybe_subsample__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  size_t arg1 ;
+  size_t *arg2 = (size_t *) 0 ;
+  size_t arg3 ;
+  float *arg4 = (float *) 0 ;
+  bool arg5 ;
+  long arg6 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  bool val5 ;
+  int ecode5 = 0 ;
+  long val6 ;
+  int ecode6 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  float *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:fvecs_maybe_subsample",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "fvecs_maybe_subsample" "', argument " "1"" of type '" "size_t""'");
+  } 
+  arg1 = static_cast< size_t >(val1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_unsigned_long, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "fvecs_maybe_subsample" "', argument " "2"" of type '" "size_t *""'"); 
+  }
+  arg2 = reinterpret_cast< size_t * >(argp2);
+  ecode3 = SWIG_AsVal_size_t(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "fvecs_maybe_subsample" "', argument " "3"" of type '" "size_t""'");
+  } 
+  arg3 = static_cast< size_t >(val3);
+  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "fvecs_maybe_subsample" "', argument " "4"" of type '" "float const *""'"); 
+  }
+  arg4 = reinterpret_cast< float * >(argp4);
+  ecode5 = SWIG_AsVal_bool(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "fvecs_maybe_subsample" "', argument " "5"" of type '" "bool""'");
+  } 
+  arg5 = static_cast< bool >(val5);
+  ecode6 = SWIG_AsVal_long(obj5, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "fvecs_maybe_subsample" "', argument " "6"" of type '" "long""'");
+  } 
+  arg6 = static_cast< long >(val6);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (float *)faiss::fvecs_maybe_subsample(arg1,arg2,arg3,(float const *)arg4,arg5,arg6);
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_float, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_fvecs_maybe_subsample__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  size_t arg1 ;
+  size_t *arg2 = (size_t *) 0 ;
+  size_t arg3 ;
+  float *arg4 = (float *) 0 ;
+  bool arg5 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  bool val5 ;
+  int ecode5 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  float *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:fvecs_maybe_subsample",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "fvecs_maybe_subsample" "', argument " "1"" of type '" "size_t""'");
+  } 
+  arg1 = static_cast< size_t >(val1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_unsigned_long, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "fvecs_maybe_subsample" "', argument " "2"" of type '" "size_t *""'"); 
+  }
+  arg2 = reinterpret_cast< size_t * >(argp2);
+  ecode3 = SWIG_AsVal_size_t(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "fvecs_maybe_subsample" "', argument " "3"" of type '" "size_t""'");
+  } 
+  arg3 = static_cast< size_t >(val3);
+  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "fvecs_maybe_subsample" "', argument " "4"" of type '" "float const *""'"); 
+  }
+  arg4 = reinterpret_cast< float * >(argp4);
+  ecode5 = SWIG_AsVal_bool(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "fvecs_maybe_subsample" "', argument " "5"" of type '" "bool""'");
+  } 
+  arg5 = static_cast< bool >(val5);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (float *)faiss::fvecs_maybe_subsample(arg1,arg2,arg3,(float const *)arg4,arg5);
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_float, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_fvecs_maybe_subsample__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  size_t arg1 ;
+  size_t *arg2 = (size_t *) 0 ;
+  size_t arg3 ;
+  float *arg4 = (float *) 0 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  float *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:fvecs_maybe_subsample",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "fvecs_maybe_subsample" "', argument " "1"" of type '" "size_t""'");
+  } 
+  arg1 = static_cast< size_t >(val1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_unsigned_long, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "fvecs_maybe_subsample" "', argument " "2"" of type '" "size_t *""'"); 
+  }
+  arg2 = reinterpret_cast< size_t * >(argp2);
+  ecode3 = SWIG_AsVal_size_t(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "fvecs_maybe_subsample" "', argument " "3"" of type '" "size_t""'");
+  } 
+  arg3 = static_cast< size_t >(val3);
+  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "fvecs_maybe_subsample" "', argument " "4"" of type '" "float const *""'"); 
+  }
+  arg4 = reinterpret_cast< float * >(argp4);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (float *)faiss::fvecs_maybe_subsample(arg1,arg2,arg3,(float const *)arg4);
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_float, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_fvecs_maybe_subsample(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[7];
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 6) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_unsigned_long, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          void *vptr = 0;
+          int res = SWIG_ConvertPtr(argv[3], &vptr, SWIGTYPE_p_float, 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_fvecs_maybe_subsample__SWIG_2(self, args);
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_unsigned_long, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          void *vptr = 0;
+          int res = SWIG_ConvertPtr(argv[3], &vptr, SWIGTYPE_p_float, 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            {
+              int res = SWIG_AsVal_bool(argv[4], NULL);
+              _v = SWIG_CheckState(res);
+            }
+            if (_v) {
+              return _wrap_fvecs_maybe_subsample__SWIG_1(self, args);
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 6) {
+    int _v;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_unsigned_long, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          void *vptr = 0;
+          int res = SWIG_ConvertPtr(argv[3], &vptr, SWIGTYPE_p_float, 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            {
+              int res = SWIG_AsVal_bool(argv[4], NULL);
+              _v = SWIG_CheckState(res);
+            }
+            if (_v) {
+              {
+                int res = SWIG_AsVal_long(argv[5], NULL);
+                _v = SWIG_CheckState(res);
+              }
+              if (_v) {
+                return _wrap_fvecs_maybe_subsample__SWIG_0(self, args);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'fvecs_maybe_subsample'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    faiss::fvecs_maybe_subsample(size_t,size_t *,size_t,float const *,bool,long)\n"
+    "    faiss::fvecs_maybe_subsample(size_t,size_t *,size_t,float const *,bool)\n"
+    "    faiss::fvecs_maybe_subsample(size_t,size_t *,size_t,float const *)\n");
+  return 0;
+}
+
+
 SWIGINTERN PyObject *_wrap_Index_index_typename_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::Index *arg1 = (faiss::Index *) 0 ;
@@ -17667,58 +17971,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_LinearTransform_max_points_per_d_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::LinearTransform *arg1 = (faiss::LinearTransform *) 0 ;
-  size_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  size_t val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:LinearTransform_max_points_per_d_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__LinearTransform, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LinearTransform_max_points_per_d_set" "', argument " "1"" of type '" "faiss::LinearTransform *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::LinearTransform * >(argp1);
-  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LinearTransform_max_points_per_d_set" "', argument " "2"" of type '" "size_t""'");
-  } 
-  arg2 = static_cast< size_t >(val2);
-  if (arg1) (arg1)->max_points_per_d = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_LinearTransform_max_points_per_d_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::LinearTransform *arg1 = (faiss::LinearTransform *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  size_t result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:LinearTransform_max_points_per_d_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__LinearTransform, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LinearTransform_max_points_per_d_get" "', argument " "1"" of type '" "faiss::LinearTransform *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::LinearTransform * >(argp1);
-  result = (size_t) ((arg1)->max_points_per_d);
-  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_LinearTransform_verbose_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::LinearTransform *arg1 = (faiss::LinearTransform *) 0 ;
@@ -17765,50 +18017,6 @@ SWIGINTERN PyObject *_wrap_LinearTransform_verbose_get(PyObject *SWIGUNUSEDPARM(
   arg1 = reinterpret_cast< faiss::LinearTransform * >(argp1);
   result = (bool) ((arg1)->verbose);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_LinearTransform_maybe_subsample_train_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::LinearTransform *arg1 = (faiss::LinearTransform *) 0 ;
-  faiss::Index::idx_t *arg2 = (faiss::Index::idx_t *) 0 ;
-  float *arg3 = (float *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  float *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:LinearTransform_maybe_subsample_train_set",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__LinearTransform, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LinearTransform_maybe_subsample_train_set" "', argument " "1"" of type '" "faiss::LinearTransform *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::LinearTransform * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_long, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "LinearTransform_maybe_subsample_train_set" "', argument " "2"" of type '" "faiss::Index::idx_t *""'"); 
-  }
-  arg2 = reinterpret_cast< faiss::Index::idx_t * >(argp2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "LinearTransform_maybe_subsample_train_set" "', argument " "3"" of type '" "float const *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    result = (float *)(arg1)->maybe_subsample_train_set(arg2,(float const *)arg3);
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_float, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -18150,6 +18358,58 @@ SWIGINTERN PyObject *_wrap_PCAMatrix_random_rotation_get(PyObject *SWIGUNUSEDPAR
   arg1 = reinterpret_cast< faiss::PCAMatrix * >(argp1);
   result = (bool) ((arg1)->random_rotation);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PCAMatrix_max_points_per_d_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::PCAMatrix *arg1 = (faiss::PCAMatrix *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:PCAMatrix_max_points_per_d_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__PCAMatrix, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PCAMatrix_max_points_per_d_set" "', argument " "1"" of type '" "faiss::PCAMatrix *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::PCAMatrix * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PCAMatrix_max_points_per_d_set" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->max_points_per_d = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PCAMatrix_max_points_per_d_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::PCAMatrix *arg1 = (faiss::PCAMatrix *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:PCAMatrix_max_points_per_d_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__PCAMatrix, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PCAMatrix_max_points_per_d_get" "', argument " "1"" of type '" "faiss::PCAMatrix *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::PCAMatrix * >(argp1);
+  result = (size_t) ((arg1)->max_points_per_d);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
   return NULL;
@@ -19034,29 +19294,29 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_OPQMatrix_max_points_per_d_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_OPQMatrix_max_train_points_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::OPQMatrix *arg1 = (faiss::OPQMatrix *) 0 ;
-  int arg2 ;
+  size_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int val2 ;
+  size_t val2 ;
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:OPQMatrix_max_points_per_d_set",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO:OPQMatrix_max_train_points_set",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__OPQMatrix, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OPQMatrix_max_points_per_d_set" "', argument " "1"" of type '" "faiss::OPQMatrix *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OPQMatrix_max_train_points_set" "', argument " "1"" of type '" "faiss::OPQMatrix *""'"); 
   }
   arg1 = reinterpret_cast< faiss::OPQMatrix * >(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OPQMatrix_max_points_per_d_set" "', argument " "2"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OPQMatrix_max_train_points_set" "', argument " "2"" of type '" "size_t""'");
   } 
-  arg2 = static_cast< int >(val2);
-  if (arg1) (arg1)->max_points_per_d = arg2;
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->max_train_points = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -19064,22 +19324,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_OPQMatrix_max_points_per_d_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_OPQMatrix_max_train_points_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::OPQMatrix *arg1 = (faiss::OPQMatrix *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  int result;
+  size_t result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:OPQMatrix_max_points_per_d_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:OPQMatrix_max_train_points_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__OPQMatrix, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OPQMatrix_max_points_per_d_get" "', argument " "1"" of type '" "faiss::OPQMatrix *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OPQMatrix_max_train_points_get" "', argument " "1"" of type '" "faiss::OPQMatrix *""'"); 
   }
   arg1 = reinterpret_cast< faiss::OPQMatrix * >(argp1);
-  result = (int) ((arg1)->max_points_per_d);
-  resultobj = SWIG_From_int(static_cast< int >(result));
+  result = (size_t) ((arg1)->max_train_points);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
   return NULL;
@@ -33295,7 +33555,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_IndexIDMap(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_IndexIDMap__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::Index *arg1 = (faiss::Index *) 0 ;
   void *argp1 = 0 ;
@@ -33601,6 +33861,55 @@ SWIGINTERN PyObject *_wrap_delete_IndexIDMap(PyObject *SWIGUNUSEDPARM(self), PyO
   return resultobj;
 fail:
   return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IndexIDMap__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexIDMap *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_IndexIDMap")) SWIG_fail;
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (faiss::IndexIDMap *)new faiss::IndexIDMap();
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexIDMap, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IndexIDMap(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[2];
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 1) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 0) {
+    return _wrap_new_IndexIDMap__SWIG_1(self, args);
+  }
+  if (argc == 1) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__Index, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_IndexIDMap__SWIG_0(self, args);
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_IndexIDMap'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    faiss::IndexIDMap::IndexIDMap(faiss::Index *)\n"
+    "    faiss::IndexIDMap::IndexIDMap()\n");
+  return 0;
 }
 
 
@@ -35112,19 +35421,307 @@ SWIGINTERN PyObject *GpuIndex_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObj
   return SWIG_Py_Void();
 }
 
-SWIGINTERN PyObject *_wrap_new_GpuIndexFlat__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_GpuIndexFlatConfig(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
+  faiss::gpu::GpuIndexFlatConfig *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_GpuIndexFlatConfig")) SWIG_fail;
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (faiss::gpu::GpuIndexFlatConfig *)new faiss::gpu::GpuIndexFlatConfig();
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GpuIndexFlatConfig_device_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuIndexFlatConfig *arg1 = (faiss::gpu::GpuIndexFlatConfig *) 0 ;
   int arg2 ;
-  bool arg3 ;
-  faiss::IndexFlat *arg4 = (faiss::IndexFlat *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
-  bool val3 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GpuIndexFlatConfig_device_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndexFlatConfig_device_set" "', argument " "1"" of type '" "faiss::gpu::GpuIndexFlatConfig *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GpuIndexFlatConfig_device_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->device = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GpuIndexFlatConfig_device_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuIndexFlatConfig *arg1 = (faiss::gpu::GpuIndexFlatConfig *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GpuIndexFlatConfig_device_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndexFlatConfig_device_get" "', argument " "1"" of type '" "faiss::gpu::GpuIndexFlatConfig *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp1);
+  result = (int) ((arg1)->device);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GpuIndexFlatConfig_useFloat16_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuIndexFlatConfig *arg1 = (faiss::gpu::GpuIndexFlatConfig *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GpuIndexFlatConfig_useFloat16_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndexFlatConfig_useFloat16_set" "', argument " "1"" of type '" "faiss::gpu::GpuIndexFlatConfig *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GpuIndexFlatConfig_useFloat16_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->useFloat16 = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GpuIndexFlatConfig_useFloat16_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuIndexFlatConfig *arg1 = (faiss::gpu::GpuIndexFlatConfig *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GpuIndexFlatConfig_useFloat16_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndexFlatConfig_useFloat16_get" "', argument " "1"" of type '" "faiss::gpu::GpuIndexFlatConfig *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp1);
+  result = (bool) ((arg1)->useFloat16);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GpuIndexFlatConfig_storeTransposed_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuIndexFlatConfig *arg1 = (faiss::gpu::GpuIndexFlatConfig *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GpuIndexFlatConfig_storeTransposed_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndexFlatConfig_storeTransposed_set" "', argument " "1"" of type '" "faiss::gpu::GpuIndexFlatConfig *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GpuIndexFlatConfig_storeTransposed_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->storeTransposed = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GpuIndexFlatConfig_storeTransposed_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuIndexFlatConfig *arg1 = (faiss::gpu::GpuIndexFlatConfig *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GpuIndexFlatConfig_storeTransposed_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndexFlatConfig_storeTransposed_get" "', argument " "1"" of type '" "faiss::gpu::GpuIndexFlatConfig *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp1);
+  result = (bool) ((arg1)->storeTransposed);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_GpuIndexFlatConfig(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuIndexFlatConfig *arg1 = (faiss::gpu::GpuIndexFlatConfig *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_GpuIndexFlatConfig",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_GpuIndexFlatConfig" "', argument " "1"" of type '" "faiss::gpu::GpuIndexFlatConfig *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *GpuIndexFlatConfig_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_new_GpuIndexFlat__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
+  faiss::IndexFlat *arg2 = (faiss::IndexFlat *) 0 ;
+  faiss::gpu::GpuIndexFlatConfig arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  faiss::gpu::GpuIndexFlat *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:new_GpuIndexFlat",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuResources, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_GpuIndexFlat" "', argument " "1"" of type '" "faiss::gpu::GpuResources *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuResources * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__IndexFlat, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_GpuIndexFlat" "', argument " "2"" of type '" "faiss::IndexFlat const *""'"); 
+  }
+  arg2 = reinterpret_cast< faiss::IndexFlat * >(argp2);
+  {
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig,  0  | 0);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_GpuIndexFlat" "', argument " "3"" of type '" "faiss::gpu::GpuIndexFlatConfig""'"); 
+    }  
+    if (!argp3) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_GpuIndexFlat" "', argument " "3"" of type '" "faiss::gpu::GpuIndexFlatConfig""'");
+    } else {
+      faiss::gpu::GpuIndexFlatConfig * temp = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp3);
+      arg3 = *temp;
+      if (SWIG_IsNewObj(res3)) delete temp;
+    }
+  }
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (faiss::gpu::GpuIndexFlat *)new faiss::gpu::GpuIndexFlat(arg1,(faiss::IndexFlat const *)arg2,arg3);
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlat, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_GpuIndexFlat__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
+  faiss::IndexFlat *arg2 = (faiss::IndexFlat *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::gpu::GpuIndexFlat *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_GpuIndexFlat",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuResources, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_GpuIndexFlat" "', argument " "1"" of type '" "faiss::gpu::GpuResources *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuResources * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__IndexFlat, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_GpuIndexFlat" "', argument " "2"" of type '" "faiss::IndexFlat const *""'"); 
+  }
+  arg2 = reinterpret_cast< faiss::IndexFlat * >(argp2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (faiss::gpu::GpuIndexFlat *)new faiss::gpu::GpuIndexFlat(arg1,(faiss::IndexFlat const *)arg2);
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlat, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_GpuIndexFlat__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
+  int arg2 ;
+  faiss::MetricType arg3 ;
+  faiss::gpu::GpuIndexFlatConfig arg4 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
   int ecode3 = 0 ;
-  void *argp4 = 0 ;
+  void *argp4 ;
   int res4 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
@@ -35143,19 +35740,27 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlat__SWIG_0(PyObject *SWIGUNUSEDPARM(sel
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_GpuIndexFlat" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_bool(obj2, &val3);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_GpuIndexFlat" "', argument " "3"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_GpuIndexFlat" "', argument " "3"" of type '" "faiss::MetricType""'");
   } 
-  arg3 = static_cast< bool >(val3);
-  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_faiss__IndexFlat, 0 |  0 );
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "new_GpuIndexFlat" "', argument " "4"" of type '" "faiss::IndexFlat const *""'"); 
+  arg3 = static_cast< faiss::MetricType >(val3);
+  {
+    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig,  0  | 0);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "new_GpuIndexFlat" "', argument " "4"" of type '" "faiss::gpu::GpuIndexFlatConfig""'"); 
+    }  
+    if (!argp4) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_GpuIndexFlat" "', argument " "4"" of type '" "faiss::gpu::GpuIndexFlatConfig""'");
+    } else {
+      faiss::gpu::GpuIndexFlatConfig * temp = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp4);
+      arg4 = *temp;
+      if (SWIG_IsNewObj(res4)) delete temp;
+    }
   }
-  arg4 = reinterpret_cast< faiss::IndexFlat * >(argp4);
   {
     Py_BEGIN_ALLOW_THREADS
-    result = (faiss::gpu::GpuIndexFlat *)new faiss::gpu::GpuIndexFlat(arg1,arg2,arg3,(faiss::IndexFlat const *)arg4);
+    result = (faiss::gpu::GpuIndexFlat *)new faiss::gpu::GpuIndexFlat(arg1,arg2,arg3,arg4);
     Py_END_ALLOW_THREADS
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlat, SWIG_POINTER_NEW |  0 );
@@ -35165,31 +35770,23 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_GpuIndexFlat__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_GpuIndexFlat__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
   int arg2 ;
-  int arg3 ;
-  bool arg4 ;
-  faiss::MetricType arg5 ;
+  faiss::MetricType arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
   int val3 ;
   int ecode3 = 0 ;
-  bool val4 ;
-  int ecode4 = 0 ;
-  int val5 ;
-  int ecode5 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
   faiss::gpu::GpuIndexFlat *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOO:new_GpuIndexFlat",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO:new_GpuIndexFlat",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuResources, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_GpuIndexFlat" "', argument " "1"" of type '" "faiss::gpu::GpuResources *""'"); 
@@ -35202,22 +35799,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlat__SWIG_1(PyObject *SWIGUNUSEDPARM(sel
   arg2 = static_cast< int >(val2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_GpuIndexFlat" "', argument " "3"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_GpuIndexFlat" "', argument " "3"" of type '" "faiss::MetricType""'");
   } 
-  arg3 = static_cast< int >(val3);
-  ecode4 = SWIG_AsVal_bool(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "new_GpuIndexFlat" "', argument " "4"" of type '" "bool""'");
-  } 
-  arg4 = static_cast< bool >(val4);
-  ecode5 = SWIG_AsVal_int(obj4, &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "new_GpuIndexFlat" "', argument " "5"" of type '" "faiss::MetricType""'");
-  } 
-  arg5 = static_cast< faiss::MetricType >(val5);
+  arg3 = static_cast< faiss::MetricType >(val3);
   {
     Py_BEGIN_ALLOW_THREADS
-    result = (faiss::gpu::GpuIndexFlat *)new faiss::gpu::GpuIndexFlat(arg1,arg2,arg3,arg4,arg5);
+    result = (faiss::gpu::GpuIndexFlat *)new faiss::gpu::GpuIndexFlat(arg1,arg2,arg3);
     Py_END_ALLOW_THREADS
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlat, SWIG_POINTER_NEW |  0 );
@@ -35229,41 +35816,47 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_GpuIndexFlat(PyObject *self, PyObject *args) {
   int argc;
-  PyObject *argv[6];
+  PyObject *argv[5];
   int ii;
   
   if (!PyTuple_Check(args)) SWIG_fail;
   argc = args ? (int)PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 5) && (ii < argc); ii++) {
+  for (ii = 0; (ii < 4) && (ii < argc); ii++) {
     argv[ii] = PyTuple_GET_ITEM(args,ii);
   }
-  if (argc == 4) {
+  if (argc == 2) {
     int _v;
     void *vptr = 0;
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__gpu__GpuResources, 0);
     _v = SWIG_CheckState(res);
     if (_v) {
-      {
-        int res = SWIG_AsVal_int(argv[1], NULL);
-        _v = SWIG_CheckState(res);
-      }
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_faiss__IndexFlat, 0);
+      _v = SWIG_CheckState(res);
       if (_v) {
-        {
-          int res = SWIG_AsVal_bool(argv[2], NULL);
-          _v = SWIG_CheckState(res);
-        }
+        return _wrap_new_GpuIndexFlat__SWIG_1(self, args);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__gpu__GpuResources, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_faiss__IndexFlat, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, 0);
+        _v = SWIG_CheckState(res);
         if (_v) {
-          void *vptr = 0;
-          int res = SWIG_ConvertPtr(argv[3], &vptr, SWIGTYPE_p_faiss__IndexFlat, 0);
-          _v = SWIG_CheckState(res);
-          if (_v) {
-            return _wrap_new_GpuIndexFlat__SWIG_0(self, args);
-          }
+          return _wrap_new_GpuIndexFlat__SWIG_0(self, args);
         }
       }
     }
   }
-  if (argc == 5) {
+  if (argc == 3) {
     int _v;
     void *vptr = 0;
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__gpu__GpuResources, 0);
@@ -35279,18 +35872,31 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlat(PyObject *self, PyObject *args) {
           _v = SWIG_CheckState(res);
         }
         if (_v) {
-          {
-            int res = SWIG_AsVal_bool(argv[3], NULL);
-            _v = SWIG_CheckState(res);
-          }
+          return _wrap_new_GpuIndexFlat__SWIG_3(self, args);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__gpu__GpuResources, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_int(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, 0);
+          _v = SWIG_CheckState(res);
           if (_v) {
-            {
-              int res = SWIG_AsVal_int(argv[4], NULL);
-              _v = SWIG_CheckState(res);
-            }
-            if (_v) {
-              return _wrap_new_GpuIndexFlat__SWIG_1(self, args);
-            }
+            return _wrap_new_GpuIndexFlat__SWIG_2(self, args);
           }
         }
       }
@@ -35300,8 +35906,10 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlat(PyObject *self, PyObject *args) {
 fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_GpuIndexFlat'.\n"
     "  Possible C/C++ prototypes are:\n"
-    "    faiss::gpu::GpuIndexFlat::GpuIndexFlat(faiss::gpu::GpuResources *,int,bool,faiss::IndexFlat const *)\n"
-    "    faiss::gpu::GpuIndexFlat::GpuIndexFlat(faiss::gpu::GpuResources *,int,int,bool,faiss::MetricType)\n");
+    "    faiss::gpu::GpuIndexFlat::GpuIndexFlat(faiss::gpu::GpuResources *,faiss::IndexFlat const *,faiss::gpu::GpuIndexFlatConfig)\n"
+    "    faiss::gpu::GpuIndexFlat::GpuIndexFlat(faiss::gpu::GpuResources *,faiss::IndexFlat const *)\n"
+    "    faiss::gpu::GpuIndexFlat::GpuIndexFlat(faiss::gpu::GpuResources *,int,faiss::MetricType,faiss::gpu::GpuIndexFlatConfig)\n"
+    "    faiss::gpu::GpuIndexFlat::GpuIndexFlat(faiss::gpu::GpuResources *,int,faiss::MetricType)\n");
   return 0;
 }
 
@@ -35848,47 +36456,46 @@ SWIGINTERN PyObject *GpuIndexFlat_swigregister(PyObject *SWIGUNUSEDPARM(self), P
 SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
-  int arg2 ;
-  bool arg3 ;
-  faiss::IndexFlatL2 *arg4 = (faiss::IndexFlatL2 *) 0 ;
+  faiss::IndexFlatL2 *arg2 = (faiss::IndexFlatL2 *) 0 ;
+  faiss::gpu::GpuIndexFlatConfig arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  bool val3 ;
-  int ecode3 = 0 ;
-  void *argp4 = 0 ;
-  int res4 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 ;
+  int res3 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
   faiss::gpu::GpuIndexFlatL2 *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:new_GpuIndexFlatL2",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO:new_GpuIndexFlatL2",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuResources, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_GpuIndexFlatL2" "', argument " "1"" of type '" "faiss::gpu::GpuResources *""'"); 
   }
   arg1 = reinterpret_cast< faiss::gpu::GpuResources * >(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_GpuIndexFlatL2" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_bool(obj2, &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_GpuIndexFlatL2" "', argument " "3"" of type '" "bool""'");
-  } 
-  arg3 = static_cast< bool >(val3);
-  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_faiss__IndexFlatL2, 0 |  0 );
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "new_GpuIndexFlatL2" "', argument " "4"" of type '" "faiss::IndexFlatL2 *""'"); 
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__IndexFlatL2, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_GpuIndexFlatL2" "', argument " "2"" of type '" "faiss::IndexFlatL2 *""'"); 
   }
-  arg4 = reinterpret_cast< faiss::IndexFlatL2 * >(argp4);
+  arg2 = reinterpret_cast< faiss::IndexFlatL2 * >(argp2);
+  {
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig,  0  | 0);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_GpuIndexFlatL2" "', argument " "3"" of type '" "faiss::gpu::GpuIndexFlatConfig""'"); 
+    }  
+    if (!argp3) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_GpuIndexFlatL2" "', argument " "3"" of type '" "faiss::gpu::GpuIndexFlatConfig""'");
+    } else {
+      faiss::gpu::GpuIndexFlatConfig * temp = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp3);
+      arg3 = *temp;
+      if (SWIG_IsNewObj(res3)) delete temp;
+    }
+  }
   {
     Py_BEGIN_ALLOW_THREADS
-    result = (faiss::gpu::GpuIndexFlatL2 *)new faiss::gpu::GpuIndexFlatL2(arg1,arg2,arg3,arg4);
+    result = (faiss::gpu::GpuIndexFlatL2 *)new faiss::gpu::GpuIndexFlatL2(arg1,arg2,arg3);
     Py_END_ALLOW_THREADS
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlatL2, SWIG_POINTER_NEW |  0 );
@@ -35901,24 +36508,55 @@ fail:
 SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
+  faiss::IndexFlatL2 *arg2 = (faiss::IndexFlatL2 *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::gpu::GpuIndexFlatL2 *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_GpuIndexFlatL2",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuResources, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_GpuIndexFlatL2" "', argument " "1"" of type '" "faiss::gpu::GpuResources *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuResources * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__IndexFlatL2, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_GpuIndexFlatL2" "', argument " "2"" of type '" "faiss::IndexFlatL2 *""'"); 
+  }
+  arg2 = reinterpret_cast< faiss::IndexFlatL2 * >(argp2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (faiss::gpu::GpuIndexFlatL2 *)new faiss::gpu::GpuIndexFlatL2(arg1,arg2);
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlatL2, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
   int arg2 ;
-  int arg3 ;
-  bool arg4 ;
+  faiss::gpu::GpuIndexFlatConfig arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
-  int val3 ;
-  int ecode3 = 0 ;
-  bool val4 ;
-  int ecode4 = 0 ;
+  void *argp3 ;
+  int res3 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
   faiss::gpu::GpuIndexFlatL2 *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:new_GpuIndexFlatL2",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO:new_GpuIndexFlatL2",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuResources, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_GpuIndexFlatL2" "', argument " "1"" of type '" "faiss::gpu::GpuResources *""'"); 
@@ -35929,19 +36567,57 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2__SWIG_1(PyObject *SWIGUNUSEDPARM(s
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_GpuIndexFlatL2" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_int(obj2, &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_GpuIndexFlatL2" "', argument " "3"" of type '" "int""'");
-  } 
-  arg3 = static_cast< int >(val3);
-  ecode4 = SWIG_AsVal_bool(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "new_GpuIndexFlatL2" "', argument " "4"" of type '" "bool""'");
-  } 
-  arg4 = static_cast< bool >(val4);
+  {
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig,  0  | 0);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_GpuIndexFlatL2" "', argument " "3"" of type '" "faiss::gpu::GpuIndexFlatConfig""'"); 
+    }  
+    if (!argp3) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_GpuIndexFlatL2" "', argument " "3"" of type '" "faiss::gpu::GpuIndexFlatConfig""'");
+    } else {
+      faiss::gpu::GpuIndexFlatConfig * temp = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp3);
+      arg3 = *temp;
+      if (SWIG_IsNewObj(res3)) delete temp;
+    }
+  }
   {
     Py_BEGIN_ALLOW_THREADS
-    result = (faiss::gpu::GpuIndexFlatL2 *)new faiss::gpu::GpuIndexFlatL2(arg1,arg2,arg3,arg4);
+    result = (faiss::gpu::GpuIndexFlatL2 *)new faiss::gpu::GpuIndexFlatL2(arg1,arg2,arg3);
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlatL2, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::gpu::GpuIndexFlatL2 *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_GpuIndexFlatL2",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuResources, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_GpuIndexFlatL2" "', argument " "1"" of type '" "faiss::gpu::GpuResources *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuResources * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_GpuIndexFlatL2" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (faiss::gpu::GpuIndexFlatL2 *)new faiss::gpu::GpuIndexFlatL2(arg1,arg2);
     Py_END_ALLOW_THREADS
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlatL2, SWIG_POINTER_NEW |  0 );
@@ -35953,15 +36629,29 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2(PyObject *self, PyObject *args) {
   int argc;
-  PyObject *argv[5];
+  PyObject *argv[4];
   int ii;
   
   if (!PyTuple_Check(args)) SWIG_fail;
   argc = args ? (int)PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 4) && (ii < argc); ii++) {
+  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
     argv[ii] = PyTuple_GET_ITEM(args,ii);
   }
-  if (argc == 4) {
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__gpu__GpuResources, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_faiss__IndexFlatL2, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_GpuIndexFlatL2__SWIG_1(self, args);
+      }
+    }
+  }
+  if (argc == 2) {
     int _v;
     void *vptr = 0;
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__gpu__GpuResources, 0);
@@ -35972,22 +36662,29 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2(PyObject *self, PyObject *args) {
         _v = SWIG_CheckState(res);
       }
       if (_v) {
-        {
-          int res = SWIG_AsVal_bool(argv[2], NULL);
-          _v = SWIG_CheckState(res);
-        }
+        return _wrap_new_GpuIndexFlatL2__SWIG_3(self, args);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__gpu__GpuResources, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_faiss__IndexFlatL2, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, 0);
+        _v = SWIG_CheckState(res);
         if (_v) {
-          void *vptr = 0;
-          int res = SWIG_ConvertPtr(argv[3], &vptr, SWIGTYPE_p_faiss__IndexFlatL2, 0);
-          _v = SWIG_CheckState(res);
-          if (_v) {
-            return _wrap_new_GpuIndexFlatL2__SWIG_0(self, args);
-          }
+          return _wrap_new_GpuIndexFlatL2__SWIG_0(self, args);
         }
       }
     }
   }
-  if (argc == 4) {
+  if (argc == 3) {
     int _v;
     void *vptr = 0;
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__gpu__GpuResources, 0);
@@ -35998,18 +36695,10 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2(PyObject *self, PyObject *args) {
         _v = SWIG_CheckState(res);
       }
       if (_v) {
-        {
-          int res = SWIG_AsVal_int(argv[2], NULL);
-          _v = SWIG_CheckState(res);
-        }
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, 0);
+        _v = SWIG_CheckState(res);
         if (_v) {
-          {
-            int res = SWIG_AsVal_bool(argv[3], NULL);
-            _v = SWIG_CheckState(res);
-          }
-          if (_v) {
-            return _wrap_new_GpuIndexFlatL2__SWIG_1(self, args);
-          }
+          return _wrap_new_GpuIndexFlatL2__SWIG_2(self, args);
         }
       }
     }
@@ -36018,8 +36707,10 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2(PyObject *self, PyObject *args) {
 fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_GpuIndexFlatL2'.\n"
     "  Possible C/C++ prototypes are:\n"
-    "    faiss::gpu::GpuIndexFlatL2::GpuIndexFlatL2(faiss::gpu::GpuResources *,int,bool,faiss::IndexFlatL2 *)\n"
-    "    faiss::gpu::GpuIndexFlatL2::GpuIndexFlatL2(faiss::gpu::GpuResources *,int,int,bool)\n");
+    "    faiss::gpu::GpuIndexFlatL2::GpuIndexFlatL2(faiss::gpu::GpuResources *,faiss::IndexFlatL2 *,faiss::gpu::GpuIndexFlatConfig)\n"
+    "    faiss::gpu::GpuIndexFlatL2::GpuIndexFlatL2(faiss::gpu::GpuResources *,faiss::IndexFlatL2 *)\n"
+    "    faiss::gpu::GpuIndexFlatL2::GpuIndexFlatL2(faiss::gpu::GpuResources *,int,faiss::gpu::GpuIndexFlatConfig)\n"
+    "    faiss::gpu::GpuIndexFlatL2::GpuIndexFlatL2(faiss::gpu::GpuResources *,int)\n");
   return 0;
 }
 
@@ -36123,47 +36814,46 @@ SWIGINTERN PyObject *GpuIndexFlatL2_swigregister(PyObject *SWIGUNUSEDPARM(self),
 SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
-  int arg2 ;
-  bool arg3 ;
-  faiss::IndexFlatIP *arg4 = (faiss::IndexFlatIP *) 0 ;
+  faiss::IndexFlatIP *arg2 = (faiss::IndexFlatIP *) 0 ;
+  faiss::gpu::GpuIndexFlatConfig arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  bool val3 ;
-  int ecode3 = 0 ;
-  void *argp4 = 0 ;
-  int res4 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 ;
+  int res3 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
   faiss::gpu::GpuIndexFlatIP *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:new_GpuIndexFlatIP",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO:new_GpuIndexFlatIP",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuResources, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_GpuIndexFlatIP" "', argument " "1"" of type '" "faiss::gpu::GpuResources *""'"); 
   }
   arg1 = reinterpret_cast< faiss::gpu::GpuResources * >(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_GpuIndexFlatIP" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_bool(obj2, &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_GpuIndexFlatIP" "', argument " "3"" of type '" "bool""'");
-  } 
-  arg3 = static_cast< bool >(val3);
-  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_faiss__IndexFlatIP, 0 |  0 );
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "new_GpuIndexFlatIP" "', argument " "4"" of type '" "faiss::IndexFlatIP *""'"); 
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__IndexFlatIP, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_GpuIndexFlatIP" "', argument " "2"" of type '" "faiss::IndexFlatIP *""'"); 
   }
-  arg4 = reinterpret_cast< faiss::IndexFlatIP * >(argp4);
+  arg2 = reinterpret_cast< faiss::IndexFlatIP * >(argp2);
+  {
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig,  0  | 0);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_GpuIndexFlatIP" "', argument " "3"" of type '" "faiss::gpu::GpuIndexFlatConfig""'"); 
+    }  
+    if (!argp3) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_GpuIndexFlatIP" "', argument " "3"" of type '" "faiss::gpu::GpuIndexFlatConfig""'");
+    } else {
+      faiss::gpu::GpuIndexFlatConfig * temp = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp3);
+      arg3 = *temp;
+      if (SWIG_IsNewObj(res3)) delete temp;
+    }
+  }
   {
     Py_BEGIN_ALLOW_THREADS
-    result = (faiss::gpu::GpuIndexFlatIP *)new faiss::gpu::GpuIndexFlatIP(arg1,arg2,arg3,arg4);
+    result = (faiss::gpu::GpuIndexFlatIP *)new faiss::gpu::GpuIndexFlatIP(arg1,arg2,arg3);
     Py_END_ALLOW_THREADS
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlatIP, SWIG_POINTER_NEW |  0 );
@@ -36176,24 +36866,55 @@ fail:
 SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
+  faiss::IndexFlatIP *arg2 = (faiss::IndexFlatIP *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::gpu::GpuIndexFlatIP *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_GpuIndexFlatIP",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuResources, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_GpuIndexFlatIP" "', argument " "1"" of type '" "faiss::gpu::GpuResources *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuResources * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__IndexFlatIP, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_GpuIndexFlatIP" "', argument " "2"" of type '" "faiss::IndexFlatIP *""'"); 
+  }
+  arg2 = reinterpret_cast< faiss::IndexFlatIP * >(argp2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (faiss::gpu::GpuIndexFlatIP *)new faiss::gpu::GpuIndexFlatIP(arg1,arg2);
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlatIP, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
   int arg2 ;
-  int arg3 ;
-  bool arg4 ;
+  faiss::gpu::GpuIndexFlatConfig arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
-  int val3 ;
-  int ecode3 = 0 ;
-  bool val4 ;
-  int ecode4 = 0 ;
+  void *argp3 ;
+  int res3 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
   faiss::gpu::GpuIndexFlatIP *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:new_GpuIndexFlatIP",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO:new_GpuIndexFlatIP",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuResources, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_GpuIndexFlatIP" "', argument " "1"" of type '" "faiss::gpu::GpuResources *""'"); 
@@ -36204,19 +36925,57 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP__SWIG_1(PyObject *SWIGUNUSEDPARM(s
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_GpuIndexFlatIP" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_int(obj2, &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_GpuIndexFlatIP" "', argument " "3"" of type '" "int""'");
-  } 
-  arg3 = static_cast< int >(val3);
-  ecode4 = SWIG_AsVal_bool(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "new_GpuIndexFlatIP" "', argument " "4"" of type '" "bool""'");
-  } 
-  arg4 = static_cast< bool >(val4);
+  {
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig,  0  | 0);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_GpuIndexFlatIP" "', argument " "3"" of type '" "faiss::gpu::GpuIndexFlatConfig""'"); 
+    }  
+    if (!argp3) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_GpuIndexFlatIP" "', argument " "3"" of type '" "faiss::gpu::GpuIndexFlatConfig""'");
+    } else {
+      faiss::gpu::GpuIndexFlatConfig * temp = reinterpret_cast< faiss::gpu::GpuIndexFlatConfig * >(argp3);
+      arg3 = *temp;
+      if (SWIG_IsNewObj(res3)) delete temp;
+    }
+  }
   {
     Py_BEGIN_ALLOW_THREADS
-    result = (faiss::gpu::GpuIndexFlatIP *)new faiss::gpu::GpuIndexFlatIP(arg1,arg2,arg3,arg4);
+    result = (faiss::gpu::GpuIndexFlatIP *)new faiss::gpu::GpuIndexFlatIP(arg1,arg2,arg3);
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlatIP, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::gpu::GpuIndexFlatIP *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_GpuIndexFlatIP",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuResources, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_GpuIndexFlatIP" "', argument " "1"" of type '" "faiss::gpu::GpuResources *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuResources * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_GpuIndexFlatIP" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (faiss::gpu::GpuIndexFlatIP *)new faiss::gpu::GpuIndexFlatIP(arg1,arg2);
     Py_END_ALLOW_THREADS
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuIndexFlatIP, SWIG_POINTER_NEW |  0 );
@@ -36228,15 +36987,29 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP(PyObject *self, PyObject *args) {
   int argc;
-  PyObject *argv[5];
+  PyObject *argv[4];
   int ii;
   
   if (!PyTuple_Check(args)) SWIG_fail;
   argc = args ? (int)PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 4) && (ii < argc); ii++) {
+  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
     argv[ii] = PyTuple_GET_ITEM(args,ii);
   }
-  if (argc == 4) {
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__gpu__GpuResources, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_faiss__IndexFlatIP, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_GpuIndexFlatIP__SWIG_1(self, args);
+      }
+    }
+  }
+  if (argc == 2) {
     int _v;
     void *vptr = 0;
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__gpu__GpuResources, 0);
@@ -36247,22 +37020,29 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP(PyObject *self, PyObject *args) {
         _v = SWIG_CheckState(res);
       }
       if (_v) {
-        {
-          int res = SWIG_AsVal_bool(argv[2], NULL);
-          _v = SWIG_CheckState(res);
-        }
+        return _wrap_new_GpuIndexFlatIP__SWIG_3(self, args);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__gpu__GpuResources, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_faiss__IndexFlatIP, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, 0);
+        _v = SWIG_CheckState(res);
         if (_v) {
-          void *vptr = 0;
-          int res = SWIG_ConvertPtr(argv[3], &vptr, SWIGTYPE_p_faiss__IndexFlatIP, 0);
-          _v = SWIG_CheckState(res);
-          if (_v) {
-            return _wrap_new_GpuIndexFlatIP__SWIG_0(self, args);
-          }
+          return _wrap_new_GpuIndexFlatIP__SWIG_0(self, args);
         }
       }
     }
   }
-  if (argc == 4) {
+  if (argc == 3) {
     int _v;
     void *vptr = 0;
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__gpu__GpuResources, 0);
@@ -36273,18 +37053,10 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP(PyObject *self, PyObject *args) {
         _v = SWIG_CheckState(res);
       }
       if (_v) {
-        {
-          int res = SWIG_AsVal_int(argv[2], NULL);
-          _v = SWIG_CheckState(res);
-        }
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig, 0);
+        _v = SWIG_CheckState(res);
         if (_v) {
-          {
-            int res = SWIG_AsVal_bool(argv[3], NULL);
-            _v = SWIG_CheckState(res);
-          }
-          if (_v) {
-            return _wrap_new_GpuIndexFlatIP__SWIG_1(self, args);
-          }
+          return _wrap_new_GpuIndexFlatIP__SWIG_2(self, args);
         }
       }
     }
@@ -36293,8 +37065,10 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP(PyObject *self, PyObject *args) {
 fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_GpuIndexFlatIP'.\n"
     "  Possible C/C++ prototypes are:\n"
-    "    faiss::gpu::GpuIndexFlatIP::GpuIndexFlatIP(faiss::gpu::GpuResources *,int,bool,faiss::IndexFlatIP *)\n"
-    "    faiss::gpu::GpuIndexFlatIP::GpuIndexFlatIP(faiss::gpu::GpuResources *,int,int,bool)\n");
+    "    faiss::gpu::GpuIndexFlatIP::GpuIndexFlatIP(faiss::gpu::GpuResources *,faiss::IndexFlatIP *,faiss::gpu::GpuIndexFlatConfig)\n"
+    "    faiss::gpu::GpuIndexFlatIP::GpuIndexFlatIP(faiss::gpu::GpuResources *,faiss::IndexFlatIP *)\n"
+    "    faiss::gpu::GpuIndexFlatIP::GpuIndexFlatIP(faiss::gpu::GpuResources *,int,faiss::gpu::GpuIndexFlatConfig)\n"
+    "    faiss::gpu::GpuIndexFlatIP::GpuIndexFlatIP(faiss::gpu::GpuResources *,int)\n");
   return 0;
 }
 
@@ -38808,6 +39582,7 @@ SWIGINTERN PyObject *_wrap_kmeans_clustering_gpu(PyObject *SWIGUNUSEDPARM(self),
   float *arg5 = (float *) 0 ;
   float *arg6 = (float *) 0 ;
   bool arg7 ;
+  bool arg8 ;
   int val1 ;
   int ecode1 = 0 ;
   size_t val2 ;
@@ -38822,6 +39597,8 @@ SWIGINTERN PyObject *_wrap_kmeans_clustering_gpu(PyObject *SWIGUNUSEDPARM(self),
   int res6 = 0 ;
   bool val7 ;
   int ecode7 = 0 ;
+  bool val8 ;
+  int ecode8 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -38829,9 +39606,10 @@ SWIGINTERN PyObject *_wrap_kmeans_clustering_gpu(PyObject *SWIGUNUSEDPARM(self),
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
   PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
   float result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOO:kmeans_clustering_gpu",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOO:kmeans_clustering_gpu",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7)) SWIG_fail;
   ecode1 = SWIG_AsVal_int(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "kmeans_clustering_gpu" "', argument " "1"" of type '" "int""'");
@@ -38867,9 +39645,14 @@ SWIGINTERN PyObject *_wrap_kmeans_clustering_gpu(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "kmeans_clustering_gpu" "', argument " "7"" of type '" "bool""'");
   } 
   arg7 = static_cast< bool >(val7);
+  ecode8 = SWIG_AsVal_bool(obj7, &val8);
+  if (!SWIG_IsOK(ecode8)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "kmeans_clustering_gpu" "', argument " "8"" of type '" "bool""'");
+  } 
+  arg8 = static_cast< bool >(val8);
   {
     Py_BEGIN_ALLOW_THREADS
-    result = (float)faiss::gpu::kmeans_clustering_gpu(arg1,arg2,arg3,arg4,(float const *)arg5,arg6,arg7);
+    result = (float)faiss::gpu::kmeans_clustering_gpu(arg1,arg2,arg3,arg4,(float const *)arg5,arg6,arg7,arg8);
     Py_END_ALLOW_THREADS
   }
   resultobj = SWIG_From_float(static_cast< float >(result));
@@ -43530,6 +44313,58 @@ SWIGINTERN PyObject *_wrap_GpuClonerOptions_reserveVecs_get(PyObject *SWIGUNUSED
   arg1 = reinterpret_cast< faiss::gpu::GpuClonerOptions * >(argp1);
   result = (long) ((arg1)->reserveVecs);
   resultobj = SWIG_From_long(static_cast< long >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GpuClonerOptions_storeTransposed_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuClonerOptions *arg1 = (faiss::gpu::GpuClonerOptions *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GpuClonerOptions_storeTransposed_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuClonerOptions, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuClonerOptions_storeTransposed_set" "', argument " "1"" of type '" "faiss::gpu::GpuClonerOptions *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuClonerOptions * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GpuClonerOptions_storeTransposed_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->storeTransposed = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GpuClonerOptions_storeTransposed_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuClonerOptions *arg1 = (faiss::gpu::GpuClonerOptions *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GpuClonerOptions_storeTransposed_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuClonerOptions, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuClonerOptions_storeTransposed_get" "', argument " "1"" of type '" "faiss::gpu::GpuClonerOptions *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuClonerOptions * >(argp1);
+  result = (bool) ((arg1)->storeTransposed);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
   return NULL;
@@ -51145,6 +51980,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"ivec_hist", _wrap_ivec_hist, METH_VARARGS, NULL},
 	 { (char *)"bincode_hist", _wrap_bincode_hist, METH_VARARGS, NULL},
 	 { (char *)"ivec_checksum", _wrap_ivec_checksum, METH_VARARGS, NULL},
+	 { (char *)"fvecs_maybe_subsample", _wrap_fvecs_maybe_subsample, METH_VARARGS, NULL},
 	 { (char *)"Index_index_typename_set", _wrap_Index_index_typename_set, METH_VARARGS, NULL},
 	 { (char *)"Index_index_typename_get", _wrap_Index_index_typename_get, METH_VARARGS, NULL},
 	 { (char *)"Index_d_set", _wrap_Index_d_set, METH_VARARGS, NULL},
@@ -51269,11 +52105,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_LinearTransform", _wrap_new_LinearTransform, METH_VARARGS, NULL},
 	 { (char *)"LinearTransform_apply_noalloc", _wrap_LinearTransform_apply_noalloc, METH_VARARGS, NULL},
 	 { (char *)"LinearTransform_transform_transpose", _wrap_LinearTransform_transform_transpose, METH_VARARGS, NULL},
-	 { (char *)"LinearTransform_max_points_per_d_set", _wrap_LinearTransform_max_points_per_d_set, METH_VARARGS, NULL},
-	 { (char *)"LinearTransform_max_points_per_d_get", _wrap_LinearTransform_max_points_per_d_get, METH_VARARGS, NULL},
 	 { (char *)"LinearTransform_verbose_set", _wrap_LinearTransform_verbose_set, METH_VARARGS, NULL},
 	 { (char *)"LinearTransform_verbose_get", _wrap_LinearTransform_verbose_get, METH_VARARGS, NULL},
-	 { (char *)"LinearTransform_maybe_subsample_train_set", _wrap_LinearTransform_maybe_subsample_train_set, METH_VARARGS, NULL},
 	 { (char *)"delete_LinearTransform", _wrap_delete_LinearTransform, METH_VARARGS, NULL},
 	 { (char *)"LinearTransform_swigregister", LinearTransform_swigregister, METH_VARARGS, NULL},
 	 { (char *)"RandomRotationMatrix_init", _wrap_RandomRotationMatrix_init, METH_VARARGS, NULL},
@@ -51285,6 +52118,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"PCAMatrix_eigen_power_get", _wrap_PCAMatrix_eigen_power_get, METH_VARARGS, NULL},
 	 { (char *)"PCAMatrix_random_rotation_set", _wrap_PCAMatrix_random_rotation_set, METH_VARARGS, NULL},
 	 { (char *)"PCAMatrix_random_rotation_get", _wrap_PCAMatrix_random_rotation_get, METH_VARARGS, NULL},
+	 { (char *)"PCAMatrix_max_points_per_d_set", _wrap_PCAMatrix_max_points_per_d_set, METH_VARARGS, NULL},
+	 { (char *)"PCAMatrix_max_points_per_d_get", _wrap_PCAMatrix_max_points_per_d_get, METH_VARARGS, NULL},
 	 { (char *)"PCAMatrix_balanced_bins_set", _wrap_PCAMatrix_balanced_bins_set, METH_VARARGS, NULL},
 	 { (char *)"PCAMatrix_balanced_bins_get", _wrap_PCAMatrix_balanced_bins_get, METH_VARARGS, NULL},
 	 { (char *)"PCAMatrix_mean_set", _wrap_PCAMatrix_mean_set, METH_VARARGS, NULL},
@@ -51308,8 +52143,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"OPQMatrix_niter_pq_get", _wrap_OPQMatrix_niter_pq_get, METH_VARARGS, NULL},
 	 { (char *)"OPQMatrix_niter_pq_0_set", _wrap_OPQMatrix_niter_pq_0_set, METH_VARARGS, NULL},
 	 { (char *)"OPQMatrix_niter_pq_0_get", _wrap_OPQMatrix_niter_pq_0_get, METH_VARARGS, NULL},
-	 { (char *)"OPQMatrix_max_points_per_d_set", _wrap_OPQMatrix_max_points_per_d_set, METH_VARARGS, NULL},
-	 { (char *)"OPQMatrix_max_points_per_d_get", _wrap_OPQMatrix_max_points_per_d_get, METH_VARARGS, NULL},
+	 { (char *)"OPQMatrix_max_train_points_set", _wrap_OPQMatrix_max_train_points_set, METH_VARARGS, NULL},
+	 { (char *)"OPQMatrix_max_train_points_get", _wrap_OPQMatrix_max_train_points_get, METH_VARARGS, NULL},
 	 { (char *)"OPQMatrix_verbose_set", _wrap_OPQMatrix_verbose_set, METH_VARARGS, NULL},
 	 { (char *)"OPQMatrix_verbose_get", _wrap_OPQMatrix_verbose_get, METH_VARARGS, NULL},
 	 { (char *)"new_OPQMatrix", _wrap_new_OPQMatrix, METH_VARARGS, NULL},
@@ -51695,7 +52530,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexIDMap_own_fields_get", _wrap_IndexIDMap_own_fields_get, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_id_map_set", _wrap_IndexIDMap_id_map_set, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_id_map_get", _wrap_IndexIDMap_id_map_get, METH_VARARGS, NULL},
-	 { (char *)"new_IndexIDMap", _wrap_new_IndexIDMap, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_add_with_ids", _wrap_IndexIDMap_add_with_ids, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_add", _wrap_IndexIDMap_add, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_search", _wrap_IndexIDMap_search, METH_VARARGS, NULL},
@@ -51703,6 +52537,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexIDMap_reset", _wrap_IndexIDMap_reset, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_set_typename", _wrap_IndexIDMap_set_typename, METH_VARARGS, NULL},
 	 { (char *)"delete_IndexIDMap", _wrap_delete_IndexIDMap, METH_VARARGS, NULL},
+	 { (char *)"new_IndexIDMap", _wrap_new_IndexIDMap, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_swigregister", IndexIDMap_swigregister, METH_VARARGS, NULL},
 	 { (char *)"IndexShards_shard_indexes_set", _wrap_IndexShards_shard_indexes_set, METH_VARARGS, NULL},
 	 { (char *)"IndexShards_shard_indexes_get", _wrap_IndexShards_shard_indexes_get, METH_VARARGS, NULL},
@@ -51747,6 +52582,15 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GpuIndex_add", _wrap_GpuIndex_add, METH_VARARGS, NULL},
 	 { (char *)"delete_GpuIndex", _wrap_delete_GpuIndex, METH_VARARGS, NULL},
 	 { (char *)"GpuIndex_swigregister", GpuIndex_swigregister, METH_VARARGS, NULL},
+	 { (char *)"new_GpuIndexFlatConfig", _wrap_new_GpuIndexFlatConfig, METH_VARARGS, NULL},
+	 { (char *)"GpuIndexFlatConfig_device_set", _wrap_GpuIndexFlatConfig_device_set, METH_VARARGS, NULL},
+	 { (char *)"GpuIndexFlatConfig_device_get", _wrap_GpuIndexFlatConfig_device_get, METH_VARARGS, NULL},
+	 { (char *)"GpuIndexFlatConfig_useFloat16_set", _wrap_GpuIndexFlatConfig_useFloat16_set, METH_VARARGS, NULL},
+	 { (char *)"GpuIndexFlatConfig_useFloat16_get", _wrap_GpuIndexFlatConfig_useFloat16_get, METH_VARARGS, NULL},
+	 { (char *)"GpuIndexFlatConfig_storeTransposed_set", _wrap_GpuIndexFlatConfig_storeTransposed_set, METH_VARARGS, NULL},
+	 { (char *)"GpuIndexFlatConfig_storeTransposed_get", _wrap_GpuIndexFlatConfig_storeTransposed_get, METH_VARARGS, NULL},
+	 { (char *)"delete_GpuIndexFlatConfig", _wrap_delete_GpuIndexFlatConfig, METH_VARARGS, NULL},
+	 { (char *)"GpuIndexFlatConfig_swigregister", GpuIndexFlatConfig_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_GpuIndexFlat", _wrap_new_GpuIndexFlat, METH_VARARGS, NULL},
 	 { (char *)"delete_GpuIndexFlat", _wrap_delete_GpuIndexFlat, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexFlat_setMinPagingSize", _wrap_GpuIndexFlat_setMinPagingSize, METH_VARARGS, NULL},
@@ -51942,6 +52786,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GpuClonerOptions_usePrecomputed_get", _wrap_GpuClonerOptions_usePrecomputed_get, METH_VARARGS, NULL},
 	 { (char *)"GpuClonerOptions_reserveVecs_set", _wrap_GpuClonerOptions_reserveVecs_set, METH_VARARGS, NULL},
 	 { (char *)"GpuClonerOptions_reserveVecs_get", _wrap_GpuClonerOptions_reserveVecs_get, METH_VARARGS, NULL},
+	 { (char *)"GpuClonerOptions_storeTransposed_set", _wrap_GpuClonerOptions_storeTransposed_set, METH_VARARGS, NULL},
+	 { (char *)"GpuClonerOptions_storeTransposed_get", _wrap_GpuClonerOptions_storeTransposed_get, METH_VARARGS, NULL},
 	 { (char *)"GpuClonerOptions_verbose_set", _wrap_GpuClonerOptions_verbose_set, METH_VARARGS, NULL},
 	 { (char *)"GpuClonerOptions_verbose_get", _wrap_GpuClonerOptions_verbose_get, METH_VARARGS, NULL},
 	 { (char *)"new_GpuClonerOptions", _wrap_new_GpuClonerOptions, METH_VARARGS, NULL},
@@ -52399,6 +53245,7 @@ static swig_type_info _swigt__p_faiss__gpu__FlatIndex = {"_p_faiss__gpu__FlatInd
 static swig_type_info _swigt__p_faiss__gpu__GpuClonerOptions = {"_p_faiss__gpu__GpuClonerOptions", "faiss::gpu::GpuClonerOptions *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__gpu__GpuIndex = {"_p_faiss__gpu__GpuIndex", "faiss::gpu::GpuIndex *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__gpu__GpuIndexFlat = {"_p_faiss__gpu__GpuIndexFlat", "faiss::gpu::GpuIndexFlat *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_faiss__gpu__GpuIndexFlatConfig = {"_p_faiss__gpu__GpuIndexFlatConfig", "faiss::gpu::GpuIndexFlatConfig *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__gpu__GpuIndexFlatIP = {"_p_faiss__gpu__GpuIndexFlatIP", "faiss::gpu::GpuIndexFlatIP *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__gpu__GpuIndexFlatL2 = {"_p_faiss__gpu__GpuIndexFlatL2", "faiss::gpu::GpuIndexFlatL2 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__gpu__GpuIndexIVF = {"_p_faiss__gpu__GpuIndexIVF", "faiss::gpu::GpuIndexIVF *", 0, 0, (void*)0, 0};
@@ -52526,6 +53373,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_faiss__gpu__GpuClonerOptions,
   &_swigt__p_faiss__gpu__GpuIndex,
   &_swigt__p_faiss__gpu__GpuIndexFlat,
+  &_swigt__p_faiss__gpu__GpuIndexFlatConfig,
   &_swigt__p_faiss__gpu__GpuIndexFlatIP,
   &_swigt__p_faiss__gpu__GpuIndexFlatL2,
   &_swigt__p_faiss__gpu__GpuIndexIVF,
@@ -52653,6 +53501,7 @@ static swig_cast_info _swigc__p_faiss__gpu__FlatIndex[] = {  {&_swigt__p_faiss__
 static swig_cast_info _swigc__p_faiss__gpu__GpuClonerOptions[] = {  {&_swigt__p_faiss__gpu__GpuClonerOptions, 0, 0, 0},  {&_swigt__p_faiss__gpu__GpuMultipleClonerOptions, _p_faiss__gpu__GpuMultipleClonerOptionsTo_p_faiss__gpu__GpuClonerOptions, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__gpu__GpuIndex[] = {  {&_swigt__p_faiss__gpu__GpuIndex, 0, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlat, _p_faiss__gpu__GpuIndexFlatTo_p_faiss__gpu__GpuIndex, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlatL2, _p_faiss__gpu__GpuIndexFlatL2To_p_faiss__gpu__GpuIndex, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVF, _p_faiss__gpu__GpuIndexIVFTo_p_faiss__gpu__GpuIndex, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVFPQ, _p_faiss__gpu__GpuIndexIVFPQTo_p_faiss__gpu__GpuIndex, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVFFlat, _p_faiss__gpu__GpuIndexIVFFlatTo_p_faiss__gpu__GpuIndex, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlatIP, _p_faiss__gpu__GpuIndexFlatIPTo_p_faiss__gpu__GpuIndex, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__gpu__GpuIndexFlat[] = {  {&_swigt__p_faiss__gpu__GpuIndexFlat, 0, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlatL2, _p_faiss__gpu__GpuIndexFlatL2To_p_faiss__gpu__GpuIndexFlat, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlatIP, _p_faiss__gpu__GpuIndexFlatIPTo_p_faiss__gpu__GpuIndexFlat, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__gpu__GpuIndexFlatConfig[] = {  {&_swigt__p_faiss__gpu__GpuIndexFlatConfig, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__gpu__GpuIndexFlatIP[] = {  {&_swigt__p_faiss__gpu__GpuIndexFlatIP, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__gpu__GpuIndexFlatL2[] = {  {&_swigt__p_faiss__gpu__GpuIndexFlatL2, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__gpu__GpuIndexIVF[] = {  {&_swigt__p_faiss__gpu__GpuIndexIVF, 0, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVFPQ, _p_faiss__gpu__GpuIndexIVFPQTo_p_faiss__gpu__GpuIndexIVF, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVFFlat, _p_faiss__gpu__GpuIndexIVFFlatTo_p_faiss__gpu__GpuIndexIVF, 0, 0},{0, 0, 0, 0}};
@@ -52780,6 +53629,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_faiss__gpu__GpuClonerOptions,
   _swigc__p_faiss__gpu__GpuIndex,
   _swigc__p_faiss__gpu__GpuIndexFlat,
+  _swigc__p_faiss__gpu__GpuIndexFlatConfig,
   _swigc__p_faiss__gpu__GpuIndexFlatIP,
   _swigc__p_faiss__gpu__GpuIndexFlatL2,
   _swigc__p_faiss__gpu__GpuIndexIVF,

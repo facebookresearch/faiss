@@ -52,7 +52,10 @@ res = faiss.StandardGpuResources()
 
 print "============ Exact search"
 
-index = faiss.GpuIndexFlatL2(res, 0, d, False)
+flat_config = faiss.GpuIndexFlatConfig()
+flat_config.device = 0
+
+index = faiss.GpuIndexFlatL2(res, d, flat_config)
 
 print "add vectors to index"
 

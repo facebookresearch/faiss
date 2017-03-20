@@ -186,7 +186,7 @@ impl/FlatIndex.o: impl/FlatIndex.cu impl/FlatIndex.cuh \
  impl/../utils/StaticUtils.h impl/../utils/Float16.cuh \
  impl/../utils/../GpuResources.h impl/Distance.cuh impl/L2Norm.cuh \
  impl/../utils/CopyUtils.cuh impl/../utils/HostTensor.cuh \
- impl/../utils/HostTensor-inl.cuh
+ impl/../utils/HostTensor-inl.cuh impl/../utils/Transpose.cuh
 impl/InvertedListAppend.o: impl/InvertedListAppend.cu \
  impl/InvertedListAppend.cuh impl/../GpuIndicesOptions.h \
  impl/../utils/Tensor.cuh impl/../utils/Tensor-inl.cuh \
@@ -375,7 +375,7 @@ GpuIndexIVFPQ.cu/GpuIndexIVFPQ.o: GpuIndexIVFPQ.cu GpuIndexIVFPQ.h GpuIndexIVF.h
 utils/Float16.o: utils/Float16.cu utils/Float16.cuh utils/../GpuResources.h \
  utils/../utils/DeviceMemory.h utils/DeviceTensor.cuh utils/Tensor.cuh \
  utils/Tensor-inl.cuh utils/../../FaissAssert.h utils/DeviceUtils.h \
- utils/DeviceTensor-inl.cuh
+ utils/DeviceTensor-inl.cuh utils/nvidia/fp16_emu.cuh
 utils/MatrixMult.o: utils/MatrixMult.cu utils/MatrixMult.cuh utils/Float16.cuh \
  utils/../GpuResources.h utils/../utils/DeviceMemory.h \
  utils/DeviceTensor.cuh utils/Tensor.cuh utils/Tensor-inl.cuh \
@@ -459,167 +459,8 @@ utils/WarpSelectHalf.o: utils/WarpSelectHalf.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
+utils/nvidia/fp16_emu.o: utils/nvidia/fp16_emu.cu utils/nvidia/fp16_emu.cuh
 utils/blockselect/BlockSelectHalf1.o: utils/blockselect/BlockSelectHalf1.cu \
- utils/blockselect/BlockSelectImpl.cuh \
- utils/blockselect/../BlockSelectKernel.cuh \
- utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
- utils/blockselect/../../utils/DeviceMemory.h \
- utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
- utils/blockselect/../Tensor-inl.cuh \
- utils/blockselect/../../../FaissAssert.h \
- utils/blockselect/../DeviceUtils.h \
- utils/blockselect/../DeviceTensor-inl.cuh \
- utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
- utils/blockselect/../DeviceDefs.cuh \
- utils/blockselect/../MergeNetworkBlock.cuh \
- utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
- utils/blockselect/../WarpShuffles.cuh \
- utils/blockselect/../MergeNetworkWarp.cuh \
- utils/blockselect/../Reductions.cuh \
- utils/blockselect/../ReductionOperators.cuh \
- utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
- utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalf32.o: utils/blockselect/BlockSelectHalf32.cu \
- utils/blockselect/BlockSelectImpl.cuh \
- utils/blockselect/../BlockSelectKernel.cuh \
- utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
- utils/blockselect/../../utils/DeviceMemory.h \
- utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
- utils/blockselect/../Tensor-inl.cuh \
- utils/blockselect/../../../FaissAssert.h \
- utils/blockselect/../DeviceUtils.h \
- utils/blockselect/../DeviceTensor-inl.cuh \
- utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
- utils/blockselect/../DeviceDefs.cuh \
- utils/blockselect/../MergeNetworkBlock.cuh \
- utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
- utils/blockselect/../WarpShuffles.cuh \
- utils/blockselect/../MergeNetworkWarp.cuh \
- utils/blockselect/../Reductions.cuh \
- utils/blockselect/../ReductionOperators.cuh \
- utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
- utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalf64.o: utils/blockselect/BlockSelectHalf64.cu \
- utils/blockselect/BlockSelectImpl.cuh \
- utils/blockselect/../BlockSelectKernel.cuh \
- utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
- utils/blockselect/../../utils/DeviceMemory.h \
- utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
- utils/blockselect/../Tensor-inl.cuh \
- utils/blockselect/../../../FaissAssert.h \
- utils/blockselect/../DeviceUtils.h \
- utils/blockselect/../DeviceTensor-inl.cuh \
- utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
- utils/blockselect/../DeviceDefs.cuh \
- utils/blockselect/../MergeNetworkBlock.cuh \
- utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
- utils/blockselect/../WarpShuffles.cuh \
- utils/blockselect/../MergeNetworkWarp.cuh \
- utils/blockselect/../Reductions.cuh \
- utils/blockselect/../ReductionOperators.cuh \
- utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
- utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalf128.o: utils/blockselect/BlockSelectHalf128.cu \
- utils/blockselect/BlockSelectImpl.cuh \
- utils/blockselect/../BlockSelectKernel.cuh \
- utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
- utils/blockselect/../../utils/DeviceMemory.h \
- utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
- utils/blockselect/../Tensor-inl.cuh \
- utils/blockselect/../../../FaissAssert.h \
- utils/blockselect/../DeviceUtils.h \
- utils/blockselect/../DeviceTensor-inl.cuh \
- utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
- utils/blockselect/../DeviceDefs.cuh \
- utils/blockselect/../MergeNetworkBlock.cuh \
- utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
- utils/blockselect/../WarpShuffles.cuh \
- utils/blockselect/../MergeNetworkWarp.cuh \
- utils/blockselect/../Reductions.cuh \
- utils/blockselect/../ReductionOperators.cuh \
- utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
- utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalf256.o: utils/blockselect/BlockSelectHalf256.cu \
- utils/blockselect/BlockSelectImpl.cuh \
- utils/blockselect/../BlockSelectKernel.cuh \
- utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
- utils/blockselect/../../utils/DeviceMemory.h \
- utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
- utils/blockselect/../Tensor-inl.cuh \
- utils/blockselect/../../../FaissAssert.h \
- utils/blockselect/../DeviceUtils.h \
- utils/blockselect/../DeviceTensor-inl.cuh \
- utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
- utils/blockselect/../DeviceDefs.cuh \
- utils/blockselect/../MergeNetworkBlock.cuh \
- utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
- utils/blockselect/../WarpShuffles.cuh \
- utils/blockselect/../MergeNetworkWarp.cuh \
- utils/blockselect/../Reductions.cuh \
- utils/blockselect/../ReductionOperators.cuh \
- utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
- utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalfF512.o: utils/blockselect/BlockSelectHalfF512.cu \
- utils/blockselect/BlockSelectImpl.cuh \
- utils/blockselect/../BlockSelectKernel.cuh \
- utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
- utils/blockselect/../../utils/DeviceMemory.h \
- utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
- utils/blockselect/../Tensor-inl.cuh \
- utils/blockselect/../../../FaissAssert.h \
- utils/blockselect/../DeviceUtils.h \
- utils/blockselect/../DeviceTensor-inl.cuh \
- utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
- utils/blockselect/../DeviceDefs.cuh \
- utils/blockselect/../MergeNetworkBlock.cuh \
- utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
- utils/blockselect/../WarpShuffles.cuh \
- utils/blockselect/../MergeNetworkWarp.cuh \
- utils/blockselect/../Reductions.cuh \
- utils/blockselect/../ReductionOperators.cuh \
- utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
- utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalfT512.o: utils/blockselect/BlockSelectHalfT512.cu \
- utils/blockselect/BlockSelectImpl.cuh \
- utils/blockselect/../BlockSelectKernel.cuh \
- utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
- utils/blockselect/../../utils/DeviceMemory.h \
- utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
- utils/blockselect/../Tensor-inl.cuh \
- utils/blockselect/../../../FaissAssert.h \
- utils/blockselect/../DeviceUtils.h \
- utils/blockselect/../DeviceTensor-inl.cuh \
- utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
- utils/blockselect/../DeviceDefs.cuh \
- utils/blockselect/../MergeNetworkBlock.cuh \
- utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
- utils/blockselect/../WarpShuffles.cuh \
- utils/blockselect/../MergeNetworkWarp.cuh \
- utils/blockselect/../Reductions.cuh \
- utils/blockselect/../ReductionOperators.cuh \
- utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
- utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalfF1024.o: utils/blockselect/BlockSelectHalfF1024.cu \
- utils/blockselect/BlockSelectImpl.cuh \
- utils/blockselect/../BlockSelectKernel.cuh \
- utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
- utils/blockselect/../../utils/DeviceMemory.h \
- utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
- utils/blockselect/../Tensor-inl.cuh \
- utils/blockselect/../../../FaissAssert.h \
- utils/blockselect/../DeviceUtils.h \
- utils/blockselect/../DeviceTensor-inl.cuh \
- utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
- utils/blockselect/../DeviceDefs.cuh \
- utils/blockselect/../MergeNetworkBlock.cuh \
- utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
- utils/blockselect/../WarpShuffles.cuh \
- utils/blockselect/../MergeNetworkWarp.cuh \
- utils/blockselect/../Reductions.cuh \
- utils/blockselect/../ReductionOperators.cuh \
- utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
- utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalfT1024.o: utils/blockselect/BlockSelectHalfT1024.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -659,7 +500,123 @@ utils/blockselect/BlockSelectFloat1.o: utils/blockselect/BlockSelectFloat1.cu \
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
+utils/warpselect/WarpSelectHalf1.o: utils/warpselect/WarpSelectHalf1.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/warpselect/WarpSelectFloat1.o: utils/warpselect/WarpSelectFloat1.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/blockselect/BlockSelectHalf32.o: utils/blockselect/BlockSelectHalf32.cu \
+ utils/blockselect/BlockSelectImpl.cuh \
+ utils/blockselect/../BlockSelectKernel.cuh \
+ utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
+ utils/blockselect/../../utils/DeviceMemory.h \
+ utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
+ utils/blockselect/../Tensor-inl.cuh \
+ utils/blockselect/../../../FaissAssert.h \
+ utils/blockselect/../DeviceUtils.h \
+ utils/blockselect/../DeviceTensor-inl.cuh \
+ utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
+ utils/blockselect/../DeviceDefs.cuh \
+ utils/blockselect/../MergeNetworkBlock.cuh \
+ utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
+ utils/blockselect/../WarpShuffles.cuh \
+ utils/blockselect/../MergeNetworkWarp.cuh \
+ utils/blockselect/../Reductions.cuh \
+ utils/blockselect/../ReductionOperators.cuh \
+ utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
+ utils/blockselect/../MathOperators.cuh
 utils/blockselect/BlockSelectFloat32.o: utils/blockselect/BlockSelectFloat32.cu \
+ utils/blockselect/BlockSelectImpl.cuh \
+ utils/blockselect/../BlockSelectKernel.cuh \
+ utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
+ utils/blockselect/../../utils/DeviceMemory.h \
+ utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
+ utils/blockselect/../Tensor-inl.cuh \
+ utils/blockselect/../../../FaissAssert.h \
+ utils/blockselect/../DeviceUtils.h \
+ utils/blockselect/../DeviceTensor-inl.cuh \
+ utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
+ utils/blockselect/../DeviceDefs.cuh \
+ utils/blockselect/../MergeNetworkBlock.cuh \
+ utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
+ utils/blockselect/../WarpShuffles.cuh \
+ utils/blockselect/../MergeNetworkWarp.cuh \
+ utils/blockselect/../Reductions.cuh \
+ utils/blockselect/../ReductionOperators.cuh \
+ utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
+ utils/blockselect/../MathOperators.cuh
+utils/warpselect/WarpSelectHalf32.o: utils/warpselect/WarpSelectHalf32.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/warpselect/WarpSelectFloat32.o: utils/warpselect/WarpSelectFloat32.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/blockselect/BlockSelectHalf64.o: utils/blockselect/BlockSelectHalf64.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -699,7 +656,123 @@ utils/blockselect/BlockSelectFloat64.o: utils/blockselect/BlockSelectFloat64.cu 
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
+utils/warpselect/WarpSelectHalf64.o: utils/warpselect/WarpSelectHalf64.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/warpselect/WarpSelectFloat64.o: utils/warpselect/WarpSelectFloat64.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/blockselect/BlockSelectHalf128.o: utils/blockselect/BlockSelectHalf128.cu \
+ utils/blockselect/BlockSelectImpl.cuh \
+ utils/blockselect/../BlockSelectKernel.cuh \
+ utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
+ utils/blockselect/../../utils/DeviceMemory.h \
+ utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
+ utils/blockselect/../Tensor-inl.cuh \
+ utils/blockselect/../../../FaissAssert.h \
+ utils/blockselect/../DeviceUtils.h \
+ utils/blockselect/../DeviceTensor-inl.cuh \
+ utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
+ utils/blockselect/../DeviceDefs.cuh \
+ utils/blockselect/../MergeNetworkBlock.cuh \
+ utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
+ utils/blockselect/../WarpShuffles.cuh \
+ utils/blockselect/../MergeNetworkWarp.cuh \
+ utils/blockselect/../Reductions.cuh \
+ utils/blockselect/../ReductionOperators.cuh \
+ utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
+ utils/blockselect/../MathOperators.cuh
 utils/blockselect/BlockSelectFloat128.o: utils/blockselect/BlockSelectFloat128.cu \
+ utils/blockselect/BlockSelectImpl.cuh \
+ utils/blockselect/../BlockSelectKernel.cuh \
+ utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
+ utils/blockselect/../../utils/DeviceMemory.h \
+ utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
+ utils/blockselect/../Tensor-inl.cuh \
+ utils/blockselect/../../../FaissAssert.h \
+ utils/blockselect/../DeviceUtils.h \
+ utils/blockselect/../DeviceTensor-inl.cuh \
+ utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
+ utils/blockselect/../DeviceDefs.cuh \
+ utils/blockselect/../MergeNetworkBlock.cuh \
+ utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
+ utils/blockselect/../WarpShuffles.cuh \
+ utils/blockselect/../MergeNetworkWarp.cuh \
+ utils/blockselect/../Reductions.cuh \
+ utils/blockselect/../ReductionOperators.cuh \
+ utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
+ utils/blockselect/../MathOperators.cuh
+utils/warpselect/WarpSelectHalf128.o: utils/warpselect/WarpSelectHalf128.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/warpselect/WarpSelectFloat128.o: utils/warpselect/WarpSelectFloat128.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/blockselect/BlockSelectHalf256.o: utils/blockselect/BlockSelectHalf256.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -739,7 +812,123 @@ utils/blockselect/BlockSelectFloat256.o: utils/blockselect/BlockSelectFloat256.c
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
+utils/warpselect/WarpSelectHalf256.o: utils/warpselect/WarpSelectHalf256.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/warpselect/WarpSelectFloat256.o: utils/warpselect/WarpSelectFloat256.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/blockselect/BlockSelectHalfF512.o: utils/blockselect/BlockSelectHalfF512.cu \
+ utils/blockselect/BlockSelectImpl.cuh \
+ utils/blockselect/../BlockSelectKernel.cuh \
+ utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
+ utils/blockselect/../../utils/DeviceMemory.h \
+ utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
+ utils/blockselect/../Tensor-inl.cuh \
+ utils/blockselect/../../../FaissAssert.h \
+ utils/blockselect/../DeviceUtils.h \
+ utils/blockselect/../DeviceTensor-inl.cuh \
+ utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
+ utils/blockselect/../DeviceDefs.cuh \
+ utils/blockselect/../MergeNetworkBlock.cuh \
+ utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
+ utils/blockselect/../WarpShuffles.cuh \
+ utils/blockselect/../MergeNetworkWarp.cuh \
+ utils/blockselect/../Reductions.cuh \
+ utils/blockselect/../ReductionOperators.cuh \
+ utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
+ utils/blockselect/../MathOperators.cuh
 utils/blockselect/BlockSelectFloatF512.o: utils/blockselect/BlockSelectFloatF512.cu \
+ utils/blockselect/BlockSelectImpl.cuh \
+ utils/blockselect/../BlockSelectKernel.cuh \
+ utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
+ utils/blockselect/../../utils/DeviceMemory.h \
+ utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
+ utils/blockselect/../Tensor-inl.cuh \
+ utils/blockselect/../../../FaissAssert.h \
+ utils/blockselect/../DeviceUtils.h \
+ utils/blockselect/../DeviceTensor-inl.cuh \
+ utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
+ utils/blockselect/../DeviceDefs.cuh \
+ utils/blockselect/../MergeNetworkBlock.cuh \
+ utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
+ utils/blockselect/../WarpShuffles.cuh \
+ utils/blockselect/../MergeNetworkWarp.cuh \
+ utils/blockselect/../Reductions.cuh \
+ utils/blockselect/../ReductionOperators.cuh \
+ utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
+ utils/blockselect/../MathOperators.cuh
+utils/warpselect/WarpSelectHalfF512.o: utils/warpselect/WarpSelectHalfF512.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/warpselect/WarpSelectFloatF512.o: utils/warpselect/WarpSelectFloatF512.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/blockselect/BlockSelectHalfT512.o: utils/blockselect/BlockSelectHalfT512.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -779,7 +968,123 @@ utils/blockselect/BlockSelectFloatT512.o: utils/blockselect/BlockSelectFloatT512
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
+utils/warpselect/WarpSelectHalfT512.o: utils/warpselect/WarpSelectHalfT512.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/warpselect/WarpSelectFloatT512.o: utils/warpselect/WarpSelectFloatT512.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/blockselect/BlockSelectHalfF1024.o: utils/blockselect/BlockSelectHalfF1024.cu \
+ utils/blockselect/BlockSelectImpl.cuh \
+ utils/blockselect/../BlockSelectKernel.cuh \
+ utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
+ utils/blockselect/../../utils/DeviceMemory.h \
+ utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
+ utils/blockselect/../Tensor-inl.cuh \
+ utils/blockselect/../../../FaissAssert.h \
+ utils/blockselect/../DeviceUtils.h \
+ utils/blockselect/../DeviceTensor-inl.cuh \
+ utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
+ utils/blockselect/../DeviceDefs.cuh \
+ utils/blockselect/../MergeNetworkBlock.cuh \
+ utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
+ utils/blockselect/../WarpShuffles.cuh \
+ utils/blockselect/../MergeNetworkWarp.cuh \
+ utils/blockselect/../Reductions.cuh \
+ utils/blockselect/../ReductionOperators.cuh \
+ utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
+ utils/blockselect/../MathOperators.cuh
 utils/blockselect/BlockSelectFloatF1024.o: utils/blockselect/BlockSelectFloatF1024.cu \
+ utils/blockselect/BlockSelectImpl.cuh \
+ utils/blockselect/../BlockSelectKernel.cuh \
+ utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
+ utils/blockselect/../../utils/DeviceMemory.h \
+ utils/blockselect/../DeviceTensor.cuh utils/blockselect/../Tensor.cuh \
+ utils/blockselect/../Tensor-inl.cuh \
+ utils/blockselect/../../../FaissAssert.h \
+ utils/blockselect/../DeviceUtils.h \
+ utils/blockselect/../DeviceTensor-inl.cuh \
+ utils/blockselect/../Select.cuh utils/blockselect/../Comparators.cuh \
+ utils/blockselect/../DeviceDefs.cuh \
+ utils/blockselect/../MergeNetworkBlock.cuh \
+ utils/blockselect/../PtxUtils.cuh utils/blockselect/../StaticUtils.h \
+ utils/blockselect/../WarpShuffles.cuh \
+ utils/blockselect/../MergeNetworkWarp.cuh \
+ utils/blockselect/../Reductions.cuh \
+ utils/blockselect/../ReductionOperators.cuh \
+ utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
+ utils/blockselect/../MathOperators.cuh
+utils/warpselect/WarpSelectHalfF1024.o: utils/warpselect/WarpSelectHalfF1024.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/warpselect/WarpSelectFloatF1024.o: utils/warpselect/WarpSelectFloatF1024.cu \
+ utils/warpselect/WarpSelectImpl.cuh \
+ utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
+ utils/warpselect/../../GpuResources.h \
+ utils/warpselect/../../utils/DeviceMemory.h \
+ utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
+ utils/warpselect/../Tensor-inl.cuh \
+ utils/warpselect/../../../FaissAssert.h \
+ utils/warpselect/../DeviceUtils.h \
+ utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
+ utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
+ utils/warpselect/../MergeNetworkBlock.cuh \
+ utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
+ utils/warpselect/../WarpShuffles.cuh \
+ utils/warpselect/../MergeNetworkWarp.cuh \
+ utils/warpselect/../Reductions.cuh \
+ utils/warpselect/../ReductionOperators.cuh \
+ utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
+ utils/warpselect/../MathOperators.cuh
+utils/blockselect/BlockSelectHalfT1024.o: utils/blockselect/BlockSelectHalfT1024.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -819,311 +1124,7 @@ utils/blockselect/BlockSelectFloatT1024.o: utils/blockselect/BlockSelectFloatT10
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalf1.o: utils/warpselect/WarpSelectHalf1.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalf32.o: utils/warpselect/WarpSelectHalf32.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalf64.o: utils/warpselect/WarpSelectHalf64.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalf128.o: utils/warpselect/WarpSelectHalf128.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalf256.o: utils/warpselect/WarpSelectHalf256.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalfF512.o: utils/warpselect/WarpSelectHalfF512.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalfT512.o: utils/warpselect/WarpSelectHalfT512.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalfF1024.o: utils/warpselect/WarpSelectHalfF1024.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
 utils/warpselect/WarpSelectHalfT1024.o: utils/warpselect/WarpSelectHalfT1024.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloat1.o: utils/warpselect/WarpSelectFloat1.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloat32.o: utils/warpselect/WarpSelectFloat32.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloat64.o: utils/warpselect/WarpSelectFloat64.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloat128.o: utils/warpselect/WarpSelectFloat128.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloat256.o: utils/warpselect/WarpSelectFloat256.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloatF512.o: utils/warpselect/WarpSelectFloatF512.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloatT512.o: utils/warpselect/WarpSelectFloatT512.cu \
- utils/warpselect/WarpSelectImpl.cuh \
- utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
- utils/warpselect/../../GpuResources.h \
- utils/warpselect/../../utils/DeviceMemory.h \
- utils/warpselect/../DeviceTensor.cuh utils/warpselect/../Tensor.cuh \
- utils/warpselect/../Tensor-inl.cuh \
- utils/warpselect/../../../FaissAssert.h \
- utils/warpselect/../DeviceUtils.h \
- utils/warpselect/../DeviceTensor-inl.cuh utils/warpselect/../Select.cuh \
- utils/warpselect/../Comparators.cuh utils/warpselect/../DeviceDefs.cuh \
- utils/warpselect/../MergeNetworkBlock.cuh \
- utils/warpselect/../PtxUtils.cuh utils/warpselect/../StaticUtils.h \
- utils/warpselect/../WarpShuffles.cuh \
- utils/warpselect/../MergeNetworkWarp.cuh \
- utils/warpselect/../Reductions.cuh \
- utils/warpselect/../ReductionOperators.cuh \
- utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
- utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloatF1024.o: utils/warpselect/WarpSelectFloatF1024.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \

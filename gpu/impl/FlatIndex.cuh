@@ -25,7 +25,8 @@ class FlatIndex {
   FlatIndex(GpuResources* res,
             int dim,
             bool l2Distance,
-            bool useFloat16);
+            bool useFloat16,
+            bool storeTransposed);
 
   bool getUseFloat16() const;
 
@@ -84,6 +85,10 @@ class FlatIndex {
   /// Float16 data format
   const bool useFloat16_;
 
+  /// Store vectors in transposed layout for speed; makes addition to
+  /// the index slower
+  const bool storeTransposed_;
+
   /// L2 or inner product distance?
   bool l2Distance_;
 
@@ -95,10 +100,12 @@ class FlatIndex {
 
   /// Vectors currently in rawData_
   DeviceTensor<float, 2, true> vectors_;
+  DeviceTensor<float, 2, true> vectorsTransposed_;
 
 #ifdef FAISS_USE_FLOAT16
   /// Vectors currently in rawData_, float16 form
   DeviceTensor<half, 2, true> vectorsHalf_;
+  DeviceTensor<half, 2, true> vectorsHalfTransposed_;
 #endif
 
   /// Precomputed L2 norms

@@ -82,8 +82,11 @@ void IndexIVFPQ::train_residual (idx_t n, const float *x)
 
 void IndexIVFPQ::train_residual_o (idx_t n, const float *x, float *residuals_2)
 {
-    idx_t ntrain = pq.ksub * 64;
-    if(n > ntrain) n = ntrain;
+    const float * x_in = x;
+
+    x = fvecs_maybe_subsample (
+         d, (size_t*)&n, pq.cp.max_points_per_centroid * pq.ksub,
+         x, verbose, pq.cp.seed);
 
     const float *trainset;
     if (by_residual) {
@@ -132,6 +135,7 @@ void IndexIVFPQ::train_residual_o (idx_t n, const float *x, float *residuals_2)
         precompute_table ();
     }
 
+    if (x_in != x) delete [] x;
 }
 
 

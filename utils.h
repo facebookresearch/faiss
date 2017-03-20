@@ -55,7 +55,7 @@ struct RandomGenerator {
     unsigned rand_state;
 #endif
 
-    /// random 31-bit positive integer 
+    /// random 31-bit positive integer
     int rand_int ();
 
     /// random long < 2 ^ 62
@@ -86,6 +86,7 @@ void byte_rand (uint8_t * x, size_t n, long seed);
 
 /* random permutation */
 void rand_perm (int * perm, size_t n, long seed);
+
 
 
  /*********************************************************
@@ -348,6 +349,19 @@ void bincode_hist(size_t n, size_t nbits, const uint8_t *codes, int *hist);
 /// compute a checksum on a table.
 size_t ivec_checksum (size_t n, const int *a);
 
+
+/** random subsamples a set of vectors if there are too many of them
+ *
+ * @param d      dimension of the vectors
+ * @param n      on input: nb of input vectors, output: nb of output vectors
+ * @param nmax   max nb of vectors to keep
+ * @param x      input array, size *n-by-d
+ * @param seed   random seed to use for sampling
+ * @return       x or an array allocated with new [] with *n vectors
+ */
+const float *fvecs_maybe_subsample (
+       size_t d, size_t *n, size_t nmax, const float *x,
+       bool verbose = false, long seed = 1234);
 
 } // namspace faiss
 

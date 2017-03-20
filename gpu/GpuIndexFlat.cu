@@ -31,31 +31,30 @@ constexpr size_t kMinPagedQuerySize = (size_t) 256 * 1024 * 1024;
 constexpr size_t kNonPinnedPageSize = (size_t) 256 * 1024 * 1024;
 
 GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
-                           int device,
-                           bool useFloat16,
-                           const faiss::IndexFlat* index) :
-    GpuIndex(resources, device, index->d, index->metric_type),
+                           const faiss::IndexFlat* index,
+                           GpuIndexFlatConfig config) :
+    GpuIndex(resources, config.device, index->d, index->metric_type),
     minPagedSize_(kMinPagedQuerySize),
-    useFloat16_(useFloat16),
+    config_(config),
     data_(nullptr) {
   copyFrom(index);
 }
 
 GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
-                           int device,
                            int dims,
-                           bool useFloat16,
-                           faiss::MetricType metric) :
-    GpuIndex(resources, device, dims, metric),
+                           faiss::MetricType metric,
+                           GpuIndexFlatConfig config) :
+    GpuIndex(resources, config.device, dims, metric),
     minPagedSize_(kMinPagedQuerySize),
-    useFloat16_(useFloat16),
+    config_(config),
     data_(nullptr) {
   DeviceScope scope(device_);
 
   data_ = new FlatIndex(resources,
                         dims,
                         metric == faiss::METRIC_L2,
-                        useFloat16);
+                        config_.useFloat16,
+                        config_.storeTransposed);
 }
 
 GpuIndexFlat::~GpuIndexFlat() {
@@ -74,7 +73,7 @@ GpuIndexFlat::getMinPagingSize() const {
 
 bool
 GpuIndexFlat::getUseFloat16() const {
-  return useFloat16_;
+  return config_.useFloat16;
 }
 
 void
@@ -93,7 +92,8 @@ GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
   data_ = new FlatIndex(resources_,
                         this->d,
                         index->metric_type == faiss::METRIC_L2,
-                        useFloat16_);
+                        config_.useFloat16,
+                        config_.storeTransposed);
 
   // The index could be empty
   if (index->ntotal > 0) {
@@ -117,7 +117,7 @@ GpuIndexFlat::copyTo(faiss::IndexFlat* index) const {
   auto stream = resources_->getDefaultStream(device_);
 
   if (this->ntotal > 0) {
-    if (useFloat16_) {
+    if (config_.useFloat16) {
       auto vecFloat32 = data_->getVectorsFloat32Copy(stream);
       fromDevice(vecFloat32, index->xb.data(), stream);
     } else {
@@ -444,7 +444,7 @@ GpuIndexFlat::reconstruct(faiss::Index::idx_t key,
   FAISS_ASSERT(key < this->ntotal);
   auto stream = resources_->getDefaultStream(device_);
 
-  if (useFloat16_) {
+  if (config_.useFloat16) {
     auto vec = data_->getVectorsFloat32Copy(key, 1, stream);
     fromDevice(vec.data(), out, this->d, stream);
   } else {
@@ -463,7 +463,7 @@ GpuIndexFlat::reconstruct_n(faiss::Index::idx_t i0,
   FAISS_ASSERT(i0 + num - 1 < this->ntotal);
   auto stream = resources_->getDefaultStream(device_);
 
-  if (useFloat16_) {
+  if (config_.useFloat16) {
     auto vec = data_->getVectorsFloat32Copy(i0, num, stream);
     fromDevice(vec.data(), out, num * this->d, stream);
   } else {
@@ -486,17 +486,15 @@ GpuIndexFlat::set_typename() {
 //
 
 GpuIndexFlatL2::GpuIndexFlatL2(GpuResources* resources,
-                               int device,
-                               bool useFloat16,
-                               faiss::IndexFlatL2* index) :
-    GpuIndexFlat(resources, device, useFloat16, index) {
+                               faiss::IndexFlatL2* index,
+                               GpuIndexFlatConfig config) :
+    GpuIndexFlat(resources, index, config) {
 }
 
 GpuIndexFlatL2::GpuIndexFlatL2(GpuResources* resources,
-                               int device,
                                int dims,
-                               bool useFloat16) :
-    GpuIndexFlat(resources, device, dims, useFloat16, faiss::METRIC_L2) {
+                               GpuIndexFlatConfig config) :
+    GpuIndexFlat(resources, dims, faiss::METRIC_L2, config) {
 }
 
 void
@@ -514,18 +512,15 @@ GpuIndexFlatL2::copyTo(faiss::IndexFlatL2* index) {
 //
 
 GpuIndexFlatIP::GpuIndexFlatIP(GpuResources* resources,
-                               int device,
-                               bool useFloat16,
-                               faiss::IndexFlatIP* index) :
-    GpuIndexFlat(resources, device, useFloat16, index) {
+                               faiss::IndexFlatIP* index,
+                               GpuIndexFlatConfig config) :
+    GpuIndexFlat(resources, index, config) {
 }
 
 GpuIndexFlatIP::GpuIndexFlatIP(GpuResources* resources,
-                               int device,
                                int dims,
-                               bool useFloat16) :
-    GpuIndexFlat(resources, device, dims, useFloat16,
-                 faiss::METRIC_INNER_PRODUCT) {
+                               GpuIndexFlatConfig config) :
+    GpuIndexFlat(resources, dims, faiss::METRIC_INNER_PRODUCT, config) {
 }
 
 void

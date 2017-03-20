@@ -158,6 +158,18 @@ class Tensor {
   template <typename U>
   __host__ __device__ bool canCastResize() const;
 
+  /// Attempts to cast this tensor to a tensor of a different IndexT.
+  /// Fails if size or stride entries are not representable in the new
+  /// IndexT.
+  template <typename NewIndexT>
+  __host__ Tensor<T, Dim, Contig, NewIndexT, PtrTraits>
+  castIndexType() const;
+
+  /// Returns true if we can castIndexType() this tensor to the new
+  /// index type
+  template <typename NewIndexT>
+  __host__ bool canCastIndexType() const;
+
   /// Returns a raw pointer to the start of our data.
   __host__ __device__ inline DataPtrType data() {
     return data_;
@@ -336,6 +348,27 @@ class Tensor {
   /// Size per each dimension
   IndexT size_[Dim];
 };
+
+// Utilities for checking a collection of tensors
+namespace detail {
+
+template <typename IndexType>
+bool canCastIndexType() {
+  return true;
+}
+
+template <typename IndexType, typename T, typename... U>
+bool canCastIndexType(const T& arg, const U&... args) {
+  return arg.canCastIndexType<IndexType>() &&
+    canCastIndexType(args...);
+}
+
+} // namespace detail
+
+template <typename IndexType, typename... T>
+bool canCastIndexType(const T&... args) {
+  return detail::canCastIndexType(args...);
+}
 
 namespace detail {
 

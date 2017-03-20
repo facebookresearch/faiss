@@ -31,6 +31,7 @@ DEFINE_int32(dim, 128, "# of dimensions");
 DEFINE_int32(num_queries, 3, "number of query vectors");
 DEFINE_bool(diff, true, "show exact distance + index output discrepancies");
 DEFINE_bool(use_float16, false, "use encodings in float16 instead of float32");
+DEFINE_bool(transposed, false, "store vectors transposed");
 DEFINE_int64(seed, -1, "specify random seed");
 DEFINE_int32(num_gpus, 1, "number of gpus to use");
 DEFINE_int64(pinned_mem, 0, "pinned memory allocation to use");
@@ -38,7 +39,7 @@ DEFINE_int64(pinned_mem, 0, "pinned memory allocation to use");
 using namespace faiss::gpu;
 
 int main(int argc, char** argv) {
-  google::ParseCommandLineFlags(&argc, &argv, true);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   cudaProfilerStop();
 
@@ -59,6 +60,7 @@ int main(int argc, char** argv) {
   printf("L2 lookup: %d queries, total k %d\n",
          numQueries, FLAGS_k);
   printf("float16 encoding %s\n", FLAGS_use_float16 ? "enabled" : "disabled");
+  printf("transposed storage %s\n", FLAGS_transposed ? "enabled" : "disabled");
 
   // Convert to GPU index
   printf("Copying index to %d GPU(s)...\n", FLAGS_num_gpus);
@@ -68,8 +70,13 @@ int main(int argc, char** argv) {
     ((faiss::gpu::StandardGpuResources*) res)->setPinnedMemory(
       FLAGS_pinned_mem);
 
+    GpuIndexFlatConfig config;
+    config.device = dev;
+    config.useFloat16 = FLAGS_use_float16;
+    config.storeTransposed = FLAGS_transposed;
+
     auto p = std::unique_ptr<faiss::gpu::GpuIndexFlatL2>(
-      new faiss::gpu::GpuIndexFlatL2(res, dev, FLAGS_use_float16, index.get()));
+      new faiss::gpu::GpuIndexFlatL2(res, index.get(), config));
     return p;
   };
 

@@ -49,7 +49,7 @@ struct IndexIDMap : Index {
     virtual void set_typename () override;
 
     virtual ~IndexIDMap ();
-
+    IndexIDMap () {own_fields=false; index=nullptr; }
 };
 
 /** Index that concatenates the results from several sub-indexes

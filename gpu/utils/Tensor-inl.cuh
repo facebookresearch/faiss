@@ -11,6 +11,7 @@
 
 #include "../../FaissAssert.h"
 #include "DeviceUtils.h"
+#include <limits>
 
 namespace faiss { namespace gpu {
 
@@ -273,6 +274,58 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::canCastResize() const {
   }
 
   if (stride_[Dim - 1] != 1) {
+    return false;
+  }
+
+  return true;
+}
+
+template <typename T, int Dim, bool Contig,
+          typename IndexT, template <typename U> class PtrTraits>
+template <typename NewIndexT>
+__host__ Tensor<T, Dim, Contig, NewIndexT, PtrTraits>
+Tensor<T, Dim, Contig, IndexT, PtrTraits>::castIndexType() const {
+  if (sizeof(NewIndexT) < sizeof(IndexT)) {
+    assert(this->canCastIndexType<NewIndexT>());
+  }
+
+  NewIndexT newSize[Dim];
+  NewIndexT newStride[Dim];
+  for (int i = 0; i < Dim; ++i) {
+    newSize[i] = (NewIndexT) size_[i];
+    newStride[i] = (NewIndexT) stride_[i];
+  }
+
+  return Tensor<T, Dim, Contig, NewIndexT, PtrTraits>(
+    data_, newSize, newStride);
+}
+
+template <typename T, int Dim, bool Contig,
+          typename IndexT, template <typename U> class PtrTraits>
+template <typename NewIndexT>
+__host__ bool
+Tensor<T, Dim, Contig, IndexT, PtrTraits>::canCastIndexType() const {
+  static_assert(sizeof(size_t) >= sizeof(IndexT),
+                "index size too large");
+  static_assert(sizeof(size_t) >= sizeof(NewIndexT),
+                "new index size too large");
+
+  // Find maximum offset that can be calculated
+  // FIXME: maybe also consider offset in bytes? multiply by sizeof(T)?
+  size_t maxOffset = 0;
+
+  if (Contig) {
+    maxOffset = (size_t) size_[0] * (size_t) stride_[0];
+  } else {
+    for (int i = 0; i < Dim; ++i) {
+      size_t curMaxOffset = (size_t) size_[i] * (size_t) stride_[i];
+      if (curMaxOffset > maxOffset) {
+        maxOffset = curMaxOffset;
+      }
+    }
+  }
+
+  if (maxOffset > (size_t) std::numeric_limits<NewIndexT>::max()) {
     return false;
   }
 

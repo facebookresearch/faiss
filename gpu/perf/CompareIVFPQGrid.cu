@@ -34,7 +34,7 @@ DEFINE_int32(index, 2, "0 = no indices on GPU; 1 = 32 bit, 2 = 64 bit on GPU");
 using namespace faiss::gpu;
 
 int main(int argc, char** argv) {
-  google::ParseCommandLineFlags(&argc, &argv, true);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   auto seed = time(nullptr);
   auto k = FLAGS_k;

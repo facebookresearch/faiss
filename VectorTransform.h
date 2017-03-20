@@ -100,12 +100,7 @@ struct LinearTransform: VectorTransform {
     void transform_transpose (idx_t n, const float * y,
                               float *x) const;
 
-    // ratio between # training vectors and dimension
-    size_t max_points_per_d;
     bool verbose;
-
-    // subsamples training set if there are too many vectors
-    const float *maybe_subsample_train_set (Index::idx_t *n, const float *x);
 
     virtual ~LinearTransform () {}
 
@@ -145,6 +140,9 @@ struct PCAMatrix: LinearTransform {
 
     /// random rotation after PCA
     bool random_rotation;
+
+    /// ratio between # training vectors and dimension
+    size_t max_points_per_d;
 
     /// try to distribute output eigenvectors in this many bins
     int balanced_bins;
@@ -191,8 +189,9 @@ struct OPQMatrix: LinearTransform {
     int niter;      ///< Number of outer training iterations
     int niter_pq;   ///< Number of training iterations for the PQ
     int niter_pq_0; ///< same, for the first outer iteration
+
     /// if there are too many training points, resample
-    int max_points_per_d;
+    size_t max_train_points;
     bool verbose;
 
     /// if d2 != -1, output vectors of this dimension

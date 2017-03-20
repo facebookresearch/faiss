@@ -65,6 +65,7 @@ GpuClonerOptions::GpuClonerOptions():
     useFloat16(false),
     usePrecomputed(true),
     reserveVecs(0),
+    storeTransposed(false),
     verbose(0)
 {}
 
@@ -79,7 +80,12 @@ struct ToGpuCloner: faiss::Cloner, GpuClonerOptions {
 
     Index *clone_Index(const Index *index) override {
         if(auto ifl = dynamic_cast<const IndexFlat *>(index)) {
-          return new GpuIndexFlat(resources, device, useFloat16, ifl);
+          GpuIndexFlatConfig config;
+          config.device = device;
+          config.useFloat16 = useFloat16;
+          config.storeTransposed = storeTransposed;
+
+          return new GpuIndexFlat(resources, ifl, config);
         } else if(auto ifl = dynamic_cast<const faiss::IndexIVFFlat *>(index)) {
           GpuIndexIVFFlat *res =
             new GpuIndexIVFFlat(resources,

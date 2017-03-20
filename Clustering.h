@@ -26,7 +26,6 @@ struct ClusteringParameters {
     int niter;          ///< clustering iterations
     int nredo;          ///< redo clustering this many times and keep best
 
-
     bool verbose;
     bool spherical;     ///< do we want normalized centroids?
     bool update_index;  ///< update index after each iteration?

@@ -82,14 +82,17 @@ GpuIndexIVF::init_() {
 
   if (!quantizer_) {
     // Construct an empty quantizer
+    GpuIndexFlatConfig config;
+    config.device = device_;
+    config.useFloat16 = useFloat16CoarseQuantizer_;
+    config.storeTransposed = false;
+
     if (this->metric_type == faiss::METRIC_L2) {
       // FIXME: 2 different float16 options?
-      quantizer_ = new GpuIndexFlatL2(resources_, device_, this->d,
-                                      useFloat16CoarseQuantizer_);
+      quantizer_ = new GpuIndexFlatL2(resources_, this->d, config);
     } else if (this->metric_type == faiss::METRIC_INNER_PRODUCT) {
       // FIXME: 2 different float16 options?
-      quantizer_ = new GpuIndexFlatIP(resources_, device_, this->d,
-                                      useFloat16CoarseQuantizer_);
+      quantizer_ = new GpuIndexFlatIP(resources_, this->d, config);
     } else {
       // unknown metric type
       FAISS_ASSERT(false);
@@ -131,14 +134,17 @@ GpuIndexIVF::copyFrom(const faiss::IndexIVF* index) {
   delete quantizer_;
   quantizer_ = nullptr;
 
+  GpuIndexFlatConfig config;
+  config.device = device_;
+  config.useFloat16 = useFloat16CoarseQuantizer_;
+  config.storeTransposed = false;
+
   if (index->metric_type == faiss::METRIC_L2) {
     // FIXME: 2 different float16 options?
-    quantizer_ = new GpuIndexFlatL2(resources_, device_, this->d,
-                                    useFloat16CoarseQuantizer_);
+    quantizer_ = new GpuIndexFlatL2(resources_, this->d, config);
   } else if (index->metric_type == faiss::METRIC_INNER_PRODUCT) {
     // FIXME: 2 different float16 options?
-    quantizer_ = new GpuIndexFlatIP(resources_, device_, this->d,
-                                    useFloat16CoarseQuantizer_);
+    quantizer_ = new GpuIndexFlatIP(resources_, this->d, config);
   } else {
     // unknown metric type
     FAISS_ASSERT(false);

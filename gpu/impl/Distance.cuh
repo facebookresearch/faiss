@@ -22,6 +22,7 @@ class GpuResources;
 /// `queries`, returning the k closest results seen
 void runL2Distance(GpuResources* resources,
                    Tensor<float, 2, true>& vectors,
+                   Tensor<float, 2, true>* vectorsTransposed,
                    // can be optionally pre-computed; nullptr if we
                    // have to compute it upon the call
                    Tensor<float, 1, true>* vectorNorms,
@@ -41,6 +42,7 @@ void runL2Distance(GpuResources* resources,
 /// and `queries`, returning the k closest results seen
 void runIPDistance(GpuResources* resources,
                    Tensor<float, 2, true>& vectors,
+                   Tensor<float, 2, true>* vectorsTransposed,
                    Tensor<float, 2, true>& queries,
                    int k,
                    Tensor<float, 2, true>& outDistances,
@@ -53,6 +55,7 @@ void runIPDistance(GpuResources* resources,
 #ifdef FAISS_USE_FLOAT16
 void runIPDistance(GpuResources* resources,
                    Tensor<half, 2, true>& vectors,
+                   Tensor<half, 2, true>* vectorsTransposed,
                    Tensor<half, 2, true>& queries,
                    int k,
                    Tensor<half, 2, true>& outDistances,
@@ -61,6 +64,7 @@ void runIPDistance(GpuResources* resources,
 
 void runL2Distance(GpuResources* resources,
                    Tensor<half, 2, true>& vectors,
+                   Tensor<half, 2, true>* vectorsTransposed,
                    Tensor<half, 1, true>* vectorNorms,
                    Tensor<half, 2, true>& queries,
                    int k,

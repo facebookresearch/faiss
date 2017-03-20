@@ -35,7 +35,7 @@ DEFINE_bool(per_batch_time, false, "print per-batch times");
 DEFINE_bool(reserve_memory, false, "whether or not to pre-reserve memory");
 
 int main(int argc, char** argv) {
-  google::ParseCommandLineFlags(&argc, &argv, true);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   cudaProfilerStop();
 

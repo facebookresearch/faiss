@@ -24,16 +24,25 @@
 #include "IndexPQ.h"
 #include "IndexIVF.h"
 #include "IndexIVFPQ.h"
+#include "MetaIndexes.h"
 
 /*************************************************************
  * The I/O format is the content of the class. For objects that are
- * inherited, like Index, a 4-character-code indicates which child
- * class this is an instance of.
+ * inherited, like Index, a 4-character-code (fourcc) indicates which
+ * child class this is an instance of.
  *
  * In this case, the fields of the parent class are written first,
  * then the ones for the child classes. Note that this requires
  * classes to be serialized to have a constructor without parameters,
- * so that the fields can be filled in later.
+ * so that the fields can be filled in later. The default constructor
+ * should set reasonable defaults for all fields.
+ *
+ * The fourccs are assigned arbitrarily. When the class changed (added
+ * or deprecated fields), the fourcc can be replaced. New code should
+ * be able to read the old fourcc and fill in new classes.
+ *
+ * TODO: serialization to strings for use in Python pickle or Torch
+ * serialization.
  **************************************************************/
 
 
@@ -294,6 +303,13 @@ void write_index (const Index *idx, FILE *f) {
         write_index (idxrf->base_index, f);
         write_index (&idxrf->refine_index, f);
         WRITE1 (idxrf->k_factor);
+    } else if(const IndexIDMap * idxmap =
+              dynamic_cast<const IndexIDMap *> (idx)) {
+        uint32_t h = fourcc ("IxMp");
+        WRITE1 (h);
+        write_index_header (idxmap, f);
+        write_index (idxmap->index, f);
+        WRITEVECTOR (idxmap->id_map);
     } else {
         FAISS_ASSERT (!"don't know how to serialize this type of index");
     }
@@ -572,6 +588,13 @@ Index *read_index (FILE * f, bool try_mmap) {
         delete rf;
         READ1 (idxrf->k_factor);
         idx = idxrf;
+    } else if(h == fourcc ("IxMp")) {
+        IndexIDMap * idxmap = new IndexIDMap ();
+        read_index_header (idxmap, f);
+        idxmap->index = read_index (f);
+        idxmap->own_fields = true;
+        READVECTOR (idxmap->id_map);
+        idx = idxmap;
     } else {
         fprintf (stderr, "Index type 0x%08x not supported\n", h);
         abort ();

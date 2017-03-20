@@ -98,7 +98,8 @@ class IndexProxy : public faiss::Index {
 float kmeans_clustering_gpu (int ngpu, size_t d, size_t n, size_t k,
                              const float *x,
                              float *centroids,
-                             bool useFloat16);
+                             bool useFloat16,
+                             bool storeTransposed);
 
 
 

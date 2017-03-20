@@ -1790,6 +1790,28 @@ int fvec_madd_and_argmin (size_t n, const float *a,
 
 
 
+const float *fvecs_maybe_subsample (
+          size_t d, size_t *n, size_t nmax, const float *x,
+          bool verbose, long seed)
+{
+
+    if (*n <= nmax) return x; // nothing to do
+
+    size_t n2 = nmax;
+    if (verbose) {
+        printf ("  Input training set too big (max size is %ld), sampling "
+                "%ld / %ld vectors\n", nmax, n2, *n);
+    }
+    std::vector<int> subset (*n);
+    rand_perm (subset.data (), *n, seed);
+    float *x_subset = new float[n2 * d];
+    for (long i = 0; i < n2; i++)
+        memcpy (&x_subset[i * d],
+                &x[subset[i] * size_t(d)],
+                sizeof (x[0]) * d);
+    *n = n2;
+    return x_subset;
+}
 
 
 } // namespace faiss

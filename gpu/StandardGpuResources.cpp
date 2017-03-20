@@ -119,7 +119,8 @@ StandardGpuResources::initializeForDevice(int device) {
   auto& prop = getDeviceProperties(device);
 
   // Also check to make sure we meet our minimum compute capability (3.5)
-  FAISS_ASSERT(prop.major > 3 || (prop.major == 3 && prop.minor >= 5));
+  FAISS_ASSERT(prop.major > 3 || (prop.major == 3 && prop.minor >= 5) ||
+               !"Device not supported, need 3.5+ compute capability");
 
   // Create streams
   cudaStream_t defaultStream = 0;

@@ -104,14 +104,13 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
                int(nx), d, k, nredo, niter);
 
 
-
     idx_t * assign = new idx_t[nx];
     float * dis = new float[nx];
 
     float best_err = 1e50;
     double t_search_tot = 0;
     if (verbose) {
-        printf("  Preprocessing in %5g s\n",
+        printf("  Preprocessing in %.2f s\n",
                (getmillisecs() - t0)/1000.);
     }
     t0 = getmillisecs();
@@ -149,7 +148,7 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
         if (!index.is_trained)
             index.train (k, cur_centroids.data());
 
-        FAISS_ASSERT (index.ntotal == 0 );
+        FAISS_ASSERT (index.ntotal == 0);
         index.add (k, cur_centroids.data());
         float err = 0;
         for (int i = 0; i < niter; i++) {
@@ -183,16 +182,17 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
                 index.train (k, cur_centroids.data());
 
             assert (index.ntotal == 0);
-            index.add (k, centroids.data());
+            index.add (k, cur_centroids.data());
         }
         if (verbose) printf("\n");
         if (nredo > 1) {
             if (err < best_err) {
                 if (verbose)
-                    printf ("Keep new clusters\n");
-                centroids = cur_centroids;
+                    printf ("Objective improved: keep new clusters\n");
+                centroids = buf_centroids;
                 best_err = err;
             }
+            index.reset ();
         }
     }
 

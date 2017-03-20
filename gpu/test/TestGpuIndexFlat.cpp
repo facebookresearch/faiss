@@ -22,7 +22,10 @@
 constexpr float kF16MaxRelErr = 0.07f;
 constexpr float kF32MaxRelErr = 6e-3f;
 
-void testFlat(bool useL2, bool useFloat16, int kOverride = -1) {
+void testFlat(bool useL2,
+              bool useFloat16,
+              bool useTransposed,
+              int kOverride = -1) {
   int numVecs = faiss::gpu::randVal(1000, 20000);
   int dim = faiss::gpu::randVal(50, 800);
   int numQuery = faiss::gpu::randVal(1, 512);
@@ -49,8 +52,15 @@ void testFlat(bool useL2, bool useFloat16, int kOverride = -1) {
 
   faiss::gpu::StandardGpuResources res;
   res.noTempMemory();
-  faiss::gpu::GpuIndexFlatIP gpuIndexIP(&res, device, dim, useFloat16);
-  faiss::gpu::GpuIndexFlatL2 gpuIndexL2(&res, device, dim, useFloat16);
+
+
+  faiss::gpu::GpuIndexFlatConfig config;
+  config.device = device;
+  config.useFloat16 = useFloat16;
+  config.storeTransposed = useTransposed;
+
+  faiss::gpu::GpuIndexFlatIP gpuIndexIP(&res, dim, config);
+  faiss::gpu::GpuIndexFlatL2 gpuIndexL2(&res, dim, config);
 
   faiss::gpu::GpuIndexFlat* gpuIndex =
     useL2 ? (faiss::gpu::GpuIndexFlat*) &gpuIndexL2 :
@@ -64,6 +74,7 @@ void testFlat(bool useL2, bool useFloat16, int kOverride = -1) {
   str << (useL2 ? "L2" : "IP") << " numVecs " << numVecs
       << " dim " << dim
       << " useFloat16 " << useFloat16
+      << " transposed " << useTransposed
       << " numQuery " << numQuery
       << " k " << k;
 
@@ -79,16 +90,18 @@ void testFlat(bool useL2, bool useFloat16, int kOverride = -1) {
 }
 
 TEST(TestGpuIndexFlat, IP_Float32) {
-  for (int tries = 0; tries < 10; ++tries) {
+  for (int tries = 0; tries < 5; ++tries) {
     faiss::gpu::newTestSeed();
-    testFlat(false, false);
+    testFlat(false, false, false);
+    testFlat(false, false, true);
   }
 }
 
 TEST(TestGpuIndexFlat, L2_Float32) {
-  for (int tries = 0; tries < 10; ++tries) {
+  for (int tries = 0; tries < 5; ++tries) {
     faiss::gpu::newTestSeed();
-    testFlat(true, false);
+    testFlat(true, false, false);
+    testFlat(true, false, true);
   }
 }
 
@@ -96,21 +109,24 @@ TEST(TestGpuIndexFlat, L2_Float32) {
 TEST(TestGpuIndexFlat, L2_Float32_K1) {
   for (int tries = 0; tries < 5; ++tries) {
     faiss::gpu::newTestSeed();
-    testFlat(true, false, 1);
+    testFlat(true, false, false, 1);
+    testFlat(true, false, true, 1);
   }
 }
 
 TEST(TestGpuIndexFlat, IP_Float16) {
-  for (int tries = 0; tries < 10; ++tries) {
+  for (int tries = 0; tries < 5; ++tries) {
     faiss::gpu::newTestSeed();
-    testFlat(false, true);
+    testFlat(false, true, false);
+    testFlat(false, true, false);
   }
 }
 
 TEST(TestGpuIndexFlat, L2_Float16) {
-  for (int tries = 0; tries < 10; ++tries) {
+  for (int tries = 0; tries < 5; ++tries) {
     faiss::gpu::newTestSeed();
-    testFlat(true, true);
+    testFlat(true, true, false);
+    testFlat(true, true, true);
   }
 }
 
@@ -118,7 +134,8 @@ TEST(TestGpuIndexFlat, L2_Float16) {
 TEST(TestGpuIndexFlat, L2_Float16_K1) {
   for (int tries = 0; tries < 5; ++tries) {
     faiss::gpu::newTestSeed();
-    testFlat(true, true, 1);
+    testFlat(true, true, false, 1);
+    testFlat(true, true, true, 1);
   }
 }
 
@@ -126,8 +143,13 @@ TEST(TestGpuIndexFlat, QueryEmpty) {
   faiss::gpu::StandardGpuResources res;
   res.noTempMemory();
 
+  faiss::gpu::GpuIndexFlatConfig config;
+  config.device = 0;
+  config.useFloat16 = false;
+  config.storeTransposed = false;
+
   int dim = 128;
-  faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, 0, dim, false);
+  faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, dim, config);
 
   // Querying an empty index should not blow up, and just return
   // (FLT_MAX, -1)
@@ -165,7 +187,13 @@ TEST(TestGpuIndexFlat, CopyFrom) {
 
   // Fill with garbage values
   int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
-  faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, device, 2000, false);
+
+  faiss::gpu::GpuIndexFlatConfig config;
+  config.device = 0;
+  config.useFloat16 = false;
+  config.storeTransposed = false;
+
+  faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, 2000, config);
   gpuIndex.copyFrom(&cpuIndex);
 
   EXPECT_EQ(cpuIndex.ntotal, gpuIndex.ntotal);
@@ -195,7 +223,13 @@ TEST(TestGpuIndexFlat, CopyTo) {
   int dim = faiss::gpu::randVal(1, 1000);
 
   int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
-  faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, device, dim, false);
+
+  faiss::gpu::GpuIndexFlatConfig config;
+  config.device = device;
+  config.useFloat16 = false;
+  config.storeTransposed = false;
+
+  faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, dim, config);
 
   std::vector<float> vecs = faiss::gpu::randVecs(numVecs, dim);
   gpuIndex.add(numVecs, vecs.data());

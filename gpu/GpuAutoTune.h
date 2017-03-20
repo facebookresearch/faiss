@@ -40,6 +40,8 @@ struct GpuClonerOptions {
   bool usePrecomputed;
   /// reserve vectors in the invfiles?
   long reserveVecs;
+  /// For GpuIndexFlat, store data in transposed layout?
+  bool storeTransposed;
   int verbose;
   GpuClonerOptions ();
 };

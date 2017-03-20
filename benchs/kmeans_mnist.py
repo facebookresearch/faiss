@@ -55,12 +55,17 @@ def train_kmeans(x, k, ngpu):
 
     res = [faiss.StandardGpuResources() for i in range(ngpu)]
 
-    useFloat16 = False
+    flat_config = []
+    for i in range(ngpu):
+        cfg = faiss.GpuIndexFlatConfig()
+        cfg.useFloat16 = False
+        cfg.device = i
+        flat_config.append(cfg)
 
     if ngpu == 1:
-        index = faiss.GpuIndexFlatL2(res[0], 0, d, useFloat16)
+        index = faiss.GpuIndexFlatL2(res[0], d, flat_config[0])
     else:
-        indexes = [faiss.GpuIndexFlatL2(res[i], i, d, useFloat16)
+        indexes = [faiss.GpuIndexFlatL2(res[i], d, flat_config[i])
                    for i in range(ngpu)]
         index = faiss.IndexProxy()
         for sub_index in indexes:

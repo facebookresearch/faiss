@@ -3489,6 +3489,20 @@ int get_num_gpus()
 }
 
 
+SWIGINTERN int
+SWIG_AsVal_bool (PyObject *obj, bool *val)
+{
+  int r;
+  if (!PyBool_Check(obj))
+    return SWIG_ERROR;
+  r = PyObject_IsTrue(obj);
+  if (r == -1)
+    return SWIG_ERROR;
+  if (val) *val = r ? true : false;
+  return SWIG_OK;
+}
+
+
 SWIGINTERN swig_type_info*
 SWIG_pchar_descriptor(void)
 {
@@ -3638,20 +3652,6 @@ SWIGINTERNINLINE PyObject *
 SWIG_From_std_string  (const std::string& s)
 {
   return SWIG_FromCharPtrAndSize(s.data(), s.size());
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_bool (PyObject *obj, bool *val)
-{
-  int r;
-  if (!PyBool_Check(obj))
-    return SWIG_ERROR;
-  r = PyObject_IsTrue(obj);
-  if (r == -1)
-    return SWIG_ERROR;
-  if (val) *val = r ? true : false;
-  return SWIG_OK;
 }
 
 
@@ -11694,6 +11694,309 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_fvecs_maybe_subsample__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  size_t arg1 ;
+  size_t *arg2 = (size_t *) 0 ;
+  size_t arg3 ;
+  float *arg4 = (float *) 0 ;
+  bool arg5 ;
+  long arg6 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  bool val5 ;
+  int ecode5 = 0 ;
+  long val6 ;
+  int ecode6 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  float *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:fvecs_maybe_subsample",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "fvecs_maybe_subsample" "', argument " "1"" of type '" "size_t""'");
+  } 
+  arg1 = static_cast< size_t >(val1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_unsigned_long, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "fvecs_maybe_subsample" "', argument " "2"" of type '" "size_t *""'"); 
+  }
+  arg2 = reinterpret_cast< size_t * >(argp2);
+  ecode3 = SWIG_AsVal_size_t(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "fvecs_maybe_subsample" "', argument " "3"" of type '" "size_t""'");
+  } 
+  arg3 = static_cast< size_t >(val3);
+  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "fvecs_maybe_subsample" "', argument " "4"" of type '" "float const *""'"); 
+  }
+  arg4 = reinterpret_cast< float * >(argp4);
+  ecode5 = SWIG_AsVal_bool(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "fvecs_maybe_subsample" "', argument " "5"" of type '" "bool""'");
+  } 
+  arg5 = static_cast< bool >(val5);
+  ecode6 = SWIG_AsVal_long(obj5, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "fvecs_maybe_subsample" "', argument " "6"" of type '" "long""'");
+  } 
+  arg6 = static_cast< long >(val6);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (float *)faiss::fvecs_maybe_subsample(arg1,arg2,arg3,(float const *)arg4,arg5,arg6);
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_float, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_fvecs_maybe_subsample__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  size_t arg1 ;
+  size_t *arg2 = (size_t *) 0 ;
+  size_t arg3 ;
+  float *arg4 = (float *) 0 ;
+  bool arg5 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  bool val5 ;
+  int ecode5 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  float *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:fvecs_maybe_subsample",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "fvecs_maybe_subsample" "', argument " "1"" of type '" "size_t""'");
+  } 
+  arg1 = static_cast< size_t >(val1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_unsigned_long, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "fvecs_maybe_subsample" "', argument " "2"" of type '" "size_t *""'"); 
+  }
+  arg2 = reinterpret_cast< size_t * >(argp2);
+  ecode3 = SWIG_AsVal_size_t(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "fvecs_maybe_subsample" "', argument " "3"" of type '" "size_t""'");
+  } 
+  arg3 = static_cast< size_t >(val3);
+  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "fvecs_maybe_subsample" "', argument " "4"" of type '" "float const *""'"); 
+  }
+  arg4 = reinterpret_cast< float * >(argp4);
+  ecode5 = SWIG_AsVal_bool(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "fvecs_maybe_subsample" "', argument " "5"" of type '" "bool""'");
+  } 
+  arg5 = static_cast< bool >(val5);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (float *)faiss::fvecs_maybe_subsample(arg1,arg2,arg3,(float const *)arg4,arg5);
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_float, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_fvecs_maybe_subsample__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  size_t arg1 ;
+  size_t *arg2 = (size_t *) 0 ;
+  size_t arg3 ;
+  float *arg4 = (float *) 0 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  float *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:fvecs_maybe_subsample",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "fvecs_maybe_subsample" "', argument " "1"" of type '" "size_t""'");
+  } 
+  arg1 = static_cast< size_t >(val1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_unsigned_long, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "fvecs_maybe_subsample" "', argument " "2"" of type '" "size_t *""'"); 
+  }
+  arg2 = reinterpret_cast< size_t * >(argp2);
+  ecode3 = SWIG_AsVal_size_t(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "fvecs_maybe_subsample" "', argument " "3"" of type '" "size_t""'");
+  } 
+  arg3 = static_cast< size_t >(val3);
+  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "fvecs_maybe_subsample" "', argument " "4"" of type '" "float const *""'"); 
+  }
+  arg4 = reinterpret_cast< float * >(argp4);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (float *)faiss::fvecs_maybe_subsample(arg1,arg2,arg3,(float const *)arg4);
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_float, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_fvecs_maybe_subsample(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[7];
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 6) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_unsigned_long, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          void *vptr = 0;
+          int res = SWIG_ConvertPtr(argv[3], &vptr, SWIGTYPE_p_float, 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_fvecs_maybe_subsample__SWIG_2(self, args);
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_unsigned_long, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          void *vptr = 0;
+          int res = SWIG_ConvertPtr(argv[3], &vptr, SWIGTYPE_p_float, 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            {
+              int res = SWIG_AsVal_bool(argv[4], NULL);
+              _v = SWIG_CheckState(res);
+            }
+            if (_v) {
+              return _wrap_fvecs_maybe_subsample__SWIG_1(self, args);
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 6) {
+    int _v;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_unsigned_long, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          void *vptr = 0;
+          int res = SWIG_ConvertPtr(argv[3], &vptr, SWIGTYPE_p_float, 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            {
+              int res = SWIG_AsVal_bool(argv[4], NULL);
+              _v = SWIG_CheckState(res);
+            }
+            if (_v) {
+              {
+                int res = SWIG_AsVal_long(argv[5], NULL);
+                _v = SWIG_CheckState(res);
+              }
+              if (_v) {
+                return _wrap_fvecs_maybe_subsample__SWIG_0(self, args);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'fvecs_maybe_subsample'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    faiss::fvecs_maybe_subsample(size_t,size_t *,size_t,float const *,bool,long)\n"
+    "    faiss::fvecs_maybe_subsample(size_t,size_t *,size_t,float const *,bool)\n"
+    "    faiss::fvecs_maybe_subsample(size_t,size_t *,size_t,float const *)\n");
+  return 0;
+}
+
+
 SWIGINTERN PyObject *_wrap_Index_index_typename_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::Index *arg1 = (faiss::Index *) 0 ;
@@ -16745,58 +17048,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_LinearTransform_max_points_per_d_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::LinearTransform *arg1 = (faiss::LinearTransform *) 0 ;
-  size_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  size_t val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:LinearTransform_max_points_per_d_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__LinearTransform, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LinearTransform_max_points_per_d_set" "', argument " "1"" of type '" "faiss::LinearTransform *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::LinearTransform * >(argp1);
-  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LinearTransform_max_points_per_d_set" "', argument " "2"" of type '" "size_t""'");
-  } 
-  arg2 = static_cast< size_t >(val2);
-  if (arg1) (arg1)->max_points_per_d = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_LinearTransform_max_points_per_d_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::LinearTransform *arg1 = (faiss::LinearTransform *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  size_t result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:LinearTransform_max_points_per_d_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__LinearTransform, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LinearTransform_max_points_per_d_get" "', argument " "1"" of type '" "faiss::LinearTransform *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::LinearTransform * >(argp1);
-  result = (size_t) ((arg1)->max_points_per_d);
-  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_LinearTransform_verbose_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::LinearTransform *arg1 = (faiss::LinearTransform *) 0 ;
@@ -16843,50 +17094,6 @@ SWIGINTERN PyObject *_wrap_LinearTransform_verbose_get(PyObject *SWIGUNUSEDPARM(
   arg1 = reinterpret_cast< faiss::LinearTransform * >(argp1);
   result = (bool) ((arg1)->verbose);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_LinearTransform_maybe_subsample_train_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::LinearTransform *arg1 = (faiss::LinearTransform *) 0 ;
-  faiss::Index::idx_t *arg2 = (faiss::Index::idx_t *) 0 ;
-  float *arg3 = (float *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  float *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:LinearTransform_maybe_subsample_train_set",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__LinearTransform, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LinearTransform_maybe_subsample_train_set" "', argument " "1"" of type '" "faiss::LinearTransform *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::LinearTransform * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_long, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "LinearTransform_maybe_subsample_train_set" "', argument " "2"" of type '" "faiss::Index::idx_t *""'"); 
-  }
-  arg2 = reinterpret_cast< faiss::Index::idx_t * >(argp2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "LinearTransform_maybe_subsample_train_set" "', argument " "3"" of type '" "float const *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    result = (float *)(arg1)->maybe_subsample_train_set(arg2,(float const *)arg3);
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_float, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -17228,6 +17435,58 @@ SWIGINTERN PyObject *_wrap_PCAMatrix_random_rotation_get(PyObject *SWIGUNUSEDPAR
   arg1 = reinterpret_cast< faiss::PCAMatrix * >(argp1);
   result = (bool) ((arg1)->random_rotation);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PCAMatrix_max_points_per_d_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::PCAMatrix *arg1 = (faiss::PCAMatrix *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:PCAMatrix_max_points_per_d_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__PCAMatrix, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PCAMatrix_max_points_per_d_set" "', argument " "1"" of type '" "faiss::PCAMatrix *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::PCAMatrix * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PCAMatrix_max_points_per_d_set" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->max_points_per_d = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PCAMatrix_max_points_per_d_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::PCAMatrix *arg1 = (faiss::PCAMatrix *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:PCAMatrix_max_points_per_d_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__PCAMatrix, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PCAMatrix_max_points_per_d_get" "', argument " "1"" of type '" "faiss::PCAMatrix *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::PCAMatrix * >(argp1);
+  result = (size_t) ((arg1)->max_points_per_d);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
   return NULL;
@@ -18112,29 +18371,29 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_OPQMatrix_max_points_per_d_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_OPQMatrix_max_train_points_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::OPQMatrix *arg1 = (faiss::OPQMatrix *) 0 ;
-  int arg2 ;
+  size_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int val2 ;
+  size_t val2 ;
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:OPQMatrix_max_points_per_d_set",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO:OPQMatrix_max_train_points_set",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__OPQMatrix, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OPQMatrix_max_points_per_d_set" "', argument " "1"" of type '" "faiss::OPQMatrix *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OPQMatrix_max_train_points_set" "', argument " "1"" of type '" "faiss::OPQMatrix *""'"); 
   }
   arg1 = reinterpret_cast< faiss::OPQMatrix * >(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OPQMatrix_max_points_per_d_set" "', argument " "2"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OPQMatrix_max_train_points_set" "', argument " "2"" of type '" "size_t""'");
   } 
-  arg2 = static_cast< int >(val2);
-  if (arg1) (arg1)->max_points_per_d = arg2;
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->max_train_points = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -18142,22 +18401,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_OPQMatrix_max_points_per_d_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_OPQMatrix_max_train_points_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::OPQMatrix *arg1 = (faiss::OPQMatrix *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  int result;
+  size_t result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:OPQMatrix_max_points_per_d_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:OPQMatrix_max_train_points_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__OPQMatrix, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OPQMatrix_max_points_per_d_get" "', argument " "1"" of type '" "faiss::OPQMatrix *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OPQMatrix_max_train_points_get" "', argument " "1"" of type '" "faiss::OPQMatrix *""'"); 
   }
   arg1 = reinterpret_cast< faiss::OPQMatrix * >(argp1);
-  result = (int) ((arg1)->max_points_per_d);
-  resultobj = SWIG_From_int(static_cast< int >(result));
+  result = (size_t) ((arg1)->max_train_points);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
   return NULL;
@@ -32373,7 +32632,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_IndexIDMap(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_IndexIDMap__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::Index *arg1 = (faiss::Index *) 0 ;
   void *argp1 = 0 ;
@@ -32679,6 +32938,55 @@ SWIGINTERN PyObject *_wrap_delete_IndexIDMap(PyObject *SWIGUNUSEDPARM(self), PyO
   return resultobj;
 fail:
   return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IndexIDMap__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexIDMap *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_IndexIDMap")) SWIG_fail;
+  {
+    Py_BEGIN_ALLOW_THREADS
+    result = (faiss::IndexIDMap *)new faiss::IndexIDMap();
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexIDMap, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IndexIDMap(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[2];
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 1) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 0) {
+    return _wrap_new_IndexIDMap__SWIG_1(self, args);
+  }
+  if (argc == 1) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__Index, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_IndexIDMap__SWIG_0(self, args);
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_IndexIDMap'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    faiss::IndexIDMap::IndexIDMap(faiss::Index *)\n"
+    "    faiss::IndexIDMap::IndexIDMap()\n");
+  return 0;
 }
 
 
@@ -44769,6 +45077,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"ivec_hist", _wrap_ivec_hist, METH_VARARGS, NULL},
 	 { (char *)"bincode_hist", _wrap_bincode_hist, METH_VARARGS, NULL},
 	 { (char *)"ivec_checksum", _wrap_ivec_checksum, METH_VARARGS, NULL},
+	 { (char *)"fvecs_maybe_subsample", _wrap_fvecs_maybe_subsample, METH_VARARGS, NULL},
 	 { (char *)"Index_index_typename_set", _wrap_Index_index_typename_set, METH_VARARGS, NULL},
 	 { (char *)"Index_index_typename_get", _wrap_Index_index_typename_get, METH_VARARGS, NULL},
 	 { (char *)"Index_d_set", _wrap_Index_d_set, METH_VARARGS, NULL},
@@ -44893,11 +45202,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_LinearTransform", _wrap_new_LinearTransform, METH_VARARGS, NULL},
 	 { (char *)"LinearTransform_apply_noalloc", _wrap_LinearTransform_apply_noalloc, METH_VARARGS, NULL},
 	 { (char *)"LinearTransform_transform_transpose", _wrap_LinearTransform_transform_transpose, METH_VARARGS, NULL},
-	 { (char *)"LinearTransform_max_points_per_d_set", _wrap_LinearTransform_max_points_per_d_set, METH_VARARGS, NULL},
-	 { (char *)"LinearTransform_max_points_per_d_get", _wrap_LinearTransform_max_points_per_d_get, METH_VARARGS, NULL},
 	 { (char *)"LinearTransform_verbose_set", _wrap_LinearTransform_verbose_set, METH_VARARGS, NULL},
 	 { (char *)"LinearTransform_verbose_get", _wrap_LinearTransform_verbose_get, METH_VARARGS, NULL},
-	 { (char *)"LinearTransform_maybe_subsample_train_set", _wrap_LinearTransform_maybe_subsample_train_set, METH_VARARGS, NULL},
 	 { (char *)"delete_LinearTransform", _wrap_delete_LinearTransform, METH_VARARGS, NULL},
 	 { (char *)"LinearTransform_swigregister", LinearTransform_swigregister, METH_VARARGS, NULL},
 	 { (char *)"RandomRotationMatrix_init", _wrap_RandomRotationMatrix_init, METH_VARARGS, NULL},
@@ -44909,6 +45215,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"PCAMatrix_eigen_power_get", _wrap_PCAMatrix_eigen_power_get, METH_VARARGS, NULL},
 	 { (char *)"PCAMatrix_random_rotation_set", _wrap_PCAMatrix_random_rotation_set, METH_VARARGS, NULL},
 	 { (char *)"PCAMatrix_random_rotation_get", _wrap_PCAMatrix_random_rotation_get, METH_VARARGS, NULL},
+	 { (char *)"PCAMatrix_max_points_per_d_set", _wrap_PCAMatrix_max_points_per_d_set, METH_VARARGS, NULL},
+	 { (char *)"PCAMatrix_max_points_per_d_get", _wrap_PCAMatrix_max_points_per_d_get, METH_VARARGS, NULL},
 	 { (char *)"PCAMatrix_balanced_bins_set", _wrap_PCAMatrix_balanced_bins_set, METH_VARARGS, NULL},
 	 { (char *)"PCAMatrix_balanced_bins_get", _wrap_PCAMatrix_balanced_bins_get, METH_VARARGS, NULL},
 	 { (char *)"PCAMatrix_mean_set", _wrap_PCAMatrix_mean_set, METH_VARARGS, NULL},
@@ -44932,8 +45240,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"OPQMatrix_niter_pq_get", _wrap_OPQMatrix_niter_pq_get, METH_VARARGS, NULL},
 	 { (char *)"OPQMatrix_niter_pq_0_set", _wrap_OPQMatrix_niter_pq_0_set, METH_VARARGS, NULL},
 	 { (char *)"OPQMatrix_niter_pq_0_get", _wrap_OPQMatrix_niter_pq_0_get, METH_VARARGS, NULL},
-	 { (char *)"OPQMatrix_max_points_per_d_set", _wrap_OPQMatrix_max_points_per_d_set, METH_VARARGS, NULL},
-	 { (char *)"OPQMatrix_max_points_per_d_get", _wrap_OPQMatrix_max_points_per_d_get, METH_VARARGS, NULL},
+	 { (char *)"OPQMatrix_max_train_points_set", _wrap_OPQMatrix_max_train_points_set, METH_VARARGS, NULL},
+	 { (char *)"OPQMatrix_max_train_points_get", _wrap_OPQMatrix_max_train_points_get, METH_VARARGS, NULL},
 	 { (char *)"OPQMatrix_verbose_set", _wrap_OPQMatrix_verbose_set, METH_VARARGS, NULL},
 	 { (char *)"OPQMatrix_verbose_get", _wrap_OPQMatrix_verbose_get, METH_VARARGS, NULL},
 	 { (char *)"new_OPQMatrix", _wrap_new_OPQMatrix, METH_VARARGS, NULL},
@@ -45319,7 +45627,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexIDMap_own_fields_get", _wrap_IndexIDMap_own_fields_get, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_id_map_set", _wrap_IndexIDMap_id_map_set, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_id_map_get", _wrap_IndexIDMap_id_map_get, METH_VARARGS, NULL},
-	 { (char *)"new_IndexIDMap", _wrap_new_IndexIDMap, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_add_with_ids", _wrap_IndexIDMap_add_with_ids, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_add", _wrap_IndexIDMap_add, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_search", _wrap_IndexIDMap_search, METH_VARARGS, NULL},
@@ -45327,6 +45634,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexIDMap_reset", _wrap_IndexIDMap_reset, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_set_typename", _wrap_IndexIDMap_set_typename, METH_VARARGS, NULL},
 	 { (char *)"delete_IndexIDMap", _wrap_delete_IndexIDMap, METH_VARARGS, NULL},
+	 { (char *)"new_IndexIDMap", _wrap_new_IndexIDMap, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_swigregister", IndexIDMap_swigregister, METH_VARARGS, NULL},
 	 { (char *)"IndexShards_shard_indexes_set", _wrap_IndexShards_shard_indexes_set, METH_VARARGS, NULL},
 	 { (char *)"IndexShards_shard_indexes_get", _wrap_IndexShards_shard_indexes_get, METH_VARARGS, NULL},

@@ -95,7 +95,7 @@ void VectorTransform::reverse_transform (
 LinearTransform::LinearTransform (int d_in, int d_out,
                                   bool have_bias):
     VectorTransform (d_in, d_out), have_bias (have_bias),
-    max_points_per_d (1 << 20), verbose (false)
+    verbose (false)
 {}
 
 void LinearTransform::apply_noalloc (Index::idx_t n, const float * x,
@@ -150,27 +150,6 @@ void LinearTransform::transform_transpose (idx_t n, const float * y,
     }
 
     if (have_bias) delete [] y;
-}
-
-const float * LinearTransform::maybe_subsample_train_set (
-            Index::idx_t *n, const float *x)
-{
-    if (*n <= max_points_per_d * d_in) return x;
-
-    size_t n2 = max_points_per_d * d_in;
-    if (verbose) {
-        printf ("  Input training set too big, sampling "
-                "%ld / %ld vectors\n", n2, *n);
-    }
-    std::vector<int> subset (*n);
-    rand_perm (subset.data (), *n, 1234);
-    float *x_subset = new float[n2 * d_in];
-    for (long i = 0; i < n2; i++)
-        memcpy (&x_subset[i * d_in],
-                &x[subset[i] * size_t(d_in)],
-                sizeof (x[0]) * d_in);
-    *n = n2;
-    return x_subset;
 }
 
 
@@ -228,7 +207,8 @@ void PCAMatrix::train (Index::idx_t n, const float *x)
 {
     const float * x_in = x;
 
-    x = maybe_subsample_train_set(&n, x);
+    x = fvecs_maybe_subsample (d_in, (size_t*)&n,
+                               max_points_per_d * d_in, x, verbose);
 
     // compute mean
     mean.clear(); mean.resize(d_in, 0.0);
@@ -461,7 +441,8 @@ OPQMatrix::OPQMatrix (int d, int M, int d2):
     verbose(false)
 {
     is_trained = false;
-    max_points_per_d = 1000;
+    // OPQ is quite expensive to train, so set this right.
+    max_train_points = 256 * 256;
 }
 
 
@@ -471,7 +452,8 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
 
     const float * x_in = x;
 
-    x = maybe_subsample_train_set (&n, x);
+    x = fvecs_maybe_subsample (d_in, (size_t*)&n,
+                               max_train_points, x, verbose);
 
     // To support d_out > d_in, we pad input vectors with 0s to d_out
     size_t d = d_out <= d_in ? d_in : d_out;

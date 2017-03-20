@@ -52,7 +52,7 @@ void fillAndSave(T& index, int numTrain, int num, int dim) {
 }
 
 int main(int argc, char** argv) {
-  google::ParseCommandLineFlags(&argc, &argv, true);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   // Either ivfpq or ivfflat must be set
   if ((FLAGS_ivfpq && FLAGS_ivfflat) ||

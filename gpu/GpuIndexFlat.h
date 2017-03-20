@@ -25,6 +25,18 @@ namespace faiss { namespace gpu {
 
 struct FlatIndex;
 
+struct GpuIndexFlatConfig {
+  inline GpuIndexFlatConfig()
+      : device(0),
+        useFloat16(false),
+        storeTransposed(false) {
+  }
+
+  int device;
+  bool useFloat16;
+  bool storeTransposed;
+};
+
 /// Wrapper around the GPU implementation that looks like
 /// faiss::IndexFlat; copies over centroid data from a given
 /// faiss::IndexFlat
@@ -33,16 +45,14 @@ class GpuIndexFlat : public GpuIndex {
   /// Construct from a pre-existing faiss::IndexFlat instance, copying
   /// data over to the given GPU
   GpuIndexFlat(GpuResources* resources,
-               int device,
-               bool useFloat16,
-               const faiss::IndexFlat* index);
+               const faiss::IndexFlat* index,
+               GpuIndexFlatConfig config = GpuIndexFlatConfig());
 
   /// Construct an empty instance that can be added to
   GpuIndexFlat(GpuResources* resources,
-               int device,
                int dims,
-               bool useFloat16,
-               faiss::MetricType metric);
+               faiss::MetricType metric,
+               GpuIndexFlatConfig config = GpuIndexFlatConfig());
 
   ~GpuIndexFlat() override;
 
@@ -118,8 +128,7 @@ class GpuIndexFlat : public GpuIndex {
   /// Size above which we page copies from the CPU to GPU
   size_t minPagedSize_;
 
-  /// Whether or not we store our vectors in float32 or float16
-  const bool useFloat16_;
+  const GpuIndexFlatConfig config_;
 
   /// Holds our GPU data containing the list of vectors
   FlatIndex* data_;
@@ -133,15 +142,13 @@ class GpuIndexFlatL2 : public GpuIndexFlat {
   /// Construct from a pre-existing faiss::IndexFlatL2 instance, copying
   /// data over to the given GPU
   GpuIndexFlatL2(GpuResources* resources,
-                 int device,
-                 bool useFloat16,
-                 faiss::IndexFlatL2* index);
+                 faiss::IndexFlatL2* index,
+                 GpuIndexFlatConfig config = GpuIndexFlatConfig());
 
   /// Construct an empty instance that can be added to
   GpuIndexFlatL2(GpuResources* resources,
-                 int device,
                  int dims,
-                 bool useFloat16);
+                 GpuIndexFlatConfig config = GpuIndexFlatConfig());
 
   /// Initialize ourselves from the given CPU index; will overwrite
   /// all data in ourselves
@@ -160,15 +167,13 @@ class GpuIndexFlatIP : public GpuIndexFlat {
   /// Construct from a pre-existing faiss::IndexFlatIP instance, copying
   /// data over to the given GPU
   GpuIndexFlatIP(GpuResources* resources,
-                 int device,
-                 bool useFloat16,
-                 faiss::IndexFlatIP* index);
+                 faiss::IndexFlatIP* index,
+                 GpuIndexFlatConfig config = GpuIndexFlatConfig());
 
   /// Construct an empty instance that can be added to
   GpuIndexFlatIP(GpuResources* resources,
-                 int device,
                  int dims,
-                 bool useFloat16);
+                 GpuIndexFlatConfig config = GpuIndexFlatConfig());
 
   /// Initialize ourselves from the given CPU index; will overwrite
   /// all data in ourselves

@@ -14,16 +14,19 @@
 #include "L2Norm.cuh"
 #include "../utils/CopyUtils.cuh"
 #include "../utils/DeviceUtils.h"
+#include "../utils/Transpose.cuh"
 
 namespace faiss { namespace gpu {
 
 FlatIndex::FlatIndex(GpuResources* res,
                      int dim,
                      bool l2Distance,
-                     bool useFloat16) :
+                     bool useFloat16,
+                     bool storeTransposed) :
     resources_(res),
     dim_(dim),
     useFloat16_(useFloat16),
+    storeTransposed_(storeTransposed),
     l2Distance_(l2Distance),
     num_(0) {
 #ifndef FAISS_USE_FLOAT16
@@ -92,7 +95,7 @@ FlatIndex::getVectorsFloat32Copy(int from, int num, cudaStream_t stream) {
 }
 
 void
-FlatIndex::query(Tensor<float, 2, true>& vecs,
+FlatIndex::query(Tensor<float, 2, true>& input,
                  int k,
                  Tensor<float, 2, true>& outDistances,
                  Tensor<int, 2, true>& outIndices,
@@ -104,12 +107,12 @@ FlatIndex::query(Tensor<float, 2, true>& vecs,
   if (useFloat16_) {
     // We need to convert to float16
 #ifdef FAISS_USE_FLOAT16
-    auto vecsHalf = toHalf<2>(resources_, stream, vecs);
+    auto inputHalf = toHalf<2>(resources_, stream, input);
 
     DeviceTensor<half, 2, true> outDistancesHalf(
       mem, {outDistances.getSize(0), outDistances.getSize(1)}, stream);
 
-    query(vecsHalf, k, outDistancesHalf, outIndices, exactDistance, tileSize);
+    query(inputHalf, k, outDistancesHalf, outIndices, exactDistance, tileSize);
 
     if (exactDistance) {
       // Convert outDistances back
@@ -120,8 +123,9 @@ FlatIndex::query(Tensor<float, 2, true>& vecs,
     if (l2Distance_) {
       runL2Distance(resources_,
                     vectors_,
+                    storeTransposed_ ? &vectorsTransposed_ : nullptr,
                     &norms_,
-                    vecs,
+                    input,
                     k,
                     outDistances,
                     outIndices,
@@ -131,7 +135,8 @@ FlatIndex::query(Tensor<float, 2, true>& vecs,
     } else {
       runIPDistance(resources_,
                     vectors_,
-                    vecs,
+                    storeTransposed_ ? &vectorsTransposed_ : nullptr,
+                    input,
                     k,
                     outDistances,
                     outIndices,
@@ -142,7 +147,7 @@ FlatIndex::query(Tensor<float, 2, true>& vecs,
 
 #ifdef FAISS_USE_FLOAT16
 void
-FlatIndex::query(Tensor<half, 2, true>& vecs,
+FlatIndex::query(Tensor<half, 2, true>& input,
                  int k,
                  Tensor<half, 2, true>& outDistances,
                  Tensor<int, 2, true>& outIndices,
@@ -153,8 +158,9 @@ FlatIndex::query(Tensor<half, 2, true>& vecs,
   if (l2Distance_) {
     runL2Distance(resources_,
                   vectorsHalf_,
+                  storeTransposed_ ? &vectorsHalfTransposed_ : nullptr,
                   &normsHalf_,
-                  vecs,
+                  input,
                   k,
                   outDistances,
                   outIndices,
@@ -164,7 +170,8 @@ FlatIndex::query(Tensor<half, 2, true>& vecs,
   } else {
     runIPDistance(resources_,
                   vectorsHalf_,
-                  vecs,
+                  storeTransposed_ ? &vectorsHalfTransposed_ : nullptr,
+                  input,
                   k,
                   outDistances,
                   outIndices,
@@ -213,6 +220,20 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
     DeviceTensor<float, 2, true> vectors(
     (float*) rawData_.data(), {(int) num_, dim_});
     vectors_ = std::move(vectors);
+  }
+
+  if (storeTransposed_) {
+    if (useFloat16_) {
+#ifdef FAISS_USE_FLOAT16
+      vectorsHalfTransposed_ =
+        std::move(DeviceTensor<half, 2, true>({dim_, (int) num_}));
+      runTransposeAny(vectorsHalf_, 0, 1, vectorsHalfTransposed_, stream);
+#endif
+    } else {
+      vectorsTransposed_ =
+        std::move(DeviceTensor<float, 2, true>({dim_, (int) num_}));
+      runTransposeAny(vectors_, 0, 1, vectorsTransposed_, stream);
+    }
   }
 
   if (l2Distance_) {

@@ -187,6 +187,7 @@ IVFPQ::classifyAndAddVectors(Tensor<float, 2, true>& vecs,
 
     runL2Distance(resources_,
                   pqCentroidsMiddleCodeView,
+                  nullptr, // no transposed storage
                   nullptr, // no precomputed norms
                   residualsTransposeView,
                   1,
