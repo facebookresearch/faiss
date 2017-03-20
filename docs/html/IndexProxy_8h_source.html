@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: IndexProxy.h Source File</title>
+<title>Faiss: /data/users/matthijs/github_faiss/faiss/gpu/IndexProxy.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -169,7 +169,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; <span class="keyword">private</span>:<span class="comment"></span></div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment">  /// Collection of Index instances, with their managing worker thread</span></div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment"></span>  <span class="keyword">mutable</span> std::vector&lt;std::pair&lt;<a class="code" href="structfaiss_1_1Index.html">faiss::Index</a>*,</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                                std::unique_ptr&lt;WorkerThread&gt;&gt;&gt; indices_;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                                std::unique_ptr&lt;WorkerThread&gt; &gt; &gt; indices_;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;};</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
@@ -187,11 +187,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="keywordtype">float</span> kmeans_clustering_gpu (<span class="keywordtype">int</span> ngpu, <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> n, <span class="keywordtype">size_t</span> k,</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                             <span class="keyword">const</span> <span class="keywordtype">float</span> *x,</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                             <span class="keywordtype">float</span> *centroids,</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                             <span class="keywordtype">bool</span> useFloat16);</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                             <span class="keywordtype">bool</span> useFloat16,</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                             <span class="keywordtype">bool</span> storeTransposed);</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;} } <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;} } <span class="comment">// namespace</span></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1IndexProxy_html_a7f1b8287a607c80f2bb92f4ac0300649"><div class="ttname"><a href="classfaiss_1_1gpu_1_1IndexProxy.html#a7f1b8287a607c80f2bb92f4ac0300649">faiss::gpu::IndexProxy::reset</a></div><div class="ttdeci">void reset() override</div><div class="ttdef"><b>Definition:</b> <a href="IndexProxy_8cpp_source.html#l00101">IndexProxy.cpp:101</a></div></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1IndexProxy_html_a99aaeb0573880fa4d6efaeb39f93deeb"><div class="ttname"><a href="classfaiss_1_1gpu_1_1IndexProxy.html#a99aaeb0573880fa4d6efaeb39f93deeb">faiss::gpu::IndexProxy::removeIndex</a></div><div class="ttdeci">void removeIndex(faiss::Index *index)</div><div class="ttdef"><b>Definition:</b> <a href="IndexProxy_8cpp_source.html#l00068">IndexProxy.cpp:68</a></div></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1IndexProxy_html_a4efa3134256a6cd6a98c45184a7e8dbf"><div class="ttname"><a href="classfaiss_1_1gpu_1_1IndexProxy.html#a4efa3134256a6cd6a98c45184a7e8dbf">faiss::gpu::IndexProxy::runOnIndex</a></div><div class="ttdeci">void runOnIndex(std::function&lt; void(faiss::Index *)&gt; f)</div><div class="ttdef"><b>Definition:</b> <a href="IndexProxy_8cpp_source.html#l00086">IndexProxy.cpp:86</a></div></div>

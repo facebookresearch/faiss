@@ -240,6 +240,13 @@ template&lt;typename U &gt; </td></tr>
 <tr class="memitem:a9b3a5fb3a903295b7d2f8cb2caae0352 inherit pub_methods_classfaiss_1_1gpu_1_1Tensor"><td class="memTemplItemLeft" align="right" valign="top">__host__ __device__ bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a9b3a5fb3a903295b7d2f8cb2caae0352">canCastResize</a> () const </td></tr>
 <tr class="memdesc:a9b3a5fb3a903295b7d2f8cb2caae0352 inherit pub_methods_classfaiss_1_1gpu_1_1Tensor"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if we can <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#aab60b0711646ffe587b62a5434d53c6a">castResize()</a> this tensor to the new type. <br/></td></tr>
 <tr class="separator:a9b3a5fb3a903295b7d2f8cb2caae0352 inherit pub_methods_classfaiss_1_1gpu_1_1Tensor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa66c4592bc873a3f663d765cb9ea2c0 inherit pub_methods_classfaiss_1_1gpu_1_1Tensor"><td class="memTemplParams" colspan="2">template&lt;typename NewIndexT &gt; </td></tr>
+<tr class="memitem:afa66c4592bc873a3f663d765cb9ea2c0 inherit pub_methods_classfaiss_1_1gpu_1_1Tensor"><td class="memTemplItemLeft" align="right" valign="top">__host__ <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; T, Dim, <br class="typebreak"/>
+Contig, NewIndexT, PtrTraits &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#afa66c4592bc873a3f663d765cb9ea2c0">castIndexType</a> () const </td></tr>
+<tr class="separator:afa66c4592bc873a3f663d765cb9ea2c0 inherit pub_methods_classfaiss_1_1gpu_1_1Tensor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a080cf59b73bee015c02947009e70ce07 inherit pub_methods_classfaiss_1_1gpu_1_1Tensor"><td class="memTemplParams" colspan="2">template&lt;typename NewIndexT &gt; </td></tr>
+<tr class="memitem:a080cf59b73bee015c02947009e70ce07 inherit pub_methods_classfaiss_1_1gpu_1_1Tensor"><td class="memTemplItemLeft" align="right" valign="top">__host__ bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a080cf59b73bee015c02947009e70ce07">canCastIndexType</a> () const </td></tr>
+<tr class="separator:a080cf59b73bee015c02947009e70ce07 inherit pub_methods_classfaiss_1_1gpu_1_1Tensor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37d3ac0dffcaad29f09d6e85fb07b335 inherit pub_methods_classfaiss_1_1gpu_1_1Tensor"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a37d3ac0dffcaad29f09d6e85fb07b335"></a>
 __host__ __device__ DataPtrType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a37d3ac0dffcaad29f09d6e85fb07b335">data</a> ()</td></tr>
 <tr class="memdesc:a37d3ac0dffcaad29f09d6e85fb07b335 inherit pub_methods_classfaiss_1_1gpu_1_1Tensor"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a raw pointer to the start of our data. <br/></td></tr>
@@ -493,8 +500,8 @@ template&lt;typename T , int Dim, bool Contig, typename IndexT , template&lt; ty
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="HostTensor_8cuh_source.html">HostTensor.cuh</a></li>
-<li><a class="el" href="HostTensor-inl_8cuh_source.html">HostTensor-inl.cuh</a></li>
+<li>/data/users/matthijs/github_faiss/faiss/gpu/utils/<a class="el" href="HostTensor_8cuh_source.html">HostTensor.cuh</a></li>
+<li>/data/users/matthijs/github_faiss/faiss/gpu/utils/<a class="el" href="HostTensor-inl_8cuh_source.html">HostTensor-inl.cuh</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

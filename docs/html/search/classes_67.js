@@ -7,6 +7,7 @@ var searchData=
   ['gpucloneroptions',['GpuClonerOptions',['../structfaiss_1_1gpu_1_1GpuClonerOptions.html',1,'faiss::gpu']]],
   ['gpuindex',['GpuIndex',['../classfaiss_1_1gpu_1_1GpuIndex.html',1,'faiss::gpu']]],
   ['gpuindexflat',['GpuIndexFlat',['../classfaiss_1_1gpu_1_1GpuIndexFlat.html',1,'faiss::gpu']]],
+  ['gpuindexflatconfig',['GpuIndexFlatConfig',['../structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html',1,'faiss::gpu']]],
   ['gpuindexflatip',['GpuIndexFlatIP',['../classfaiss_1_1gpu_1_1GpuIndexFlatIP.html',1,'faiss::gpu']]],
   ['gpuindexflatl2',['GpuIndexFlatL2',['../classfaiss_1_1gpu_1_1GpuIndexFlatL2.html',1,'faiss::gpu']]],
   ['gpuindexivf',['GpuIndexIVF',['../classfaiss_1_1gpu_1_1GpuIndexIVF.html',1,'faiss::gpu']]],

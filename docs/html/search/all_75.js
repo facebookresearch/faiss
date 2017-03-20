@@ -11,7 +11,6 @@ var searchData=
   ['updatedevicelistinfo_5f',['updateDeviceListInfo_',['../classfaiss_1_1gpu_1_1IVFBase.html#acc695610c9513952b8d234dc0db78e5c',1,'faiss::gpu::IVFBase::updateDeviceListInfo_(cudaStream_t stream)'],['../classfaiss_1_1gpu_1_1IVFBase.html#ae90724e307bbfe49554a2ab77fbd1764',1,'faiss::gpu::IVFBase::updateDeviceListInfo_(const std::vector&lt; int &gt; &amp;listIds, cudaStream_t stream)']]],
   ['use_5fprecomputed_5ftable',['use_precomputed_table',['../structfaiss_1_1IndexIVFPQ.html#a1c66ff073c18a1edbe8444c24d870583',1,'faiss::IndexIVFPQ']]],
   ['usefloat16',['useFloat16',['../structfaiss_1_1gpu_1_1GpuClonerOptions.html#ac7cc57d6091d6a79ea6020bf8d1fbe27',1,'faiss::gpu::GpuClonerOptions']]],
-  ['usefloat16_5f',['useFloat16_',['../classfaiss_1_1gpu_1_1GpuIndexFlat.html#ad09fbc6ed81eb30533c56a3ef262b022',1,'faiss::gpu::GpuIndexFlat']]],
   ['usefloat16coarsequantizer',['useFloat16CoarseQuantizer',['../structfaiss_1_1gpu_1_1GpuClonerOptions.html#a85f3093908b6e9a503c24bb226b17b1b',1,'faiss::gpu::GpuClonerOptions']]],
   ['usefloat16coarsequantizer_5f',['useFloat16CoarseQuantizer_',['../classfaiss_1_1gpu_1_1GpuIndexIVF.html#a571ba3623dd0f23ae11e5300eb6baf61',1,'faiss::gpu::GpuIndexIVF']]],
   ['useprecomputed',['usePrecomputed',['../structfaiss_1_1gpu_1_1GpuClonerOptions.html#abc9c607f2dfc9f23942a523fb49c63fe',1,'faiss::gpu::GpuClonerOptions']]]

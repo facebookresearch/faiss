@@ -1,7 +1,9 @@
 var searchData=
 [
+  ['cancastindextype',['canCastIndexType',['../classfaiss_1_1gpu_1_1Tensor.html#a080cf59b73bee015c02947009e70ce07',1,'faiss::gpu::Tensor']]],
   ['cancastresize',['canCastResize',['../classfaiss_1_1gpu_1_1Tensor.html#a9b3a5fb3a903295b7d2f8cb2caae0352',1,'faiss::gpu::Tensor']]],
   ['cast',['cast',['../classfaiss_1_1gpu_1_1Tensor.html#ab462574aa0756b701e52279c13449764',1,'faiss::gpu::Tensor::cast()'],['../classfaiss_1_1gpu_1_1Tensor.html#a0bee6b10584a0a201dad5db3e3d37720',1,'faiss::gpu::Tensor::cast() const ']]],
+  ['castindextype',['castIndexType',['../classfaiss_1_1gpu_1_1Tensor.html#afa66c4592bc873a3f663d765cb9ea2c0',1,'faiss::gpu::Tensor']]],
   ['castresize',['castResize',['../classfaiss_1_1gpu_1_1Tensor.html#aab60b0711646ffe587b62a5434d53c6a',1,'faiss::gpu::Tensor::castResize()'],['../classfaiss_1_1gpu_1_1Tensor.html#ae2cdd4f1eecbbca286c0d594143030f3',1,'faiss::gpu::Tensor::castResize() const ']]],
   ['centroids',['centroids',['../structfaiss_1_1Clustering.html#a64c5ec0b4a7967d8be2872974b455ff1',1,'faiss::Clustering::centroids()'],['../structfaiss_1_1ProductQuantizer.html#aab1109a29ba0544358e274d727b23cae',1,'faiss::ProductQuantizer::centroids()']]],
   ['classifyandaddvectors',['classifyAndAddVectors',['../classfaiss_1_1gpu_1_1IVFFlat.html#af20f96b6ad754664796c8a4e7f83ed3a',1,'faiss::gpu::IVFFlat::classifyAndAddVectors()'],['../classfaiss_1_1gpu_1_1IVFPQ.html#ab1e07b04b25569cc58c5f3f033f4dab3',1,'faiss::gpu::IVFPQ::classifyAndAddVectors()']]],

@@ -9,5 +9,6 @@ var searchData=
   ['spherical',['spherical',['../structfaiss_1_1ClusteringParameters.html#ad997fb511f574f7ddc69938c21612f8d',1,'faiss::ClusteringParameters']]],
   ['stack_5f',['stack_',['../classfaiss_1_1gpu_1_1StackDeviceMemory.html#a323a632f397eaf3df3034595762c6a29',1,'faiss::gpu::StackDeviceMemory']]],
   ['start_5f',['start_',['../structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#aed64654e7d498114fdd48a6f1cdb1aa2',1,'faiss::gpu::StackDeviceMemory::Stack']]],
+  ['storetransposed',['storeTransposed',['../structfaiss_1_1gpu_1_1GpuClonerOptions.html#a5f2470ec5b2a8fe7aae0542f113b781d',1,'faiss::gpu::GpuClonerOptions']]],
   ['stride_5f',['stride_',['../classfaiss_1_1gpu_1_1Tensor.html#a46c20e6be3ce16feb99f8d3a5ee268c9',1,'faiss::gpu::Tensor']]]
 ];

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: utils.cpp Source File</title>
+<title>Faiss: /data/users/matthijs/github_faiss/faiss/utils.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -80,7 +80,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="header">
   <div class="headertitle">
-<div class="title">utils.cpp</div>  </div>
+<div class="title">/data/users/matthijs/github_faiss/faiss/utils.cpp</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment"></span></div>
@@ -1875,15 +1875,38 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l01790"></a><span class="lineno"> 1790</span>&#160;</div>
 <div class="line"><a name="l01791"></a><span class="lineno"> 1791</span>&#160;</div>
 <div class="line"><a name="l01792"></a><span class="lineno"> 1792</span>&#160;</div>
-<div class="line"><a name="l01793"></a><span class="lineno"> 1793</span>&#160;</div>
-<div class="line"><a name="l01794"></a><span class="lineno"> 1794</span>&#160;</div>
-<div class="line"><a name="l01795"></a><span class="lineno"> 1795</span>&#160;} <span class="comment">// namespace faiss</span></div>
+<div class="line"><a name="l01793"></a><span class="lineno"><a class="line" href="namespacefaiss.html#a14884d253128c7af5891a65082ad7dc6"> 1793</a></span>&#160;<span class="keyword">const</span> <span class="keywordtype">float</span> *<a class="code" href="namespacefaiss.html#a14884d253128c7af5891a65082ad7dc6">fvecs_maybe_subsample</a> (</div>
+<div class="line"><a name="l01794"></a><span class="lineno"> 1794</span>&#160;          <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> *n, <span class="keywordtype">size_t</span> nmax, <span class="keyword">const</span> <span class="keywordtype">float</span> *x,</div>
+<div class="line"><a name="l01795"></a><span class="lineno"> 1795</span>&#160;          <span class="keywordtype">bool</span> verbose, <span class="keywordtype">long</span> seed)</div>
+<div class="line"><a name="l01796"></a><span class="lineno"> 1796</span>&#160;{</div>
+<div class="line"><a name="l01797"></a><span class="lineno"> 1797</span>&#160;</div>
+<div class="line"><a name="l01798"></a><span class="lineno"> 1798</span>&#160;    <span class="keywordflow">if</span> (*n &lt;= nmax) <span class="keywordflow">return</span> x; <span class="comment">// nothing to do</span></div>
+<div class="line"><a name="l01799"></a><span class="lineno"> 1799</span>&#160;</div>
+<div class="line"><a name="l01800"></a><span class="lineno"> 1800</span>&#160;    <span class="keywordtype">size_t</span> n2 = nmax;</div>
+<div class="line"><a name="l01801"></a><span class="lineno"> 1801</span>&#160;    <span class="keywordflow">if</span> (verbose) {</div>
+<div class="line"><a name="l01802"></a><span class="lineno"> 1802</span>&#160;        printf (<span class="stringliteral">&quot;  Input training set too big (max size is %ld), sampling &quot;</span></div>
+<div class="line"><a name="l01803"></a><span class="lineno"> 1803</span>&#160;                <span class="stringliteral">&quot;%ld / %ld vectors\n&quot;</span>, nmax, n2, *n);</div>
+<div class="line"><a name="l01804"></a><span class="lineno"> 1804</span>&#160;    }</div>
+<div class="line"><a name="l01805"></a><span class="lineno"> 1805</span>&#160;    std::vector&lt;int&gt; subset (*n);</div>
+<div class="line"><a name="l01806"></a><span class="lineno"> 1806</span>&#160;    rand_perm (subset.data (), *n, seed);</div>
+<div class="line"><a name="l01807"></a><span class="lineno"> 1807</span>&#160;    <span class="keywordtype">float</span> *x_subset = <span class="keyword">new</span> <span class="keywordtype">float</span>[n2 * d];</div>
+<div class="line"><a name="l01808"></a><span class="lineno"> 1808</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; n2; i++)</div>
+<div class="line"><a name="l01809"></a><span class="lineno"> 1809</span>&#160;        memcpy (&amp;x_subset[i * d],</div>
+<div class="line"><a name="l01810"></a><span class="lineno"> 1810</span>&#160;                &amp;x[subset[i] * <span class="keywordtype">size_t</span>(d)],</div>
+<div class="line"><a name="l01811"></a><span class="lineno"> 1811</span>&#160;                <span class="keyword">sizeof</span> (x[0]) * d);</div>
+<div class="line"><a name="l01812"></a><span class="lineno"> 1812</span>&#160;    *n = n2;</div>
+<div class="line"><a name="l01813"></a><span class="lineno"> 1813</span>&#160;    <span class="keywordflow">return</span> x_subset;</div>
+<div class="line"><a name="l01814"></a><span class="lineno"> 1814</span>&#160;}</div>
+<div class="line"><a name="l01815"></a><span class="lineno"> 1815</span>&#160;</div>
+<div class="line"><a name="l01816"></a><span class="lineno"> 1816</span>&#160;</div>
+<div class="line"><a name="l01817"></a><span class="lineno"> 1817</span>&#160;} <span class="comment">// namespace faiss</span></div>
 <div class="ttc" id="structfaiss_1_1RandomGenerator_html"><div class="ttname"><a href="structfaiss_1_1RandomGenerator.html">faiss::RandomGenerator</a></div><div class="ttdoc">random generator that can be used in multithreaded contexts </div><div class="ttdef"><b>Definition:</b> <a href="utils_8h_source.html#l00049">utils.h:49</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a5eb1701e46123827966f2a56da893d1d"><div class="ttname"><a href="namespacefaiss.html#a5eb1701e46123827966f2a56da893d1d">faiss::knn_L2sqr_base_shift</a></div><div class="ttdeci">void knn_L2sqr_base_shift(const float *x, const float *y, size_t d, size_t nx, size_t ny, float_maxheap_array_t *res, const float *base_shift)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00870">utils.cpp:870</a></div></div>
 <div class="ttc" id="structfaiss_1_1RandomGenerator_html_a7633c373153f3b2824d2d99382ba20ab"><div class="ttname"><a href="structfaiss_1_1RandomGenerator.html#a7633c373153f3b2824d2d99382ba20ab">faiss::RandomGenerator::RandomGenerator</a></div><div class="ttdeci">RandomGenerator(long seed=1234)</div><div class="ttdoc">initialize </div></div>
 <div class="ttc" id="namespacefaiss_html_ad1cfbe51f2d77dc5094e0140f5955165"><div class="ttname"><a href="namespacefaiss.html#ad1cfbe51f2d77dc5094e0140f5955165">faiss::km_update_centroids</a></div><div class="ttdeci">int km_update_centroids(const float *x, float *centroids, long *assign, size_t d, size_t k, size_t n)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01286">utils.cpp:1286</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a7466bd32de31640860393a701eaac5ad"><div class="ttname"><a href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">faiss::fvec_L2sqr</a></div><div class="ttdeci">float fvec_L2sqr(const float *x, const float *y, size_t d)</div><div class="ttdoc">Squared L2 distance between two vectors. </div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00430">utils.cpp:430</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a154a47857ed321b9db91122770a16e09"><div class="ttname"><a href="namespacefaiss.html#a154a47857ed321b9db91122770a16e09">faiss::bincode_hist</a></div><div class="ttdeci">void bincode_hist(size_t n, size_t nbits, const uint8_t *codes, int *hist)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01467">utils.cpp:1467</a></div></div>
+<div class="ttc" id="namespacefaiss_html_a14884d253128c7af5891a65082ad7dc6"><div class="ttname"><a href="namespacefaiss.html#a14884d253128c7af5891a65082ad7dc6">faiss::fvecs_maybe_subsample</a></div><div class="ttdeci">const float * fvecs_maybe_subsample(size_t d, size_t *n, size_t nmax, const float *x, bool verbose, long seed)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01793">utils.cpp:1793</a></div></div>
 <div class="ttc" id="namespacefaiss_html_ae0ee1b6fbd3d6da0f1a3550a780ca24c"><div class="ttname"><a href="namespacefaiss.html#ae0ee1b6fbd3d6da0f1a3550a780ca24c">faiss::ranklist_handle_ties</a></div><div class="ttdeci">void ranklist_handle_ties(int k, long *idx, const float *dis)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01378">utils.cpp:1378</a></div></div>
 <div class="ttc" id="structfaiss_1_1RandomGenerator_html_ac82a433d7bfa56d750907ba5cf74aed7"><div class="ttname"><a href="structfaiss_1_1RandomGenerator.html#ac82a433d7bfa56d750907ba5cf74aed7">faiss::RandomGenerator::rand_float</a></div><div class="ttdeci">float rand_float()</div><div class="ttdoc">between 0 and 1 </div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00208">utils.cpp:208</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a40328c31abd0bbba5bd95d7de951e847"><div class="ttname"><a href="namespacefaiss.html#a40328c31abd0bbba5bd95d7de951e847">faiss::fvec_madd</a></div><div class="ttdeci">void fvec_madd(size_t n, const float *a, float bf, const float *b, float *c)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01707">utils.cpp:1707</a></div></div>

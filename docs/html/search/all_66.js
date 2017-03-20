@@ -14,5 +14,6 @@ var searchData=
   ['fvec_5fmadd_5fand_5fargmin',['fvec_madd_and_argmin',['../namespacefaiss.html#a9da63b8bb84460f5e8ccf8e17622cc7a',1,'faiss']]],
   ['fvec_5fnorm_5fl2sqr',['fvec_norm_L2sqr',['../namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84',1,'faiss']]],
   ['fvec_5fnorms_5fl2',['fvec_norms_L2',['../namespacefaiss.html#a40265aa2cbbe57e5b223c2c7dafac31f',1,'faiss']]],
-  ['fvec_5fnorms_5fl2sqr',['fvec_norms_L2sqr',['../namespacefaiss.html#abce90e9d55d6838c7a37422285192d54',1,'faiss']]]
+  ['fvec_5fnorms_5fl2sqr',['fvec_norms_L2sqr',['../namespacefaiss.html#abce90e9d55d6838c7a37422285192d54',1,'faiss']]],
+  ['fvecs_5fmaybe_5fsubsample',['fvecs_maybe_subsample',['../namespacefaiss.html#a14884d253128c7af5891a65082ad7dc6',1,'faiss']]]
 ];

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: CompareIVFPQ.cu Source File</title>
+<title>Faiss: /data/users/matthijs/github_faiss/faiss/gpu/perf/CompareIVFPQ.cu Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -130,7 +130,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">using namespace </span>faiss::gpu;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv) {</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  google::ParseCommandLineFlags(&amp;argc, &amp;argv, <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  gflags::ParseCommandLineFlags(&amp;argc, &amp;argv, <span class="keyword">true</span>);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  CUDA_VERIFY(cudaProfilerStop());</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
@@ -246,7 +246,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;}</div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1CpuTimer_html_a4a2795debf10bc7eb904d62356e41f0d"><div class="ttname"><a href="classfaiss_1_1gpu_1_1CpuTimer.html#a4a2795debf10bc7eb904d62356e41f0d">faiss::gpu::CpuTimer::elapsedMilliseconds</a></div><div class="ttdeci">float elapsedMilliseconds()</div><div class="ttdoc">Returns elapsed time in milliseconds. </div><div class="ttdef"><b>Definition:</b> <a href="Timer_8cpp_source.html#l00053">Timer.cpp:53</a></div></div>
-<div class="ttc" id="namespacefaiss_html_aa46fe38a858ecfde7e0fc0744939d5ad"><div class="ttname"><a href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">faiss::read_index</a></div><div class="ttdeci">Index * read_index(FILE *f, bool try_mmap)</div><div class="ttdef"><b>Definition:</b> <a href="index__io_8cpp_source.html#l00476">index_io.cpp:476</a></div></div>
+<div class="ttc" id="namespacefaiss_html_aa46fe38a858ecfde7e0fc0744939d5ad"><div class="ttname"><a href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">faiss::read_index</a></div><div class="ttdeci">Index * read_index(FILE *f, bool try_mmap)</div><div class="ttdef"><b>Definition:</b> <a href="index__io_8cpp_source.html#l00492">index_io.cpp:492</a></div></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1GpuResources_html"><div class="ttname"><a href="classfaiss_1_1gpu_1_1GpuResources.html">faiss::gpu::GpuResources</a></div><div class="ttdef"><b>Definition:</b> <a href="GpuResources_8h_source.html#l00024">GpuResources.h:24</a></div></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1CpuTimer_html"><div class="ttname"><a href="classfaiss_1_1gpu_1_1CpuTimer.html">faiss::gpu::CpuTimer</a></div><div class="ttdoc">CPU wallclock elapsed timer. </div><div class="ttdef"><b>Definition:</b> <a href="Timer_8h_source.html#l00043">Timer.h:43</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFPQ_html"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQ.html">faiss::IndexIVFPQ</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8h_source.html#l00030">IndexIVFPQ.h:30</a></div></div>

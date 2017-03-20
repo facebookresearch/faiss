@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: StandardGpuResources.h Source File</title>
+<title>Faiss: /data/users/matthijs/github_faiss/faiss/gpu/StandardGpuResources.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -153,7 +153,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment"></span>  std::unordered_map&lt;int, cudaStream_t&gt; defaultStreams_;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">  /// Other streams we can use, per each device</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment"></span>  std::unordered_map&lt;int, std::vector&lt;cudaStream_t&gt;&gt; alternateStreams_;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment"></span>  std::unordered_map&lt;int, std::vector&lt;cudaStream_t&gt; &gt; alternateStreams_;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment">  /// Async copy stream to use for GPU &lt;-&gt; CPU pinned memory copies</span></div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment"></span>  std::unordered_map&lt;int, cudaStream_t&gt; asyncCopyStreams_;</div>
@@ -162,7 +162,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment"></span>  std::unordered_map&lt;int, cublasHandle_t&gt; blasHandles_;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">  /// Temporary memory provider, per each device</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment"></span>  std::unordered_map&lt;int, std::unique_ptr&lt;StackDeviceMemory&gt;&gt; memory_;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment"></span>  std::unordered_map&lt;int, std::unique_ptr&lt;StackDeviceMemory&gt; &gt; memory_;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">  /// Pinned memory allocation for use with this GPU</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span>* pinnedMemAlloc_;</div>
