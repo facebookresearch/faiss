@@ -261,6 +261,12 @@ The makefile generates a static and a dynamic library
 the executable should be linked to one of these. If you use
 the static version (.a), add the LDFLAGS used in the Makefile.
 
+For binary-only distributions, the include files should be under 
+a faiss/ directory, so that they can be included as
+
+  #include <faiss/IndexIVFPQ.h>
+  #include <faiss/gpu/GpuIndexFlat.h>
+
 Python
 ------
 
