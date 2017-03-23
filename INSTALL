@@ -15,6 +15,8 @@ involved:
 
 Steps 2 and 3 depend on 1, but they are otherwise independent.
 
+Alternatively, all 3 steps above can be run by building a Docker image (see section "Docker instructions" below).
+
 General compilation instructions
 ================================
 
@@ -246,6 +248,31 @@ The auto-tuning example above also runs on the GPU. Edit
   python/demo_auto_tune.py
 
 to enable and run it.
+
+
+Docker instructions
+===================
+
+For using GPU capabilities of Faiss, you'll need to run "nvidia-docker"
+rather than "docker". Make sure that docker
+(https://docs.docker.com/engine/installation/) and nvidia-docker
+(https://github.com/NVIDIA/nvidia-docker) are installed on your system
+
+To build the "faiss" image, run
+
+  nvidia-docker build -t faiss .
+
+If you want to run the tests during the docker build, uncomment the
+last 3 "RUN" steps in the Dockerfile. But you might want to run the
+tests by yourself, so just run
+
+  nvidia-docker run -ti --name faiss faiss bash
+
+and run what you want. If you need a dataset (like sift1M), download it
+inside the created container, or better, mount a directory from the host
+
+  nvidia-docker run -ti --name faiss -v /my/host/data/folder/ann_dataset/sift/:/opt/faiss/sift1M faiss bash
+
 
 Hot to use Faiss in your own projects
 =====================================
