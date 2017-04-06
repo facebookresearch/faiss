@@ -13,6 +13,7 @@
 
 #include "IndexIVFPQ.h"
 
+#include <cmath>
 #include <cstdio>
 #include <cassert>
 
@@ -154,9 +155,13 @@ void IndexIVFPQ::encode (long key, const float * x, uint8_t * code) const
 
 
 
-void IndexIVFPQ::encode_multiple (size_t n, const long *keys,
-                                  const float * x, uint8_t * xcodes) const
+void IndexIVFPQ::encode_multiple (size_t n, long *keys,
+                                  const float * x, uint8_t * xcodes,
+                                  bool compute_keys) const
 {
+    if (compute_keys)
+        quantizer->assign (n, x, keys);
+
     if (by_residual) {
         float *residuals = new float [n * d];
         // TODO: parallelize?
@@ -169,6 +174,21 @@ void IndexIVFPQ::encode_multiple (size_t n, const long *keys,
     }
 }
 
+void IndexIVFPQ::decode_multiple (size_t n, const long *keys,
+                                  const uint8_t * xcodes, float * x) const
+{
+    pq.decode (xcodes, x, n);
+    if (by_residual) {
+        std::vector<float> centroid (d);
+        for (size_t i = 0; i < n; i++) {
+            quantizer->reconstruct (keys[i], centroid.data());
+            float *xi = x + i * d;
+            for (size_t j = 0; j < d; j++) {
+                xi [j] += centroid [j];
+            }
+        }
+    }
+}
 
 
 void IndexIVFPQ::add_with_ids (idx_t n, const float * x, const long *xids)
@@ -397,7 +417,7 @@ void IndexIVFPQ::precompute_table ()
 
 
     // squared norms of the PQ centroids
-    std::vector<float> r_norms (pq.M * pq.ksub, 0.0/0.0);
+    std::vector<float> r_norms (pq.M * pq.ksub, NAN);
     for (int m = 0; m < pq.M; m++)
         for (int j = 0; j < pq.ksub; j++)
             r_norms [m * pq.ksub + j] =
@@ -425,7 +445,7 @@ void IndexIVFPQ::precompute_table ()
         precomputed_table.resize(cpq.ksub * pq.M * pq.ksub);
 
         // reorder PQ centroid table
-        std::vector<float> centroids (d * cpq.ksub, 0.0/0.0);
+        std::vector<float> centroids (d * cpq.ksub, NAN);
 
         for (int m = 0; m < cpq.M; m++) {
             for (size_t i = 0; i < cpq.ksub; i++) {

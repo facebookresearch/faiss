@@ -412,19 +412,21 @@ void reflection_ref (const float * u, float * x, size_t n, size_t d, size_t nu)
 
 */
 
-
-// set some of the floats in x to 0 so that there are d floats remaining
-// 0 <= d <= 4
-static inline __m128 maskout (int d, __m128 x)
+// reads 0 <= d < 4 floats as __m128
+static inline __m128 masked_read (int d, const float *x)
 {
-    // check which values to clear out
-    __m128i d4 = _mm_set1_epi32 (d);
-    __m128i lim = _mm_set_epi32 (3, 2, 1, 0);
-    __m128i mask = _mm_cmpgt_epi32 (d4, lim);
-
-    return _mm_and_ps (x, (__m128)mask);
+    assert (0 <= d && d < 4);
+    __attribute__((__aligned__(16))) float buf[4] = {0, 0, 0, 0};
+    switch (d) {
+      case 3:
+        buf[2] = x[2];
+      case 2:
+        buf[1] = x[1];
+      case 1:
+        buf[0] = x[0];
+    }
+    return _mm_load_ps (buf);
 }
-
 
 /* SSE-implementation of L2 distance */
 float fvec_L2sqr (const float * x,
@@ -434,7 +436,7 @@ float fvec_L2sqr (const float * x,
     __m128 mx, my;
     __m128 msum1 = _mm_setzero_ps();
 
-    while (d > 4) {
+    while (d >= 4) {
         mx = _mm_loadu_ps (x); x += 4;
         my = _mm_loadu_ps (y); y += 4;
         const __m128 a_m_b1 = _mm_sub_ps (mx, my);
@@ -442,10 +444,10 @@ float fvec_L2sqr (const float * x,
         d -= 4;
     }
 
-    // add the last 1, 2, 3, or 4 values
-    mx = _mm_loadu_ps (x);
-    my = _mm_loadu_ps (y);
-    __m128 a_m_b1 = maskout (d, _mm_sub_ps (mx, my));
+    // add the last 1, 2 or 3 values
+    mx = masked_read (d, x);
+    my = masked_read (d, y);
+    __m128 a_m_b1 = _mm_sub_ps (mx, my);
 
     msum1 = _mm_add_ps (msum1, _mm_mul_ps (a_m_b1, a_m_b1));
 
@@ -476,17 +478,17 @@ float fvec_inner_product (const float * x,
     __m128 mx, my;
     __m128 msum1 = _mm_setzero_ps();
 
-    while (d > 4) {
+    while (d >= 4) {
         mx = _mm_loadu_ps (x); x += 4;
         my = _mm_loadu_ps (y); y += 4;
         msum1 = _mm_add_ps (msum1, _mm_mul_ps (mx, my));
         d -= 4;
     }
 
-    // add the last 1, 2, 3, or 4 values
-    mx = _mm_loadu_ps (x);
-    my = _mm_loadu_ps (y);
-    __m128 prod = maskout (d, _mm_mul_ps (mx, my));
+    // add the last 1, 2, or 3 values
+    mx = masked_read (d, x);
+    my = masked_read (d, y);
+    __m128 prod = _mm_mul_ps (mx, my);
 
     msum1 = _mm_add_ps (msum1, prod);
 
@@ -514,13 +516,13 @@ float fvec_norm_L2sqr (const float *  x,
     __m128 mx;
     __m128 msum1 = _mm_setzero_ps();
 
-    while (d > 4) {
+    while (d >= 4) {
         mx = _mm_loadu_ps (x); x += 4;
         msum1 = _mm_add_ps (msum1, _mm_mul_ps (mx, mx));
         d -= 4;
     }
 
-    mx = maskout (d, _mm_loadu_ps (x));
+    mx = masked_read (d, x);
     msum1 = _mm_add_ps (msum1, _mm_mul_ps (mx, mx));
 
     msum1 = _mm_hadd_ps (msum1, msum1);
@@ -934,13 +936,11 @@ void fvec_L2sqr_by_idx (float * __restrict dis,
    indexed by ids. May be useful for re-ranking a pre-selected vector list */
 void knn_inner_products_by_idx (const float * x,
                                 const float * y,
-                                const long * __restrict ids,
+                                const long * ids,
                                 size_t d, size_t nx, size_t ny,
                                 float_minheap_array_t * res)
 {
     size_t k = res->k;
-
-
 
 #pragma omp parallel for
     for (size_t i = 0; i < nx; i++) {

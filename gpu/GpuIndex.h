@@ -32,8 +32,45 @@ class GpuIndex : public faiss::Index {
     return resources_;
   }
 
-  // redeclare an abstract method to quiet SWIG warning
-  virtual void add(faiss::Index::idx_t,float const *) = 0;
+  /// `x` can be resident on the CPU or any GPU; copies are performed
+  /// as needed
+  /// Handles paged adds if the add set is too large; calls addInternal_
+  virtual void add(faiss::Index::idx_t, const float* x);
+
+  /// `x` and `ids` can be resident on the CPU or any GPU; copies are
+  /// performed as needed
+  /// Handles paged adds if the add set is too large; calls addInternal_
+  virtual void add_with_ids(Index::idx_t n,
+                            const float* x,
+                            const Index::idx_t* ids);
+
+  /// `x`, `distances` and `labels` can be resident on the CPU or any
+  /// GPU; copies are performed as needed
+  virtual void search(faiss::Index::idx_t n,
+                      const float* x,
+                      faiss::Index::idx_t k,
+                      float* distances,
+                      faiss::Index::idx_t* labels) const;
+
+
+ protected:
+  /// Handles paged adds if the add set is too large, passes to
+  /// addImpl_ to actually perform the add for the current page
+  void addInternal_(Index::idx_t n,
+                    const float* x,
+                    const Index::idx_t* ids);
+
+  /// Overridden to actually perform the add
+  virtual void addImpl_(Index::idx_t n,
+                        const float* x,
+                        const Index::idx_t* ids) = 0;
+
+  /// Overridden to actually perform the search
+  virtual void searchImpl_(faiss::Index::idx_t n,
+                           const float* x,
+                           faiss::Index::idx_t k,
+                           float* distances,
+                           faiss::Index::idx_t* labels) const = 0;
 
  protected:
   /// Manages streans, cuBLAS handles and scratch memory for devices

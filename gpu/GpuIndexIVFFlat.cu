@@ -211,13 +211,14 @@ GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
 }
 
 void
-GpuIndexIVFFlat::add_with_ids(Index::idx_t n,
-                              const float* x,
-                              const Index::idx_t* xids) {
-  FAISS_ASSERT(this->is_trained);
-  FAISS_ASSERT(index_);
+GpuIndexIVFFlat::addImpl_(Index::idx_t n,
+                          const float* x,
+                          const Index::idx_t* xids) {
+  // Device is already set in GpuIndex::addInternal_
 
-  DeviceScope scope(device_);
+  FAISS_ASSERT(index_);
+  FAISS_ASSERT(n > 0);
+
   auto stream = resources_->getDefaultStreamCurrentDevice();
 
   auto deviceVecs =
@@ -241,19 +242,16 @@ GpuIndexIVFFlat::add_with_ids(Index::idx_t n,
 }
 
 void
-GpuIndexIVFFlat::search(faiss::Index::idx_t n,
-                        const float* x,
-                        faiss::Index::idx_t k,
-                        float* distances,
-                        faiss::Index::idx_t* labels) const {
-  if (n == 0) {
-    return;
-  }
+GpuIndexIVFFlat::searchImpl_(faiss::Index::idx_t n,
+                             const float* x,
+                             faiss::Index::idx_t k,
+                             float* distances,
+                             faiss::Index::idx_t* labels) const {
+  // Device is already set in GpuIndex::search
 
-  FAISS_ASSERT(this->is_trained);
   FAISS_ASSERT(index_);
+  FAISS_ASSERT(n > 0);
 
-  DeviceScope scope(device_);
   auto stream = resources_->getDefaultStream(device_);
 
   // Make sure arguments are on the device we desire; use temporary

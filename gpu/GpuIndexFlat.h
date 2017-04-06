@@ -54,7 +54,7 @@ class GpuIndexFlat : public GpuIndex {
                faiss::MetricType metric,
                GpuIndexFlatConfig config = GpuIndexFlatConfig());
 
-  ~GpuIndexFlat() override;
+  virtual ~GpuIndexFlat();
 
   /// Set the minimum data size for searches (in MiB) for which we use
   /// CPU -> GPU paging
@@ -78,38 +78,49 @@ class GpuIndexFlat : public GpuIndex {
   size_t getNumVecs() const;
 
   /// Clears all vectors from this index
-  void reset() override;
+  virtual void reset();
 
   /// This index is not trained, so this does nothing
-  void train(Index::idx_t n, const float* x) override;
-
-  /// `x` can be resident on the CPU or any GPU; the proper copies are
-  /// performed
-  void add(Index::idx_t n, const float* x) override;
+  virtual void train(Index::idx_t n, const float* x);
 
   /// `x`, `distances` and `labels` can be resident on the CPU or any
   /// GPU; copies are performed as needed
-  void search(faiss::Index::idx_t n,
-              const float* x,
-              faiss::Index::idx_t k,
-              float* distances,
-              faiss::Index::idx_t* labels) const override;
+  /// We have our own implementation here which handles CPU async
+  /// copies; searchImpl_ is not called
+  /// FIXME: move paged impl into GpuIndex
+  virtual void search(faiss::Index::idx_t n,
+                      const float* x,
+                      faiss::Index::idx_t k,
+                      float* distances,
+                      faiss::Index::idx_t* labels) const;
 
   /// Reconstruction methods; prefer the batch reconstruct as it will
   /// be more efficient
-  void reconstruct(faiss::Index::idx_t key, float* out) const override;
+  virtual void reconstruct(faiss::Index::idx_t key, float* out) const;
 
   /// Batch reconstruction method
-  void reconstruct_n(faiss::Index::idx_t i0,
-                     faiss::Index::idx_t num,
-                     float* out) const override;
+  virtual void reconstruct_n(faiss::Index::idx_t i0,
+                             faiss::Index::idx_t num,
+                             float* out) const;
 
-  void set_typename() override;
+  virtual void set_typename();
 
   /// For internal access
   inline FlatIndex* getGpuData() { return data_; }
 
  protected:
+  /// Called from GpuIndex for add
+  virtual void addImpl_(faiss::Index::idx_t n,
+                        const float* x,
+                        const faiss::Index::idx_t* ids);
+
+  /// Should not be called (we have our own implementation)
+  virtual void searchImpl_(faiss::Index::idx_t n,
+                           const float* x,
+                           faiss::Index::idx_t k,
+                           float* distances,
+                           faiss::Index::idx_t* labels) const;
+
   /// Called from search when the input data is on the CPU;
   /// potentially allows for pinned memory usage
   void searchFromCpuPaged_(int n,

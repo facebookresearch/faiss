@@ -102,8 +102,9 @@ Inheritance diagram for faiss::IndexIVFFlat:</div>
  <div class="center">
   <img src="structfaiss_1_1IndexIVFFlat.png" usemap="#faiss::IndexIVFFlat_map" alt=""/>
   <map id="faiss::IndexIVFFlat_map" name="faiss::IndexIVFFlat_map">
-<area href="structfaiss_1_1IndexIVF.html" alt="faiss::IndexIVF" shape="rect" coords="0,56,115,80"/>
-<area href="structfaiss_1_1Index.html" alt="faiss::Index" shape="rect" coords="0,0,115,24"/>
+<area href="structfaiss_1_1IndexIVF.html" alt="faiss::IndexIVF" shape="rect" coords="0,56,168,80"/>
+<area href="structfaiss_1_1Index.html" alt="faiss::Index" shape="rect" coords="0,0,168,24"/>
+<area href="structfaiss_1_1IndexIVFFlatIPBounds.html" alt="faiss::IndexIVFFlatIPBounds" shape="rect" coords="0,168,168,192"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -115,7 +116,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0117e9eac02ce8d106d8a288234f365c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFFlat.html#a0117e9eac02ce8d106d8a288234f365c">set_typename</a> () override</td></tr>
 <tr class="separator:a0117e9eac02ce8d106d8a288234f365c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea729c3d8c70bdd93f8e413e834851a4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aea729c3d8c70bdd93f8e413e834851a4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFFlat.html#aea729c3d8c70bdd93f8e413e834851a4">add_core</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, const long *xids, const long *precomputed_idx)</td></tr>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFFlat.html#aea729c3d8c70bdd93f8e413e834851a4">add_core</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, const long *xids, const long *precomputed_idx)</td></tr>
 <tr class="memdesc:aea729c3d8c70bdd93f8e413e834851a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">same as add_with_ids, with precomputed coarse quantizer <br/></td></tr>
 <tr class="separator:aea729c3d8c70bdd93f8e413e834851a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f7356766632d3ce2838f285aa6b8e76"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f7356766632d3ce2838f285aa6b8e76"></a>
@@ -264,7 +265,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Inverted file with stored vectors. Here the inverted file pre-selects the vectors to be searched, but they are not otherwise encoded. </p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8h_source.html#l00113">113</a> of file <a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8h_source.html#l00128">128</a> of file <a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a1d0a5285344c3302ba10bb79f4578a82"></a>
 <div class="memitem">
@@ -304,7 +305,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>copy a subset of the entries index to the other index</p>
 <p>if subset_type == 0: copies ids in [a1, a2) if subset_type == 1: copies ids if id % a1 == a2 </p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00441">441</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00456">456</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -333,7 +334,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Implements <a class="el" href="structfaiss_1_1IndexIVF.html#aacaf0b2529a9d9def094ea3728a12824">faiss::IndexIVF</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00429">429</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00444">444</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -393,7 +394,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#a236897832a58dbb205e2d662c1929fb1">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00385">385</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00400">400</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -440,7 +441,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#aaef6f4132b1f390121ebb11058baf190">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00508">508</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00523">523</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -469,7 +470,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#af8bf7bd97aeed8ad5fc48b242379a68a">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00476">476</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00491">491</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -535,7 +536,9 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Implements <a class="el" href="structfaiss_1_1Index.html#aced51b1ebc33c47ab3ae15ea906559a7">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00364">364</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFFlatIPBounds.html#aac063e96413e0e90d87898df8a60088b">faiss::IndexIVFFlatIPBounds</a>.</p>
+
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00379">379</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -579,7 +582,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>Inverted list of original vectors. Each list is a nl * d matrix, where nl is the nb of vectors stored in the list. </p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8h_source.html#l00116">116</a> of file <a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8h_source.html#l00131">131</a> of file <a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a>.</p>
 
 </div>
 </div>

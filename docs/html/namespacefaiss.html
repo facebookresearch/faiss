@@ -176,7 +176,11 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html">IndexIVF</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFFlatStats.html">IndexIVFFlatStats</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFFlat.html">IndexIVFFlat</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFFlatIPBounds.html">IndexIVFFlatIPBounds</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1CodeCmp.html">CodeCmp</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -563,9 +567,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_inner_products_b
 <tr class="memitem:acad70536e37674f21dc4f47fc130e03b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acad70536e37674f21dc4f47fc130e03b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_L2sqr_by_idx</b> (float *__restrict dis, const float *x, const float *y, const long *__restrict ids, size_t d, size_t nx, size_t ny)</td></tr>
 <tr class="separator:acad70536e37674f21dc4f47fc130e03b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04eafd0d8f57e413587661c6bf6eb5be"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a04eafd0d8f57e413587661c6bf6eb5be"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>knn_inner_products_by_idx</b> (const float *x, const float *y, const long *__restrict ids, size_t d, size_t nx, size_t ny, <a class="el" href="structfaiss_1_1HeapArray.html">float_minheap_array_t</a> *res)</td></tr>
-<tr class="separator:a04eafd0d8f57e413587661c6bf6eb5be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cede63f44a39f09ae574f98c02d71db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4cede63f44a39f09ae574f98c02d71db"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>knn_inner_products_by_idx</b> (const float *x, const float *y, const long *ids, size_t d, size_t nx, size_t ny, <a class="el" href="structfaiss_1_1HeapArray.html">float_minheap_array_t</a> *res)</td></tr>
+<tr class="separator:a4cede63f44a39f09ae574f98c02d71db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a705dcfc6ae950690bc14ccf3dae591b8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a705dcfc6ae950690bc14ccf3dae591b8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>knn_L2sqr_by_idx</b> (const float *x, const float *y, const long *__restrict ids, size_t d, size_t nx, size_t ny, <a class="el" href="structfaiss_1_1HeapArray.html">float_maxheap_array_t</a> *res)</td></tr>
 <tr class="separator:a705dcfc6ae950690bc14ccf3dae591b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -643,6 +647,9 @@ Variables</h2></td></tr>
 <tr class="memitem:a8cd23fc7d944b9cfe8b498a4b35bc558"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8cd23fc7d944b9cfe8b498a4b35bc558"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> = 0</td></tr>
 <tr class="separator:a8cd23fc7d944b9cfe8b498a4b35bc558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bd17ab7054bbfb5aa3f26db1183e5ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5bd17ab7054bbfb5aa3f26db1183e5ec"></a>
+<a class="el" href="structfaiss_1_1IndexIVFFlatStats.html">IndexIVFFlatStats</a>&#160;</td><td class="memItemRight" valign="bottom"><b>indexIVFFlat_stats</b></td></tr>
+<tr class="separator:a5bd17ab7054bbfb5aa3f26db1183e5ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d6b069b2590a195d078d696cba14284"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2d6b069b2590a195d078d696cba14284"></a>
 <a class="el" href="structfaiss_1_1IndexIVFPQStats.html">IndexIVFPQStats</a>&#160;</td><td class="memItemRight" valign="bottom"><b>indexIVFPQ_stats</b></td></tr>
 <tr class="separator:a2d6b069b2590a195d078d696cba14284"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -848,7 +855,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 </div><div class="memdoc">
 <p>squared norm of a vector </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00511">511</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00513">513</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1443,7 +1450,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00830">830</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00832">832</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1496,7 +1503,7 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>Same as knn_inner_product, for the L2 distance </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00850">850</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00852">852</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1561,7 +1568,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00870">870</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00872">872</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>

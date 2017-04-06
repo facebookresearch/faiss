@@ -44,7 +44,7 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
                 bool useFloat16LookupTables,
                 faiss::MetricType metric);
 
-  ~GpuIndexIVFPQ() override;
+  virtual ~GpuIndexIVFPQ();
 
   /// Reserve space on the GPU for the inverted lists for `num`
   /// vectors, assumed equally distributed among
@@ -84,25 +84,11 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
 
   /// Clears out all inverted lists, but retains the coarse and
   /// product centroid information
-  void reset() override;
+  virtual void reset();
 
-  void train(Index::idx_t n, const float* x) override;
+  virtual void train(Index::idx_t n, const float* x);
 
-  /// `x` and `xids` can be resident on the CPU or any GPU; the proper
-  /// copies are performed
-  void add_with_ids(Index::idx_t n,
-                    const float* x,
-                    const Index::idx_t* xids) override;
-
-  /// `x`, `distances` and `labels` can be resident on the CPU or any
-  /// GPU; copies are performed as needed
-  void search(faiss::Index::idx_t n,
-              const float* x,
-              faiss::Index::idx_t k,
-              float* distances,
-              faiss::Index::idx_t* labels) const override;
-
-  void set_typename() override;
+  virtual void set_typename();
 
   /// For debugging purposes, return the list length of a particular
   /// list
@@ -115,6 +101,19 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
   /// For debugging purposes, return the list indices of a particular
   /// list
   std::vector<long> getListIndices(int listId) const;
+
+ protected:
+  /// Called from GpuIndex for add/add_with_ids
+  virtual void addImpl_(faiss::Index::idx_t n,
+                        const float* x,
+                        const faiss::Index::idx_t* ids);
+
+  /// Called from GpuIndex for search
+  virtual void searchImpl_(faiss::Index::idx_t n,
+                           const float* x,
+                           faiss::Index::idx_t k,
+                           float* distances,
+                           faiss::Index::idx_t* labels) const;
 
  private:
   void assertSettings_() const;

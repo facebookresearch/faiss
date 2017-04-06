@@ -497,210 +497,210 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;<span class="comment">*/</span></div>
 <div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;<span class="comment">// set some of the floats in x to 0 so that there are d floats remaining</span></div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;<span class="comment">// 0 &lt;= d &lt;= 4</span></div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> __m128 maskout (<span class="keywordtype">int</span> d, __m128 x)</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;{</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;    <span class="comment">// check which values to clear out</span></div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    __m128i d4 = _mm_set1_epi32 (d);</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    __m128i lim = _mm_set_epi32 (3, 2, 1, 0);</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    __m128i mask = _mm_cmpgt_epi32 (d4, lim);</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    <span class="keywordflow">return</span> _mm_and_ps (x, (__m128)mask);</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;}</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;<span class="comment">/* SSE-implementation of L2 distance */</span></div>
-<div class="line"><a name="l00430"></a><span class="lineno"><a class="line" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">  430</a></span>&#160;<span class="keywordtype">float</span> <a class="code" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">fvec_L2sqr</a> (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;                 <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;                 <span class="keywordtype">size_t</span> d)</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;{</div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;    __m128 mx, my;</div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    __m128 msum1 = _mm_setzero_ps();</div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;</div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;    <span class="keywordflow">while</span> (d &gt; 4) {</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;        mx = _mm_loadu_ps (x); x += 4;</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;        my = _mm_loadu_ps (y); y += 4;</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;        <span class="keyword">const</span> __m128 a_m_b1 = _mm_sub_ps (mx, my);</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;        msum1 = _mm_add_ps (msum1, _mm_mul_ps (a_m_b1, a_m_b1));</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;        d -= 4;</div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;    }</div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;</div>
-<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;    <span class="comment">// add the last 1, 2, 3, or 4 values</span></div>
-<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;    mx = _mm_loadu_ps (x);</div>
-<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;    my = _mm_loadu_ps (y);</div>
-<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;    __m128 a_m_b1 = maskout (d, _mm_sub_ps (mx, my));</div>
-<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;</div>
-<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;    msum1 = _mm_add_ps (msum1, _mm_mul_ps (a_m_b1, a_m_b1));</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;<span class="comment">// reads 0 &lt;= d &lt; 4 floats as __m128</span></div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> __m128 masked_read (<span class="keywordtype">int</span> d, <span class="keyword">const</span> <span class="keywordtype">float</span> *x)</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;{</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    assert (0 &lt;= d &amp;&amp; d &lt; 4);</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    __attribute__((__aligned__(16))) float buf[4] = {0, 0, 0, 0};</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;    <span class="keywordflow">switch</span> (d) {</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;      <span class="keywordflow">case</span> 3:</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;        buf[2] = x[2];</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;      <span class="keywordflow">case</span> 2:</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;        buf[1] = x[1];</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;      <span class="keywordflow">case</span> 1:</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;        buf[0] = x[0];</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;    }</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;    <span class="keywordflow">return</span> _mm_load_ps (buf);</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;}</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;<span class="comment">/* SSE-implementation of L2 distance */</span></div>
+<div class="line"><a name="l00432"></a><span class="lineno"><a class="line" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">  432</a></span>&#160;<span class="keywordtype">float</span> <a class="code" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">fvec_L2sqr</a> (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;                 <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;                 <span class="keywordtype">size_t</span> d)</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;{</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;    __m128 mx, my;</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;    __m128 msum1 = _mm_setzero_ps();</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;    <span class="keywordflow">while</span> (d &gt;= 4) {</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;        mx = _mm_loadu_ps (x); x += 4;</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;        my = _mm_loadu_ps (y); y += 4;</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;        <span class="keyword">const</span> __m128 a_m_b1 = _mm_sub_ps (mx, my);</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;        msum1 = _mm_add_ps (msum1, _mm_mul_ps (a_m_b1, a_m_b1));</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;        d -= 4;</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;    }</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;    <span class="comment">// add the last 1, 2 or 3 values</span></div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;    mx = masked_read (d, x);</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;    my = masked_read (d, y);</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;    __m128 a_m_b1 = _mm_sub_ps (mx, my);</div>
 <div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;</div>
-<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;    msum1 = _mm_hadd_ps (msum1, msum1);</div>
-<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;    msum1 = _mm_hadd_ps (msum1, msum1);</div>
-<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;    <span class="keywordflow">return</span>  _mm_cvtss_f32 (msum1);</div>
-<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;}</div>
-<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;</div>
-<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;</div>
-<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;<span class="comment">/* same without SSE */</span></div>
-<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;<span class="keywordtype">float</span> fvec_L2sqr_ref (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;                     <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;                     <span class="keywordtype">size_t</span> d)</div>
-<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;{</div>
-<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;    <span class="keywordtype">size_t</span> i;</div>
-<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;    <span class="keywordtype">float</span> res_ = 0;</div>
-<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;    <span class="keywordflow">for</span> (i = 0; i &lt; d; i++) {</div>
-<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> tmp = x[i] - y[i];</div>
-<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;       res_ += tmp * tmp;</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;    }</div>
-<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;    <span class="keywordflow">return</span> res_;</div>
-<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;}</div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;</div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;<span class="keywordtype">float</span> fvec_inner_product (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;                         <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;                         <span class="keywordtype">size_t</span> d)</div>
-<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;{</div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;    __m128 mx, my;</div>
-<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;    __m128 msum1 = _mm_setzero_ps();</div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;</div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;    <span class="keywordflow">while</span> (d &gt; 4) {</div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;        mx = _mm_loadu_ps (x); x += 4;</div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;        my = _mm_loadu_ps (y); y += 4;</div>
-<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;        msum1 = _mm_add_ps (msum1, _mm_mul_ps (mx, my));</div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;        d -= 4;</div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;    }</div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;</div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;    <span class="comment">// add the last 1, 2, 3, or 4 values</span></div>
-<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;    mx = _mm_loadu_ps (x);</div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;    my = _mm_loadu_ps (y);</div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;    __m128 prod = maskout (d, _mm_mul_ps (mx, my));</div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;</div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;    msum1 = _mm_add_ps (msum1, prod);</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;    msum1 = _mm_add_ps (msum1, _mm_mul_ps (a_m_b1, a_m_b1));</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;    msum1 = _mm_hadd_ps (msum1, msum1);</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;    msum1 = _mm_hadd_ps (msum1, msum1);</div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;    <span class="keywordflow">return</span>  _mm_cvtss_f32 (msum1);</div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;}</div>
+<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;<span class="comment">/* same without SSE */</span></div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;<span class="keywordtype">float</span> fvec_L2sqr_ref (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;                     <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;                     <span class="keywordtype">size_t</span> d)</div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;{</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;    <span class="keywordtype">size_t</span> i;</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;    <span class="keywordtype">float</span> res_ = 0;</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;    <span class="keywordflow">for</span> (i = 0; i &lt; d; i++) {</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> tmp = x[i] - y[i];</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;       res_ += tmp * tmp;</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;    }</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;    <span class="keywordflow">return</span> res_;</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;}</div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;<span class="keywordtype">float</span> fvec_inner_product (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;                         <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;                         <span class="keywordtype">size_t</span> d)</div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;{</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;    __m128 mx, my;</div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;    __m128 msum1 = _mm_setzero_ps();</div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;</div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;    <span class="keywordflow">while</span> (d &gt;= 4) {</div>
+<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;        mx = _mm_loadu_ps (x); x += 4;</div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;        my = _mm_loadu_ps (y); y += 4;</div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;        msum1 = _mm_add_ps (msum1, _mm_mul_ps (mx, my));</div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;        d -= 4;</div>
+<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;    }</div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;</div>
+<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;    <span class="comment">// add the last 1, 2, or 3 values</span></div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;    mx = masked_read (d, x);</div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;    my = masked_read (d, y);</div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;    __m128 prod = _mm_mul_ps (mx, my);</div>
 <div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;</div>
-<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;    msum1 = _mm_hadd_ps (msum1, msum1);</div>
-<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;    msum1 = _mm_hadd_ps (msum1, msum1);</div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;    <span class="keywordflow">return</span>  _mm_cvtss_f32 (msum1);</div>
-<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;}</div>
-<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;</div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;<span class="keywordtype">float</span> fvec_inner_product_ref (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;                             <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;                             <span class="keywordtype">size_t</span> d)</div>
-<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;{</div>
-<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;    <span class="keywordtype">size_t</span> i;</div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;    <span class="keywordtype">float</span> res_ = 0;</div>
-<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;    <span class="keywordflow">for</span> (i = 0; i &lt; d; i++)</div>
-<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;       res_ += x[i] * y[i];</div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;    <span class="keywordflow">return</span> res_;</div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;}</div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;</div>
-<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;</div>
-<div class="line"><a name="l00511"></a><span class="lineno"><a class="line" href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">  511</a></span>&#160;<span class="keywordtype">float</span> <a class="code" href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">fvec_norm_L2sqr</a> (<span class="keyword">const</span> <span class="keywordtype">float</span> *  x,</div>
-<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;                      <span class="keywordtype">size_t</span> d)</div>
-<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;{</div>
-<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;    __m128 mx;</div>
-<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;    __m128 msum1 = _mm_setzero_ps();</div>
-<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;</div>
-<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;    <span class="keywordflow">while</span> (d &gt; 4) {</div>
-<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;        mx = _mm_loadu_ps (x); x += 4;</div>
-<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;        msum1 = _mm_add_ps (msum1, _mm_mul_ps (mx, mx));</div>
-<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;        d -= 4;</div>
-<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;    }</div>
-<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;</div>
-<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;    mx = maskout (d, _mm_loadu_ps (x));</div>
-<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;    msum1 = _mm_add_ps (msum1, _mm_mul_ps (mx, mx));</div>
-<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;</div>
-<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;    msum1 = _mm_hadd_ps (msum1, msum1);</div>
-<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;    msum1 = _mm_hadd_ps (msum1, msum1);</div>
-<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;    <span class="keywordflow">return</span>  _mm_cvtss_f32 (msum1);</div>
-<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;}</div>
-<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;</div>
-<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;</div>
-<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;<span class="keywordtype">float</span> fvec_norm_L2sqr_ref (<span class="keyword">const</span> <span class="keywordtype">float</span> * __restrict x,</div>
-<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;                          <span class="keywordtype">size_t</span> d)</div>
-<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;{</div>
-<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;    <span class="keywordtype">size_t</span> i;</div>
-<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;    <span class="keywordtype">double</span> res_ = 0;</div>
-<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;    <span class="keywordflow">for</span> (i = 0; i &lt; d; i++)</div>
-<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;       res_ += x[i] * x[i];</div>
-<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;    <span class="keywordflow">return</span> res_;</div>
-<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;}</div>
-<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;</div>
-<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;</div>
+<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;    msum1 = _mm_add_ps (msum1, prod);</div>
+<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;    msum1 = _mm_hadd_ps (msum1, msum1);</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;    msum1 = _mm_hadd_ps (msum1, msum1);</div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;    <span class="keywordflow">return</span>  _mm_cvtss_f32 (msum1);</div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;}</div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;</div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;<span class="keywordtype">float</span> fvec_inner_product_ref (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;                             <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;                             <span class="keywordtype">size_t</span> d)</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;{</div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;    <span class="keywordtype">size_t</span> i;</div>
+<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;    <span class="keywordtype">float</span> res_ = 0;</div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;    <span class="keywordflow">for</span> (i = 0; i &lt; d; i++)</div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;       res_ += x[i] * y[i];</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;    <span class="keywordflow">return</span> res_;</div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;}</div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;</div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;</div>
+<div class="line"><a name="l00513"></a><span class="lineno"><a class="line" href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">  513</a></span>&#160;<span class="keywordtype">float</span> <a class="code" href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">fvec_norm_L2sqr</a> (<span class="keyword">const</span> <span class="keywordtype">float</span> *  x,</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;                      <span class="keywordtype">size_t</span> d)</div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;{</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;    __m128 mx;</div>
+<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;    __m128 msum1 = _mm_setzero_ps();</div>
+<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;</div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;    <span class="keywordflow">while</span> (d &gt;= 4) {</div>
+<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;        mx = _mm_loadu_ps (x); x += 4;</div>
+<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;        msum1 = _mm_add_ps (msum1, _mm_mul_ps (mx, mx));</div>
+<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;        d -= 4;</div>
+<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;    }</div>
+<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;</div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;    mx = masked_read (d, x);</div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;    msum1 = _mm_add_ps (msum1, _mm_mul_ps (mx, mx));</div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;</div>
+<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;    msum1 = _mm_hadd_ps (msum1, msum1);</div>
+<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;    msum1 = _mm_hadd_ps (msum1, msum1);</div>
+<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;    <span class="keywordflow">return</span>  _mm_cvtss_f32 (msum1);</div>
+<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;}</div>
+<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;</div>
+<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;</div>
+<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;<span class="keywordtype">float</span> fvec_norm_L2sqr_ref (<span class="keyword">const</span> <span class="keywordtype">float</span> * __restrict x,</div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;                          <span class="keywordtype">size_t</span> d)</div>
+<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;{</div>
+<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;    <span class="keywordtype">size_t</span> i;</div>
+<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;    <span class="keywordtype">double</span> res_ = 0;</div>
+<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;    <span class="keywordflow">for</span> (i = 0; i &lt; d; i++)</div>
+<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;       res_ += x[i] * x[i];</div>
+<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;    <span class="keywordflow">return</span> res_;</div>
+<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;}</div>
 <div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;</div>
 <div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;</div>
-<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;<span class="comment">/* Compute the inner product between a vector x and</span></div>
-<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;<span class="comment">   a set of ny vectors y.</span></div>
-<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;<span class="comment">   These functions are not intended to replace BLAS matrix-matrix, as they</span></div>
-<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;<span class="comment">   would be significantly less efficient in this case. */</span></div>
-<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;<span class="keywordtype">void</span> fvec_inner_products_ny (<span class="keywordtype">float</span> * __restrict ip,</div>
-<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;                             <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;                             <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;                             <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> ny)</div>
-<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;{</div>
-<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ny; i++) {</div>
-<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;        ip[i] = fvec_inner_product (x, y, d);</div>
-<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;        y += d;</div>
-<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;    }</div>
-<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;}</div>
-<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;</div>
-<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;</div>
+<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;</div>
+<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;</div>
+<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;<span class="comment">/* Compute the inner product between a vector x and</span></div>
+<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;<span class="comment">   a set of ny vectors y.</span></div>
+<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;<span class="comment">   These functions are not intended to replace BLAS matrix-matrix, as they</span></div>
+<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;<span class="comment">   would be significantly less efficient in this case. */</span></div>
+<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;<span class="keywordtype">void</span> fvec_inner_products_ny (<span class="keywordtype">float</span> * __restrict ip,</div>
+<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;                             <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;                             <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;                             <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> ny)</div>
+<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;{</div>
+<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ny; i++) {</div>
+<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;        ip[i] = fvec_inner_product (x, y, d);</div>
+<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;        y += d;</div>
+<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;    }</div>
+<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;}</div>
 <div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;</div>
 <div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;</div>
-<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;<span class="comment">/* compute ny L2 distances between x and a set of vectors y */</span></div>
-<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;<span class="keywordtype">void</span> fvec_L2sqr_ny (<span class="keywordtype">float</span> * __restrict dis,</div>
-<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;                    <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;                    <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;                    <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> ny)</div>
-<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;{</div>
-<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ny; i++) {</div>
-<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;        dis[i] = <a class="code" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">fvec_L2sqr</a> (x, y, d);</div>
-<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;        y += d;</div>
-<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;    }</div>
-<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;}</div>
-<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;</div>
-<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;</div>
+<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;</div>
+<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;</div>
+<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;<span class="comment">/* compute ny L2 distances between x and a set of vectors y */</span></div>
+<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;<span class="keywordtype">void</span> fvec_L2sqr_ny (<span class="keywordtype">float</span> * __restrict dis,</div>
+<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;                    <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;                    <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;                    <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> ny)</div>
+<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;{</div>
+<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ny; i++) {</div>
+<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;        dis[i] = <a class="code" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">fvec_L2sqr</a> (x, y, d);</div>
+<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;        y += d;</div>
+<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;    }</div>
+<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;}</div>
 <div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;</div>
 <div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;</div>
-<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;<span class="comment">/* Compute the L2 norm of a set of nx vectors */</span></div>
-<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;<span class="keywordtype">void</span> fvec_norms_L2 (<span class="keywordtype">float</span> * __restrict nr,</div>
-<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;                    <span class="keyword">const</span> <span class="keywordtype">float</span> * __restrict x,</div>
-<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;                    <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx)</div>
-<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;{</div>
-<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;</div>
-<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
-<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++) {</div>
-<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;        nr[i] = sqrtf (<a class="code" href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">fvec_norm_L2sqr</a> (x + i * d, d));</div>
-<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;    }</div>
-<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;}</div>
-<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;</div>
-<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;<span class="keywordtype">void</span> fvec_norms_L2sqr (<span class="keywordtype">float</span> * __restrict nr,</div>
-<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;                       <span class="keyword">const</span> <span class="keywordtype">float</span> * __restrict x,</div>
-<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;                       <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx)</div>
-<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;{</div>
-<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
-<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++)</div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;        nr[i] = <a class="code" href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">fvec_norm_L2sqr</a> (x + i * d, d);</div>
-<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;}</div>
-<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;</div>
-<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;</div>
+<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;</div>
+<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;</div>
+<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;<span class="comment">/* Compute the L2 norm of a set of nx vectors */</span></div>
+<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;<span class="keywordtype">void</span> fvec_norms_L2 (<span class="keywordtype">float</span> * __restrict nr,</div>
+<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;                    <span class="keyword">const</span> <span class="keywordtype">float</span> * __restrict x,</div>
+<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;                    <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx)</div>
+<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;{</div>
+<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;</div>
+<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
+<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++) {</div>
+<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;        nr[i] = sqrtf (<a class="code" href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">fvec_norm_L2sqr</a> (x + i * d, d));</div>
+<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;    }</div>
+<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;}</div>
+<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;</div>
+<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;<span class="keywordtype">void</span> fvec_norms_L2sqr (<span class="keywordtype">float</span> * __restrict nr,</div>
+<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;                       <span class="keyword">const</span> <span class="keywordtype">float</span> * __restrict x,</div>
+<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;                       <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx)</div>
+<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;{</div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++)</div>
+<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;        nr[i] = <a class="code" href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">fvec_norm_L2sqr</a> (x + i * d, d);</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;}</div>
 <div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;</div>
-<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;<span class="keywordtype">void</span> fvec_renorm_L2 (<span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">float</span> * __restrict x)</div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;{</div>
-<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
-<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++) {</div>
-<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;        <span class="keywordtype">float</span> * __restrict xi = x + i * d;</div>
-<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;</div>
-<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;        <span class="keywordtype">float</span> nr = <a class="code" href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">fvec_norm_L2sqr</a> (xi, d);</div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;</div>
+<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;<span class="keywordtype">void</span> fvec_renorm_L2 (<span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">float</span> * __restrict x)</div>
+<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;{</div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++) {</div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;        <span class="keywordtype">float</span> * __restrict xi = x + i * d;</div>
 <div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;</div>
-<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;        <span class="keywordflow">if</span> (nr &gt; 0) {</div>
-<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;            <span class="keywordtype">size_t</span> j;</div>
-<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> inv_nr = 1.0 / sqrtf (nr);</div>
-<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;            <span class="keywordflow">for</span> (j = 0; j &lt; d; j++)</div>
-<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;                xi[j] *= inv_nr;</div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;        }</div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;    }</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;}</div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;</div>
-<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;</div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;        <span class="keywordtype">float</span> nr = <a class="code" href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">fvec_norm_L2sqr</a> (xi, d);</div>
+<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;</div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;        <span class="keywordflow">if</span> (nr &gt; 0) {</div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;            <span class="keywordtype">size_t</span> j;</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> inv_nr = 1.0 / sqrtf (nr);</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;            <span class="keywordflow">for</span> (j = 0; j &lt; d; j++)</div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;                xi[j] *= inv_nr;</div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;        }</div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;    }</div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;}</div>
 <div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;</div>
 <div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;</div>
 <div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;</div>
@@ -716,191 +716,191 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;</div>
 <div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;</div>
 <div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;</div>
-<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;<span class="comment">/***************************************************************************</span></div>
-<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;<span class="comment"> * KNN functions</span></div>
-<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;<span class="comment"> ***************************************************************************/</span></div>
-<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;</div>
-<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;</div>
+<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;</div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;</div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;<span class="comment">/***************************************************************************</span></div>
+<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;<span class="comment"> * KNN functions</span></div>
+<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;<span class="comment"> ***************************************************************************/</span></div>
 <div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;</div>
-<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;<span class="comment">/* Find the nearest neighbors for nx queries in a set of ny vectors */</span></div>
-<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> knn_inner_product_sse (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;                        <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;                        <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;                        float_minheap_array_t * res)</div>
-<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;{</div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;    <span class="keywordtype">size_t</span> k = res-&gt;k;</div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;</div>
-<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
-<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++) {</div>
-<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * x_ = x + i * d;</div>
-<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * y_ = y;</div>
-<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;</div>
-<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;        <span class="keywordtype">float</span> * __restrict simi = res-&gt;get_val(i);</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;        <span class="keywordtype">long</span> * __restrict idxi = res-&gt;get_ids (i);</div>
-<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;</div>
-<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;        minheap_heapify (k, simi, idxi);</div>
+<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;</div>
+<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;</div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;<span class="comment">/* Find the nearest neighbors for nx queries in a set of ny vectors */</span></div>
+<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> knn_inner_product_sse (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;                        <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;                        <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;                        float_minheap_array_t * res)</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;{</div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;    <span class="keywordtype">size_t</span> k = res-&gt;k;</div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;</div>
+<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++) {</div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * x_ = x + i * d;</div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * y_ = y;</div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;</div>
+<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;        <span class="keywordtype">float</span> * __restrict simi = res-&gt;get_val(i);</div>
+<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;        <span class="keywordtype">long</span> * __restrict idxi = res-&gt;get_ids (i);</div>
 <div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;</div>
-<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; ny; j++) {</div>
-<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;            <span class="keywordtype">float</span> ip = fvec_inner_product (x_, y_, d);</div>
-<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;</div>
-<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;            <span class="keywordflow">if</span> (ip &gt; simi[0]) {</div>
-<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;                minheap_pop (k, simi, idxi);</div>
-<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;                minheap_push (k, simi, idxi, ip, j);</div>
-<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;            }</div>
-<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;            y_ += d;</div>
-<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;        }</div>
-<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;        minheap_reorder (k, simi, idxi);</div>
-<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;    }</div>
-<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;</div>
-<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;}</div>
+<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;        minheap_heapify (k, simi, idxi);</div>
+<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;</div>
+<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; ny; j++) {</div>
+<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;            <span class="keywordtype">float</span> ip = fvec_inner_product (x_, y_, d);</div>
+<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;</div>
+<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;            <span class="keywordflow">if</span> (ip &gt; simi[0]) {</div>
+<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;                minheap_pop (k, simi, idxi);</div>
+<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;                minheap_push (k, simi, idxi, ip, j);</div>
+<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;            }</div>
+<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;            y_ += d;</div>
+<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;        }</div>
+<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;        minheap_reorder (k, simi, idxi);</div>
+<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;    }</div>
 <div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;</div>
-<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> knn_L2sqr_sse (</div>
-<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;                <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
-<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;                float_maxheap_array_t * res)</div>
-<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;{</div>
-<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;    <span class="keywordtype">size_t</span> k = res-&gt;k;</div>
-<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;</div>
-<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
-<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++) {</div>
-<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * x_ = x + i * d;</div>
-<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * y_ = y;</div>
-<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;        <span class="keywordtype">size_t</span> j;</div>
-<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;        <span class="keywordtype">float</span> * __restrict simi = res-&gt;get_val(i);</div>
-<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;        <span class="keywordtype">long</span> * __restrict idxi = res-&gt;get_ids (i);</div>
-<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;</div>
-<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;        maxheap_heapify (k, simi, idxi);</div>
-<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;        <span class="keywordflow">for</span> (j = 0; j &lt; ny; j++) {</div>
-<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;            <span class="keywordtype">float</span> disij = <a class="code" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">fvec_L2sqr</a> (x_, y_, d);</div>
-<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;</div>
-<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;            <span class="keywordflow">if</span> (disij &lt; simi[0]) {</div>
-<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;                maxheap_pop (k, simi, idxi);</div>
-<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;                maxheap_push (k, simi, idxi, disij, j);</div>
-<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;            }</div>
-<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;            y_ += d;</div>
-<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;        }</div>
-<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;        maxheap_reorder (k, simi, idxi);</div>
-<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;    }</div>
-<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;</div>
-<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;}</div>
+<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;}</div>
+<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;</div>
+<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> knn_L2sqr_sse (</div>
+<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;                <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
+<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;                float_maxheap_array_t * res)</div>
+<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;{</div>
+<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;    <span class="keywordtype">size_t</span> k = res-&gt;k;</div>
+<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;</div>
+<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
+<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++) {</div>
+<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * x_ = x + i * d;</div>
+<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * y_ = y;</div>
+<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;        <span class="keywordtype">size_t</span> j;</div>
+<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;        <span class="keywordtype">float</span> * __restrict simi = res-&gt;get_val(i);</div>
+<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;        <span class="keywordtype">long</span> * __restrict idxi = res-&gt;get_ids (i);</div>
+<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;</div>
+<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;        maxheap_heapify (k, simi, idxi);</div>
+<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;        <span class="keywordflow">for</span> (j = 0; j &lt; ny; j++) {</div>
+<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;            <span class="keywordtype">float</span> disij = <a class="code" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">fvec_L2sqr</a> (x_, y_, d);</div>
+<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;</div>
+<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;            <span class="keywordflow">if</span> (disij &lt; simi[0]) {</div>
+<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;                maxheap_pop (k, simi, idxi);</div>
+<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;                maxheap_push (k, simi, idxi, disij, j);</div>
+<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;            }</div>
+<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;            y_ += d;</div>
+<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;        }</div>
+<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;        maxheap_reorder (k, simi, idxi);</div>
+<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;    }</div>
 <div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;</div>
-<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;<span class="comment">/** Find the nearest neighbors for nx queries in a set of ny vectors */</span></div>
-<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> knn_inner_product_blas (</div>
-<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;        <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
-<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;        float_minheap_array_t * res)</div>
-<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;{</div>
-<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;    res-&gt;heapify ();</div>
-<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;</div>
-<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;    <span class="comment">// BLAS does not like empty matrices</span></div>
-<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;    <span class="keywordflow">if</span> (nx == 0 || ny == 0) <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;</div>
-<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;    <span class="comment">/* block sizes */</span></div>
-<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> bs_x = 4096, bs_y = 1024;</div>
-<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;    <span class="comment">// const size_t bs_x = 16, bs_y = 16;</span></div>
-<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;    <span class="keywordtype">float</span> *ip_block = <span class="keyword">new</span> <span class="keywordtype">float</span>[bs_x * bs_y];</div>
-<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;</div>
-<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i0 = 0; i0 &lt; nx; i0 += bs_x) {</div>
-<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;        <span class="keywordtype">size_t</span> i1 = i0 + bs_x;</div>
-<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;        <span class="keywordflow">if</span>(i1 &gt; nx) i1 = nx;</div>
-<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;</div>
-<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j0 = 0; j0 &lt; ny; j0 += bs_y) {</div>
-<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;            <span class="keywordtype">size_t</span> j1 = j0 + bs_y;</div>
-<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;            <span class="keywordflow">if</span> (j1 &gt; ny) j1 = ny;</div>
-<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;            <span class="comment">/* compute the actual dot products */</span></div>
-<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;            {</div>
-<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;                <span class="keywordtype">float</span> one = 1, zero = 0;</div>
-<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;                FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;</div>
-<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;                sgemm_ (<span class="stringliteral">&quot;Transpose&quot;</span>, <span class="stringliteral">&quot;Not transpose&quot;</span>, &amp;nyi, &amp;nxi, &amp;di, &amp;one,</div>
-<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;                        y + j0 * d, &amp;di,</div>
-<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;                        x + i0 * d, &amp;di, &amp;zero,</div>
-<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;                        ip_block, &amp;nyi);</div>
-<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;            }</div>
-<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;</div>
-<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;            <span class="comment">/* collect maxima */</span></div>
-<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;            res-&gt;addn (j1 - j0, ip_block, j0, i0, i1 - i0);</div>
-<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;        }</div>
-<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;    }</div>
-<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;    <span class="keyword">delete</span> [] ip_block;</div>
-<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;    res-&gt;reorder ();</div>
-<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;}</div>
-<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;</div>
-<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;<span class="comment">// distance correction is an operator that can be applied to transform</span></div>
-<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;<span class="comment">// the distances</span></div>
-<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> DistanceCorrection&gt;</div>
-<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> knn_L2sqr_blas (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;        <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
-<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;        float_maxheap_array_t * res,</div>
-<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;        <span class="keyword">const</span> DistanceCorrection &amp;corr)</div>
-<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;{</div>
-<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;    res-&gt;heapify ();</div>
-<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;</div>
-<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;    <span class="comment">// BLAS does not like empty matrices</span></div>
-<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;    <span class="keywordflow">if</span> (nx == 0 || ny == 0) <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;</div>
-<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    <span class="keywordtype">size_t</span> k = res-&gt;k;</div>
+<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;}</div>
+<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;</div>
+<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;<span class="comment">/** Find the nearest neighbors for nx queries in a set of ny vectors */</span></div>
+<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> knn_inner_product_blas (</div>
+<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;        <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
+<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;        float_minheap_array_t * res)</div>
+<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;{</div>
+<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;    res-&gt;heapify ();</div>
+<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;</div>
+<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;    <span class="comment">// BLAS does not like empty matrices</span></div>
+<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;    <span class="keywordflow">if</span> (nx == 0 || ny == 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;</div>
+<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;    <span class="comment">/* block sizes */</span></div>
+<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> bs_x = 4096, bs_y = 1024;</div>
+<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;    <span class="comment">// const size_t bs_x = 16, bs_y = 16;</span></div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;    <span class="keywordtype">float</span> *ip_block = <span class="keyword">new</span> <span class="keywordtype">float</span>[bs_x * bs_y];</div>
+<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;</div>
+<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i0 = 0; i0 &lt; nx; i0 += bs_x) {</div>
+<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;        <span class="keywordtype">size_t</span> i1 = i0 + bs_x;</div>
+<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;        <span class="keywordflow">if</span>(i1 &gt; nx) i1 = nx;</div>
+<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;</div>
+<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j0 = 0; j0 &lt; ny; j0 += bs_y) {</div>
+<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;            <span class="keywordtype">size_t</span> j1 = j0 + bs_y;</div>
+<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;            <span class="keywordflow">if</span> (j1 &gt; ny) j1 = ny;</div>
+<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;            <span class="comment">/* compute the actual dot products */</span></div>
+<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;            {</div>
+<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;                <span class="keywordtype">float</span> one = 1, zero = 0;</div>
+<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;                FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;</div>
+<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;                sgemm_ (<span class="stringliteral">&quot;Transpose&quot;</span>, <span class="stringliteral">&quot;Not transpose&quot;</span>, &amp;nyi, &amp;nxi, &amp;di, &amp;one,</div>
+<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;                        y + j0 * d, &amp;di,</div>
+<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;                        x + i0 * d, &amp;di, &amp;zero,</div>
+<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;                        ip_block, &amp;nyi);</div>
+<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;            }</div>
+<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;</div>
+<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;            <span class="comment">/* collect maxima */</span></div>
+<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;            res-&gt;addn (j1 - j0, ip_block, j0, i0, i1 - i0);</div>
+<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;        }</div>
+<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;    }</div>
+<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;    <span class="keyword">delete</span> [] ip_block;</div>
+<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;    res-&gt;reorder ();</div>
+<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;}</div>
+<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;</div>
+<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;<span class="comment">// distance correction is an operator that can be applied to transform</span></div>
+<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;<span class="comment">// the distances</span></div>
+<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> DistanceCorrection&gt;</div>
+<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> knn_L2sqr_blas (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;        <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
+<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;        float_maxheap_array_t * res,</div>
+<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;        <span class="keyword">const</span> DistanceCorrection &amp;corr)</div>
+<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;{</div>
+<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;    res-&gt;heapify ();</div>
+<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;</div>
+<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;    <span class="comment">// BLAS does not like empty matrices</span></div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    <span class="keywordflow">if</span> (nx == 0 || ny == 0) <span class="keywordflow">return</span>;</div>
 <div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;</div>
-<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;    <span class="comment">/* block sizes */</span></div>
-<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> bs_x = 4096, bs_y = 1024;</div>
-<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;    <span class="comment">// const size_t bs_x = 16, bs_y = 16;</span></div>
-<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;    <span class="keywordtype">float</span> *ip_block = <span class="keyword">new</span> <span class="keywordtype">float</span>[bs_x * bs_y];</div>
-<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;</div>
-<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;    <span class="keywordtype">float</span> *x_norms = <span class="keyword">new</span> <span class="keywordtype">float</span>[nx];</div>
-<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;    fvec_norms_L2sqr (x_norms, x, d, nx);</div>
-<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;</div>
-<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;    <span class="keywordtype">float</span> *y_norms = <span class="keyword">new</span> <span class="keywordtype">float</span>[ny];</div>
-<div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;    fvec_norms_L2sqr (y_norms, y, d, ny);</div>
-<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;</div>
-<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i0 = 0; i0 &lt; nx; i0 += bs_x) {</div>
-<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;        <span class="keywordtype">size_t</span> i1 = i0 + bs_x;</div>
-<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;        <span class="keywordflow">if</span>(i1 &gt; nx) i1 = nx;</div>
-<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;</div>
-<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j0 = 0; j0 &lt; ny; j0 += bs_y) {</div>
-<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;            <span class="keywordtype">size_t</span> j1 = j0 + bs_y;</div>
-<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;            <span class="keywordflow">if</span> (j1 &gt; ny) j1 = ny;</div>
-<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;            <span class="comment">/* compute the actual dot products */</span></div>
-<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;            {</div>
-<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;                <span class="keywordtype">float</span> one = 1, zero = 0;</div>
-<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;                FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;</div>
-<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;                sgemm_ (<span class="stringliteral">&quot;Transpose&quot;</span>, <span class="stringliteral">&quot;Not transpose&quot;</span>, &amp;nyi, &amp;nxi, &amp;di, &amp;one,</div>
-<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;                        y + j0 * d, &amp;di,</div>
-<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;                        x + i0 * d, &amp;di, &amp;zero,</div>
-<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;                        ip_block, &amp;nyi);</div>
-<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;            }</div>
-<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;</div>
-<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;            <span class="comment">/* collect minima */</span></div>
-<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
-<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;<span class="preprocessor"></span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = i0; i &lt; i1; i++) {</div>
-<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;                <span class="keywordtype">float</span> * __restrict simi = res-&gt;get_val(i);</div>
-<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;                <span class="keywordtype">long</span> * __restrict idxi = res-&gt;get_ids (i);</div>
-<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">float</span> *ip_line = ip_block + (i - i0) * (j1 - j0);</div>
-<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;</div>
-<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160;                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = j0; j &lt; j1; j++) {</div>
-<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;                    <span class="keywordtype">float</span> ip = *ip_line++;</div>
-<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;                    <span class="keywordtype">float</span> dis = x_norms[i] + y_norms[j] - 2 * ip;</div>
-<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;</div>
-<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;                    dis = corr (dis, i, j);</div>
+<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;    <span class="keywordtype">size_t</span> k = res-&gt;k;</div>
+<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;</div>
+<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;    <span class="comment">/* block sizes */</span></div>
+<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> bs_x = 4096, bs_y = 1024;</div>
+<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;    <span class="comment">// const size_t bs_x = 16, bs_y = 16;</span></div>
+<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;    <span class="keywordtype">float</span> *ip_block = <span class="keyword">new</span> <span class="keywordtype">float</span>[bs_x * bs_y];</div>
+<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;</div>
+<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;    <span class="keywordtype">float</span> *x_norms = <span class="keyword">new</span> <span class="keywordtype">float</span>[nx];</div>
+<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;    fvec_norms_L2sqr (x_norms, x, d, nx);</div>
+<div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;</div>
+<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;    <span class="keywordtype">float</span> *y_norms = <span class="keyword">new</span> <span class="keywordtype">float</span>[ny];</div>
+<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;    fvec_norms_L2sqr (y_norms, y, d, ny);</div>
+<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;</div>
+<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i0 = 0; i0 &lt; nx; i0 += bs_x) {</div>
+<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;        <span class="keywordtype">size_t</span> i1 = i0 + bs_x;</div>
+<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;        <span class="keywordflow">if</span>(i1 &gt; nx) i1 = nx;</div>
+<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;</div>
+<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j0 = 0; j0 &lt; ny; j0 += bs_y) {</div>
+<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;            <span class="keywordtype">size_t</span> j1 = j0 + bs_y;</div>
+<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;            <span class="keywordflow">if</span> (j1 &gt; ny) j1 = ny;</div>
+<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;            <span class="comment">/* compute the actual dot products */</span></div>
+<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;            {</div>
+<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;                <span class="keywordtype">float</span> one = 1, zero = 0;</div>
+<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;                FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;</div>
+<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;                sgemm_ (<span class="stringliteral">&quot;Transpose&quot;</span>, <span class="stringliteral">&quot;Not transpose&quot;</span>, &amp;nyi, &amp;nxi, &amp;di, &amp;one,</div>
+<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;                        y + j0 * d, &amp;di,</div>
+<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;                        x + i0 * d, &amp;di, &amp;zero,</div>
+<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;                        ip_block, &amp;nyi);</div>
+<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;            }</div>
+<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;</div>
+<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;            <span class="comment">/* collect minima */</span></div>
+<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
+<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;<span class="preprocessor"></span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = i0; i &lt; i1; i++) {</div>
+<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;                <span class="keywordtype">float</span> * __restrict simi = res-&gt;get_val(i);</div>
+<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;                <span class="keywordtype">long</span> * __restrict idxi = res-&gt;get_ids (i);</div>
+<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">float</span> *ip_line = ip_block + (i - i0) * (j1 - j0);</div>
+<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;</div>
+<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = j0; j &lt; j1; j++) {</div>
+<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;                    <span class="keywordtype">float</span> ip = *ip_line++;</div>
+<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;                    <span class="keywordtype">float</span> dis = x_norms[i] + y_norms[j] - 2 * ip;</div>
 <div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;</div>
-<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;                    <span class="keywordflow">if</span> (dis &lt; simi[0]) {</div>
-<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;                        maxheap_pop (k, simi, idxi);</div>
-<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;                        maxheap_push (k, simi, idxi, dis, j);</div>
-<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;                    }</div>
-<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;                }</div>
-<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160;            }</div>
-<div class="line"><a name="l00809"></a><span class="lineno">  809</span>&#160;        }</div>
-<div class="line"><a name="l00810"></a><span class="lineno">  810</span>&#160;    }</div>
-<div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160;    res-&gt;reorder ();</div>
-<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;</div>
-<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;    <span class="keyword">delete</span> [] ip_block;</div>
-<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;    <span class="keyword">delete</span> [] x_norms;</div>
-<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;    <span class="keyword">delete</span> [] y_norms;</div>
-<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;}</div>
-<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;</div>
-<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;</div>
+<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;                    dis = corr (dis, i, j);</div>
+<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;</div>
+<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;                    <span class="keywordflow">if</span> (dis &lt; simi[0]) {</div>
+<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;                        maxheap_pop (k, simi, idxi);</div>
+<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;                        maxheap_push (k, simi, idxi, dis, j);</div>
+<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160;                    }</div>
+<div class="line"><a name="l00809"></a><span class="lineno">  809</span>&#160;                }</div>
+<div class="line"><a name="l00810"></a><span class="lineno">  810</span>&#160;            }</div>
+<div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160;        }</div>
+<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;    }</div>
+<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;    res-&gt;reorder ();</div>
+<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;</div>
+<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;    <span class="keyword">delete</span> [] ip_block;</div>
+<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;    <span class="keyword">delete</span> [] x_norms;</div>
+<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;    <span class="keyword">delete</span> [] y_norms;</div>
+<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;}</div>
 <div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160;</div>
 <div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;</div>
 <div class="line"><a name="l00821"></a><span class="lineno">  821</span>&#160;</div>
@@ -908,124 +908,124 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00823"></a><span class="lineno">  823</span>&#160;</div>
 <div class="line"><a name="l00824"></a><span class="lineno">  824</span>&#160;</div>
 <div class="line"><a name="l00825"></a><span class="lineno">  825</span>&#160;</div>
-<div class="line"><a name="l00826"></a><span class="lineno">  826</span>&#160;<span class="comment">/*******************************************************</span></div>
-<div class="line"><a name="l00827"></a><span class="lineno">  827</span>&#160;<span class="comment"> * KNN driver functions</span></div>
-<div class="line"><a name="l00828"></a><span class="lineno">  828</span>&#160;<span class="comment"> *******************************************************/</span></div>
-<div class="line"><a name="l00829"></a><span class="lineno">  829</span>&#160;</div>
-<div class="line"><a name="l00830"></a><span class="lineno"><a class="line" href="namespacefaiss.html#a880c7318971f866267a86945aaa61b17">  830</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacefaiss.html#a880c7318971f866267a86945aaa61b17">knn_inner_product</a> (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00831"></a><span class="lineno">  831</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00832"></a><span class="lineno">  832</span>&#160;        <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
-<div class="line"><a name="l00833"></a><span class="lineno">  833</span>&#160;        <a class="code" href="structfaiss_1_1HeapArray.html">float_minheap_array_t</a> * res)</div>
-<div class="line"><a name="l00834"></a><span class="lineno">  834</span>&#160;{</div>
-<div class="line"><a name="l00835"></a><span class="lineno">  835</span>&#160;    <span class="keywordflow">if</span> (d % 4 == 0 &amp;&amp; nx &lt; 20) {</div>
-<div class="line"><a name="l00836"></a><span class="lineno">  836</span>&#160;        knn_inner_product_sse (x, y, d, nx, ny, res);</div>
-<div class="line"><a name="l00837"></a><span class="lineno">  837</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00838"></a><span class="lineno">  838</span>&#160;        knn_inner_product_blas (x, y, d, nx, ny, res);</div>
-<div class="line"><a name="l00839"></a><span class="lineno">  839</span>&#160;    }</div>
-<div class="line"><a name="l00840"></a><span class="lineno">  840</span>&#160;}</div>
-<div class="line"><a name="l00841"></a><span class="lineno">  841</span>&#160;</div>
-<div class="line"><a name="l00842"></a><span class="lineno">  842</span>&#160;</div>
+<div class="line"><a name="l00826"></a><span class="lineno">  826</span>&#160;</div>
+<div class="line"><a name="l00827"></a><span class="lineno">  827</span>&#160;</div>
+<div class="line"><a name="l00828"></a><span class="lineno">  828</span>&#160;<span class="comment">/*******************************************************</span></div>
+<div class="line"><a name="l00829"></a><span class="lineno">  829</span>&#160;<span class="comment"> * KNN driver functions</span></div>
+<div class="line"><a name="l00830"></a><span class="lineno">  830</span>&#160;<span class="comment"> *******************************************************/</span></div>
+<div class="line"><a name="l00831"></a><span class="lineno">  831</span>&#160;</div>
+<div class="line"><a name="l00832"></a><span class="lineno"><a class="line" href="namespacefaiss.html#a880c7318971f866267a86945aaa61b17">  832</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacefaiss.html#a880c7318971f866267a86945aaa61b17">knn_inner_product</a> (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00833"></a><span class="lineno">  833</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00834"></a><span class="lineno">  834</span>&#160;        <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
+<div class="line"><a name="l00835"></a><span class="lineno">  835</span>&#160;        <a class="code" href="structfaiss_1_1HeapArray.html">float_minheap_array_t</a> * res)</div>
+<div class="line"><a name="l00836"></a><span class="lineno">  836</span>&#160;{</div>
+<div class="line"><a name="l00837"></a><span class="lineno">  837</span>&#160;    <span class="keywordflow">if</span> (d % 4 == 0 &amp;&amp; nx &lt; 20) {</div>
+<div class="line"><a name="l00838"></a><span class="lineno">  838</span>&#160;        knn_inner_product_sse (x, y, d, nx, ny, res);</div>
+<div class="line"><a name="l00839"></a><span class="lineno">  839</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00840"></a><span class="lineno">  840</span>&#160;        knn_inner_product_blas (x, y, d, nx, ny, res);</div>
+<div class="line"><a name="l00841"></a><span class="lineno">  841</span>&#160;    }</div>
+<div class="line"><a name="l00842"></a><span class="lineno">  842</span>&#160;}</div>
 <div class="line"><a name="l00843"></a><span class="lineno">  843</span>&#160;</div>
-<div class="line"><a name="l00844"></a><span class="lineno"><a class="line" href="structfaiss_1_1NopDistanceCorrection.html">  844</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1NopDistanceCorrection.html">NopDistanceCorrection</a> {</div>
-<div class="line"><a name="l00845"></a><span class="lineno">  845</span>&#160;    <span class="keywordtype">float</span> operator()(<span class="keywordtype">float</span> dis, <span class="keywordtype">size_t</span> qno, <span class="keywordtype">size_t</span> bno)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00846"></a><span class="lineno">  846</span>&#160;        <span class="keywordflow">return</span> dis;</div>
-<div class="line"><a name="l00847"></a><span class="lineno">  847</span>&#160;    }</div>
-<div class="line"><a name="l00848"></a><span class="lineno">  848</span>&#160;};</div>
-<div class="line"><a name="l00849"></a><span class="lineno">  849</span>&#160;</div>
-<div class="line"><a name="l00850"></a><span class="lineno"><a class="line" href="namespacefaiss.html#a2f803e3d3b07cfab63699c89de161237">  850</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacefaiss.html#a2f803e3d3b07cfab63699c89de161237">knn_L2sqr</a> (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00851"></a><span class="lineno">  851</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00852"></a><span class="lineno">  852</span>&#160;                <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
-<div class="line"><a name="l00853"></a><span class="lineno">  853</span>&#160;                <a class="code" href="structfaiss_1_1HeapArray.html">float_maxheap_array_t</a> * res)</div>
-<div class="line"><a name="l00854"></a><span class="lineno">  854</span>&#160;{</div>
-<div class="line"><a name="l00855"></a><span class="lineno">  855</span>&#160;    <span class="keywordflow">if</span> (d % 4 == 0 &amp;&amp; nx &lt; 20) {</div>
-<div class="line"><a name="l00856"></a><span class="lineno">  856</span>&#160;        knn_L2sqr_sse (x, y, d, nx, ny, res);</div>
-<div class="line"><a name="l00857"></a><span class="lineno">  857</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00858"></a><span class="lineno">  858</span>&#160;        <a class="code" href="structfaiss_1_1NopDistanceCorrection.html">NopDistanceCorrection</a> nop;</div>
-<div class="line"><a name="l00859"></a><span class="lineno">  859</span>&#160;        knn_L2sqr_blas (x, y, d, nx, ny, res, nop);</div>
-<div class="line"><a name="l00860"></a><span class="lineno">  860</span>&#160;    }</div>
-<div class="line"><a name="l00861"></a><span class="lineno">  861</span>&#160;}</div>
-<div class="line"><a name="l00862"></a><span class="lineno">  862</span>&#160;</div>
-<div class="line"><a name="l00863"></a><span class="lineno"><a class="line" href="structfaiss_1_1BaseShiftDistanceCorrection.html">  863</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1BaseShiftDistanceCorrection.html">BaseShiftDistanceCorrection</a> {</div>
-<div class="line"><a name="l00864"></a><span class="lineno">  864</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">float</span> *base_shift;</div>
-<div class="line"><a name="l00865"></a><span class="lineno">  865</span>&#160;    <span class="keywordtype">float</span> operator()(<span class="keywordtype">float</span> dis, <span class="keywordtype">size_t</span> qno, <span class="keywordtype">size_t</span> bno)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00866"></a><span class="lineno">  866</span>&#160;        <span class="keywordflow">return</span> dis - base_shift[bno];</div>
-<div class="line"><a name="l00867"></a><span class="lineno">  867</span>&#160;    }</div>
-<div class="line"><a name="l00868"></a><span class="lineno">  868</span>&#160;};</div>
-<div class="line"><a name="l00869"></a><span class="lineno">  869</span>&#160;</div>
-<div class="line"><a name="l00870"></a><span class="lineno"><a class="line" href="namespacefaiss.html#a5eb1701e46123827966f2a56da893d1d">  870</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacefaiss.html#a5eb1701e46123827966f2a56da893d1d">knn_L2sqr_base_shift</a> (</div>
-<div class="line"><a name="l00871"></a><span class="lineno">  871</span>&#160;         <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00872"></a><span class="lineno">  872</span>&#160;         <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00873"></a><span class="lineno">  873</span>&#160;         <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
-<div class="line"><a name="l00874"></a><span class="lineno">  874</span>&#160;         <a class="code" href="structfaiss_1_1HeapArray.html">float_maxheap_array_t</a> * res,</div>
-<div class="line"><a name="l00875"></a><span class="lineno">  875</span>&#160;         <span class="keyword">const</span> <span class="keywordtype">float</span> *base_shift)</div>
-<div class="line"><a name="l00876"></a><span class="lineno">  876</span>&#160;{</div>
-<div class="line"><a name="l00877"></a><span class="lineno">  877</span>&#160;    <a class="code" href="structfaiss_1_1BaseShiftDistanceCorrection.html">BaseShiftDistanceCorrection</a> corr = {base_shift};</div>
-<div class="line"><a name="l00878"></a><span class="lineno">  878</span>&#160;    knn_L2sqr_blas (x, y, d, nx, ny, res, corr);</div>
-<div class="line"><a name="l00879"></a><span class="lineno">  879</span>&#160;}</div>
-<div class="line"><a name="l00880"></a><span class="lineno">  880</span>&#160;</div>
-<div class="line"><a name="l00881"></a><span class="lineno">  881</span>&#160;</div>
+<div class="line"><a name="l00844"></a><span class="lineno">  844</span>&#160;</div>
+<div class="line"><a name="l00845"></a><span class="lineno">  845</span>&#160;</div>
+<div class="line"><a name="l00846"></a><span class="lineno"><a class="line" href="structfaiss_1_1NopDistanceCorrection.html">  846</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1NopDistanceCorrection.html">NopDistanceCorrection</a> {</div>
+<div class="line"><a name="l00847"></a><span class="lineno">  847</span>&#160;    <span class="keywordtype">float</span> operator()(<span class="keywordtype">float</span> dis, <span class="keywordtype">size_t</span> qno, <span class="keywordtype">size_t</span> bno)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00848"></a><span class="lineno">  848</span>&#160;        <span class="keywordflow">return</span> dis;</div>
+<div class="line"><a name="l00849"></a><span class="lineno">  849</span>&#160;    }</div>
+<div class="line"><a name="l00850"></a><span class="lineno">  850</span>&#160;};</div>
+<div class="line"><a name="l00851"></a><span class="lineno">  851</span>&#160;</div>
+<div class="line"><a name="l00852"></a><span class="lineno"><a class="line" href="namespacefaiss.html#a2f803e3d3b07cfab63699c89de161237">  852</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacefaiss.html#a2f803e3d3b07cfab63699c89de161237">knn_L2sqr</a> (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00853"></a><span class="lineno">  853</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00854"></a><span class="lineno">  854</span>&#160;                <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
+<div class="line"><a name="l00855"></a><span class="lineno">  855</span>&#160;                <a class="code" href="structfaiss_1_1HeapArray.html">float_maxheap_array_t</a> * res)</div>
+<div class="line"><a name="l00856"></a><span class="lineno">  856</span>&#160;{</div>
+<div class="line"><a name="l00857"></a><span class="lineno">  857</span>&#160;    <span class="keywordflow">if</span> (d % 4 == 0 &amp;&amp; nx &lt; 20) {</div>
+<div class="line"><a name="l00858"></a><span class="lineno">  858</span>&#160;        knn_L2sqr_sse (x, y, d, nx, ny, res);</div>
+<div class="line"><a name="l00859"></a><span class="lineno">  859</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00860"></a><span class="lineno">  860</span>&#160;        <a class="code" href="structfaiss_1_1NopDistanceCorrection.html">NopDistanceCorrection</a> nop;</div>
+<div class="line"><a name="l00861"></a><span class="lineno">  861</span>&#160;        knn_L2sqr_blas (x, y, d, nx, ny, res, nop);</div>
+<div class="line"><a name="l00862"></a><span class="lineno">  862</span>&#160;    }</div>
+<div class="line"><a name="l00863"></a><span class="lineno">  863</span>&#160;}</div>
+<div class="line"><a name="l00864"></a><span class="lineno">  864</span>&#160;</div>
+<div class="line"><a name="l00865"></a><span class="lineno"><a class="line" href="structfaiss_1_1BaseShiftDistanceCorrection.html">  865</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1BaseShiftDistanceCorrection.html">BaseShiftDistanceCorrection</a> {</div>
+<div class="line"><a name="l00866"></a><span class="lineno">  866</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">float</span> *base_shift;</div>
+<div class="line"><a name="l00867"></a><span class="lineno">  867</span>&#160;    <span class="keywordtype">float</span> operator()(<span class="keywordtype">float</span> dis, <span class="keywordtype">size_t</span> qno, <span class="keywordtype">size_t</span> bno)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00868"></a><span class="lineno">  868</span>&#160;        <span class="keywordflow">return</span> dis - base_shift[bno];</div>
+<div class="line"><a name="l00869"></a><span class="lineno">  869</span>&#160;    }</div>
+<div class="line"><a name="l00870"></a><span class="lineno">  870</span>&#160;};</div>
+<div class="line"><a name="l00871"></a><span class="lineno">  871</span>&#160;</div>
+<div class="line"><a name="l00872"></a><span class="lineno"><a class="line" href="namespacefaiss.html#a5eb1701e46123827966f2a56da893d1d">  872</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacefaiss.html#a5eb1701e46123827966f2a56da893d1d">knn_L2sqr_base_shift</a> (</div>
+<div class="line"><a name="l00873"></a><span class="lineno">  873</span>&#160;         <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00874"></a><span class="lineno">  874</span>&#160;         <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00875"></a><span class="lineno">  875</span>&#160;         <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
+<div class="line"><a name="l00876"></a><span class="lineno">  876</span>&#160;         <a class="code" href="structfaiss_1_1HeapArray.html">float_maxheap_array_t</a> * res,</div>
+<div class="line"><a name="l00877"></a><span class="lineno">  877</span>&#160;         <span class="keyword">const</span> <span class="keywordtype">float</span> *base_shift)</div>
+<div class="line"><a name="l00878"></a><span class="lineno">  878</span>&#160;{</div>
+<div class="line"><a name="l00879"></a><span class="lineno">  879</span>&#160;    <a class="code" href="structfaiss_1_1BaseShiftDistanceCorrection.html">BaseShiftDistanceCorrection</a> corr = {base_shift};</div>
+<div class="line"><a name="l00880"></a><span class="lineno">  880</span>&#160;    knn_L2sqr_blas (x, y, d, nx, ny, res, corr);</div>
+<div class="line"><a name="l00881"></a><span class="lineno">  881</span>&#160;}</div>
 <div class="line"><a name="l00882"></a><span class="lineno">  882</span>&#160;</div>
-<div class="line"><a name="l00883"></a><span class="lineno">  883</span>&#160;<span class="comment">/***************************************************************************</span></div>
-<div class="line"><a name="l00884"></a><span class="lineno">  884</span>&#160;<span class="comment"> * compute a subset of  distances</span></div>
-<div class="line"><a name="l00885"></a><span class="lineno">  885</span>&#160;<span class="comment"> ***************************************************************************/</span></div>
-<div class="line"><a name="l00886"></a><span class="lineno">  886</span>&#160;</div>
-<div class="line"><a name="l00887"></a><span class="lineno">  887</span>&#160;<span class="comment">/* compute the inner product between x and a subset y of ny vectors,</span></div>
-<div class="line"><a name="l00888"></a><span class="lineno">  888</span>&#160;<span class="comment">   whose indices are given by idy.  */</span></div>
-<div class="line"><a name="l00889"></a><span class="lineno">  889</span>&#160;<span class="keywordtype">void</span> fvec_inner_products_by_idx (<span class="keywordtype">float</span> * __restrict ip,</div>
-<div class="line"><a name="l00890"></a><span class="lineno">  890</span>&#160;                                 <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00891"></a><span class="lineno">  891</span>&#160;                                 <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00892"></a><span class="lineno">  892</span>&#160;                                 <span class="keyword">const</span> <span class="keywordtype">long</span> * __restrict ids, <span class="comment">/* for y vecs */</span></div>
-<div class="line"><a name="l00893"></a><span class="lineno">  893</span>&#160;                                 <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny)</div>
-<div class="line"><a name="l00894"></a><span class="lineno">  894</span>&#160;{</div>
-<div class="line"><a name="l00895"></a><span class="lineno">  895</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
-<div class="line"><a name="l00896"></a><span class="lineno">  896</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; nx; j++) {</div>
-<div class="line"><a name="l00897"></a><span class="lineno">  897</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">long</span> * __restrict idsj = ids + j * ny;</div>
-<div class="line"><a name="l00898"></a><span class="lineno">  898</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * xj = x + j * d;</div>
-<div class="line"><a name="l00899"></a><span class="lineno">  899</span>&#160;        <span class="keywordtype">float</span> * __restrict ipj = ip + j * ny;</div>
-<div class="line"><a name="l00900"></a><span class="lineno">  900</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ny; i++) {</div>
-<div class="line"><a name="l00901"></a><span class="lineno">  901</span>&#160;            <span class="keywordflow">if</span> (idsj[i] &lt; 0)</div>
-<div class="line"><a name="l00902"></a><span class="lineno">  902</span>&#160;                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00903"></a><span class="lineno">  903</span>&#160;            ipj[i] = fvec_inner_product (xj, y + d * idsj[i], d);</div>
-<div class="line"><a name="l00904"></a><span class="lineno">  904</span>&#160;        }</div>
-<div class="line"><a name="l00905"></a><span class="lineno">  905</span>&#160;    }</div>
-<div class="line"><a name="l00906"></a><span class="lineno">  906</span>&#160;}</div>
-<div class="line"><a name="l00907"></a><span class="lineno">  907</span>&#160;</div>
-<div class="line"><a name="l00908"></a><span class="lineno">  908</span>&#160;<span class="comment">/* compute the inner product between x and a subset y of ny vectors,</span></div>
-<div class="line"><a name="l00909"></a><span class="lineno">  909</span>&#160;<span class="comment">   whose indices are given by idy.  */</span></div>
-<div class="line"><a name="l00910"></a><span class="lineno">  910</span>&#160;<span class="keywordtype">void</span> fvec_L2sqr_by_idx (<span class="keywordtype">float</span> * __restrict dis,</div>
-<div class="line"><a name="l00911"></a><span class="lineno">  911</span>&#160;                        <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00912"></a><span class="lineno">  912</span>&#160;                        <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00913"></a><span class="lineno">  913</span>&#160;                        <span class="keyword">const</span> <span class="keywordtype">long</span> * __restrict ids, <span class="comment">/* ids of y vecs */</span></div>
-<div class="line"><a name="l00914"></a><span class="lineno">  914</span>&#160;                        <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny)</div>
-<div class="line"><a name="l00915"></a><span class="lineno">  915</span>&#160;{</div>
-<div class="line"><a name="l00916"></a><span class="lineno">  916</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
-<div class="line"><a name="l00917"></a><span class="lineno">  917</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; nx; j++) {</div>
-<div class="line"><a name="l00918"></a><span class="lineno">  918</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">long</span> * __restrict idsj = ids + j * ny;</div>
-<div class="line"><a name="l00919"></a><span class="lineno">  919</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * xj = x + j * d;</div>
-<div class="line"><a name="l00920"></a><span class="lineno">  920</span>&#160;        <span class="keywordtype">float</span> * __restrict disj = dis + j * ny;</div>
-<div class="line"><a name="l00921"></a><span class="lineno">  921</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ny; i++) {</div>
-<div class="line"><a name="l00922"></a><span class="lineno">  922</span>&#160;            <span class="keywordflow">if</span> (idsj[i] &lt; 0)</div>
-<div class="line"><a name="l00923"></a><span class="lineno">  923</span>&#160;                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00924"></a><span class="lineno">  924</span>&#160;            disj[i] = <a class="code" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">fvec_L2sqr</a> (xj, y + d * idsj[i], d);</div>
-<div class="line"><a name="l00925"></a><span class="lineno">  925</span>&#160;        }</div>
-<div class="line"><a name="l00926"></a><span class="lineno">  926</span>&#160;    }</div>
-<div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;}</div>
-<div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;</div>
-<div class="line"><a name="l00929"></a><span class="lineno">  929</span>&#160;</div>
+<div class="line"><a name="l00883"></a><span class="lineno">  883</span>&#160;</div>
+<div class="line"><a name="l00884"></a><span class="lineno">  884</span>&#160;</div>
+<div class="line"><a name="l00885"></a><span class="lineno">  885</span>&#160;<span class="comment">/***************************************************************************</span></div>
+<div class="line"><a name="l00886"></a><span class="lineno">  886</span>&#160;<span class="comment"> * compute a subset of  distances</span></div>
+<div class="line"><a name="l00887"></a><span class="lineno">  887</span>&#160;<span class="comment"> ***************************************************************************/</span></div>
+<div class="line"><a name="l00888"></a><span class="lineno">  888</span>&#160;</div>
+<div class="line"><a name="l00889"></a><span class="lineno">  889</span>&#160;<span class="comment">/* compute the inner product between x and a subset y of ny vectors,</span></div>
+<div class="line"><a name="l00890"></a><span class="lineno">  890</span>&#160;<span class="comment">   whose indices are given by idy.  */</span></div>
+<div class="line"><a name="l00891"></a><span class="lineno">  891</span>&#160;<span class="keywordtype">void</span> fvec_inner_products_by_idx (<span class="keywordtype">float</span> * __restrict ip,</div>
+<div class="line"><a name="l00892"></a><span class="lineno">  892</span>&#160;                                 <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00893"></a><span class="lineno">  893</span>&#160;                                 <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00894"></a><span class="lineno">  894</span>&#160;                                 <span class="keyword">const</span> <span class="keywordtype">long</span> * __restrict ids, <span class="comment">/* for y vecs */</span></div>
+<div class="line"><a name="l00895"></a><span class="lineno">  895</span>&#160;                                 <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny)</div>
+<div class="line"><a name="l00896"></a><span class="lineno">  896</span>&#160;{</div>
+<div class="line"><a name="l00897"></a><span class="lineno">  897</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
+<div class="line"><a name="l00898"></a><span class="lineno">  898</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; nx; j++) {</div>
+<div class="line"><a name="l00899"></a><span class="lineno">  899</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">long</span> * __restrict idsj = ids + j * ny;</div>
+<div class="line"><a name="l00900"></a><span class="lineno">  900</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * xj = x + j * d;</div>
+<div class="line"><a name="l00901"></a><span class="lineno">  901</span>&#160;        <span class="keywordtype">float</span> * __restrict ipj = ip + j * ny;</div>
+<div class="line"><a name="l00902"></a><span class="lineno">  902</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ny; i++) {</div>
+<div class="line"><a name="l00903"></a><span class="lineno">  903</span>&#160;            <span class="keywordflow">if</span> (idsj[i] &lt; 0)</div>
+<div class="line"><a name="l00904"></a><span class="lineno">  904</span>&#160;                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00905"></a><span class="lineno">  905</span>&#160;            ipj[i] = fvec_inner_product (xj, y + d * idsj[i], d);</div>
+<div class="line"><a name="l00906"></a><span class="lineno">  906</span>&#160;        }</div>
+<div class="line"><a name="l00907"></a><span class="lineno">  907</span>&#160;    }</div>
+<div class="line"><a name="l00908"></a><span class="lineno">  908</span>&#160;}</div>
+<div class="line"><a name="l00909"></a><span class="lineno">  909</span>&#160;</div>
+<div class="line"><a name="l00910"></a><span class="lineno">  910</span>&#160;<span class="comment">/* compute the inner product between x and a subset y of ny vectors,</span></div>
+<div class="line"><a name="l00911"></a><span class="lineno">  911</span>&#160;<span class="comment">   whose indices are given by idy.  */</span></div>
+<div class="line"><a name="l00912"></a><span class="lineno">  912</span>&#160;<span class="keywordtype">void</span> fvec_L2sqr_by_idx (<span class="keywordtype">float</span> * __restrict dis,</div>
+<div class="line"><a name="l00913"></a><span class="lineno">  913</span>&#160;                        <span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00914"></a><span class="lineno">  914</span>&#160;                        <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00915"></a><span class="lineno">  915</span>&#160;                        <span class="keyword">const</span> <span class="keywordtype">long</span> * __restrict ids, <span class="comment">/* ids of y vecs */</span></div>
+<div class="line"><a name="l00916"></a><span class="lineno">  916</span>&#160;                        <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny)</div>
+<div class="line"><a name="l00917"></a><span class="lineno">  917</span>&#160;{</div>
+<div class="line"><a name="l00918"></a><span class="lineno">  918</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
+<div class="line"><a name="l00919"></a><span class="lineno">  919</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; nx; j++) {</div>
+<div class="line"><a name="l00920"></a><span class="lineno">  920</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">long</span> * __restrict idsj = ids + j * ny;</div>
+<div class="line"><a name="l00921"></a><span class="lineno">  921</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">float</span> * xj = x + j * d;</div>
+<div class="line"><a name="l00922"></a><span class="lineno">  922</span>&#160;        <span class="keywordtype">float</span> * __restrict disj = dis + j * ny;</div>
+<div class="line"><a name="l00923"></a><span class="lineno">  923</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ny; i++) {</div>
+<div class="line"><a name="l00924"></a><span class="lineno">  924</span>&#160;            <span class="keywordflow">if</span> (idsj[i] &lt; 0)</div>
+<div class="line"><a name="l00925"></a><span class="lineno">  925</span>&#160;                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00926"></a><span class="lineno">  926</span>&#160;            disj[i] = <a class="code" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">fvec_L2sqr</a> (xj, y + d * idsj[i], d);</div>
+<div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;        }</div>
+<div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;    }</div>
+<div class="line"><a name="l00929"></a><span class="lineno">  929</span>&#160;}</div>
 <div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;</div>
 <div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160;</div>
 <div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;</div>
-<div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;<span class="comment">/* Find the nearest neighbors for nx queries in a set of ny vectors</span></div>
-<div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;<span class="comment">   indexed by ids. May be useful for re-ranking a pre-selected vector list */</span></div>
-<div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;<span class="keywordtype">void</span> knn_inner_products_by_idx (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
-<div class="line"><a name="l00936"></a><span class="lineno">  936</span>&#160;                                <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
-<div class="line"><a name="l00937"></a><span class="lineno">  937</span>&#160;                                <span class="keyword">const</span> <span class="keywordtype">long</span> * __restrict ids,</div>
-<div class="line"><a name="l00938"></a><span class="lineno">  938</span>&#160;                                <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
-<div class="line"><a name="l00939"></a><span class="lineno">  939</span>&#160;                                float_minheap_array_t * res)</div>
-<div class="line"><a name="l00940"></a><span class="lineno">  940</span>&#160;{</div>
-<div class="line"><a name="l00941"></a><span class="lineno">  941</span>&#160;    <span class="keywordtype">size_t</span> k = res-&gt;k;</div>
-<div class="line"><a name="l00942"></a><span class="lineno">  942</span>&#160;</div>
-<div class="line"><a name="l00943"></a><span class="lineno">  943</span>&#160;</div>
+<div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;</div>
+<div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;</div>
+<div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;<span class="comment">/* Find the nearest neighbors for nx queries in a set of ny vectors</span></div>
+<div class="line"><a name="l00936"></a><span class="lineno">  936</span>&#160;<span class="comment">   indexed by ids. May be useful for re-ranking a pre-selected vector list */</span></div>
+<div class="line"><a name="l00937"></a><span class="lineno">  937</span>&#160;<span class="keywordtype">void</span> knn_inner_products_by_idx (<span class="keyword">const</span> <span class="keywordtype">float</span> * x,</div>
+<div class="line"><a name="l00938"></a><span class="lineno">  938</span>&#160;                                <span class="keyword">const</span> <span class="keywordtype">float</span> * y,</div>
+<div class="line"><a name="l00939"></a><span class="lineno">  939</span>&#160;                                <span class="keyword">const</span> <span class="keywordtype">long</span> * ids,</div>
+<div class="line"><a name="l00940"></a><span class="lineno">  940</span>&#160;                                <span class="keywordtype">size_t</span> d, <span class="keywordtype">size_t</span> nx, <span class="keywordtype">size_t</span> ny,</div>
+<div class="line"><a name="l00941"></a><span class="lineno">  941</span>&#160;                                float_minheap_array_t * res)</div>
+<div class="line"><a name="l00942"></a><span class="lineno">  942</span>&#160;{</div>
+<div class="line"><a name="l00943"></a><span class="lineno">  943</span>&#160;    <span class="keywordtype">size_t</span> k = res-&gt;k;</div>
 <div class="line"><a name="l00944"></a><span class="lineno">  944</span>&#160;</div>
 <div class="line"><a name="l00945"></a><span class="lineno">  945</span>&#160;<span class="preprocessor">#pragma omp parallel for</span></div>
 <div class="line"><a name="l00946"></a><span class="lineno">  946</span>&#160;<span class="preprocessor"></span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++) {</div>
@@ -1901,10 +1901,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l01816"></a><span class="lineno"> 1816</span>&#160;</div>
 <div class="line"><a name="l01817"></a><span class="lineno"> 1817</span>&#160;} <span class="comment">// namespace faiss</span></div>
 <div class="ttc" id="structfaiss_1_1RandomGenerator_html"><div class="ttname"><a href="structfaiss_1_1RandomGenerator.html">faiss::RandomGenerator</a></div><div class="ttdoc">random generator that can be used in multithreaded contexts </div><div class="ttdef"><b>Definition:</b> <a href="utils_8h_source.html#l00049">utils.h:49</a></div></div>
-<div class="ttc" id="namespacefaiss_html_a5eb1701e46123827966f2a56da893d1d"><div class="ttname"><a href="namespacefaiss.html#a5eb1701e46123827966f2a56da893d1d">faiss::knn_L2sqr_base_shift</a></div><div class="ttdeci">void knn_L2sqr_base_shift(const float *x, const float *y, size_t d, size_t nx, size_t ny, float_maxheap_array_t *res, const float *base_shift)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00870">utils.cpp:870</a></div></div>
+<div class="ttc" id="namespacefaiss_html_a5eb1701e46123827966f2a56da893d1d"><div class="ttname"><a href="namespacefaiss.html#a5eb1701e46123827966f2a56da893d1d">faiss::knn_L2sqr_base_shift</a></div><div class="ttdeci">void knn_L2sqr_base_shift(const float *x, const float *y, size_t d, size_t nx, size_t ny, float_maxheap_array_t *res, const float *base_shift)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00872">utils.cpp:872</a></div></div>
 <div class="ttc" id="structfaiss_1_1RandomGenerator_html_a7633c373153f3b2824d2d99382ba20ab"><div class="ttname"><a href="structfaiss_1_1RandomGenerator.html#a7633c373153f3b2824d2d99382ba20ab">faiss::RandomGenerator::RandomGenerator</a></div><div class="ttdeci">RandomGenerator(long seed=1234)</div><div class="ttdoc">initialize </div></div>
 <div class="ttc" id="namespacefaiss_html_ad1cfbe51f2d77dc5094e0140f5955165"><div class="ttname"><a href="namespacefaiss.html#ad1cfbe51f2d77dc5094e0140f5955165">faiss::km_update_centroids</a></div><div class="ttdeci">int km_update_centroids(const float *x, float *centroids, long *assign, size_t d, size_t k, size_t n)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01286">utils.cpp:1286</a></div></div>
-<div class="ttc" id="namespacefaiss_html_a7466bd32de31640860393a701eaac5ad"><div class="ttname"><a href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">faiss::fvec_L2sqr</a></div><div class="ttdeci">float fvec_L2sqr(const float *x, const float *y, size_t d)</div><div class="ttdoc">Squared L2 distance between two vectors. </div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00430">utils.cpp:430</a></div></div>
+<div class="ttc" id="namespacefaiss_html_a7466bd32de31640860393a701eaac5ad"><div class="ttname"><a href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">faiss::fvec_L2sqr</a></div><div class="ttdeci">float fvec_L2sqr(const float *x, const float *y, size_t d)</div><div class="ttdoc">Squared L2 distance between two vectors. </div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00432">utils.cpp:432</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a154a47857ed321b9db91122770a16e09"><div class="ttname"><a href="namespacefaiss.html#a154a47857ed321b9db91122770a16e09">faiss::bincode_hist</a></div><div class="ttdeci">void bincode_hist(size_t n, size_t nbits, const uint8_t *codes, int *hist)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01467">utils.cpp:1467</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a14884d253128c7af5891a65082ad7dc6"><div class="ttname"><a href="namespacefaiss.html#a14884d253128c7af5891a65082ad7dc6">faiss::fvecs_maybe_subsample</a></div><div class="ttdeci">const float * fvecs_maybe_subsample(size_t d, size_t *n, size_t nmax, const float *x, bool verbose, long seed)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01793">utils.cpp:1793</a></div></div>
 <div class="ttc" id="namespacefaiss_html_ae0ee1b6fbd3d6da0f1a3550a780ca24c"><div class="ttname"><a href="namespacefaiss.html#ae0ee1b6fbd3d6da0f1a3550a780ca24c">faiss::ranklist_handle_ties</a></div><div class="ttdeci">void ranklist_handle_ties(int k, long *idx, const float *dis)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01378">utils.cpp:1378</a></div></div>
@@ -1918,18 +1918,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="namespacefaiss_html_a8dbc652ba48d41f126b8815004899448"><div class="ttname"><a href="namespacefaiss.html#a8dbc652ba48d41f126b8815004899448">faiss::ranklist_intersection_size</a></div><div class="ttdeci">size_t ranklist_intersection_size(size_t k1, const long *v1, size_t k2, const long *v2_in)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01394">utils.cpp:1394</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a3d9c7db82d43c1f0ab1d28b92bc9fe57"><div class="ttname"><a href="namespacefaiss.html#a3d9c7db82d43c1f0ab1d28b92bc9fe57">faiss::pairwise_L2sqr</a></div><div class="ttdeci">void pairwise_L2sqr(long d, long nq, const float *xq, long nb, const float *xb, float *dis, long ldq, long ldb, long ldd)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01228">utils.cpp:1228</a></div></div>
 <div class="ttc" id="namespacefaiss_html_ab29d725b808df6f142b80f21aa45e507"><div class="ttname"><a href="namespacefaiss.html#ab29d725b808df6f142b80f21aa45e507">faiss::range_search_inner_product</a></div><div class="ttdeci">void range_search_inner_product(const float *x, const float *y, size_t d, size_t nx, size_t ny, float radius, RangeSearchResult *res)</div><div class="ttdoc">same as range_search_L2sqr for the inner product similarity </div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01166">utils.cpp:1166</a></div></div>
-<div class="ttc" id="namespacefaiss_html_a880c7318971f866267a86945aaa61b17"><div class="ttname"><a href="namespacefaiss.html#a880c7318971f866267a86945aaa61b17">faiss::knn_inner_product</a></div><div class="ttdeci">void knn_inner_product(const float *x, const float *y, size_t d, size_t nx, size_t ny, float_minheap_array_t *res)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00830">utils.cpp:830</a></div></div>
+<div class="ttc" id="namespacefaiss_html_a880c7318971f866267a86945aaa61b17"><div class="ttname"><a href="namespacefaiss.html#a880c7318971f866267a86945aaa61b17">faiss::knn_inner_product</a></div><div class="ttdeci">void knn_inner_product(const float *x, const float *y, size_t d, size_t nx, size_t ny, float_minheap_array_t *res)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00832">utils.cpp:832</a></div></div>
 <div class="ttc" id="namespacefaiss_html_af2a71f7d5402ae02ce169a4cc83020eb"><div class="ttname"><a href="namespacefaiss.html#af2a71f7d5402ae02ce169a4cc83020eb">faiss::getmillisecs</a></div><div class="ttdeci">double getmillisecs()</div><div class="ttdoc">ms elapsed since some arbitrary epoch </div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00071">utils.cpp:71</a></div></div>
-<div class="ttc" id="structfaiss_1_1NopDistanceCorrection_html"><div class="ttname"><a href="structfaiss_1_1NopDistanceCorrection.html">faiss::NopDistanceCorrection</a></div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00844">utils.cpp:844</a></div></div>
+<div class="ttc" id="structfaiss_1_1NopDistanceCorrection_html"><div class="ttname"><a href="structfaiss_1_1NopDistanceCorrection.html">faiss::NopDistanceCorrection</a></div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00846">utils.cpp:846</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a94c1d99ac39d22e362aa27ce7c7ff714"><div class="ttname"><a href="namespacefaiss.html#a94c1d99ac39d22e362aa27ce7c7ff714">faiss::imbalance_factor</a></div><div class="ttdeci">double imbalance_factor(int k, const int *hist)</div><div class="ttdoc">same, takes a histogram as input </div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01432">utils.cpp:1432</a></div></div>
-<div class="ttc" id="namespacefaiss_html_a7a49180ebf10e643217bbce5862c7f84"><div class="ttname"><a href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">faiss::fvec_norm_L2sqr</a></div><div class="ttdeci">float fvec_norm_L2sqr(const float *x, size_t d)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00511">utils.cpp:511</a></div></div>
+<div class="ttc" id="namespacefaiss_html_a7a49180ebf10e643217bbce5862c7f84"><div class="ttname"><a href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">faiss::fvec_norm_L2sqr</a></div><div class="ttdeci">float fvec_norm_L2sqr(const float *x, size_t d)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00513">utils.cpp:513</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a1faa7bd079c9b1addf3058ddf882a000"><div class="ttname"><a href="namespacefaiss.html#a1faa7bd079c9b1addf3058ddf882a000">faiss::range_search_L2sqr</a></div><div class="ttdeci">void range_search_L2sqr(const float *x, const float *y, size_t d, size_t nx, size_t ny, float radius, RangeSearchResult *res)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01151">utils.cpp:1151</a></div></div>
 <div class="ttc" id="namespacefaiss_html_afb68fe89ad5e948974da1b70d7b4157c"><div class="ttname"><a href="namespacefaiss.html#afb68fe89ad5e948974da1b70d7b4157c">faiss::matrix_qr</a></div><div class="ttdeci">void matrix_qr(int m, int n, float *a)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01206">utils.cpp:1206</a></div></div>
 <div class="ttc" id="structfaiss_1_1RangeSearchResult_html"><div class="ttname"><a href="structfaiss_1_1RangeSearchResult.html">faiss::RangeSearchResult</a></div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00035">AuxIndexStructures.h:35</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a4369329c9dbdfe23e3f35d09ba7b5c6e"><div class="ttname"><a href="namespacefaiss.html#a4369329c9dbdfe23e3f35d09ba7b5c6e">faiss::ivec_checksum</a></div><div class="ttdeci">size_t ivec_checksum(size_t n, const int *a)</div><div class="ttdoc">compute a checksum on a table. </div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01490">utils.cpp:1490</a></div></div>
-<div class="ttc" id="structfaiss_1_1BaseShiftDistanceCorrection_html"><div class="ttname"><a href="structfaiss_1_1BaseShiftDistanceCorrection.html">faiss::BaseShiftDistanceCorrection</a></div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00863">utils.cpp:863</a></div></div>
+<div class="ttc" id="structfaiss_1_1BaseShiftDistanceCorrection_html"><div class="ttname"><a href="structfaiss_1_1BaseShiftDistanceCorrection.html">faiss::BaseShiftDistanceCorrection</a></div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00865">utils.cpp:865</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a9da63b8bb84460f5e8ccf8e17622cc7a"><div class="ttname"><a href="namespacefaiss.html#a9da63b8bb84460f5e8ccf8e17622cc7a">faiss::fvec_madd_and_argmin</a></div><div class="ttdeci">int fvec_madd_and_argmin(size_t n, const float *a, float bf, const float *b, float *c)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01781">utils.cpp:1781</a></div></div>
-<div class="ttc" id="namespacefaiss_html_a2f803e3d3b07cfab63699c89de161237"><div class="ttname"><a href="namespacefaiss.html#a2f803e3d3b07cfab63699c89de161237">faiss::knn_L2sqr</a></div><div class="ttdeci">void knn_L2sqr(const float *x, const float *y, size_t d, size_t nx, size_t ny, float_maxheap_array_t *res)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00850">utils.cpp:850</a></div></div>
+<div class="ttc" id="namespacefaiss_html_a2f803e3d3b07cfab63699c89de161237"><div class="ttname"><a href="namespacefaiss.html#a2f803e3d3b07cfab63699c89de161237">faiss::knn_L2sqr</a></div><div class="ttdeci">void knn_L2sqr(const float *x, const float *y, size_t d, size_t nx, size_t ny, float_maxheap_array_t *res)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00852">utils.cpp:852</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

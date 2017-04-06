@@ -107,9 +107,22 @@ struct IndexIVFPQ: IndexIVF {
     // map a vector to a binary code knowning the index
     void encode (long key, const float * x, uint8_t * code) const;
 
-    /// same as encode, for multiple points at once
-    void encode_multiple (size_t n, const long *keys,
-                          const float * x, uint8_t * codes) const;
+    /** Encode multiple vectors
+     *
+     * @param n       nb vectors to encode
+     * @param keys    posting list ids for those vectors (size n)
+     * @param x       vectors (size n * d)
+     * @param codes   output codes (size n * code_size)
+     * @param compute_keys  if false, assume keys are precomputed,
+     *                      otherwise compute them
+     */
+    void encode_multiple (size_t n, long *keys,
+                          const float * x, uint8_t * codes,
+                          bool compute_keys = false) const;
+
+    /// inverse of encode_multiple
+    void decode_multiple (size_t n, const long *keys,
+                          const uint8_t * xcodes, float * x) const;
 
     /** search a set of vectors, that are pre-quantized by the IVF
      *  quantizer. Fill in the corresponding heaps with the query

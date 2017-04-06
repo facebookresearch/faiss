@@ -323,17 +323,14 @@ GpuIndexIVFPQ::train(Index::idx_t n, const float* x) {
 }
 
 void
-GpuIndexIVFPQ::add_with_ids(Index::idx_t n,
-                            const float* x,
-                            const Index::idx_t* xids) {
-  FAISS_ASSERT(this->is_trained);
+GpuIndexIVFPQ::addImpl_(Index::idx_t n,
+                        const float* x,
+                        const Index::idx_t* xids) {
+  // Device is already set in GpuIndex::addInternal_
+
   FAISS_ASSERT(index_);
+  FAISS_ASSERT(n > 0);
 
-  if (n == 0) {
-    return;
-  }
-
-  DeviceScope scope(device_);
   auto stream = resources_->getDefaultStreamCurrentDevice();
 
   auto deviceVecs =
@@ -356,19 +353,15 @@ GpuIndexIVFPQ::add_with_ids(Index::idx_t n,
 }
 
 void
-GpuIndexIVFPQ::search(faiss::Index::idx_t n,
-                      const float* x,
-                      faiss::Index::idx_t k,
-                      float* distances,
-                      faiss::Index::idx_t* labels) const {
-  FAISS_ASSERT(this->is_trained);
+GpuIndexIVFPQ::searchImpl_(faiss::Index::idx_t n,
+                           const float* x,
+                           faiss::Index::idx_t k,
+                           float* distances,
+                           faiss::Index::idx_t* labels) const {
+  // Device is already set in GpuIndex::search
+
   FAISS_ASSERT(index_);
-
-  if (n == 0) {
-    return;
-  }
-
-  DeviceScope scope(device_);
+  FAISS_ASSERT(n > 0);
 
   // Make sure arguments are on the device we desire; use temporary
   // memory allocations to move it if necessary

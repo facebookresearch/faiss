@@ -146,10 +146,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <tr class="memitem:aa26497bd5b44c5dbbebfe6bfe453119e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa26497bd5b44c5dbbebfe6bfe453119e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>encode</b> (long key, const float *x, uint8_t *code) const </td></tr>
 <tr class="separator:aa26497bd5b44c5dbbebfe6bfe453119e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a947c6b15c2dde086a8e638fa69b7a7a6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a947c6b15c2dde086a8e638fa69b7a7a6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFPQ.html#a947c6b15c2dde086a8e638fa69b7a7a6">encode_multiple</a> (size_t n, const long *keys, const float *x, uint8_t *codes) const </td></tr>
-<tr class="memdesc:a947c6b15c2dde086a8e638fa69b7a7a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">same as encode, for multiple points at once <br/></td></tr>
-<tr class="separator:a947c6b15c2dde086a8e638fa69b7a7a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ae6cdd996bbd398fa4e87646c8f3ba6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFPQ.html#a1ae6cdd996bbd398fa4e87646c8f3ba6">encode_multiple</a> (size_t n, long *keys, const float *x, uint8_t *codes, bool compute_keys=false) const </td></tr>
+<tr class="separator:a1ae6cdd996bbd398fa4e87646c8f3ba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1fb0cc3051dec8e322a78c443f8fc9a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae1fb0cc3051dec8e322a78c443f8fc9a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFPQ.html#ae1fb0cc3051dec8e322a78c443f8fc9a">decode_multiple</a> (size_t n, const long *keys, const uint8_t *xcodes, float *x) const </td></tr>
+<tr class="memdesc:ae1fb0cc3051dec8e322a78c443f8fc9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">inverse of encode_multiple <br/></td></tr>
+<tr class="separator:ae1fb0cc3051dec8e322a78c443f8fc9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5ae3ae94b4776291f6abee5110c7c0c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFPQ.html#ad5ae3ae94b4776291f6abee5110c7c0c">search_knn_with_key</a> (size_t nx, const float *qx, const long *keys, const float *coarse_dis, <a class="el" href="structfaiss_1_1HeapArray.html">float_maxheap_array_t</a> *res, bool store_pairs=false) const </td></tr>
 <tr class="separator:ad5ae3ae94b4776291f6abee5110c7c0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad99c215aeaf92e995cb97f4044c4d267"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFPQ.html#ad99c215aeaf92e995cb97f4044c4d267">precompute_table</a> ()</td></tr>
@@ -366,7 +368,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <li>use precomputed list numbers if precomputed_idx != NULL </li>
 </ul>
 
-<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00180">180</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00200">200</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
 
 </div>
 </div>
@@ -420,7 +422,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a4b6154a5194d574d037ba78c137a2fa5">faiss::IndexIVFPQR</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00174">174</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00194">194</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
 
 </div>
 </div>
@@ -462,7 +464,64 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>copy a subset of the entries index to the other index</p>
 <p>if subset_type == 0: copies ids in [a1, a2) if subset_type == 1: copies ids if id % a1 == a2 </p>
 
-<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00321">321</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00341">341</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1ae6cdd996bbd398fa4e87646c8f3ba6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::IndexIVFPQ::encode_multiple </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long *&#160;</td>
+          <td class="paramname"><em>keys</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>codes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>compute_keys</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Encode multiple vectors</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">n</td><td>nb vectors to encode </td></tr>
+    <tr><td class="paramname">keys</td><td>posting list ids for those vectors (size n) </td></tr>
+    <tr><td class="paramname">x</td><td>vectors (size n * d) </td></tr>
+    <tr><td class="paramname">codes</td><td>output codes (size n * code_size) </td></tr>
+    <tr><td class="paramname">compute_keys</td><td>if false, assume keys are precomputed, otherwise compute them </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00158">158</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
 
 </div>
 </div>
@@ -494,7 +553,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>lims limits between groups of duplicates (max size ntotal / 2 + 1)  ids ids[lims[i]] : ids[lims[i+1]-1] is a group of duplicates (max size ntotal) </p>
 <dl class="section return"><dt>Returns</dt><dd>n number of groups found </dd></dl>
 
-<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l01134">1134</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l01154">1154</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
 
 </div>
 </div>
@@ -528,7 +587,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>Since y_R defined by a product quantizer, it is split across subvectors and stored separately for each subvector. If the coarse quantizer is a <a class="el" href="structfaiss_1_1MultiIndexQuantizer.html">MultiIndexQuantizer</a> then the table can be stored more compactly.</p>
 <p>At search time, the tables for term 2 and term 3 are added up. This is faster when the length of the lists is &gt; ksub * M. </p>
 
-<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00380">380</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00400">400</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
 
 </div>
 </div>
@@ -575,7 +634,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#aaef6f4132b1f390121ebb11058baf190">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00291">291</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00311">311</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
 
 </div>
 </div>
@@ -630,7 +689,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a0f0d8fc6b2c6aa2431c1730111a3b22a">faiss::IndexIVFPQR</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00262">262</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00282">282</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
 
 </div>
 </div>
@@ -661,7 +720,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#acc5eeeeb8ac8d2581ef07947932d9f6c">faiss::IndexIVFPQR</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l01077">1077</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l01097">1097</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
 
 </div>
 </div>
@@ -729,7 +788,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a3e982ee6f1a3a025148270701867d04f">faiss::IndexIVFPQR</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l01049">1049</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l01069">1069</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
 
 </div>
 </div>
@@ -803,7 +862,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQCompact.html#a583dd638a00cb9246ac7b54ee6d65f95">faiss::IndexIVFPQCompact</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00950">950</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVFPQ_8cpp_source.html#l00970">970</a> of file <a class="el" href="IndexIVFPQ_8cpp_source.html">IndexIVFPQ.cpp</a>.</p>
 
 </div>
 </div>

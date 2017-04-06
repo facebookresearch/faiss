@@ -52,7 +52,7 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
                   IndicesOptions indicesOptions,
                   faiss::MetricType metric);
 
-  ~GpuIndexIVFFlat() override;
+  virtual ~GpuIndexIVFFlat();
 
   /// Reserve GPU memory in our inverted lists for this number of vectors
   void reserveMemory(size_t numVecs);
@@ -69,25 +69,24 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
   /// to exactly the amount needed. Returns space reclaimed in bytes
   size_t reclaimMemory();
 
-  void reset() override;
+  virtual void reset();
 
-  void train(Index::idx_t n, const float* x) override;
+  virtual void train(Index::idx_t n, const float* x);
 
-  /// `x` and `xids` can be resident on the CPU or any GPU; the proper
-  /// copies are performed
-  void add_with_ids(Index::idx_t n,
-                    const float* x,
-                    const Index::idx_t* xids) override;
+  virtual void set_typename();
 
-  /// `x`, `distances` and `labels` can be resident on the CPU or any
-  /// GPU; copies are performed as needed
-  void search(faiss::Index::idx_t n,
-              const float* x,
-              faiss::Index::idx_t k,
-              float* distances,
-              faiss::Index::idx_t* labels) const override;
+ protected:
+  /// Called from GpuIndex for add/add_with_ids
+  virtual void addImpl_(faiss::Index::idx_t n,
+                        const float* x,
+                        const faiss::Index::idx_t* ids);
 
-  void set_typename() override;
+  /// Called from GpuIndex for search
+  virtual void searchImpl_(faiss::Index::idx_t n,
+                           const float* x,
+                           faiss::Index::idx_t k,
+                           float* distances,
+                           faiss::Index::idx_t* labels) const;
 
  private:
   /// Is float16 encoding enabled for our IVF data?

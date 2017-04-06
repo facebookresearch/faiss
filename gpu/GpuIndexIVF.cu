@@ -248,7 +248,6 @@ GpuIndexIVF::getNumProbes() const {
   return nprobe_;
 }
 
-
 void
 GpuIndexIVF::add(Index::idx_t n, const float* x) {
   // FIXME: GPU-ize

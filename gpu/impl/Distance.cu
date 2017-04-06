@@ -28,7 +28,43 @@
 
 namespace faiss { namespace gpu {
 
+namespace {
+
 constexpr int kDefaultTileSize = 256;
+
+template <typename T>
+int chooseTileSize(int tileSizeOverride,
+                   size_t numCentroids,
+                   size_t tempMemAvailable) {
+  if (tileSizeOverride > 0) {
+    return tileSizeOverride;
+  }
+
+  size_t tileSize =
+    sizeof(T) < 4 ? kDefaultTileSize * 2 : kDefaultTileSize;
+
+  while (tileSize > 64) {
+    size_t memRequirement = 2 * tileSize * numCentroids * sizeof(T);
+
+    if (memRequirement <= tempMemAvailable) {
+      // This fits entirely into our temporary memory
+      return tileSize;
+    }
+
+    // Otherwise, halve the tile size
+    tileSize /= 2;
+  }
+
+  // We use 64 as the minimum acceptable tile size
+  FAISS_ASSERT(tileSize >= 64);
+
+  // FIXME: if we're running with no available temp memory, do we try
+  // and go larger based on free memory available on the device?
+
+  return tileSize;
+}
+
+}
 
 template <typename T>
 void runL2Distance(GpuResources* resources,
@@ -40,7 +76,7 @@ void runL2Distance(GpuResources* resources,
                    Tensor<T, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices,
                    bool ignoreOutDistances = false,
-                   int tileSize = -1) {
+                   int tileSizeOverride = -1) {
   FAISS_ASSERT(outDistances.getSize(0) == queries.getSize(0));
   FAISS_ASSERT(outIndices.getSize(0) == queries.getSize(0));
   FAISS_ASSERT(outDistances.getSize(1) == k);
@@ -89,13 +125,11 @@ void runL2Distance(GpuResources* resources,
   FAISS_ASSERT(k <= centroids.getSize(0));
   FAISS_ASSERT(k <= 1024); // select limitation
 
-  // To allocate all of (#queries, #centroids) is potentially too much
-  // memory. Limit our total size requested
-  size_t distanceRowSize = centroids.getSize(0) * sizeof(T);
-
-  // FIXME: parameterize based on # of centroids and DeviceMemory
-  int defaultTileSize = sizeof(T) < 4 ? kDefaultTileSize * 2 : kDefaultTileSize;
-  tileSize = tileSize <= 0 ? defaultTileSize : tileSize;
+  int tileSize =
+    chooseTileSize<T>(
+      tileSizeOverride,
+      centroids.getSize(0),
+      resources->getMemoryManagerCurrentDevice().getSizeAvailable());
 
   int maxQueriesPerIteration = std::min(tileSize, queries.getSize(0));
 
@@ -171,7 +205,7 @@ void runIPDistance(GpuResources* resources,
                    int k,
                    Tensor<T, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices,
-                   int tileSize = -1) {
+                   int tileSizeOverride = -1) {
   FAISS_ASSERT(outDistances.getSize(0) == queries.getSize(0));
   FAISS_ASSERT(outIndices.getSize(0) == queries.getSize(0));
   FAISS_ASSERT(outDistances.getSize(1) == k);
@@ -201,13 +235,11 @@ void runIPDistance(GpuResources* resources,
   FAISS_ASSERT(k <= centroids.getSize(0));
   FAISS_ASSERT(k <= 1024); // select limitation
 
-  // To allocate all of (#queries, #centroids) is potentially too much
-  // memory. Limit our total size requested
-  size_t distanceRowSize = centroids.getSize(0) * sizeof(T);
-
-  // FIXME: parameterize based on # of centroids and DeviceMemory
-  int defaultTileSize = sizeof(T) < 4 ? kDefaultTileSize * 2 : kDefaultTileSize;
-  tileSize = tileSize <= 0 ? defaultTileSize : tileSize;
+  int tileSize =
+    chooseTileSize<T>(
+      tileSizeOverride,
+      centroids.getSize(0),
+      resources->getMemoryManagerCurrentDevice().getSizeAvailable());
 
   int maxQueriesPerIteration = std::min(tileSize, queries.getSize(0));
 
@@ -271,7 +303,7 @@ runIPDistance(GpuResources* resources,
               int k,
               Tensor<float, 2, true>& outDistances,
               Tensor<int, 2, true>& outIndices,
-              int tileSize) {
+              int tileSizeOverride) {
   runIPDistance<float>(resources,
                        vectors,
                        vectorsTransposed,
@@ -279,7 +311,7 @@ runIPDistance(GpuResources* resources,
                        k,
                        outDistances,
                        outIndices,
-                       tileSize);
+                       tileSizeOverride);
 }
 
 #ifdef FAISS_USE_FLOAT16
@@ -291,7 +323,7 @@ runIPDistance(GpuResources* resources,
               int k,
               Tensor<half, 2, true>& outDistances,
               Tensor<int, 2, true>& outIndices,
-              int tileSize) {
+              int tileSizeOverride) {
   runIPDistance<half>(resources,
                       vectors,
                       vectorsTransposed,
@@ -299,7 +331,7 @@ runIPDistance(GpuResources* resources,
                       k,
                       outDistances,
                       outIndices,
-                      tileSize);
+                      tileSizeOverride);
 }
 #endif
 
@@ -313,7 +345,7 @@ runL2Distance(GpuResources* resources,
               Tensor<float, 2, true>& outDistances,
               Tensor<int, 2, true>& outIndices,
               bool ignoreOutDistances,
-              int tileSize) {
+              int tileSizeOverride) {
   runL2Distance<float>(resources,
                        vectors,
                        vectorsTransposed,
@@ -323,7 +355,7 @@ runL2Distance(GpuResources* resources,
                        outDistances,
                        outIndices,
                        ignoreOutDistances,
-                       tileSize);
+                       tileSizeOverride);
 }
 
 #ifdef FAISS_USE_FLOAT16
@@ -337,7 +369,7 @@ runL2Distance(GpuResources* resources,
               Tensor<half, 2, true>& outDistances,
               Tensor<int, 2, true>& outIndices,
               bool ignoreOutDistances,
-              int tileSize) {
+              int tileSizeOverride) {
   runL2Distance<half>(resources,
                       vectors,
                       vectorsTransposed,
@@ -347,7 +379,7 @@ runL2Distance(GpuResources* resources,
                       outDistances,
                       outIndices,
                       ignoreOutDistances,
-                      tileSize);
+                      tileSizeOverride);
 }
 #endif
 

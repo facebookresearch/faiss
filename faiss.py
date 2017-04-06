@@ -5,12 +5,12 @@
 # This source code is licensed under the CC-by-NC license found in the
 # LICENSE file in the root directory of this source tree.
 
+#@nolint
 
-# sorry for putting this in the main Faiss directory. This is to avoid
-# having to write from python import faiss
+# not linting this file because it imports * form swigfaiss, which
+# causes a ton of useless warnings.
 
 import numpy as np
-import types
 import sys
 import inspect
 import pdb
@@ -28,13 +28,11 @@ except ImportError as e:
     from swigfaiss import *
 
 
-
 ##################################################################
 # The functions below add or replace some methods for classes
 # this is to be able to pass in numpy arrays directly
 # The C++ version of the classnames will be suffixed with _c
 ##################################################################
-
 
 
 def replace_method(the_class, name, replacement):
@@ -45,6 +43,7 @@ def replace_method(the_class, name, replacement):
     setattr(the_class, name + '_c', orig_method)
     setattr(the_class, name, replacement)
 
+
 def handle_Clustering():
     def replacement_train(self, x, index):
         assert x.flags.contiguous
@@ -53,7 +52,9 @@ def handle_Clustering():
         self.train_c(n, swig_ptr(x), index)
     replace_method(Clustering, 'train', replacement_train)
 
+
 handle_Clustering()
+
 
 def handle_ProductQuantizer():
 
@@ -80,7 +81,9 @@ def handle_ProductQuantizer():
     replace_method(ProductQuantizer, 'compute_codes', replacement_compute_codes)
     replace_method(ProductQuantizer, 'decode', replacement_decode)
 
+
 handle_ProductQuantizer()
+
 
 def handle_Index(the_class):
 
@@ -118,6 +121,7 @@ def handle_Index(the_class):
     replace_method(the_class, 'train', replacement_train)
     replace_method(the_class, 'search', replacement_search)
 
+
 def handle_VectorTransform(the_class):
 
     def apply_method(self, x):
@@ -139,7 +143,6 @@ def handle_VectorTransform(the_class):
     the_class.apply_py = apply_method
 
 
-
 def handle_AutoTuneCriterion(the_class):
     def replacement_set_groundtruth(self, D, I):
         if D:
@@ -156,6 +159,7 @@ def handle_AutoTuneCriterion(the_class):
     replace_method(the_class, 'set_groundtruth', replacement_set_groundtruth)
     replace_method(the_class, 'evaluate', replacement_evaluate)
 
+
 def handle_ParameterSpace(the_class):
     def replacement_explore(self, index, xq, crit):
         assert xq.shape == (crit.nq, index.d)
@@ -165,7 +169,9 @@ def handle_ParameterSpace(the_class):
         return ops
     replace_method(the_class, 'explore', replacement_explore)
 
+
 this_module = sys.modules[__name__]
+
 
 for symbol in dir(this_module):
     obj = getattr(this_module, symbol)
@@ -185,6 +191,16 @@ for symbol in dir(this_module):
             handle_ParameterSpace(the_class)
 
 
+def index_cpu_to_gpu_multiple_py(resources, index, co=None):
+    """builds the C++ vectors for the GPU indices and the
+    resources. Handles the common case where the resources are assigned to
+    the first len(resources) GPUs"""
+    vres = GpuResourcesVector()
+    vdev = IntVector()
+    for i, res in enumerate(resources):
+        vdev.push_back(i)
+        vres.push_back(res)
+    return index_cpu_to_gpu_multiple(vres, vdev, index, co)
 
 
 def vector_float_to_array(v):
@@ -224,30 +240,35 @@ class Kmeans:
 
 
 def kmin(array, k):
-    """ return k smallest values of a float32 array """
-    I = np.zeros(k, dtype='int64')
-    D = np.zeros(k, dtype='float32')
+    """return k smallest values (and their indices) of the lines of a
+    float32 array"""
+    m, n = array.shape
+    I = np.zeros((m, k), dtype='int64')
+    D = np.zeros((m, k), dtype='float32')
     ha = float_maxheap_array_t()
     ha.ids = swig_ptr(I)
     ha.val = swig_ptr(D)
-    ha.nh = 1
+    ha.nh = m
     ha.k = k
     ha.heapify()
-    ha.addn(array.size, swig_ptr(array))
+    ha.addn(n, swig_ptr(array))
     ha.reorder()
     return D, I
 
+
 def kmax(array, k):
-    """ return k largest values of a float32 array """
-    I = np.zeros(k, dtype='int64')
-    D = np.zeros(k, dtype='float32')
+    """return k largest values (and their indices) of the lines of a
+    float32 array"""
+    m, n = array.shape
+    I = np.zeros((m, k), dtype='int64')
+    D = np.zeros((m, k), dtype='float32')
     ha = float_minheap_array_t()
     ha.ids = swig_ptr(I)
     ha.val = swig_ptr(D)
-    ha.nh = 1
+    ha.nh = m
     ha.k = k
     ha.heapify()
-    ha.addn(array.size, swig_ptr(array))
+    ha.addn(n, swig_ptr(array))
     ha.reorder()
     return D, I
 
@@ -257,10 +278,12 @@ def rand(n, seed=12345):
     float_rand(swig_ptr(res), n, seed)
     return res
 
+
 def lrand(n, seed=12345):
     res = np.empty(n, dtype='int64')
     long_rand(swig_ptr(res), n, seed)
     return res
+
 
 def randn(n, seed=12345):
     res = np.empty(n, dtype='float32')

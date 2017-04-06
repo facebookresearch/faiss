@@ -229,11 +229,13 @@ void knn_L2sqr_base_shift (
          float_maxheap_array_t * res,
          const float *base_shift);
 
-
+/* Find the nearest neighbors for nx queries in a set of ny vectors
+ * indexed by ids. May be useful for re-ranking a pre-selected vector list
+ */
 void knn_inner_products_by_idx (
         const float * x,
         const float * y,
-        const long * __restrict ids,
+        const long *  ids,
         size_t d, size_t nx, size_t ny,
         float_minheap_array_t * res);
 

@@ -1646,6 +1646,34 @@ class IndexIVF(Index):
 IndexIVF_swigregister = _swigfaiss.IndexIVF_swigregister
 IndexIVF_swigregister(IndexIVF)
 
+class IndexIVFFlatStats(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, IndexIVFFlatStats, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, IndexIVFFlatStats, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["nq"] = _swigfaiss.IndexIVFFlatStats_nq_set
+    __swig_getmethods__["nq"] = _swigfaiss.IndexIVFFlatStats_nq_get
+    if _newclass:nq = _swig_property(_swigfaiss.IndexIVFFlatStats_nq_get, _swigfaiss.IndexIVFFlatStats_nq_set)
+    __swig_setmethods__["nlist"] = _swigfaiss.IndexIVFFlatStats_nlist_set
+    __swig_getmethods__["nlist"] = _swigfaiss.IndexIVFFlatStats_nlist_get
+    if _newclass:nlist = _swig_property(_swigfaiss.IndexIVFFlatStats_nlist_get, _swigfaiss.IndexIVFFlatStats_nlist_set)
+    __swig_setmethods__["ndis"] = _swigfaiss.IndexIVFFlatStats_ndis_set
+    __swig_getmethods__["ndis"] = _swigfaiss.IndexIVFFlatStats_ndis_get
+    if _newclass:ndis = _swig_property(_swigfaiss.IndexIVFFlatStats_ndis_get, _swigfaiss.IndexIVFFlatStats_ndis_set)
+    __swig_setmethods__["npartial"] = _swigfaiss.IndexIVFFlatStats_npartial_set
+    __swig_getmethods__["npartial"] = _swigfaiss.IndexIVFFlatStats_npartial_get
+    if _newclass:npartial = _swig_property(_swigfaiss.IndexIVFFlatStats_npartial_get, _swigfaiss.IndexIVFFlatStats_npartial_set)
+    def __init__(self): 
+        this = _swigfaiss.new_IndexIVFFlatStats()
+        try: self.this.append(this)
+        except: self.this = this
+    def reset(self): return _swigfaiss.IndexIVFFlatStats_reset(self)
+    __swig_destroy__ = _swigfaiss.delete_IndexIVFFlatStats
+    __del__ = lambda self : None;
+IndexIVFFlatStats_swigregister = _swigfaiss.IndexIVFFlatStats_swigregister
+IndexIVFFlatStats_swigregister(IndexIVFFlatStats)
+
 class IndexIVFFlat(IndexIVF):
     __swig_setmethods__ = {}
     for _s in [IndexIVF]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
@@ -1677,6 +1705,31 @@ class IndexIVFFlat(IndexIVF):
     __del__ = lambda self : None;
 IndexIVFFlat_swigregister = _swigfaiss.IndexIVFFlat_swigregister
 IndexIVFFlat_swigregister(IndexIVFFlat)
+
+class IndexIVFFlatIPBounds(IndexIVFFlat):
+    __swig_setmethods__ = {}
+    for _s in [IndexIVFFlat]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, IndexIVFFlatIPBounds, name, value)
+    __swig_getmethods__ = {}
+    for _s in [IndexIVFFlat]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, IndexIVFFlatIPBounds, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["fsize"] = _swigfaiss.IndexIVFFlatIPBounds_fsize_set
+    __swig_getmethods__["fsize"] = _swigfaiss.IndexIVFFlatIPBounds_fsize_get
+    if _newclass:fsize = _swig_property(_swigfaiss.IndexIVFFlatIPBounds_fsize_get, _swigfaiss.IndexIVFFlatIPBounds_fsize_set)
+    __swig_setmethods__["part_norms"] = _swigfaiss.IndexIVFFlatIPBounds_part_norms_set
+    __swig_getmethods__["part_norms"] = _swigfaiss.IndexIVFFlatIPBounds_part_norms_get
+    if _newclass:part_norms = _swig_property(_swigfaiss.IndexIVFFlatIPBounds_part_norms_get, _swigfaiss.IndexIVFFlatIPBounds_part_norms_set)
+    def __init__(self, *args): 
+        this = _swigfaiss.new_IndexIVFFlatIPBounds(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def add_core(self, *args): return _swigfaiss.IndexIVFFlatIPBounds_add_core(self, *args)
+    def search(self, *args): return _swigfaiss.IndexIVFFlatIPBounds_search(self, *args)
+    __swig_destroy__ = _swigfaiss.delete_IndexIVFFlatIPBounds
+    __del__ = lambda self : None;
+IndexIVFFlatIPBounds_swigregister = _swigfaiss.IndexIVFFlatIPBounds_swigregister
+IndexIVFFlatIPBounds_swigregister(IndexIVFFlatIPBounds)
 
 class IndexIVFPQ(IndexIVF):
     __swig_setmethods__ = {}
@@ -1732,6 +1785,7 @@ class IndexIVFPQ(IndexIVF):
     def find_duplicates(self, *args): return _swigfaiss.IndexIVFPQ_find_duplicates(self, *args)
     def encode(self, *args): return _swigfaiss.IndexIVFPQ_encode(self, *args)
     def encode_multiple(self, *args): return _swigfaiss.IndexIVFPQ_encode_multiple(self, *args)
+    def decode_multiple(self, *args): return _swigfaiss.IndexIVFPQ_decode_multiple(self, *args)
     def search_knn_with_key(self, *args): return _swigfaiss.IndexIVFPQ_search_knn_with_key(self, *args)
     def precompute_table(self): return _swigfaiss.IndexIVFPQ_precompute_table(self)
     def merge_from_residuals(self, *args): return _swigfaiss.IndexIVFPQ_merge_from_residuals(self, *args)

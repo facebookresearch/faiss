@@ -9,6 +9,7 @@ var searchData=
   ['finalblockmerge_3c_208_2c_20numthreads_2c_20k_2c_20v_2c_20numwarpq_2c_20dir_2c_20comp_20_3e',['FinalBlockMerge&lt; 8, NumThreads, K, V, NumWarpQ, Dir, Comp &gt;',['../structfaiss_1_1gpu_1_1FinalBlockMerge_3_018_00_01NumThreads_00_01K_00_01V_00_01NumWarpQ_00_01Dir_00_01Comp_01_4.html',1,'faiss::gpu']]],
   ['find_5fduplicates',['find_duplicates',['../structfaiss_1_1IndexIVFPQ.html#aee355b57acde203a3caed46a93e16a3c',1,'faiss::IndexIVFPQ']]],
   ['flatindex',['FlatIndex',['../classfaiss_1_1gpu_1_1FlatIndex.html',1,'faiss::gpu']]],
+  ['fsize',['fsize',['../structfaiss_1_1IndexIVFFlatIPBounds.html#a32e550879d0bf5eecf0a939eb25b3c0c',1,'faiss::IndexIVFFlatIPBounds']]],
   ['fvec_5fl2sqr',['fvec_L2sqr',['../namespacefaiss.html#a7466bd32de31640860393a701eaac5ad',1,'faiss']]],
   ['fvec_5fmadd',['fvec_madd',['../namespacefaiss.html#a40328c31abd0bbba5bd95d7de951e847',1,'faiss']]],
   ['fvec_5fmadd_5fand_5fargmin',['fvec_madd_and_argmin',['../namespacefaiss.html#a9da63b8bb84460f5e8ccf8e17622cc7a',1,'faiss']]],

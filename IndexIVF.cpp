@@ -267,8 +267,13 @@ void IndexIVFFlat::add_core (idx_t n, const float * x, const long *xids,
     ntotal += n_add;
 }
 
+void IndexIVFFlatStats::reset()
+{
+    memset ((void*)this, 0, sizeof (*this));
+}
 
 
+IndexIVFFlatStats indexIVFFlat_stats;
 
 void IndexIVFFlat::search_knn_inner_product (
     size_t nx,
@@ -278,8 +283,9 @@ void IndexIVFFlat::search_knn_inner_product (
 {
 
     const size_t k = res->k;
+    size_t nlistv = 0, ndis = 0;
 
-#pragma omp parallel for
+#pragma omp parallel for reduction(+: nlistv, ndis)
     for (size_t i = 0; i < nx; i++) {
         const float * xi = x + i * d;
         const long * keysi = keys + i * nprobe;
@@ -298,7 +304,7 @@ void IndexIVFFlat::search_knn_inner_product (
                                   key, ik, nlist);
                 throw;
             }
-
+            nlistv++;
             const size_t list_size = ids[key].size();
             const float * list_vecs = vecs[key].data();
 
@@ -310,9 +316,13 @@ void IndexIVFFlat::search_knn_inner_product (
                     minheap_push (k, simi, idxi, ip, ids[key][j]);
                 }
             }
+            ndis += list_size;
         }
         minheap_reorder (k, simi, idxi);
     }
+    indexIVFFlat_stats.nq += nx;
+    indexIVFFlat_stats.nlist += nlistv;
+    indexIVFFlat_stats.ndis += ndis;
 }
 
 
@@ -323,8 +333,9 @@ void IndexIVFFlat::search_knn_L2sqr (
     float_maxheap_array_t * res) const
 {
     const size_t k = res->k;
+    size_t nlistv = 0, ndis = 0;
 
-#pragma omp parallel for
+#pragma omp parallel for reduction(+: nlistv, ndis)
     for (size_t i = 0; i < nx; i++) {
         const float * xi = x + i * d;
         const long * keysi = keys + i * nprobe;
@@ -343,7 +354,7 @@ void IndexIVFFlat::search_knn_L2sqr (
                                   key, ik, nlist);
                 throw;
             }
-
+            nlistv++;
             const size_t list_size = ids[key].size();
             const float * list_vecs = vecs[key].data();
 
@@ -355,9 +366,13 @@ void IndexIVFFlat::search_knn_L2sqr (
                     maxheap_push (k, disi, idxi, disij, ids[key][j]);
                 }
             }
+            ndis += list_size;
         }
         maxheap_reorder (k, disi, idxi);
     }
+    indexIVFFlat_stats.nq += nx;
+    indexIVFFlat_stats.nlist += nlistv;
+    indexIVFFlat_stats.ndis += ndis;
 }
 
 
@@ -513,5 +528,142 @@ void IndexIVFFlat::reconstruct (idx_t key, float * recons) const
     memcpy (recons, &vecs[list_no][ofs * d], d * sizeof(recons[0]));
 }
 
+
+
+
+/*****************************************
+ * IndexIVFFlatIPBounds implementation
+ ******************************************/
+
+IndexIVFFlatIPBounds::IndexIVFFlatIPBounds (
+           Index * quantizer, size_t d, size_t nlist,
+           size_t fsize):
+    IndexIVFFlat(quantizer, d, nlist, METRIC_INNER_PRODUCT), fsize(fsize)
+{
+    part_norms.resize(nlist);
+}
+
+
+
+void IndexIVFFlatIPBounds::add_core (idx_t n, const float * x, const long *xids,
+               const long *precomputed_idx) {
+
+    FAISS_ASSERT (is_trained);
+    const long * idx;
+
+    if (precomputed_idx) {
+        idx = precomputed_idx;
+    } else {
+        long * idx0 = new long [n];
+        quantizer->assign (n, x, idx0);
+        idx = idx0;
+    }
+    IndexIVFFlat::add_core(n, x, xids, idx);
+
+    // compute
+    const float * xi = x + fsize;
+    for (size_t i = 0; i < n; i++) {
+        float norm = std::sqrt (fvec_norm_L2sqr (xi, d - fsize));
+        part_norms[idx[i]].push_back(norm);
+        xi += d;
+    }
+
+    if (idx != precomputed_idx) {
+        delete [] idx;
+    }
+
+}
+
+namespace {
+
+void search_bounds_knn_inner_product (
+    const IndexIVFFlatIPBounds & ivf,
+    const float *x,
+    const long *keys,
+    float_minheap_array_t *res,
+    const float *qnorms)
+{
+
+    size_t k = res->k, nx = res->nh, nprobe = ivf.nprobe;
+    size_t d = ivf.d;
+    int fsize = ivf.fsize;
+
+    size_t nlistv = 0, ndis = 0, npartial = 0;
+
+#pragma omp parallel for reduction(+: nlistv, ndis, npartial)
+    for (size_t i = 0; i < nx; i++) {
+        const float * xi = x + i * d;
+        const long * keysi = keys + i * nprobe;
+        float qnorm = qnorms[i];
+        float * __restrict simi = res->get_val (i);
+        long * __restrict idxi = res->get_ids (i);
+        minheap_heapify (k, simi, idxi);
+
+        for (size_t ik = 0; ik < nprobe; ik++) {
+            long key = keysi[ik];  /* select the list  */
+            if (key < 0) {
+                // not enough centroids for multiprobe
+                continue;
+            }
+            assert (key < (long) ivf.nlist);
+            nlistv++;
+
+            const size_t list_size = ivf.ids[key].size();
+            const float * yj = ivf.vecs[key].data();
+            const float * bnorms = ivf.part_norms[key].data();
+
+            for (size_t j = 0; j < list_size; j++) {
+                float ip_part = fvec_inner_product (xi, yj, fsize);
+                float bound = ip_part + bnorms[j] * qnorm;
+
+                if (bound > simi[0]) {
+                    float ip = ip_part + fvec_inner_product (
+                           xi + fsize, yj + fsize, d - fsize);
+                    if (ip > simi[0]) {
+                        minheap_pop (k, simi, idxi);
+                        minheap_push (k, simi, idxi, ip, ivf.ids[key][j]);
+                    }
+                    ndis ++;
+                }
+                yj += d;
+            }
+            npartial += list_size;
+        }
+        minheap_reorder (k, simi, idxi);
+    }
+    indexIVFFlat_stats.nq += nx;
+    indexIVFFlat_stats.nlist += nlistv;
+    indexIVFFlat_stats.ndis += ndis;
+    indexIVFFlat_stats.npartial += npartial;
+}
+
+
+}
+
+
+void IndexIVFFlatIPBounds::search (
+            idx_t n, const float *x, idx_t k,
+            float *distances, idx_t *labels) const
+{
+    // compute query remainder norms and distances
+    idx_t * idx = new idx_t [n * nprobe];
+    quantizer->assign (n, x, idx, nprobe);
+
+    float * qnorms = new float [n];
+
+#pragma omp parallel for
+    for (size_t i = 0; i < n; i++) {
+        qnorms[i] = std::sqrt (fvec_norm_L2sqr (
+                x + i * d + fsize, d - fsize));
+    }
+
+    float_minheap_array_t res = {
+        size_t(n), size_t(k), labels, distances};
+
+    search_bounds_knn_inner_product (*this, x, idx, &res, qnorms);
+
+    delete [] qnorms;
+    delete [] idx;
+}
 
 } // namespace faiss

@@ -104,6 +104,21 @@ struct IndexIVF: Index {
 };
 
 
+struct IndexIVFFlatStats {
+    size_t nq;       // nb of queries run
+    size_t nlist;    // nb of inverted lists scanned
+    size_t ndis;     // nb of distancs computed
+    size_t npartial; // nb of bound computations (IndexIVFFlatIPBounds)
+
+    IndexIVFFlatStats () {reset (); }
+    void reset ();
+};
+
+// global var that collects them all
+extern IndexIVFFlatStats indexIVFFlat_stats;
+
+
+
 
 
 /** Inverted file with stored vectors. Here the inverted file
@@ -124,7 +139,7 @@ struct IndexIVFFlat: IndexIVF {
 
 
     /// same as add_with_ids, with precomputed coarse quantizer
-    void add_core (idx_t n, const float * x, const long *xids,
+    virtual void add_core (idx_t n, const float * x, const long *xids,
                    const long *precomputed_idx);
 
 
@@ -173,8 +188,28 @@ struct IndexIVFFlat: IndexIVF {
     IndexIVFFlat () {}
 };
 
+struct IndexIVFFlatIPBounds: IndexIVFFlat {
+
+    /// nb of dimensions of pre-filter
+    size_t fsize;
+
+    /// norm of remainder (dimensions fsize:d)
+    std::vector<std::vector<float> > part_norms;
+
+    IndexIVFFlatIPBounds (
+           Index * quantizer, size_t d, size_t nlist,
+           size_t fsize);
+
+    virtual void add_core (idx_t n, const float * x, const long *xids,
+                   const long *precomputed_idx) override;
+
+    virtual void search (
+            idx_t n, const float *x, idx_t k,
+            float *distances, idx_t *labels) const override;
 
 
+
+};
 
 
 

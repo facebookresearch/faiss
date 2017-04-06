@@ -88,6 +88,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">faiss::gpu::GpuIndexIVFPQ Class Reference</div>  </div>
@@ -152,17 +153,13 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <tr class="separator:a2f50e79af6727962cd89534438d4769e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83831088d9593f753560965172ccb0a0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a83831088d9593f753560965172ccb0a0">reclaimMemory</a> ()</td></tr>
 <tr class="separator:a83831088d9593f753560965172ccb0a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a43a70461e09ef87bdb7b48ec420dd2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a3a43a70461e09ef87bdb7b48ec420dd2">reset</a> () override</td></tr>
-<tr class="separator:a3a43a70461e09ef87bdb7b48ec420dd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac4814acafa4bc340a4c4bdcafd469b56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#ac4814acafa4bc340a4c4bdcafd469b56">train</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, const float *x) override</td></tr>
-<tr class="separator:ac4814acafa4bc340a4c4bdcafd469b56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3669471243f2bbd23a37cbafa6e78637"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a3669471243f2bbd23a37cbafa6e78637">add_with_ids</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, const float *x, const <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> *xids) override</td></tr>
-<tr class="separator:a3669471243f2bbd23a37cbafa6e78637"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a451d60fe221545234f55cf7ed65b5d26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a451d60fe221545234f55cf7ed65b5d26">search</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> *labels) const override</td></tr>
-<tr class="separator:a451d60fe221545234f55cf7ed65b5d26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa92119d24f9dbec6604bb1b7bcb0527e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa92119d24f9dbec6604bb1b7bcb0527e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_typename</b> () override</td></tr>
-<tr class="separator:aa92119d24f9dbec6604bb1b7bcb0527e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9896eeed0b1960f8769b7669dedc586"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#ad9896eeed0b1960f8769b7669dedc586">reset</a> ()</td></tr>
+<tr class="separator:ad9896eeed0b1960f8769b7669dedc586"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74ff3a7214889e2aa81deb68de52f16b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a74ff3a7214889e2aa81deb68de52f16b">train</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, const float *x)</td></tr>
+<tr class="separator:a74ff3a7214889e2aa81deb68de52f16b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc2f2c42a3cb1ed6bbc1f80423522f20"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afc2f2c42a3cb1ed6bbc1f80423522f20"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>set_typename</b> ()</td></tr>
+<tr class="separator:afc2f2c42a3cb1ed6bbc1f80423522f20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7f77961857e560b4dbb81888a8c8bf8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#ab7f77961857e560b4dbb81888a8c8bf8">getListLength</a> (int listId) const </td></tr>
 <tr class="separator:ab7f77961857e560b4dbb81888a8c8bf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98f0000872701f9f23ac2073723a0aa7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a98f0000872701f9f23ac2073723a0aa7">getListCodes</a> (int listId) const </td></tr>
@@ -216,6 +213,10 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>getDevice</b> () const
 <tr class="memitem:aa40dd7a62abea6f8e8a7afdaf1e81cef inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa40dd7a62abea6f8e8a7afdaf1e81cef"></a>
 <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getResources</b> ()</td></tr>
 <tr class="separator:aa40dd7a62abea6f8e8a7afdaf1e81cef inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5d3422defd473dc848ee10595be41f2 inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#af5d3422defd473dc848ee10595be41f2">add_with_ids</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, const float *x, const <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> *ids)</td></tr>
+<tr class="separator:af5d3422defd473dc848ee10595be41f2 inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ed0703c30e6634eba082c0841c4119c inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a9ed0703c30e6634eba082c0841c4119c">search</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> *labels) const </td></tr>
+<tr class="separator:a9ed0703c30e6634eba082c0841c4119c inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structfaiss_1_1Index"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structfaiss_1_1Index')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structfaiss_1_1Index.html">faiss::Index</a></td></tr>
 <tr class="memitem:a18475cb29370bd6ac3c9f41d39f2e8ec inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a18475cb29370bd6ac3c9f41d39f2e8ec"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Index</b> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> <a class="el" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>=0, <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">MetricType</a> metric=METRIC_INNER_PRODUCT)</td></tr>
@@ -236,6 +237,24 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>getDevice</b> () const
 <tr class="separator:a373c30e3d87d1d4e616f450d87152b1a inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae095c6209a16347262408b3346193a3 inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#aae095c6209a16347262408b3346193a3">get_typename</a> () const </td></tr>
 <tr class="separator:aae095c6209a16347262408b3346193a3 inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a66bd3f5ae20c95cc05658def051cc4d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66bd3f5ae20c95cc05658def051cc4d2"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a66bd3f5ae20c95cc05658def051cc4d2">addImpl_</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> n, const float *x, const <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> *ids)</td></tr>
+<tr class="memdesc:a66bd3f5ae20c95cc05658def051cc4d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called from <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html">GpuIndex</a> for add/add_with_ids. <br/></td></tr>
+<tr class="separator:a66bd3f5ae20c95cc05658def051cc4d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24d33e9c89e5fe3b419bd52ed6d701c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a24d33e9c89e5fe3b419bd52ed6d701c1"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a24d33e9c89e5fe3b419bd52ed6d701c1">searchImpl_</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> *labels) const </td></tr>
+<tr class="memdesc:a24d33e9c89e5fe3b419bd52ed6d701c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called from <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html">GpuIndex</a> for search. <br/></td></tr>
+<tr class="separator:a24d33e9c89e5fe3b419bd52ed6d701c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classfaiss_1_1gpu_1_1GpuIndexIVF"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classfaiss_1_1gpu_1_1GpuIndexIVF')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html">faiss::gpu::GpuIndexIVF</a></td></tr>
+<tr class="memitem:a8d590e207ff158c1d17df627891f21c4 inherit pro_methods_classfaiss_1_1gpu_1_1GpuIndexIVF"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8d590e207ff158c1d17df627891f21c4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>trainQuantizer_</b> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> n, const float *x)</td></tr>
+<tr class="separator:a8d590e207ff158c1d17df627891f21c4 inherit pro_methods_classfaiss_1_1gpu_1_1GpuIndexIVF"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classfaiss_1_1gpu_1_1GpuIndex"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classfaiss_1_1gpu_1_1GpuIndex')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html">faiss::gpu::GpuIndex</a></td></tr>
+<tr class="memitem:a90a4b0c76c15512d1d231383c404d8d2 inherit pro_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a90a4b0c76c15512d1d231383c404d8d2">addInternal_</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, const float *x, const <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> *ids)</td></tr>
+<tr class="separator:a90a4b0c76c15512d1d231383c404d8d2 inherit pro_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -268,10 +287,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">MetricType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a8e18f641854b2bde83ecff0a2f9a6f4e">metric_type</a></td></tr>
 <tr class="memdesc:a8e18f641854b2bde83ecff0a2f9a6f4e inherit pub_attribs_structfaiss_1_1Index"><td class="mdescLeft">&#160;</td><td class="mdescRight">type of metric this index uses for search <br/></td></tr>
 <tr class="separator:a8e18f641854b2bde83ecff0a2f9a6f4e inherit pub_attribs_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classfaiss_1_1gpu_1_1GpuIndexIVF"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classfaiss_1_1gpu_1_1GpuIndexIVF')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html">faiss::gpu::GpuIndexIVF</a></td></tr>
-<tr class="memitem:a8d590e207ff158c1d17df627891f21c4 inherit pro_methods_classfaiss_1_1gpu_1_1GpuIndexIVF"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8d590e207ff158c1d17df627891f21c4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>trainQuantizer_</b> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> n, const float *x)</td></tr>
-<tr class="separator:a8d590e207ff158c1d17df627891f21c4 inherit pro_methods_classfaiss_1_1gpu_1_1GpuIndexIVF"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classfaiss_1_1gpu_1_1GpuIndexIVF"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classfaiss_1_1gpu_1_1GpuIndexIVF')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html">faiss::gpu::GpuIndexIVF</a></td></tr>
 <tr class="memitem:a58e0f685aab12409eca26de01d43e39e inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndexIVF"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58e0f685aab12409eca26de01d43e39e"></a>
 const IndicesOptions&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a58e0f685aab12409eca26de01d43e39e">indicesOptions_</a></td></tr>
@@ -362,51 +377,6 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a3669471243f2bbd23a37cbafa6e78637"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void faiss::gpu::GpuIndexIVFPQ::add_with_ids </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a>&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const float *&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> *&#160;</td>
-          <td class="paramname"><em>xids</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p><code>x</code> and <code>xids</code> can be resident on the CPU or any GPU; the proper copies are performed </p>
-
-<p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#aa6931dfe054b33b02c842ff75f7a0c7f">faiss::Index</a>.</p>
-
-<p>Definition at line <a class="el" href="GpuIndexIVFPQ_8cu_source.html#l00326">326</a> of file <a class="el" href="GpuIndexIVFPQ_8cu_source.html">GpuIndexIVFPQ.cu</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="a8d48f79af9080b55706050244fc24f0e"></a>
 <div class="memitem">
 <div class="memproto">
@@ -460,7 +430,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </div><div class="memdoc">
 <p>For debugging purposes, return the list codes of a particular list </p>
 
-<p>Definition at line <a class="el" href="GpuIndexIVFPQ_8cu_source.html#l00420">420</a> of file <a class="el" href="GpuIndexIVFPQ_8cu_source.html">GpuIndexIVFPQ.cu</a>.</p>
+<p>Definition at line <a class="el" href="GpuIndexIVFPQ_8cu_source.html#l00413">413</a> of file <a class="el" href="GpuIndexIVFPQ_8cu_source.html">GpuIndexIVFPQ.cu</a>.</p>
 
 </div>
 </div>
@@ -479,7 +449,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </div><div class="memdoc">
 <p>For debugging purposes, return the list indices of a particular list </p>
 
-<p>Definition at line <a class="el" href="GpuIndexIVFPQ_8cu_source.html#l00428">428</a> of file <a class="el" href="GpuIndexIVFPQ_8cu_source.html">GpuIndexIVFPQ.cu</a>.</p>
+<p>Definition at line <a class="el" href="GpuIndexIVFPQ_8cu_source.html#l00421">421</a> of file <a class="el" href="GpuIndexIVFPQ_8cu_source.html">GpuIndexIVFPQ.cu</a>.</p>
 
 </div>
 </div>
@@ -498,7 +468,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </div><div class="memdoc">
 <p>For debugging purposes, return the list length of a particular list </p>
 
-<p>Definition at line <a class="el" href="GpuIndexIVFPQ_8cu_source.html#l00414">414</a> of file <a class="el" href="GpuIndexIVFPQ_8cu_source.html">GpuIndexIVFPQ.cu</a>.</p>
+<p>Definition at line <a class="el" href="GpuIndexIVFPQ_8cu_source.html#l00407">407</a> of file <a class="el" href="GpuIndexIVFPQ_8cu_source.html">GpuIndexIVFPQ.cu</a>.</p>
 
 </div>
 </div>
@@ -520,7 +490,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 
 </div>
 </div>
-<a class="anchor" id="a3a43a70461e09ef87bdb7b48ec420dd2"></a>
+<a class="anchor" id="ad9896eeed0b1960f8769b7669dedc586"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -536,7 +506,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -548,64 +518,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 
 </div>
 </div>
-<a class="anchor" id="a451d60fe221545234f55cf7ed65b5d26"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void faiss::gpu::GpuIndexIVFPQ::search </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a>&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const float *&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a>&#160;</td>
-          <td class="paramname"><em>k</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float *&#160;</td>
-          <td class="paramname"><em>distances</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> *&#160;</td>
-          <td class="paramname"><em>labels</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p><code>x</code>, <code>distances</code> and <code>labels</code> can be resident on the CPU or any GPU; copies are performed as needed </p>
-
-<p>Implements <a class="el" href="structfaiss_1_1Index.html#aced51b1ebc33c47ab3ae15ea906559a7">faiss::Index</a>.</p>
-
-<p>Definition at line <a class="el" href="GpuIndexIVFPQ_8cu_source.html#l00359">359</a> of file <a class="el" href="GpuIndexIVFPQ_8cu_source.html">GpuIndexIVFPQ.cu</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ac4814acafa4bc340a4c4bdcafd469b56"></a>
+<a class="anchor" id="a74ff3a7214889e2aa81deb68de52f16b"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -632,7 +545,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

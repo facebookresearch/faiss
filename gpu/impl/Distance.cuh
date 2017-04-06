@@ -35,8 +35,8 @@ void runL2Distance(GpuResources* resources,
                    bool ignoreOutDistances = false,
                    // Hint to use a different sized tile for
                    // multi-streaming the queries. If <= 0, we use the
-                   // default (256)
-                   int tileSize = -1);
+                   // default
+                   int tileSizeOverride = -1);
 
 /// Calculates brute-force inner product distance between `vectors`
 /// and `queries`, returning the k closest results seen
@@ -49,8 +49,8 @@ void runIPDistance(GpuResources* resources,
                    Tensor<int, 2, true>& outIndices,
                    // Hint to use a different sized tile for
                    // multi-streaming the queries. If <= 0, we use the
-                   // default (256)
-                   int tileSize = -1);
+                   // default
+                   int tileSizeOverride = -1);
 
 #ifdef FAISS_USE_FLOAT16
 void runIPDistance(GpuResources* resources,
@@ -60,7 +60,7 @@ void runIPDistance(GpuResources* resources,
                    int k,
                    Tensor<half, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices,
-                   int tileSize = -1);
+                   int tileSizeOverride = -1);
 
 void runL2Distance(GpuResources* resources,
                    Tensor<half, 2, true>& vectors,
@@ -71,7 +71,7 @@ void runL2Distance(GpuResources* resources,
                    Tensor<half, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices,
                    bool ignoreOutDistances = false,
-                   int tileSize = -1);
+                   int tileSizeOverride = -1);
 #endif
 
 } } // namespace

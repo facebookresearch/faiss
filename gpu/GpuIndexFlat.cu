@@ -24,7 +24,7 @@
 namespace faiss { namespace gpu {
 
 /// Default CPU search size for which we use paged copies
-constexpr size_t kMinPagedQuerySize = (size_t) 256 * 1024 * 1024;
+constexpr size_t kMinPageSize = (size_t) 256 * 1024 * 1024;
 
 /// Size above which we page copies from the CPU to GPU (non-paged
 /// memory usage)
@@ -34,9 +34,11 @@ GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
                            const faiss::IndexFlat* index,
                            GpuIndexFlatConfig config) :
     GpuIndex(resources, config.device, index->d, index->metric_type),
-    minPagedSize_(kMinPagedQuerySize),
+    minPagedSize_(kMinPageSize),
     config_(config),
     data_(nullptr) {
+  // Flat index doesn't need training
+  this->is_trained = true;
   copyFrom(index);
 }
 
@@ -45,9 +47,11 @@ GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
                            faiss::MetricType metric,
                            GpuIndexFlatConfig config) :
     GpuIndex(resources, config.device, dims, metric),
-    minPagedSize_(kMinPagedQuerySize),
+    minPagedSize_(kMinPageSize),
     config_(config),
     data_(nullptr) {
+  // Flat index doesn't need training
+  this->is_trained = true;
   DeviceScope scope(device_);
 
   data_ = new FlatIndex(resources,
@@ -146,17 +150,22 @@ GpuIndexFlat::train(Index::idx_t n, const float* x) {
 }
 
 void
-GpuIndexFlat::add(Index::idx_t n, const float* x) {
+GpuIndexFlat::addImpl_(Index::idx_t n,
+                       const float* x,
+                       const Index::idx_t* ids) {
+  // Device is already set in GpuIndex::addInternal_
+
+  // We do not support add_with_ids
+  FAISS_ASSERT(!ids);
+  FAISS_ASSERT(n > 0);
+
   // Due to GPU indexing in int32, we can't store more than this
   // number of vectors on a GPU
   FAISS_ASSERT(this->ntotal + n <=
                (faiss::Index::idx_t) std::numeric_limits<int>::max());
 
-  if (n > 0) {
-    DeviceScope scope(device_);
-    data_->add(x, n, resources_->getDefaultStream(device_));
-    this->ntotal += n;
-  }
+  data_->add(x, n, resources_->getDefaultStream(device_));
+  this->ntotal += n;
 }
 
 struct IntToLong {
@@ -240,6 +249,15 @@ GpuIndexFlat::search(faiss::Index::idx_t n,
   // Copy back if necessary
   fromDevice<float, 2>(outDistances, distances, stream);
   fromDevice<faiss::Index::idx_t, 2>(outIndices, labels, stream);
+}
+
+void
+GpuIndexFlat::searchImpl_(faiss::Index::idx_t n,
+                          const float* x,
+                          faiss::Index::idx_t k,
+                          float* distances,
+                          faiss::Index::idx_t* labels) const {
+  FAISS_ASSERT(!"Should not be called");
 }
 
 void

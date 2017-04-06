@@ -70,7 +70,8 @@ class GpuIndexIVF : public GpuIndex {
 
   /// `x` can be resident on the CPU or any GPU; the proper copies are
   /// performed
-  /// Forwards to add_with_ids
+  /// Forwards to add_with_ids; assigns IDs as needed
+  /// FIXME: remove override for C++03 compatibility
   void add(Index::idx_t n, const float* x) override;
 
  protected:
