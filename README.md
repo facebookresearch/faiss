@@ -41,5 +41,5 @@ We monitor the [issues page](http://github.com/facebookresearch/faiss/issues) of
 
 ## License
 
-Faiss is licenced under CC-by-NC, see the LICENCE file for details. This licence may be relaxed to BSD in the future.
+Faiss is licenced under CC-by-NC, see the LICENSE file for details. This license may be relaxed to BSD in the future.
 
