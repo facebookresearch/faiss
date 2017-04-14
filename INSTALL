@@ -307,3 +307,15 @@ to be visible in the PYTHONPATH or in the current directory.
 Then Faiss can be used in python with
 
   import faiss
+
+
+CMake build instructions:
+=========================
+Alternatively, Faiss can be built via the experimental cmake scripts.
+The installation process is similar to using Makefiles. After installing 
+the necessary dependencies (OpenBLAS, OpenMP, and CUDA, if BUILD_WITH_GPU
+is enabled), the build process can be done by the following commands:
+
+  mkdir build
+  cmake ..
+  make      # use -j to enable parallel build
