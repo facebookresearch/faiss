@@ -262,6 +262,10 @@ To build the "faiss" image, run
 
   nvidia-docker build -t faiss .
 
+or if you don't want/need to clone the sources, just run
+
+  nvidia-docker build -t faiss github.com/facebookresearch/faiss
+
 If you want to run the tests during the docker build, uncomment the
 last 3 "RUN" steps in the Dockerfile. But you might want to run the
 tests by yourself, so just run

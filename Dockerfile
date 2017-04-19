@@ -6,13 +6,13 @@ RUN apt-get install -y libopenblas-dev python-numpy python-dev swig git python-p
 
 RUN pip install matplotlib
 
-RUN cd /opt/ && git clone https://github.com/facebookresearch/faiss.git
+COPY . /opt/faiss
 
 WORKDIR /opt/faiss
 
-RUN mv example_makefiles/makefile.inc.Linux ./makefile.inc
+ENV BLASLDFLAGS /usr/lib/libopenblas.so.0
 
-RUN sed -i -e 's%^BLASLDFLAGS=/usr/lib64/libopenblas.so.0%# BLASLDFLAGS=/usr/lib64/libopenblas.so.0%g' -e 's%^# BLASLDFLAGS=/usr/lib/libopenblas.so.0$%BLASLDFLAGS=/usr/lib/libopenblas.so.0%g' makefile.inc
+RUN mv example_makefiles/makefile.inc.Linux ./makefile.inc
 
 RUN make tests/test_blas -j $(nproc) && \
     make -j $(nproc) && \

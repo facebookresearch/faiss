@@ -60,16 +60,15 @@ FAISSSHAREDFLAGS=-shared
 BLASCFLAGS=-DFINTEGER=int
 
 # This is for Centos:
-BLASLDFLAGS=/usr/lib64/libopenblas.so.0
+BLASLDFLAGS?=/usr/lib64/libopenblas.so.0
 
 # for Ubuntu 16: 
 # sudo apt-get install libopenblas-dev python-numpy python-dev
-# BLASLDFLAGS=/usr/lib/libopenblas.so.0
+# BLASLDFLAGS?=/usr/lib/libopenblas.so.0
 
 # for Ubuntu 14: 
 # sudo apt-get install libopenblas-dev liblapack3 python-numpy python-dev
-# BLASLDFLAGS=/usr/lib/libopenblas.so.0 /usr/lib/lapack/liblapack.so.3.0
-
+# BLASLDFLAGS?=/usr/lib/libopenblas.so.0 /usr/lib/lapack/liblapack.so.3.0
 #
 # 3. Atlas
 #
@@ -80,7 +79,6 @@ BLASLDFLAGS=/usr/lib64/libopenblas.so.0
 #
 # BLASCFLAGS=-DFINTEGER=int
 # BLASLDFLAGS=/usr/lib64/atlas-sse3/libptf77blas.so.3 /usr/lib64/atlas-sse3/liblapack.so
-
 #
 # 4. reference implementation
 #
