@@ -319,3 +319,13 @@ is enabled), the build process can be done by the following commands:
   mkdir build
   cmake ..
   make      # use -j to enable parallel build
+
+Notes for build on Mac: The native compiler on Mac does not support OpenMP.
+So to make it work on Mac, you have to install a new compiler using either 
+Macports or Homebrew. For example, after installing the compiler g++-mp-6 
+from Macports (port install g++-mp-6), you need to set the two flags CMAKE_CXX_COMPILER and and CMAKE_C_COMPILER:
+
+cmake -DCMAKE_CXX_COMPILER=/opt/local/bin/g++-mp-6 -DCMAKE_C_COMPILER=/opt/local/bin/gcc-mp-6  ..
+
+Similarly, you can use Homebrew to install clang++ (brew install llvm) and 
+then set the two flags to '/usr/local/opt/llvm/bin/clang++'.
