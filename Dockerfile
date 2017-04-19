@@ -10,7 +10,9 @@ COPY . /opt/faiss
 
 WORKDIR /opt/faiss
 
-RUN mv example_makefiles/makefile.inc.Ubuntu-16.04 ./makefile.inc
+ENV BLASLDFLAGS /usr/lib/libopenblas.so.0
+
+RUN mv example_makefiles/makefile.inc.Linux ./makefile.inc
 
 RUN make tests/test_blas -j $(nproc) && \
     make -j $(nproc) && \
