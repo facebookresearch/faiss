@@ -44,10 +44,8 @@ FAISSSHAREDFLAGS=-shared
 #
 # MKLROOT=/opt/intel/compilers_and_libraries/linux/mkl/
 #
-ifeq ($(BLASLDFLAGS),)
-    # BLASLDFLAGS=-Wl,--no-as-needed -L$(MKLROOT)/lib/intel64   -lmkl_intel_ilp64 \
-    # -lmkl_core -lmkl_gnu_thread -ldl -lpthread
-endif
+# BLASLDFLAGS=-Wl,--no-as-needed -L$(MKLROOT)/lib/intel64   -lmkl_intel_ilp64 \
+# -lmkl_core -lmkl_gnu_thread -ldl -lpthread
 #
 # BLASCFLAGS=-DFINTEGER=long
 #
@@ -62,21 +60,15 @@ endif
 BLASCFLAGS=-DFINTEGER=int
 
 # This is for Centos:
-ifeq ($(BLASLDFLAGS),)
-    BLASLDFLAGS=/usr/lib64/libopenblas.so.0
-endif
+BLASLDFLAGS?=/usr/lib64/libopenblas.so.0
 
 # for Ubuntu 16: 
 # sudo apt-get install libopenblas-dev python-numpy python-dev
-ifeq ($(BLASLDFLAGS),)
-    # BLASLDFLAGS=/usr/lib/libopenblas.so.0
-endif
+# BLASLDFLAGS?=/usr/lib/libopenblas.so.0
 
 # for Ubuntu 14: 
 # sudo apt-get install libopenblas-dev liblapack3 python-numpy python-dev
-ifeq ($(BLASLDFLAGS),)
-    # BLASLDFLAGS=/usr/lib/libopenblas.so.0 /usr/lib/lapack/liblapack.so.3.0
-endif
+# BLASLDFLAGS?=/usr/lib/libopenblas.so.0 /usr/lib/lapack/liblapack.so.3.0
 #
 # 3. Atlas
 #
@@ -86,10 +78,7 @@ endif
 # directory name, eg. atlas-sse3 = optimized for SSE3 architecture.
 #
 # BLASCFLAGS=-DFINTEGER=int
-ifeq ($(BLASLDFLAGS),)
-    # BLASLDFLAGS=/usr/lib64/atlas-sse3/libptf77blas.so.3 /usr/lib64/atlas-sse3/liblapack.so
-endif
-
+# BLASLDFLAGS=/usr/lib64/atlas-sse3/libptf77blas.so.3 /usr/lib64/atlas-sse3/liblapack.so
 #
 # 4. reference implementation
 #
@@ -97,9 +86,7 @@ endif
 # implementation, that is not optimized at all.
 #
 # BLASCFLAGS=-DFINTEGER=int
-ifeq ($(BLASLDFLAGS),)
-    # BLASLDFLAGS=/usr/lib64/libblas.so.3 /usr/lib64/liblapack.so.3.2
-endif
+# BLASLDFLAGS=/usr/lib64/libblas.so.3 /usr/lib64/liblapack.so.3.2
 #
 
 
