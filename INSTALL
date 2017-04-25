@@ -191,11 +191,15 @@ See the example makefile on how to set the flags.
 
 The nvcc-specific flags to pass to the compiler, based on your desired
 compute capability. Only compute capability 3.5+ is supported. For
-example:
+example, we enable by default:
 
    -gencode arch=compute_35,code="compute_35"
    -gencode arch=compute_52,code="compute_52"
    -gencode arch=compute_60,code="compute_60"
+
+However, look at https://developer.nvidia.com/cuda-gpus to determine
+what compute capability you need to use, and replace our gencode
+specifications with the one(s) you need.
 
 Most other flags are related to the C++11 compiler used by nvcc to
 complile the actual C++ code. They are normally just transmitted by
