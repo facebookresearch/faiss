@@ -315,3 +315,35 @@ to be visible in the PYTHONPATH or in the current directory.
 Then Faiss can be used in python with
 
   import faiss
+
+
+CMake build instructions:
+=========================
+Alternatively, Faiss can be built via the experimental cmake scripts.
+The installation process is similar to using Makefiles. After installing 
+the necessary dependencies (OpenBLAS, OpenMP, and CUDA, if BUILD_WITH_GPU
+is enabled), the build process can be done by the following commands:
+
+  mkdir build
+  cmake ..
+  make      # use -j to enable parallel build
+
+Notes for build on Mac: The native compiler on Mac does not support OpenMP.
+So to make it work on Mac, you have to install a new compiler using either 
+Macports or Homebrew. For example, after installing the compiler g++-mp-6 
+from Macports (port install g++-mp-6), you need to set the two flags CMAKE_CXX_COMPILER and and CMAKE_C_COMPILER:
+
+cmake -DCMAKE_CXX_COMPILER=/opt/local/bin/g++-mp-6 -DCMAKE_C_COMPILER=/opt/local/bin/gcc-mp-6  ..
+
+Similarly, you can use Homebrew to install clang++ (brew install llvm) and 
+then set the two flags to '/usr/local/opt/llvm/bin/clang++'.
+
+CMake limitations: Currently this cmake build only supports OpenBLAS as the BLAS solution. 
+Also, the python interface is NOT supported at this point. 
+
+Use Faiss as a 3rd-party library: Using Faiss as a 3rd-party lib via CMake is easy.
+If the parental project is also build via CMake, just add a line 'add_subdirectory(faiss)' 
+in CMake where faiss is the sub-folder name. To link Faiss to your application, use 
+
+  add_executable(my_app my_app.cpp)
+  target_link_libraries(my_app gpufaise faiss)
