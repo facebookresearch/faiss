@@ -34,6 +34,13 @@ The following are entry points for documentation:
 - the [doxygen documentation](http://rawgithub.com/facebookresearch/faiss/master/docs/html/annotated.html) gives per-class information
 - to reproduce results from our research papers, [Polysemous codes](https://arxiv.org/abs/1609.01882) and [Billion-scale similarity search with GPUs](https://arxiv.org/abs/1702.08734), refer to the [benchmarks README](benchs/README.md).
 
+## Authors
+
+The main authors of Faiss are:
+- [Hervé Jégou](https://github.com/jegou) initiated the Faiss project and wrote its first implementation
+- [Matthijs Douze](https://github.com/mdouze) implemented most of the CPU Faiss
+- [Jeff Johnson](https://github.com/wickedfoo) implemented all of the GPU Faiss
+
 
 ## Join the Faiss community
 
