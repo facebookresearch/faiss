@@ -12,7 +12,7 @@ foreach(source ${srcs})
 
     # target
     add_executable(${name} ${source})
-    target_link_libraries(${name} ${faiss_lib} ${OpenBLAS_LIB} ${GTEST_BOTH_LIBRARIES})
+    target_link_libraries(${name} ${faiss_lib} ${BLAS_LIB} ${GTEST_BOTH_LIBRARIES})
 
     # Install
     install(TARGETS ${name} DESTINATION test)
