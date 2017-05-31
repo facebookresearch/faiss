@@ -338,8 +338,8 @@ cmake -DCMAKE_CXX_COMPILER=/opt/local/bin/g++-mp-6 -DCMAKE_C_COMPILER=/opt/local
 Similarly, you can use Homebrew to install clang++ (brew install llvm) and 
 then set the two flags to '/usr/local/opt/llvm/bin/clang++'.
 
-CMake limitations: Currently this cmake build only supports OpenBLAS as the BLAS solution. 
-Also, the python interface is NOT supported at this point. 
+CMake supports the OpenBLAS and MKL implementations. CMake limitations: the python interface is 
+NOT supported at this point. 
 
 Use Faiss as a 3rd-party library: Using Faiss as a 3rd-party lib via CMake is easy.
 If the parental project is also build via CMake, just add a line 'add_subdirectory(faiss)' 
