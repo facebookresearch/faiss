@@ -28,7 +28,7 @@ def fvecs_read(filename):
 
     return fv.copy()   # to make contiguous
 
-rootdir = '/mnt/vol/gfsai-east/ai-group/datasets/simsearch/sift1M'
+rootdir = './sift1M'
 
 
 print "loading database"
