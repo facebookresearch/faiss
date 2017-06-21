@@ -11,7 +11,7 @@
 
 CC=g++
 
-CFLAGS=-fPIC -m64 -Wall -g -O3  -msse4 -mpopcnt -fopenmp -Wno-sign-compare -Dnullptr=NULL -Doverride= -fopenmp
+CFLAGS=-fPIC -m64 -Wall -g -O3  -msse4 -mpopcnt -fopenmp -Wno-sign-compare -std=c++11 -fopenmp
 LDFLAGS=-g -fPIC  -fopenmp
 
 # common linux flags
@@ -62,11 +62,11 @@ BLASCFLAGS=-DFINTEGER=int
 # This is for Centos:
 BLASLDFLAGS?=/usr/lib64/libopenblas.so.0
 
-# for Ubuntu 16: 
+# for Ubuntu 16:
 # sudo apt-get install libopenblas-dev python-numpy python-dev
 # BLASLDFLAGS?=/usr/lib/libopenblas.so.0
 
-# for Ubuntu 14: 
+# for Ubuntu 14:
 # sudo apt-get install libopenblas-dev liblapack3 python-numpy python-dev
 # BLASLDFLAGS?=/usr/lib/libopenblas.so.0 /usr/lib/lapack/liblapack.so.3.0
 #
@@ -102,12 +102,12 @@ SWIGEXEC=swig
 #
 # python -c "import distutils.sysconfig; print distutils.sysconfig.get_python_inc()"
 # python -c "import numpy ; print numpy.get_include()"
-# 
-# or, for Python 3, with 
-# 
+#
+# or, for Python 3, with
+#
 # python3 -c "import distutils.sysconfig; print(distutils.sysconfig.get_python_inc())"
 # python3 -c "import numpy ; print(numpy.get_include())"
-# 
+#
 
 PYTHONCFLAGS=-I/usr/include/python2.7/ -I/usr/lib64/python2.7/site-packages/numpy/core/include/
 
@@ -138,7 +138,7 @@ NVCCFLAGS= $(CUDAFLAGS) \
    -ccbin $(CC11) -DFAISS_USE_FLOAT16
 
 # BLAS LD flags for nvcc (used to generate an executable)
-# if BLASLDFLAGS contains several flags, each one may 
+# if BLASLDFLAGS contains several flags, each one may
 # need to be prepended with -Xlinker
 BLASLDFLAGSNVCC=-Xlinker $(BLASLDFLAGS)
 

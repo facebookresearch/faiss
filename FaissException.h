@@ -27,9 +27,9 @@ class FaissException : public std::exception {
                  int line);
 
   /// from std::exception
-  virtual const char* what() const _GLIBCXX_USE_NOEXCEPT
+  const char* what() const noexcept override
   {  return msg.c_str(); }
-  virtual ~FaissException () _GLIBCXX_USE_NOEXCEPT {}
+  ~FaissException () noexcept override {}
 
   std::string msg;
 };
