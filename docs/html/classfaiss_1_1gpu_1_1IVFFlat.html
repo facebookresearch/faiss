@@ -105,9 +105,9 @@ Inheritance diagram for faiss::gpu::IVFFlat:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a94160e57062d20ce45f0824ef975bbda"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1IVFFlat.html#a94160e57062d20ce45f0824ef975bbda">IVFFlat</a> (<a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *resources, <a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html">FlatIndex</a> *quantizer, bool l2Distance, bool useFloat16, IndicesOptions indicesOptions)</td></tr>
-<tr class="memdesc:a94160e57062d20ce45f0824ef975bbda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from a quantizer that has elemen.  <a href="#a94160e57062d20ce45f0824ef975bbda">More...</a><br/></td></tr>
-<tr class="separator:a94160e57062d20ce45f0824ef975bbda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ae83f107abf31feeb78cd5633806e5d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1IVFFlat.html#a7ae83f107abf31feeb78cd5633806e5d">IVFFlat</a> (<a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *resources, <a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html">FlatIndex</a> *quantizer, bool l2Distance, bool useFloat16, IndicesOptions indicesOptions, MemorySpace space)</td></tr>
+<tr class="memdesc:a7ae83f107abf31feeb78cd5633806e5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from a quantizer that has elemen.  <a href="#a7ae83f107abf31feeb78cd5633806e5d">More...</a><br/></td></tr>
+<tr class="separator:a7ae83f107abf31feeb78cd5633806e5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bedde6dcb7c2f10f277461b97486f52"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1IVFFlat.html#a0bedde6dcb7c2f10f277461b97486f52">addCodeVectorsFromCpu</a> (int listId, const float *vecs, const long *indices, size_t numVecs)</td></tr>
 <tr class="separator:a0bedde6dcb7c2f10f277461b97486f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af20f96b6ad754664796c8a4e7f83ed3a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1IVFFlat.html#af20f96b6ad754664796c8a4e7f83ed3a">classifyAndAddVectors</a> (<a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; float, 2, true &gt; &amp;vecs, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; long, 1, true &gt; &amp;indices)</td></tr>
@@ -119,8 +119,8 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 <tr class="memdesc:a78473b609750b8ec7dfe3d137f50c650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the vectors of a particular list back to the CPU. <br/></td></tr>
 <tr class="separator:a78473b609750b8ec7dfe3d137f50c650"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classfaiss_1_1gpu_1_1IVFBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classfaiss_1_1gpu_1_1IVFBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classfaiss_1_1gpu_1_1IVFBase.html">faiss::gpu::IVFBase</a></td></tr>
-<tr class="memitem:af9eb209beb142e7931155bec4aeeaabf inherit pub_methods_classfaiss_1_1gpu_1_1IVFBase"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1IVFBase.html#af9eb209beb142e7931155bec4aeeaabf">IVFBase</a> (<a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *resources, <a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html">FlatIndex</a> *quantizer, int bytesPerVector, IndicesOptions indicesOptions)</td></tr>
-<tr class="separator:af9eb209beb142e7931155bec4aeeaabf inherit pub_methods_classfaiss_1_1gpu_1_1IVFBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80130acfe0a2a4d387a5c9ee4c386b9c inherit pub_methods_classfaiss_1_1gpu_1_1IVFBase"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1IVFBase.html#a80130acfe0a2a4d387a5c9ee4c386b9c">IVFBase</a> (<a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *resources, <a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html">FlatIndex</a> *quantizer, int bytesPerVector, IndicesOptions indicesOptions, MemorySpace space)</td></tr>
+<tr class="separator:a80130acfe0a2a4d387a5c9ee4c386b9c inherit pub_methods_classfaiss_1_1gpu_1_1IVFBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02e1e2d080ee31bf7835f89b9f2a13a9 inherit pub_methods_classfaiss_1_1gpu_1_1IVFBase"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a02e1e2d080ee31bf7835f89b9f2a13a9"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1IVFBase.html#a02e1e2d080ee31bf7835f89b9f2a13a9">reserveMemory</a> (size_t numVecs)</td></tr>
 <tr class="memdesc:a02e1e2d080ee31bf7835f89b9f2a13a9 inherit pub_methods_classfaiss_1_1gpu_1_1IVFBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserve GPU memory in our inverted lists for this number of vectors. <br/></td></tr>
@@ -184,6 +184,10 @@ const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=
 const IndicesOptions&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1IVFBase.html#afb6d10e23d6448c10f472b9234e0bcab">indicesOptions_</a></td></tr>
 <tr class="memdesc:afb6d10e23d6448c10f472b9234e0bcab inherit pro_attribs_classfaiss_1_1gpu_1_1IVFBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">How are user indices stored on the GPU? <br/></td></tr>
 <tr class="separator:afb6d10e23d6448c10f472b9234e0bcab inherit pro_attribs_classfaiss_1_1gpu_1_1IVFBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30499eb61763df72cab25ea9d1235251 inherit pro_attribs_classfaiss_1_1gpu_1_1IVFBase"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a30499eb61763df72cab25ea9d1235251"></a>
+const MemorySpace&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1IVFBase.html#a30499eb61763df72cab25ea9d1235251">space_</a></td></tr>
+<tr class="memdesc:a30499eb61763df72cab25ea9d1235251 inherit pro_attribs_classfaiss_1_1gpu_1_1IVFBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">What memory space our inverted list storage is in. <br/></td></tr>
+<tr class="separator:a30499eb61763df72cab25ea9d1235251 inherit pro_attribs_classfaiss_1_1gpu_1_1IVFBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96240a08b42bd1913e2286d7d514fc56 inherit pro_attribs_classfaiss_1_1gpu_1_1IVFBase"><td class="memItemLeft" align="right" valign="top">thrust::device_vector&lt; void * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1IVFBase.html#a96240a08b42bd1913e2286d7d514fc56">deviceListDataPointers_</a></td></tr>
 <tr class="separator:a96240a08b42bd1913e2286d7d514fc56 inherit pro_attribs_classfaiss_1_1gpu_1_1IVFBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9aedcf0e6a20b908980ae96d73461f4c inherit pro_attribs_classfaiss_1_1gpu_1_1IVFBase"><td class="memItemLeft" align="right" valign="top">thrust::device_vector&lt; void * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1IVFBase.html#a9aedcf0e6a20b908980ae96d73461f4c">deviceListIndexPointers_</a></td></tr>
@@ -206,9 +210,9 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="IVFFlat_8cuh_source.html#l00018">18</a> of file <a class="el" href="IVFFlat_8cuh_source.html">IVFFlat.cuh</a>.</p>
+<p>Definition at line <a class="el" href="IVFFlat_8cuh_source.html#l00017">17</a> of file <a class="el" href="IVFFlat_8cuh_source.html">IVFFlat.cuh</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a94160e57062d20ce45f0824ef975bbda"></a>
+<a class="anchor" id="a7ae83f107abf31feeb78cd5633806e5d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -240,7 +244,13 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">IndicesOptions&#160;</td>
-          <td class="paramname"><em>indicesOptions</em>&#160;</td>
+          <td class="paramname"><em>indicesOptions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">MemorySpace&#160;</td>
+          <td class="paramname"><em>space</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -258,7 +268,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="IVFFlat_8cu_source.html#l00030">30</a> of file <a class="el" href="IVFFlat_8cu_source.html">IVFFlat.cu</a>.</p>
+<p>Definition at line <a class="el" href="IVFFlat_8cu_source.html#l00029">29</a> of file <a class="el" href="IVFFlat_8cu_source.html">IVFFlat.cu</a>.</p>
 
 </div>
 </div>
@@ -300,7 +310,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Add vectors to a specific list; the input data can be on the host or on our current device </p>
 
-<p>Definition at line <a class="el" href="IVFFlat_8cu_source.html#l00057">57</a> of file <a class="el" href="IVFFlat_8cu_source.html">IVFFlat.cu</a>.</p>
+<p>Definition at line <a class="el" href="IVFFlat_8cu_source.html#l00058">58</a> of file <a class="el" href="IVFFlat_8cu_source.html">IVFFlat.cu</a>.</p>
 
 </div>
 </div>
@@ -329,7 +339,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Adds the given vectors to this index. The input data must be on our current device. Returns the number of vectors successfully added. Vectors may not be able to be added because they contain NaNs. </p>
 
-<p>Definition at line <a class="el" href="IVFFlat_8cu_source.html#l00129">129</a> of file <a class="el" href="IVFFlat_8cu_source.html">IVFFlat.cu</a>.</p>
+<p>Definition at line <a class="el" href="IVFFlat_8cu_source.html#l00130">130</a> of file <a class="el" href="IVFFlat_8cu_source.html">IVFFlat.cu</a>.</p>
 
 </div>
 </div>
@@ -376,7 +386,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Find the approximate k nearest neigbors for <code>queries</code> against our database </p>
 
-<p>Definition at line <a class="el" href="IVFFlat_8cu_source.html#l00287">287</a> of file <a class="el" href="IVFFlat_8cu_source.html">IVFFlat.cu</a>.</p>
+<p>Definition at line <a class="el" href="IVFFlat_8cu_source.html#l00288">288</a> of file <a class="el" href="IVFFlat_8cu_source.html">IVFFlat.cu</a>.</p>
 
 </div>
 </div>

@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -217,7 +216,7 @@ void runL2SelectMin(Tensor<T, 2, true>& productDistances,
     }
   }
 
-  CUDA_VERIFY(cudaGetLastError());
+  CUDA_TEST_ERROR();
 }
 
 void runL2SelectMin(Tensor<float, 2, true>& productDistances,

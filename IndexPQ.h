@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -47,23 +46,22 @@ struct IndexPQ: Index {
 
     IndexPQ ();
 
-    virtual void set_typename () override;
+    void train(idx_t n, const float* x) override;
 
-    virtual void train (idx_t n, const float *x) override;
+    void add(idx_t n, const float* x) override;
 
-    virtual void add (idx_t n, const float *x) override;
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 
-    virtual void search (
-            idx_t n, const float *x, idx_t k,
-            float *distances, idx_t *labels) const override;
+    void reset() override;
 
-    virtual void reset() override;
+    void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
 
-    virtual void reconstruct_n (idx_t i0, idx_t ni, float *recons)
-        const override;
-
-    virtual void reconstruct (idx_t key, float * recons)
-        const override;
+    void reconstruct(idx_t key, float* recons) const override;
 
     /******************************************************
      * Polysemous codes implementation
@@ -141,21 +139,22 @@ struct MultiIndexQuantizer: Index  {
                          size_t M,      ///< number of subquantizers
                          size_t nbits); ///< number of bit per subvector index
 
-    virtual void set_typename ();
+    void train(idx_t n, const float* x) override;
 
-    virtual void train (idx_t n, const float *x);
-
-
-    virtual void search (idx_t n, const float *x, idx_t k,
-                              float *distances, idx_t *labels) const;
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 
     /// add and reset will crash at runtime
-    virtual void add (idx_t n, const float *x);
-    virtual void reset ();
+    void add(idx_t n, const float* x) override;
+    void reset() override;
 
     MultiIndexQuantizer () {}
 
-    virtual void reconstruct (idx_t key, float * recons) const;
+    void reconstruct(idx_t key, float* recons) const override;
 };
 
 

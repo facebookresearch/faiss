@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -166,7 +165,7 @@ ProductQuantizer::ProductQuantizer ():
 
 void ProductQuantizer::set_derived_values () {
     // quite a few derived values
-    FAISS_ASSERT (d % M == 0);
+    FAISS_THROW_IF_NOT (d % M == 0);
     dsub = d / M;
     byte_per_idx = (nbits + 7) / 8;
     code_size = byte_per_idx * M;
@@ -249,6 +248,7 @@ void ProductQuantizer::train (int n, const float * x)
         }
 
         float * xslice = new float[n * dsub];
+        ScopeDeleter<float> del (xslice);
         for (int m = 0; m < M; m++) {
             for (int j = 0; j < n; j++)
                 memcpy (xslice + j * dsub,
@@ -287,7 +287,7 @@ void ProductQuantizer::train (int n, const float * x)
             clus.train (n, xslice, index);
             set_params (clus.centroids.data(), m);
         }
-        delete [] xslice;
+
 
     } else {
 
@@ -394,6 +394,7 @@ void ProductQuantizer::compute_codes (const float * x,
 
     } else { // worthwile to use BLAS
         float *dis_tables = new float [n * ksub * M];
+        ScopeDeleter<float> del (dis_tables);
         compute_distance_tables (n, x, dis_tables);
 
 #pragma omp parallel for
@@ -402,7 +403,6 @@ void ProductQuantizer::compute_codes (const float * x,
             const float * tab = dis_tables + i * ksub * M;
             compute_code_from_distance_table (tab, code);
         }
-        delete [] dis_tables;
     }
 }
 
@@ -544,9 +544,10 @@ void ProductQuantizer::search (const float * __restrict x,
                                float_maxheap_array_t * res,
                                bool init_finalize_heap) const
 {
+    FAISS_THROW_IF_NOT (nx == res->nh);
     float * dis_tables = new float [nx * ksub * M];
+    ScopeDeleter<float> del(dis_tables);
     compute_distance_tables (nx, x, dis_tables);
-    FAISS_ASSERT(nx == res->nh);
 
     if (byte_per_idx == 1) {
 
@@ -558,7 +559,7 @@ void ProductQuantizer::search (const float * __restrict x,
              this, dis_tables, codes, ncodes, res, init_finalize_heap);
 
     }
-    delete [] dis_tables;
+
 }
 
 void ProductQuantizer::search_ip (const float * __restrict x,
@@ -568,9 +569,10 @@ void ProductQuantizer::search_ip (const float * __restrict x,
                                float_minheap_array_t * res,
                                bool init_finalize_heap) const
 {
+    FAISS_THROW_IF_NOT (nx == res->nh);
     float * dis_tables = new float [nx * ksub * M];
+    ScopeDeleter<float> del(dis_tables);
     compute_inner_prod_tables (nx, x, dis_tables);
-    FAISS_ASSERT(nx == res->nh);
 
     if (byte_per_idx == 1) {
 
@@ -581,7 +583,7 @@ void ProductQuantizer::search_ip (const float * __restrict x,
         pq_knn_search_with_tables<uint16_t, CMin<float, long> > (
              this, dis_tables, codes, ncodes, res, init_finalize_heap);
     }
-    delete [] dis_tables;
+
 }
 
 
@@ -620,10 +622,10 @@ void ProductQuantizer::search_sdc (const uint8_t * qcodes,
                      float_maxheap_array_t * res,
                      bool init_finalize_heap) const
 {
-    FAISS_ASSERT (sdc_table.size() == M * ksub * ksub);
+    FAISS_THROW_IF_NOT (sdc_table.size() == M * ksub * ksub);
+    FAISS_THROW_IF_NOT (byte_per_idx == 1);
     size_t k = res->k;
 
-    FAISS_ASSERT (byte_per_idx == 1);
 
 #pragma omp parallel for
     for (size_t i = 0; i < nq; i++) {

@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -55,7 +54,7 @@ T randSelect(std::initializer_list<T> vals) {
 }
 
 /// Generates a collection of random vectors in the range [0, 1]
-std::vector<float> randVecs(int num, int dim);
+std::vector<float> randVecs(size_t num, size_t dim);
 
 /// Compare two indices via query for similarity
 void compareIndices(faiss::Index& refIndex,

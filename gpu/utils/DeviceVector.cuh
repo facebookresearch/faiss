@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -13,6 +12,7 @@
 
 #include "../../FaissAssert.h"
 #include "DeviceUtils.h"
+#include "MemorySpace.h"
 #include "StaticUtils.h"
 #include <algorithm>
 #include <cuda.h>
@@ -27,10 +27,11 @@ namespace faiss { namespace gpu {
 template <typename T>
 class DeviceVector {
  public:
-  DeviceVector()
+  DeviceVector(MemorySpace space = MemorySpace::Device)
       : data_(nullptr),
         num_(0),
-        capacity_(0) {
+        capacity_(0),
+        space_(space) {
   }
 
   ~DeviceVector() {
@@ -154,7 +155,7 @@ class DeviceVector {
     FAISS_ASSERT(num_ <= newCapacity);
 
     T* newData = nullptr;
-    CUDA_VERIFY(cudaMalloc(&newData, newCapacity * sizeof(T)));
+    allocMemorySpace(space_, (void**) &newData, newCapacity * sizeof(T));
     CUDA_VERIFY(cudaMemcpyAsync(newData, data_, num_ * sizeof(T),
                                 cudaMemcpyDeviceToDevice, stream));
     // FIXME: keep on reclamation queue to avoid hammering cudaFree?
@@ -171,6 +172,7 @@ class DeviceVector {
   T* data_;
   size_t num_;
   size_t capacity_;
+  MemorySpace space_;
 };
 
 } } // namespace

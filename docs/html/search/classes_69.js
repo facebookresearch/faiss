@@ -18,6 +18,7 @@ var searchData=
   ['indexivfpqcompact',['IndexIVFPQCompact',['../structfaiss_1_1IndexIVFPQCompact.html',1,'faiss']]],
   ['indexivfpqr',['IndexIVFPQR',['../structfaiss_1_1IndexIVFPQR.html',1,'faiss']]],
   ['indexivfpqstats',['IndexIVFPQStats',['../structfaiss_1_1IndexIVFPQStats.html',1,'faiss']]],
+  ['indexivfscalarquantizer',['IndexIVFScalarQuantizer',['../structfaiss_1_1IndexIVFScalarQuantizer.html',1,'faiss']]],
   ['indexlsh',['IndexLSH',['../structfaiss_1_1IndexLSH.html',1,'faiss']]],
   ['indexpq',['IndexPQ',['../structfaiss_1_1IndexPQ.html',1,'faiss']]],
   ['indexpqstats',['IndexPQStats',['../structfaiss_1_1IndexPQStats.html',1,'faiss']]],

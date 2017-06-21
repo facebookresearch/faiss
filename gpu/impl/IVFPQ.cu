@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -39,11 +38,13 @@ IVFPQ::IVFPQ(GpuResources* resources,
              int bitsPerSubQuantizer,
              float* pqCentroidData,
              IndicesOptions indicesOptions,
-             bool useFloat16LookupTables) :
+             bool useFloat16LookupTables,
+             MemorySpace space) :
     IVFBase(resources,
             quantizer,
             numSubQuantizers,
-            indicesOptions),
+            indicesOptions,
+            space),
     numSubQuantizers_(numSubQuantizers),
     bitsPerSubQuantizer_(bitsPerSubQuantizer),
     numSubQuantizerCodes_(utils::pow2(bitsPerSubQuantizer_)),

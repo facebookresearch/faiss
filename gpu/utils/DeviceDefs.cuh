@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -14,7 +13,7 @@
 namespace faiss { namespace gpu {
 
 #ifdef __CUDA_ARCH__
-#if __CUDA_ARCH__ <= 610
+#if __CUDA_ARCH__ <= 620
 constexpr int kWarpSize = 32;
 #else
 #error Unknown __CUDA_ARCH__; please define parameters for compute capability

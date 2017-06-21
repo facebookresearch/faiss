@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -328,6 +327,21 @@ void ranklist_handle_ties (int k, long *idx, const float *dis);
  */
 size_t ranklist_intersection_size (size_t k1, const long *v1,
                                    size_t k2, const long *v2);
+
+/** merge a result table into another one
+ *
+ * @param I0, D0       first result table, size (n, k)
+ * @param I1, D1       second result table, size (n, k)
+ * @param keep_min     if true, keep min values, otherwise keep max
+ * @param translation  add this value to all I1's indexes
+ * @return             nb of values that were taken from the second table
+ */
+size_t merge_result_table_with (size_t n, size_t k,
+                                long *I0, float *D0,
+                                const long *I1, const float *D1,
+                                bool keep_min = true,
+                                long translation = 0);
+
 
 
 void fvec_argsort (size_t n, const float *vals,

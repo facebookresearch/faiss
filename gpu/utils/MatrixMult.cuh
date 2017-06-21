@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -26,6 +25,7 @@ void runMatrixMult(Tensor<float, 2, true>& c, bool transC,
                    Tensor<float, 2, true>& b, bool transB,
                    float alpha,
                    float beta,
+                   bool useHgemm, // ignored for float32
                    cublasHandle_t handle,
                    cudaStream_t stream);
 
@@ -37,6 +37,7 @@ void runMatrixMult(Tensor<half, 2, true>& c, bool transC,
                    Tensor<half, 2, true>& b, bool transB,
                    float alpha,
                    float beta,
+                   bool useHgemm,
                    cublasHandle_t handle,
                    cudaStream_t stream);
 #endif

@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -707,6 +706,8 @@ runIVFFlatScanTile(Tensor<float, 2, true>& queries,
     HANDLE_DIM_CASE(-1);
   }
 
+  CUDA_TEST_ERROR();
+
 #undef HANDLE_DIM_CASE
 #undef RUN_IVF_FLAT
 
@@ -735,8 +736,6 @@ runIVFFlatScanTile(Tensor<float, 2, true>& queries,
                       outDistances,
                       outIndices,
                       stream);
-
-  CUDA_VERIFY(cudaGetLastError());
 }
 
 void

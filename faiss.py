@@ -1,4 +1,3 @@
-
 # Copyright (c) 2015-present, Facebook, Inc.
 # All rights reserved.
 #
@@ -116,10 +115,19 @@ def handle_Index(the_class):
                       swig_ptr(labels))
         return distances, labels
 
+    def replacement_remove_ids(self, x):
+        if isinstance(x, IDSelector):
+            sel = x
+        else:
+            assert x.ndim == 1
+            sel = IDSelectorBatch(x.size, swig_ptr(x))
+        return self.remove_ids_c(sel)
+
     replace_method(the_class, 'add', replacement_add)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'train', replacement_train)
     replace_method(the_class, 'search', replacement_search)
+    replace_method(the_class, 'remove_ids', replacement_remove_ids)
 
 
 def handle_VectorTransform(the_class):
@@ -132,6 +140,13 @@ def handle_VectorTransform(the_class):
         self.apply_noalloc(n, swig_ptr(x), swig_ptr(y))
         return y
 
+    def replacement_reverse_transform(self, x):
+        n, d = x.shape
+        assert d == self.d_out
+        y = np.empty((n, self.d_in), dtype=np.float32)
+        self.reverse_transform_c(n, swig_ptr(x), swig_ptr(y))
+        return y
+
     def replacement_vt_train(self, x):
         assert x.flags.contiguous
         n, d = x.shape
@@ -141,6 +156,8 @@ def handle_VectorTransform(the_class):
     replace_method(the_class, 'train', replacement_vt_train)
     # apply is reserved in Pyton...
     the_class.apply_py = apply_method
+    replace_method(the_class, 'reverse_transform',
+                   replacement_reverse_transform)
 
 
 def handle_AutoTuneCriterion(the_class):

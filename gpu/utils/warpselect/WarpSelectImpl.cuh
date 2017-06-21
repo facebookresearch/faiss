@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -42,6 +41,7 @@
                                                                         \
     warpSelect<TYPE, int, DIR, WARP_Q, THREAD_Q, kWarpSelectNumThreads> \
       <<<grid, block, 0, stream>>>(in, outK, outV, kInit, vInit, k);    \
+    CUDA_TEST_ERROR();                                                  \
   }
 
 #define WARP_SELECT_CALL(TYPE, DIR, WARP_Q)                     \

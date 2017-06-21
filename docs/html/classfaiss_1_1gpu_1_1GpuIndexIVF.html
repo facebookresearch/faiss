@@ -110,20 +110,9 @@ Inheritance diagram for faiss::gpu::GpuIndexIVF:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4c67e5cc1ba673a6a7024a54fdefff67"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4c67e5cc1ba673a6a7024a54fdefff67"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>GpuIndexIVF</b> (<a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *resources, int device, IndicesOptions indicesOptions, bool useFloat16CoarseQuantizer, int dims, <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">faiss::MetricType</a> metric, int nlist)</td></tr>
-<tr class="separator:a4c67e5cc1ba673a6a7024a54fdefff67"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa76ce227d84de67fd40f0bc534bf9e10"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa76ce227d84de67fd40f0bc534bf9e10"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>GpuIndexIVF</b> (<a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *resources, int device, IndicesOptions indicesOptions, int dims, <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">faiss::MetricType</a> metric, int nlist, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html">GpuIndexFlat</a> *quantizer)</td></tr>
-<tr class="separator:aa76ce227d84de67fd40f0bc534bf9e10"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91eb7171dbec0d09b8a1a6ae86a03b3e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a91eb7171dbec0d09b8a1a6ae86a03b3e"></a>
-IndicesOptions&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a91eb7171dbec0d09b8a1a6ae86a03b3e">getIndicesOptions</a> () const </td></tr>
-<tr class="memdesc:a91eb7171dbec0d09b8a1a6ae86a03b3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">What indices storage options are we using? <br/></td></tr>
-<tr class="separator:a91eb7171dbec0d09b8a1a6ae86a03b3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b678cc83dedf93dfc6a31782f9405ed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9b678cc83dedf93dfc6a31782f9405ed"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a9b678cc83dedf93dfc6a31782f9405ed">getUseFloat16CoarseQuantizer</a> () const </td></tr>
-<tr class="memdesc:a9b678cc83dedf93dfc6a31782f9405ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Is our coarse quantizer storing and performing math in float16? <br/></td></tr>
-<tr class="separator:a9b678cc83dedf93dfc6a31782f9405ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46a559961d36eef8ee930bb5b4aba85a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a46a559961d36eef8ee930bb5b4aba85a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>GpuIndexIVF</b> (<a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *resources, int dims, <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">faiss::MetricType</a> metric, int nlist, <a class="el" href="structfaiss_1_1gpu_1_1GpuIndexIVFConfig.html">GpuIndexIVFConfig</a> config=<a class="el" href="structfaiss_1_1gpu_1_1GpuIndexIVFConfig.html">GpuIndexIVFConfig</a>())</td></tr>
+<tr class="separator:a46a559961d36eef8ee930bb5b4aba85a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94c2c171f9a2d27085dea9101067bdf2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a94c2c171f9a2d27085dea9101067bdf2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a94c2c171f9a2d27085dea9101067bdf2">copyFrom</a> (const <a class="el" href="structfaiss_1_1IndexIVF.html">faiss::IndexIVF</a> *index)</td></tr>
 <tr class="memdesc:a94c2c171f9a2d27085dea9101067bdf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy what we need from the CPU equivalent. <br/></td></tr>
@@ -136,6 +125,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a43a63e93d55b79eac38173f219743ddf">getNumLists</a> () const </td></tr>
 <tr class="memdesc:a43a63e93d55b79eac38173f219743ddf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of inverted lists we're managing. <br/></td></tr>
 <tr class="separator:a43a63e93d55b79eac38173f219743ddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe6eb789377072b309d7a385aa0d1c5e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afe6eb789377072b309d7a385aa0d1c5e"></a>
+<a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html">GpuIndexFlat</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#afe6eb789377072b309d7a385aa0d1c5e">getQuantizer</a> ()</td></tr>
+<tr class="memdesc:afe6eb789377072b309d7a385aa0d1c5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the quantizer we're using. <br/></td></tr>
+<tr class="separator:afe6eb789377072b309d7a385aa0d1c5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1efac4b9801d57fa6d0085d6aed9c1f2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1efac4b9801d57fa6d0085d6aed9c1f2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a1efac4b9801d57fa6d0085d6aed9c1f2">setNumProbes</a> (int nprobe)</td></tr>
 <tr class="memdesc:a1efac4b9801d57fa6d0085d6aed9c1f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the number of list probes per query. <br/></td></tr>
@@ -147,19 +140,19 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <tr class="memitem:ace41857c97a357284acbe4556c9da3da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#ace41857c97a357284acbe4556c9da3da">add</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, const float *x) override</td></tr>
 <tr class="separator:ace41857c97a357284acbe4556c9da3da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classfaiss_1_1gpu_1_1GpuIndex')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html">faiss::gpu::GpuIndex</a></td></tr>
-<tr class="memitem:a3d4297852b063b2537ca8b73ba30953c inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d4297852b063b2537ca8b73ba30953c"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>GpuIndex</b> (<a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *resources, int device, int dims, <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">faiss::MetricType</a> metric)</td></tr>
-<tr class="separator:a3d4297852b063b2537ca8b73ba30953c inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bd06bc3c4ac62195b80389ce8fd1f28 inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9bd06bc3c4ac62195b80389ce8fd1f28"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>GpuIndex</b> (<a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *resources, int dims, <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">faiss::MetricType</a> metric, <a class="el" href="structfaiss_1_1gpu_1_1GpuIndexConfig.html">GpuIndexConfig</a> config)</td></tr>
+<tr class="separator:a9bd06bc3c4ac62195b80389ce8fd1f28 inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88b10d410c10fa8667c394ee7fbfbdbc inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a88b10d410c10fa8667c394ee7fbfbdbc"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>getDevice</b> () const </td></tr>
 <tr class="separator:a88b10d410c10fa8667c394ee7fbfbdbc inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa40dd7a62abea6f8e8a7afdaf1e81cef inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa40dd7a62abea6f8e8a7afdaf1e81cef"></a>
 <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getResources</b> ()</td></tr>
 <tr class="separator:aa40dd7a62abea6f8e8a7afdaf1e81cef inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5d3422defd473dc848ee10595be41f2 inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#af5d3422defd473dc848ee10595be41f2">add_with_ids</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, const float *x, const <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> *ids)</td></tr>
-<tr class="separator:af5d3422defd473dc848ee10595be41f2 inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ed0703c30e6634eba082c0841c4119c inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a9ed0703c30e6634eba082c0841c4119c">search</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> *labels) const </td></tr>
-<tr class="separator:a9ed0703c30e6634eba082c0841c4119c inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47f6969fe60d82b8e3407557ba9eec88 inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a47f6969fe60d82b8e3407557ba9eec88">add_with_ids</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, const float *x, const <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> *ids) override</td></tr>
+<tr class="separator:a47f6969fe60d82b8e3407557ba9eec88 inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f1cadb5e8970c9c1fdf15eddb9d874f inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a6f1cadb5e8970c9c1fdf15eddb9d874f">search</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> *labels) const override</td></tr>
+<tr class="separator:a6f1cadb5e8970c9c1fdf15eddb9d874f inherit pub_methods_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structfaiss_1_1Index"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structfaiss_1_1Index')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structfaiss_1_1Index.html">faiss::Index</a></td></tr>
 <tr class="memitem:a18475cb29370bd6ac3c9f41d39f2e8ec inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a18475cb29370bd6ac3c9f41d39f2e8ec"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Index</b> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> <a class="el" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>=0, <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">MetricType</a> metric=METRIC_INNER_PRODUCT)</td></tr>
@@ -184,11 +177,6 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr class="separator:aaae77608bbda70b1098897e9167a82f9 inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a373c30e3d87d1d4e616f450d87152b1a inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a373c30e3d87d1d4e616f450d87152b1a">display</a> () const </td></tr>
 <tr class="separator:a373c30e3d87d1d4e616f450d87152b1a inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae095c6209a16347262408b3346193a3 inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#aae095c6209a16347262408b3346193a3">get_typename</a> () const </td></tr>
-<tr class="separator:aae095c6209a16347262408b3346193a3 inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d9fcc5be66369215df74bb7d028424c inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2d9fcc5be66369215df74bb7d028424c"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>set_typename</b> ()=0</td></tr>
-<tr class="separator:a2d9fcc5be66369215df74bb7d028424c inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -209,12 +197,9 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a58e0f685aab12409eca26de01d43e39e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58e0f685aab12409eca26de01d43e39e"></a>
-const IndicesOptions&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a58e0f685aab12409eca26de01d43e39e">indicesOptions_</a></td></tr>
-<tr class="memdesc:a58e0f685aab12409eca26de01d43e39e"><td class="mdescLeft">&#160;</td><td class="mdescRight">How should indices be stored on the GPU? <br/></td></tr>
-<tr class="separator:a58e0f685aab12409eca26de01d43e39e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a571ba3623dd0f23ae11e5300eb6baf61"><td class="memItemLeft" align="right" valign="top">const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a571ba3623dd0f23ae11e5300eb6baf61">useFloat16CoarseQuantizer_</a></td></tr>
-<tr class="separator:a571ba3623dd0f23ae11e5300eb6baf61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afef2728938dadaaa02e8aa24a8c11014"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afef2728938dadaaa02e8aa24a8c11014"></a>
+<a class="el" href="structfaiss_1_1gpu_1_1GpuIndexIVFConfig.html">GpuIndexIVFConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ivfConfig_</b></td></tr>
+<tr class="separator:afef2728938dadaaa02e8aa24a8c11014"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba606c141e714fab843493cc58167494"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba606c141e714fab843493cc58167494"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#aba606c141e714fab843493cc58167494">nlist_</a></td></tr>
 <tr class="memdesc:aba606c141e714fab843493cc58167494"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of inverted lists that we manage. <br/></td></tr>
@@ -231,19 +216,19 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html">GpuIndexFlat</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#aaa7dd748e3cbd7ef68f2e384ac503eab">quantizer_</a></td></tr>
 <tr class="memdesc:aaa7dd748e3cbd7ef68f2e384ac503eab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quantizer for inverted lists. <br/></td></tr>
 <tr class="separator:aaa7dd748e3cbd7ef68f2e384ac503eab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13c34dd6df2fb042bade2a37f7a525f8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a13c34dd6df2fb042bade2a37f7a525f8"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a13c34dd6df2fb042bade2a37f7a525f8">ownsQuantizer_</a></td></tr>
-<tr class="memdesc:a13c34dd6df2fb042bade2a37f7a525f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Do we own the above quantizer instance? <br/></td></tr>
-<tr class="separator:a13c34dd6df2fb042bade2a37f7a525f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classfaiss_1_1gpu_1_1GpuIndex')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html">faiss::gpu::GpuIndex</a></td></tr>
 <tr class="memitem:a17b82a8a11783da6eb1b07c9aab98c36 inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a17b82a8a11783da6eb1b07c9aab98c36"></a>
 <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a17b82a8a11783da6eb1b07c9aab98c36">resources_</a></td></tr>
 <tr class="memdesc:a17b82a8a11783da6eb1b07c9aab98c36 inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manages streans, cuBLAS handles and scratch memory for devices. <br/></td></tr>
 <tr class="separator:a17b82a8a11783da6eb1b07c9aab98c36 inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27b56209183310c8d57ffda796f02c6c inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27b56209183310c8d57ffda796f02c6c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a27b56209183310c8d57ffda796f02c6c">device_</a></td></tr>
-<tr class="memdesc:a27b56209183310c8d57ffda796f02c6c inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="mdescLeft">&#160;</td><td class="mdescRight">The GPU device we are resident on. <br/></td></tr>
-<tr class="separator:a27b56209183310c8d57ffda796f02c6c inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67750633faa35677ee505a1e61cfe142 inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a67750633faa35677ee505a1e61cfe142"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a67750633faa35677ee505a1e61cfe142">device_</a></td></tr>
+<tr class="memdesc:a67750633faa35677ee505a1e61cfe142 inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="mdescLeft">&#160;</td><td class="mdescRight">The GPU device we are resident on. <br/></td></tr>
+<tr class="separator:a67750633faa35677ee505a1e61cfe142 inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af304169eac7781b573f76d545f37b7d9 inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af304169eac7781b573f76d545f37b7d9"></a>
+const MemorySpace&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#af304169eac7781b573f76d545f37b7d9">memorySpace_</a></td></tr>
+<tr class="memdesc:af304169eac7781b573f76d545f37b7d9 inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="mdescLeft">&#160;</td><td class="mdescRight">The memory space of our primary storage on the GPU. <br/></td></tr>
+<tr class="separator:af304169eac7781b573f76d545f37b7d9 inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -253,9 +238,6 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr class="memdesc:a040c6aed1f224f3ea7bf58eebc0c31a4 inherit pub_types_structfaiss_1_1Index"><td class="mdescLeft">&#160;</td><td class="mdescRight">all indices are this type <br/></td></tr>
 <tr class="separator:a040c6aed1f224f3ea7bf58eebc0c31a4 inherit pub_types_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_structfaiss_1_1Index"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structfaiss_1_1Index')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structfaiss_1_1Index.html">faiss::Index</a></td></tr>
-<tr class="memitem:a294b7b4efde95636baed8a6691f49018 inherit pub_attribs_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a294b7b4efde95636baed8a6691f49018"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>index_typename</b></td></tr>
-<tr class="separator:a294b7b4efde95636baed8a6691f49018 inherit pub_attribs_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a002388d2c081c2dbab8508dcefe73d inherit pub_attribs_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2a002388d2c081c2dbab8508dcefe73d"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a></td></tr>
 <tr class="memdesc:a2a002388d2c081c2dbab8508dcefe73d inherit pub_attribs_structfaiss_1_1Index"><td class="mdescLeft">&#160;</td><td class="mdescRight">vector dimension <br/></td></tr>
@@ -279,7 +261,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="GpuIndexIVF_8h_source.html#l00025">25</a> of file <a class="el" href="GpuIndexIVF_8h_source.html">GpuIndexIVF.h</a>.</p>
+<p>Definition at line <a class="el" href="GpuIndexIVF_8h_source.html#l00037">37</a> of file <a class="el" href="GpuIndexIVF_8h_source.html">GpuIndexIVF.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="ace41857c97a357284acbe4556c9da3da"></a>
 <div class="memitem">
@@ -314,33 +296,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 </div><div class="memdoc">
 <p><code>x</code> can be resident on the CPU or any GPU; the proper copies are performed Forwards to add_with_ids; assigns IDs as needed FIXME: remove override for C++03 compatibility </p>
 
-<p>Reimplemented from <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a2a7226973e6325014da1ef5d00eaebba">faiss::gpu::GpuIndex</a>.</p>
+<p>Reimplemented from <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#af576341f6996b0e80e26b9748db51eb7">faiss::gpu::GpuIndex</a>.</p>
 
-<p>Definition at line <a class="el" href="GpuIndexIVF_8cu_source.html#l00252">252</a> of file <a class="el" href="GpuIndexIVF_8cu_source.html">GpuIndexIVF.cu</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="a571ba3623dd0f23ae11e5300eb6baf61"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const bool faiss::gpu::GpuIndexIVF::useFloat16CoarseQuantizer_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Do we want to use float16 storage and math in our coarse quantizer? </p>
-
-<p>Definition at line <a class="el" href="GpuIndexIVF_8h_source.html#l00086">86</a> of file <a class="el" href="GpuIndexIVF_8h_source.html">GpuIndexIVF.h</a>.</p>
+<p>Definition at line <a class="el" href="GpuIndexIVF_8cu_source.html#l00215">215</a> of file <a class="el" href="GpuIndexIVF_8cu_source.html">GpuIndexIVF.cu</a>.</p>
 
 </div>
 </div>

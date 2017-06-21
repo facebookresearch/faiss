@@ -705,6 +705,10 @@ def ranklist_intersection_size(*args):
   return _swigfaiss.ranklist_intersection_size(*args)
 ranklist_intersection_size = _swigfaiss.ranklist_intersection_size
 
+def merge_result_table_with(*args):
+  return _swigfaiss.merge_result_table_with(*args)
+merge_result_table_with = _swigfaiss.merge_result_table_with
+
 def fvec_argsort(*args):
   return _swigfaiss.fvec_argsort(*args)
 fvec_argsort = _swigfaiss.fvec_argsort
@@ -737,9 +741,6 @@ class Index(_object):
     __getattr__ = lambda self, name: _swig_getattr(self, Index, name)
     def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
     __repr__ = _swig_repr
-    __swig_setmethods__["index_typename"] = _swigfaiss.Index_index_typename_set
-    __swig_getmethods__["index_typename"] = _swigfaiss.Index_index_typename_get
-    if _newclass:index_typename = _swig_property(_swigfaiss.Index_index_typename_get, _swigfaiss.Index_index_typename_set)
     __swig_setmethods__["d"] = _swigfaiss.Index_d_set
     __swig_getmethods__["d"] = _swigfaiss.Index_d_get
     if _newclass:d = _swig_property(_swigfaiss.Index_d_get, _swigfaiss.Index_d_set)
@@ -769,8 +770,6 @@ class Index(_object):
     def reconstruct_n(self, *args): return _swigfaiss.Index_reconstruct_n(self, *args)
     def compute_residual(self, *args): return _swigfaiss.Index_compute_residual(self, *args)
     def display(self): return _swigfaiss.Index_display(self)
-    def get_typename(self): return _swigfaiss.Index_get_typename(self)
-    def set_typename(self): return _swigfaiss.Index_set_typename(self)
 Index_swigregister = _swigfaiss.Index_swigregister
 Index_swigregister(Index)
 
@@ -1117,7 +1116,6 @@ class IndexPreTransform(Index):
         try: self.this.append(this)
         except: self.this = this
     def prepend_transform(self, *args): return _swigfaiss.IndexPreTransform_prepend_transform(self, *args)
-    def set_typename(self): return _swigfaiss.IndexPreTransform_set_typename(self)
     def train(self, *args): return _swigfaiss.IndexPreTransform_train(self, *args)
     def add(self, *args): return _swigfaiss.IndexPreTransform_add(self, *args)
     def add_with_ids(self, *args): return _swigfaiss.IndexPreTransform_add_with_ids(self, *args)
@@ -1142,13 +1140,13 @@ class IndexFlat(Index):
     __swig_setmethods__["xb"] = _swigfaiss.IndexFlat_xb_set
     __swig_getmethods__["xb"] = _swigfaiss.IndexFlat_xb_get
     if _newclass:xb = _swig_property(_swigfaiss.IndexFlat_xb_get, _swigfaiss.IndexFlat_xb_set)
-    def set_typename(self): return _swigfaiss.IndexFlat_set_typename(self)
     def add(self, *args): return _swigfaiss.IndexFlat_add(self, *args)
     def reset(self): return _swigfaiss.IndexFlat_reset(self)
     def search(self, *args): return _swigfaiss.IndexFlat_search(self, *args)
     def range_search(self, *args): return _swigfaiss.IndexFlat_range_search(self, *args)
     def reconstruct(self, *args): return _swigfaiss.IndexFlat_reconstruct(self, *args)
     def compute_distance_subset(self, *args): return _swigfaiss.IndexFlat_compute_distance_subset(self, *args)
+    def remove_ids(self, *args): return _swigfaiss.IndexFlat_remove_ids(self, *args)
     def __init__(self, *args): 
         this = _swigfaiss.new_IndexFlat(*args)
         try: self.this.append(this)
@@ -1241,7 +1239,6 @@ class IndexRefineFlat(Index):
     def add(self, *args): return _swigfaiss.IndexRefineFlat_add(self, *args)
     def reset(self): return _swigfaiss.IndexRefineFlat_reset(self)
     def search(self, *args): return _swigfaiss.IndexRefineFlat_search(self, *args)
-    def set_typename(self): return _swigfaiss.IndexRefineFlat_set_typename(self)
     __swig_destroy__ = _swigfaiss.delete_IndexRefineFlat
     __del__ = lambda self : None;
 IndexRefineFlat_swigregister = _swigfaiss.IndexRefineFlat_swigregister
@@ -1304,7 +1301,6 @@ class IndexLSH(Index):
     __swig_getmethods__["codes"] = _swigfaiss.IndexLSH_codes_get
     if _newclass:codes = _swig_property(_swigfaiss.IndexLSH_codes_get, _swigfaiss.IndexLSH_codes_set)
     def apply_preprocess(self, *args): return _swigfaiss.IndexLSH_apply_preprocess(self, *args)
-    def set_typename(self): return _swigfaiss.IndexLSH_set_typename(self)
     def train(self, *args): return _swigfaiss.IndexLSH_train(self, *args)
     def add(self, *args): return _swigfaiss.IndexLSH_add(self, *args)
     def search(self, *args): return _swigfaiss.IndexLSH_search(self, *args)
@@ -1508,7 +1504,6 @@ class IndexPQ(Index):
         this = _swigfaiss.new_IndexPQ(*args)
         try: self.this.append(this)
         except: self.this = this
-    def set_typename(self): return _swigfaiss.IndexPQ_set_typename(self)
     def train(self, *args): return _swigfaiss.IndexPQ_train(self, *args)
     def add(self, *args): return _swigfaiss.IndexPQ_add(self, *args)
     def search(self, *args): return _swigfaiss.IndexPQ_search(self, *args)
@@ -1580,7 +1575,6 @@ class MultiIndexQuantizer(Index):
     __swig_setmethods__["pq"] = _swigfaiss.MultiIndexQuantizer_pq_set
     __swig_getmethods__["pq"] = _swigfaiss.MultiIndexQuantizer_pq_get
     if _newclass:pq = _swig_property(_swigfaiss.MultiIndexQuantizer_pq_get, _swigfaiss.MultiIndexQuantizer_pq_set)
-    def set_typename(self): return _swigfaiss.MultiIndexQuantizer_set_typename(self)
     def train(self, *args): return _swigfaiss.MultiIndexQuantizer_train(self, *args)
     def search(self, *args): return _swigfaiss.MultiIndexQuantizer_search(self, *args)
     def add(self, *args): return _swigfaiss.MultiIndexQuantizer_add(self, *args)
@@ -1640,6 +1634,7 @@ class IndexIVF(Index):
     def merge_from_residuals(self, *args): return _swigfaiss.IndexIVF_merge_from_residuals(self, *args)
     __swig_destroy__ = _swigfaiss.delete_IndexIVF
     __del__ = lambda self : None;
+    def get_list_size(self, *args): return _swigfaiss.IndexIVF_get_list_size(self, *args)
     def make_direct_map(self): return _swigfaiss.IndexIVF_make_direct_map(self)
     def imbalance_factor(self): return _swigfaiss.IndexIVF_imbalance_factor(self)
     def print_stats(self): return _swigfaiss.IndexIVF_print_stats(self)
@@ -1685,10 +1680,10 @@ class IndexIVFFlat(IndexIVF):
     __swig_setmethods__["vecs"] = _swigfaiss.IndexIVFFlat_vecs_set
     __swig_getmethods__["vecs"] = _swigfaiss.IndexIVFFlat_vecs_get
     if _newclass:vecs = _swig_property(_swigfaiss.IndexIVFFlat_vecs_get, _swigfaiss.IndexIVFFlat_vecs_set)
-    def set_typename(self): return _swigfaiss.IndexIVFFlat_set_typename(self)
     def add_core(self, *args): return _swigfaiss.IndexIVFFlat_add_core(self, *args)
     def add_with_ids(self, *args): return _swigfaiss.IndexIVFFlat_add_with_ids(self, *args)
     def search(self, *args): return _swigfaiss.IndexIVFFlat_search(self, *args)
+    def search_preassigned(self, *args): return _swigfaiss.IndexIVFFlat_search_preassigned(self, *args)
     def range_search(self, *args): return _swigfaiss.IndexIVFFlat_range_search(self, *args)
     def copy_subset_to(self, *args): return _swigfaiss.IndexIVFFlat_copy_subset_to(self, *args)
     def reset(self): return _swigfaiss.IndexIVFFlat_reset(self)
@@ -1731,6 +1726,80 @@ class IndexIVFFlatIPBounds(IndexIVFFlat):
 IndexIVFFlatIPBounds_swigregister = _swigfaiss.IndexIVFFlatIPBounds_swigregister
 IndexIVFFlatIPBounds_swigregister(IndexIVFFlatIPBounds)
 
+class ScalarQuantizer(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ScalarQuantizer, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, ScalarQuantizer, name)
+    __repr__ = _swig_repr
+    QT_8bit = _swigfaiss.ScalarQuantizer_QT_8bit
+    QT_4bit = _swigfaiss.ScalarQuantizer_QT_4bit
+    QT_8bit_uniform = _swigfaiss.ScalarQuantizer_QT_8bit_uniform
+    QT_4bit_uniform = _swigfaiss.ScalarQuantizer_QT_4bit_uniform
+    __swig_setmethods__["qtype"] = _swigfaiss.ScalarQuantizer_qtype_set
+    __swig_getmethods__["qtype"] = _swigfaiss.ScalarQuantizer_qtype_get
+    if _newclass:qtype = _swig_property(_swigfaiss.ScalarQuantizer_qtype_get, _swigfaiss.ScalarQuantizer_qtype_set)
+    RS_minmax = _swigfaiss.ScalarQuantizer_RS_minmax
+    RS_meanstd = _swigfaiss.ScalarQuantizer_RS_meanstd
+    RS_quantiles = _swigfaiss.ScalarQuantizer_RS_quantiles
+    RS_optim = _swigfaiss.ScalarQuantizer_RS_optim
+    __swig_setmethods__["rangestat"] = _swigfaiss.ScalarQuantizer_rangestat_set
+    __swig_getmethods__["rangestat"] = _swigfaiss.ScalarQuantizer_rangestat_get
+    if _newclass:rangestat = _swig_property(_swigfaiss.ScalarQuantizer_rangestat_get, _swigfaiss.ScalarQuantizer_rangestat_set)
+    __swig_setmethods__["rangestat_arg"] = _swigfaiss.ScalarQuantizer_rangestat_arg_set
+    __swig_getmethods__["rangestat_arg"] = _swigfaiss.ScalarQuantizer_rangestat_arg_get
+    if _newclass:rangestat_arg = _swig_property(_swigfaiss.ScalarQuantizer_rangestat_arg_get, _swigfaiss.ScalarQuantizer_rangestat_arg_set)
+    __swig_setmethods__["d"] = _swigfaiss.ScalarQuantizer_d_set
+    __swig_getmethods__["d"] = _swigfaiss.ScalarQuantizer_d_get
+    if _newclass:d = _swig_property(_swigfaiss.ScalarQuantizer_d_get, _swigfaiss.ScalarQuantizer_d_set)
+    __swig_setmethods__["code_size"] = _swigfaiss.ScalarQuantizer_code_size_set
+    __swig_getmethods__["code_size"] = _swigfaiss.ScalarQuantizer_code_size_get
+    if _newclass:code_size = _swig_property(_swigfaiss.ScalarQuantizer_code_size_get, _swigfaiss.ScalarQuantizer_code_size_set)
+    __swig_setmethods__["trained"] = _swigfaiss.ScalarQuantizer_trained_set
+    __swig_getmethods__["trained"] = _swigfaiss.ScalarQuantizer_trained_get
+    if _newclass:trained = _swig_property(_swigfaiss.ScalarQuantizer_trained_get, _swigfaiss.ScalarQuantizer_trained_set)
+    def __init__(self, *args): 
+        this = _swigfaiss.new_ScalarQuantizer(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def train(self, *args): return _swigfaiss.ScalarQuantizer_train(self, *args)
+    def compute_codes(self, *args): return _swigfaiss.ScalarQuantizer_compute_codes(self, *args)
+    def decode(self, *args): return _swigfaiss.ScalarQuantizer_decode(self, *args)
+    __swig_destroy__ = _swigfaiss.delete_ScalarQuantizer
+    __del__ = lambda self : None;
+ScalarQuantizer_swigregister = _swigfaiss.ScalarQuantizer_swigregister
+ScalarQuantizer_swigregister(ScalarQuantizer)
+
+class IndexIVFScalarQuantizer(IndexIVF):
+    __swig_setmethods__ = {}
+    for _s in [IndexIVF]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, IndexIVFScalarQuantizer, name, value)
+    __swig_getmethods__ = {}
+    for _s in [IndexIVF]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, IndexIVFScalarQuantizer, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["sq"] = _swigfaiss.IndexIVFScalarQuantizer_sq_set
+    __swig_getmethods__["sq"] = _swigfaiss.IndexIVFScalarQuantizer_sq_get
+    if _newclass:sq = _swig_property(_swigfaiss.IndexIVFScalarQuantizer_sq_get, _swigfaiss.IndexIVFScalarQuantizer_sq_set)
+    __swig_setmethods__["code_size"] = _swigfaiss.IndexIVFScalarQuantizer_code_size_set
+    __swig_getmethods__["code_size"] = _swigfaiss.IndexIVFScalarQuantizer_code_size_get
+    if _newclass:code_size = _swig_property(_swigfaiss.IndexIVFScalarQuantizer_code_size_get, _swigfaiss.IndexIVFScalarQuantizer_code_size_set)
+    __swig_setmethods__["codes"] = _swigfaiss.IndexIVFScalarQuantizer_codes_set
+    __swig_getmethods__["codes"] = _swigfaiss.IndexIVFScalarQuantizer_codes_get
+    if _newclass:codes = _swig_property(_swigfaiss.IndexIVFScalarQuantizer_codes_get, _swigfaiss.IndexIVFScalarQuantizer_codes_set)
+    def __init__(self, *args): 
+        this = _swigfaiss.new_IndexIVFScalarQuantizer(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def train_residual(self, *args): return _swigfaiss.IndexIVFScalarQuantizer_train_residual(self, *args)
+    def add_with_ids(self, *args): return _swigfaiss.IndexIVFScalarQuantizer_add_with_ids(self, *args)
+    def search(self, *args): return _swigfaiss.IndexIVFScalarQuantizer_search(self, *args)
+    def merge_from_residuals(self, *args): return _swigfaiss.IndexIVFScalarQuantizer_merge_from_residuals(self, *args)
+    __swig_destroy__ = _swigfaiss.delete_IndexIVFScalarQuantizer
+    __del__ = lambda self : None;
+IndexIVFScalarQuantizer_swigregister = _swigfaiss.IndexIVFScalarQuantizer_swigregister
+IndexIVFScalarQuantizer_swigregister(IndexIVFScalarQuantizer)
+
 class IndexIVFPQ(IndexIVF):
     __swig_setmethods__ = {}
     for _s in [IndexIVF]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
@@ -1772,7 +1841,6 @@ class IndexIVFPQ(IndexIVF):
     __swig_setmethods__["precomputed_table"] = _swigfaiss.IndexIVFPQ_precomputed_table_set
     __swig_getmethods__["precomputed_table"] = _swigfaiss.IndexIVFPQ_precomputed_table_get
     if _newclass:precomputed_table = _swig_property(_swigfaiss.IndexIVFPQ_precomputed_table_get, _swigfaiss.IndexIVFPQ_precomputed_table_set)
-    def set_typename(self): return _swigfaiss.IndexIVFPQ_set_typename(self)
     def add_with_ids(self, *args): return _swigfaiss.IndexIVFPQ_add_with_ids(self, *args)
     def add_core_o(self, *args): return _swigfaiss.IndexIVFPQ_add_core_o(self, *args)
     def search(self, *args): return _swigfaiss.IndexIVFPQ_search(self, *args)
@@ -1868,7 +1936,6 @@ class IndexIVFPQR(IndexIVFPQ):
     __swig_setmethods__["k_factor"] = _swigfaiss.IndexIVFPQR_k_factor_set
     __swig_getmethods__["k_factor"] = _swigfaiss.IndexIVFPQR_k_factor_get
     if _newclass:k_factor = _swig_property(_swigfaiss.IndexIVFPQR_k_factor_get, _swigfaiss.IndexIVFPQR_k_factor_set)
-    def set_typename(self): return _swigfaiss.IndexIVFPQR_set_typename(self)
     def reset(self): return _swigfaiss.IndexIVFPQR_reset(self)
     def remove_ids(self, *args): return _swigfaiss.IndexIVFPQR_remove_ids(self, *args)
     def train_residual(self, *args): return _swigfaiss.IndexIVFPQR_train_residual(self, *args)
@@ -1947,7 +2014,7 @@ class IndexIDMap(Index):
     def search(self, *args): return _swigfaiss.IndexIDMap_search(self, *args)
     def train(self, *args): return _swigfaiss.IndexIDMap_train(self, *args)
     def reset(self): return _swigfaiss.IndexIDMap_reset(self)
-    def set_typename(self): return _swigfaiss.IndexIDMap_set_typename(self)
+    def remove_ids(self, *args): return _swigfaiss.IndexIDMap_remove_ids(self, *args)
     __swig_destroy__ = _swigfaiss.delete_IndexIDMap
     __del__ = lambda self : None;
     def __init__(self, *args): 
@@ -1989,7 +2056,6 @@ class IndexShards(Index):
     def search(self, *args): return _swigfaiss.IndexShards_search(self, *args)
     def train(self, *args): return _swigfaiss.IndexShards_train(self, *args)
     def reset(self): return _swigfaiss.IndexShards_reset(self)
-    def set_typename(self): return _swigfaiss.IndexShards_set_typename(self)
     __swig_destroy__ = _swigfaiss.delete_IndexShards
     __del__ = lambda self : None;
 IndexShards_swigregister = _swigfaiss.IndexShards_swigregister
@@ -2025,7 +2091,6 @@ class IndexSplitVectors(Index):
     def search(self, *args): return _swigfaiss.IndexSplitVectors_search(self, *args)
     def train(self, *args): return _swigfaiss.IndexSplitVectors_train(self, *args)
     def reset(self): return _swigfaiss.IndexSplitVectors_reset(self)
-    def set_typename(self): return _swigfaiss.IndexSplitVectors_set_typename(self)
     __swig_destroy__ = _swigfaiss.delete_IndexSplitVectors
     __del__ = lambda self : None;
 IndexSplitVectors_swigregister = _swigfaiss.IndexSplitVectors_swigregister
@@ -2280,6 +2345,10 @@ index_factory = _swigfaiss.index_factory
 def swig_ptr(*args):
   return _swigfaiss.swig_ptr(*args)
 swig_ptr = _swigfaiss.swig_ptr
+
+def rev_swig_ptr(*args):
+  return _swigfaiss.rev_swig_ptr(*args)
+rev_swig_ptr = _swigfaiss.rev_swig_ptr
 class float_minheap_array_t(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, float_minheap_array_t, name, value)

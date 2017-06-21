@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -68,9 +67,8 @@ struct IDSelectorRange: IDSelector {
     idx_t imin, imax;
 
     IDSelectorRange (idx_t imin, idx_t imax);
-    virtual bool is_member (idx_t id) const override;
-    virtual ~IDSelectorRange () {}
-
+    bool is_member(idx_t id) const override;
+    ~IDSelectorRange() override {}
 };
 
 
@@ -94,9 +92,8 @@ struct IDSelectorBatch: IDSelector {
     idx_t mask;
 
     IDSelectorBatch (long n, const idx_t *indices);
-    virtual bool is_member (idx_t id) const override;
-    virtual ~IDSelectorBatch() {}
-
+    bool is_member(idx_t id) const override;
+    ~IDSelectorBatch() override {}
 };
 
 

@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -253,4 +252,46 @@ TEST(TestGpuIndexFlat, CopyTo) {
   cpuIndex.reconstruct(idx, cpuVals.data());
 
   EXPECT_EQ(gpuVals, cpuVals);
+}
+
+TEST(TestGpuIndexFlat, UnifiedMemory) {
+  // Construct on a random device to test multi-device, if we have
+  // multiple devices
+  int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
+
+  if (!faiss::gpu::getFullUnifiedMemSupport(device)) {
+    return;
+  }
+
+  int dim = 256;
+
+  // FIXME: GpuIndexFlat doesn't support > 2^31 (vecs * dims) due to
+  // kernel indexing, so we can't test unified memory for memory
+  // oversubscription.
+  size_t numVecs = 50000;
+  int numQuery = 10;
+  int k = 10;
+
+  faiss::IndexFlatL2 cpuIndexL2(dim);
+
+  faiss::gpu::StandardGpuResources res;
+  res.noTempMemory();
+
+  faiss::gpu::GpuIndexFlatConfig config;
+  config.device = device;
+  config.memorySpace = faiss::gpu::MemorySpace::Unified;
+
+  faiss::gpu::GpuIndexFlatL2 gpuIndexL2(&res, dim, config);
+
+  std::vector<float> vecs = faiss::gpu::randVecs(numVecs, dim);
+  cpuIndexL2.add(numVecs, vecs.data());
+  gpuIndexL2.add(numVecs, vecs.data());
+
+  // To some extent, we depend upon the relative error for the test
+  // for float16
+  faiss::gpu::compareIndices(cpuIndexL2, gpuIndexL2,
+                             numQuery, dim, k, "Unified Memory",
+                             kF32MaxRelErr,
+                             0.1f,
+                             0.015f);
 }

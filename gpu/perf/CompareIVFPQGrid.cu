@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -63,13 +62,15 @@ int main(int argc, char** argv) {
   auto initFn = [precomp, indicesOpt, useFloat16Lookup, &index]
     (faiss::gpu::GpuResources* res, int dev) ->
     std::unique_ptr<faiss::gpu::GpuIndexIVFPQ> {
+
+    faiss::gpu::GpuIndexIVFPQConfig config;
+    config.device = dev;
+    config.usePrecomputedTables = precomp;
+    config.indicesOptions = indicesOpt;
+    config.useFloat16LookupTables = useFloat16Lookup;
+
     auto p = std::unique_ptr<faiss::gpu::GpuIndexIVFPQ>(
-      new faiss::gpu::GpuIndexIVFPQ(res,
-                                    dev,
-                                    indicesOpt,
-                                    useFloat16Lookup,
-                                    index.get()));
-    p->setPrecomputedCodes(precomp);
+      new faiss::gpu::GpuIndexIVFPQ(res, index.get(), config));
 
     return p;
   };
@@ -189,9 +190,6 @@ int main(int argc, char** argv) {
 
     printf("\n");
   }
-
-  // printf("\ncudaMalloc usage %zd\n",
-  //        resources.getMemoryManager().getHighWaterCudaMalloc());
 
   return 0;
 }

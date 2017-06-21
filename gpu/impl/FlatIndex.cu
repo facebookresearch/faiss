@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -22,13 +21,18 @@ FlatIndex::FlatIndex(GpuResources* res,
                      int dim,
                      bool l2Distance,
                      bool useFloat16,
-                     bool storeTransposed) :
+                     bool useFloat16Accumulator,
+                     bool storeTransposed,
+                     MemorySpace space) :
     resources_(res),
     dim_(dim),
     useFloat16_(useFloat16),
+    useFloat16Accumulator_(useFloat16Accumulator),
     storeTransposed_(storeTransposed),
     l2Distance_(l2Distance),
-    num_(0) {
+    space_(space),
+    num_(0),
+    rawData_(space) {
 #ifndef FAISS_USE_FLOAT16
   FAISS_ASSERT(!useFloat16_);
 #endif
@@ -60,6 +64,17 @@ int FlatIndex::getDim() const {
   return vectors_.getSize(1);
 }
 
+void
+FlatIndex::reserve(size_t numVecs, cudaStream_t stream) {
+  if (useFloat16_) {
+#ifdef FAISS_USE_FLOAT16
+    rawData_.reserve(numVecs * dim_ * sizeof(half), stream);
+#endif
+  } else {
+    rawData_.reserve(numVecs * dim_ * sizeof(float), stream);
+  }
+}
+
 Tensor<float, 2, true>&
 FlatIndex::getVectorsFloat32Ref() {
   return vectors_;
@@ -79,7 +94,7 @@ FlatIndex::getVectorsFloat32Copy(cudaStream_t stream) {
 
 DeviceTensor<float, 2, true>
 FlatIndex::getVectorsFloat32Copy(int from, int num, cudaStream_t stream) {
-  DeviceTensor<float, 2, true> vecFloat32({num, dim_});
+  DeviceTensor<float, 2, true> vecFloat32({num, dim_}, space_);
 
   if (useFloat16_) {
 #ifdef FAISS_USE_FLOAT16
@@ -164,6 +179,7 @@ FlatIndex::query(Tensor<half, 2, true>& input,
                   k,
                   outDistances,
                   outIndices,
+                  useFloat16Accumulator_,
                   // FIXME
                   !exactDistance,
                   tileSize);
@@ -175,6 +191,7 @@ FlatIndex::query(Tensor<half, 2, true>& input,
                   k,
                   outDistances,
                   outIndices,
+                  useFloat16Accumulator_,
                   tileSize);
   }
 }
@@ -213,12 +230,12 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
   if (useFloat16_) {
 #ifdef FAISS_USE_FLOAT16
     DeviceTensor<half, 2, true> vectorsHalf(
-      (half*) rawData_.data(), {(int) num_, dim_});
+      (half*) rawData_.data(), {(int) num_, dim_}, space_);
     vectorsHalf_ = std::move(vectorsHalf);
 #endif
   } else {
     DeviceTensor<float, 2, true> vectors(
-    (float*) rawData_.data(), {(int) num_, dim_});
+      (float*) rawData_.data(), {(int) num_, dim_}, space_);
     vectors_ = std::move(vectors);
   }
 
@@ -226,12 +243,12 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
     if (useFloat16_) {
 #ifdef FAISS_USE_FLOAT16
       vectorsHalfTransposed_ =
-        std::move(DeviceTensor<half, 2, true>({dim_, (int) num_}));
+        std::move(DeviceTensor<half, 2, true>({dim_, (int) num_}, space_));
       runTransposeAny(vectorsHalf_, 0, 1, vectorsHalfTransposed_, stream);
 #endif
     } else {
       vectorsTransposed_ =
-        std::move(DeviceTensor<float, 2, true>({dim_, (int) num_}));
+        std::move(DeviceTensor<float, 2, true>({dim_, (int) num_}, space_));
       runTransposeAny(vectors_, 0, 1, vectorsTransposed_, stream);
     }
   }
@@ -240,12 +257,12 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
     // Precompute L2 norms of our database
     if (useFloat16_) {
 #ifdef FAISS_USE_FLOAT16
-      DeviceTensor<half, 1, true> normsHalf({(int) num_});
+      DeviceTensor<half, 1, true> normsHalf({(int) num_}, space_);
       runL2Norm(vectorsHalf_, normsHalf, true, stream);
       normsHalf_ = std::move(normsHalf);
 #endif
     } else {
-      DeviceTensor<float, 1, true> norms({(int) num_});
+      DeviceTensor<float, 1, true> norms({(int) num_}, space_);
       runL2Norm(vectors_, norms, true, stream);
       norms_ = std::move(norms);
     }

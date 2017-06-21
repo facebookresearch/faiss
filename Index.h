@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -59,7 +58,6 @@ struct RangeSearchResult;
  * database-to-database queries are not implemented.
  */
 struct Index {
-    std::string index_typename;
 
     typedef long idx_t;    ///< all indices are this type
 
@@ -74,7 +72,6 @@ struct Index {
     MetricType metric_type;
 
     explicit Index (idx_t d = 0, MetricType metric = METRIC_INNER_PRODUCT):
-                    index_typename ("Undefined Index typename"),
                     d(d),
                     ntotal(0),
                     verbose(false),
@@ -184,11 +181,6 @@ struct Index {
     /** Display the actual class name and some more info */
     void display () const;
 
-    /** Return the typeName of the index (which includes main parameters */
-    virtual std::string get_typename () const {
-        return index_typename; }
-
-    virtual void set_typename () = 0 ;
 
 
 };

@@ -1,4 +1,3 @@
-
 # Copyright (c) 2015-present, Facebook, Inc.
 # All rights reserved.
 #
@@ -28,7 +27,7 @@ def fvecs_read(filename):
 
     return fv.copy()   # to make contiguous
 
-rootdir = './sift1M'
+rootdir = '/mnt/vol/gfsai-east/ai-group/datasets/simsearch/sift1M'
 
 
 print "loading database"

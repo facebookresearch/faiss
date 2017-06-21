@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -23,7 +22,8 @@ class IVFFlat : public IVFBase {
           FlatIndex* quantizer,
           bool l2Distance,
           bool useFloat16,
-          IndicesOptions indicesOptions);
+          IndicesOptions indicesOptions,
+          MemorySpace space);
 
   ~IVFFlat() override;
 

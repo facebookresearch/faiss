@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -109,6 +108,7 @@ runPass1SelectLists(Tensor<int, 2, true>& prefixSumOffsets,
                                    k,                                   \
                                    heapDistances,                       \
                                    heapIndices);                        \
+    CUDA_TEST_ERROR();                                                  \
     return; /* success */                                               \
   } while (0)
 
@@ -138,7 +138,7 @@ runPass1SelectLists(Tensor<int, 2, true>& prefixSumOffsets,
   }
 
   // unimplemented / too many resources
-  FAISS_ASSERT(false);
+  FAISS_ASSERT_FMT(false, "unimplemented k value (%d)", k);
 
 #undef RUN_PASS_DIR
 #undef RUN_PASS

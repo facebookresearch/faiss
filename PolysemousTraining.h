@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -73,11 +72,11 @@ struct ReproduceDistancesObjective : PermutationObjective {
     double get_source_dis (int i, int j) const;
 
     // cost = quadratic difference between actual distance and Hamming distance
-    virtual double compute_cost (const int *perm) const override;
+    double compute_cost(const int* perm) const override;
 
     // what would the cost update be if iw and jw were swapped?
     // computed in O(n) instead of O(n^2) for the full re-computation
-    virtual double cost_update (const int *perm, int iw, int jw) const override;
+    double cost_update(const int* perm, int iw, int jw) const override;
 
     ReproduceDistancesObjective (
            int n,
@@ -90,8 +89,7 @@ struct ReproduceDistancesObjective : PermutationObjective {
 
     void set_affine_target_dis (const double *source_dis_in);
 
-    virtual ~ReproduceDistancesObjective () {}
-
+    ~ReproduceDistancesObjective() override {}
 };
 
 struct RandomGenerator;

@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -41,6 +40,7 @@
                                                                         \
     blockSelect<TYPE, int, DIR, WARP_Q, THREAD_Q, kBlockSelectNumThreads> \
       <<<grid, block, 0, stream>>>(in, outK, outV, kInit, vInit, k);    \
+    CUDA_TEST_ERROR();                                                  \
   }
 
 #define BLOCK_SELECT_CALL(TYPE, DIR, WARP_Q)                    \

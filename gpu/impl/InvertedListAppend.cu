@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -58,6 +57,8 @@ runUpdateListPointers(Tensor<int, 1, true>& listIds,
     listLengths.data().get(),
     listCodes.data().get(),
     listIndices.data().get());
+
+  CUDA_TEST_ERROR();
 }
 
 template <IndicesOptions Opt>
@@ -137,6 +138,8 @@ runIVFPQInvertedListAppend(Tensor<int, 1, true>& listIds,
     // unknown index storage type
     FAISS_ASSERT(false);
   }
+
+  CUDA_TEST_ERROR();
 
 #undef RUN_APPEND
 }
@@ -260,6 +263,8 @@ runIVFFlatInvertedListAppend(Tensor<int, 1, true>& listIds,
       RUN_APPEND(false, false);
     }
   }
+
+  CUDA_TEST_ERROR();
 
 #undef RUN_APPEND
 #undef RUN_APPEND_OPT

@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -52,6 +51,11 @@ int ssyev_ (
         FINTEGER *lda, float *w, float *work, FINTEGER *lwork,
         FINTEGER *info);
 
+int dsyev_ (
+        const char *jobz, const char *uplo, FINTEGER *n, double *a,
+        FINTEGER *lda, double *w, double *work, FINTEGER *lwork,
+        FINTEGER *info);
+
 int sgesvd_(
         const char *jobu, const char *jobvt, FINTEGER *m, FINTEGER *n,
         float *a, FINTEGER *lda, float *s, float *u, FINTEGER *ldu, float *vt,
@@ -82,7 +86,7 @@ void VectorTransform::reverse_transform (
              idx_t , const float *,
              float *) const
 {
-    FAISS_ASSERT (!"reverse transform not implemented");
+    FAISS_THROW_MSG ("reverse transform not implemented");
 }
 
 
@@ -101,11 +105,11 @@ LinearTransform::LinearTransform (int d_in, int d_out,
 void LinearTransform::apply_noalloc (Index::idx_t n, const float * x,
                                float * xt) const
 {
-    FAISS_ASSERT(is_trained || !"Transformation not trained yet");
+    FAISS_THROW_IF_NOT_MSG(is_trained, "Transformation not trained yet");
 
     float c_factor;
     if (have_bias) {
-        FAISS_ASSERT (b.size() == d_out || !"Bias not initialized");
+        FAISS_THROW_IF_NOT_MSG (b.size() == d_out, "Bias not initialized");
         float * xi = xt;
         for (int i = 0; i < n; i++)
             for(int j = 0; j < d_out; j++)
@@ -115,8 +119,8 @@ void LinearTransform::apply_noalloc (Index::idx_t n, const float * x,
         c_factor = 0.0;
     }
 
-    FAISS_ASSERT (A.size() == d_out * d_in ||
-            !"Transformation matrix not initialized");
+    FAISS_THROW_IF_NOT_MSG (A.size() == d_out * d_in,
+                      "Transformation matrix not initialized");
 
     float one = 1;
     FINTEGER nbiti = d_out, ni = n, di = d_in;
@@ -203,12 +207,75 @@ PCAMatrix::PCAMatrix (int d_in, int d_out,
 }
 
 
+namespace {
+
+/// Compute the eigenvalue decomposition of symmetric matrix cov,
+/// dimensions d_in-by-d_in. Output eigenvectors in cov.
+
+void eig(size_t d_in, double *cov, double *eigenvalues, int verbose)
+{
+    { // compute eigenvalues and vectors
+        FINTEGER info = 0, lwork = -1, di = d_in;
+        double workq;
+
+        dsyev_ ("Vectors as well", "Upper",
+                &di, cov, &di, eigenvalues, &workq, &lwork, &info);
+        lwork = FINTEGER(workq);
+        double *work = new double[lwork];
+
+        dsyev_ ("Vectors as well", "Upper",
+                &di, cov, &di, eigenvalues, work, &lwork, &info);
+
+        delete [] work;
+
+        if (info != 0) {
+            fprintf (stderr, "WARN ssyev info returns %d, "
+                     "a very bad PCA matrix is learnt\n",
+                     int(info));
+            // do not throw exception, as the matrix could still be useful
+        }
+
+
+        if(verbose && d_in <= 10) {
+            printf("info=%ld new eigvals=[", long(info));
+            for(int j = 0; j < d_in; j++) printf("%g ", eigenvalues[j]);
+            printf("]\n");
+
+            double *ci = cov;
+            printf("eigenvecs=\n");
+            for(int i = 0; i < d_in; i++) {
+                for(int j = 0; j < d_in; j++)
+                    printf("%10.4g ", *ci++);
+                printf("\n");
+            }
+        }
+
+    }
+
+    // revert order of eigenvectors & values
+
+    for(int i = 0; i < d_in / 2; i++) {
+
+        std::swap(eigenvalues[i], eigenvalues[d_in - 1 - i]);
+        double *v1 = cov + i * d_in;
+        double *v2 = cov + (d_in - 1 - i) * d_in;
+        for(int j = 0; j < d_in; j++)
+            std::swap(v1[j], v2[j]);
+    }
+
+}
+
+
+}
+
 void PCAMatrix::train (Index::idx_t n, const float *x)
 {
     const float * x_in = x;
 
     x = fvecs_maybe_subsample (d_in, (size_t*)&n,
                                max_points_per_d * d_in, x, verbose);
+
+    ScopeDeleter<float> del_x (x != x_in ? x : nullptr);
 
     // compute mean
     mean.clear(); mean.resize(d_in, 0.0);
@@ -255,62 +322,92 @@ void PCAMatrix::train (Index::idx_t n, const float *x)
             }
         }
 
-        { // compute eigenvalues and vectors
-            eigenvalues.resize(d_in);
-            FINTEGER info = 0, lwork = -1, di = d_in;
-            float workq;
+        std::vector<double> covd (d_in * d_in);
+        for (size_t i = 0; i < d_in * d_in; i++) covd [i] = cov [i];
 
-            ssyev_ ("Vectors as well", "Upper",
-                    &di, cov, &di, eigenvalues.data(), &workq, &lwork, &info);
-            lwork = FINTEGER(workq);
-            float *work = new float[lwork];
+        std::vector<double> eigenvaluesd (d_in);
 
-            ssyev_ ("Vectors as well", "Upper",
-                    &di, cov, &di, eigenvalues.data(), work, &lwork, &info);
+        eig (d_in, covd.data (), eigenvaluesd.data (), verbose);
 
-            if (info != 0) {
-                fprintf (stderr, "WARN ssyev info returns %d, "
-                         "a very bad PCA matrix is learnt\n",
-                         int(info));
+        for (size_t i = 0; i < d_in * d_in; i++) PCAMat [i] = covd [i];
+        eigenvalues.resize (d_in);
 
-            }
+        for (size_t i = 0; i < d_in; i++)
+            eigenvalues [i] = eigenvaluesd [i];
 
-            delete [] work;
-
-            if(verbose && d_in <= 10) {
-                printf("info=%ld new eigvals=[", long(info));
-                for(int j = 0; j < d_in; j++) printf("%g ", eigenvalues[j]);
-                printf("]\n");
-
-                float *ci = cov;
-                printf("eigenvecs=\n");
-                for(int i = 0; i < d_in; i++) {
-                    for(int j = 0; j < d_in; j++)
-                        printf("%10.4g ", *ci++);
-                    printf("\n");
-                }
-            }
-
-        }
-
-        // revert order of eigenvectors & values
-
-        for(int i = 0; i < d_in / 2; i++) {
-
-            std::swap(eigenvalues[i], eigenvalues[d_in - 1 - i]);
-            float *v1 = cov + i * d_in;
-            float *v2 = cov + (d_in - 1 - i) * d_in;
-            for(int j = 0; j < d_in; j++)
-                std::swap(v1[j], v2[j]);
-        }
 
     } else {
-        FAISS_ASSERT(!"Gramm matrix version not implemented "
-               "--  provide more training examples than dimensions");
+
+        std::vector<float> xc (n * d_in);
+
+        for (size_t i = 0; i < n; i++)
+            for(size_t j = 0; j < d_in; j++)
+                xc [i * d_in + j] = x [i * d_in + j] - mean[j];
+
+        // compute Gram matrix
+        std::vector<float> gram (n * n);
+        {
+            FINTEGER di = d_in, ni = n;
+            float one = 1.0, zero = 0.0;
+            ssyrk_ ("Up", "Transposed",
+                    &ni, &di, &one, xc.data(), &di, &zero, gram.data(), &ni);
+        }
+
+        if(verbose && d_in <= 10) {
+            float *ci = gram.data();
+            printf("gram=\n");
+            for(int i = 0; i < n; i++) {
+                for(int j = 0; j < n; j++)
+                    printf("%10g ", *ci++);
+                printf("\n");
+            }
+        }
+
+        std::vector<double> gramd (n * n);
+        for (size_t i = 0; i < n * n; i++)
+            gramd [i] = gram [i];
+
+        std::vector<double> eigenvaluesd (n);
+
+        // eig will fill in only the n first eigenvals
+
+        eig (n, gramd.data (), eigenvaluesd.data (), verbose);
+
+        PCAMat.resize(d_in * d_in);
+
+        for (size_t i = 0; i < n * n; i++)
+            gram [i] = gramd [i];
+
+        eigenvalues.resize (d_in);
+        // fill in only the n first ones
+        for (size_t i = 0; i < n; i++)
+            eigenvalues [i] = eigenvaluesd [i];
+
+        { // compute PCAMat = x' * v
+            FINTEGER di = d_in, ni = n;
+            float one = 1.0;
+
+            sgemm_ ("Non", "Non Trans",
+                    &di, &ni, &ni,
+                    &one, xc.data(), &di, gram.data(), &ni,
+                    &one, PCAMat.data(), &di);
+        }
+
+
+        if(verbose && d_in <= 10) {
+            float *ci = PCAMat.data();
+            printf("PCAMat=\n");
+            for(int i = 0; i < n; i++) {
+                for(int j = 0; j < d_in; j++)
+                    printf("%10g ", *ci++);
+                printf("\n");
+            }
+        }
+        fvec_renorm_L2 (d_in, n, PCAMat.data());
+
     }
 
 
-    if (x != x_in) delete [] x;
 
     prepare_Ab();
     is_trained = true;
@@ -318,7 +415,7 @@ void PCAMatrix::train (Index::idx_t n, const float *x)
 
 void PCAMatrix::copy_from (const PCAMatrix & other)
 {
-    FAISS_ASSERT (other.is_trained);
+    FAISS_THROW_IF_NOT (other.is_trained);
     mean = other.mean;
     eigenvalues = other.eigenvalues;
     PCAMat = other.PCAMat;
@@ -344,7 +441,7 @@ void PCAMatrix::prepare_Ab ()
         }
 
         if (balanced_bins != 0) {
-            FAISS_ASSERT (d_out % balanced_bins == 0);
+            FAISS_THROW_IF_NOT (d_out % balanced_bins == 0);
             int dsub = d_out / balanced_bins;
             std::vector <float> Ain;
             std::swap(A, Ain);
@@ -381,9 +478,9 @@ void PCAMatrix::prepare_Ab ()
 
 
     } else {
-        FAISS_ASSERT (balanced_bins == 0 ||
-                      !"both balancing bins and applying a random rotation "
-                      "does not make sense");
+        FAISS_THROW_IF_NOT_MSG (balanced_bins == 0,
+                          "both balancing bins and applying a random rotation "
+                          "does not make sense");
         RandomRotationMatrix rr(d_out, d_out);
 
         rr.init(5);
@@ -424,8 +521,8 @@ void PCAMatrix::prepare_Ab ()
 void PCAMatrix::reverse_transform (idx_t n, const float * xt,
                                    float *x) const
 {
-    FAISS_ASSERT (eigen_power == 0 ||
-                  !"reverse only implemented for orthogonal transforms");
+    FAISS_THROW_IF_NOT_MSG (eigen_power == 0,
+                      "reverse only implemented for orthogonal transforms");
     transform_transpose (n, xt, x);
 }
 
@@ -454,6 +551,8 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
 
     x = fvecs_maybe_subsample (d_in, (size_t*)&n,
                                max_train_points, x, verbose);
+
+    ScopeDeleter<float> del_x (x != x_in ? x : nullptr);
 
     // To support d_out > d_in, we pad input vectors with 0s to d_out
     size_t d = d_out <= d_in ? d_in : d_out;
@@ -513,7 +612,7 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
         // we use only the d * d2 upper part of the matrix
         A.resize (d * d2);
     } else {
-        FAISS_ASSERT (A.size() == d * d2);
+        FAISS_THROW_IF_NOT (A.size() == d * d2);
         rotation = A.data();
     }
 
@@ -600,9 +699,6 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
         A.resize (d_in * d_out);
     }
 
-    if (x != x_in)
-        delete [] x;
-
     is_trained = true;
 }
 
@@ -631,7 +727,6 @@ IndexPreTransform::IndexPreTransform (
     index (index), own_fields (false)
 {
     is_trained = index->is_trained;
-    set_typename();
 }
 
 
@@ -645,23 +740,14 @@ IndexPreTransform::IndexPreTransform (
 {
     is_trained = index->is_trained;
     prepend_transform (ltrans);
-    set_typename();
 }
 
 void IndexPreTransform::prepend_transform (VectorTransform *ltrans)
 {
-    FAISS_ASSERT (ltrans->d_out == d);
+    FAISS_THROW_IF_NOT (ltrans->d_out == d);
     is_trained = is_trained && ltrans->is_trained;
     chain.insert (chain.begin(), ltrans);
     d = ltrans->d_in;
-    set_typename ();
-}
-
-
-void IndexPreTransform::set_typename ()
-{
-    // TODO correct this according to actual type
-    index_typename = "PreLT[" + index->index_typename + "]";
 }
 
 
@@ -684,6 +770,7 @@ void IndexPreTransform::train (idx_t n, const float *x)
         if (!chain[i]->is_trained) last_untrained = i;
     if (!index->is_trained) last_untrained = chain.size();
     const float *prev_x = x;
+    ScopeDeleter<float> del;
 
     for (int i = 0; i <= last_untrained; i++) {
         if (i < chain.size()) {
@@ -696,11 +783,11 @@ void IndexPreTransform::train (idx_t n, const float *x)
         if (i == last_untrained) break;
 
         float * xt = chain[i]->apply (n, prev_x);
-        if (prev_x != x) delete [] prev_x;
+        if (prev_x != x) delete prev_x;
         prev_x = xt;
+        del.set(xt);
     }
 
-    if (prev_x != x) delete [] prev_x;
     is_trained = true;
 }
 
@@ -708,30 +795,34 @@ void IndexPreTransform::train (idx_t n, const float *x)
 const float *IndexPreTransform::apply_chain (idx_t n, const float *x) const
 {
     const float *prev_x = x;
+    ScopeDeleter<float> del;
+
     for (int i = 0; i < chain.size(); i++) {
         float * xt = chain[i]->apply (n, prev_x);
-        if (prev_x != x) delete [] prev_x;
+        ScopeDeleter<float> del2 (xt);
+        del2.swap (del);
         prev_x = xt;
     }
+    del.release ();
     return prev_x;
 }
 
 void IndexPreTransform::add (idx_t n, const float *x)
 {
-    FAISS_ASSERT (is_trained);
+    FAISS_THROW_IF_NOT (is_trained);
     const float *xt = apply_chain (n, x);
+    ScopeDeleter<float> del(xt == x ? nullptr : xt);
     index->add (n, xt);
-    if (xt != x) delete [] xt;
     ntotal = index->ntotal;
 }
 
 void IndexPreTransform::add_with_ids (idx_t n, const float * x,
                                       const long *xids)
 {
-    FAISS_ASSERT (is_trained);
+    FAISS_THROW_IF_NOT (is_trained);
     const float *xt = apply_chain (n, x);
+    ScopeDeleter<float> del(xt == x ? nullptr : xt);
     index->add_with_ids (n, xt, xids);
-    if (xt != x) delete [] xt;
     ntotal = index->ntotal;
 }
 
@@ -741,10 +832,10 @@ void IndexPreTransform::add_with_ids (idx_t n, const float * x,
 void IndexPreTransform::search (idx_t n, const float *x, idx_t k,
                                float *distances, idx_t *labels) const
 {
-    FAISS_ASSERT (is_trained);
+    FAISS_THROW_IF_NOT (is_trained);
     const float *xt = apply_chain (n, x);
+    ScopeDeleter<float> del(xt == x ? nullptr : xt);
     index->search (n, xt, k, distances, labels);
-    if (xt != x) delete [] xt;
 }
 
 
@@ -763,14 +854,16 @@ long IndexPreTransform::remove_ids (const IDSelector & sel) {
 void IndexPreTransform::reconstruct_n (idx_t i0, idx_t ni, float *recons) const
 {
     float *x = chain.empty() ? recons : new float [ni * index->d];
+    ScopeDeleter<float> del (recons == x ? nullptr : x);
     // initial reconstruction
     index->reconstruct_n (i0, ni, x);
 
     // revert transformations from last to first
     for (int i = chain.size() - 1; i >= 0; i--) {
         float *x_pre = i == 0 ? recons : new float [chain[i]->d_in * ni];
+        ScopeDeleter<float> del2 (x_pre == recons ? nullptr : x_pre);
         chain [i]->reverse_transform (ni, x, x_pre);
-        delete [] x;
+        del2.swap (del);  // delete [] x;
         x = x_pre;
     }
 }
@@ -789,7 +882,7 @@ RemapDimensionsTransform::RemapDimensionsTransform (
     map.resize (d_out);
     for (int i = 0; i < d_out; i++) {
         map[i] = map_in[i];
-        FAISS_ASSERT (map[i] == -1 || (map[i] >= 0 && map[i] < d_in));
+        FAISS_THROW_IF_NOT (map[i] == -1 || (map[i] >= 0 && map[i] < d_in));
     }
 }
 

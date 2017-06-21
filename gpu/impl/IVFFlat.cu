@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -31,7 +30,8 @@ IVFFlat::IVFFlat(GpuResources* resources,
                  FlatIndex* quantizer,
                  bool l2Distance,
                  bool useFloat16,
-                 IndicesOptions indicesOptions) :
+                 IndicesOptions indicesOptions,
+                 MemorySpace space) :
     IVFBase(resources,
             quantizer,
 #ifdef FAISS_USE_FLOAT16
@@ -41,11 +41,12 @@ IVFFlat::IVFFlat(GpuResources* resources,
 #else
             sizeof(float) * quantizer->getDim(),
 #endif
-            indicesOptions),
+            indicesOptions,
+            space),
     l2Distance_(l2Distance),
     useFloat16_(useFloat16) {
 #ifndef FAISS_USE_FLOAT16
-  FAISS_ASSERT(!useFloat16 | !"float16 unsupported");
+  FAISS_ASSERT_MSG(!useFloat16, "float16 unsupported");
   useFloat16_ = false;
 #endif
 }

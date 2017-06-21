@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -75,6 +74,7 @@ void runL2Distance(GpuResources* resources,
                    int k,
                    Tensor<T, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices,
+                   bool useHgemm,
                    bool ignoreOutDistances = false,
                    int tileSizeOverride = -1) {
   FAISS_ASSERT(outDistances.getSize(0) == queries.getSize(0));
@@ -169,7 +169,7 @@ void runL2Distance(GpuResources* resources,
                   queryView, false,
                   centroidsTransposed ? *centroidsTransposed : centroids,
                   centroidsTransposed ? false : true,
-                  -2.0f, 0.0f,
+                  -2.0f, 0.0f, useHgemm,
                   resources->getBlasHandleCurrentDevice(),
                   streams[curStream]);
 
@@ -205,6 +205,7 @@ void runIPDistance(GpuResources* resources,
                    int k,
                    Tensor<T, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices,
+                   bool useHgemm,
                    int tileSizeOverride = -1) {
   FAISS_ASSERT(outDistances.getSize(0) == queries.getSize(0));
   FAISS_ASSERT(outIndices.getSize(0) == queries.getSize(0));
@@ -274,7 +275,7 @@ void runIPDistance(GpuResources* resources,
                   queryView, false,
                   centroidsTransposed ? *centroidsTransposed : centroids,
                   centroidsTransposed ? false : true,
-                  1.0f, 0.0f,
+                  1.0f, 0.0f, useHgemm,
                   resources->getBlasHandleCurrentDevice(),
                   streams[curStream]);
 
@@ -311,6 +312,7 @@ runIPDistance(GpuResources* resources,
                        k,
                        outDistances,
                        outIndices,
+                       false,
                        tileSizeOverride);
 }
 
@@ -323,6 +325,7 @@ runIPDistance(GpuResources* resources,
               int k,
               Tensor<half, 2, true>& outDistances,
               Tensor<int, 2, true>& outIndices,
+              bool useHgemm,
               int tileSizeOverride) {
   runIPDistance<half>(resources,
                       vectors,
@@ -331,6 +334,7 @@ runIPDistance(GpuResources* resources,
                       k,
                       outDistances,
                       outIndices,
+                      useHgemm,
                       tileSizeOverride);
 }
 #endif
@@ -354,6 +358,7 @@ runL2Distance(GpuResources* resources,
                        k,
                        outDistances,
                        outIndices,
+                       false,
                        ignoreOutDistances,
                        tileSizeOverride);
 }
@@ -368,6 +373,7 @@ runL2Distance(GpuResources* resources,
               int k,
               Tensor<half, 2, true>& outDistances,
               Tensor<int, 2, true>& outIndices,
+              bool useHgemm,
               bool ignoreOutDistances,
               int tileSizeOverride) {
   runL2Distance<half>(resources,
@@ -378,6 +384,7 @@ runL2Distance(GpuResources* resources,
                       k,
                       outDistances,
                       outIndices,
+                      useHgemm,
                       ignoreOutDistances,
                       tileSizeOverride);
 }

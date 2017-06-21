@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -15,6 +14,7 @@
 #include "impl/FlatIndex.cuh"
 #include "utils/CopyUtils.cuh"
 #include "utils/DeviceUtils.h"
+#include "utils/Float16.cuh"
 #include "utils/StaticUtils.h"
 
 #include <thrust/execution_policy.h>
@@ -33,12 +33,15 @@ constexpr size_t kNonPinnedPageSize = (size_t) 256 * 1024 * 1024;
 GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
                            const faiss::IndexFlat* index,
                            GpuIndexFlatConfig config) :
-    GpuIndex(resources, config.device, index->d, index->metric_type),
+    GpuIndex(resources, index->d, index->metric_type, config),
     minPagedSize_(kMinPageSize),
     config_(config),
     data_(nullptr) {
+  verifySettings_();
+
   // Flat index doesn't need training
   this->is_trained = true;
+
   copyFrom(index);
 }
 
@@ -46,19 +49,24 @@ GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
                            int dims,
                            faiss::MetricType metric,
                            GpuIndexFlatConfig config) :
-    GpuIndex(resources, config.device, dims, metric),
+    GpuIndex(resources, dims, metric, config),
     minPagedSize_(kMinPageSize),
     config_(config),
     data_(nullptr) {
+  verifySettings_();
+
   // Flat index doesn't need training
   this->is_trained = true;
-  DeviceScope scope(device_);
 
+  // Construct index
+  DeviceScope scope(device_);
   data_ = new FlatIndex(resources,
                         dims,
                         metric == faiss::METRIC_L2,
                         config_.useFloat16,
-                        config_.storeTransposed);
+                        config_.useFloat16Accumulator,
+                        config_.storeTransposed,
+                        memorySpace_);
 }
 
 GpuIndexFlat::~GpuIndexFlat() {
@@ -75,11 +83,6 @@ GpuIndexFlat::getMinPagingSize() const {
   return minPagedSize_;
 }
 
-bool
-GpuIndexFlat::getUseFloat16() const {
-  return config_.useFloat16;
-}
-
 void
 GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
   DeviceScope scope(device_);
@@ -88,8 +91,12 @@ GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
   this->metric_type = index->metric_type;
 
   // GPU code has 32 bit indices
-  FAISS_ASSERT(index->ntotal <=
-               (faiss::Index::idx_t) std::numeric_limits<int>::max());
+  FAISS_THROW_IF_NOT_FMT(index->ntotal <=
+                     (faiss::Index::idx_t) std::numeric_limits<int>::max(),
+                     "GPU index only supports up to %zu indices; "
+                     "attempting to copy CPU index with %zu parameters",
+                     (size_t) std::numeric_limits<int>::max(),
+                     (size_t) index->ntotal);
   this->ntotal = index->ntotal;
 
   delete data_;
@@ -97,7 +104,9 @@ GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
                         this->d,
                         index->metric_type == faiss::METRIC_L2,
                         config_.useFloat16,
-                        config_.storeTransposed);
+                        config_.useFloat16Accumulator,
+                        config_.storeTransposed,
+                        memorySpace_);
 
   // The index could be empty
   if (index->ntotal > 0) {
@@ -150,19 +159,39 @@ GpuIndexFlat::train(Index::idx_t n, const float* x) {
 }
 
 void
+GpuIndexFlat::add(Index::idx_t n, const float* x) {
+  DeviceScope scope(device_);
+
+  // To avoid multiple re-allocations, ensure we have enough storage
+  // available
+  data_->reserve(n, resources_->getDefaultStream(device_));
+
+  // If we're not operating in float16 mode, we don't need the input
+  // data to be resident on our device; we can add directly.
+  if (!config_.useFloat16) {
+    addImpl_(n, x, nullptr);
+  } else {
+    // Otherwise, perform the paging
+    GpuIndex::add(n, x);
+  }
+}
+
+void
 GpuIndexFlat::addImpl_(Index::idx_t n,
                        const float* x,
                        const Index::idx_t* ids) {
   // Device is already set in GpuIndex::addInternal_
 
   // We do not support add_with_ids
-  FAISS_ASSERT(!ids);
-  FAISS_ASSERT(n > 0);
+  FAISS_THROW_IF_NOT_MSG(!ids, "add_with_ids not supported");
+  FAISS_THROW_IF_NOT(n > 0);
 
   // Due to GPU indexing in int32, we can't store more than this
   // number of vectors on a GPU
-  FAISS_ASSERT(this->ntotal + n <=
-               (faiss::Index::idx_t) std::numeric_limits<int>::max());
+  FAISS_THROW_IF_NOT_FMT(this->ntotal + n <=
+                     (faiss::Index::idx_t) std::numeric_limits<int>::max(),
+                     "GPU index only supports up to %zu indices",
+                     (size_t) std::numeric_limits<int>::max());
 
   data_->add(x, n, resources_->getDefaultStream(device_));
   this->ntotal += n;
@@ -183,9 +212,13 @@ GpuIndexFlat::search(faiss::Index::idx_t n,
   }
 
   // For now, only support <= max int results
-  // TODO: handle tiling over arbitrary n to keep within 32 bit bounds
-  FAISS_ASSERT(n <= (faiss::Index::idx_t) std::numeric_limits<int>::max());
-  FAISS_ASSERT(k <= 1024); // select limitation
+  FAISS_THROW_IF_NOT_FMT(n <=
+                     (faiss::Index::idx_t) std::numeric_limits<int>::max(),
+                     "GPU index only supports up to %zu indices",
+                     (size_t) std::numeric_limits<int>::max());
+  FAISS_THROW_IF_NOT_FMT(k <= 1024,
+                     "GPU only supports k <= 1024 (requested %d)",
+                     (int) k); // select limitation
 
   DeviceScope scope(device_);
   auto stream = resources_->getDefaultStream(device_);
@@ -257,7 +290,7 @@ GpuIndexFlat::searchImpl_(faiss::Index::idx_t n,
                           faiss::Index::idx_t k,
                           float* distances,
                           faiss::Index::idx_t* labels) const {
-  FAISS_ASSERT(!"Should not be called");
+  FAISS_ASSERT_MSG(false, "Should not be called");
 }
 
 void
@@ -459,7 +492,7 @@ GpuIndexFlat::reconstruct(faiss::Index::idx_t key,
                           float* out) const {
   DeviceScope scope(device_);
 
-  FAISS_ASSERT(key < this->ntotal);
+  FAISS_THROW_IF_NOT_MSG(key < this->ntotal, "index out of bounds");
   auto stream = resources_->getDefaultStream(device_);
 
   if (config_.useFloat16) {
@@ -477,8 +510,8 @@ GpuIndexFlat::reconstruct_n(faiss::Index::idx_t i0,
                             float* out) const {
   DeviceScope scope(device_);
 
-  FAISS_ASSERT(i0 < this->ntotal);
-  FAISS_ASSERT(i0 + num - 1 < this->ntotal);
+  FAISS_THROW_IF_NOT_MSG(i0 < this->ntotal, "index out of bounds");
+  FAISS_THROW_IF_NOT_MSG(i0 + num - 1 < this->ntotal, "num out of bounds");
   auto stream = resources_->getDefaultStream(device_);
 
   if (config_.useFloat16) {
@@ -491,11 +524,21 @@ GpuIndexFlat::reconstruct_n(faiss::Index::idx_t i0,
 }
 
 void
-GpuIndexFlat::set_typename() {
-  if (this->metric_type == faiss::METRIC_L2) {
-    this->index_typename = "GpuL2";
-  } else {
-    this->index_typename = "GpuIP";
+GpuIndexFlat::verifySettings_() const {
+  // If we want Hgemm, ensure that it is supported on this device
+  if (config_.useFloat16Accumulator) {
+#ifdef FAISS_USE_FLOAT16
+    FAISS_THROW_IF_NOT_MSG(config_.useFloat16,
+                       "useFloat16Accumulator can only be enabled "
+                       "with useFloat16");
+
+    FAISS_THROW_IF_NOT_FMT(getDeviceSupportsFloat16Math(config_.device),
+                       "Device %d does not support Hgemm "
+                       "(useFloat16Accumulator)",
+                       config_.device);
+#else
+    FAISS_THROW_IF_NOT_MSG(false, "not compiled with float16 support");
+#endif
   }
 }
 

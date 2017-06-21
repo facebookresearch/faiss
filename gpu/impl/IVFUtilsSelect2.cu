@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -178,6 +177,7 @@ runPass2SelectLists(Tensor<float, 2, true>& heapDistances,
                                    indicesOptions,                      \
                                    outDistances,                        \
                                    outIndices);                         \
+    CUDA_TEST_ERROR();                                                  \
     return; /* success */                                               \
   } while (0)
 
@@ -207,7 +207,7 @@ runPass2SelectLists(Tensor<float, 2, true>& heapDistances,
   }
 
   // unimplemented / too many resources
-  FAISS_ASSERT(false);
+  FAISS_ASSERT_FMT(false, "unimplemented k value (%d)", k);
 
 #undef RUN_PASS_DIR
 #undef RUN_PASS

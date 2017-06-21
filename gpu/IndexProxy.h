@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -66,8 +65,6 @@ class IndexProxy : public faiss::Index {
 
   /// reconstructs from the first index
   void reconstruct(idx_t, float *v) const override;
-
-  void set_typename() override;
 
   bool own_fields;
 

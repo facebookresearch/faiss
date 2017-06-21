@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -71,14 +70,18 @@ int main(int argc, char** argv) {
 
   auto initFn = [&index](faiss::gpu::GpuResources* res, int dev) ->
     std::unique_ptr<faiss::gpu::GpuIndexIVFFlat> {
+    GpuIndexIVFFlatConfig config;
+    config.device = dev;
+    config.indicesOptions = (faiss::gpu::IndicesOptions) FLAGS_index;
+    config.flatConfig.useFloat16 = FLAGS_use_float16_coarse;
+    config.useFloat16IVFStorage = FLAGS_use_float16;
+
     auto p = std::unique_ptr<faiss::gpu::GpuIndexIVFFlat>(
       new faiss::gpu::GpuIndexIVFFlat(res,
-                                      dev,
-                                      FLAGS_use_float16_coarse,
-                                      FLAGS_use_float16,
-                                      index->d, index->nlist,
-                                      (faiss::gpu::IndicesOptions) FLAGS_index,
-                                      index->metric_type));
+                                      index->d,
+                                      index->nlist,
+                                      index->metric_type,
+                                      config));
     p->copyFrom(index.get());
     return p;
   };

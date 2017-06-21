@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -36,24 +35,28 @@ __global__ void blockSelect(Tensor<K, 2, true> in,
             NumWarpQ, NumThreadQ, ThreadsPerBlock>
     heap(initK, initV, smemK, smemV, k);
 
+  // Grid is exactly sized to rows available
   int row = blockIdx.x;
+
+  int i = threadIdx.x;
+  K* inStart = in[row][i].data();
 
   // Whole warps must participate in the selection
   int limit = utils::roundDown(in.getSize(1), kWarpSize);
-  int i = threadIdx.x;
 
-  for (; i < limit; i += blockDim.x) {
-    heap.add(in[row][i], (IndexType) i);
+  for (; i < limit; i += ThreadsPerBlock) {
+    heap.add(*inStart, (IndexType) i);
+    inStart += ThreadsPerBlock;
   }
 
   // Handle last remainder fraction of a warp of elements
   if (i < in.getSize(1)) {
-    heap.addThreadQ(in[row][i], (IndexType) i);
+    heap.addThreadQ(*inStart, (IndexType) i);
   }
 
   heap.reduce();
 
-  for (int i = threadIdx.x; i < k; i += blockDim.x) {
+  for (int i = threadIdx.x; i < k; i += ThreadsPerBlock) {
     outK[row][i] = smemK[i];
     outV[row][i] = smemV[i];
   }

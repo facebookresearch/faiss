@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -67,15 +66,13 @@ struct IndexIVF: Index {
     IndexIVF (Index * quantizer, size_t d, size_t nlist,
               MetricType metric = METRIC_INNER_PRODUCT);
 
-    virtual void reset () override;
+    void reset() override;
 
     /// Trains the quantizer and calls train_residual to train sub-quantizers
-    virtual void train (idx_t n, const float *x) override;
+    void train(idx_t n, const float* x) override;
 
     /// Quantizes x and calls add_with_key
-    virtual void add (idx_t n, const float *x) override;
-
-
+    void add(idx_t n, const float* x) override;
 
     /// Sub-classes that encode the residuals can train their encoders here
     /// does nothing by default
@@ -89,7 +86,11 @@ struct IndexIVF: Index {
     /** implemented by sub-classes */
     virtual void merge_from_residuals (IndexIVF &other) = 0;
 
-    virtual ~IndexIVF();
+    ~IndexIVF() override;
+
+    size_t get_list_size (size_t list_no) const
+    { return ids[list_no].size(); }
+
 
     /// intialize a direct map
     void make_direct_map ();
@@ -134,26 +135,30 @@ struct IndexIVFFlat: IndexIVF {
             Index * quantizer, size_t d, size_t nlist_,
             MetricType = METRIC_INNER_PRODUCT);
 
-    /** Return the typeName of the index (which includes main parameters */
-    virtual void set_typename () override;
-
-
     /// same as add_with_ids, with precomputed coarse quantizer
     virtual void add_core (idx_t n, const float * x, const long *xids,
                    const long *precomputed_idx);
 
-
     /// implemented for all IndexIVF* classes
-    virtual void add_with_ids (idx_t n, const float * x, const long *xids)
-        override;
+    void add_with_ids(idx_t n, const float* x, const long* xids) override;
 
-    virtual void search (
-            idx_t n, const float *x, idx_t k,
-            float *distances, idx_t *labels) const override;
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 
-    virtual void range_search (
-            idx_t n, const float *x, float radius,
-            RangeSearchResult *result) const override;
+    /// perform search, without computing the assignment to the quantizer
+    void search_preassigned (idx_t n, const float *x, idx_t k,
+                             const idx_t *assign,
+                             float *distances, idx_t *labels) const;
+
+    void range_search(
+        idx_t n,
+        const float* x,
+        float radius,
+        RangeSearchResult* result) const override;
 
     /** copy a subset of the entries index to the other index
      *
@@ -163,10 +168,9 @@ struct IndexIVFFlat: IndexIVF {
     void copy_subset_to (IndexIVFFlat & other, int subset_type,
                          long a1, long a2) const;
 
+    void reset() override;
 
-    virtual void reset() override;
-
-    virtual long remove_ids (const IDSelector & sel) override;
+    long remove_ids(const IDSelector& sel) override;
 
     /// Implementation of the search for the inner product metric
     void search_knn_inner_product (
@@ -180,10 +184,9 @@ struct IndexIVFFlat: IndexIVF {
             const long * keys,
             float_maxheap_array_t * res) const;
 
-    virtual void reconstruct (idx_t key, float * recons) const override;
+    void reconstruct(idx_t key, float* recons) const override;
 
-    virtual void merge_from_residuals (IndexIVF &other) override;
-
+    void merge_from_residuals(IndexIVF& other) override;
 
     IndexIVFFlat () {}
 };
@@ -200,15 +203,18 @@ struct IndexIVFFlatIPBounds: IndexIVFFlat {
            Index * quantizer, size_t d, size_t nlist,
            size_t fsize);
 
-    virtual void add_core (idx_t n, const float * x, const long *xids,
-                   const long *precomputed_idx) override;
+    void add_core(
+        idx_t n,
+        const float* x,
+        const long* xids,
+        const long* precomputed_idx) override;
 
-    virtual void search (
-            idx_t n, const float *x, idx_t k,
-            float *distances, idx_t *labels) const override;
-
-
-
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 };
 
 
