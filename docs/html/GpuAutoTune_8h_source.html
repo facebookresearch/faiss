@@ -87,104 +87,61 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">GpuAutoTune.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * Copyright (c) 2015-present, Facebook, Inc.</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * All rights reserved.</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * This source code is licensed under the CC-by-NC license found in the</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * LICENSE file in the root directory of this source tree.</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">// Copyright 2004-present Facebook. All Rights Reserved.</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../Index.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;../AutoTune.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;GpuIndex.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;GpuIndicesOptions.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>faiss { <span class="keyword">namespace </span>gpu {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">class </span>GpuResources;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">// to support auto-tuning we need cloning to/from CPU</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">/// converts any GPU index inside gpu_index to a CPU index</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment"></span><a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> * index_gpu_to_cpu(<span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> *gpu_index);</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">/// set some options on how to copy to GPU</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html">   31</a></span>&#160;<span class="comment"></span><span class="keyword">struct </span><a class="code" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html">GpuClonerOptions</a> {<span class="comment"></span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">  /// how should indices be stored on GpuIndexIVFPQ?</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ad960ac51b7cc607fcb1a1b07efc32a9e">   33</a></span>&#160;<span class="comment"></span>  IndicesOptions <a class="code" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ad960ac51b7cc607fcb1a1b07efc32a9e">indicesOptions</a>;<span class="comment"></span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">  /// is the coarse quantizer in float16?</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a85f3093908b6e9a503c24bb226b17b1b">   35</a></span>&#160;<span class="comment"></span>  <span class="keywordtype">bool</span> <a class="code" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a85f3093908b6e9a503c24bb226b17b1b">useFloat16CoarseQuantizer</a>;<span class="comment"></span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">  /// for GpuIndexIVFFlat, is storage in float16?</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">  /// for GpuIndexIVFPQ, are intermediate calculations in float16?</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ac7cc57d6091d6a79ea6020bf8d1fbe27">   38</a></span>&#160;<span class="comment"></span>  <span class="keywordtype">bool</span> <a class="code" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ac7cc57d6091d6a79ea6020bf8d1fbe27">useFloat16</a>;<span class="comment"></span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">  /// use precomputed tables?</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#abc9c607f2dfc9f23942a523fb49c63fe">   40</a></span>&#160;<span class="comment"></span>  <span class="keywordtype">bool</span> <a class="code" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#abc9c607f2dfc9f23942a523fb49c63fe">usePrecomputed</a>;<span class="comment"></span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">  /// reserve vectors in the invfiles?</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ab60dd87e51af59373a48d73852573f04">   42</a></span>&#160;<span class="comment"></span>  <span class="keywordtype">long</span> <a class="code" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ab60dd87e51af59373a48d73852573f04">reserveVecs</a>;<span class="comment"></span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">  /// For GpuIndexFlat, store data in transposed layout?</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a5f2470ec5b2a8fe7aae0542f113b781d">   44</a></span>&#160;<span class="comment"></span>  <span class="keywordtype">bool</span> <a class="code" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a5f2470ec5b2a8fe7aae0542f113b781d">storeTransposed</a>;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordtype">int</span> verbose;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <a class="code" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html">GpuClonerOptions</a> ();</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;};</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">/// converts any CPU index that can be converted to GPU</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment"></span><a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> * index_cpu_to_gpu(</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;       <a class="code" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a>* resources, <span class="keywordtype">int</span> device,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;       <span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> *index,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;       <span class="keyword">const</span> <a class="code" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html">GpuClonerOptions</a> *options = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html">   56</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html">GpuMultipleClonerOptions</a>: <a class="code" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html">GpuClonerOptions</a> {</div>
-<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html#a7c5bd7a840f6641d5d68699f4416d79d">   57</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html#a7c5bd7a840f6641d5d68699f4416d79d">shard</a>; <span class="comment">///&lt; shard rather than copying to each GPU</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment"></span>    <a class="code" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html">GpuMultipleClonerOptions</a> ();</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> * index_cpu_to_gpu_multiple(</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;       std::vector&lt;GpuResources*&gt; &amp; resources,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;       std::vector&lt;int&gt; &amp;devices,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;       <span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> *index,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;       <span class="keyword">const</span> <a class="code" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html">GpuMultipleClonerOptions</a> *options = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">/// parameter space and setters for GPU indexes</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html">   71</a></span>&#160;<span class="comment"></span><span class="keyword">struct </span><a class="code" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html">GpuParameterSpace</a>: <a class="code" href="structfaiss_1_1ParameterSpace.html">faiss::ParameterSpace</a> {<span class="comment"></span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">    /// initialize with reasonable parameters for the index</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment"></span>    <span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html#ab2bf33a6f1579c3d42f656ded1df3398">initialize</a> (<span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> * index) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">    /// set a combination of parameters on an index</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment"></span>    <span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html#a1820826bb47a51ec9f000118be9c83b2">set_index_parameter</a> (</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;          <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> * index, <span class="keyword">const</span> std::string &amp; name,</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;          <span class="keywordtype">double</span> val) <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;};</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;} } <span class="comment">// namespace</span></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_html_a7c5bd7a840f6641d5d68699f4416d79d"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html#a7c5bd7a840f6641d5d68699f4416d79d">faiss::gpu::GpuMultipleClonerOptions::shard</a></div><div class="ttdeci">bool shard</div><div class="ttdoc">shard rather than copying to each GPU </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8h_source.html#l00057">GpuAutoTune.h:57</a></div></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1GpuClonerOptions_html_a5f2470ec5b2a8fe7aae0542f113b781d"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a5f2470ec5b2a8fe7aae0542f113b781d">faiss::gpu::GpuClonerOptions::storeTransposed</a></div><div class="ttdeci">bool storeTransposed</div><div class="ttdoc">For GpuIndexFlat, store data in transposed layout? </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8h_source.html#l00044">GpuAutoTune.h:44</a></div></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1GpuParameterSpace_html_ab2bf33a6f1579c3d42f656ded1df3398"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuParameterSpace.html#ab2bf33a6f1579c3d42f656ded1df3398">faiss::gpu::GpuParameterSpace::initialize</a></div><div class="ttdeci">void initialize(const faiss::Index *index) override</div><div class="ttdoc">initialize with reasonable parameters for the index </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8cpp_source.html#l00281">GpuAutoTune.cpp:281</a></div></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1GpuClonerOptions_html"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuClonerOptions.html">faiss::gpu::GpuClonerOptions</a></div><div class="ttdoc">set some options on how to copy to GPU </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8h_source.html#l00031">GpuAutoTune.h:31</a></div></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1GpuClonerOptions_html_abc9c607f2dfc9f23942a523fb49c63fe"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#abc9c607f2dfc9f23942a523fb49c63fe">faiss::gpu::GpuClonerOptions::usePrecomputed</a></div><div class="ttdeci">bool usePrecomputed</div><div class="ttdoc">use precomputed tables? </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8h_source.html#l00040">GpuAutoTune.h:40</a></div></div>
-<div class="ttc" id="classfaiss_1_1gpu_1_1GpuResources_html"><div class="ttname"><a href="classfaiss_1_1gpu_1_1GpuResources.html">faiss::gpu::GpuResources</a></div><div class="ttdef"><b>Definition:</b> <a href="GpuResources_8h_source.html#l00024">GpuResources.h:24</a></div></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_html"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html">faiss::gpu::GpuMultipleClonerOptions</a></div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8h_source.html#l00056">GpuAutoTune.h:56</a></div></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1GpuParameterSpace_html_a1820826bb47a51ec9f000118be9c83b2"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuParameterSpace.html#a1820826bb47a51ec9f000118be9c83b2">faiss::gpu::GpuParameterSpace::set_index_parameter</a></div><div class="ttdeci">void set_index_parameter(faiss::Index *index, const std::string &amp;name, double val) const override</div><div class="ttdoc">set a combination of parameters on an index </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8cpp_source.html#l00314">GpuAutoTune.cpp:314</a></div></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1GpuParameterSpace_html"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuParameterSpace.html">faiss::gpu::GpuParameterSpace</a></div><div class="ttdoc">parameter space and setters for GPU indexes </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8h_source.html#l00071">GpuAutoTune.h:71</a></div></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1GpuClonerOptions_html_ac7cc57d6091d6a79ea6020bf8d1fbe27"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ac7cc57d6091d6a79ea6020bf8d1fbe27">faiss::gpu::GpuClonerOptions::useFloat16</a></div><div class="ttdeci">bool useFloat16</div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8h_source.html#l00038">GpuAutoTune.h:38</a></div></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1GpuClonerOptions_html_ad960ac51b7cc607fcb1a1b07efc32a9e"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ad960ac51b7cc607fcb1a1b07efc32a9e">faiss::gpu::GpuClonerOptions::indicesOptions</a></div><div class="ttdeci">IndicesOptions indicesOptions</div><div class="ttdoc">how should indices be stored on GpuIndexIVFPQ? </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8h_source.html#l00033">GpuAutoTune.h:33</a></div></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1GpuClonerOptions_html_a85f3093908b6e9a503c24bb226b17b1b"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a85f3093908b6e9a503c24bb226b17b1b">faiss::gpu::GpuClonerOptions::useFloat16CoarseQuantizer</a></div><div class="ttdeci">bool useFloat16CoarseQuantizer</div><div class="ttdoc">is the coarse quantizer in float16? </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8h_source.html#l00035">GpuAutoTune.h:35</a></div></div>
-<div class="ttc" id="structfaiss_1_1ParameterSpace_html"><div class="ttname"><a href="structfaiss_1_1ParameterSpace.html">faiss::ParameterSpace</a></div><div class="ttdef"><b>Definition:</b> <a href="AutoTune_8h_source.html#l00133">AutoTune.h:133</a></div></div>
-<div class="ttc" id="structfaiss_1_1Index_html"><div class="ttname"><a href="structfaiss_1_1Index.html">faiss::Index</a></div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00061">Index.h:61</a></div></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1GpuClonerOptions_html_ab60dd87e51af59373a48d73852573f04"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ab60dd87e51af59373a48d73852573f04">faiss::gpu::GpuClonerOptions::reserveVecs</a></div><div class="ttdeci">long reserveVecs</div><div class="ttdoc">reserve vectors in the invfiles? </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8h_source.html#l00042">GpuAutoTune.h:42</a></div></div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Copyright (c) 2015-present, Facebook, Inc.</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * All rights reserved.</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * This source code is licensed under the CC-by-NC license found in the</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * LICENSE file in the root directory of this source tree.</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// Copyright 2004-present Facebook. All Rights Reserved.</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;../Index.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../AutoTune.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;GpuClonerOptions.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;GpuIndex.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;GpuIndicesOptions.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>faiss { <span class="keyword">namespace </span>gpu {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">class </span>GpuResources;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">// to support auto-tuning we need cloning to/from CPU</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">/// converts any GPU index inside gpu_index to a CPU index</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"></span><a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> * index_gpu_to_cpu(<span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> *gpu_index);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">/// converts any CPU index that can be converted to GPU</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment"></span><a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> * index_cpu_to_gpu(</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;       GpuResources* resources, <span class="keywordtype">int</span> device,</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;       <span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> *index,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;       <span class="keyword">const</span> GpuClonerOptions *options = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> * index_cpu_to_gpu_multiple(</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;       std::vector&lt;GpuResources*&gt; &amp; resources,</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;       std::vector&lt;int&gt; &amp;devices,</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;       <span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> *index,</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;       <span class="keyword">const</span> GpuMultipleClonerOptions *options = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">/// parameter space and setters for GPU indexes</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html">   40</a></span>&#160;<span class="comment"></span><span class="keyword">struct </span><a class="code" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html">GpuParameterSpace</a>: <a class="code" href="structfaiss_1_1ParameterSpace.html">faiss::ParameterSpace</a> {<span class="comment"></span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">    /// initialize with reasonable parameters for the index</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment"></span>    <span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html#ab2bf33a6f1579c3d42f656ded1df3398">initialize</a> (<span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> * index) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">    /// set a combination of parameters on an index</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment"></span>    <span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html#a1820826bb47a51ec9f000118be9c83b2">set_index_parameter</a> (</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;          <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a> * index, <span class="keyword">const</span> std::string &amp; name,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;          <span class="keywordtype">double</span> val) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;};</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;} } <span class="comment">// namespace</span></div>
+<div class="ttc" id="structfaiss_1_1gpu_1_1GpuParameterSpace_html_ab2bf33a6f1579c3d42f656ded1df3398"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuParameterSpace.html#ab2bf33a6f1579c3d42f656ded1df3398">faiss::gpu::GpuParameterSpace::initialize</a></div><div class="ttdeci">void initialize(const faiss::Index *index) override</div><div class="ttdoc">initialize with reasonable parameters for the index </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8cpp_source.html#l00339">GpuAutoTune.cpp:339</a></div></div>
+<div class="ttc" id="structfaiss_1_1gpu_1_1GpuParameterSpace_html_a1820826bb47a51ec9f000118be9c83b2"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuParameterSpace.html#a1820826bb47a51ec9f000118be9c83b2">faiss::gpu::GpuParameterSpace::set_index_parameter</a></div><div class="ttdeci">void set_index_parameter(faiss::Index *index, const std::string &amp;name, double val) const override</div><div class="ttdoc">set a combination of parameters on an index </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8cpp_source.html#l00372">GpuAutoTune.cpp:372</a></div></div>
+<div class="ttc" id="structfaiss_1_1gpu_1_1GpuParameterSpace_html"><div class="ttname"><a href="structfaiss_1_1gpu_1_1GpuParameterSpace.html">faiss::gpu::GpuParameterSpace</a></div><div class="ttdoc">parameter space and setters for GPU indexes </div><div class="ttdef"><b>Definition:</b> <a href="GpuAutoTune_8h_source.html#l00040">GpuAutoTune.h:40</a></div></div>
+<div class="ttc" id="structfaiss_1_1ParameterSpace_html"><div class="ttname"><a href="structfaiss_1_1ParameterSpace.html">faiss::ParameterSpace</a></div><div class="ttdef"><b>Definition:</b> <a href="AutoTune_8h_source.html#l00132">AutoTune.h:132</a></div></div>
+<div class="ttc" id="structfaiss_1_1Index_html"><div class="ttname"><a href="structfaiss_1_1Index.html">faiss::Index</a></div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00060">Index.h:60</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

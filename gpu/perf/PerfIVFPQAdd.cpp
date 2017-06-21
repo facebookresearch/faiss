@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -57,13 +56,13 @@ int main(int argc, char** argv) {
     cpuIndex.train(numTrain, trainVecs.data());
   }
 
+  faiss::gpu::GpuIndexIVFPQConfig config;
+  config.device = 0;
+  config.indicesOptions = (faiss::gpu::IndicesOptions) FLAGS_index;
+
   faiss::gpu::GpuIndexIVFPQ gpuIndex(
-    &res, 0,
-    dim, numCentroids, bytesPerVec, bitsPerCode,
-    false,
-    (faiss::gpu::IndicesOptions) FLAGS_index,
-    false,
-    faiss::METRIC_L2);
+    &res, dim, numCentroids, bytesPerVec, bitsPerCode,
+    faiss::METRIC_L2, config);
 
   if (FLAGS_time_gpu) {
     gpuIndex.train(numTrain, trainVecs.data());

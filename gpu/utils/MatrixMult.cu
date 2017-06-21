@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -36,7 +35,8 @@ struct CublasGemm<float> {
                              int ldb,
                              float fBeta,
                              float *C,
-                             int ldc) {
+                             int ldc,
+                             bool useHgemm) {
     return cublasSgemm(handle, transa, transb, m, n, k,
                        &fAlpha, A, lda, B, ldb, &fBeta, C, ldc);
   }
@@ -58,8 +58,9 @@ struct CublasGemm<half> {
                              int ldb,
                              const float fBeta,
                              half *C,
-                             int ldc) {
-    if (getDeviceSupportsFloat16Math(getCurrentDevice())) {
+                             int ldc,
+                             bool useHgemm) {
+    if (getDeviceSupportsFloat16Math(getCurrentDevice()) && useHgemm) {
       half hAlpha = hostFloat2Half(fAlpha);
       half hBeta = hostFloat2Half(fBeta);
 
@@ -91,6 +92,7 @@ runMatrixMult(Tensor<T, 2, true>& c, bool transC,
               Tensor<T, 2, true>& b, bool transB,
               float alpha,
               float beta,
+              bool useHgemm,
               cublasHandle_t handle,
               cudaStream_t stream) {
   cublasSetStream(handle, stream);
@@ -136,10 +138,17 @@ runMatrixMult(Tensor<T, 2, true>& c, bool transC,
                                  gemmTrA, gemmTrB,
                                  m, n, k, alpha,
                                  pA, lda, pB, ldb, beta,
-                                 pC, ldc);
+                                 pC, ldc, useHgemm);
 
-  FAISS_ASSERT(err == CUBLAS_STATUS_SUCCESS);
-  CUDA_VERIFY(cudaGetLastError());
+  FAISS_ASSERT_FMT(err == CUBLAS_STATUS_SUCCESS,
+                   "cublas failed (%d): %s "
+                   "(%d, %d)%s x (%d, %d)%s = (%d, %d)%s",
+                   (int) err,
+                   useHgemm ? "Hgemm" : "Sgemm",
+                   a.getSize(0), a.getSize(1), transA ? "'" : "",
+                   b.getSize(0), b.getSize(1), transB ? "'" : "",
+                   c.getSize(0), c.getSize(1), transC ? "'" : "");
+  CUDA_TEST_ERROR();
 }
 
 void runMatrixMult(Tensor<float, 2, true>& c, bool transC,
@@ -147,10 +156,11 @@ void runMatrixMult(Tensor<float, 2, true>& c, bool transC,
                    Tensor<float, 2, true>& b, bool transB,
                    float alpha,
                    float beta,
+                   bool useHgemm,
                    cublasHandle_t handle,
                    cudaStream_t stream) {
   return runMatrixMult<float>(c, transC, a, transA, b, transB,
-                              alpha, beta, handle, stream);
+                              alpha, beta, useHgemm, handle, stream);
 }
 
 #ifdef FAISS_USE_FLOAT16
@@ -159,10 +169,11 @@ void runMatrixMult(Tensor<half, 2, true>& c, bool transC,
                    Tensor<half, 2, true>& b, bool transB,
                    float alpha,
                    float beta,
+                   bool useHgemm,
                    cublasHandle_t handle,
                    cudaStream_t stream) {
   return runMatrixMult<half>(c, transC, a, transA, b, transB,
-                             alpha, beta, handle, stream);
+                             alpha, beta, useHgemm, handle, stream);
 }
 #endif
 
@@ -185,7 +196,7 @@ runIteratedMatrixMult(Tensor<float, 3, true>& c, bool transC,
     runMatrixMult(cView, transC,
                   aView, transA,
                   bView, transB,
-                  alpha, beta, handle, stream);
+                  alpha, beta, false, handle, stream);
   }
 }
 
@@ -264,8 +275,9 @@ runBatchMatrixMult(Tensor<float, 3, true>& c, bool transC,
                        (const float**) deviceA.data(), lda,
                        (const float**) deviceB.data(), ldb, &beta,
                        deviceC.data(), ldc, a.getSize(0));
-  FAISS_ASSERT(err == CUBLAS_STATUS_SUCCESS);
-  CUDA_VERIFY(cudaGetLastError());
+  FAISS_ASSERT_FMT(err == CUBLAS_STATUS_SUCCESS,
+                   "cublasSgemmBatched failed (%d)", (int) err);
+  CUDA_TEST_ERROR();
 }
 
 } } // namespace

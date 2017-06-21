@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -66,16 +65,19 @@ StackDeviceMemory::Stack::getAlloc(size_t size, cudaStream_t stream) {
     // Too large for our stack
     DeviceScope s(device_);
 
-    char* p = nullptr;
-    auto err = cudaMalloc(&p, size);
-    FAISS_ASSERT(err == cudaSuccess);
-
-    mallocCurrent_ += size;
-    highWaterMalloc_ = std::max(highWaterMalloc_, mallocCurrent_);
-
+    // Print our requested size before we attempt the allocation
     fprintf(stderr, "WARN: increase temp memory to avoid cudaMalloc, "
             "or decrease query/add size (alloc %zu B, highwater %zu B)\n",
             size, highWaterMalloc_);
+
+    char* p = nullptr;
+    auto err = cudaMalloc(&p, size);
+    FAISS_ASSERT_FMT(err == cudaSuccess,
+                     "cudaMalloc error %d on alloc size %zu",
+                     (int) err, size);
+
+    mallocCurrent_ += size;
+    highWaterMalloc_ = std::max(highWaterMalloc_, mallocCurrent_);
 
     return p;
   } else {
@@ -133,7 +135,9 @@ StackDeviceMemory::Stack::returnAlloc(char* p,
     DeviceScope s(device_);
 
     auto err = cudaFree(p);
-    FAISS_ASSERT(err == cudaSuccess);
+    FAISS_ASSERT_FMT(err == cudaSuccess,
+                     "cudaFree error %d (addr %p size %zu)",
+                     (int) err, p, size);
 
     FAISS_ASSERT(mallocCurrent_ >= size);
     mallocCurrent_ -= size;

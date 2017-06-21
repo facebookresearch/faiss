@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -7,8 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// Copyright 2004-present Facebook. All Rights Reserved.
 #include "GpuAutoTune.h"
-
 
 #include "GpuIndex.h"
 #include "../FaissAssert.h"
@@ -32,6 +31,26 @@ namespace faiss { namespace gpu {
 
 struct ToCPUCloner: Cloner {
 
+    void merge_index(Index *dst, Index *src, bool successive_ids) {
+        if (auto ifl = dynamic_cast<IndexFlat *>(dst)) {
+            auto ifl2 = dynamic_cast<const IndexFlat *>(src);
+            FAISS_ASSERT(ifl2);
+            FAISS_ASSERT(successive_ids);
+            ifl->add(ifl2->ntotal, ifl2->xb.data());
+        } else if(auto ifl = dynamic_cast<IndexIVFFlat *>(dst)) {
+            auto ifl2 = dynamic_cast<IndexIVFFlat *>(src);
+            FAISS_ASSERT(ifl2);
+            ifl->merge_from(*ifl2, successive_ids ? ifl->ntotal : 0);
+        } else if(auto ifl = dynamic_cast<IndexIVFPQ *>(dst)) {
+            auto ifl2 = dynamic_cast<IndexIVFPQ *>(src);
+            FAISS_ASSERT(ifl2);
+            ifl->merge_from(*ifl2, successive_ids ? ifl->ntotal : 0);
+        } else {
+            FAISS_ASSERT(!"merging not implemented for this type of class");
+        }
+    }
+
+
     Index *clone_Index(const Index *index) override {
         if(auto ifl = dynamic_cast<const GpuIndexFlat *>(index)) {
             IndexFlat *res = new IndexFlat();
@@ -45,6 +64,25 @@ struct ToCPUCloner: Cloner {
             IndexIVFPQ *res = new IndexIVFPQ();
             ipq->copyTo(res);
             return res;
+
+            // for IndexShards and IndexProxy we assume that the
+            // objective is to make a single component out of them
+            // (inverse op of ToGpuClonerMultiple)
+
+        } else if(auto ish = dynamic_cast<const IndexShards *>(index)) {
+            int nshard = ish->shard_indexes.size();
+            FAISS_ASSERT(nshard > 0);
+            Index *res = clone_Index(ish->shard_indexes[0]);
+            for(int i = 1; i < ish->shard_indexes.size(); i++) {
+                Index *res_i = clone_Index(ish->shard_indexes[i]);
+                merge_index(res, res_i, ish->successive_ids);
+                delete res_i;
+            }
+            return res;
+        } else if(auto ipr = dynamic_cast<const IndexProxy *>(index)) {
+            // just clone one of the replicas
+            FAISS_ASSERT(ipr->count() > 0);
+            return clone_Index(ipr->at(0));
         } else {
             return Cloner::clone_Index(index);
         }
@@ -74,7 +112,8 @@ struct ToGpuCloner: faiss::Cloner, GpuClonerOptions {
     GpuResources *resources;
     int device;
 
-    ToGpuCloner(GpuResources *resources, int device, const GpuClonerOptions &options):
+    ToGpuCloner(GpuResources *resources, int device,
+                const GpuClonerOptions &options):
         GpuClonerOptions(options), resources(resources), device(device)
     {}
 
@@ -87,31 +126,46 @@ struct ToGpuCloner: faiss::Cloner, GpuClonerOptions {
 
           return new GpuIndexFlat(resources, ifl, config);
         } else if(auto ifl = dynamic_cast<const faiss::IndexIVFFlat *>(index)) {
+          GpuIndexIVFFlatConfig config;
+          config.device = device;
+          config.indicesOptions = indicesOptions;
+          config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
+          config.flatConfig.storeTransposed = storeTransposed;
+          config.useFloat16IVFStorage = useFloat16;
+
           GpuIndexIVFFlat *res =
             new GpuIndexIVFFlat(resources,
-                                device,
-                                useFloat16CoarseQuantizer,
-                                useFloat16,
                                 ifl->d,
                                 ifl->nlist,
-                                indicesOptions,
-                                ifl->metric_type);
-          if(reserveVecs > 0 && ifl->ntotal == 0)
+                                ifl->metric_type,
+                                config);
+          if(reserveVecs > 0 && ifl->ntotal == 0) {
               res->reserveMemory(reserveVecs);
+          }
+
           res->copyFrom(ifl);
           return res;
         } else if(auto ipq = dynamic_cast<const faiss::IndexIVFPQ *>(index)) {
             if(verbose)
-                printf("  IndexIVFPQ size %ld -> GpuIndexIVFPQ indicesOptions=%d "
+                printf("  IndexIVFPQ size %ld -> GpuIndexIVFPQ "
+                       "indicesOptions=%d "
                        "usePrecomputed=%d useFloat16=%d reserveVecs=%ld\n",
                        ipq->ntotal, indicesOptions, usePrecomputed,
                        useFloat16, reserveVecs);
-            GpuIndexIVFPQ *res = new GpuIndexIVFPQ(
-                resources, device, indicesOptions, useFloat16,
-                ipq);
-            res->setPrecomputedCodes(usePrecomputed);
-            if(reserveVecs > 0 && ipq->ntotal == 0)
+            GpuIndexIVFPQConfig config;
+            config.device = device;
+            config.indicesOptions = indicesOptions;
+            config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
+            config.flatConfig.storeTransposed = storeTransposed;
+            config.useFloat16LookupTables = useFloat16;
+            config.usePrecomputedTables = usePrecomputed;
+
+            GpuIndexIVFPQ *res = new GpuIndexIVFPQ(resources, ipq, config);
+
+            if(reserveVecs > 0 && ipq->ntotal == 0) {
                 res->reserveMemory(reserveVecs);
+            }
+
             return res;
         } else {
             return Cloner::clone_Index(index);
@@ -178,8 +232,8 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
                     dynamic_cast<const faiss::IndexIVFPQ *>(index);
                 auto index_ivfflat =
                     dynamic_cast<const faiss::IndexIVFFlat *>(index);
-                FAISS_ASSERT (index_ivfpq || index_ivfflat ||
-                              !"IndexShards implemented only for "
+                FAISS_ASSERT_MSG (index_ivfpq || index_ivfflat,
+                              "IndexShards implemented only for "
                               "IndexIVFFlat or IndexIVFPQ");
                 std::vector<faiss::Index*> shards(n);
 
@@ -200,7 +254,9 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
                               index_ivfpq->quantizer, index_ivfpq->d,
                               index_ivfpq->nlist, index_ivfpq->code_size,
                               index_ivfpq->pq.nbits);
+                        idx2.metric_type = index_ivfpq->metric_type;
                         idx2.pq = index_ivfpq->pq;
+                        idx2.nprobe = index_ivfpq->nprobe;
                         idx2.use_precomputed_table = 0;
                         idx2.is_trained = index->is_trained;
                         index_ivfpq->copy_subset_to(idx2, 0, i0, i1);
@@ -209,7 +265,9 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
                         faiss::IndexIVFFlat idx2(
                               index_ivfflat->quantizer, index->d,
                               index_ivfflat->nlist, index_ivfflat->metric_type);
+                        idx2.nprobe = index_ivfflat->nprobe;
                         index_ivfflat->copy_subset_to(idx2, 0, i0, i1);
+                        idx2.nprobe = index_ivfflat->nprobe;
                         shards[i] = sub_cloners[i].clone_Index(&idx2);
                     }
                 }
@@ -220,7 +278,7 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
                     res->add_shard(shards[i]);
                 }
                 res->own_fields = true;
-                assert(index->ntotal == res->ntotal);
+                FAISS_ASSERT(index->ntotal == res->ntotal);
                 return res;
             }
         } else if(auto miq = dynamic_cast<const MultiIndexQuantizer *>(index)) {
@@ -328,12 +386,19 @@ void GpuParameterSpace::set_index_parameter (
         return;
     }
     if (name == "nprobe") {
-        DC (GpuIndexIVF);
-        FAISS_ASSERT(ix);
-        ix->setNumProbes (int (val));
-        return;
+      DC (GpuIndexIVF);
+      FAISS_ASSERT(ix);
+      ix->setNumProbes (int (val));
+      return;
     }
-    FAISS_ASSERT (!"unknown parameter");
+    if (name == "use_precomputed_table") {
+      DC (GpuIndexIVFPQ);
+      FAISS_ASSERT(ix);
+      ix->setPrecomputedCodes(bool (val));
+      return;
+    }
+
+    FAISS_ASSERT_MSG (false, "unknown parameter");
 }
 
 

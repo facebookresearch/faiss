@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -77,6 +76,8 @@ void calcResidual(Tensor<float, 2, true>& vecs,
     calcResidual<CentroidT, false><<<grid, block, 0, stream>>>(
       vecs, centroids, vecToCentroid, residuals);
   }
+
+  CUDA_TEST_ERROR();
 }
 
 void runCalcResidual(Tensor<float, 2, true>& vecs,

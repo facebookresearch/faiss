@@ -112,9 +112,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0c234bc06b073970af406d8877f67989"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0c234bc06b073970af406d8877f67989"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>PCAMatrix</b> (int d_in=0, int <a class="el" href="structfaiss_1_1VectorTransform.html#a589d612f7b1773614619a0cbecd728a9">d_out</a>=0, float <a class="el" href="structfaiss_1_1PCAMatrix.html#a4e48e801f98ba2cf57c03b0913d6fafc">eigen_power</a>=0, bool <a class="el" href="structfaiss_1_1PCAMatrix.html#af111f055b7571703a3aa270d89e99321">random_rotation</a>=false)</td></tr>
 <tr class="separator:a0c234bc06b073970af406d8877f67989"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f2dd12da8dce3cbeb22da9c5d4ec3e7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1PCAMatrix.html#a8f2dd12da8dce3cbeb22da9c5d4ec3e7">train</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, const float *x) override</td></tr>
+<tr class="memitem:a8f2dd12da8dce3cbeb22da9c5d4ec3e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1PCAMatrix.html#a8f2dd12da8dce3cbeb22da9c5d4ec3e7">train</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, const float *x) override</td></tr>
 <tr class="separator:a8f2dd12da8dce3cbeb22da9c5d4ec3e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf427521a66cbfaaf0b7aae16bcb6e93"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1PCAMatrix.html#abf427521a66cbfaaf0b7aae16bcb6e93">reverse_transform</a> (idx_t n, const float *xt, float *x) const override</td></tr>
+<tr class="memitem:abf427521a66cbfaaf0b7aae16bcb6e93"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1PCAMatrix.html#abf427521a66cbfaaf0b7aae16bcb6e93">reverse_transform</a> (idx_t n, const float *xt, float *x) const override</td></tr>
 <tr class="separator:abf427521a66cbfaaf0b7aae16bcb6e93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae586dc89db6c57753c687473417742a6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae586dc89db6c57753c687473417742a6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1PCAMatrix.html#ae586dc89db6c57753c687473417742a6">copy_from</a> (const <a class="el" href="structfaiss_1_1PCAMatrix.html">PCAMatrix</a> &amp;other)</td></tr>
@@ -129,10 +129,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1LinearTransform.html#a2fffd6064defb7c3fdaf143c0c4a9bc7">LinearTransform</a> (int d_in=0, int <a class="el" href="structfaiss_1_1VectorTransform.html#a589d612f7b1773614619a0cbecd728a9">d_out</a>=0, bool have_bias=false)</td></tr>
 <tr class="memdesc:a2fffd6064defb7c3fdaf143c0c4a9bc7 inherit pub_methods_structfaiss_1_1LinearTransform"><td class="mdescLeft">&#160;</td><td class="mdescRight">both d_in &gt; d_out and d_out &lt; d_in are supported <br/></td></tr>
 <tr class="separator:a2fffd6064defb7c3fdaf143c0c4a9bc7 inherit pub_methods_structfaiss_1_1LinearTransform"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1467253297ce7a3838a71769b3c86aa inherit pub_methods_structfaiss_1_1LinearTransform"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab1467253297ce7a3838a71769b3c86aa"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1LinearTransform.html#ab1467253297ce7a3838a71769b3c86aa">apply_noalloc</a> (idx_t n, const float *x, float *xt) const </td></tr>
-<tr class="memdesc:ab1467253297ce7a3838a71769b3c86aa inherit pub_methods_structfaiss_1_1LinearTransform"><td class="mdescLeft">&#160;</td><td class="mdescRight">same as apply, but result is pre-allocated <br/></td></tr>
-<tr class="separator:ab1467253297ce7a3838a71769b3c86aa inherit pub_methods_structfaiss_1_1LinearTransform"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9c20b4ae67691b5713489884ca9f80f inherit pub_methods_structfaiss_1_1LinearTransform"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9c20b4ae67691b5713489884ca9f80f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1LinearTransform.html#af9c20b4ae67691b5713489884ca9f80f">apply_noalloc</a> (idx_t n, const float *x, float *xt) const override</td></tr>
+<tr class="memdesc:af9c20b4ae67691b5713489884ca9f80f inherit pub_methods_structfaiss_1_1LinearTransform"><td class="mdescLeft">&#160;</td><td class="mdescRight">same as apply, but result is pre-allocated <br/></td></tr>
+<tr class="separator:af9c20b4ae67691b5713489884ca9f80f inherit pub_methods_structfaiss_1_1LinearTransform"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1642efca4f5eb524c29722b0441c4d13 inherit pub_methods_structfaiss_1_1LinearTransform"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1LinearTransform.html#a1642efca4f5eb524c29722b0441c4d13">transform_transpose</a> (idx_t n, const float *y, float *x) const </td></tr>
 <tr class="separator:a1642efca4f5eb524c29722b0441c4d13 inherit pub_methods_structfaiss_1_1LinearTransform"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structfaiss_1_1VectorTransform"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structfaiss_1_1VectorTransform')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structfaiss_1_1VectorTransform.html">faiss::VectorTransform</a></td></tr>
@@ -206,7 +206,7 @@ typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eeb
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Applies a principal component analysis on a set of vectors, with optionally whitening and random rotation. </p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00131">131</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00126">126</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="abf427521a66cbfaaf0b7aae16bcb6e93"></a>
 <div class="memitem">
@@ -249,7 +249,7 @@ typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eeb
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1VectorTransform.html#a101ce54f1c60df19478801aa942470d9">faiss::VectorTransform</a>.</p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00424">424</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00521">521</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
 
 </div>
 </div>
@@ -284,18 +284,11 @@ typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eeb
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Perform training on a representative set of vectors. Does nothing by default.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">n</td><td>nb of training vectors </td></tr>
-    <tr><td class="paramname">x</td><td>training vecors, size n * d </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>train on n vectors. If n &lt; d_in then the eigenvector matrix will be completed with 0s </p>
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1VectorTransform.html#a7350d4dd28d60866d55ba4f75d2da84c">faiss::VectorTransform</a>.</p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00206">206</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00271">271</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
 
 </div>
 </div>
@@ -312,7 +305,7 @@ typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eeb
 <p>after transformation the components are multiplied by eigenvalues^eigen_power</p>
 <p>=0: no whitening =-2: full whitening </p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00139">139</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00134">134</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
 
 </div>
 </div>

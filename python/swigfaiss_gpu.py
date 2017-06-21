@@ -774,6 +774,10 @@ def ranklist_intersection_size(*args):
   return _swigfaiss_gpu.ranklist_intersection_size(*args)
 ranklist_intersection_size = _swigfaiss_gpu.ranklist_intersection_size
 
+def merge_result_table_with(*args):
+  return _swigfaiss_gpu.merge_result_table_with(*args)
+merge_result_table_with = _swigfaiss_gpu.merge_result_table_with
+
 def fvec_argsort(*args):
   return _swigfaiss_gpu.fvec_argsort(*args)
 fvec_argsort = _swigfaiss_gpu.fvec_argsort
@@ -806,9 +810,6 @@ class Index(_object):
     __getattr__ = lambda self, name: _swig_getattr(self, Index, name)
     def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
     __repr__ = _swig_repr
-    __swig_setmethods__["index_typename"] = _swigfaiss_gpu.Index_index_typename_set
-    __swig_getmethods__["index_typename"] = _swigfaiss_gpu.Index_index_typename_get
-    if _newclass:index_typename = _swig_property(_swigfaiss_gpu.Index_index_typename_get, _swigfaiss_gpu.Index_index_typename_set)
     __swig_setmethods__["d"] = _swigfaiss_gpu.Index_d_set
     __swig_getmethods__["d"] = _swigfaiss_gpu.Index_d_get
     if _newclass:d = _swig_property(_swigfaiss_gpu.Index_d_get, _swigfaiss_gpu.Index_d_set)
@@ -838,8 +839,6 @@ class Index(_object):
     def reconstruct_n(self, *args): return _swigfaiss_gpu.Index_reconstruct_n(self, *args)
     def compute_residual(self, *args): return _swigfaiss_gpu.Index_compute_residual(self, *args)
     def display(self): return _swigfaiss_gpu.Index_display(self)
-    def get_typename(self): return _swigfaiss_gpu.Index_get_typename(self)
-    def set_typename(self): return _swigfaiss_gpu.Index_set_typename(self)
 Index_swigregister = _swigfaiss_gpu.Index_swigregister
 Index_swigregister(Index)
 
@@ -1186,7 +1185,6 @@ class IndexPreTransform(Index):
         try: self.this.append(this)
         except: self.this = this
     def prepend_transform(self, *args): return _swigfaiss_gpu.IndexPreTransform_prepend_transform(self, *args)
-    def set_typename(self): return _swigfaiss_gpu.IndexPreTransform_set_typename(self)
     def train(self, *args): return _swigfaiss_gpu.IndexPreTransform_train(self, *args)
     def add(self, *args): return _swigfaiss_gpu.IndexPreTransform_add(self, *args)
     def add_with_ids(self, *args): return _swigfaiss_gpu.IndexPreTransform_add_with_ids(self, *args)
@@ -1211,13 +1209,13 @@ class IndexFlat(Index):
     __swig_setmethods__["xb"] = _swigfaiss_gpu.IndexFlat_xb_set
     __swig_getmethods__["xb"] = _swigfaiss_gpu.IndexFlat_xb_get
     if _newclass:xb = _swig_property(_swigfaiss_gpu.IndexFlat_xb_get, _swigfaiss_gpu.IndexFlat_xb_set)
-    def set_typename(self): return _swigfaiss_gpu.IndexFlat_set_typename(self)
     def add(self, *args): return _swigfaiss_gpu.IndexFlat_add(self, *args)
     def reset(self): return _swigfaiss_gpu.IndexFlat_reset(self)
     def search(self, *args): return _swigfaiss_gpu.IndexFlat_search(self, *args)
     def range_search(self, *args): return _swigfaiss_gpu.IndexFlat_range_search(self, *args)
     def reconstruct(self, *args): return _swigfaiss_gpu.IndexFlat_reconstruct(self, *args)
     def compute_distance_subset(self, *args): return _swigfaiss_gpu.IndexFlat_compute_distance_subset(self, *args)
+    def remove_ids(self, *args): return _swigfaiss_gpu.IndexFlat_remove_ids(self, *args)
     def __init__(self, *args): 
         this = _swigfaiss_gpu.new_IndexFlat(*args)
         try: self.this.append(this)
@@ -1310,7 +1308,6 @@ class IndexRefineFlat(Index):
     def add(self, *args): return _swigfaiss_gpu.IndexRefineFlat_add(self, *args)
     def reset(self): return _swigfaiss_gpu.IndexRefineFlat_reset(self)
     def search(self, *args): return _swigfaiss_gpu.IndexRefineFlat_search(self, *args)
-    def set_typename(self): return _swigfaiss_gpu.IndexRefineFlat_set_typename(self)
     __swig_destroy__ = _swigfaiss_gpu.delete_IndexRefineFlat
     __del__ = lambda self : None;
 IndexRefineFlat_swigregister = _swigfaiss_gpu.IndexRefineFlat_swigregister
@@ -1373,7 +1370,6 @@ class IndexLSH(Index):
     __swig_getmethods__["codes"] = _swigfaiss_gpu.IndexLSH_codes_get
     if _newclass:codes = _swig_property(_swigfaiss_gpu.IndexLSH_codes_get, _swigfaiss_gpu.IndexLSH_codes_set)
     def apply_preprocess(self, *args): return _swigfaiss_gpu.IndexLSH_apply_preprocess(self, *args)
-    def set_typename(self): return _swigfaiss_gpu.IndexLSH_set_typename(self)
     def train(self, *args): return _swigfaiss_gpu.IndexLSH_train(self, *args)
     def add(self, *args): return _swigfaiss_gpu.IndexLSH_add(self, *args)
     def search(self, *args): return _swigfaiss_gpu.IndexLSH_search(self, *args)
@@ -1577,7 +1573,6 @@ class IndexPQ(Index):
         this = _swigfaiss_gpu.new_IndexPQ(*args)
         try: self.this.append(this)
         except: self.this = this
-    def set_typename(self): return _swigfaiss_gpu.IndexPQ_set_typename(self)
     def train(self, *args): return _swigfaiss_gpu.IndexPQ_train(self, *args)
     def add(self, *args): return _swigfaiss_gpu.IndexPQ_add(self, *args)
     def search(self, *args): return _swigfaiss_gpu.IndexPQ_search(self, *args)
@@ -1649,7 +1644,6 @@ class MultiIndexQuantizer(Index):
     __swig_setmethods__["pq"] = _swigfaiss_gpu.MultiIndexQuantizer_pq_set
     __swig_getmethods__["pq"] = _swigfaiss_gpu.MultiIndexQuantizer_pq_get
     if _newclass:pq = _swig_property(_swigfaiss_gpu.MultiIndexQuantizer_pq_get, _swigfaiss_gpu.MultiIndexQuantizer_pq_set)
-    def set_typename(self): return _swigfaiss_gpu.MultiIndexQuantizer_set_typename(self)
     def train(self, *args): return _swigfaiss_gpu.MultiIndexQuantizer_train(self, *args)
     def search(self, *args): return _swigfaiss_gpu.MultiIndexQuantizer_search(self, *args)
     def add(self, *args): return _swigfaiss_gpu.MultiIndexQuantizer_add(self, *args)
@@ -1709,6 +1703,7 @@ class IndexIVF(Index):
     def merge_from_residuals(self, *args): return _swigfaiss_gpu.IndexIVF_merge_from_residuals(self, *args)
     __swig_destroy__ = _swigfaiss_gpu.delete_IndexIVF
     __del__ = lambda self : None;
+    def get_list_size(self, *args): return _swigfaiss_gpu.IndexIVF_get_list_size(self, *args)
     def make_direct_map(self): return _swigfaiss_gpu.IndexIVF_make_direct_map(self)
     def imbalance_factor(self): return _swigfaiss_gpu.IndexIVF_imbalance_factor(self)
     def print_stats(self): return _swigfaiss_gpu.IndexIVF_print_stats(self)
@@ -1754,10 +1749,10 @@ class IndexIVFFlat(IndexIVF):
     __swig_setmethods__["vecs"] = _swigfaiss_gpu.IndexIVFFlat_vecs_set
     __swig_getmethods__["vecs"] = _swigfaiss_gpu.IndexIVFFlat_vecs_get
     if _newclass:vecs = _swig_property(_swigfaiss_gpu.IndexIVFFlat_vecs_get, _swigfaiss_gpu.IndexIVFFlat_vecs_set)
-    def set_typename(self): return _swigfaiss_gpu.IndexIVFFlat_set_typename(self)
     def add_core(self, *args): return _swigfaiss_gpu.IndexIVFFlat_add_core(self, *args)
     def add_with_ids(self, *args): return _swigfaiss_gpu.IndexIVFFlat_add_with_ids(self, *args)
     def search(self, *args): return _swigfaiss_gpu.IndexIVFFlat_search(self, *args)
+    def search_preassigned(self, *args): return _swigfaiss_gpu.IndexIVFFlat_search_preassigned(self, *args)
     def range_search(self, *args): return _swigfaiss_gpu.IndexIVFFlat_range_search(self, *args)
     def copy_subset_to(self, *args): return _swigfaiss_gpu.IndexIVFFlat_copy_subset_to(self, *args)
     def reset(self): return _swigfaiss_gpu.IndexIVFFlat_reset(self)
@@ -1800,6 +1795,80 @@ class IndexIVFFlatIPBounds(IndexIVFFlat):
 IndexIVFFlatIPBounds_swigregister = _swigfaiss_gpu.IndexIVFFlatIPBounds_swigregister
 IndexIVFFlatIPBounds_swigregister(IndexIVFFlatIPBounds)
 
+class ScalarQuantizer(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ScalarQuantizer, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, ScalarQuantizer, name)
+    __repr__ = _swig_repr
+    QT_8bit = _swigfaiss_gpu.ScalarQuantizer_QT_8bit
+    QT_4bit = _swigfaiss_gpu.ScalarQuantizer_QT_4bit
+    QT_8bit_uniform = _swigfaiss_gpu.ScalarQuantizer_QT_8bit_uniform
+    QT_4bit_uniform = _swigfaiss_gpu.ScalarQuantizer_QT_4bit_uniform
+    __swig_setmethods__["qtype"] = _swigfaiss_gpu.ScalarQuantizer_qtype_set
+    __swig_getmethods__["qtype"] = _swigfaiss_gpu.ScalarQuantizer_qtype_get
+    if _newclass:qtype = _swig_property(_swigfaiss_gpu.ScalarQuantizer_qtype_get, _swigfaiss_gpu.ScalarQuantizer_qtype_set)
+    RS_minmax = _swigfaiss_gpu.ScalarQuantizer_RS_minmax
+    RS_meanstd = _swigfaiss_gpu.ScalarQuantizer_RS_meanstd
+    RS_quantiles = _swigfaiss_gpu.ScalarQuantizer_RS_quantiles
+    RS_optim = _swigfaiss_gpu.ScalarQuantizer_RS_optim
+    __swig_setmethods__["rangestat"] = _swigfaiss_gpu.ScalarQuantizer_rangestat_set
+    __swig_getmethods__["rangestat"] = _swigfaiss_gpu.ScalarQuantizer_rangestat_get
+    if _newclass:rangestat = _swig_property(_swigfaiss_gpu.ScalarQuantizer_rangestat_get, _swigfaiss_gpu.ScalarQuantizer_rangestat_set)
+    __swig_setmethods__["rangestat_arg"] = _swigfaiss_gpu.ScalarQuantizer_rangestat_arg_set
+    __swig_getmethods__["rangestat_arg"] = _swigfaiss_gpu.ScalarQuantizer_rangestat_arg_get
+    if _newclass:rangestat_arg = _swig_property(_swigfaiss_gpu.ScalarQuantizer_rangestat_arg_get, _swigfaiss_gpu.ScalarQuantizer_rangestat_arg_set)
+    __swig_setmethods__["d"] = _swigfaiss_gpu.ScalarQuantizer_d_set
+    __swig_getmethods__["d"] = _swigfaiss_gpu.ScalarQuantizer_d_get
+    if _newclass:d = _swig_property(_swigfaiss_gpu.ScalarQuantizer_d_get, _swigfaiss_gpu.ScalarQuantizer_d_set)
+    __swig_setmethods__["code_size"] = _swigfaiss_gpu.ScalarQuantizer_code_size_set
+    __swig_getmethods__["code_size"] = _swigfaiss_gpu.ScalarQuantizer_code_size_get
+    if _newclass:code_size = _swig_property(_swigfaiss_gpu.ScalarQuantizer_code_size_get, _swigfaiss_gpu.ScalarQuantizer_code_size_set)
+    __swig_setmethods__["trained"] = _swigfaiss_gpu.ScalarQuantizer_trained_set
+    __swig_getmethods__["trained"] = _swigfaiss_gpu.ScalarQuantizer_trained_get
+    if _newclass:trained = _swig_property(_swigfaiss_gpu.ScalarQuantizer_trained_get, _swigfaiss_gpu.ScalarQuantizer_trained_set)
+    def __init__(self, *args): 
+        this = _swigfaiss_gpu.new_ScalarQuantizer(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def train(self, *args): return _swigfaiss_gpu.ScalarQuantizer_train(self, *args)
+    def compute_codes(self, *args): return _swigfaiss_gpu.ScalarQuantizer_compute_codes(self, *args)
+    def decode(self, *args): return _swigfaiss_gpu.ScalarQuantizer_decode(self, *args)
+    __swig_destroy__ = _swigfaiss_gpu.delete_ScalarQuantizer
+    __del__ = lambda self : None;
+ScalarQuantizer_swigregister = _swigfaiss_gpu.ScalarQuantizer_swigregister
+ScalarQuantizer_swigregister(ScalarQuantizer)
+
+class IndexIVFScalarQuantizer(IndexIVF):
+    __swig_setmethods__ = {}
+    for _s in [IndexIVF]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, IndexIVFScalarQuantizer, name, value)
+    __swig_getmethods__ = {}
+    for _s in [IndexIVF]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, IndexIVFScalarQuantizer, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["sq"] = _swigfaiss_gpu.IndexIVFScalarQuantizer_sq_set
+    __swig_getmethods__["sq"] = _swigfaiss_gpu.IndexIVFScalarQuantizer_sq_get
+    if _newclass:sq = _swig_property(_swigfaiss_gpu.IndexIVFScalarQuantizer_sq_get, _swigfaiss_gpu.IndexIVFScalarQuantizer_sq_set)
+    __swig_setmethods__["code_size"] = _swigfaiss_gpu.IndexIVFScalarQuantizer_code_size_set
+    __swig_getmethods__["code_size"] = _swigfaiss_gpu.IndexIVFScalarQuantizer_code_size_get
+    if _newclass:code_size = _swig_property(_swigfaiss_gpu.IndexIVFScalarQuantizer_code_size_get, _swigfaiss_gpu.IndexIVFScalarQuantizer_code_size_set)
+    __swig_setmethods__["codes"] = _swigfaiss_gpu.IndexIVFScalarQuantizer_codes_set
+    __swig_getmethods__["codes"] = _swigfaiss_gpu.IndexIVFScalarQuantizer_codes_get
+    if _newclass:codes = _swig_property(_swigfaiss_gpu.IndexIVFScalarQuantizer_codes_get, _swigfaiss_gpu.IndexIVFScalarQuantizer_codes_set)
+    def __init__(self, *args): 
+        this = _swigfaiss_gpu.new_IndexIVFScalarQuantizer(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def train_residual(self, *args): return _swigfaiss_gpu.IndexIVFScalarQuantizer_train_residual(self, *args)
+    def add_with_ids(self, *args): return _swigfaiss_gpu.IndexIVFScalarQuantizer_add_with_ids(self, *args)
+    def search(self, *args): return _swigfaiss_gpu.IndexIVFScalarQuantizer_search(self, *args)
+    def merge_from_residuals(self, *args): return _swigfaiss_gpu.IndexIVFScalarQuantizer_merge_from_residuals(self, *args)
+    __swig_destroy__ = _swigfaiss_gpu.delete_IndexIVFScalarQuantizer
+    __del__ = lambda self : None;
+IndexIVFScalarQuantizer_swigregister = _swigfaiss_gpu.IndexIVFScalarQuantizer_swigregister
+IndexIVFScalarQuantizer_swigregister(IndexIVFScalarQuantizer)
+
 class IndexIVFPQ(IndexIVF):
     __swig_setmethods__ = {}
     for _s in [IndexIVF]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
@@ -1841,7 +1910,6 @@ class IndexIVFPQ(IndexIVF):
     __swig_setmethods__["precomputed_table"] = _swigfaiss_gpu.IndexIVFPQ_precomputed_table_set
     __swig_getmethods__["precomputed_table"] = _swigfaiss_gpu.IndexIVFPQ_precomputed_table_get
     if _newclass:precomputed_table = _swig_property(_swigfaiss_gpu.IndexIVFPQ_precomputed_table_get, _swigfaiss_gpu.IndexIVFPQ_precomputed_table_set)
-    def set_typename(self): return _swigfaiss_gpu.IndexIVFPQ_set_typename(self)
     def add_with_ids(self, *args): return _swigfaiss_gpu.IndexIVFPQ_add_with_ids(self, *args)
     def add_core_o(self, *args): return _swigfaiss_gpu.IndexIVFPQ_add_core_o(self, *args)
     def search(self, *args): return _swigfaiss_gpu.IndexIVFPQ_search(self, *args)
@@ -1937,7 +2005,6 @@ class IndexIVFPQR(IndexIVFPQ):
     __swig_setmethods__["k_factor"] = _swigfaiss_gpu.IndexIVFPQR_k_factor_set
     __swig_getmethods__["k_factor"] = _swigfaiss_gpu.IndexIVFPQR_k_factor_get
     if _newclass:k_factor = _swig_property(_swigfaiss_gpu.IndexIVFPQR_k_factor_get, _swigfaiss_gpu.IndexIVFPQR_k_factor_set)
-    def set_typename(self): return _swigfaiss_gpu.IndexIVFPQR_set_typename(self)
     def reset(self): return _swigfaiss_gpu.IndexIVFPQR_reset(self)
     def remove_ids(self, *args): return _swigfaiss_gpu.IndexIVFPQR_remove_ids(self, *args)
     def train_residual(self, *args): return _swigfaiss_gpu.IndexIVFPQR_train_residual(self, *args)
@@ -2016,7 +2083,7 @@ class IndexIDMap(Index):
     def search(self, *args): return _swigfaiss_gpu.IndexIDMap_search(self, *args)
     def train(self, *args): return _swigfaiss_gpu.IndexIDMap_train(self, *args)
     def reset(self): return _swigfaiss_gpu.IndexIDMap_reset(self)
-    def set_typename(self): return _swigfaiss_gpu.IndexIDMap_set_typename(self)
+    def remove_ids(self, *args): return _swigfaiss_gpu.IndexIDMap_remove_ids(self, *args)
     __swig_destroy__ = _swigfaiss_gpu.delete_IndexIDMap
     __del__ = lambda self : None;
     def __init__(self, *args): 
@@ -2058,7 +2125,6 @@ class IndexShards(Index):
     def search(self, *args): return _swigfaiss_gpu.IndexShards_search(self, *args)
     def train(self, *args): return _swigfaiss_gpu.IndexShards_train(self, *args)
     def reset(self): return _swigfaiss_gpu.IndexShards_reset(self)
-    def set_typename(self): return _swigfaiss_gpu.IndexShards_set_typename(self)
     __swig_destroy__ = _swigfaiss_gpu.delete_IndexShards
     __del__ = lambda self : None;
 IndexShards_swigregister = _swigfaiss_gpu.IndexShards_swigregister
@@ -2094,7 +2160,6 @@ class IndexSplitVectors(Index):
     def search(self, *args): return _swigfaiss_gpu.IndexSplitVectors_search(self, *args)
     def train(self, *args): return _swigfaiss_gpu.IndexSplitVectors_train(self, *args)
     def reset(self): return _swigfaiss_gpu.IndexSplitVectors_reset(self)
-    def set_typename(self): return _swigfaiss_gpu.IndexSplitVectors_set_typename(self)
     __swig_destroy__ = _swigfaiss_gpu.delete_IndexSplitVectors
     __del__ = lambda self : None;
 IndexSplitVectors_swigregister = _swigfaiss_gpu.IndexSplitVectors_swigregister
@@ -2104,6 +2169,89 @@ INDICES_CPU = _swigfaiss_gpu.INDICES_CPU
 INDICES_IVF = _swigfaiss_gpu.INDICES_IVF
 INDICES_32_BIT = _swigfaiss_gpu.INDICES_32_BIT
 INDICES_64_BIT = _swigfaiss_gpu.INDICES_64_BIT
+class GpuClonerOptions(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, GpuClonerOptions, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, GpuClonerOptions, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _swigfaiss_gpu.new_GpuClonerOptions()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_setmethods__["indicesOptions"] = _swigfaiss_gpu.GpuClonerOptions_indicesOptions_set
+    __swig_getmethods__["indicesOptions"] = _swigfaiss_gpu.GpuClonerOptions_indicesOptions_get
+    if _newclass:indicesOptions = _swig_property(_swigfaiss_gpu.GpuClonerOptions_indicesOptions_get, _swigfaiss_gpu.GpuClonerOptions_indicesOptions_set)
+    __swig_setmethods__["useFloat16CoarseQuantizer"] = _swigfaiss_gpu.GpuClonerOptions_useFloat16CoarseQuantizer_set
+    __swig_getmethods__["useFloat16CoarseQuantizer"] = _swigfaiss_gpu.GpuClonerOptions_useFloat16CoarseQuantizer_get
+    if _newclass:useFloat16CoarseQuantizer = _swig_property(_swigfaiss_gpu.GpuClonerOptions_useFloat16CoarseQuantizer_get, _swigfaiss_gpu.GpuClonerOptions_useFloat16CoarseQuantizer_set)
+    __swig_setmethods__["useFloat16"] = _swigfaiss_gpu.GpuClonerOptions_useFloat16_set
+    __swig_getmethods__["useFloat16"] = _swigfaiss_gpu.GpuClonerOptions_useFloat16_get
+    if _newclass:useFloat16 = _swig_property(_swigfaiss_gpu.GpuClonerOptions_useFloat16_get, _swigfaiss_gpu.GpuClonerOptions_useFloat16_set)
+    __swig_setmethods__["usePrecomputed"] = _swigfaiss_gpu.GpuClonerOptions_usePrecomputed_set
+    __swig_getmethods__["usePrecomputed"] = _swigfaiss_gpu.GpuClonerOptions_usePrecomputed_get
+    if _newclass:usePrecomputed = _swig_property(_swigfaiss_gpu.GpuClonerOptions_usePrecomputed_get, _swigfaiss_gpu.GpuClonerOptions_usePrecomputed_set)
+    __swig_setmethods__["reserveVecs"] = _swigfaiss_gpu.GpuClonerOptions_reserveVecs_set
+    __swig_getmethods__["reserveVecs"] = _swigfaiss_gpu.GpuClonerOptions_reserveVecs_get
+    if _newclass:reserveVecs = _swig_property(_swigfaiss_gpu.GpuClonerOptions_reserveVecs_get, _swigfaiss_gpu.GpuClonerOptions_reserveVecs_set)
+    __swig_setmethods__["storeTransposed"] = _swigfaiss_gpu.GpuClonerOptions_storeTransposed_set
+    __swig_getmethods__["storeTransposed"] = _swigfaiss_gpu.GpuClonerOptions_storeTransposed_get
+    if _newclass:storeTransposed = _swig_property(_swigfaiss_gpu.GpuClonerOptions_storeTransposed_get, _swigfaiss_gpu.GpuClonerOptions_storeTransposed_set)
+    __swig_setmethods__["verbose"] = _swigfaiss_gpu.GpuClonerOptions_verbose_set
+    __swig_getmethods__["verbose"] = _swigfaiss_gpu.GpuClonerOptions_verbose_get
+    if _newclass:verbose = _swig_property(_swigfaiss_gpu.GpuClonerOptions_verbose_get, _swigfaiss_gpu.GpuClonerOptions_verbose_set)
+    __swig_destroy__ = _swigfaiss_gpu.delete_GpuClonerOptions
+    __del__ = lambda self : None;
+GpuClonerOptions_swigregister = _swigfaiss_gpu.GpuClonerOptions_swigregister
+GpuClonerOptions_swigregister(GpuClonerOptions)
+
+class GpuMultipleClonerOptions(GpuClonerOptions):
+    __swig_setmethods__ = {}
+    for _s in [GpuClonerOptions]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, GpuMultipleClonerOptions, name, value)
+    __swig_getmethods__ = {}
+    for _s in [GpuClonerOptions]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, GpuMultipleClonerOptions, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _swigfaiss_gpu.new_GpuMultipleClonerOptions()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_setmethods__["shard"] = _swigfaiss_gpu.GpuMultipleClonerOptions_shard_set
+    __swig_getmethods__["shard"] = _swigfaiss_gpu.GpuMultipleClonerOptions_shard_get
+    if _newclass:shard = _swig_property(_swigfaiss_gpu.GpuMultipleClonerOptions_shard_get, _swigfaiss_gpu.GpuMultipleClonerOptions_shard_set)
+    __swig_destroy__ = _swigfaiss_gpu.delete_GpuMultipleClonerOptions
+    __del__ = lambda self : None;
+GpuMultipleClonerOptions_swigregister = _swigfaiss_gpu.GpuMultipleClonerOptions_swigregister
+GpuMultipleClonerOptions_swigregister(GpuMultipleClonerOptions)
+
+Device = _swigfaiss_gpu.Device
+Unified = _swigfaiss_gpu.Unified
+
+def allocMemorySpace(*args):
+  return _swigfaiss_gpu.allocMemorySpace(*args)
+allocMemorySpace = _swigfaiss_gpu.allocMemorySpace
+class GpuIndexConfig(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, GpuIndexConfig, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, GpuIndexConfig, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _swigfaiss_gpu.new_GpuIndexConfig()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_setmethods__["device"] = _swigfaiss_gpu.GpuIndexConfig_device_set
+    __swig_getmethods__["device"] = _swigfaiss_gpu.GpuIndexConfig_device_get
+    if _newclass:device = _swig_property(_swigfaiss_gpu.GpuIndexConfig_device_get, _swigfaiss_gpu.GpuIndexConfig_device_set)
+    __swig_setmethods__["memorySpace"] = _swigfaiss_gpu.GpuIndexConfig_memorySpace_set
+    __swig_getmethods__["memorySpace"] = _swigfaiss_gpu.GpuIndexConfig_memorySpace_get
+    if _newclass:memorySpace = _swig_property(_swigfaiss_gpu.GpuIndexConfig_memorySpace_get, _swigfaiss_gpu.GpuIndexConfig_memorySpace_set)
+    __swig_destroy__ = _swigfaiss_gpu.delete_GpuIndexConfig
+    __del__ = lambda self : None;
+GpuIndexConfig_swigregister = _swigfaiss_gpu.GpuIndexConfig_swigregister
+GpuIndexConfig_swigregister(GpuIndexConfig)
+
 class GpuIndex(Index):
     __swig_setmethods__ = {}
     for _s in [Index]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
@@ -2123,22 +2271,24 @@ class GpuIndex(Index):
 GpuIndex_swigregister = _swigfaiss_gpu.GpuIndex_swigregister
 GpuIndex_swigregister(GpuIndex)
 
-class GpuIndexFlatConfig(_object):
+class GpuIndexFlatConfig(GpuIndexConfig):
     __swig_setmethods__ = {}
+    for _s in [GpuIndexConfig]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
     __setattr__ = lambda self, name, value: _swig_setattr(self, GpuIndexFlatConfig, name, value)
     __swig_getmethods__ = {}
+    for _s in [GpuIndexConfig]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
     __getattr__ = lambda self, name: _swig_getattr(self, GpuIndexFlatConfig, name)
     __repr__ = _swig_repr
     def __init__(self): 
         this = _swigfaiss_gpu.new_GpuIndexFlatConfig()
         try: self.this.append(this)
         except: self.this = this
-    __swig_setmethods__["device"] = _swigfaiss_gpu.GpuIndexFlatConfig_device_set
-    __swig_getmethods__["device"] = _swigfaiss_gpu.GpuIndexFlatConfig_device_get
-    if _newclass:device = _swig_property(_swigfaiss_gpu.GpuIndexFlatConfig_device_get, _swigfaiss_gpu.GpuIndexFlatConfig_device_set)
     __swig_setmethods__["useFloat16"] = _swigfaiss_gpu.GpuIndexFlatConfig_useFloat16_set
     __swig_getmethods__["useFloat16"] = _swigfaiss_gpu.GpuIndexFlatConfig_useFloat16_get
     if _newclass:useFloat16 = _swig_property(_swigfaiss_gpu.GpuIndexFlatConfig_useFloat16_get, _swigfaiss_gpu.GpuIndexFlatConfig_useFloat16_set)
+    __swig_setmethods__["useFloat16Accumulator"] = _swigfaiss_gpu.GpuIndexFlatConfig_useFloat16Accumulator_set
+    __swig_getmethods__["useFloat16Accumulator"] = _swigfaiss_gpu.GpuIndexFlatConfig_useFloat16Accumulator_get
+    if _newclass:useFloat16Accumulator = _swig_property(_swigfaiss_gpu.GpuIndexFlatConfig_useFloat16Accumulator_get, _swigfaiss_gpu.GpuIndexFlatConfig_useFloat16Accumulator_set)
     __swig_setmethods__["storeTransposed"] = _swigfaiss_gpu.GpuIndexFlatConfig_storeTransposed_set
     __swig_getmethods__["storeTransposed"] = _swigfaiss_gpu.GpuIndexFlatConfig_storeTransposed_get
     if _newclass:storeTransposed = _swig_property(_swigfaiss_gpu.GpuIndexFlatConfig_storeTransposed_get, _swigfaiss_gpu.GpuIndexFlatConfig_storeTransposed_set)
@@ -2163,16 +2313,15 @@ class GpuIndexFlat(GpuIndex):
     __del__ = lambda self : None;
     def setMinPagingSize(self, *args): return _swigfaiss_gpu.GpuIndexFlat_setMinPagingSize(self, *args)
     def getMinPagingSize(self): return _swigfaiss_gpu.GpuIndexFlat_getMinPagingSize(self)
-    def getUseFloat16(self): return _swigfaiss_gpu.GpuIndexFlat_getUseFloat16(self)
     def copyFrom(self, *args): return _swigfaiss_gpu.GpuIndexFlat_copyFrom(self, *args)
     def copyTo(self, *args): return _swigfaiss_gpu.GpuIndexFlat_copyTo(self, *args)
     def getNumVecs(self): return _swigfaiss_gpu.GpuIndexFlat_getNumVecs(self)
     def reset(self): return _swigfaiss_gpu.GpuIndexFlat_reset(self)
     def train(self, *args): return _swigfaiss_gpu.GpuIndexFlat_train(self, *args)
+    def add(self, *args): return _swigfaiss_gpu.GpuIndexFlat_add(self, *args)
     def search(self, *args): return _swigfaiss_gpu.GpuIndexFlat_search(self, *args)
     def reconstruct(self, *args): return _swigfaiss_gpu.GpuIndexFlat_reconstruct(self, *args)
     def reconstruct_n(self, *args): return _swigfaiss_gpu.GpuIndexFlat_reconstruct_n(self, *args)
-    def set_typename(self): return _swigfaiss_gpu.GpuIndexFlat_set_typename(self)
     def getGpuData(self): return _swigfaiss_gpu.GpuIndexFlat_getGpuData(self)
 GpuIndexFlat_swigregister = _swigfaiss_gpu.GpuIndexFlat_swigregister
 GpuIndexFlat_swigregister(GpuIndexFlat)
@@ -2215,6 +2364,29 @@ class GpuIndexFlatIP(GpuIndexFlat):
 GpuIndexFlatIP_swigregister = _swigfaiss_gpu.GpuIndexFlatIP_swigregister
 GpuIndexFlatIP_swigregister(GpuIndexFlatIP)
 
+class GpuIndexIVFConfig(GpuIndexConfig):
+    __swig_setmethods__ = {}
+    for _s in [GpuIndexConfig]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, GpuIndexIVFConfig, name, value)
+    __swig_getmethods__ = {}
+    for _s in [GpuIndexConfig]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, GpuIndexIVFConfig, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _swigfaiss_gpu.new_GpuIndexIVFConfig()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_setmethods__["indicesOptions"] = _swigfaiss_gpu.GpuIndexIVFConfig_indicesOptions_set
+    __swig_getmethods__["indicesOptions"] = _swigfaiss_gpu.GpuIndexIVFConfig_indicesOptions_get
+    if _newclass:indicesOptions = _swig_property(_swigfaiss_gpu.GpuIndexIVFConfig_indicesOptions_get, _swigfaiss_gpu.GpuIndexIVFConfig_indicesOptions_set)
+    __swig_setmethods__["flatConfig"] = _swigfaiss_gpu.GpuIndexIVFConfig_flatConfig_set
+    __swig_getmethods__["flatConfig"] = _swigfaiss_gpu.GpuIndexIVFConfig_flatConfig_get
+    if _newclass:flatConfig = _swig_property(_swigfaiss_gpu.GpuIndexIVFConfig_flatConfig_get, _swigfaiss_gpu.GpuIndexIVFConfig_flatConfig_set)
+    __swig_destroy__ = _swigfaiss_gpu.delete_GpuIndexIVFConfig
+    __del__ = lambda self : None;
+GpuIndexIVFConfig_swigregister = _swigfaiss_gpu.GpuIndexIVFConfig_swigregister
+GpuIndexIVFConfig_swigregister(GpuIndexIVFConfig)
+
 class GpuIndexIVF(GpuIndex):
     __swig_setmethods__ = {}
     for _s in [GpuIndex]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
@@ -2226,16 +2398,38 @@ class GpuIndexIVF(GpuIndex):
     __repr__ = _swig_repr
     __swig_destroy__ = _swigfaiss_gpu.delete_GpuIndexIVF
     __del__ = lambda self : None;
-    def getIndicesOptions(self): return _swigfaiss_gpu.GpuIndexIVF_getIndicesOptions(self)
-    def getUseFloat16CoarseQuantizer(self): return _swigfaiss_gpu.GpuIndexIVF_getUseFloat16CoarseQuantizer(self)
     def copyFrom(self, *args): return _swigfaiss_gpu.GpuIndexIVF_copyFrom(self, *args)
     def copyTo(self, *args): return _swigfaiss_gpu.GpuIndexIVF_copyTo(self, *args)
     def getNumLists(self): return _swigfaiss_gpu.GpuIndexIVF_getNumLists(self)
+    def getQuantizer(self): return _swigfaiss_gpu.GpuIndexIVF_getQuantizer(self)
     def setNumProbes(self, *args): return _swigfaiss_gpu.GpuIndexIVF_setNumProbes(self, *args)
     def getNumProbes(self): return _swigfaiss_gpu.GpuIndexIVF_getNumProbes(self)
     def add(self, *args): return _swigfaiss_gpu.GpuIndexIVF_add(self, *args)
 GpuIndexIVF_swigregister = _swigfaiss_gpu.GpuIndexIVF_swigregister
 GpuIndexIVF_swigregister(GpuIndexIVF)
+
+class GpuIndexIVFPQConfig(GpuIndexIVFConfig):
+    __swig_setmethods__ = {}
+    for _s in [GpuIndexIVFConfig]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, GpuIndexIVFPQConfig, name, value)
+    __swig_getmethods__ = {}
+    for _s in [GpuIndexIVFConfig]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, GpuIndexIVFPQConfig, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _swigfaiss_gpu.new_GpuIndexIVFPQConfig()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_setmethods__["useFloat16LookupTables"] = _swigfaiss_gpu.GpuIndexIVFPQConfig_useFloat16LookupTables_set
+    __swig_getmethods__["useFloat16LookupTables"] = _swigfaiss_gpu.GpuIndexIVFPQConfig_useFloat16LookupTables_get
+    if _newclass:useFloat16LookupTables = _swig_property(_swigfaiss_gpu.GpuIndexIVFPQConfig_useFloat16LookupTables_get, _swigfaiss_gpu.GpuIndexIVFPQConfig_useFloat16LookupTables_set)
+    __swig_setmethods__["usePrecomputedTables"] = _swigfaiss_gpu.GpuIndexIVFPQConfig_usePrecomputedTables_set
+    __swig_getmethods__["usePrecomputedTables"] = _swigfaiss_gpu.GpuIndexIVFPQConfig_usePrecomputedTables_get
+    if _newclass:usePrecomputedTables = _swig_property(_swigfaiss_gpu.GpuIndexIVFPQConfig_usePrecomputedTables_get, _swigfaiss_gpu.GpuIndexIVFPQConfig_usePrecomputedTables_set)
+    __swig_destroy__ = _swigfaiss_gpu.delete_GpuIndexIVFPQConfig
+    __del__ = lambda self : None;
+GpuIndexIVFPQConfig_swigregister = _swigfaiss_gpu.GpuIndexIVFPQConfig_swigregister
+GpuIndexIVFPQConfig_swigregister(GpuIndexIVFPQConfig)
 
 class GpuIndexIVFPQ(GpuIndexIVF):
     __swig_setmethods__ = {}
@@ -2256,19 +2450,37 @@ class GpuIndexIVFPQ(GpuIndexIVF):
     def reserveMemory(self, *args): return _swigfaiss_gpu.GpuIndexIVFPQ_reserveMemory(self, *args)
     def setPrecomputedCodes(self, *args): return _swigfaiss_gpu.GpuIndexIVFPQ_setPrecomputedCodes(self, *args)
     def getPrecomputedCodes(self): return _swigfaiss_gpu.GpuIndexIVFPQ_getPrecomputedCodes(self)
-    def getFloat16LookupTables(self): return _swigfaiss_gpu.GpuIndexIVFPQ_getFloat16LookupTables(self)
     def getNumSubQuantizers(self): return _swigfaiss_gpu.GpuIndexIVFPQ_getNumSubQuantizers(self)
     def getBitsPerCode(self): return _swigfaiss_gpu.GpuIndexIVFPQ_getBitsPerCode(self)
     def getCentroidsPerSubQuantizer(self): return _swigfaiss_gpu.GpuIndexIVFPQ_getCentroidsPerSubQuantizer(self)
     def reclaimMemory(self): return _swigfaiss_gpu.GpuIndexIVFPQ_reclaimMemory(self)
     def reset(self): return _swigfaiss_gpu.GpuIndexIVFPQ_reset(self)
     def train(self, *args): return _swigfaiss_gpu.GpuIndexIVFPQ_train(self, *args)
-    def set_typename(self): return _swigfaiss_gpu.GpuIndexIVFPQ_set_typename(self)
     def getListLength(self, *args): return _swigfaiss_gpu.GpuIndexIVFPQ_getListLength(self, *args)
     def getListCodes(self, *args): return _swigfaiss_gpu.GpuIndexIVFPQ_getListCodes(self, *args)
     def getListIndices(self, *args): return _swigfaiss_gpu.GpuIndexIVFPQ_getListIndices(self, *args)
 GpuIndexIVFPQ_swigregister = _swigfaiss_gpu.GpuIndexIVFPQ_swigregister
 GpuIndexIVFPQ_swigregister(GpuIndexIVFPQ)
+
+class GpuIndexIVFFlatConfig(GpuIndexIVFConfig):
+    __swig_setmethods__ = {}
+    for _s in [GpuIndexIVFConfig]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, GpuIndexIVFFlatConfig, name, value)
+    __swig_getmethods__ = {}
+    for _s in [GpuIndexIVFConfig]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, GpuIndexIVFFlatConfig, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _swigfaiss_gpu.new_GpuIndexIVFFlatConfig()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_setmethods__["useFloat16IVFStorage"] = _swigfaiss_gpu.GpuIndexIVFFlatConfig_useFloat16IVFStorage_set
+    __swig_getmethods__["useFloat16IVFStorage"] = _swigfaiss_gpu.GpuIndexIVFFlatConfig_useFloat16IVFStorage_get
+    if _newclass:useFloat16IVFStorage = _swig_property(_swigfaiss_gpu.GpuIndexIVFFlatConfig_useFloat16IVFStorage_get, _swigfaiss_gpu.GpuIndexIVFFlatConfig_useFloat16IVFStorage_set)
+    __swig_destroy__ = _swigfaiss_gpu.delete_GpuIndexIVFFlatConfig
+    __del__ = lambda self : None;
+GpuIndexIVFFlatConfig_swigregister = _swigfaiss_gpu.GpuIndexIVFFlatConfig_swigregister
+GpuIndexIVFFlatConfig_swigregister(GpuIndexIVFFlatConfig)
 
 class GpuIndexIVFFlat(GpuIndexIVF):
     __swig_setmethods__ = {}
@@ -2290,7 +2502,6 @@ class GpuIndexIVFFlat(GpuIndexIVF):
     def reclaimMemory(self): return _swigfaiss_gpu.GpuIndexIVFFlat_reclaimMemory(self)
     def reset(self): return _swigfaiss_gpu.GpuIndexIVFFlat_reset(self)
     def train(self, *args): return _swigfaiss_gpu.GpuIndexIVFFlat_train(self, *args)
-    def set_typename(self): return _swigfaiss_gpu.GpuIndexIVFFlat_set_typename(self)
 GpuIndexIVFFlat_swigregister = _swigfaiss_gpu.GpuIndexIVFFlat_swigregister
 GpuIndexIVFFlat_swigregister(GpuIndexIVFFlat)
 
@@ -2316,7 +2527,6 @@ class IndexProxy(Index):
     def add(self, *args): return _swigfaiss_gpu.IndexProxy_add(self, *args)
     def search(self, *args): return _swigfaiss_gpu.IndexProxy_search(self, *args)
     def reconstruct(self, *args): return _swigfaiss_gpu.IndexProxy_reconstruct(self, *args)
-    def set_typename(self): return _swigfaiss_gpu.IndexProxy_set_typename(self)
     __swig_setmethods__["own_fields"] = _swigfaiss_gpu.IndexProxy_own_fields_set
     __swig_getmethods__["own_fields"] = _swigfaiss_gpu.IndexProxy_own_fields_get
     if _newclass:own_fields = _swig_property(_swigfaiss_gpu.IndexProxy_own_fields_get, _swigfaiss_gpu.IndexProxy_own_fields_set)
@@ -2578,66 +2788,10 @@ index_factory = _swigfaiss_gpu.index_factory
 def index_gpu_to_cpu(*args):
   return _swigfaiss_gpu.index_gpu_to_cpu(*args)
 index_gpu_to_cpu = _swigfaiss_gpu.index_gpu_to_cpu
-class GpuClonerOptions(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, GpuClonerOptions, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, GpuClonerOptions, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["indicesOptions"] = _swigfaiss_gpu.GpuClonerOptions_indicesOptions_set
-    __swig_getmethods__["indicesOptions"] = _swigfaiss_gpu.GpuClonerOptions_indicesOptions_get
-    if _newclass:indicesOptions = _swig_property(_swigfaiss_gpu.GpuClonerOptions_indicesOptions_get, _swigfaiss_gpu.GpuClonerOptions_indicesOptions_set)
-    __swig_setmethods__["useFloat16CoarseQuantizer"] = _swigfaiss_gpu.GpuClonerOptions_useFloat16CoarseQuantizer_set
-    __swig_getmethods__["useFloat16CoarseQuantizer"] = _swigfaiss_gpu.GpuClonerOptions_useFloat16CoarseQuantizer_get
-    if _newclass:useFloat16CoarseQuantizer = _swig_property(_swigfaiss_gpu.GpuClonerOptions_useFloat16CoarseQuantizer_get, _swigfaiss_gpu.GpuClonerOptions_useFloat16CoarseQuantizer_set)
-    __swig_setmethods__["useFloat16"] = _swigfaiss_gpu.GpuClonerOptions_useFloat16_set
-    __swig_getmethods__["useFloat16"] = _swigfaiss_gpu.GpuClonerOptions_useFloat16_get
-    if _newclass:useFloat16 = _swig_property(_swigfaiss_gpu.GpuClonerOptions_useFloat16_get, _swigfaiss_gpu.GpuClonerOptions_useFloat16_set)
-    __swig_setmethods__["usePrecomputed"] = _swigfaiss_gpu.GpuClonerOptions_usePrecomputed_set
-    __swig_getmethods__["usePrecomputed"] = _swigfaiss_gpu.GpuClonerOptions_usePrecomputed_get
-    if _newclass:usePrecomputed = _swig_property(_swigfaiss_gpu.GpuClonerOptions_usePrecomputed_get, _swigfaiss_gpu.GpuClonerOptions_usePrecomputed_set)
-    __swig_setmethods__["reserveVecs"] = _swigfaiss_gpu.GpuClonerOptions_reserveVecs_set
-    __swig_getmethods__["reserveVecs"] = _swigfaiss_gpu.GpuClonerOptions_reserveVecs_get
-    if _newclass:reserveVecs = _swig_property(_swigfaiss_gpu.GpuClonerOptions_reserveVecs_get, _swigfaiss_gpu.GpuClonerOptions_reserveVecs_set)
-    __swig_setmethods__["storeTransposed"] = _swigfaiss_gpu.GpuClonerOptions_storeTransposed_set
-    __swig_getmethods__["storeTransposed"] = _swigfaiss_gpu.GpuClonerOptions_storeTransposed_get
-    if _newclass:storeTransposed = _swig_property(_swigfaiss_gpu.GpuClonerOptions_storeTransposed_get, _swigfaiss_gpu.GpuClonerOptions_storeTransposed_set)
-    __swig_setmethods__["verbose"] = _swigfaiss_gpu.GpuClonerOptions_verbose_set
-    __swig_getmethods__["verbose"] = _swigfaiss_gpu.GpuClonerOptions_verbose_get
-    if _newclass:verbose = _swig_property(_swigfaiss_gpu.GpuClonerOptions_verbose_get, _swigfaiss_gpu.GpuClonerOptions_verbose_set)
-    def __init__(self): 
-        this = _swigfaiss_gpu.new_GpuClonerOptions()
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _swigfaiss_gpu.delete_GpuClonerOptions
-    __del__ = lambda self : None;
-GpuClonerOptions_swigregister = _swigfaiss_gpu.GpuClonerOptions_swigregister
-GpuClonerOptions_swigregister(GpuClonerOptions)
-
 
 def index_cpu_to_gpu(*args):
   return _swigfaiss_gpu.index_cpu_to_gpu(*args)
 index_cpu_to_gpu = _swigfaiss_gpu.index_cpu_to_gpu
-class GpuMultipleClonerOptions(GpuClonerOptions):
-    __swig_setmethods__ = {}
-    for _s in [GpuClonerOptions]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, GpuMultipleClonerOptions, name, value)
-    __swig_getmethods__ = {}
-    for _s in [GpuClonerOptions]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
-    __getattr__ = lambda self, name: _swig_getattr(self, GpuMultipleClonerOptions, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["shard"] = _swigfaiss_gpu.GpuMultipleClonerOptions_shard_set
-    __swig_getmethods__["shard"] = _swigfaiss_gpu.GpuMultipleClonerOptions_shard_get
-    if _newclass:shard = _swig_property(_swigfaiss_gpu.GpuMultipleClonerOptions_shard_get, _swigfaiss_gpu.GpuMultipleClonerOptions_shard_set)
-    def __init__(self): 
-        this = _swigfaiss_gpu.new_GpuMultipleClonerOptions()
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _swigfaiss_gpu.delete_GpuMultipleClonerOptions
-    __del__ = lambda self : None;
-GpuMultipleClonerOptions_swigregister = _swigfaiss_gpu.GpuMultipleClonerOptions_swigregister
-GpuMultipleClonerOptions_swigregister(GpuMultipleClonerOptions)
-
 
 def index_cpu_to_gpu_multiple(*args):
   return _swigfaiss_gpu.index_cpu_to_gpu_multiple(*args)
@@ -2665,6 +2819,10 @@ GpuParameterSpace_swigregister(GpuParameterSpace)
 def swig_ptr(*args):
   return _swigfaiss_gpu.swig_ptr(*args)
 swig_ptr = _swigfaiss_gpu.swig_ptr
+
+def rev_swig_ptr(*args):
+  return _swigfaiss_gpu.rev_swig_ptr(*args)
+rev_swig_ptr = _swigfaiss_gpu.rev_swig_ptr
 class float_minheap_array_t(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, float_minheap_array_t, name, value)

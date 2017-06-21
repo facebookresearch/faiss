@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -60,6 +59,7 @@ void runIPDistance(GpuResources* resources,
                    int k,
                    Tensor<half, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices,
+                   bool useHgemm,
                    int tileSizeOverride = -1);
 
 void runL2Distance(GpuResources* resources,
@@ -70,6 +70,7 @@ void runL2Distance(GpuResources* resources,
                    int k,
                    Tensor<half, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices,
+                   bool useHgemm,
                    bool ignoreOutDistances = false,
                    int tileSizeOverride = -1);
 #endif

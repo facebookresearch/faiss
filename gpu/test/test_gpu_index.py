@@ -1,4 +1,3 @@
-
 # Copyright (c) 2015-present, Facebook, Inc.
 # All rights reserved.
 #
@@ -58,9 +57,12 @@ class EvalIVFPQAccuracy(testutil.BaseFacebookTestCase):
         index = faiss.IndexIVFPQ(coarse_quantizer, d, ncentroids, 32, 8)
         # add implemented on GPU but not train
         index.train(xt)
-        gpuIndex = faiss.GpuIndexIVFPQ(res, dev_no, faiss.INDICES_64_BIT,
-                                       False, index)
-        gpuIndex.setPrecomputedCodes(usePrecomputed)
+
+        ivfpq_config = faiss.GpuIndexIVFPQConfig()
+        ivfpq_config.device = dev_no
+        ivfpq_config.usePrecomputedTables = usePrecomputed
+
+        gpuIndex = faiss.GpuIndexIVFPQ(res, index, ivfpq_config)
         gpuIndex.setNumProbes(64)
         index.add(xb)
 

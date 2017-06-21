@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -128,7 +127,7 @@ IndexProxy::search(faiss::Index::idx_t n,
                         float* distances,
                         faiss::Index::idx_t* labels) const {
   FAISS_ASSERT(!indices_.empty());
-  if (indices_.empty()) {
+  if (n == 0) {
     return;
   }
 
@@ -166,12 +165,6 @@ IndexProxy::search(faiss::Index::idx_t n,
   for (auto& f : v) {
     f.get();
   }
-}
-
-void
-IndexProxy::set_typename() {
-  // FIXME: implement
-  FAISS_ASSERT(false);
 }
 
 

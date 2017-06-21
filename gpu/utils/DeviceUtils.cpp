@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -98,6 +97,15 @@ int getDeviceForAddress(const void* p) {
   } else {
     return att.device;
   }
+}
+
+bool getFullUnifiedMemSupport(int device) {
+  const auto& prop = getDeviceProperties(device);
+  return (prop.major >= 6);
+}
+
+bool getFullUnifiedMemSupportCurrentDevice() {
+  return getFullUnifiedMemSupport(getCurrentDevice());
 }
 
 DeviceScope::DeviceScope(int device) {

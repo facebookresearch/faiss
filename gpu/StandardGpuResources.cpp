@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -118,9 +117,11 @@ StandardGpuResources::initializeForDevice(int device) {
   // Make sure that device properties for all devices are cached
   auto& prop = getDeviceProperties(device);
 
-  // Also check to make sure we meet our minimum compute capability (3.5)
-  FAISS_ASSERT(prop.major > 3 || (prop.major == 3 && prop.minor >= 5) ||
-               !"Device not supported, need 3.5+ compute capability");
+  // Also check to make sure we meet our minimum compute capability (3.0)
+  FAISS_ASSERT_FMT(prop.major >= 3,
+                   "Device id %d with CC %d.%d not supported, "
+                   "need 3.0+ compute capability",
+                   device, prop.major, prop.minor);
 
   // Create streams
   cudaStream_t defaultStream = 0;

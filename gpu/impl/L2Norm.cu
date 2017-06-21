@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -235,7 +234,7 @@ void runL2Norm(Tensor<T, 2, true>& input,
 
 #undef RUN_L2
 
-  CUDA_VERIFY(cudaGetLastError());
+  CUDA_TEST_ERROR();
 }
 
 void runL2Norm(Tensor<float, 2, true>& input,

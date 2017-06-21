@@ -119,22 +119,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abade6e417f42c280b8cfdc95e40fed66"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abade6e417f42c280b8cfdc95e40fed66"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>prepend_transform</b> (<a class="el" href="structfaiss_1_1VectorTransform.html">VectorTransform</a> *ltrans)</td></tr>
 <tr class="separator:abade6e417f42c280b8cfdc95e40fed66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b8c9aebb784183a99f9738fab8d0ac9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4b8c9aebb784183a99f9738fab8d0ac9"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>set_typename</b> () override</td></tr>
-<tr class="separator:a4b8c9aebb784183a99f9738fab8d0ac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a416aaf28d7a533dcf7d2d7de434e993c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#a416aaf28d7a533dcf7d2d7de434e993c">train</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x) override</td></tr>
+<tr class="memitem:a416aaf28d7a533dcf7d2d7de434e993c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#a416aaf28d7a533dcf7d2d7de434e993c">train</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x) override</td></tr>
 <tr class="separator:a416aaf28d7a533dcf7d2d7de434e993c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03c77c582a3421952e2cba2057083059"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#a03c77c582a3421952e2cba2057083059">add</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x) override</td></tr>
+<tr class="memitem:a03c77c582a3421952e2cba2057083059"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#a03c77c582a3421952e2cba2057083059">add</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x) override</td></tr>
 <tr class="separator:a03c77c582a3421952e2cba2057083059"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07fef0553b2ef2907f394470f61898b2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#a07fef0553b2ef2907f394470f61898b2">add_with_ids</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, const long *xids) override</td></tr>
+<tr class="memitem:a07fef0553b2ef2907f394470f61898b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#a07fef0553b2ef2907f394470f61898b2">add_with_ids</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, const long *xids) override</td></tr>
 <tr class="separator:a07fef0553b2ef2907f394470f61898b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e48ac9fde5e76e378553b2a6ec2c86e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8e48ac9fde5e76e378553b2a6ec2c86e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#a8e48ac9fde5e76e378553b2a6ec2c86e">reset</a> () override</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#a8e48ac9fde5e76e378553b2a6ec2c86e">reset</a> () override</td></tr>
 <tr class="memdesc:a8e48ac9fde5e76e378553b2a6ec2c86e"><td class="mdescLeft">&#160;</td><td class="mdescRight">removes all elements from the database. <br/></td></tr>
 <tr class="separator:a8e48ac9fde5e76e378553b2a6ec2c86e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4e59f4dacc1d8183a788510680f0df5"><td class="memItemLeft" align="right" valign="top">virtual long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#ad4e59f4dacc1d8183a788510680f0df5">remove_ids</a> (const <a class="el" href="structfaiss_1_1IDSelector.html">IDSelector</a> &amp;sel) override</td></tr>
+<tr class="memitem:ad4e59f4dacc1d8183a788510680f0df5"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#ad4e59f4dacc1d8183a788510680f0df5">remove_ids</a> (const <a class="el" href="structfaiss_1_1IDSelector.html">IDSelector</a> &amp;sel) override</td></tr>
 <tr class="separator:ad4e59f4dacc1d8183a788510680f0df5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c2c820895d87083742969c281ae4911"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#a7c2c820895d87083742969c281ae4911">search</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *labels) const override</td></tr>
+<tr class="memitem:a7c2c820895d87083742969c281ae4911"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#a7c2c820895d87083742969c281ae4911">search</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *labels) const override</td></tr>
 <tr class="separator:a7c2c820895d87083742969c281ae4911"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a370dd6ef091393401fa9b60e3d1d25b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html#a370dd6ef091393401fa9b60e3d1d25b2">reconstruct_n</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> i0, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> ni, float *recons) const override</td></tr>
 <tr class="separator:a370dd6ef091393401fa9b60e3d1d25b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -154,8 +151,6 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr class="separator:aaae77608bbda70b1098897e9167a82f9 inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a373c30e3d87d1d4e616f450d87152b1a inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a373c30e3d87d1d4e616f450d87152b1a">display</a> () const </td></tr>
 <tr class="separator:a373c30e3d87d1d4e616f450d87152b1a inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae095c6209a16347262408b3346193a3 inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#aae095c6209a16347262408b3346193a3">get_typename</a> () const </td></tr>
-<tr class="separator:aae095c6209a16347262408b3346193a3 inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -171,9 +166,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <tr class="memdesc:ae5ec3f184eb211e7d6e204082b52c8c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">! the sub-index <br/></td></tr>
 <tr class="separator:ae5ec3f184eb211e7d6e204082b52c8c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_structfaiss_1_1Index"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structfaiss_1_1Index')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structfaiss_1_1Index.html">faiss::Index</a></td></tr>
-<tr class="memitem:a294b7b4efde95636baed8a6691f49018 inherit pub_attribs_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a294b7b4efde95636baed8a6691f49018"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>index_typename</b></td></tr>
-<tr class="separator:a294b7b4efde95636baed8a6691f49018 inherit pub_attribs_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a002388d2c081c2dbab8508dcefe73d inherit pub_attribs_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2a002388d2c081c2dbab8508dcefe73d"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a></td></tr>
 <tr class="memdesc:a2a002388d2c081c2dbab8508dcefe73d inherit pub_attribs_structfaiss_1_1Index"><td class="mdescLeft">&#160;</td><td class="mdescRight">vector dimension <br/></td></tr>
@@ -206,7 +198,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="structfaiss_1_1Index.html">Index</a> that applies a <a class="el" href="structfaiss_1_1LinearTransform.html">LinearTransform</a> transform on vectors before handing them over to a sub-index </p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00237">237</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00230">230</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a03c77c582a3421952e2cba2057083059"></a>
 <div class="memitem">
@@ -250,7 +242,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Implements <a class="el" href="structfaiss_1_1Index.html#a1b5e9ac70adbce0897dd6c8276ad96f2">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00719">719</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00810">810</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
 
 </div>
 </div>
@@ -302,7 +294,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#aa6931dfe054b33b02c842ff75f7a0c7f">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00728">728</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00819">819</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
 
 </div>
 </div>
@@ -331,7 +323,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>apply the transforms in the chain. The returned float * may be equal to x, otherwise it should be deallocated. </p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00708">708</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00795">795</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
 
 </div>
 </div>
@@ -383,7 +375,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#a1936604fffe16b0ef2a3879305950738">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00763">763</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00854">854</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
 
 </div>
 </div>
@@ -412,7 +404,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#af8bf7bd97aeed8ad5fc48b242379a68a">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00756">756</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00847">847</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
 
 </div>
 </div>
@@ -478,7 +470,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Implements <a class="el" href="structfaiss_1_1Index.html#aced51b1ebc33c47ab3ae15ea906559a7">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00741">741</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00832">832</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
 
 </div>
 </div>
@@ -524,7 +516,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#a8f67dfd73993e192dc78f2c93d9d9532">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00680">680</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00766">766</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
 
 </div>
 </div>

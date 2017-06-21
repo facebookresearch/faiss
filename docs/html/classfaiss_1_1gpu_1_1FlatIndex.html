@@ -99,9 +99,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac70ae7e98515342379553de7c856d013"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac70ae7e98515342379553de7c856d013"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>FlatIndex</b> (<a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *res, int dim, bool l2Distance, bool useFloat16, bool storeTransposed)</td></tr>
-<tr class="separator:ac70ae7e98515342379553de7c856d013"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09114f736efaadcdc0f2b51ac03909be"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a09114f736efaadcdc0f2b51ac03909be"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>FlatIndex</b> (<a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> *res, int dim, bool l2Distance, bool useFloat16, bool useFloat16Accumulator, bool storeTransposed, MemorySpace space)</td></tr>
+<tr class="separator:a09114f736efaadcdc0f2b51ac03909be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8fa02481e912b0be2ad3a29b87edd85d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8fa02481e912b0be2ad3a29b87edd85d"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>getUseFloat16</b> () const </td></tr>
 <tr class="separator:a8fa02481e912b0be2ad3a29b87edd85d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -112,6 +112,10 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <tr class="memitem:a466a22d95f218b1998049943ca3134bf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a466a22d95f218b1998049943ca3134bf"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>getDim</b> () const </td></tr>
 <tr class="separator:a466a22d95f218b1998049943ca3134bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a06b678b97e3732939f6a4fb5106ef6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7a06b678b97e3732939f6a4fb5106ef6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html#a7a06b678b97e3732939f6a4fb5106ef6">reserve</a> (size_t numVecs, cudaStream_t stream)</td></tr>
+<tr class="memdesc:a7a06b678b97e3732939f6a4fb5106ef6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserve storage that can contain at least this many vectors. <br/></td></tr>
+<tr class="separator:a7a06b678b97e3732939f6a4fb5106ef6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12058744ffb3fbcbb047872449269c06"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a12058744ffb3fbcbb047872449269c06"></a>
 <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; float, 2, true &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html#a12058744ffb3fbcbb047872449269c06">getVectorsFloat32Ref</a> ()</td></tr>
 <tr class="memdesc:a12058744ffb3fbcbb047872449269c06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a reference to our vectors currently in use. <br/></td></tr>
@@ -168,7 +172,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div><div class="memdoc">
 <p>Add vectors to ourselves; the pointer passed can be on the host or the device </p>
 
-<p>Definition at line <a class="el" href="FlatIndex_8cu_source.html#l00184">184</a> of file <a class="el" href="FlatIndex_8cu_source.html">FlatIndex.cu</a>.</p>
+<p>Definition at line <a class="el" href="FlatIndex_8cu_source.html#l00201">201</a> of file <a class="el" href="FlatIndex_8cu_source.html">FlatIndex.cu</a>.</p>
 
 </div>
 </div>
@@ -187,7 +191,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div><div class="memdoc">
 <p>Performs a copy of the vectors on the given device, converting as needed from float16 </p>
 
-<p>Definition at line <a class="el" href="FlatIndex_8cu_source.html#l00076">76</a> of file <a class="el" href="FlatIndex_8cu_source.html">FlatIndex.cu</a>.</p>
+<p>Definition at line <a class="el" href="FlatIndex_8cu_source.html#l00091">91</a> of file <a class="el" href="FlatIndex_8cu_source.html">FlatIndex.cu</a>.</p>
 
 </div>
 </div>

@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -90,7 +89,11 @@ __global__ void transposeAny(TensorInfo<T> input,
   auto outputOffset =
     TensorInfoOffset<T, DimOutput>::get(output, linearThreadId);
 
+#if __CUDA_ARCH__ >= 350
   output.data[outputOffset] = __ldg(&input.data[inputOffset]);
+#else
+  output.data[outputOffset] = input.data[inputOffset];
+#endif
 }
 
 /// Performs an out-of-place transposition between any two dimensions.
@@ -136,8 +139,9 @@ void runTransposeAny(Tensor<T, Dim, true>& in,
   auto grid = dim3(utils::divUp(totalSize, numThreads));
   auto block = dim3(numThreads);
 
-  transposeAny<T, Dim, -1><<<grid, block, 0, stream>>>(inInfo, outInfo, totalSize);
-  CUDA_VERIFY(cudaGetLastError());
+  transposeAny<T, Dim, -1><<<grid, block, 0, stream>>>(
+    inInfo, outInfo, totalSize);
+  CUDA_TEST_ERROR();
 }
 
 } } // namespace

@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -39,12 +38,10 @@ bool isSupportedNoPrecomputedSubDimSize(int dims) {
     case 16:
     case 32:
       return true;
-      break;
     default:
       // FIXME: larger sizes require too many registers - we need the
       // MM implementation working
       return false;
-      break;
   }
 }
 
@@ -370,6 +367,8 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
 #undef RUN_PQ_OPT
   }
 
+  CUDA_TEST_ERROR();
+
   // k-select the output in chunks, to increase parallelism
   runPass1SelectLists(prefixSumOffsets,
                       allDistances,
@@ -395,8 +394,6 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
                       outDistances,
                       outIndices,
                       stream);
-
-  CUDA_VERIFY(cudaGetLastError());
 }
 
 void runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,

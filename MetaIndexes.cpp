@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -18,6 +17,8 @@
 
 #include "FaissAssert.h"
 #include "Heap.h"
+#include "AuxIndexStructures.h"
+
 
 namespace faiss {
 
@@ -29,18 +30,17 @@ IndexIDMap::IndexIDMap (Index *index):
     index (index),
     own_fields (false)
 {
-    FAISS_ASSERT (index->ntotal == 0 || !"index must be empty on input");
+    FAISS_THROW_IF_NOT_MSG (index->ntotal == 0, "index must be empty on input");
     is_trained = index->is_trained;
     metric_type = index->metric_type;
     verbose = index->verbose;
     d = index->d;
-    set_typename ();
 }
 
 void IndexIDMap::add (idx_t, const float *)
 {
-   FAISS_ASSERT (!"add does not make sense with IndexIDMap, "
-                 "use add_with_ids");
+    FAISS_THROW_MSG ("add does not make sense with IndexIDMap, "
+                      "use add_with_ids");
 }
 
 
@@ -76,6 +76,43 @@ void IndexIDMap::search (idx_t n, const float *x, idx_t k,
     }
 }
 
+namespace {
+
+struct IDTranslatedSelector: IDSelector {
+    const std::vector <long> & id_map;
+    const IDSelector & sel;
+    IDTranslatedSelector (const std::vector <long> & id_map,
+                          const IDSelector & sel):
+        id_map (id_map), sel (sel)
+    {}
+    bool is_member(idx_t id) const override {
+      return sel.is_member(id_map[id]);
+    }
+};
+
+}
+
+long IndexIDMap::remove_ids (const IDSelector & sel)
+{
+    // remove in sub-index first
+    IDTranslatedSelector sel2 (id_map, sel);
+    long nremove = index->remove_ids (sel2);
+
+    long j = 0;
+    for (idx_t i = 0; i < ntotal; i++) {
+        if (sel.is_member (id_map[i])) {
+            // remove
+        } else {
+            id_map[j] = id_map[i];
+            j++;
+        }
+    }
+    FAISS_ASSERT (j == index->ntotal);
+    ntotal = j;
+    return nremove;
+}
+
+
 
 
 IndexIDMap::~IndexIDMap ()
@@ -83,10 +120,6 @@ IndexIDMap::~IndexIDMap ()
     if (own_fields) delete index;
 }
 
-void IndexIDMap::set_typename ()
-{
-    index_typename = "IDMap[" + index->index_typename + "]";
-}
 
 
 /*****************************************************
@@ -300,8 +333,8 @@ void IndexShards::sync_with_shard_indexes ()
     ntotal = index0->ntotal;
     for (int i = 1; i < shard_indexes.size(); i++) {
         Index * index = shard_indexes[i];
-        FAISS_ASSERT (metric_type == index->metric_type);
-        FAISS_ASSERT (d == index->d);
+        FAISS_THROW_IF_NOT (metric_type == index->metric_type);
+        FAISS_THROW_IF_NOT (d == index->d);
         ntotal += index->ntotal;
     }
 }
@@ -350,24 +383,28 @@ void IndexShards::add (idx_t n, const float *x)
 void IndexShards::add_with_ids (idx_t n, const float * x, const long *xids)
 {
 
-    FAISS_ASSERT(!(successive_ids && xids) ||
-        !"It makes no sense to pass in ids and request them to be shifted");
+    FAISS_THROW_IF_NOT_MSG(!(successive_ids && xids),
+                   "It makes no sense to pass in ids and "
+                   "request them to be shifted");
 
     if (successive_ids) {
-        FAISS_ASSERT(!xids ||
-           !"It makes no sense to pass in ids and request them to be shifted");
-        FAISS_ASSERT(ntotal == 0 ||
-            !"when adding to IndexShards with sucessive_ids, only add() "
-            "in a single pass is supported");
+      FAISS_THROW_IF_NOT_MSG(!xids,
+                       "It makes no sense to pass in ids and "
+                       "request them to be shifted");
+      FAISS_THROW_IF_NOT_MSG(ntotal == 0,
+                       "when adding to IndexShards with sucessive_ids, "
+                       "only add() in a single pass is supported");
     }
 
     long nshard = shard_indexes.size();
     const long *ids = xids;
+    ScopeDeleter<long> del;
     if (!ids && !successive_ids) {
         long *aids = new long[n];
         for (long i = 0; i < n; i++)
             aids[i] = ntotal + i;
         ids = aids;
+        del.set (ids);
     }
 
     std::vector<Thread<AddJob > > asa (shard_indexes.size());
@@ -389,7 +426,6 @@ void IndexShards::add_with_ids (idx_t n, const float * x, const long *xids)
     for (int i = 0; i < nt; i++) {
         asa[i].wait();
     }
-    if (ids != xids) delete [] ids;
     ntotal += n;
 }
 
@@ -412,6 +448,8 @@ void IndexShards::search (
     long nshard = shard_indexes.size();
     float *all_distances = new float [nshard * k * n];
     idx_t *all_labels = new idx_t [nshard * k * n];
+    ScopeDeleter<float> del (all_distances);
+    ScopeDeleter<idx_t> del2 (all_labels);
 
 #if 1
 
@@ -478,15 +516,10 @@ void IndexShards::search (
              n, k, nshard, distances, labels,
              all_distances, all_labels, translations.data ());
     }
-    delete [] all_distances;
-    delete [] all_labels;
-}
-
-
-void IndexShards::set_typename ()
-{
 
 }
+
+
 
 IndexShards::~IndexShards ()
 {
@@ -525,8 +558,8 @@ void IndexSplitVectors::sync_with_sub_indexes ()
     ntotal = index0->ntotal;
     for (int i = 1; i < sub_indexes.size(); i++) {
         Index * index = sub_indexes[i];
-        FAISS_ASSERT (metric_type == index->metric_type);
-        FAISS_ASSERT (ntotal == index->ntotal);
+        FAISS_THROW_IF_NOT (metric_type == index->metric_type);
+        FAISS_THROW_IF_NOT (ntotal == index->ntotal);
         sum_d += index->d;
     }
 
@@ -534,7 +567,7 @@ void IndexSplitVectors::sync_with_sub_indexes ()
 
 void IndexSplitVectors::add (idx_t n, const float *x)
 {
-    FAISS_ASSERT (!"not implemented");
+    FAISS_THROW_MSG ("not implemented");
 }
 
 namespace {
@@ -561,10 +594,10 @@ struct SplitQueryJob {
         idx_t ofs = 0;
         for (int i = 0; i < no; i++) ofs += index->sub_indexes[i]->d;
         float *sub_x = new float [sub_d * n];
+        ScopeDeleter<float> del (sub_x);
         for (idx_t i = 0; i < n; i++)
             memcpy (sub_x + i * sub_d, x + ofs + i * d, sub_d * sizeof (sub_x));
         sub_index->search (n, sub_x, k, distances, labels);
-        delete [] sub_x;
         if (index->verbose)
             printf ("end query shard %d\n", no);
     }
@@ -581,12 +614,16 @@ void IndexSplitVectors::search (
            idx_t n, const float *x, idx_t k,
            float *distances, idx_t *labels) const
 {
-    FAISS_ASSERT (k == 1 || !"search implemented only for k=1");
-    FAISS_ASSERT (sum_d == d || !"not enough indexes compared to # dimensions");
+    FAISS_THROW_IF_NOT_MSG (k == 1,
+                      "search implemented only for k=1");
+    FAISS_THROW_IF_NOT_MSG (sum_d == d,
+                      "not enough indexes compared to # dimensions");
 
     long nshard = sub_indexes.size();
     float *all_distances = new float [nshard * k * n];
     idx_t *all_labels = new idx_t [nshard * k * n];
+    ScopeDeleter<float> del (all_distances);
+    ScopeDeleter<idx_t> del2 (all_labels);
 
     // pre-alloc because we don't want reallocs
     std::vector<Thread<SplitQueryJob> > qss (nshard);
@@ -627,23 +664,20 @@ void IndexSplitVectors::search (
         }
         factor *= sub_indexes[i]->ntotal;
     }
-    delete [] all_labels;
-    delete [] all_distances;
+
 }
 
 
 void IndexSplitVectors::train (idx_t n, const float *x)
 {
-    FAISS_ASSERT (!"not implemented");
+    FAISS_THROW_MSG ("not implemented");
 }
 
 void IndexSplitVectors::reset ()
 {
-    FAISS_ASSERT (!"not implemented");
+    FAISS_THROW_MSG ("not implemented");
 }
 
-void IndexSplitVectors::set_typename ()
-{}
 
 IndexSplitVectors::~IndexSplitVectors ()
 {

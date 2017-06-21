@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -51,11 +50,8 @@ struct IndexIVFPQ: IndexIVF {
             Index * quantizer, size_t d, size_t nlist,
             size_t M, size_t nbits_per_idx);
 
-    virtual void set_typename () override;
-
-    virtual void add_with_ids (
-            idx_t n, const float *x,
-            const long *xids = nullptr) override;
+    void add_with_ids(idx_t n, const float* x, const long* xids = nullptr)
+        override;
 
     /// same as add_core, also:
     /// - output 2nd level residuals if residuals_2 != NULL
@@ -64,16 +60,19 @@ struct IndexIVFPQ: IndexIVF {
                      const long *xids, float *residuals_2,
                      const long *precomputed_idx = nullptr);
 
-    virtual void search (
-            idx_t n, const float *x, idx_t k,
-            float *distances, idx_t *labels) const override;
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 
-    virtual void reset () override;
+    void reset() override;
 
-    virtual long remove_ids (const IDSelector & sel) override;
+    long remove_ids(const IDSelector& sel) override;
 
     /// trains the product quantizer
-    virtual void train_residual(idx_t n, const float *x) override;
+    void train_residual(idx_t n, const float* x) override;
 
     /// same as train_residual, also output 2nd level residuals
     void train_residual_o (idx_t n, const float *x, float *residuals_2);
@@ -85,11 +84,9 @@ struct IndexIVFPQ: IndexIVF {
      * @param ni     nb of vectors to reconstruct
      * @param recons output array of reconstructed vectors, size ni * d
      */
-    virtual void reconstruct_n (idx_t i0, idx_t ni, float *recons)
-        const override;
+    void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
 
-    virtual void reconstruct (idx_t key, float * recons)
-        const override;
+    void reconstruct(idx_t key, float* recons) const override;
 
     /** Find exact duplicates in the dataset.
      *
@@ -150,8 +147,7 @@ struct IndexIVFPQ: IndexIVF {
     void precompute_table ();
 
     /// used to implement merging
-    virtual void merge_from_residuals (IndexIVF &other) override;
-
+    void merge_from_residuals(IndexIVF& other) override;
 
     /** copy a subset of the entries index to the other index
      *
@@ -211,31 +207,29 @@ struct IndexIVFPQR: IndexIVFPQ {
             size_t M, size_t nbits_per_idx,
             size_t M_refine, size_t nbits_per_idx_refine);
 
-    virtual void set_typename () override;
+    void reset() override;
 
-    virtual void reset() override;
-
-    virtual long remove_ids (const IDSelector & sel) override;
+    long remove_ids(const IDSelector& sel) override;
 
     /// trains the two product quantizers
-    virtual void train_residual (idx_t n, const float *x) override;
+    void train_residual(idx_t n, const float* x) override;
 
-    virtual void add_with_ids (idx_t n, const float *x, const long *xids)
-        override;
+    void add_with_ids(idx_t n, const float* x, const long* xids) override;
 
     /// same as add_with_ids, but optionally use the precomputed list ids
     void add_core (idx_t n, const float *x, const long *xids,
                      const long *precomputed_idx = nullptr);
 
+    void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
 
-    virtual void reconstruct_n (idx_t i0, idx_t ni, float *recons)
-        const override;
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 
-    virtual void search (
-            idx_t n, const float *x, idx_t k,
-            float *distances, idx_t *labels) const override;
-
-    virtual void merge_from_residuals (IndexIVF &other) override;
+    void merge_from_residuals(IndexIVF& other) override;
 
     IndexIVFPQR();
 };
@@ -267,20 +261,20 @@ struct IndexIVFPQCompact: IndexIVFPQ {
     char * mmap_buffer;
     long mmap_length;
 
-    virtual void search_knn_with_key (
-            size_t nx,
-            const float * qx,
-            const long * keys,
-            const float * coarse_dis,
-            float_maxheap_array_t * res,
-            bool store_pairs = false) const override;
+    void search_knn_with_key(
+        size_t nx,
+        const float* qx,
+        const long* keys,
+        const float* coarse_dis,
+        float_maxheap_array_t* res,
+        bool store_pairs = false) const override;
 
     /// the three following functions will fail at runtime
-    virtual void add (idx_t, const float *) override;
-    virtual void reset () override;
-    virtual void train (idx_t, const float *) override;
+    void add(idx_t, const float*) override;
+    void reset() override;
+    void train(idx_t, const float*) override;
 
-    virtual ~IndexIVFPQCompact ();
+    ~IndexIVFPQCompact() override;
 
     IndexIVFPQCompact ();
 

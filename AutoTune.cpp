@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -23,7 +22,7 @@
 #include "IndexIVF.h"
 #include "IndexIVFPQ.h"
 #include "MetaIndexes.h"
-
+#include "IndexIVFScalarQuantizer.h"
 
 
 namespace faiss {
@@ -54,8 +53,9 @@ OneRecallAtRCriterion::OneRecallAtRCriterion (idx_t nq, idx_t R):
 
 double OneRecallAtRCriterion::evaluate (const float *D, const idx_t *I) const
 {
-    FAISS_ASSERT ((gt_I.size() == gt_nnn * nq && gt_nnn >= 1 && nnn >= R) ||
-                  !"gound truth not initialized");
+    FAISS_THROW_IF_NOT_MSG (
+           (gt_I.size() == gt_nnn * nq && gt_nnn >= 1 && nnn >= R),
+           "ground truth not initialized");
     idx_t n_ok = 0;
     for (idx_t q = 0; q < nq; q++) {
         idx_t gt_nn = gt_I [q * gt_nnn];
@@ -77,8 +77,9 @@ IntersectionCriterion::IntersectionCriterion (idx_t nq, idx_t R):
 
 double IntersectionCriterion::evaluate (const float *D, const idx_t *I) const
 {
-    FAISS_ASSERT ((gt_I.size() == gt_nnn * nq && gt_nnn >= R && nnn >= R) ||
-                  !"gound truth not initialized");
+    FAISS_THROW_IF_NOT_MSG (
+         (gt_I.size() == gt_nnn * nq && gt_nnn >= R && nnn >= R),
+         "ground truth not initialized");
     long n_ok = 0;
 #pragma omp parallel for reduction(+: n_ok)
     for (idx_t q = 0; q < nq; q++) {
@@ -410,7 +411,9 @@ void ParameterSpace::set_index_parameters (
          tok = strtok_r (nullptr, " ,", &ptr)) {
         char name[100];
         double val;
-        FAISS_ASSERT (sscanf (tok, "%100[^=]=%lf", name, &val) == 2);
+        int ret = sscanf (tok, "%100[^=]=%lf", name, &val);
+        FAISS_THROW_IF_NOT_FMT (
+           ret == 2, "could not interpret parameters %s", tok);
         set_index_parameter (index, name, val);
     }
 
@@ -470,9 +473,9 @@ void ParameterSpace::set_index_parameter (
         DC (IndexIVFPQ);
         ix->max_codes = finite(val) ? size_t(val) : 0;
     } else {
-        fprintf(stderr,
+        FAISS_THROW_FMT (
                 "ParameterSpace::set_index_parameter:"
-                "could not set parameter %s\n",
+                "could not set parameter %s",
                 name.c_str());
     }
 }
@@ -514,8 +517,8 @@ void ParameterSpace::explore (Index *index,
                               const AutoTuneCriterion & crit,
                               OperatingPoints * ops) const
 {
-    FAISS_ASSERT (nq == crit.nq ||
-                  !"criterion does not have the same nb of queries");
+    FAISS_THROW_IF_NOT_MSG (nq == crit.nq,
+                      "criterion does not have the same nb of queries");
 
     size_t n_comb = n_combinations ();
 
@@ -545,7 +548,7 @@ void ParameterSpace::explore (Index *index,
     int n_exp = n_experiments;
 
     if (n_exp > n_comb) n_exp = n_comb;
-    FAISS_ASSERT (n_comb == 1 || n_exp > 2);
+    FAISS_THROW_IF_NOT (n_comb == 1 || n_exp > 2);
     std::vector<int> perm (n_comb);
     // make sure the slowest and fastest experiment are run
     perm[0] = 0;
@@ -620,6 +623,8 @@ void ParameterSpace::explore (Index *index,
  * index_factory
  ***************************************************************/
 
+
+
 Index *index_factory (int d, const char *description_in, MetricType metric)
 {
     VectorTransform *vt = nullptr;
@@ -627,6 +632,9 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
     Index *index = nullptr;
     bool add_idmap = false;
     bool make_IndexRefineFlat = false;
+
+    ScopeDeleter1<Index> del_coarse_quantizer, del_index;
+    ScopeDeleter1<VectorTransform> del_vt;
 
     char description[strlen(description_in) + 1];
     char *ptr;
@@ -638,39 +646,45 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
          tok;
          tok = strtok_r (nullptr, " ,", &ptr)) {
         int d_out, opq_M, nbit, M, M2;
+        std::string stok(tok);
+
+        // to avoid mem leaks with exceptions:
+        // do all tests before any instanciation
+
         VectorTransform *vt_1 = nullptr;
         Index *coarse_quantizer_1 = nullptr;
         Index *index_1 = nullptr;
 
         // VectorTransforms
-        if (sscanf (tok, "PCA%d", &d_out) == 1) {
+        if (!vt && sscanf (tok, "PCA%d", &d_out) == 1) {
             vt_1 = new PCAMatrix (d, d_out);
             d = d_out;
-        } else if (sscanf (tok, "PCAR%d", &d_out) == 1) {
+        } else if (!vt && sscanf (tok, "PCAR%d", &d_out) == 1) {
             vt_1 = new PCAMatrix (d, d_out, 0, true);
             d = d_out;
-        } else if (sscanf (tok, "OPQ%d_%d", &opq_M, &d_out) == 2) {
+        } else if (!vt && sscanf (tok, "OPQ%d_%d", &opq_M, &d_out) == 2) {
             vt_1 = new OPQMatrix (d, opq_M, d_out);
             d = d_out;
-        } else if (sscanf (tok, "OPQ%d", &opq_M) == 1) {
+        } else if (!vt && sscanf (tok, "OPQ%d", &opq_M) == 1) {
             vt_1 = new OPQMatrix (d, opq_M);
             // coarse quantizers
-        } else if (sscanf (tok, "IVF%d", &ncentroids) == 1) {
+        } else if (!coarse_quantizer &&
+                   sscanf (tok, "IVF%d", &ncentroids) == 1) {
             if (metric == METRIC_L2) {
                 coarse_quantizer_1 = new IndexFlatL2 (d);
             } else { // if (metric == METRIC_IP)
                 coarse_quantizer_1 = new IndexFlatIP (d);
             }
-        } else if (sscanf (tok, "IMI2x%d", &nbit) == 1) {
-            FAISS_ASSERT(metric == METRIC_L2 ||
-                         !"MultiIndex not implemented for inner prod search");
+        } else if (!coarse_quantizer && sscanf (tok, "IMI2x%d", &nbit) == 1) {
+            FAISS_THROW_IF_NOT_MSG (metric == METRIC_L2,
+                             "MultiIndex not implemented for inner prod search");
             coarse_quantizer_1 = new MultiIndexQuantizer (d, 2, nbit);
             ncentroids = 1 << (2 * nbit);
-        } else if (strcmp(tok, "IDMap") == 0) {
+        } else if (stok == "IDMap") {
             add_idmap = true;
 
             // IVFs
-        } else if (strcmp (tok, "Flat") == 0) {
+        } else if (!index && stok == "Flat") {
             if (coarse_quantizer) {
                 // if there was an IVF in front, then it is an IVFFlat
                 IndexIVF *index_ivf = new IndexIVFFlat (
@@ -679,6 +693,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                     dynamic_cast<MultiIndexQuantizer*>(coarse_quantizer)
                     != nullptr;
                 index_ivf->cp.spherical = metric == METRIC_INNER_PRODUCT;
+                del_coarse_quantizer.release ();
                 index_ivf->own_fields = true;
                 index_1 = index_ivf;
             } else {
@@ -690,19 +705,35 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                     add_idmap = false;
                 }
             }
-        } else if (sscanf (tok, "PQ%d+%d", &M, &M2) == 2) {
-            FAISS_ASSERT(coarse_quantizer ||
-                         !"PQ with + works only with an IVF");
-            FAISS_ASSERT(metric == METRIC_L2 ||
-                         !"IVFPQR not implemented for inner product search");
+        } else if (!index && (stok == "SQ8" || stok == "SQ4")) {
+            FAISS_THROW_IF_NOT_MSG(coarse_quantizer,
+                             "ScalarQuantizer works only with an IVF");
+            ScalarQuantizer::QuantizerType qt =
+                stok == "SQ8" ? ScalarQuantizer::QT_8bit :
+                stok == "SQ4" ? ScalarQuantizer::QT_4bit :
+                ScalarQuantizer::QT_4bit;
+            IndexIVFScalarQuantizer *index_ivf = new IndexIVFScalarQuantizer (
+                             coarse_quantizer, d, ncentroids, qt, metric);
+            index_ivf->quantizer_trains_alone =
+                dynamic_cast<MultiIndexQuantizer*>(coarse_quantizer)
+                != nullptr;
+            del_coarse_quantizer.release ();
+            index_ivf->own_fields = true;
+            index_1 = index_ivf;
+        } else if (!index && sscanf (tok, "PQ%d+%d", &M, &M2) == 2) {
+            FAISS_THROW_IF_NOT_MSG(coarse_quantizer,
+                             "PQ with + works only with an IVF");
+            FAISS_THROW_IF_NOT_MSG(metric == METRIC_L2,
+                             "IVFPQR not implemented for inner product search");
             IndexIVFPQR *index_ivf = new IndexIVFPQR (
                   coarse_quantizer, d, ncentroids, M, 8, M2, 8);
             index_ivf->quantizer_trains_alone =
                 dynamic_cast<MultiIndexQuantizer*>(coarse_quantizer)
                 != nullptr;
+            del_coarse_quantizer.release ();
             index_ivf->own_fields = true;
             index_1 = index_ivf;
-        } else if (sscanf (tok, "PQ%d", &M) == 1) {
+        } else if (!index && sscanf (tok, "PQ%d", &M) == 1) {
             if (coarse_quantizer) {
                 IndexIVFPQ *index_ivf = new IndexIVFPQ (
                     coarse_quantizer, d, ncentroids, M, 8);
@@ -711,6 +742,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                     != nullptr;
                 index_ivf->metric_type = metric;
                 index_ivf->cp.spherical = metric == METRIC_INNER_PRODUCT;
+                del_coarse_quantizer.release ();
                 index_ivf->own_fields = true;
                 index_ivf->do_polysemous_training = true;
                 index_1 = index_ivf;
@@ -720,35 +752,41 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                 index_1 = index_pq;
                 if (add_idmap) {
                     IndexIDMap *idmap = new IndexIDMap(index_1);
+                    del_index.set (idmap);
                     idmap->own_fields = true;
                     index_1 = idmap;
                     add_idmap = false;
                 }
             }
-        } else if (strcmp (tok, "RFlat") == 0) {
+        } else if (stok == "RFlat") {
             make_IndexRefineFlat = true;
         } else {
-            fprintf (stderr, "could not parse token \"%s\" in %s\n",
-                     tok, description_in);
-            FAISS_ASSERT (!"parse error");
+            FAISS_THROW_FMT( "could not parse token \"%s\" in %s\n",
+                             tok, description_in);
         }
 
         if (vt_1)  {
-            FAISS_ASSERT (!vt || !"cannot apply two VectorTransforms");
             vt = vt_1;
+            del_vt.set (vt);
         }
 
         if (coarse_quantizer_1) {
-            FAISS_ASSERT (!coarse_quantizer ||
-                          !"cannot have 2 coarse quantizers");
             coarse_quantizer = coarse_quantizer_1;
+            del_coarse_quantizer.set (coarse_quantizer);
         }
 
         if (index_1) {
-            FAISS_ASSERT (!index || !"cannot have 2 indexes");
             index = index_1;
+            del_index.set (index);
         }
     }
+
+    FAISS_THROW_IF_NOT_FMT(index, "descrption %s did not generate an index",
+                    description_in);
+
+    // nothing can go wrong now
+    del_index.release ();
+    del_coarse_quantizer.release ();
 
     if (add_idmap) {
         fprintf(stderr, "index_factory: WARNING: "
@@ -757,6 +795,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
 
     if (vt) {
         IndexPreTransform *index_pt = new IndexPreTransform (vt, index);
+        del_vt.release ();
         index_pt->own_fields = true;
         index = index_pt;
     }

@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -351,6 +350,8 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
         break;
     }
 
+    CUDA_TEST_ERROR();
+
 #undef RUN_PQ
 #undef RUN_PQ_OPT
   }
@@ -381,7 +382,7 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
                       outIndices,
                       stream);
 
-  CUDA_VERIFY(cudaGetLastError());
+  CUDA_TEST_ERROR();
 }
 
 void runPQScanMultiPassPrecomputed(Tensor<float, 2, true>& queries,

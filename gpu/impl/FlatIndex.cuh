@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -14,6 +13,7 @@
 #include "../utils/DeviceTensor.cuh"
 #include "../utils/DeviceVector.cuh"
 #include "../utils/Float16.cuh"
+#include "../utils/MemorySpace.h"
 
 namespace faiss { namespace gpu {
 
@@ -26,7 +26,9 @@ class FlatIndex {
             int dim,
             bool l2Distance,
             bool useFloat16,
-            bool storeTransposed);
+            bool useFloat16Accumulator,
+            bool storeTransposed,
+            MemorySpace space);
 
   bool getUseFloat16() const;
 
@@ -34,6 +36,9 @@ class FlatIndex {
   int getSize() const;
 
   int getDim() const;
+
+  /// Reserve storage that can contain at least this many vectors
+  void reserve(size_t numVecs, cudaStream_t stream);
 
   /// Returns a reference to our vectors currently in use
   Tensor<float, 2, true>& getVectorsFloat32Ref();
@@ -85,12 +90,18 @@ class FlatIndex {
   /// Float16 data format
   const bool useFloat16_;
 
+  /// For supporting hardware, whether or not we use Hgemm
+  const bool useFloat16Accumulator_;
+
   /// Store vectors in transposed layout for speed; makes addition to
   /// the index slower
   const bool storeTransposed_;
 
   /// L2 or inner product distance?
   bool l2Distance_;
+
+  /// Memory space for our allocations
+  MemorySpace space_;
 
   /// How many vectors we have
   int num_;

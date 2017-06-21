@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -61,9 +60,9 @@ struct OneRecallAtRCriterion: AutoTuneCriterion {
 
     OneRecallAtRCriterion (idx_t nq, idx_t R);
 
-    virtual double evaluate (const float *D, const idx_t *I) const override;
+    double evaluate(const float* D, const idx_t* I) const override;
 
-    virtual ~OneRecallAtRCriterion () {}
+    ~OneRecallAtRCriterion() override {}
 };
 
 
@@ -73,9 +72,9 @@ struct IntersectionCriterion: AutoTuneCriterion {
 
     IntersectionCriterion (idx_t nq, idx_t R);
 
-    virtual double evaluate (const float *D, const idx_t *I) const override;
+    double evaluate(const float* D, const idx_t* I) const override;
 
-    virtual ~IntersectionCriterion () {}
+    ~IntersectionCriterion() override {}
 };
 
 /**

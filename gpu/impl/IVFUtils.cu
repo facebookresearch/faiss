@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -62,6 +61,7 @@ void runCalcListOffsets(Tensor<int, 2, true>& topQueryToCentroid,
     listLengths.data().get(),
     totalSize,
     prefixSumOffsets);
+  CUDA_TEST_ERROR();
 
   // Prefix sum of the indices, so we know where the intermediate
   // results should be maintained
@@ -74,6 +74,7 @@ void runCalcListOffsets(Tensor<int, 2, true>& topQueryToCentroid,
                          prefixSumOffsets.data(),
                          prefixSumOffsets.data() + totalSize,
                          prefixSumOffsets.data());
+  CUDA_TEST_ERROR();
 }
 
 } } // namespace

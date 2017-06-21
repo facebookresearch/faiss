@@ -98,9 +98,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8e02e0d602e8709e23e9fd9a7112e159"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8e02e0d602e8709e23e9fd9a7112e159"></a>
-__device__&#160;</td><td class="memItemRight" valign="bottom"><b>BlockSelect</b> (K initK, V initV, K *smemK, V *smemV, int k)</td></tr>
-<tr class="separator:a8e02e0d602e8709e23e9fd9a7112e159"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8060f5ed8c500dd685eac6e74461c0ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8060f5ed8c500dd685eac6e74461c0ec"></a>
+__device__&#160;</td><td class="memItemRight" valign="bottom"><b>BlockSelect</b> (K initKVal, V initVVal, K *smemK, V *smemV, int k)</td></tr>
+<tr class="separator:a8060f5ed8c500dd685eac6e74461c0ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9bba03961f824cec6dbd7505a90b7e5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9bba03961f824cec6dbd7505a90b7e5"></a>
 __device__ void&#160;</td><td class="memItemRight" valign="bottom"><b>addThreadQ</b> (K k, V v)</td></tr>
 <tr class="separator:af9bba03961f824cec6dbd7505a90b7e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -117,6 +117,18 @@ __device__ void&#160;</td><td class="memItemRight" valign="bottom"><b>reduce</b>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
+<tr class="memitem:a7c8a274e1f130d1d2ba6d37548a451c5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7c8a274e1f130d1d2ba6d37548a451c5"></a>
+const K&#160;</td><td class="memItemRight" valign="bottom"><b>initK</b></td></tr>
+<tr class="separator:a7c8a274e1f130d1d2ba6d37548a451c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaeb875cb450c12de1c400a4d9ab2c810"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaeb875cb450c12de1c400a4d9ab2c810"></a>
+const V&#160;</td><td class="memItemRight" valign="bottom"><b>initV</b></td></tr>
+<tr class="separator:aaeb875cb450c12de1c400a4d9ab2c810"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dfd6f1d2aa47c6110314227ed859537"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8dfd6f1d2aa47c6110314227ed859537"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>numVals</b></td></tr>
+<tr class="separator:a8dfd6f1d2aa47c6110314227ed859537"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa35e0874473b7c5328b471789f31251"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afa35e0874473b7c5328b471789f31251"></a>
+K&#160;</td><td class="memItemRight" valign="bottom"><b>warpKTop</b></td></tr>
+<tr class="separator:afa35e0874473b7c5328b471789f31251"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9bd7c52579e1cd50b0c97fb7b16b897c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9bd7c52579e1cd50b0c97fb7b16b897c"></a>
 K&#160;</td><td class="memItemRight" valign="bottom"><b>threadK</b> [NumThreadQ]</td></tr>
 <tr class="separator:a9bd7c52579e1cd50b0c97fb7b16b897c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -135,9 +147,6 @@ K *&#160;</td><td class="memItemRight" valign="bottom"><b>warpK</b></td></tr>
 <tr class="memitem:a33b261f51f3fc052c2c0c79eb221df29"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a33b261f51f3fc052c2c0c79eb221df29"></a>
 V *&#160;</td><td class="memItemRight" valign="bottom"><b>warpV</b></td></tr>
 <tr class="separator:a33b261f51f3fc052c2c0c79eb221df29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa35e0874473b7c5328b471789f31251"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afa35e0874473b7c5328b471789f31251"></a>
-K&#160;</td><td class="memItemRight" valign="bottom"><b>warpKTop</b></td></tr>
-<tr class="separator:afa35e0874473b7c5328b471789f31251"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7045c270802405a8cfbd65f6dba096f4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7045c270802405a8cfbd65f6dba096f4"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>kMinus1</b></td></tr>
 <tr class="separator:a7045c270802405a8cfbd65f6dba096f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -156,7 +165,7 @@ static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>kTota
 struct faiss::gpu::BlockSelect&lt; K, V, Dir, Comp, NumWarpQ, NumThreadQ, ThreadsPerBlock &gt;</h3>
 
 
-<p>Definition at line <a class="el" href="Select_8cuh_source.html#l00082">82</a> of file <a class="el" href="Select_8cuh_source.html">Select.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Select_8cuh_source.html#l00084">84</a> of file <a class="el" href="Select_8cuh_source.html">Select.cuh</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a52e2521dfc565075e73ff1a4c53474d9"></a>
 <div class="memitem">
@@ -193,7 +202,7 @@ template&lt;typename K , typename V , bool Dir, typename Comp , int NumWarpQ, in
 </div><div class="memdoc">
 <p>WARNING: all threads in a warp must participate in this. Otherwise, you must call the constituent parts separately. </p>
 
-<p>Definition at line <a class="el" href="Select_8cuh_source.html#l00223">223</a> of file <a class="el" href="Select_8cuh_source.html">Select.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Select_8cuh_source.html#l00208">208</a> of file <a class="el" href="Select_8cuh_source.html">Select.cuh</a>.</p>
 
 </div>
 </div>
@@ -221,7 +230,7 @@ template&lt;typename K , typename V , bool Dir, typename Comp , int NumWarpQ, in
 </div><div class="memdoc">
 <p>This function handles sorting and merging together the per-thread queues with the warp-wide queue, creating a sorted list across both </p>
 
-<p>Definition at line <a class="el" href="Select_8cuh_source.html#l00166">166</a> of file <a class="el" href="Select_8cuh_source.html">Select.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Select_8cuh_source.html#l00171">171</a> of file <a class="el" href="Select_8cuh_source.html">Select.cuh</a>.</p>
 
 </div>
 </div>

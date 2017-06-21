@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: faiss::gpu::BlockMerge&lt; NumThreads, K, V, N, L, Dir, Comp, false &gt; Struct Template Reference</title>
+<title>Faiss: /data/users/matthijs/github_faiss/faiss/gpu/utils/MergeNetworkUtils.cuh Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -38,8 +38,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
-      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -60,10 +60,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
-      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
-      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
-      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
-      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+      <li><a href="files.html"><span>File&#160;List</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -82,38 +79,41 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacefaiss.html">faiss</a></li><li class="navelem"><b>gpu</b></li><li class="navelem"><a class="el" href="structfaiss_1_1gpu_1_1BlockMerge_3_01NumThreads_00_01K_00_01V_00_01N_00_01L_00_01Dir_00_01Comp_00_01false_01_4.html">BlockMerge< NumThreads, K, V, N, L, Dir, Comp, false ></a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_6b3ae6988449b0834e9596fad5d75199.html">gpu</a></li><li class="navelem"><a class="el" href="dir_498271007b03b2a0521055e88776887b.html">utils</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="structfaiss_1_1gpu_1_1BlockMerge_3_01NumThreads_00_01K_00_01V_00_01N_00_01L_00_01Dir_00_01Comp_00_01false_01_4-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">faiss::gpu::BlockMerge&lt; NumThreads, K, V, N, L, Dir, Comp, false &gt; Struct Template Reference</div>  </div>
+<div class="title">MergeNetworkUtils.cuh</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Merging lists larger than a block.  
- <a href="structfaiss_1_1gpu_1_1BlockMerge_3_01NumThreads_00_01K_00_01V_00_01N_00_01L_00_01Dir_00_01Comp_00_01false_01_4.html#details">More...</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a7b4e15d75e67fecfcc25a9f97a348d21"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b4e15d75e67fecfcc25a9f97a348d21"></a>
-static __device__ void&#160;</td><td class="memItemRight" valign="bottom"><b>merge</b> (K *listK, V *listV)</td></tr>
-<tr class="separator:a7b4e15d75e67fecfcc25a9f97a348d21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;int NumThreads, typename K, typename V, int N, int L, bool Dir, typename Comp&gt;<br/>
-struct faiss::gpu::BlockMerge&lt; NumThreads, K, V, N, L, Dir, Comp, false &gt;</h3>
-
-<p>Merging lists larger than a block. </p>
-
-<p>Definition at line <a class="el" href="MergeNetworkBlock_8cuh_source.html#l00182">182</a> of file <a class="el" href="MergeNetworkBlock_8cuh_source.html">MergeNetworkBlock.cuh</a>.</p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/utils/<a class="el" href="MergeNetworkBlock_8cuh_source.html">MergeNetworkBlock.cuh</a></li>
-</ul>
-</div><!-- contents -->
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Copyright (c) 2015-present, Facebook, Inc.</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * All rights reserved.</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * This source code is licensed under the CC-by-NC license found in the</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * LICENSE file in the root directory of this source tree.</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// Copyright 2004-present Facebook. All Rights Reserved.</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>faiss { <span class="keyword">namespace </span>gpu {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">inline</span> __device__ <span class="keywordtype">void</span> swap(<span class="keywordtype">bool</span> swap, T&amp; x, T&amp; y) {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  T tmp = x;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  x = swap ? y : x;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  y = swap ? tmp : y;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">inline</span> __device__ <span class="keywordtype">void</span> assign(<span class="keywordtype">bool</span> assign, T&amp; x, T y) {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  x = assign ? y : x;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;} } <span class="comment">// namespace</span></div>
+</div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

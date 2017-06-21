@@ -25,6 +25,7 @@ var searchData=
   ['indexivfpqcompact',['IndexIVFPQCompact',['../structfaiss_1_1IndexIVFPQCompact.html',1,'faiss']]],
   ['indexivfpqr',['IndexIVFPQR',['../structfaiss_1_1IndexIVFPQR.html',1,'faiss']]],
   ['indexivfpqstats',['IndexIVFPQStats',['../structfaiss_1_1IndexIVFPQStats.html',1,'faiss']]],
+  ['indexivfscalarquantizer',['IndexIVFScalarQuantizer',['../structfaiss_1_1IndexIVFScalarQuantizer.html',1,'faiss']]],
   ['indexlsh',['IndexLSH',['../structfaiss_1_1IndexLSH.html',1,'faiss']]],
   ['indexpq',['IndexPQ',['../structfaiss_1_1IndexPQ.html',1,'faiss']]],
   ['indexpq',['IndexPQ',['../structfaiss_1_1IndexPQ.html#ab8d0bbf8a0dab39b236e0d1633923746',1,'faiss::IndexPQ']]],
@@ -38,8 +39,8 @@ var searchData=
   ['indexsplitvectors',['IndexSplitVectors',['../structfaiss_1_1IndexSplitVectors.html#a70ba3367a08722fe4466dc49c21a4d2b',1,'faiss::IndexSplitVectors']]],
   ['indexsplitvectors',['IndexSplitVectors',['../structfaiss_1_1IndexSplitVectors.html',1,'faiss']]],
   ['indexwrapper',['IndexWrapper',['../structfaiss_1_1gpu_1_1IndexWrapper.html',1,'faiss::gpu']]],
-  ['indicesoptions',['indicesOptions',['../structfaiss_1_1gpu_1_1GpuClonerOptions.html#ad960ac51b7cc607fcb1a1b07efc32a9e',1,'faiss::gpu::GpuClonerOptions']]],
-  ['indicesoptions_5f',['indicesOptions_',['../classfaiss_1_1gpu_1_1GpuIndexIVF.html#a58e0f685aab12409eca26de01d43e39e',1,'faiss::gpu::GpuIndexIVF::indicesOptions_()'],['../classfaiss_1_1gpu_1_1IVFBase.html#afb6d10e23d6448c10f472b9234e0bcab',1,'faiss::gpu::IVFBase::indicesOptions_()']]],
+  ['indicesoptions',['indicesOptions',['../structfaiss_1_1gpu_1_1GpuClonerOptions.html#ad960ac51b7cc607fcb1a1b07efc32a9e',1,'faiss::gpu::GpuClonerOptions::indicesOptions()'],['../structfaiss_1_1gpu_1_1GpuIndexIVFConfig.html#af432221761d48e4753f501208a60264d',1,'faiss::gpu::GpuIndexIVFConfig::indicesOptions()']]],
+  ['indicesoptions_5f',['indicesOptions_',['../classfaiss_1_1gpu_1_1IVFBase.html#afb6d10e23d6448c10f472b9234e0bcab',1,'faiss::gpu::IVFBase']]],
   ['indirectsort',['IndirectSort',['../structfaiss_1_1IndirectSort.html',1,'faiss']]],
   ['init',['init',['../structfaiss_1_1RandomRotationMatrix.html#a857ad8c32fb76b3298d4eea4338ff66f',1,'faiss::RandomRotationMatrix']]],
   ['init_5fcost',['init_cost',['../structfaiss_1_1SimulatedAnnealingOptimizer.html#aa8ff19f97482c6213b2a8ff3b190412b',1,'faiss::SimulatedAnnealingOptimizer']]],
@@ -57,10 +58,10 @@ var searchData=
   ['issupportedpqcodelength',['isSupportedPQCodeLength',['../classfaiss_1_1gpu_1_1IVFPQ.html#adb58eeacdceb0e0fde1820ca7f116e05',1,'faiss::gpu::IVFPQ']]],
   ['ivec_5fchecksum',['ivec_checksum',['../namespacefaiss.html#a4369329c9dbdfe23e3f35d09ba7b5c6e',1,'faiss']]],
   ['ivec_5fhist',['ivec_hist',['../namespacefaiss.html#a7bea462108bee98d8d5859b51ec4db8e',1,'faiss']]],
+  ['ivfbase',['IVFBase',['../classfaiss_1_1gpu_1_1IVFBase.html#a80130acfe0a2a4d387a5c9ee4c386b9c',1,'faiss::gpu::IVFBase']]],
   ['ivfbase',['IVFBase',['../classfaiss_1_1gpu_1_1IVFBase.html',1,'faiss::gpu']]],
-  ['ivfbase',['IVFBase',['../classfaiss_1_1gpu_1_1IVFBase.html#af9eb209beb142e7931155bec4aeeaabf',1,'faiss::gpu::IVFBase']]],
   ['ivfflat',['IVFFlat',['../classfaiss_1_1gpu_1_1IVFFlat.html',1,'faiss::gpu']]],
-  ['ivfflat',['IVFFlat',['../classfaiss_1_1gpu_1_1IVFFlat.html#a94160e57062d20ce45f0824ef975bbda',1,'faiss::gpu::IVFFlat']]],
+  ['ivfflat',['IVFFlat',['../classfaiss_1_1gpu_1_1IVFFlat.html#a7ae83f107abf31feeb78cd5633806e5d',1,'faiss::gpu::IVFFlat']]],
   ['ivfflatscan',['IVFFlatScan',['../structfaiss_1_1gpu_1_1IVFFlatScan.html',1,'faiss::gpu']]],
   ['ivfflatscan_3c_200_2c_20l2_2c_20t_20_3e',['IVFFlatScan&lt; 0, L2, T &gt;',['../structfaiss_1_1gpu_1_1IVFFlatScan_3_010_00_01L2_00_01T_01_4.html',1,'faiss::gpu']]],
   ['ivfflatscan_3c_20128_2c_20l2_2c_20float_20_3e',['IVFFlatScan&lt; 128, L2, float &gt;',['../structfaiss_1_1gpu_1_1IVFFlatScan_3_01128_00_01L2_00_01float_01_4.html',1,'faiss::gpu']]],
@@ -68,5 +69,5 @@ var searchData=
   ['ivfflatscan_3c_2064_2c_20l2_2c_20float_20_3e',['IVFFlatScan&lt; 64, L2, float &gt;',['../structfaiss_1_1gpu_1_1IVFFlatScan_3_0164_00_01L2_00_01float_01_4.html',1,'faiss::gpu']]],
   ['ivfflatscan_3c_2d1_2c_20l2_2c_20t_20_3e',['IVFFlatScan&lt;-1, L2, T &gt;',['../structfaiss_1_1gpu_1_1IVFFlatScan_3-1_00_01L2_00_01T_01_4.html',1,'faiss::gpu']]],
   ['ivfpq',['IVFPQ',['../classfaiss_1_1gpu_1_1IVFPQ.html',1,'faiss::gpu']]],
-  ['ivfpq',['IVFPQ',['../classfaiss_1_1gpu_1_1IVFPQ.html#acdcc64f9b72e661d39528d5d67e54536',1,'faiss::gpu::IVFPQ']]]
+  ['ivfpq',['IVFPQ',['../classfaiss_1_1gpu_1_1IVFPQ.html#a18cfe8bf2178468f3372727d0b0bbc33',1,'faiss::gpu::IVFPQ']]]
 ];

@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -32,23 +31,26 @@ struct IndexIDMap : Index {
 
     /// Same as add_core, but stores xids instead of sequential ids
     /// @param xids if non-null, ids to store for the vectors (size n)
-    virtual void add_with_ids (idx_t n, const float * x, const long *xids)
-        override;
+    void add_with_ids(idx_t n, const float* x, const long* xids) override;
 
     /// this will fail. Use add_with_ids
-    virtual void add (idx_t n, const float *x) override;
+    void add(idx_t n, const float* x) override;
 
-    virtual void search (
-           idx_t n, const float *x, idx_t k,
-           float *distances, idx_t *labels) const override;
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 
-    virtual void train (idx_t n, const float *x) override;
+    void train(idx_t n, const float* x) override;
 
-    virtual void reset () override;
+    void reset() override;
 
-    virtual void set_typename () override;
+    /// remove ids adapted to IndexFlat
+    long remove_ids(const IDSelector& sel) override;
 
-    virtual ~IndexIDMap ();
+    ~IndexIDMap() override;
     IndexIDMap () {own_fields=false; index=nullptr; }
 };
 
@@ -81,25 +83,22 @@ struct IndexShards : Index {
     Index *at(int i) {return shard_indexes[i]; }
 
     /// supported only for sub-indices that implement add_with_ids
-    virtual void add (idx_t n, const float *x) override;
+    void add(idx_t n, const float* x) override;
 
-    virtual void add_with_ids (idx_t n, const float * x, const long *xids)
-        override;
+    void add_with_ids(idx_t n, const float* x, const long* xids) override;
 
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 
+    void train(idx_t n, const float* x) override;
 
-    virtual void search (
-           idx_t n, const float *x, idx_t k,
-           float *distances, idx_t *labels) const override;
+    void reset() override;
 
-    virtual void train (idx_t n, const float *x) override;
-
-    virtual void reset () override;
-
-    virtual void set_typename () override;
-
-    virtual ~IndexShards ();
-
+    ~IndexShards() override;
 };
 
 /** splits input vectors in segments and assigns each segment to a sub-index
@@ -117,21 +116,20 @@ struct IndexSplitVectors: Index {
     void add_sub_index (Index *);
     void sync_with_sub_indexes ();
 
-    virtual void add (idx_t n, const float *x) override;
+    void add(idx_t n, const float* x) override;
 
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 
-    virtual void search (
-           idx_t n, const float *x, idx_t k,
-           float *distances, idx_t *labels) const override;
+    void train(idx_t n, const float* x) override;
 
-    virtual void train (idx_t n, const float *x) override;
+    void reset() override;
 
-    virtual void reset () override;
-
-    virtual void set_typename () override;
-
-    virtual ~IndexSplitVectors ();
-
+    ~IndexSplitVectors() override;
 };
 
 

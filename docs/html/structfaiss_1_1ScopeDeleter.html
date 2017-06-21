@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: faiss::gpu::BlockMerge&lt; NumThreads, K, V, N, L, Dir, Comp, true &gt; Struct Template Reference</title>
+<title>Faiss: faiss::ScopeDeleter&lt; T &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -82,36 +82,51 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacefaiss.html">faiss</a></li><li class="navelem"><b>gpu</b></li><li class="navelem"><a class="el" href="structfaiss_1_1gpu_1_1BlockMerge_3_01NumThreads_00_01K_00_01V_00_01N_00_01L_00_01Dir_00_01Comp_00_01true_01_4.html">BlockMerge< NumThreads, K, V, N, L, Dir, Comp, true ></a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacefaiss.html">faiss</a></li><li class="navelem"><a class="el" href="structfaiss_1_1ScopeDeleter.html">ScopeDeleter</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="structfaiss_1_1gpu_1_1BlockMerge_3_01NumThreads_00_01K_00_01V_00_01N_00_01L_00_01Dir_00_01Comp_00_01true_01_4-members.html">List of all members</a>  </div>
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structfaiss_1_1ScopeDeleter-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">faiss::gpu::BlockMerge&lt; NumThreads, K, V, N, L, Dir, Comp, true &gt; Struct Template Reference</div>  </div>
+<div class="title">faiss::ScopeDeleter&lt; T &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Merging lists smaller than a block.  
- <a href="structfaiss_1_1gpu_1_1BlockMerge_3_01NumThreads_00_01K_00_01V_00_01N_00_01L_00_01Dir_00_01Comp_00_01true_01_4.html#details">More...</a></p>
+<p><code>#include &lt;<a class="el" href="FaissException_8h_source.html">FaissException.h</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a28d43a8f7cee3b1fb1b7c132f878fed8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a28d43a8f7cee3b1fb1b7c132f878fed8"></a>
-static __device__ void&#160;</td><td class="memItemRight" valign="bottom"><b>merge</b> (K *listK, V *listV)</td></tr>
-<tr class="separator:a28d43a8f7cee3b1fb1b7c132f878fed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a82df6a36681c43a361f55f6e8eb243e8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a82df6a36681c43a361f55f6e8eb243e8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ScopeDeleter</b> (const T *ptr=nullptr)</td></tr>
+<tr class="separator:a82df6a36681c43a361f55f6e8eb243e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f738ac8eaa8dcc84990378b0afb6148"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f738ac8eaa8dcc84990378b0afb6148"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>release</b> ()</td></tr>
+<tr class="separator:a5f738ac8eaa8dcc84990378b0afb6148"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8355e3dc39db63942757728a97b25c4c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8355e3dc39db63942757728a97b25c4c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set</b> (const T *ptr_in)</td></tr>
+<tr class="separator:a8355e3dc39db63942757728a97b25c4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff064728ea4f5acbfe5b286e037b0d01"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aff064728ea4f5acbfe5b286e037b0d01"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>swap</b> (<a class="el" href="structfaiss_1_1ScopeDeleter.html">ScopeDeleter</a>&lt; T &gt; &amp;other)</td></tr>
+<tr class="separator:aff064728ea4f5acbfe5b286e037b0d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:ab58657b2665c07391d0138fb95c17670"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab58657b2665c07391d0138fb95c17670"></a>
+const T *&#160;</td><td class="memItemRight" valign="bottom"><b>ptr</b></td></tr>
+<tr class="separator:ab58657b2665c07391d0138fb95c17670"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;int NumThreads, typename K, typename V, int N, int L, bool Dir, typename Comp&gt;<br/>
-struct faiss::gpu::BlockMerge&lt; NumThreads, K, V, N, L, Dir, Comp, true &gt;</h3>
+<div class="textblock"><h3>template&lt;class T&gt;<br/>
+struct faiss::ScopeDeleter&lt; T &gt;</h3>
 
-<p>Merging lists smaller than a block. </p>
+<p>bare-bones unique_ptr this one deletes with delete [] </p>
 
-<p>Definition at line <a class="el" href="MergeNetworkBlock_8cuh_source.html#l00151">151</a> of file <a class="el" href="MergeNetworkBlock_8cuh_source.html">MergeNetworkBlock.cuh</a>.</p>
+<p>Definition at line <a class="el" href="FaissException_8h_source.html#l00039">39</a> of file <a class="el" href="FaissException_8h_source.html">FaissException.h</a>.</p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/utils/<a class="el" href="MergeNetworkBlock_8cuh_source.html">MergeNetworkBlock.cuh</a></li>
+<li>/data/users/matthijs/github_faiss/faiss/<a class="el" href="FaissException_8h_source.html">FaissException.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

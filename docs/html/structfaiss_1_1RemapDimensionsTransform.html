@@ -114,11 +114,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab07ceccc4dc767a000879c72337ddd69"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1RemapDimensionsTransform.html#ab07ceccc4dc767a000879c72337ddd69">RemapDimensionsTransform</a> (int d_in, int <a class="el" href="structfaiss_1_1VectorTransform.html#a589d612f7b1773614619a0cbecd728a9">d_out</a>, bool uniform=true)</td></tr>
 <tr class="separator:ab07ceccc4dc767a000879c72337ddd69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a550be3d40c221d2134bf06a13dd33c4d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a550be3d40c221d2134bf06a13dd33c4d"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1RemapDimensionsTransform.html#a550be3d40c221d2134bf06a13dd33c4d">apply_noalloc</a> (idx_t n, const float *x, float *xt) const override</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1RemapDimensionsTransform.html#a550be3d40c221d2134bf06a13dd33c4d">apply_noalloc</a> (idx_t n, const float *x, float *xt) const override</td></tr>
 <tr class="memdesc:a550be3d40c221d2134bf06a13dd33c4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">same as apply, but result is pre-allocated <br/></td></tr>
 <tr class="separator:a550be3d40c221d2134bf06a13dd33c4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2fc83e79e4d3c7853bfd6931cbbaf82a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2fc83e79e4d3c7853bfd6931cbbaf82a"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1RemapDimensionsTransform.html#a2fc83e79e4d3c7853bfd6931cbbaf82a">reverse_transform</a> (idx_t n, const float *xt, float *x) const override</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1RemapDimensionsTransform.html#a2fc83e79e4d3c7853bfd6931cbbaf82a">reverse_transform</a> (idx_t n, const float *xt, float *x) const override</td></tr>
 <tr class="memdesc:a2fc83e79e4d3c7853bfd6931cbbaf82a"><td class="mdescLeft">&#160;</td><td class="mdescRight">reverse transform correct only when the mapping is a permuation <br/></td></tr>
 <tr class="separator:a2fc83e79e4d3c7853bfd6931cbbaf82a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structfaiss_1_1VectorTransform"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structfaiss_1_1VectorTransform')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structfaiss_1_1VectorTransform.html">faiss::VectorTransform</a></td></tr>
@@ -156,7 +156,7 @@ typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eeb
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>remap dimensions for intput vectors, possibly inserting 0s strictly speaking this is also a linear transform but we don't want to compute it with matrix multiplies </p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00210">210</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00205">205</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ab07ceccc4dc767a000879c72337ddd69"></a>
 <div class="memitem">
@@ -189,7 +189,7 @@ typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eeb
 </div><div class="memdoc">
 <p>remap input to output, skipping or inserting dimensions as needed if uniform: distribute dimensions uniformly otherwise just take the d_out first ones. </p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00796">796</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00889">889</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
 
 </div>
 </div>
@@ -205,7 +205,7 @@ typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eeb
 </div><div class="memdoc">
 <p>map from output dimension to input, size d_out -1 -&gt; set output to 0 </p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00215">215</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00210">210</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
 
 </div>
 </div>

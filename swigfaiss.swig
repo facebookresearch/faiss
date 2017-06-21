@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -75,8 +74,10 @@ extern "C" {
 #include "IndexPQ.h"
 #include "IndexIVF.h"
 #include "IndexIVFPQ.h"
+#include "IndexIVFScalarQuantizer.h"
 
 #include "MetaIndexes.h"
+#include "FaissAssert.h"
 
 #include "index_io.h"
 
@@ -140,12 +141,35 @@ namespace std {
  *******************************************************************/
 
 #ifdef SWIGPYTHON
+// %catches(faiss::FaissException);
+
+
 // Python-specific: release GIL by default for all functions
 %exception {
     Py_BEGIN_ALLOW_THREADS
-    $action
+    try {
+        $action
+    } catch(faiss::FaissException & e) {
+        PyEval_RestoreThread(_save);
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        SWIG_fail;
+    }
     Py_END_ALLOW_THREADS
 }
+
+#endif
+
+#ifdef SWIGLUA
+
+%exception {
+    try {
+        $action
+    } catch(faiss::FaissException & e) {
+        SWIG_Lua_pushferrstring(L, "C++ exception: %s", e.what());       \
+        goto fail;
+    }
+}
+
 #endif
 
 
@@ -163,6 +187,8 @@ int get_num_gpus();
 
 #include "gpu/StandardGpuResources.h"
 #include "gpu/GpuIndicesOptions.h"
+#include "gpu/GpuClonerOptions.h"
+#include "gpu/utils/MemorySpace.h"
 #include "gpu/GpuIndex.h"
 #include "gpu/GpuIndexFlat.h"
 #include "gpu/GpuIndexIVF.h"
@@ -214,6 +240,7 @@ int get_num_gpus()
 %include "PolysemousTraining.h"
 %include "IndexPQ.h"
 %include "IndexIVF.h"
+%include "IndexIVFScalarQuantizer.h"
 
 %ignore faiss::IndexIVFPQ::alloc_type;
 %include "IndexIVFPQ.h"
@@ -236,6 +263,8 @@ int get_num_gpus()
 %ignore faiss::gpu::IndexProxy::at(int) const;
 
 %include "gpu/GpuIndicesOptions.h"
+%include "gpu/GpuClonerOptions.h"
+%include "gpu/utils/MemorySpace.h"
 %include "gpu/GpuIndex.h"
 %include "gpu/GpuIndexFlat.h"
 %include "gpu/GpuIndexIVF.h"
@@ -256,11 +285,6 @@ local swigfaiss = swigfaiss_gpu
 #endif
 
 
-// Python-specific: do not release GIL any more, as functions below
-// use the Python/C API
-#ifdef SWIGPYTHON
-%exception;
-#endif
 
 
 /*******************************************************************
@@ -397,6 +421,7 @@ struct AsyncIndexSearchC {
     DOWNCAST ( IndexIVFPQCompact )
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
+    DOWNCAST ( IndexIVFScalarQuantizer )
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
     DOWNCAST ( IndexFlat )
@@ -412,7 +437,13 @@ struct AsyncIndexSearchC {
 #endif
     // default for non-recognized classes
     DOWNCAST( Index )
+    if ($1 == NULL)
     {
+#ifdef SWIGPYTHON
+        $result = SWIG_Py_Void();
+#endif
+        // Lua does not need a push for nil
+    } else {
         assert(false);
     }
 #ifdef SWIGLUA
@@ -435,7 +466,6 @@ struct AsyncIndexSearchC {
 #endif
 }
 
-
 // just to downcast pointers that come from elsewhere (eg. direct
 // access to object fields)
 %{
@@ -451,6 +481,7 @@ faiss::VectorTransform * downcast_VectorTransform (faiss::VectorTransform *vt)
 
 faiss::Index * downcast_index (faiss::Index *);
 faiss::VectorTransform * downcast_VectorTransform (faiss::VectorTransform *vt);
+
 
 
 %include "index_io.h"
@@ -470,6 +501,11 @@ faiss::VectorTransform * downcast_VectorTransform (faiss::VectorTransform *vt);
 
 #endif
 
+// Python-specific: do not release GIL any more, as functions below
+// use the Python/C API
+#ifdef SWIGPYTHON
+%exception;
+#endif
 
 
 
@@ -515,7 +551,6 @@ PyObject *swig_ptr (PyObject *a)
 }
 
 
-
 %}
 
 
@@ -526,6 +561,23 @@ PyObject *swig_ptr (PyObject *a)
 
 // return a pointer usable as input for functions that expect pointers
 PyObject *swig_ptr (PyObject *a);
+
+%define REV_SWIG_PTR(ctype, numpytype)
+
+%{
+PyObject * rev_swig_ptr(ctype *src, npy_intp size) {
+    return PyArray_SimpleNewFromData(1, &size, numpytype, src);
+}
+%}
+
+PyObject * rev_swig_ptr(ctype *src, size_t size);
+
+%enddef
+
+REV_SWIG_PTR(float, NPY_FLOAT32);
+REV_SWIG_PTR(int, NPY_INT32);
+REV_SWIG_PTR(unsigned char, NPY_UINT8);
+
 
 #endif
 

@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -53,7 +52,7 @@ bool randBool() {
   return randSelect<bool>({true, false});
 }
 
-std::vector<float> randVecs(int num, int dim) {
+std::vector<float> randVecs(size_t num, size_t dim) {
   std::vector<float> v(num * dim);
   static bool first = true;
 
@@ -195,7 +194,9 @@ void compareLists(const float* refDist,
 
       if (assertOnErr) {
         EXPECT_LE(relErr, maxRelativeError) << configMsg
-                                            << " " << query << " " << result;
+                                            << " (" << query << ", " << result
+                                            << ") refD: " << refD
+                                            << " testD: " << testD;
       }
 
       maxRelErr = std::max(maxRelErr, relErr);

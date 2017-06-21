@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -40,7 +39,7 @@ IndexIVF::IndexIVF (Index * quantizer, size_t d, size_t nlist,
     ids (nlist),
     maintain_direct_map (false)
 {
-    FAISS_ASSERT (d == quantizer->d);
+    FAISS_THROW_IF_NOT (d == quantizer->d);
     is_trained = quantizer->is_trained && (quantizer->ntotal == nlist);
     // Spherical by default if the metric is inner_product
     if (metric_type == METRIC_INNER_PRODUCT) {
@@ -102,8 +101,8 @@ void IndexIVF::train (idx_t n, const float *x)
         if (verbose)
             printf ("IVF quantizer trains alone...\n");
         quantizer->train (n, x);
-        FAISS_ASSERT (quantizer->ntotal == nlist ||
-                      !"nlist not consistent with quantizer size");
+        FAISS_THROW_IF_NOT_MSG (quantizer->ntotal == nlist,
+                          "nlist not consistent with quantizer size");
     } else {
         if (verbose)
             printf ("Training IVF quantizer on %ld vectors in %dD\n",
@@ -163,12 +162,13 @@ void IndexIVF::print_stats () const
 void IndexIVF::merge_from (IndexIVF &other, idx_t add_id)
 {
     // minimal sanity checks
-    FAISS_ASSERT (other.d == d);
-    FAISS_ASSERT (other.nlist == nlist);
-    FAISS_ASSERT ((!maintain_direct_map && !other.maintain_direct_map) ||
-                  !"direct map copy not implemented");
-    FAISS_ASSERT (typeid (*this) == typeid (other) ||
-                  !"can only merge indexes of the same type");
+    FAISS_THROW_IF_NOT (other.d == d);
+    FAISS_THROW_IF_NOT (other.nlist == nlist);
+    FAISS_THROW_IF_NOT_MSG ((!maintain_direct_map &&
+                             !other.maintain_direct_map),
+                  "direct map copy not implemented");
+    FAISS_THROW_IF_NOT_MSG (typeid (*this) == typeid (other),
+                  "can only merge indexes of the same type");
     for (long i = 0; i < nlist; i++) {
         std::vector<idx_t> & src = other.ids[i];
         std::vector<idx_t> & dest = ids[i];
@@ -200,20 +200,6 @@ IndexIVFFlat::IndexIVFFlat (Index * quantizer,
     IndexIVF (quantizer, d, nlist, metric)
 {
     vecs.resize (nlist);
-    set_typename();
-}
-
-
-void IndexIVFFlat::set_typename ()
-{
-    std::stringstream s;
-    if (metric_type == METRIC_INNER_PRODUCT)
-        s << "IvfIP";
-    else if (metric_type == METRIC_L2)
-        s << "IvfL2";
-    else s << "??";
-    s << "[" << nlist << ":" << quantizer->index_typename << "]";
-    index_typename = s.str();
 }
 
 
@@ -230,8 +216,9 @@ void IndexIVFFlat::add_core (idx_t n, const float * x, const long *xids,
                              const long *precomputed_idx)
 
 {
-    FAISS_ASSERT (is_trained);
+    FAISS_THROW_IF_NOT (is_trained);
     const long * idx;
+    ScopeDeleter<long> del;
 
     if (precomputed_idx) {
         idx = precomputed_idx;
@@ -239,6 +226,7 @@ void IndexIVFFlat::add_core (idx_t n, const float * x, const long *xids,
         long * idx0 = new long [n];
         quantizer->assign (n, x, idx0);
         idx = idx0;
+        del.set (idx);
     }
     long n_add = 0;
     for (size_t i = 0; i < n; i++) {
@@ -246,7 +234,7 @@ void IndexIVFFlat::add_core (idx_t n, const float * x, const long *xids,
         long list_no = idx [i];
         if (list_no < 0)
             continue;
-        FAISS_ASSERT (list_no < nlist);
+        assert (list_no < nlist);
 
         ids[list_no].push_back (id);
         const float *xi = x + i * d;
@@ -262,8 +250,6 @@ void IndexIVFFlat::add_core (idx_t n, const float * x, const long *xids,
         printf("IndexIVFFlat::add_core: added %ld / %ld vectors\n",
                n_add, n);
     }
-    if (!precomputed_idx)
-        delete [] idx;
     ntotal += n_add;
 }
 
@@ -380,8 +366,16 @@ void IndexIVFFlat::search (idx_t n, const float *x, idx_t k,
                                 float *distances, idx_t *labels) const
 {
     idx_t * idx = new idx_t [n * nprobe];
+    ScopeDeleter <idx_t> del (idx);
     quantizer->assign (n, x, idx, nprobe);
+    search_preassigned (n, x, k, idx, distances, labels);
+}
 
+
+void IndexIVFFlat::search_preassigned (idx_t n, const float *x, idx_t k,
+                                       const idx_t *idx,
+                                       float *distances, idx_t *labels) const
+{
    if (metric_type == METRIC_INNER_PRODUCT) {
         float_minheap_array_t res = {
             size_t(n), size_t(k), labels, distances};
@@ -393,7 +387,6 @@ void IndexIVFFlat::search (idx_t n, const float *x, idx_t k,
         search_knn_L2sqr (n, x, idx, &res);
     }
 
-    delete [] idx;
 }
 
 
@@ -401,9 +394,9 @@ void IndexIVFFlat::range_search (idx_t nx, const float *x, float radius,
                                  RangeSearchResult *result) const
 {
     idx_t * keys = new idx_t [nx * nprobe];
+    ScopeDeleter<idx_t> del (keys);
     quantizer->assign (nx, x, keys, nprobe);
 
-    assert (metric_type == METRIC_L2 || !"Only L2 implemented");
 #pragma omp parallel
     {
         RangeSearchPartialResult pres(result);
@@ -428,9 +421,16 @@ void IndexIVFFlat::range_search (idx_t nx, const float *x, float radius,
 
                 for (size_t j = 0; j < list_size; j++) {
                     const float * yj = list_vecs + d * j;
-                    float disij = fvec_L2sqr (xi, yj, d);
-                    if (disij < radius) {
-                        qres.add (disij, ids[key][j]);
+                    if (metric_type == METRIC_L2) {
+                        float disij = fvec_L2sqr (xi, yj, d);
+                        if (disij < radius) {
+                            qres.add (disij, ids[key][j]);
+                        }
+                    } else if (metric_type == METRIC_INNER_PRODUCT) {
+                        float disij = fvec_inner_product(xi, yj, d);
+                        if (disij > radius) {
+                            qres.add (disij, ids[key][j]);
+                        }
                     }
                 }
             }
@@ -438,7 +438,6 @@ void IndexIVFFlat::range_search (idx_t nx, const float *x, float radius,
 
         pres.finalize ();
     }
-    delete[] keys;
 }
 
 void IndexIVFFlat::merge_from_residuals (IndexIVF &other_in)
@@ -456,8 +455,8 @@ void IndexIVFFlat::merge_from_residuals (IndexIVF &other_in)
 void IndexIVFFlat::copy_subset_to (IndexIVFFlat & other, int subset_type,
                      long a1, long a2) const
 {
-    FAISS_ASSERT (nlist == other.nlist);
-    FAISS_ASSERT (!other.maintain_direct_map);
+    FAISS_THROW_IF_NOT (nlist == other.nlist);
+    FAISS_THROW_IF_NOT (!other.maintain_direct_map);
 
     for (long list_no = 0; list_no < nlist; list_no++) {
         const std::vector<idx_t> & ids_in = ids[list_no];
@@ -490,8 +489,8 @@ void IndexIVFFlat::reset()
 
 long IndexIVFFlat::remove_ids (const IDSelector & sel)
 {
-    FAISS_ASSERT (!maintain_direct_map ||
-                  !"direct map remove not implemented");
+    FAISS_THROW_IF_NOT_MSG (!maintain_direct_map,
+                      "direct map remove not implemented");
     long nremove = 0;
 #pragma omp parallel for reduction(+: nremove)
     for (long i = 0; i < nlist; i++) {
@@ -522,7 +521,8 @@ long IndexIVFFlat::remove_ids (const IDSelector & sel)
 
 void IndexIVFFlat::reconstruct (idx_t key, float * recons) const
 {
-    assert (direct_map.size() == ntotal);
+    FAISS_THROW_IF_NOT_MSG (direct_map.size() == ntotal,
+                      "direct map is not initialized");
     int list_no = direct_map[key] >> 32;
     int ofs = direct_map[key] & 0xffffffff;
     memcpy (recons, &vecs[list_no][ofs * d], d * sizeof(recons[0]));
@@ -548,8 +548,9 @@ IndexIVFFlatIPBounds::IndexIVFFlatIPBounds (
 void IndexIVFFlatIPBounds::add_core (idx_t n, const float * x, const long *xids,
                const long *precomputed_idx) {
 
-    FAISS_ASSERT (is_trained);
+    FAISS_THROW_IF_NOT (is_trained);
     const long * idx;
+    ScopeDeleter<long> del;
 
     if (precomputed_idx) {
         idx = precomputed_idx;
@@ -557,6 +558,7 @@ void IndexIVFFlatIPBounds::add_core (idx_t n, const float * x, const long *xids,
         long * idx0 = new long [n];
         quantizer->assign (n, x, idx0);
         idx = idx0;
+        del.set (idx);
     }
     IndexIVFFlat::add_core(n, x, xids, idx);
 
@@ -568,9 +570,6 @@ void IndexIVFFlatIPBounds::add_core (idx_t n, const float * x, const long *xids,
         xi += d;
     }
 
-    if (idx != precomputed_idx) {
-        delete [] idx;
-    }
 
 }
 
@@ -647,9 +646,11 @@ void IndexIVFFlatIPBounds::search (
 {
     // compute query remainder norms and distances
     idx_t * idx = new idx_t [n * nprobe];
+    ScopeDeleter<idx_t> del (idx);
     quantizer->assign (n, x, idx, nprobe);
 
     float * qnorms = new float [n];
+    ScopeDeleter <float> del2 (qnorms);
 
 #pragma omp parallel for
     for (size_t i = 0; i < n; i++) {
@@ -662,8 +663,6 @@ void IndexIVFFlatIPBounds::search (
 
     search_bounds_knn_inner_product (*this, x, idx, &res, qnorms);
 
-    delete [] qnorms;
-    delete [] idx;
 }
 
 } // namespace faiss
