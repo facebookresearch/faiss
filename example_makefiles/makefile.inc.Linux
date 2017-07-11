@@ -11,7 +11,7 @@
 
 CC=g++
 
-CFLAGS=-fPIC -m64 -Wall -g -O3  -msse4 -mpopcnt -fopenmp -Wno-sign-compare -std=c++11 -fopenmp
+CFLAGS=-fPIC -m64 -Wall -g -O3 -mavx -msse4 -mpopcnt -fopenmp -Wno-sign-compare -std=c++11 -fopenmp
 LDFLAGS=-g -fPIC  -fopenmp
 
 # common linux flags
