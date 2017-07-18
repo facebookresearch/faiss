@@ -5,6 +5,7 @@ var searchData=
   ['indexivf',['IndexIVF',['../structfaiss_1_1IndexIVF.html#a617f8c4ff40619d141c5c21dbf758ddf',1,'faiss::IndexIVF']]],
   ['indexpq',['IndexPQ',['../structfaiss_1_1IndexPQ.html#ab8d0bbf8a0dab39b236e0d1633923746',1,'faiss::IndexPQ']]],
   ['indexpretransform',['IndexPreTransform',['../structfaiss_1_1IndexPreTransform.html#a2b16a03c38aa892292ba7a33da2ff7c4',1,'faiss::IndexPreTransform::IndexPreTransform(Index *index)'],['../structfaiss_1_1IndexPreTransform.html#a7697b1e693b0f099c3c3ec732329c533',1,'faiss::IndexPreTransform::IndexPreTransform(VectorTransform *ltrans, Index *index)']]],
+  ['indexscalarquantizer',['IndexScalarQuantizer',['../structfaiss_1_1IndexScalarQuantizer.html#a474ad5a50eb2e9f0d79f869855c57223',1,'faiss::IndexScalarQuantizer']]],
   ['indexshards',['IndexShards',['../structfaiss_1_1IndexShards.html#ad987a18a1786919e32cc02ca36e5ab46',1,'faiss::IndexShards']]],
   ['indexsplitvectors',['IndexSplitVectors',['../structfaiss_1_1IndexSplitVectors.html#a70ba3367a08722fe4466dc49c21a4d2b',1,'faiss::IndexSplitVectors']]],
   ['init',['init',['../structfaiss_1_1RandomRotationMatrix.html#a857ad8c32fb76b3298d4eea4338ff66f',1,'faiss::RandomRotationMatrix']]],

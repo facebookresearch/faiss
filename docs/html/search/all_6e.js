@@ -15,6 +15,7 @@ var searchData=
   ['nlist_5f',['nlist_',['../classfaiss_1_1gpu_1_1GpuIndexIVF.html#aba606c141e714fab843493cc58167494',1,'faiss::gpu::GpuIndexIVF']]],
   ['nnn',['nnn',['../structfaiss_1_1AutoTuneCriterion.html#a3bb11e873707a812999f8391869aafab',1,'faiss::AutoTuneCriterion']]],
   ['nopdistancecorrection',['NopDistanceCorrection',['../structfaiss_1_1NopDistanceCorrection.html',1,'faiss']]],
+  ['normalizationtransform',['NormalizationTransform',['../structfaiss_1_1NormalizationTransform.html',1,'faiss']]],
   ['notempmemory',['noTempMemory',['../classfaiss_1_1gpu_1_1StandardGpuResources.html#a6431477a7328ac147797b3b4e3fcf651',1,'faiss::gpu::StandardGpuResources']]],
   ['notypetensor',['NoTypeTensor',['../classfaiss_1_1gpu_1_1NoTypeTensor.html',1,'faiss::gpu']]],
   ['nprobe',['nprobe',['../structfaiss_1_1IndexIVF.html#affed235eadf27a13d753ee4d33a1dc58',1,'faiss::IndexIVF']]],

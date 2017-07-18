@@ -8,6 +8,7 @@ var searchData=
   ['update_5fj_5fline',['update_j_line',['../structfaiss_1_1Score3Computer.html#a98da6005edbb5ec26311bc947866122d',1,'faiss::Score3Computer']]],
   ['update_5fk',['update_k',['../structfaiss_1_1Score3Computer.html#a227601c3dc8779bb13747ba04934e0c8',1,'faiss::Score3Computer']]],
   ['update_5fpermutation',['update_permutation',['../structfaiss_1_1IndexFlat1D.html#ac7466c6c9b1e9e81ea19b846ddb8209e',1,'faiss::IndexFlat1D']]],
+  ['update_5fvectors',['update_vectors',['../structfaiss_1_1IndexIVFFlat.html#a2adc0b0002c32ddc01aec4ab96dd659f',1,'faiss::IndexIVFFlat']]],
   ['updatedevicelistinfo_5f',['updateDeviceListInfo_',['../classfaiss_1_1gpu_1_1IVFBase.html#acc695610c9513952b8d234dc0db78e5c',1,'faiss::gpu::IVFBase::updateDeviceListInfo_(cudaStream_t stream)'],['../classfaiss_1_1gpu_1_1IVFBase.html#ae90724e307bbfe49554a2ab77fbd1764',1,'faiss::gpu::IVFBase::updateDeviceListInfo_(const std::vector&lt; int &gt; &amp;listIds, cudaStream_t stream)']]],
   ['use_5fprecomputed_5ftable',['use_precomputed_table',['../structfaiss_1_1IndexIVFPQ.html#a1c66ff073c18a1edbe8444c24d870583',1,'faiss::IndexIVFPQ']]],
   ['usefloat16',['useFloat16',['../structfaiss_1_1gpu_1_1GpuClonerOptions.html#ac7cc57d6091d6a79ea6020bf8d1fbe27',1,'faiss::gpu::GpuClonerOptions::useFloat16()'],['../structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html#afd694186c87751937a646f3db2c8ba3d',1,'faiss::gpu::GpuIndexFlatConfig::useFloat16()']]],

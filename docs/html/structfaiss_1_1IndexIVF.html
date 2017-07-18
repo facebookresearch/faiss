@@ -102,10 +102,11 @@ Inheritance diagram for faiss::IndexIVF:</div>
  <div class="center">
   <img src="structfaiss_1_1IndexIVF.png" usemap="#faiss::IndexIVF_map" alt=""/>
   <map id="faiss::IndexIVF_map" name="faiss::IndexIVF_map">
-<area href="structfaiss_1_1Index.html" alt="faiss::Index" shape="rect" coords="294,0,480,24"/>
+<area href="structfaiss_1_1Index.html" alt="faiss::Index" shape="rect" coords="392,0,578,24"/>
 <area href="structfaiss_1_1IndexIVFFlat.html" alt="faiss::IndexIVFFlat" shape="rect" coords="0,112,186,136"/>
 <area href="structfaiss_1_1IndexIVFPQ.html" alt="faiss::IndexIVFPQ" shape="rect" coords="294,112,480,136"/>
 <area href="structfaiss_1_1IndexIVFScalarQuantizer.html" alt="faiss::IndexIVFScalarQuantizer" shape="rect" coords="490,112,676,136"/>
+<area href="structfaiss_1_1IndexIVFScalarQuantizer.html" alt="faiss::IndexIVFScalarQuantizer" shape="rect" coords="686,112,872,136"/>
 <area href="structfaiss_1_1IndexIVFFlatIPBounds.html" alt="faiss::IndexIVFFlatIPBounds" shape="rect" coords="0,168,186,192"/>
 <area href="structfaiss_1_1IndexIVFPQCompact.html" alt="faiss::IndexIVFPQCompact" shape="rect" coords="196,168,382,192"/>
 <area href="structfaiss_1_1IndexIVFPQR.html" alt="faiss::IndexIVFPQR" shape="rect" coords="392,168,578,192"/>
@@ -137,10 +138,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <tr class="memitem:a0475311f5faee84d024066906bae0bbd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0475311f5faee84d024066906bae0bbd"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_list_size</b> (size_t list_no) const </td></tr>
 <tr class="separator:a0475311f5faee84d024066906bae0bbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae6f0fae1f0721af3aa0b5ea1bd9980d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aae6f0fae1f0721af3aa0b5ea1bd9980d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#aae6f0fae1f0721af3aa0b5ea1bd9980d">make_direct_map</a> ()</td></tr>
-<tr class="memdesc:aae6f0fae1f0721af3aa0b5ea1bd9980d"><td class="mdescLeft">&#160;</td><td class="mdescRight">intialize a direct map <br/></td></tr>
-<tr class="separator:aae6f0fae1f0721af3aa0b5ea1bd9980d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c11ce77f459e2ab3e5d9a4c2263ad89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a1c11ce77f459e2ab3e5d9a4c2263ad89">make_direct_map</a> (bool new_maintain_direct_map=true)</td></tr>
+<tr class="separator:a1c11ce77f459e2ab3e5d9a4c2263ad89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeab84d4edf2cf9747c923e1a8395d9f3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeab84d4edf2cf9747c923e1a8395d9f3"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#aeab84d4edf2cf9747c923e1a8395d9f3">imbalance_factor</a> () const </td></tr>
 <tr class="memdesc:aeab84d4edf2cf9747c923e1a8395d9f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">1= perfectly balanced, &gt;1: imbalanced <br/></td></tr>
@@ -289,6 +288,31 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a1c11ce77f459e2ab3e5d9a4c2263ad89"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::IndexIVF::make_direct_map </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>new_maintain_direct_map</em> = <code>true</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>intialize a direct map</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">new_maintain_direct_map</td><td>if true, create a direct map, else clear it </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00068">68</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a0f22cc237c30c935df5b6560aecf8f01"></a>
 <div class="memitem">
 <div class="memproto">
@@ -322,7 +346,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal </p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00162">162</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00169">169</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -349,7 +373,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>implemented by sub-classes </p>
 
-<p>Implemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#af6c7ee3bc917cc5d4ab04ff64269ee06">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexIVFFlat.html#a8fc1695a87f33db1a16f8c50c3344cd3">faiss::IndexIVFFlat</a>, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#a6b8964e2da609a9261a8a35ae347ecb2">faiss::IndexIVFPQ</a>, and <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#afd54410889924a0cb544f1e3fd5babe9">faiss::IndexIVFScalarQuantizer</a>.</p>
+<p>Implemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#af6c7ee3bc917cc5d4ab04ff64269ee06">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexIVFFlat.html#a8fc1695a87f33db1a16f8c50c3344cd3">faiss::IndexIVFFlat</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#afd54410889924a0cb544f1e3fd5babe9">faiss::IndexIVFScalarQuantizer</a>, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#a6b8964e2da609a9261a8a35ae347ecb2">faiss::IndexIVFPQ</a>, and <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#afd54410889924a0cb544f1e3fd5babe9">faiss::IndexIVFScalarQuantizer</a>.</p>
 
 </div>
 </div>
@@ -386,9 +410,9 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>Sub-classes that encode the residuals can train their encoders here does nothing by default </p>
 
-<p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a68ed7cae5bec89fcdcb6a1d2addbd5a8">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#ac05d7fbfed59c85d1cf8ae526d279744">faiss::IndexIVFScalarQuantizer</a>, and <a class="el" href="structfaiss_1_1IndexIVFPQ.html#af6565a5d8bab7be3df19c50d235bd662">faiss::IndexIVFPQ</a>.</p>
+<p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a68ed7cae5bec89fcdcb6a1d2addbd5a8">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#ac05d7fbfed59c85d1cf8ae526d279744">faiss::IndexIVFScalarQuantizer</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#ac05d7fbfed59c85d1cf8ae526d279744">faiss::IndexIVFScalarQuantizer</a>, and <a class="el" href="structfaiss_1_1IndexIVFPQ.html#af6565a5d8bab7be3df19c50d235bd662">faiss::IndexIVFPQ</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00124">124</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00131">131</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>

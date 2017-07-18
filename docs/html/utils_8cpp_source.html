@@ -1503,7 +1503,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l01418"></a><span class="lineno"> 1418</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ci = 0; ci &lt; k; ci++) {</div>
 <div class="line"><a name="l01419"></a><span class="lineno"> 1419</span>&#160;        <span class="keywordflow">if</span> (hassign[ci] == 0) { <span class="comment">/* need to redefine a centroid */</span></div>
 <div class="line"><a name="l01420"></a><span class="lineno"> 1420</span>&#160;            <span class="keywordtype">size_t</span> cj;</div>
-<div class="line"><a name="l01421"></a><span class="lineno"> 1421</span>&#160;            <span class="keywordflow">for</span> (cj = 0; 1; cj = (cj+1) % k) {</div>
+<div class="line"><a name="l01421"></a><span class="lineno"> 1421</span>&#160;            <span class="keywordflow">for</span> (cj = 0; 1; cj = (cj + 1) % k) {</div>
 <div class="line"><a name="l01422"></a><span class="lineno"> 1422</span>&#160;                <span class="comment">/* probability to pick this cluster for split */</span></div>
 <div class="line"><a name="l01423"></a><span class="lineno"> 1423</span>&#160;                <span class="keywordtype">float</span> p = (hassign[cj] - 1.0) / (float) (n - k);</div>
 <div class="line"><a name="l01424"></a><span class="lineno"> 1424</span>&#160;                <span class="keywordtype">float</span> r = rng.<a class="code" href="structfaiss_1_1RandomGenerator.html#ac82a433d7bfa56d750907ba5cf74aed7">rand_float</a> ();</div>
@@ -1514,15 +1514,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l01429"></a><span class="lineno"> 1429</span>&#160;            memcpy (centroids+ci*d, centroids+cj*d, <span class="keyword">sizeof</span>(*centroids) * d);</div>
 <div class="line"><a name="l01430"></a><span class="lineno"> 1430</span>&#160;</div>
 <div class="line"><a name="l01431"></a><span class="lineno"> 1431</span>&#160;            <span class="comment">/* small symmetric pertubation. Much better than  */</span></div>
-<div class="line"><a name="l01432"></a><span class="lineno"> 1432</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; d; j++)</div>
+<div class="line"><a name="l01432"></a><span class="lineno"> 1432</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; d; j++) {</div>
 <div class="line"><a name="l01433"></a><span class="lineno"> 1433</span>&#160;                <span class="keywordflow">if</span> (j % 2 == 0) {</div>
 <div class="line"><a name="l01434"></a><span class="lineno"> 1434</span>&#160;                    centroids[ci * d + j] *= 1 + EPS;</div>
 <div class="line"><a name="l01435"></a><span class="lineno"> 1435</span>&#160;                    centroids[cj * d + j] *= 1 - EPS;</div>
-<div class="line"><a name="l01436"></a><span class="lineno"> 1436</span>&#160;                }</div>
-<div class="line"><a name="l01437"></a><span class="lineno"> 1437</span>&#160;                <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l01438"></a><span class="lineno"> 1438</span>&#160;                    centroids[ci * d + j] *= 1 + EPS;</div>
-<div class="line"><a name="l01439"></a><span class="lineno"> 1439</span>&#160;                    centroids[cj * d + j] *= 1 - EPS;</div>
-<div class="line"><a name="l01440"></a><span class="lineno"> 1440</span>&#160;                }</div>
+<div class="line"><a name="l01436"></a><span class="lineno"> 1436</span>&#160;                } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l01437"></a><span class="lineno"> 1437</span>&#160;                    centroids[ci * d + j] *= 1 - EPS;</div>
+<div class="line"><a name="l01438"></a><span class="lineno"> 1438</span>&#160;                    centroids[cj * d + j] *= 1 + EPS;</div>
+<div class="line"><a name="l01439"></a><span class="lineno"> 1439</span>&#160;                }</div>
+<div class="line"><a name="l01440"></a><span class="lineno"> 1440</span>&#160;            }</div>
 <div class="line"><a name="l01441"></a><span class="lineno"> 1441</span>&#160;</div>
 <div class="line"><a name="l01442"></a><span class="lineno"> 1442</span>&#160;            <span class="comment">/* assume even split of the cluster */</span></div>
 <div class="line"><a name="l01443"></a><span class="lineno"> 1443</span>&#160;            hassign[ci] = hassign[cj] / 2;</div>
@@ -2074,7 +2074,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="namespacefaiss_html_a7a49180ebf10e643217bbce5862c7f84"><div class="ttname"><a href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">faiss::fvec_norm_L2sqr</a></div><div class="ttdeci">float fvec_norm_L2sqr(const float *x, size_t d)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00538">utils.cpp:538</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a1faa7bd079c9b1addf3058ddf882a000"><div class="ttname"><a href="namespacefaiss.html#a1faa7bd079c9b1addf3058ddf882a000">faiss::range_search_L2sqr</a></div><div class="ttdeci">void range_search_L2sqr(const float *x, const float *y, size_t d, size_t nx, size_t ny, float radius, RangeSearchResult *res)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01234">utils.cpp:1234</a></div></div>
 <div class="ttc" id="namespacefaiss_html_afb68fe89ad5e948974da1b70d7b4157c"><div class="ttname"><a href="namespacefaiss.html#afb68fe89ad5e948974da1b70d7b4157c">faiss::matrix_qr</a></div><div class="ttdeci">void matrix_qr(int m, int n, float *a)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01289">utils.cpp:1289</a></div></div>
-<div class="ttc" id="structfaiss_1_1RangeSearchResult_html"><div class="ttname"><a href="structfaiss_1_1RangeSearchResult.html">faiss::RangeSearchResult</a></div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00034">AuxIndexStructures.h:34</a></div></div>
+<div class="ttc" id="structfaiss_1_1RangeSearchResult_html"><div class="ttname"><a href="structfaiss_1_1RangeSearchResult.html">faiss::RangeSearchResult</a></div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00029">AuxIndexStructures.h:29</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a4369329c9dbdfe23e3f35d09ba7b5c6e"><div class="ttname"><a href="namespacefaiss.html#a4369329c9dbdfe23e3f35d09ba7b5c6e">faiss::ivec_checksum</a></div><div class="ttdeci">size_t ivec_checksum(size_t n, const int *a)</div><div class="ttdoc">compute a checksum on a table. </div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01638">utils.cpp:1638</a></div></div>
 <div class="ttc" id="structfaiss_1_1BaseShiftDistanceCorrection_html"><div class="ttname"><a href="structfaiss_1_1BaseShiftDistanceCorrection.html">faiss::BaseShiftDistanceCorrection</a></div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00948">utils.cpp:948</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a9da63b8bb84460f5e8ccf8e17622cc7a"><div class="ttname"><a href="namespacefaiss.html#a9da63b8bb84460f5e8ccf8e17622cc7a">faiss::fvec_madd_and_argmin</a></div><div class="ttdeci">int fvec_madd_and_argmin(size_t n, const float *a, float bf, const float *b, float *c)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01929">utils.cpp:1929</a></div></div>

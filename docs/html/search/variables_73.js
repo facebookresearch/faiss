@@ -8,6 +8,7 @@ var searchData=
   ['source_5fdis',['source_dis',['../structfaiss_1_1ReproduceDistancesObjective.html#a6681846eb7751b32a907d075fff6770b',1,'faiss::ReproduceDistancesObjective']]],
   ['space_5f',['space_',['../classfaiss_1_1gpu_1_1IVFBase.html#a30499eb61763df72cab25ea9d1235251',1,'faiss::gpu::IVFBase']]],
   ['spherical',['spherical',['../structfaiss_1_1ClusteringParameters.html#ad997fb511f574f7ddc69938c21612f8d',1,'faiss::ClusteringParameters']]],
+  ['sq',['sq',['../structfaiss_1_1IndexScalarQuantizer.html#a71381f74754d8a54812e80af46a2a83a',1,'faiss::IndexScalarQuantizer']]],
   ['stack_5f',['stack_',['../classfaiss_1_1gpu_1_1StackDeviceMemory.html#a323a632f397eaf3df3034595762c6a29',1,'faiss::gpu::StackDeviceMemory']]],
   ['start_5f',['start_',['../structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#aed64654e7d498114fdd48a6f1cdb1aa2',1,'faiss::gpu::StackDeviceMemory::Stack']]],
   ['storetransposed',['storeTransposed',['../structfaiss_1_1gpu_1_1GpuClonerOptions.html#a5f2470ec5b2a8fe7aae0542f113b781d',1,'faiss::gpu::GpuClonerOptions::storeTransposed()'],['../structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html#a0342a26f5e59563bfe04f3f80e3b27f0',1,'faiss::gpu::GpuIndexFlatConfig::storeTransposed()']]],
