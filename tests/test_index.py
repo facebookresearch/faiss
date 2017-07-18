@@ -6,10 +6,8 @@
 
 #! /usr/bin/env python2
 
-"""this is a basic test script that works with fbmake to check if
-some simple indices work"""
+"""this is a basic test script for simple indices work"""
 
-import sys
 import numpy as np
 import unittest
 import faiss
@@ -75,9 +73,9 @@ class TestMultiIndexQuantizer(unittest.TestCase):
         self.assertEqual(np.abs(D1[:, :1] - D5[:, :1]).max(), 0)
 
 
-class TestIVFScalarQuantizer(unittest.TestCase):
+class TestScalarQuantizer(unittest.TestCase):
 
-    def test_4variants(self):
+    def test_4variants_ivf(self):
         d = 32
         nt = 1500
         nq = 200
@@ -127,19 +125,39 @@ class TestIVFScalarQuantizer(unittest.TestCase):
         self.assertGreaterEqual(nok['QT_8bit'], nok['QT_8bit_uniform'])
         self.assertGreaterEqual(nok['QT_4bit'], nok['QT_4bit_uniform'])
 
+    def test_4variants(self):
+        d = 32
+        nt = 1500
+        nq = 200
+        nb = 10000
 
-class TestRemove(unittest.TestCase):
+        np.random.seed(123)
 
-    def test_remove(self):
-        # only tests the python interface
+        xt = np.random.random(size=(nt, d)).astype('float32')
+        xq = np.random.random(size=(nq, d)).astype('float32')
+        xb = np.random.random(size=(nb, d)).astype('float32')
 
-        index = faiss.IndexFlat(5)
-        xb = np.zeros((10, 5), dtype='float32')
-        xb[:, 0] = np.arange(10) + 1000
-        index.add(xb)
-        index.remove_ids(np.arange(5) * 2)
-        xb2 = faiss.vector_float_to_array(index.xb).reshape(5, 5)
-        assert np.all(xb2[:, 0] == xb[np.arange(5) * 2 + 1, 0])
+        index_gt = faiss.IndexFlatL2(d)
+        index_gt.add(xb)
+        D, I_ref = index_gt.search(xq, 10)
+
+        nok = {}
+
+        for qname in "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform".split():
+            qtype = getattr(faiss.ScalarQuantizer, qname)
+            index = faiss.IndexScalarQuantizer(d, qtype, faiss.METRIC_L2)
+            index.train(xt)
+            index.add(xb)
+            D, I = index.search(xq, 10)
+
+            nok[qname] = (I[:, 0] == I_ref[:, 0]).sum()
+
+        print(nok)
+
+        self.assertGreaterEqual(nok['QT_8bit'], nok['QT_4bit'])
+        self.assertGreaterEqual(nok['QT_8bit'], nok['QT_8bit_uniform'])
+        self.assertGreaterEqual(nok['QT_4bit'], nok['QT_4bit_uniform'])
+
 
 
 if __name__ == '__main__':

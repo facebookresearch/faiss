@@ -711,6 +711,32 @@ void OPQMatrix::reverse_transform (idx_t n, const float * xt,
     transform_transpose (n, xt, x);
 }
 
+
+/*********************************************
+ * NormalizationTransform
+ *********************************************/
+
+NormalizationTransform::NormalizationTransform (int d, float norm):
+    VectorTransform (d, d), norm (norm)
+{
+}
+
+NormalizationTransform::NormalizationTransform ():
+    VectorTransform (-1, -1), norm (-1)
+{
+}
+
+void NormalizationTransform::apply_noalloc
+      (idx_t n, const float* x, float* xt) const
+{
+    if (norm == 2.0) {
+        memcpy (xt, x, sizeof (x[0]) * n * d_in);
+        fvec_renorm_L2 (d_in, n, xt);
+    } else {
+        FAISS_THROW_MSG ("not implemented");
+    }
+}
+
 /*********************************************
  * IndexPreTransform
  *********************************************/
@@ -728,8 +754,6 @@ IndexPreTransform::IndexPreTransform (
 {
     is_trained = index->is_trained;
 }
-
-
 
 
 IndexPreTransform::IndexPreTransform (
@@ -766,9 +790,16 @@ IndexPreTransform::~IndexPreTransform ()
 void IndexPreTransform::train (idx_t n, const float *x)
 {
     int last_untrained = 0;
-    for (int i = 0; i < chain.size(); i++)
-        if (!chain[i]->is_trained) last_untrained = i;
-    if (!index->is_trained) last_untrained = chain.size();
+    if (index->is_trained) {
+        last_untrained = chain.size();
+    } else {
+        for (int i = chain.size() - 1; i >= 0; i--) {
+            if (!chain[i]->is_trained) {
+                last_untrained = i;
+                break;
+            }
+        }
+    }
     const float *prev_x = x;
     ScopeDeleter<float> del;
 

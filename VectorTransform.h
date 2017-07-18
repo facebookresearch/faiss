@@ -76,7 +76,6 @@ struct VectorTransform {
  */
 struct LinearTransform: VectorTransform {
 
-
     bool have_bias; ///! whether to use the bias term
 
     /// Transformation matrix, size d_out * d_in
@@ -84,7 +83,6 @@ struct LinearTransform: VectorTransform {
 
      /// bias vector, size d_out
     std::vector<float> b;
-
 
     /// both d_in > d_out and d_out < d_in are supported
     explicit LinearTransform (int d_in = 0, int d_out = 0,
@@ -204,7 +202,6 @@ struct OPQMatrix: LinearTransform {
  * to compute it with matrix multiplies */
 struct RemapDimensionsTransform: VectorTransform {
 
-
     /// map from output dimension to input, size d_out
     /// -1 -> set output to 0
     std::vector<int> map;
@@ -223,6 +220,18 @@ struct RemapDimensionsTransform: VectorTransform {
 
     RemapDimensionsTransform () {}
 };
+
+
+/** per-vector normalization */
+struct NormalizationTransform: VectorTransform {
+    float norm;
+
+    explicit NormalizationTransform (int d, float norm = 2.0);
+    NormalizationTransform ();
+
+    void apply_noalloc(idx_t n, const float* x, float* xt) const override;
+};
+
 
 
 /** Index that applies a LinearTransform transform on vectors before

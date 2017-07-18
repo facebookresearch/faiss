@@ -120,6 +120,48 @@ IndexIDMap::~IndexIDMap ()
     if (own_fields) delete index;
 }
 
+/*****************************************************
+ * IndexIDMap2 implementation
+ *******************************************************/
+
+IndexIDMap2::IndexIDMap2 (Index *index): IndexIDMap (index)
+{}
+
+void IndexIDMap2::add_with_ids(idx_t n, const float* x, const long* xids)
+{
+    size_t prev_ntotal = ntotal;
+    IndexIDMap::add_with_ids (n, x, xids);
+    for (size_t i = prev_ntotal; i < ntotal; i++) {
+        rev_map [id_map [i]] = i;
+    }
+}
+
+void IndexIDMap2::construct_rev_map ()
+{
+    rev_map.clear ();
+    for (size_t i = 0; i < ntotal; i++) {
+        rev_map [id_map [i]] = i;
+    }
+}
+
+
+long IndexIDMap2::remove_ids(const IDSelector& sel)
+{
+    // This is quite inefficient
+    long nremove = IndexIDMap::remove_ids (sel);
+    construct_rev_map ();
+    return nremove;
+}
+
+void IndexIDMap2::reconstruct (idx_t key, float * recons) const
+{
+    try {
+        index->reconstruct (rev_map.at (key), recons);
+    } catch (const std::out_of_range& e) {
+        FAISS_THROW_FMT ("key %ld not found", key);
+    }
+}
+
 
 
 /*****************************************************

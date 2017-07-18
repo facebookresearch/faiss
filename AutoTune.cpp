@@ -22,7 +22,7 @@
 #include "IndexIVF.h"
 #include "IndexIVFPQ.h"
 #include "MetaIndexes.h"
-#include "IndexIVFScalarQuantizer.h"
+#include "IndexScalarQuantizer.h"
 
 
 namespace faiss {
@@ -623,18 +623,28 @@ void ParameterSpace::explore (Index *index,
  * index_factory
  ***************************************************************/
 
+namespace {
 
+struct VTChain {
+    std::vector<VectorTransform *> chain;
+    ~VTChain () {
+        for (int i = 0; i < chain.size(); i++) {
+            delete chain[i];
+        }
+    }
+};
+
+}
 
 Index *index_factory (int d, const char *description_in, MetricType metric)
 {
-    VectorTransform *vt = nullptr;
+    VTChain vts;
     Index *coarse_quantizer = nullptr;
     Index *index = nullptr;
     bool add_idmap = false;
     bool make_IndexRefineFlat = false;
 
     ScopeDeleter1<Index> del_coarse_quantizer, del_index;
-    ScopeDeleter1<VectorTransform> del_vt;
 
     char description[strlen(description_in) + 1];
     char *ptr;
@@ -656,18 +666,27 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
         Index *index_1 = nullptr;
 
         // VectorTransforms
-        if (!vt && sscanf (tok, "PCA%d", &d_out) == 1) {
+        if (sscanf (tok, "PCA%d", &d_out) == 1) {
             vt_1 = new PCAMatrix (d, d_out);
             d = d_out;
-        } else if (!vt && sscanf (tok, "PCAR%d", &d_out) == 1) {
+        } else if (sscanf (tok, "PCAR%d", &d_out) == 1) {
             vt_1 = new PCAMatrix (d, d_out, 0, true);
             d = d_out;
-        } else if (!vt && sscanf (tok, "OPQ%d_%d", &opq_M, &d_out) == 2) {
+        } else if (sscanf (tok, "PCAW%d", &d_out) == 1) {
+            vt_1 = new PCAMatrix (d, d_out, -0.5, false);
+            d = d_out;
+        } else if (sscanf (tok, "PCAWR%d", &d_out) == 1) {
+            vt_1 = new PCAMatrix (d, d_out, -0.5, true);
+            d = d_out;
+        } else if (sscanf (tok, "OPQ%d_%d", &opq_M, &d_out) == 2) {
             vt_1 = new OPQMatrix (d, opq_M, d_out);
             d = d_out;
-        } else if (!vt && sscanf (tok, "OPQ%d", &opq_M) == 1) {
+        } else if (sscanf (tok, "OPQ%d", &opq_M) == 1) {
             vt_1 = new OPQMatrix (d, opq_M);
-            // coarse quantizers
+        } else if (stok == "L2norm") {
+            vt_1 = new NormalizationTransform (d, 2.0);
+
+        // coarse quantizers
         } else if (!coarse_quantizer &&
                    sscanf (tok, "IVF%d", &ncentroids) == 1) {
             if (metric == METRIC_L2) {
@@ -698,28 +717,25 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                 index_1 = index_ivf;
             } else {
                 index_1 = new IndexFlat (d, metric);
-                if (add_idmap) {
-                    IndexIDMap *idmap = new IndexIDMap(index_1);
-                    idmap->own_fields = true;
-                    index_1 = idmap;
-                    add_idmap = false;
-                }
             }
         } else if (!index && (stok == "SQ8" || stok == "SQ4")) {
-            FAISS_THROW_IF_NOT_MSG(coarse_quantizer,
-                             "ScalarQuantizer works only with an IVF");
             ScalarQuantizer::QuantizerType qt =
                 stok == "SQ8" ? ScalarQuantizer::QT_8bit :
                 stok == "SQ4" ? ScalarQuantizer::QT_4bit :
                 ScalarQuantizer::QT_4bit;
-            IndexIVFScalarQuantizer *index_ivf = new IndexIVFScalarQuantizer (
-                             coarse_quantizer, d, ncentroids, qt, metric);
-            index_ivf->quantizer_trains_alone =
-                dynamic_cast<MultiIndexQuantizer*>(coarse_quantizer)
-                != nullptr;
-            del_coarse_quantizer.release ();
-            index_ivf->own_fields = true;
-            index_1 = index_ivf;
+            if (coarse_quantizer) {
+                IndexIVFScalarQuantizer *index_ivf =
+                    new IndexIVFScalarQuantizer (
+                      coarse_quantizer, d, ncentroids, qt, metric);
+                index_ivf->quantizer_trains_alone =
+                    dynamic_cast<MultiIndexQuantizer*>(coarse_quantizer)
+                    != nullptr;
+                del_coarse_quantizer.release ();
+                index_ivf->own_fields = true;
+                index_1 = index_ivf;
+            } else {
+                index_1 = new IndexScalarQuantizer (d, qt, metric);
+            }
         } else if (!index && sscanf (tok, "PQ%d+%d", &M, &M2) == 2) {
             FAISS_THROW_IF_NOT_MSG(coarse_quantizer,
                              "PQ with + works only with an IVF");
@@ -750,13 +766,6 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                 IndexPQ *index_pq = new IndexPQ (d, M, 8, metric);
                 index_pq->do_polysemous_training = true;
                 index_1 = index_pq;
-                if (add_idmap) {
-                    IndexIDMap *idmap = new IndexIDMap(index_1);
-                    del_index.set (idmap);
-                    idmap->own_fields = true;
-                    index_1 = idmap;
-                    add_idmap = false;
-                }
             }
         } else if (stok == "RFlat") {
             make_IndexRefineFlat = true;
@@ -765,9 +774,16 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                              tok, description_in);
         }
 
+        if (index_1 && add_idmap) {
+            IndexIDMap *idmap = new IndexIDMap(index_1);
+            del_index.set (idmap);
+            idmap->own_fields = true;
+            index_1 = idmap;
+            add_idmap = false;
+        }
+
         if (vt_1)  {
-            vt = vt_1;
-            del_vt.set (vt);
+            vts.chain.push_back (vt_1);
         }
 
         if (coarse_quantizer_1) {
@@ -793,10 +809,14 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                 "IDMap option not used\n");
     }
 
-    if (vt) {
-        IndexPreTransform *index_pt = new IndexPreTransform (vt, index);
-        del_vt.release ();
+    if (vts.chain.size() > 0) {
+        IndexPreTransform *index_pt = new IndexPreTransform (index);
         index_pt->own_fields = true;
+        // add from back
+        while (vts.chain.size() > 0) {
+            index_pt->prepend_transform (vts.chain.back());
+            vts.chain.pop_back ();
+        }
         index = index_pt;
     }
 

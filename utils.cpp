@@ -1418,7 +1418,7 @@ int km_update_centroids (const float * x,
     for (size_t ci = 0; ci < k; ci++) {
         if (hassign[ci] == 0) { /* need to redefine a centroid */
             size_t cj;
-            for (cj = 0; 1; cj = (cj+1) % k) {
+            for (cj = 0; 1; cj = (cj + 1) % k) {
                 /* probability to pick this cluster for split */
                 float p = (hassign[cj] - 1.0) / (float) (n - k);
                 float r = rng.rand_float ();
@@ -1429,15 +1429,15 @@ int km_update_centroids (const float * x,
             memcpy (centroids+ci*d, centroids+cj*d, sizeof(*centroids) * d);
 
             /* small symmetric pertubation. Much better than  */
-            for (size_t j = 0; j < d; j++)
+            for (size_t j = 0; j < d; j++) {
                 if (j % 2 == 0) {
                     centroids[ci * d + j] *= 1 + EPS;
                     centroids[cj * d + j] *= 1 - EPS;
+                } else {
+                    centroids[ci * d + j] *= 1 - EPS;
+                    centroids[cj * d + j] *= 1 + EPS;
                 }
-                else {
-                    centroids[ci * d + j] *= 1 + EPS;
-                    centroids[cj * d + j] *= 1 - EPS;
-                }
+            }
 
             /* assume even split of the cluster */
             hassign[ci] = hassign[cj] / 2;

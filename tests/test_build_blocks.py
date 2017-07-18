@@ -11,6 +11,7 @@ import numpy as np
 import faiss
 import unittest
 
+
 class TestClustering(unittest.TestCase):
 
     def test_clustering(self):
@@ -33,6 +34,17 @@ class TestClustering(unittest.TestCase):
 
         # check that 64 centroids give a lower quantization error than 32
         self.assertGreater(err32, err64)
+
+    def test_nasty_clustering(self):
+        d = 2
+        np.random.seed(123)
+        x = np.zeros((100, d), dtype='float32')
+        for i in range(5):
+            x[i * 20:i * 20 + 20] = np.random.random(size=d)
+
+        # we have 5 distinct points but ask for 10 centroids...
+        km = faiss.Kmeans(d, 10, niter=10, verbose=True)
+        km.train(x)
 
 
 class TestPCA(unittest.TestCase):

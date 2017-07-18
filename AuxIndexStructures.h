@@ -15,12 +15,7 @@
 #define FAISS_AUX_INDEX_STRUCTURES_H
 
 #include <vector>
-
-#if __cplusplus >= 201103L
 #include <unordered_set>
-#endif
-
-#include <set>
 
 
 #include "Index.h"
@@ -80,11 +75,7 @@ struct IDSelectorRange: IDSelector {
  * hash collisions if lsb's are always the same */
 struct IDSelectorBatch: IDSelector {
 
-#if __cplusplus >= 201103L
     std::unordered_set<idx_t> set;
-#else
-    std::set<idx_t> set;
-#endif
 
     typedef unsigned char uint8_t;
     std::vector<uint8_t> bloom; // assumes low bits of id are a good hash value

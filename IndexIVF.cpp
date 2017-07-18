@@ -65,21 +65,28 @@ void IndexIVF::add (idx_t n, const float * x)
     add_with_ids (n, x, nullptr);
 }
 
-void IndexIVF::make_direct_map ()
+void IndexIVF::make_direct_map (bool new_maintain_direct_map)
 {
-    if (maintain_direct_map) return;
+    // nothing to do
+    if (new_maintain_direct_map == maintain_direct_map)
+        return;
 
-    direct_map.resize (ntotal, -1);
-    for (size_t key = 0; key < nlist; key++) {
-        const std::vector<long> & idlist = ids[key];
+    if (new_maintain_direct_map) {
+        direct_map.resize (ntotal, -1);
+        for (size_t key = 0; key < nlist; key++) {
+            const std::vector<long> & idlist = ids[key];
 
-        for (long ofs = 0; ofs < idlist.size(); ofs++) {
-            direct_map [idlist [ofs]] =
-                key << 32 | ofs;
+            for (long ofs = 0; ofs < idlist.size(); ofs++) {
+                FAISS_THROW_IF_NOT_MSG (
+                       0 <= idlist [ofs] && idlist[ofs] < ntotal,
+                       "direct map supported only for seuquential ids");
+                direct_map [idlist [ofs]] = key << 32 | ofs;
+            }
         }
+    } else {
+        direct_map.clear ();
     }
-
-    maintain_direct_map = true;
+    maintain_direct_map = new_maintain_direct_map;
 }
 
 
@@ -183,7 +190,6 @@ void IndexIVF::merge_from (IndexIVF &other, idx_t add_id)
 
 
 
-
 IndexIVF::~IndexIVF()
 {
     if (own_fields) delete quantizer;
@@ -217,6 +223,8 @@ void IndexIVFFlat::add_core (idx_t n, const float * x, const long *xids,
 
 {
     FAISS_THROW_IF_NOT (is_trained);
+    FAISS_THROW_IF_NOT_MSG (!(maintain_direct_map && xids),
+                            "cannot have direct map and add with ids");
     const long * idx;
     ScopeDeleter<long> del;
 
@@ -476,6 +484,49 @@ void IndexIVFFlat::copy_subset_to (IndexIVFFlat & other, int subset_type,
         }
     }
 }
+
+void IndexIVFFlat::update_vectors (int n, idx_t *new_ids, const float *x)
+{
+    FAISS_THROW_IF_NOT (maintain_direct_map);
+    FAISS_THROW_IF_NOT (is_trained);
+    std::vector<idx_t> assign (n);
+    quantizer->assign (n, x, assign.data());
+
+    for (int i = 0; i < n; i++) {
+        idx_t id = new_ids[i];
+        FAISS_THROW_IF_NOT_MSG (0 <= id && id < ntotal,
+                                "id to update out of range");
+        { // remove old one
+            long dm = direct_map[id];
+            long ofs = dm & 0xffffffff;
+            long il = dm >> 32;
+            size_t l = ids[il].size();
+            if (ofs != l - 1) {
+                long id2 = ids[il].back();
+                ids[il][ofs] = id2;
+                direct_map[id2] = (il << 32) | ofs;
+                memcpy (vecs[il].data() + ofs * d,
+                        vecs[il].data() + (l - 1) * d,
+                        d * sizeof(vecs[il][0]));
+            }
+            ids[il].pop_back();
+            vecs[il].resize((l - 1) * d);
+        }
+        { // insert new one
+            long il = assign[i];
+            size_t l = ids[il].size();
+            long dm = (il << 32) | l;
+            direct_map[id] = dm;
+            ids[il].push_back (id);
+            vecs[il].resize((l + 1) * d);
+            memcpy (vecs[il].data() + l * d,
+                    x + i * d,
+                    d * sizeof(vecs[il][0]));
+        }
+    }
+
+}
+
 
 
 

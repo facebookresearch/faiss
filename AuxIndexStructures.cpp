@@ -158,6 +158,10 @@ void RangeSearchPartialResult::set_result (bool incremental)
 }
 
 
+/***********************************************************************
+ * IDSelectorRange
+ ***********************************************************************/
+
 IDSelectorRange::IDSelectorRange (idx_t imin, idx_t imax):
     imin (imin), imax (imax)
 {
@@ -169,6 +173,9 @@ bool IDSelectorRange::is_member (idx_t id) const
 }
 
 
+/***********************************************************************
+ * IDSelectorBatch
+ ***********************************************************************/
 
 IDSelectorBatch::IDSelectorBatch (long n, const idx_t *indices)
 {

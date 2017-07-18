@@ -1094,6 +1094,27 @@ class RemapDimensionsTransform(VectorTransform):
 RemapDimensionsTransform_swigregister = _swigfaiss.RemapDimensionsTransform_swigregister
 RemapDimensionsTransform_swigregister(RemapDimensionsTransform)
 
+class NormalizationTransform(VectorTransform):
+    __swig_setmethods__ = {}
+    for _s in [VectorTransform]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, NormalizationTransform, name, value)
+    __swig_getmethods__ = {}
+    for _s in [VectorTransform]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, NormalizationTransform, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["norm"] = _swigfaiss.NormalizationTransform_norm_set
+    __swig_getmethods__["norm"] = _swigfaiss.NormalizationTransform_norm_get
+    if _newclass:norm = _swig_property(_swigfaiss.NormalizationTransform_norm_get, _swigfaiss.NormalizationTransform_norm_set)
+    def __init__(self, *args): 
+        this = _swigfaiss.new_NormalizationTransform(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def apply_noalloc(self, *args): return _swigfaiss.NormalizationTransform_apply_noalloc(self, *args)
+    __swig_destroy__ = _swigfaiss.delete_NormalizationTransform
+    __del__ = lambda self : None;
+NormalizationTransform_swigregister = _swigfaiss.NormalizationTransform_swigregister
+NormalizationTransform_swigregister(NormalizationTransform)
+
 class IndexPreTransform(Index):
     __swig_setmethods__ = {}
     for _s in [Index]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
@@ -1635,7 +1656,7 @@ class IndexIVF(Index):
     __swig_destroy__ = _swigfaiss.delete_IndexIVF
     __del__ = lambda self : None;
     def get_list_size(self, *args): return _swigfaiss.IndexIVF_get_list_size(self, *args)
-    def make_direct_map(self): return _swigfaiss.IndexIVF_make_direct_map(self)
+    def make_direct_map(self, new_maintain_direct_map=True): return _swigfaiss.IndexIVF_make_direct_map(self, new_maintain_direct_map)
     def imbalance_factor(self): return _swigfaiss.IndexIVF_imbalance_factor(self)
     def print_stats(self): return _swigfaiss.IndexIVF_print_stats(self)
 IndexIVF_swigregister = _swigfaiss.IndexIVF_swigregister
@@ -1690,6 +1711,7 @@ class IndexIVFFlat(IndexIVF):
     def remove_ids(self, *args): return _swigfaiss.IndexIVFFlat_remove_ids(self, *args)
     def search_knn_inner_product(self, *args): return _swigfaiss.IndexIVFFlat_search_knn_inner_product(self, *args)
     def search_knn_L2sqr(self, *args): return _swigfaiss.IndexIVFFlat_search_knn_L2sqr(self, *args)
+    def update_vectors(self, *args): return _swigfaiss.IndexIVFFlat_update_vectors(self, *args)
     def reconstruct(self, *args): return _swigfaiss.IndexIVFFlat_reconstruct(self, *args)
     def merge_from_residuals(self, *args): return _swigfaiss.IndexIVFFlat_merge_from_residuals(self, *args)
     def __init__(self, *args): 
@@ -1769,6 +1791,38 @@ class ScalarQuantizer(_object):
     __del__ = lambda self : None;
 ScalarQuantizer_swigregister = _swigfaiss.ScalarQuantizer_swigregister
 ScalarQuantizer_swigregister(ScalarQuantizer)
+
+class IndexScalarQuantizer(Index):
+    __swig_setmethods__ = {}
+    for _s in [Index]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, IndexScalarQuantizer, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Index]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, IndexScalarQuantizer, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["sq"] = _swigfaiss.IndexScalarQuantizer_sq_set
+    __swig_getmethods__["sq"] = _swigfaiss.IndexScalarQuantizer_sq_get
+    if _newclass:sq = _swig_property(_swigfaiss.IndexScalarQuantizer_sq_get, _swigfaiss.IndexScalarQuantizer_sq_set)
+    __swig_setmethods__["codes"] = _swigfaiss.IndexScalarQuantizer_codes_set
+    __swig_getmethods__["codes"] = _swigfaiss.IndexScalarQuantizer_codes_get
+    if _newclass:codes = _swig_property(_swigfaiss.IndexScalarQuantizer_codes_get, _swigfaiss.IndexScalarQuantizer_codes_set)
+    __swig_setmethods__["code_size"] = _swigfaiss.IndexScalarQuantizer_code_size_set
+    __swig_getmethods__["code_size"] = _swigfaiss.IndexScalarQuantizer_code_size_get
+    if _newclass:code_size = _swig_property(_swigfaiss.IndexScalarQuantizer_code_size_get, _swigfaiss.IndexScalarQuantizer_code_size_set)
+    def __init__(self, *args): 
+        this = _swigfaiss.new_IndexScalarQuantizer(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def train(self, *args): return _swigfaiss.IndexScalarQuantizer_train(self, *args)
+    def add(self, *args): return _swigfaiss.IndexScalarQuantizer_add(self, *args)
+    def search(self, *args): return _swigfaiss.IndexScalarQuantizer_search(self, *args)
+    def reset(self): return _swigfaiss.IndexScalarQuantizer_reset(self)
+    def reconstruct_n(self, *args): return _swigfaiss.IndexScalarQuantizer_reconstruct_n(self, *args)
+    def reconstruct(self, *args): return _swigfaiss.IndexScalarQuantizer_reconstruct(self, *args)
+    __swig_destroy__ = _swigfaiss.delete_IndexScalarQuantizer
+    __del__ = lambda self : None;
+IndexScalarQuantizer_swigregister = _swigfaiss.IndexScalarQuantizer_swigregister
+IndexScalarQuantizer_swigregister(IndexScalarQuantizer)
 
 class IndexIVFScalarQuantizer(IndexIVF):
     __swig_setmethods__ = {}
@@ -2023,6 +2077,30 @@ class IndexIDMap(Index):
         except: self.this = this
 IndexIDMap_swigregister = _swigfaiss.IndexIDMap_swigregister
 IndexIDMap_swigregister(IndexIDMap)
+
+class IndexIDMap2(IndexIDMap):
+    __swig_setmethods__ = {}
+    for _s in [IndexIDMap]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, IndexIDMap2, name, value)
+    __swig_getmethods__ = {}
+    for _s in [IndexIDMap]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, IndexIDMap2, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["rev_map"] = _swigfaiss.IndexIDMap2_rev_map_set
+    __swig_getmethods__["rev_map"] = _swigfaiss.IndexIDMap2_rev_map_get
+    if _newclass:rev_map = _swig_property(_swigfaiss.IndexIDMap2_rev_map_get, _swigfaiss.IndexIDMap2_rev_map_set)
+    def construct_rev_map(self): return _swigfaiss.IndexIDMap2_construct_rev_map(self)
+    def add_with_ids(self, *args): return _swigfaiss.IndexIDMap2_add_with_ids(self, *args)
+    def remove_ids(self, *args): return _swigfaiss.IndexIDMap2_remove_ids(self, *args)
+    def reconstruct(self, *args): return _swigfaiss.IndexIDMap2_reconstruct(self, *args)
+    __swig_destroy__ = _swigfaiss.delete_IndexIDMap2
+    __del__ = lambda self : None;
+    def __init__(self, *args): 
+        this = _swigfaiss.new_IndexIDMap2(*args)
+        try: self.this.append(this)
+        except: self.this = this
+IndexIDMap2_swigregister = _swigfaiss.IndexIDMap2_swigregister
+IndexIDMap2_swigregister(IndexIDMap2)
 
 class IndexShards(Index):
     __swig_setmethods__ = {}

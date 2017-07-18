@@ -34,8 +34,13 @@ except ImportError as e:
 ##################################################################
 
 
-def replace_method(the_class, name, replacement):
-    orig_method = getattr(the_class, name)
+def replace_method(the_class, name, replacement, ignore_missing=False):
+    try:
+        orig_method = getattr(the_class, name)
+    except AttributeError:
+        if ignore_missing:
+            return
+        raise
     if orig_method.__name__ == 'replacement_' + name:
         # replacement was done in parent class
         return
@@ -123,12 +128,31 @@ def handle_Index(the_class):
             sel = IDSelectorBatch(x.size, swig_ptr(x))
         return self.remove_ids_c(sel)
 
+    def replacement_reconstruct(self, key):
+        x = np.empty(self.d, dtype=np.float32)
+        self.reconstruct_c(key, swig_ptr(x))
+        return x
+
+    def replacement_reconstruct_n(self, n0, ni):
+        x = np.empty((ni, self.d), dtype=np.float32)
+        self.reconstruct_n_c(n0, ni, swig_ptr(x))
+        return x
+
+    def replacement_update_vectors(self, keys, x):
+        n = keys.size
+        assert keys.shape == (n, )
+        assert x.shape == (n, self.d)
+        self.update_vectors_c(n, swig_ptr(keys), swig_ptr(x))
+
     replace_method(the_class, 'add', replacement_add)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'train', replacement_train)
     replace_method(the_class, 'search', replacement_search)
     replace_method(the_class, 'remove_ids', replacement_remove_ids)
-
+    replace_method(the_class, 'reconstruct', replacement_reconstruct)
+    replace_method(the_class, 'reconstruct_n', replacement_reconstruct_n)
+    replace_method(the_class, 'update_vectors', replacement_update_vectors,
+                   ignore_missing=True)
 
 def handle_VectorTransform(the_class):
 
@@ -228,12 +252,13 @@ def vector_float_to_array(v):
 
 class Kmeans:
 
-    def __init__(self, d, k, niter=25, verbose=False):
+    def __init__(self, d, k, niter=25, verbose=False, spherical = False):
         self.d = d
         self.k = k
         self.cp = ClusteringParameters()
         self.cp.niter = niter
         self.cp.verbose = verbose
+        self.cp.spherical = spherical
         self.centroids = None
 
     def train(self, x):
@@ -241,7 +266,10 @@ class Kmeans:
         n, d = x.shape
         assert d == self.d
         clus = Clustering(d, self.k, self.cp)
-        self.index = IndexFlatL2(d)
+        if self.cp.spherical:
+            self.index = IndexFlatIP(d)
+        else:
+            self.index = IndexFlatL2(d)
         clus.train(x, self.index)
         centroids = vector_float_to_array(clus.centroids)
         self.centroids = centroids.reshape(self.k, d)

@@ -24,7 +24,7 @@
 #include "IndexIVF.h"
 #include "IndexIVFPQ.h"
 #include "MetaIndexes.h"
-#include "IndexIVFScalarQuantizer.h"
+#include "IndexScalarQuantizer.h"
 
 /*************************************************************
  * The I/O format is the content of the class. For objects that are
@@ -184,6 +184,11 @@ void write_VectorTransform (const VectorTransform *vt, FILE *f) {
         uint32_t h = fourcc ("RmDT");
         WRITE1 (h);
         WRITEVECTOR (rdt->map);
+    } else if (const NormalizationTransform *nt =
+               dynamic_cast<const NormalizationTransform *>(vt)) {
+        uint32_t h = fourcc ("VNrm");
+        WRITE1 (h);
+        WRITE1 (nt->norm);
     } else {
         FAISS_THROW_MSG ("cannot serialize this");
     }
@@ -261,6 +266,13 @@ void write_index (const Index *idx, FILE *f) {
         WRITE1 (idxp->search_type);
         WRITE1 (idxp->encode_signs);
         WRITE1 (idxp->polysemous_ht);
+    } else if(const IndexScalarQuantizer * idxs =
+              dynamic_cast<const IndexScalarQuantizer *> (idx)) {
+        uint32_t h = fourcc ("IxSQ");
+        WRITE1 (h);
+        write_index_header (idx, f);
+        write_ScalarQuantizer (&idxs->sq, f);
+        WRITEVECTOR (idxs->codes);
     } else if(const IndexIVFFlat * ivfl =
               dynamic_cast<const IndexIVFFlat *> (idx)) {
         uint32_t h = fourcc ("IvFl");
@@ -329,7 +341,10 @@ void write_index (const Index *idx, FILE *f) {
         WRITE1 (idxrf->k_factor);
     } else if(const IndexIDMap * idxmap =
               dynamic_cast<const IndexIDMap *> (idx)) {
-        uint32_t h = fourcc ("IxMp");
+        uint32_t h =
+            dynamic_cast<const IndexIDMap2 *> (idx) ? fourcc ("IxM2") :
+            fourcc ("IxMp");
+        // no need to store additional info for IndexIDMap2
         WRITE1 (h);
         write_index_header (idxmap, f);
         write_index (idxmap->index, f);
@@ -400,6 +415,10 @@ VectorTransform* read_VectorTransform (FILE *f) {
         RemapDimensionsTransform *rdt = new RemapDimensionsTransform ();
         READVECTOR (rdt->map);
         vt = rdt;
+    } else if (h == fourcc ("VNrm")) {
+        NormalizationTransform *nt = new NormalizationTransform ();
+        READ1 (nt->norm);
+        vt = nt;
     } else {
         FAISS_THROW_MSG("fourcc not recognized");
     }
@@ -582,6 +601,13 @@ Index *read_index (FILE * f, bool try_mmap) {
         for (size_t i = 0; i < ivfl->nlist; i++)
             READVECTOR (ivfl->vecs[i]);
         idx = ivfl;
+    } else if (h == fourcc ("IxSQ")) {
+        IndexScalarQuantizer * idxs = new IndexScalarQuantizer ();
+        read_index_header (idxs, f);
+        read_ScalarQuantizer (&idxs->sq, f);
+        READVECTOR (idxs->codes);
+        idxs->code_size = idxs->sq.code_size;
+        idx = idxs;
     } else if(h == fourcc ("IvSQ")) {
         IndexIVFScalarQuantizer * ivsc = new IndexIVFScalarQuantizer();
         read_ivf_header (ivsc, f);
@@ -606,8 +632,9 @@ Index *read_index (FILE * f, bool try_mmap) {
         } else {
             READ1 (nt);
         }
-        for (int i = 0; i < nt; i++)
+        for (int i = 0; i < nt; i++) {
             ixpt->chain.push_back (read_VectorTransform (f));
+        }
         ixpt->index = read_index (f);
         idx = ixpt;
     } else if(h == fourcc ("Imiq")) {
@@ -625,12 +652,16 @@ Index *read_index (FILE * f, bool try_mmap) {
         delete rf;
         READ1 (idxrf->k_factor);
         idx = idxrf;
-    } else if(h == fourcc ("IxMp")) {
-        IndexIDMap * idxmap = new IndexIDMap ();
+    } else if(h == fourcc ("IxMp") || h == fourcc ("IxM2")) {
+        bool is_map2 = h == fourcc ("IxM2");
+        IndexIDMap * idxmap = is_map2 ? new IndexIDMap2 () : new IndexIDMap ();
         read_index_header (idxmap, f);
         idxmap->index = read_index (f);
         idxmap->own_fields = true;
         READVECTOR (idxmap->id_map);
+        if (is_map2) {
+            static_cast<IndexIDMap2*>(idxmap)->construct_rev_map ();
+        }
         idx = idxmap;
     } else {
         fprintf (stderr, "Index type 0x%08x not supported\n", h);
@@ -698,6 +729,7 @@ IndexIVF * Cloner::clone_IndexIVF (const IndexIVF *ivf)
     TRYCLONE (IndexIVFPQR, ivf)
     TRYCLONE (IndexIVFPQ, ivf)
     TRYCLONE (IndexIVFFlat, ivf)
+    TRYCLONE (IndexIVFScalarQuantizer, ivf)
     {
       FAISS_THROW_MSG("clone not supported for this type of IndexIVF");
     }
@@ -711,6 +743,7 @@ Index *Cloner::clone_Index (const Index *index)
     TRYCLONE (IndexFlatL2, index)
     TRYCLONE (IndexFlatIP, index)
     TRYCLONE (IndexFlat, index)
+    TRYCLONE (IndexScalarQuantizer, index)
     TRYCLONE (MultiIndexQuantizer, index)
     if (const IndexIVF * ivf = dynamic_cast<const IndexIVF*>(index)) {
         IndexIVF *res = clone_IndexIVF (ivf);

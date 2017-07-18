@@ -27,9 +27,7 @@ class FaissException : public std::exception {
                  int line);
 
   /// from std::exception
-  const char* what() const noexcept override
-  {  return msg.c_str(); }
-  ~FaissException () noexcept override {}
+  const char* what() const noexcept override;
 
   std::string msg;
 };

@@ -14,6 +14,7 @@
 
 
 #include <vector>
+#include <unordered_map>
 
 
 #include "Index.h"
@@ -53,6 +54,28 @@ struct IndexIDMap : Index {
     ~IndexIDMap() override;
     IndexIDMap () {own_fields=false; index=nullptr; }
 };
+
+/** same as IndexIDMap but also provides an efficient reconstruction
+    implementation via a 2-way index */
+struct IndexIDMap2 : IndexIDMap {
+
+    std::unordered_map<idx_t, idx_t> rev_map;
+
+    explicit IndexIDMap2 (Index *index);
+
+    /// make the rev_map from scratch
+    void construct_rev_map ();
+
+    void add_with_ids(idx_t n, const float* x, const long* xids) override;
+
+    long remove_ids(const IDSelector& sel) override;
+
+    void reconstruct (idx_t key, float * recons) const override;
+
+    ~IndexIDMap2() override {}
+    IndexIDMap2 () {}
+};
+
 
 /** Index that concatenates the results from several sub-indexes
  *

@@ -74,7 +74,7 @@ extern "C" {
 #include "IndexPQ.h"
 #include "IndexIVF.h"
 #include "IndexIVFPQ.h"
-#include "IndexIVFScalarQuantizer.h"
+#include "IndexScalarQuantizer.h"
 
 #include "MetaIndexes.h"
 #include "FaissAssert.h"
@@ -240,7 +240,7 @@ int get_num_gpus()
 %include "PolysemousTraining.h"
 %include "IndexPQ.h"
 %include "IndexIVF.h"
-%include "IndexIVFScalarQuantizer.h"
+%include "IndexScalarQuantizer.h"
 
 %ignore faiss::IndexIVFPQ::alloc_type;
 %include "IndexIVFPQ.h"
@@ -426,6 +426,7 @@ struct AsyncIndexSearchC {
     DOWNCAST ( IndexIVF )
     DOWNCAST ( IndexFlat )
     DOWNCAST ( IndexPQ )
+    DOWNCAST ( IndexScalarQuantizer )
     DOWNCAST ( IndexLSH )
     DOWNCAST ( IndexPreTransform )
     DOWNCAST ( MultiIndexQuantizer )
@@ -457,6 +458,7 @@ struct AsyncIndexSearchC {
     DOWNCAST (PCAMatrix)
     DOWNCAST (RandomRotationMatrix)
     DOWNCAST (LinearTransform)
+    DOWNCAST (NormalizationTransform)
     DOWNCAST (VectorTransform)
     {
         assert(false);

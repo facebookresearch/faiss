@@ -91,9 +91,12 @@ struct IndexIVF: Index {
     size_t get_list_size (size_t list_no) const
     { return ids[list_no].size(); }
 
-
-    /// intialize a direct map
-    void make_direct_map ();
+    /** intialize a direct map
+     *
+     * @param new_maintain_direct_map    if true, create a direct map,
+     *                                   else clear it
+     */
+    void make_direct_map (bool new_maintain_direct_map=true);
 
     /// 1= perfectly balanced, >1: imbalanced
     double imbalance_factor () const;
@@ -183,6 +186,16 @@ struct IndexIVFFlat: IndexIVF {
             size_t nx, const float * x,
             const long * keys,
             float_maxheap_array_t * res) const;
+
+    /** Update a subset of vectors.
+     *
+     * The index must have a direct_map
+     *
+     * @param nv     nb of vectors to update
+     * @param idx    vector indices to update, size nv
+     * @param v      vectors of new values, size nv*d
+     */
+    void update_vectors (int nv, idx_t *idx, const float *v);
 
     void reconstruct(idx_t key, float* recons) const override;
 
