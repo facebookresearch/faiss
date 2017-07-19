@@ -790,7 +790,7 @@ IndexPreTransform::~IndexPreTransform ()
 void IndexPreTransform::train (idx_t n, const float *x)
 {
     int last_untrained = 0;
-    if (index->is_trained) {
+    if (!index->is_trained) {
         last_untrained = chain.size();
     } else {
         for (int i = chain.size() - 1; i >= 0; i--) {
