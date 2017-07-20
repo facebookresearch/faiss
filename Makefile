@@ -86,6 +86,20 @@ python/_swigfaiss.so: python/swigfaiss_wrap.cxx $(LIBNAME).a
 _swigfaiss.so: python/_swigfaiss.so
 	cp python/_swigfaiss.so python/swigfaiss.py .
 
+
+#############################
+# Docker
+
+DOCKER ?= docker
+DOCKER_IMAGE = faiss
+
+docker/build:
+	$(DOCKER) build -t $(DOCKER_IMAGE) .
+
+docker/py:
+	$(DOCKER) run --rm -itv ${PWD}/python:/opt/faiss/python --entrypoint make $(DOCKER_IMAGE) clean py
+
+
 #############################
 # Dependencies
 
