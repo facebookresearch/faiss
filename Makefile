@@ -17,6 +17,7 @@ all: .env_ok $(LIBNAME).a tests/demo_ivfpq_indexing
 
 py: _swigfaiss.so
 
+.PHONY: .env_ok .swig_ok
 
 
 #############################
@@ -74,7 +75,7 @@ HFILES = IndexFlat.h Index.h IndexLSH.h IndexPQ.h IndexIVF.h \
     Clustering.h hamming.h AutoTune.h IndexScalarQuantizer.h FaissException.h
 
 # also silently generates python/swigfaiss.py
-python/swigfaiss_wrap.cxx: swigfaiss.swig $(HFILES)
+python/swigfaiss_wrap.cxx: .swig_ok swigfaiss.swig $(HFILES)
 	$(SWIGEXEC) -python -c++ -Doverride= -o $@ $<
 
 
