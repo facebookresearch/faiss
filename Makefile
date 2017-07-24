@@ -169,3 +169,7 @@ endif
 ifeq ($(shell command -v $(SWIGEXEC) 2>/dev/null),)
 	$(error Cannot find $(SWIGEXEC), please refer to $(CURDIR)/makefile.inc to set up your environment)
 endif
+ifneq ($(shell $(SWIGEXEC) -version | grep 'SWIG Version'), 'SWIG Version 3.0.1')
+	$(error $(SWIGEXEC) wrong version number, please install swig version 3.0.1)
+endif
+
