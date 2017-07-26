@@ -9,6 +9,7 @@ var searchData=
   ['hammingcomputer4',['HammingComputer4',['../structfaiss_1_1HammingComputer4.html',1,'faiss']]],
   ['hammingcomputer64',['HammingComputer64',['../structfaiss_1_1HammingComputer64.html',1,'faiss']]],
   ['hammingcomputer8',['HammingComputer8',['../structfaiss_1_1HammingComputer8.html',1,'faiss']]],
+  ['hammingcomputerdefault',['HammingComputerDefault',['../structfaiss_1_1HammingComputerDefault.html',1,'faiss']]],
   ['hammingcomputerm4',['HammingComputerM4',['../structfaiss_1_1HammingComputerM4.html',1,'faiss']]],
   ['hammingcomputerm8',['HammingComputerM8',['../structfaiss_1_1HammingComputerM8.html',1,'faiss']]],
   ['hammings',['hammings',['../namespacefaiss.html#a0832c5ab58f4d1a340b0bde273c5b501',1,'faiss']]],

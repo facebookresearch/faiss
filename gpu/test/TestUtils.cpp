@@ -95,7 +95,7 @@ void compareIndices(faiss::Index& refIndex,
 }
 
 template <typename T>
-inline T lookup(const T* p, int i, int j, int dim1, int dim2) {
+inline T lookup(const T* p, int i, int j, int /*dim1*/, int dim2) {
   return p[i * dim2 + j];
 }
 

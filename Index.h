@@ -86,8 +86,8 @@ struct Index {
      * @param n      nb of training vectors
      * @param x      training vecors, size n * d
      */
-    virtual void train (idx_t n, const float *x) {
-        // does nothing by default
+    virtual void train(idx_t /*n*/, const float* /*x*/) {
+      // does nothing by default
     }
 
     /** Add n vectors of dimension d to the index.

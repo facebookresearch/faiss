@@ -927,8 +927,8 @@ void knn_inner_product (const float * x,
 
 
 struct NopDistanceCorrection {
-    float operator()(float dis, size_t qno, size_t bno) const {
-        return dis;
+  float operator()(float dis, size_t /*qno*/, size_t /*bno*/) const {
+    return dis;
     }
 };
 
@@ -947,8 +947,8 @@ void knn_L2sqr (const float * x,
 
 struct BaseShiftDistanceCorrection {
     const float *base_shift;
-    float operator()(float dis, size_t qno, size_t bno) const {
-        return dis - base_shift[bno];
+    float operator()(float dis, size_t /*qno*/, size_t bno) const {
+      return dis - base_shift[bno];
     }
 };
 

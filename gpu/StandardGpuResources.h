@@ -42,6 +42,13 @@ class StandardGpuResources : public GpuResources {
   /// transfers
   void setPinnedMemory(size_t size);
 
+  /// Called to change the stream for work ordering
+  void setDefaultStream(int device, cudaStream_t stream);
+
+  /// Called to change the work ordering streams to the null stream
+  /// for all devices
+  void setDefaultNullStreamAllDevices();
+
  public:
   /// Internal system calls
   void initializeForDevice(int device) override;
@@ -61,6 +68,10 @@ class StandardGpuResources : public GpuResources {
  private:
   /// Our default stream that work is ordered on, one per each device
   std::unordered_map<int, cudaStream_t> defaultStreams_;
+
+  /// This contains particular streams as set by the user for
+  /// ordering, if any
+  std::unordered_map<int, cudaStream_t> userDefaultStreams_;
 
   /// Other streams we can use, per each device
   std::unordered_map<int, std::vector<cudaStream_t> > alternateStreams_;

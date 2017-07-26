@@ -498,10 +498,14 @@ void hammings_knn (
             (32, ha, a, b, nb, order, true);
         break;
     default:
-        FAISS_THROW_IF_NOT (ncodes % 8 == 0);
-        hammings_knn_hc<faiss::HammingComputerM8>
-            (ncodes, ha, a, b, nb, order, true);
+        if(ncodes % 8 == 0) {
+            hammings_knn_hc<faiss::HammingComputerM8>
+                (ncodes, ha, a, b, nb, order, true);
+        } else {
+            hammings_knn_hc<faiss::HammingComputerDefault>
+                (ncodes, ha, a, b, nb, order, true);
 
+        }
     }
 }
 

@@ -209,6 +209,46 @@ class OperatingPointVector(_object):
 OperatingPointVector_swigregister = _swigfaiss_gpu.OperatingPointVector_swigregister
 OperatingPointVector_swigregister(OperatingPointVector)
 
+class FloatVectorVector(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, FloatVectorVector, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, FloatVectorVector, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _swigfaiss_gpu.new_FloatVectorVector()
+        try: self.this.append(this)
+        except: self.this = this
+    def push_back(self, *args): return _swigfaiss_gpu.FloatVectorVector_push_back(self, *args)
+    def data(self): return _swigfaiss_gpu.FloatVectorVector_data(self)
+    def size(self): return _swigfaiss_gpu.FloatVectorVector_size(self)
+    def at(self, *args): return _swigfaiss_gpu.FloatVectorVector_at(self, *args)
+    def resize(self, *args): return _swigfaiss_gpu.FloatVectorVector_resize(self, *args)
+    __swig_destroy__ = _swigfaiss_gpu.delete_FloatVectorVector
+    __del__ = lambda self : None;
+FloatVectorVector_swigregister = _swigfaiss_gpu.FloatVectorVector_swigregister
+FloatVectorVector_swigregister(FloatVectorVector)
+
+class ByteVectorVector(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ByteVectorVector, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, ByteVectorVector, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _swigfaiss_gpu.new_ByteVectorVector()
+        try: self.this.append(this)
+        except: self.this = this
+    def push_back(self, *args): return _swigfaiss_gpu.ByteVectorVector_push_back(self, *args)
+    def data(self): return _swigfaiss_gpu.ByteVectorVector_data(self)
+    def size(self): return _swigfaiss_gpu.ByteVectorVector_size(self)
+    def at(self, *args): return _swigfaiss_gpu.ByteVectorVector_at(self, *args)
+    def resize(self, *args): return _swigfaiss_gpu.ByteVectorVector_resize(self, *args)
+    __swig_destroy__ = _swigfaiss_gpu.delete_ByteVectorVector
+    __del__ = lambda self : None;
+ByteVectorVector_swigregister = _swigfaiss_gpu.ByteVectorVector_swigregister
+ByteVectorVector_swigregister(ByteVectorVector)
+
 class GpuResourcesVector(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, GpuResourcesVector, name, value)
@@ -422,6 +462,28 @@ class HammingComputer64(_object):
 HammingComputer64_swigregister = _swigfaiss_gpu.HammingComputer64_swigregister
 HammingComputer64_swigregister(HammingComputer64)
 
+class HammingComputerDefault(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, HammingComputerDefault, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, HammingComputerDefault, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["a"] = _swigfaiss_gpu.HammingComputerDefault_a_set
+    __swig_getmethods__["a"] = _swigfaiss_gpu.HammingComputerDefault_a_get
+    if _newclass:a = _swig_property(_swigfaiss_gpu.HammingComputerDefault_a_get, _swigfaiss_gpu.HammingComputerDefault_a_set)
+    __swig_setmethods__["n"] = _swigfaiss_gpu.HammingComputerDefault_n_set
+    __swig_getmethods__["n"] = _swigfaiss_gpu.HammingComputerDefault_n_get
+    if _newclass:n = _swig_property(_swigfaiss_gpu.HammingComputerDefault_n_get, _swigfaiss_gpu.HammingComputerDefault_n_set)
+    def __init__(self, *args): 
+        this = _swigfaiss_gpu.new_HammingComputerDefault(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def hamming(self, *args): return _swigfaiss_gpu.HammingComputerDefault_hamming(self, *args)
+    __swig_destroy__ = _swigfaiss_gpu.delete_HammingComputerDefault
+    __del__ = lambda self : None;
+HammingComputerDefault_swigregister = _swigfaiss_gpu.HammingComputerDefault_swigregister
+HammingComputerDefault_swigregister(HammingComputerDefault)
+
 class HammingComputerM8(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, HammingComputerM8, name, value)
@@ -586,6 +648,8 @@ class GpuResources(_object):
     def getAsyncCopyStream(self, *args): return _swigfaiss_gpu.GpuResources_getAsyncCopyStream(self, *args)
     def getBlasHandleCurrentDevice(self): return _swigfaiss_gpu.GpuResources_getBlasHandleCurrentDevice(self)
     def getDefaultStreamCurrentDevice(self): return _swigfaiss_gpu.GpuResources_getDefaultStreamCurrentDevice(self)
+    def syncDefaultStream(self, *args): return _swigfaiss_gpu.GpuResources_syncDefaultStream(self, *args)
+    def syncDefaultStreamCurrentDevice(self): return _swigfaiss_gpu.GpuResources_syncDefaultStreamCurrentDevice(self)
     def getAlternateStreamsCurrentDevice(self): return _swigfaiss_gpu.GpuResources_getAlternateStreamsCurrentDevice(self)
     def getAsyncCopyStreamCurrentDevice(self): return _swigfaiss_gpu.GpuResources_getAsyncCopyStreamCurrentDevice(self)
 GpuResources_swigregister = _swigfaiss_gpu.GpuResources_swigregister
@@ -609,6 +673,8 @@ class StandardGpuResources(GpuResources):
     def setTempMemory(self, *args): return _swigfaiss_gpu.StandardGpuResources_setTempMemory(self, *args)
     def setTempMemoryFraction(self, *args): return _swigfaiss_gpu.StandardGpuResources_setTempMemoryFraction(self, *args)
     def setPinnedMemory(self, *args): return _swigfaiss_gpu.StandardGpuResources_setPinnedMemory(self, *args)
+    def setDefaultStream(self, *args): return _swigfaiss_gpu.StandardGpuResources_setDefaultStream(self, *args)
+    def setDefaultNullStreamAllDevices(self): return _swigfaiss_gpu.StandardGpuResources_setDefaultNullStreamAllDevices(self)
     def initializeForDevice(self, *args): return _swigfaiss_gpu.StandardGpuResources_initializeForDevice(self, *args)
     def getBlasHandle(self, *args): return _swigfaiss_gpu.StandardGpuResources_getBlasHandle(self, *args)
     def getDefaultStream(self, *args): return _swigfaiss_gpu.StandardGpuResources_getDefaultStream(self, *args)
@@ -3049,6 +3115,18 @@ omp_get_max_threads = _swigfaiss_gpu.omp_get_max_threads
 def memcpy(*args):
   return _swigfaiss_gpu.memcpy(*args)
 memcpy = _swigfaiss_gpu.memcpy
+
+def cast_integer_to_float_ptr(*args):
+  return _swigfaiss_gpu.cast_integer_to_float_ptr(*args)
+cast_integer_to_float_ptr = _swigfaiss_gpu.cast_integer_to_float_ptr
+
+def cast_integer_to_long_ptr(*args):
+  return _swigfaiss_gpu.cast_integer_to_long_ptr(*args)
+cast_integer_to_long_ptr = _swigfaiss_gpu.cast_integer_to_long_ptr
+
+def cast_integer_to_int_ptr(*args):
+  return _swigfaiss_gpu.cast_integer_to_int_ptr(*args)
+cast_integer_to_int_ptr = _swigfaiss_gpu.cast_integer_to_int_ptr
 class RangeSearchResult(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, RangeSearchResult, name, value)

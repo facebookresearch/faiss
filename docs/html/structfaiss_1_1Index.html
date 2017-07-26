@@ -131,8 +131,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a18475cb29370bd6ac3c9f41d39f2e8ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a18475cb29370bd6ac3c9f41d39f2e8ec"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Index</b> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> <a class="el" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>=0, <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">MetricType</a> metric=METRIC_INNER_PRODUCT)</td></tr>
 <tr class="separator:a18475cb29370bd6ac3c9f41d39f2e8ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f67dfd73993e192dc78f2c93d9d9532"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a8f67dfd73993e192dc78f2c93d9d9532">train</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x)</td></tr>
-<tr class="separator:a8f67dfd73993e192dc78f2c93d9d9532"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ffe916c958605c38b0b1bfad42485e4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a1ffe916c958605c38b0b1bfad42485e4">train</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>, const float *)</td></tr>
+<tr class="separator:a1ffe916c958605c38b0b1bfad42485e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b5e9ac70adbce0897dd6c8276ad96f2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a1b5e9ac70adbce0897dd6c8276ad96f2">add</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x)=0</td></tr>
 <tr class="separator:a1b5e9ac70adbce0897dd6c8276ad96f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6931dfe054b33b02c842ff75f7a0c7f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#aa6931dfe054b33b02c842ff75f7a0c7f">add_with_ids</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, const long *xids)</td></tr>
@@ -278,9 +278,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="structfaiss_1_1IndexPreTransform.html#a07fef0553b2ef2907f394470f61898b2">faiss::IndexPreTransform</a>, <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a4b6154a5194d574d037ba78c137a2fa5">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexIVFFlat.html#a5f7356766632d3ce2838f285aa6b8e76">faiss::IndexIVFFlat</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#afa95c17787b7e3dbed9309b440d4d748">faiss::IndexIVFScalarQuantizer</a>, <a class="el" href="structfaiss_1_1IndexShards.html#a1f771d50133494f682f05c9ab9e39ad9">faiss::IndexShards</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#afa95c17787b7e3dbed9309b440d4d748">faiss::IndexIVFScalarQuantizer</a>, <a class="el" href="structfaiss_1_1IndexIDMap2.html#a33ff76975891695c2fa45ed26fc8eae9">faiss::IndexIDMap2</a>, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a47f6969fe60d82b8e3407557ba9eec88">faiss::gpu::GpuIndex</a>, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#a981c2748bfbd9b018494f119279a0342">faiss::IndexIVFPQ</a>, and <a class="el" href="structfaiss_1_1IndexIDMap.html#aeace75e53648c052d05c357b744e090b">faiss::IndexIDMap</a>.</p>
+<p>Reimplemented in <a class="el" href="structfaiss_1_1IndexPreTransform.html#a07fef0553b2ef2907f394470f61898b2">faiss::IndexPreTransform</a>, <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a4b6154a5194d574d037ba78c137a2fa5">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexIVFFlat.html#a5f7356766632d3ce2838f285aa6b8e76">faiss::IndexIVFFlat</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#afa95c17787b7e3dbed9309b440d4d748">faiss::IndexIVFScalarQuantizer</a>, <a class="el" href="structfaiss_1_1IndexShards.html#a1f771d50133494f682f05c9ab9e39ad9">faiss::IndexShards</a>, <a class="el" href="structfaiss_1_1IndexIDMap2.html#a33ff76975891695c2fa45ed26fc8eae9">faiss::IndexIDMap2</a>, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a47f6969fe60d82b8e3407557ba9eec88">faiss::gpu::GpuIndex</a>, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#a981c2748bfbd9b018494f119279a0342">faiss::IndexIVFPQ</a>, and <a class="el" href="structfaiss_1_1IndexIDMap.html#aeace75e53648c052d05c357b744e090b">faiss::IndexIDMap</a>.</p>
 
-<p>Definition at line <a class="el" href="Index_8cpp_source.html#l00031">31</a> of file <a class="el" href="Index_8cpp_source.html">Index.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Index_8cpp_source.html#l00030">30</a> of file <a class="el" href="Index_8cpp_source.html">Index.cpp</a>.</p>
 
 </div>
 </div>
@@ -373,7 +373,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Index_8cpp_source.html#l00058">58</a> of file <a class="el" href="Index_8cpp_source.html">Index.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Index_8cpp_source.html#l00057">57</a> of file <a class="el" href="Index_8cpp_source.html">Index.cpp</a>.</p>
 
 </div>
 </div>
@@ -391,7 +391,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 </div><div class="memdoc">
 <p>Display the actual class name and some more info </p>
 
-<p>Definition at line <a class="el" href="Index_8cpp_source.html#l00066">66</a> of file <a class="el" href="Index_8cpp_source.html">Index.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Index_8cpp_source.html#l00065">65</a> of file <a class="el" href="Index_8cpp_source.html">Index.cpp</a>.</p>
 
 </div>
 </div>
@@ -498,7 +498,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFFlat.html#af7aa8b40cae6d50317049a252df8fb44">faiss::IndexIVFFlat</a>, <a class="el" href="structfaiss_1_1MultiIndexQuantizer.html#aa5bd578560419955a4bf7035cf09a392">faiss::MultiIndexQuantizer</a>, <a class="el" href="structfaiss_1_1IndexScalarQuantizer.html#a8fb8680f64465d643d96119da58099f3">faiss::IndexScalarQuantizer</a>, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#a7f1cdf03d3545a43fc91bb5cace3b6fd">faiss::gpu::GpuIndexFlat</a>, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#a28ce697b1381eb7e7d7d25774a25e175">faiss::IndexIVFPQ</a>, <a class="el" href="structfaiss_1_1IndexIDMap2.html#a3660adb35a3299bc328988f5ff2199fe">faiss::IndexIDMap2</a>, <a class="el" href="classfaiss_1_1gpu_1_1IndexProxy.html#a8bf6d513b4f41fb533f0d023c1e143ba">faiss::gpu::IndexProxy</a>, <a class="el" href="structfaiss_1_1IndexPQ.html#a20913df3bfd8caa5187112641e8d9bc7">faiss::IndexPQ</a>, and <a class="el" href="structfaiss_1_1IndexFlat.html#ae4b33315752b62cff1626f9f967167b1">faiss::IndexFlat</a>.</p>
 
-<p>Definition at line <a class="el" href="Index_8cpp_source.html#l00044">44</a> of file <a class="el" href="Index_8cpp_source.html">Index.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Index_8cpp_source.html#l00043">43</a> of file <a class="el" href="Index_8cpp_source.html">Index.cpp</a>.</p>
 
 </div>
 </div>
@@ -550,7 +550,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexPreTransform.html#a370dd6ef091393401fa9b60e3d1d25b2">faiss::IndexPreTransform</a>, <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a0f0d8fc6b2c6aa2431c1730111a3b22a">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexScalarQuantizer.html#a06e6935b75f0b209f65fffa1c9e1477c">faiss::IndexScalarQuantizer</a>, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#a472732e9bd8ffb1aa4c3abc31063dd28">faiss::gpu::GpuIndexFlat</a>, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#a1df10e9e5f4ff0dabf283f19ad94bbd4">faiss::IndexIVFPQ</a>, and <a class="el" href="structfaiss_1_1IndexPQ.html#a99b187b1231a700617f7b228ec348ade">faiss::IndexPQ</a>.</p>
 
-<p>Definition at line <a class="el" href="Index_8cpp_source.html#l00050">50</a> of file <a class="el" href="Index_8cpp_source.html">Index.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Index_8cpp_source.html#l00049">49</a> of file <a class="el" href="Index_8cpp_source.html">Index.cpp</a>.</p>
 
 </div>
 </div>
@@ -643,11 +643,11 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="structfaiss_1_1IndexPreTransform.html#a7c2c820895d87083742969c281ae4911">faiss::IndexPreTransform</a>, <a class="el" href="structfaiss_1_1IndexIVFFlatIPBounds.html#aac063e96413e0e90d87898df8a60088b">faiss::IndexIVFFlatIPBounds</a>, <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a3e982ee6f1a3a025148270701867d04f">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexFlat1D.html#a65736f2900865cd156faba4fcd260d05">faiss::IndexFlat1D</a>, <a class="el" href="structfaiss_1_1IndexIVFFlat.html#acd2bdb06fcbe9d1f5799cf78aa6cdf0d">faiss::IndexIVFFlat</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#a0e1197a21c9291a2d570116f72fd2196">faiss::IndexIVFScalarQuantizer</a>, <a class="el" href="structfaiss_1_1MultiIndexQuantizer.html#a999ee03f4e65f453377e209d10e25681">faiss::MultiIndexQuantizer</a>, <a class="el" href="structfaiss_1_1IndexSplitVectors.html#a4a010daf51e44d9717e94400cc23c159">faiss::IndexSplitVectors</a>, <a class="el" href="structfaiss_1_1IndexRefineFlat.html#ad04444de1e2c26c463cc52f3c076dd41">faiss::IndexRefineFlat</a>, <a class="el" href="structfaiss_1_1IndexShards.html#a83391295650370e8987358a898bb2cca">faiss::IndexShards</a>, <a class="el" href="structfaiss_1_1IndexScalarQuantizer.html#abf24732c29106bb808148c3d30599662">faiss::IndexScalarQuantizer</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#a0e1197a21c9291a2d570116f72fd2196">faiss::IndexIVFScalarQuantizer</a>, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#ac0f0301829363f920e619f673a4d97f3">faiss::gpu::GpuIndexFlat</a>, <a class="el" href="structfaiss_1_1IndexFlatL2BaseShift.html#a16e9bf1aec9d18b3ebbe78fea6bfecc0">faiss::IndexFlatL2BaseShift</a>, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a6f1cadb5e8970c9c1fdf15eddb9d874f">faiss::gpu::GpuIndex</a>, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#afa7c9a7ae0316d2a05acb60ab2b7a31a">faiss::IndexIVFPQ</a>, <a class="el" href="classfaiss_1_1gpu_1_1IndexProxy.html#a25ed68079907eeeca9d441cdd4fc0740">faiss::gpu::IndexProxy</a>, <a class="el" href="structfaiss_1_1IndexLSH.html#a66b6afb56afa1f58e2d93abfdfd223ee">faiss::IndexLSH</a>, <a class="el" href="structfaiss_1_1IndexPQ.html#a491ba3ed34093513e6a850fbca0abdd2">faiss::IndexPQ</a>, <a class="el" href="structfaiss_1_1IndexIDMap.html#a2f36fa9150a465b48952afbba856e2a1">faiss::IndexIDMap</a>, and <a class="el" href="structfaiss_1_1IndexFlat.html#a85510d70f4675197df9988651e4692c9">faiss::IndexFlat</a>.</p>
+<p>Implemented in <a class="el" href="structfaiss_1_1IndexPreTransform.html#a7c2c820895d87083742969c281ae4911">faiss::IndexPreTransform</a>, <a class="el" href="structfaiss_1_1IndexIVFFlatIPBounds.html#aac063e96413e0e90d87898df8a60088b">faiss::IndexIVFFlatIPBounds</a>, <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a3e982ee6f1a3a025148270701867d04f">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexFlat1D.html#a65736f2900865cd156faba4fcd260d05">faiss::IndexFlat1D</a>, <a class="el" href="structfaiss_1_1IndexIVFFlat.html#acd2bdb06fcbe9d1f5799cf78aa6cdf0d">faiss::IndexIVFFlat</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#a0e1197a21c9291a2d570116f72fd2196">faiss::IndexIVFScalarQuantizer</a>, <a class="el" href="structfaiss_1_1MultiIndexQuantizer.html#a999ee03f4e65f453377e209d10e25681">faiss::MultiIndexQuantizer</a>, <a class="el" href="structfaiss_1_1IndexSplitVectors.html#a4a010daf51e44d9717e94400cc23c159">faiss::IndexSplitVectors</a>, <a class="el" href="structfaiss_1_1IndexRefineFlat.html#ad04444de1e2c26c463cc52f3c076dd41">faiss::IndexRefineFlat</a>, <a class="el" href="structfaiss_1_1IndexShards.html#a83391295650370e8987358a898bb2cca">faiss::IndexShards</a>, <a class="el" href="structfaiss_1_1IndexScalarQuantizer.html#abf24732c29106bb808148c3d30599662">faiss::IndexScalarQuantizer</a>, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#ac0f0301829363f920e619f673a4d97f3">faiss::gpu::GpuIndexFlat</a>, <a class="el" href="structfaiss_1_1IndexFlatL2BaseShift.html#a16e9bf1aec9d18b3ebbe78fea6bfecc0">faiss::IndexFlatL2BaseShift</a>, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a6f1cadb5e8970c9c1fdf15eddb9d874f">faiss::gpu::GpuIndex</a>, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#afa7c9a7ae0316d2a05acb60ab2b7a31a">faiss::IndexIVFPQ</a>, <a class="el" href="classfaiss_1_1gpu_1_1IndexProxy.html#a25ed68079907eeeca9d441cdd4fc0740">faiss::gpu::IndexProxy</a>, <a class="el" href="structfaiss_1_1IndexLSH.html#a66b6afb56afa1f58e2d93abfdfd223ee">faiss::IndexLSH</a>, <a class="el" href="structfaiss_1_1IndexPQ.html#a491ba3ed34093513e6a850fbca0abdd2">faiss::IndexPQ</a>, <a class="el" href="structfaiss_1_1IndexIDMap.html#a2f36fa9150a465b48952afbba856e2a1">faiss::IndexIDMap</a>, and <a class="el" href="structfaiss_1_1IndexFlat.html#a85510d70f4675197df9988651e4692c9">faiss::IndexFlat</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a8f67dfd73993e192dc78f2c93d9d9532"></a>
+<a class="anchor" id="a1ffe916c958605c38b0b1bfad42485e4"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -658,13 +658,13 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
           <td class="memname">virtual void faiss::Index::train </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
+          <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const float *&#160;</td>
-          <td class="paramname"><em>x</em>&#160;</td>
+          <td class="paramname">&#160;</td>
         </tr>
         <tr>
           <td></td>

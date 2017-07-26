@@ -209,6 +209,46 @@ class OperatingPointVector(_object):
 OperatingPointVector_swigregister = _swigfaiss.OperatingPointVector_swigregister
 OperatingPointVector_swigregister(OperatingPointVector)
 
+class FloatVectorVector(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, FloatVectorVector, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, FloatVectorVector, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _swigfaiss.new_FloatVectorVector()
+        try: self.this.append(this)
+        except: self.this = this
+    def push_back(self, *args): return _swigfaiss.FloatVectorVector_push_back(self, *args)
+    def data(self): return _swigfaiss.FloatVectorVector_data(self)
+    def size(self): return _swigfaiss.FloatVectorVector_size(self)
+    def at(self, *args): return _swigfaiss.FloatVectorVector_at(self, *args)
+    def resize(self, *args): return _swigfaiss.FloatVectorVector_resize(self, *args)
+    __swig_destroy__ = _swigfaiss.delete_FloatVectorVector
+    __del__ = lambda self : None;
+FloatVectorVector_swigregister = _swigfaiss.FloatVectorVector_swigregister
+FloatVectorVector_swigregister(FloatVectorVector)
+
+class ByteVectorVector(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ByteVectorVector, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, ByteVectorVector, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _swigfaiss.new_ByteVectorVector()
+        try: self.this.append(this)
+        except: self.this = this
+    def push_back(self, *args): return _swigfaiss.ByteVectorVector_push_back(self, *args)
+    def data(self): return _swigfaiss.ByteVectorVector_data(self)
+    def size(self): return _swigfaiss.ByteVectorVector_size(self)
+    def at(self, *args): return _swigfaiss.ByteVectorVector_at(self, *args)
+    def resize(self, *args): return _swigfaiss.ByteVectorVector_resize(self, *args)
+    __swig_destroy__ = _swigfaiss.delete_ByteVectorVector
+    __del__ = lambda self : None;
+ByteVectorVector_swigregister = _swigfaiss.ByteVectorVector_swigregister
+ByteVectorVector_swigregister(ByteVectorVector)
+
 
 def popcount64(*args):
   return _swigfaiss.popcount64(*args)
@@ -401,6 +441,28 @@ class HammingComputer64(_object):
     __del__ = lambda self : None;
 HammingComputer64_swigregister = _swigfaiss.HammingComputer64_swigregister
 HammingComputer64_swigregister(HammingComputer64)
+
+class HammingComputerDefault(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, HammingComputerDefault, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, HammingComputerDefault, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["a"] = _swigfaiss.HammingComputerDefault_a_set
+    __swig_getmethods__["a"] = _swigfaiss.HammingComputerDefault_a_get
+    if _newclass:a = _swig_property(_swigfaiss.HammingComputerDefault_a_get, _swigfaiss.HammingComputerDefault_a_set)
+    __swig_setmethods__["n"] = _swigfaiss.HammingComputerDefault_n_set
+    __swig_getmethods__["n"] = _swigfaiss.HammingComputerDefault_n_get
+    if _newclass:n = _swig_property(_swigfaiss.HammingComputerDefault_n_get, _swigfaiss.HammingComputerDefault_n_set)
+    def __init__(self, *args): 
+        this = _swigfaiss.new_HammingComputerDefault(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def hamming(self, *args): return _swigfaiss.HammingComputerDefault_hamming(self, *args)
+    __swig_destroy__ = _swigfaiss.delete_HammingComputerDefault
+    __del__ = lambda self : None;
+HammingComputerDefault_swigregister = _swigfaiss.HammingComputerDefault_swigregister
+HammingComputerDefault_swigregister(HammingComputerDefault)
 
 class HammingComputerM8(_object):
     __swig_setmethods__ = {}
@@ -2575,6 +2637,18 @@ omp_get_max_threads = _swigfaiss.omp_get_max_threads
 def memcpy(*args):
   return _swigfaiss.memcpy(*args)
 memcpy = _swigfaiss.memcpy
+
+def cast_integer_to_float_ptr(*args):
+  return _swigfaiss.cast_integer_to_float_ptr(*args)
+cast_integer_to_float_ptr = _swigfaiss.cast_integer_to_float_ptr
+
+def cast_integer_to_long_ptr(*args):
+  return _swigfaiss.cast_integer_to_long_ptr(*args)
+cast_integer_to_long_ptr = _swigfaiss.cast_integer_to_long_ptr
+
+def cast_integer_to_int_ptr(*args):
+  return _swigfaiss.cast_integer_to_int_ptr(*args)
+cast_integer_to_int_ptr = _swigfaiss.cast_integer_to_int_ptr
 class RangeSearchResult(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, RangeSearchResult, name, value)

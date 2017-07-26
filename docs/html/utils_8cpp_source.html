@@ -1012,8 +1012,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;</div>
 <div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;</div>
 <div class="line"><a name="l00929"></a><span class="lineno"><a class="line" href="structfaiss_1_1NopDistanceCorrection.html">  929</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1NopDistanceCorrection.html">NopDistanceCorrection</a> {</div>
-<div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;    <span class="keywordtype">float</span> operator()(<span class="keywordtype">float</span> dis, <span class="keywordtype">size_t</span> qno, <span class="keywordtype">size_t</span> bno)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160;        <span class="keywordflow">return</span> dis;</div>
+<div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;  <span class="keywordtype">float</span> operator()(<span class="keywordtype">float</span> dis, <span class="keywordtype">size_t</span> <span class="comment">/*qno*/</span>, <span class="keywordtype">size_t</span> <span class="comment">/*bno*/</span>)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160;    <span class="keywordflow">return</span> dis;</div>
 <div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;    }</div>
 <div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;};</div>
 <div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;</div>
@@ -1032,8 +1032,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00947"></a><span class="lineno">  947</span>&#160;</div>
 <div class="line"><a name="l00948"></a><span class="lineno"><a class="line" href="structfaiss_1_1BaseShiftDistanceCorrection.html">  948</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1BaseShiftDistanceCorrection.html">BaseShiftDistanceCorrection</a> {</div>
 <div class="line"><a name="l00949"></a><span class="lineno">  949</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">float</span> *base_shift;</div>
-<div class="line"><a name="l00950"></a><span class="lineno">  950</span>&#160;    <span class="keywordtype">float</span> operator()(<span class="keywordtype">float</span> dis, <span class="keywordtype">size_t</span> qno, <span class="keywordtype">size_t</span> bno)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00951"></a><span class="lineno">  951</span>&#160;        <span class="keywordflow">return</span> dis - base_shift[bno];</div>
+<div class="line"><a name="l00950"></a><span class="lineno">  950</span>&#160;    <span class="keywordtype">float</span> operator()(<span class="keywordtype">float</span> dis, <span class="keywordtype">size_t</span> <span class="comment">/*qno*/</span>, <span class="keywordtype">size_t</span> bno)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00951"></a><span class="lineno">  951</span>&#160;      <span class="keywordflow">return</span> dis - base_shift[bno];</div>
 <div class="line"><a name="l00952"></a><span class="lineno">  952</span>&#160;    }</div>
 <div class="line"><a name="l00953"></a><span class="lineno">  953</span>&#160;};</div>
 <div class="line"><a name="l00954"></a><span class="lineno">  954</span>&#160;</div>

@@ -15,7 +15,7 @@ var searchData=
   ['rangesearchpartialresult',['RangeSearchPartialResult',['../structfaiss_1_1RangeSearchPartialResult.html',1,'faiss']]],
   ['rangesearchresult',['RangeSearchResult',['../structfaiss_1_1RangeSearchResult.html#a46e9fa31c3e232249cef508f357d856c',1,'faiss::RangeSearchResult']]],
   ['rangesearchresult',['RangeSearchResult',['../structfaiss_1_1RangeSearchResult.html',1,'faiss']]],
-  ['rangestat',['RangeStat',['../structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06',1,'faiss::ScalarQuantizer::RangeStat()'],['../structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06',1,'faiss::ScalarQuantizer::RangeStat()']]],
+  ['rangestat',['RangeStat',['../structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06',1,'faiss::ScalarQuantizer']]],
   ['rankingscore2',['RankingScore2',['../structfaiss_1_1RankingScore2.html',1,'faiss']]],
   ['ranklist_5fhandle_5fties',['ranklist_handle_ties',['../namespacefaiss.html#ae0ee1b6fbd3d6da0f1a3550a780ca24c',1,'faiss']]],
   ['ranklist_5fintersection_5fsize',['ranklist_intersection_size',['../namespacefaiss.html#a8dbc652ba48d41f126b8815004899448',1,'faiss']]],
@@ -44,9 +44,9 @@ var searchData=
   ['reverse_5ftransform',['reverse_transform',['../structfaiss_1_1VectorTransform.html#a101ce54f1c60df19478801aa942470d9',1,'faiss::VectorTransform::reverse_transform()'],['../structfaiss_1_1RandomRotationMatrix.html#a3ad86e9ae3bdc2090c1f5fc62a335c16',1,'faiss::RandomRotationMatrix::reverse_transform()'],['../structfaiss_1_1PCAMatrix.html#abf427521a66cbfaaf0b7aae16bcb6e93',1,'faiss::PCAMatrix::reverse_transform()'],['../structfaiss_1_1OPQMatrix.html#a8e61a84ea6bcbdee1809028b6aaa3aae',1,'faiss::OPQMatrix::reverse_transform()'],['../structfaiss_1_1RemapDimensionsTransform.html#a2fc83e79e4d3c7853bfd6931cbbaf82a',1,'faiss::RemapDimensionsTransform::reverse_transform()']]],
   ['rotate_5fdata',['rotate_data',['../structfaiss_1_1IndexLSH.html#a71e9142e1256705f125ded9d647f4497',1,'faiss::IndexLSH']]],
   ['rrot',['rrot',['../structfaiss_1_1IndexLSH.html#a71c8aa08d3bd0483ccc0f11c22cd3cd8',1,'faiss::IndexLSH']]],
-  ['rs_5fmeanstd',['RS_meanstd',['../structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06ad64366c7a0eea89fb52b177f251e687c',1,'faiss::ScalarQuantizer']]],
-  ['rs_5fminmax',['RS_minmax',['../structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06a4c0f67a6585c03b1e4039a23825d7df8',1,'faiss::ScalarQuantizer']]],
-  ['rs_5foptim',['RS_optim',['../structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06af1df5f45cf110c5c235c413ca31797a7',1,'faiss::ScalarQuantizer']]],
-  ['rs_5fquantiles',['RS_quantiles',['../structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06a895bd1d41b5b36a1537df9a515a416f7',1,'faiss::ScalarQuantizer']]],
+  ['rs_5fmeanstd',['RS_meanstd',['../structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06afb4b9f4ee9003fa0193e6de69632f7a0',1,'faiss::ScalarQuantizer']]],
+  ['rs_5fminmax',['RS_minmax',['../structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06aa52f2f14616c61c04baf6323d43588fd',1,'faiss::ScalarQuantizer']]],
+  ['rs_5foptim',['RS_optim',['../structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06ab0709ff74c1b882b64a7fdd7ca5df9a3',1,'faiss::ScalarQuantizer']]],
+  ['rs_5fquantiles',['RS_quantiles',['../structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06ae41cccec3a7acbcb3a47fa63c2bfb4c8',1,'faiss::ScalarQuantizer']]],
   ['runonindex',['runOnIndex',['../classfaiss_1_1gpu_1_1IndexProxy.html#a4efa3134256a6cd6a98c45184a7e8dbf',1,'faiss::gpu::IndexProxy']]]
 ];

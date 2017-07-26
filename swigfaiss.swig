@@ -124,6 +124,10 @@ namespace std {
 %template(IntVector) std::vector<int>;
 %template(VectorTransformVector) std::vector<faiss::VectorTransform*>;
 %template(OperatingPointVector) std::vector<faiss::OperatingPoint>;
+%template(FloatVectorVector) std::vector<std::vector<float> >;
+%template(ByteVectorVector) std::vector<std::vector<unsigned char> >;
+
+
 
 #ifdef GPU_WRAPPER
 %template(GpuResourcesVector) std::vector<faiss::gpu::GpuResources*>;
@@ -663,6 +667,26 @@ TYPE_CONVERSION (uint8_t, ByteTensor)
 void omp_set_num_threads (int num_threads);
 int omp_get_max_threads ();
 void *memcpy(void *dest, const void *src, size_t n);
+
+
+/*******************************************************************
+ * For Faiss/Pytorch interop via pointers encoded as longs
+ *******************************************************************/
+
+%inline %{
+float * cast_integer_to_float_ptr (long x) {
+    return (float*)x;
+}
+
+long * cast_integer_to_long_ptr (long x) {
+    return (long*)x;
+}
+
+int * cast_integer_to_int_ptr (long x) {
+    return (int*)x;
+}
+
+%}
 
 
 

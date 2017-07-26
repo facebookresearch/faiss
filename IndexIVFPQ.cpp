@@ -1368,8 +1368,7 @@ void IndexIVFPQR::merge_from_residuals (IndexIVF &other_in)
     other.refine_codes.clear();
 }
 
-long IndexIVFPQR::remove_ids (const IDSelector & sel)
-{
+long IndexIVFPQR::remove_ids(const IDSelector& /*sel*/) {
   FAISS_THROW_MSG("not implemented");
   return 0;
 }

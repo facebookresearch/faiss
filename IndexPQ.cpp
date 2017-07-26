@@ -786,6 +786,7 @@ MultiIndexQuantizer::MultiIndexQuantizer (int d,
     Index(d, METRIC_L2), pq(d, M, nbits)
 {
     is_trained = false;
+    pq.verbose = verbose;
 }
 
 
@@ -880,11 +881,10 @@ void MultiIndexQuantizer::reconstruct (idx_t key, float * recons) const
     } else FAISS_THROW_MSG( "only 1 or 2 bytes per index supported");
 }
 
-
-void MultiIndexQuantizer::add (idx_t n, const float *x)
-{
-    FAISS_THROW_MSG ( "This index has virtual elements, "
-                      "it does not support add");
+void MultiIndexQuantizer::add(idx_t /*n*/, const float* /*x*/) {
+  FAISS_THROW_MSG(
+      "This index has virtual elements, "
+      "it does not support add");
 }
 
 void MultiIndexQuantizer::reset ()

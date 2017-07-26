@@ -51,23 +51,23 @@ OneRecallAtRCriterion::OneRecallAtRCriterion (idx_t nq, idx_t R):
     AutoTuneCriterion(nq, R), R(R)
 {}
 
-double OneRecallAtRCriterion::evaluate (const float *D, const idx_t *I) const
-{
-    FAISS_THROW_IF_NOT_MSG (
-           (gt_I.size() == gt_nnn * nq && gt_nnn >= 1 && nnn >= R),
-           "ground truth not initialized");
-    idx_t n_ok = 0;
-    for (idx_t q = 0; q < nq; q++) {
-        idx_t gt_nn = gt_I [q * gt_nnn];
-        const idx_t *I_line = I + q * nnn;
-        for (int i = 0; i < R; i++) {
-            if (I_line[i] == gt_nn) {
-                n_ok++;
-                break;
-            }
-        }
+double OneRecallAtRCriterion::evaluate(const float* /*D*/, const idx_t* I)
+    const {
+  FAISS_THROW_IF_NOT_MSG(
+      (gt_I.size() == gt_nnn * nq && gt_nnn >= 1 && nnn >= R),
+      "ground truth not initialized");
+  idx_t n_ok = 0;
+  for (idx_t q = 0; q < nq; q++) {
+    idx_t gt_nn = gt_I[q * gt_nnn];
+    const idx_t* I_line = I + q * nnn;
+    for (int i = 0; i < R; i++) {
+      if (I_line[i] == gt_nn) {
+        n_ok++;
+        break;
+      }
     }
-    return n_ok / double (nq);
+  }
+  return n_ok / double(nq);
 }
 
 
@@ -75,12 +75,12 @@ IntersectionCriterion::IntersectionCriterion (idx_t nq, idx_t R):
     AutoTuneCriterion(nq, R), R(R)
 {}
 
-double IntersectionCriterion::evaluate (const float *D, const idx_t *I) const
-{
-    FAISS_THROW_IF_NOT_MSG (
-         (gt_I.size() == gt_nnn * nq && gt_nnn >= R && nnn >= R),
-         "ground truth not initialized");
-    long n_ok = 0;
+double IntersectionCriterion::evaluate(const float* /*D*/, const idx_t* I)
+    const {
+  FAISS_THROW_IF_NOT_MSG(
+      (gt_I.size() == gt_nnn * nq && gt_nnn >= R && nnn >= R),
+      "ground truth not initialized");
+  long n_ok = 0;
 #pragma omp parallel for reduction(+: n_ok)
     for (idx_t q = 0; q < nq; q++) {
         n_ok += ranklist_intersection_size (

@@ -131,7 +131,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
 <div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIDMap.html#ac873cb03aa323a06dca5d6f3af5fe559">   47</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexIDMap.html#ac873cb03aa323a06dca5d6f3af5fe559">IndexIDMap::train</a> (<a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, <span class="keyword">const</span> <span class="keywordtype">float</span> *x)</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;{</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    index-&gt;<a class="code" href="structfaiss_1_1Index.html#a8f67dfd73993e192dc78f2c93d9d9532">train</a> (n, x);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    index-&gt;<a class="code" href="structfaiss_1_1Index.html#a1ffe916c958605c38b0b1bfad42485e4">train</a> (n, x);</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <a class="code" href="structfaiss_1_1Index.html#a6e92732617c4dbe364e7678dd8773a7f">is_trained</a> = index-&gt;<a class="code" href="structfaiss_1_1Index.html#a6e92732617c4dbe364e7678dd8773a7f">is_trained</a>;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
@@ -692,150 +692,148 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;</div>
 <div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;}</div>
 <div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;</div>
-<div class="line"><a name="l00610"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexSplitVectors.html#af2ef88dc72b4a94f1190ecc8cb25881b">  610</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexSplitVectors.html#af2ef88dc72b4a94f1190ecc8cb25881b">IndexSplitVectors::add</a> (idx_t n, <span class="keyword">const</span> <span class="keywordtype">float</span> *x)</div>
-<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;{</div>
-<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;not implemented&quot;</span>);</div>
-<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;}</div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;</div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;<span class="keyword">namespace </span>{</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;<span class="comment">/// callback + thread management to query in 1 shard</span></div>
-<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;<span class="comment"></span><span class="keyword">struct </span>SplitQueryJob {</div>
-<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;    <span class="keyword">const</span> <a class="code" href="structfaiss_1_1IndexSplitVectors.html">IndexSplitVectors</a> *index;    <span class="comment">// the relevant index</span></div>
-<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;    <span class="keywordtype">int</span> no;                <span class="comment">// shard number</span></div>
-<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;</div>
-<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;    <span class="comment">// query params</span></div>
-<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;    idx_t n;</div>
-<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">float</span> *x;</div>
-<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;    idx_t k;</div>
-<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;    <span class="keywordtype">float</span> *distances;</div>
-<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;    idx_t *labels;</div>
+<div class="line"><a name="l00610"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexSplitVectors.html#af2ef88dc72b4a94f1190ecc8cb25881b">  610</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexSplitVectors.html#af2ef88dc72b4a94f1190ecc8cb25881b">IndexSplitVectors::add</a>(idx_t <span class="comment">/*n*/</span>, <span class="keyword">const</span> <span class="keywordtype">float</span>* <span class="comment">/*x*/</span>) {</div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;  FAISS_THROW_MSG(<span class="stringliteral">&quot;not implemented&quot;</span>);</div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;}</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;<span class="keyword">namespace </span>{</div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;<span class="comment">/// callback + thread management to query in 1 shard</span></div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;<span class="comment"></span><span class="keyword">struct </span>SplitQueryJob {</div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;    <span class="keyword">const</span> <a class="code" href="structfaiss_1_1IndexSplitVectors.html">IndexSplitVectors</a> *index;    <span class="comment">// the relevant index</span></div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;    <span class="keywordtype">int</span> no;                <span class="comment">// shard number</span></div>
+<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;</div>
+<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;    <span class="comment">// query params</span></div>
+<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;    idx_t n;</div>
+<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">float</span> *x;</div>
+<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;    idx_t k;</div>
+<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;    <span class="keywordtype">float</span> *distances;</div>
+<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;    idx_t *labels;</div>
+<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;</div>
 <div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;</div>
-<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;</div>
-<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;    <span class="keywordtype">void</span> run ()</div>
-<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;    {</div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;        <span class="keywordflow">if</span> (index-&gt;<a class="code" href="structfaiss_1_1Index.html#a5590d847c5c2b958affd2a05e58a6f23">verbose</a>)</div>
-<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;            printf (<span class="stringliteral">&quot;begin query shard %d on %ld points\n&quot;</span>, no, n);</div>
-<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;        <span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html">Index</a> * sub_index = index-&gt;sub_indexes[no];</div>
-<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;        <span class="keywordtype">long</span> sub_d = sub_index-&gt;<a class="code" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>, d = index-&gt;<a class="code" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>;</div>
-<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;        idx_t ofs = 0;</div>
-<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; no; i++) ofs += index-&gt;sub_indexes[i]-&gt;<a class="code" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>;</div>
-<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;        <span class="keywordtype">float</span> *sub_x = <span class="keyword">new</span> <span class="keywordtype">float</span> [sub_d * n];</div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;        <a class="code" href="structfaiss_1_1ScopeDeleter.html">ScopeDeleter&lt;float&gt;</a> del (sub_x);</div>
-<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;        <span class="keywordflow">for</span> (idx_t i = 0; i &lt; n; i++)</div>
-<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;            memcpy (sub_x + i * sub_d, x + ofs + i * d, sub_d * <span class="keyword">sizeof</span> (sub_x));</div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;        sub_index-&gt;<a class="code" href="structfaiss_1_1Index.html#aced51b1ebc33c47ab3ae15ea906559a7">search</a> (n, sub_x, k, distances, labels);</div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;        <span class="keywordflow">if</span> (index-&gt;<a class="code" href="structfaiss_1_1Index.html#a5590d847c5c2b958affd2a05e58a6f23">verbose</a>)</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;            printf (<span class="stringliteral">&quot;end query shard %d\n&quot;</span>, no);</div>
-<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;    }</div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;</div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;};</div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;    <span class="keywordtype">void</span> run ()</div>
+<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;    {</div>
+<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;        <span class="keywordflow">if</span> (index-&gt;<a class="code" href="structfaiss_1_1Index.html#a5590d847c5c2b958affd2a05e58a6f23">verbose</a>)</div>
+<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;            printf (<span class="stringliteral">&quot;begin query shard %d on %ld points\n&quot;</span>, no, n);</div>
+<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;        <span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html">Index</a> * sub_index = index-&gt;sub_indexes[no];</div>
+<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;        <span class="keywordtype">long</span> sub_d = sub_index-&gt;<a class="code" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>, d = index-&gt;<a class="code" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>;</div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;        idx_t ofs = 0;</div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; no; i++) ofs += index-&gt;sub_indexes[i]-&gt;<a class="code" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>;</div>
+<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;        <span class="keywordtype">float</span> *sub_x = <span class="keyword">new</span> <span class="keywordtype">float</span> [sub_d * n];</div>
+<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;        <a class="code" href="structfaiss_1_1ScopeDeleter.html">ScopeDeleter&lt;float&gt;</a> del (sub_x);</div>
+<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;        <span class="keywordflow">for</span> (idx_t i = 0; i &lt; n; i++)</div>
+<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;            memcpy (sub_x + i * sub_d, x + ofs + i * d, sub_d * <span class="keyword">sizeof</span> (sub_x));</div>
+<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;        sub_index-&gt;<a class="code" href="structfaiss_1_1Index.html#aced51b1ebc33c47ab3ae15ea906559a7">search</a> (n, sub_x, k, distances, labels);</div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;        <span class="keywordflow">if</span> (index-&gt;<a class="code" href="structfaiss_1_1Index.html#a5590d847c5c2b958affd2a05e58a6f23">verbose</a>)</div>
+<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;            printf (<span class="stringliteral">&quot;end query shard %d\n&quot;</span>, no);</div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;    }</div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;};</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;</div>
 <div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;</div>
 <div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;</div>
-<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;</div>
-<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;}</div>
+<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;}</div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;</div>
 <div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;</div>
 <div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;</div>
-<div class="line"><a name="l00655"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexSplitVectors.html#a4a010daf51e44d9717e94400cc23c159">  655</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexSplitVectors.html#a4a010daf51e44d9717e94400cc23c159">IndexSplitVectors::search</a> (</div>
-<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;           idx_t n, <span class="keyword">const</span> <span class="keywordtype">float</span> *x, idx_t k,</div>
-<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;           <span class="keywordtype">float</span> *distances, idx_t *labels)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;    FAISS_THROW_IF_NOT_MSG (k == 1,</div>
-<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;                      <span class="stringliteral">&quot;search implemented only for k=1&quot;</span>);</div>
-<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;    FAISS_THROW_IF_NOT_MSG (sum_d == d,</div>
-<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;                      <span class="stringliteral">&quot;not enough indexes compared to # dimensions&quot;</span>);</div>
-<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;</div>
-<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;    <span class="keywordtype">long</span> nshard = sub_indexes.size();</div>
-<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;    <span class="keywordtype">float</span> *all_distances = <span class="keyword">new</span> <span class="keywordtype">float</span> [nshard * k * n];</div>
-<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;    idx_t *all_labels = <span class="keyword">new</span> idx_t [nshard * k * n];</div>
-<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;    <a class="code" href="structfaiss_1_1ScopeDeleter.html">ScopeDeleter&lt;float&gt;</a> del (all_distances);</div>
-<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;    <a class="code" href="structfaiss_1_1ScopeDeleter.html">ScopeDeleter&lt;idx_t&gt;</a> del2 (all_labels);</div>
-<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;</div>
-<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;    <span class="comment">// pre-alloc because we don&#39;t want reallocs</span></div>
-<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;    std::vector&lt;Thread&lt;SplitQueryJob&gt; &gt; qss (nshard);</div>
-<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nshard; i++) {</div>
-<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;        SplitQueryJob qs = {</div>
-<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;            <span class="keyword">this</span>, i, n, x, k,</div>
-<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;            i == 0 ? distances : all_distances + i * k * n,</div>
-<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;            i == 0 ? labels : all_labels + i * k * n</div>
-<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;        };</div>
-<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;        <span class="keywordflow">if</span> (threaded) {</div>
-<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;            qss[i] = Thread&lt;SplitQueryJob&gt; (qs);</div>
-<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;            qss[i].start();</div>
-<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;            qs.run();</div>
-<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;        }</div>
-<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;    }</div>
-<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;</div>
-<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;    <span class="keywordflow">if</span> (threaded) {</div>
-<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; qss.size(); i++) {</div>
-<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;            qss[i].wait();</div>
-<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;        }</div>
-<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;    }</div>
-<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;</div>
-<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;    <span class="keywordtype">long</span> factor = 1;</div>
-<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nshard; i++) {</div>
-<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;        <span class="keywordflow">if</span> (i &gt; 0) { <span class="comment">// results of 0 are already in the table</span></div>
-<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> *distances_i = all_distances + i * k * n;</div>
-<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;            <span class="keyword">const</span> idx_t *labels_i = all_labels + i * k * n;</div>
-<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; n; j++) {</div>
-<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;                <span class="keywordflow">if</span> (labels[j] &gt;= 0 &amp;&amp; labels_i[j] &gt;= 0) {</div>
-<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;                    labels[j] += labels_i[j] * factor;</div>
-<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;                    distances[j] += distances_i[j];</div>
-<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;                } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;                    labels[j] = -1;</div>
-<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;                    distances[j] = 0.0 / 0.0;</div>
-<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;                }</div>
-<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;            }</div>
-<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;        }</div>
-<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;        factor *= sub_indexes[i]-&gt;ntotal;</div>
-<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;    }</div>
-<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;</div>
-<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;}</div>
-<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;</div>
-<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;</div>
-<div class="line"><a name="l00713"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexSplitVectors.html#aafa4c780e325855fe247052453967845">  713</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexSplitVectors.html#aafa4c780e325855fe247052453967845">IndexSplitVectors::train</a> (idx_t n, <span class="keyword">const</span> <span class="keywordtype">float</span> *x)</div>
-<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;{</div>
-<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;not implemented&quot;</span>);</div>
-<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;}</div>
-<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;</div>
-<div class="line"><a name="l00718"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexSplitVectors.html#a8047981cb8d10c54107664c4955df402">  718</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexSplitVectors.html#a8047981cb8d10c54107664c4955df402">IndexSplitVectors::reset</a> ()</div>
-<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;{</div>
-<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;not implemented&quot;</span>);</div>
-<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;}</div>
-<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;</div>
-<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;</div>
-<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;IndexSplitVectors::~IndexSplitVectors ()</div>
-<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;{</div>
-<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;    <span class="keywordflow">if</span> (own_fields) {</div>
-<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> s = 0; s &lt; sub_indexes.size(); s++)</div>
-<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;            <span class="keyword">delete</span> sub_indexes [s];</div>
-<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;    }</div>
-<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;}</div>
+<div class="line"><a name="l00654"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexSplitVectors.html#a4a010daf51e44d9717e94400cc23c159">  654</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexSplitVectors.html#a4a010daf51e44d9717e94400cc23c159">IndexSplitVectors::search</a> (</div>
+<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;           idx_t n, <span class="keyword">const</span> <span class="keywordtype">float</span> *x, idx_t k,</div>
+<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;           <span class="keywordtype">float</span> *distances, idx_t *labels)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;    FAISS_THROW_IF_NOT_MSG (k == 1,</div>
+<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;                      <span class="stringliteral">&quot;search implemented only for k=1&quot;</span>);</div>
+<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;    FAISS_THROW_IF_NOT_MSG (sum_d == d,</div>
+<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;                      <span class="stringliteral">&quot;not enough indexes compared to # dimensions&quot;</span>);</div>
+<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;</div>
+<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;    <span class="keywordtype">long</span> nshard = sub_indexes.size();</div>
+<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;    <span class="keywordtype">float</span> *all_distances = <span class="keyword">new</span> <span class="keywordtype">float</span> [nshard * k * n];</div>
+<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;    idx_t *all_labels = <span class="keyword">new</span> idx_t [nshard * k * n];</div>
+<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;    <a class="code" href="structfaiss_1_1ScopeDeleter.html">ScopeDeleter&lt;float&gt;</a> del (all_distances);</div>
+<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;    <a class="code" href="structfaiss_1_1ScopeDeleter.html">ScopeDeleter&lt;idx_t&gt;</a> del2 (all_labels);</div>
+<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;</div>
+<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;    <span class="comment">// pre-alloc because we don&#39;t want reallocs</span></div>
+<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;    std::vector&lt;Thread&lt;SplitQueryJob&gt; &gt; qss (nshard);</div>
+<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nshard; i++) {</div>
+<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;        SplitQueryJob qs = {</div>
+<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;            <span class="keyword">this</span>, i, n, x, k,</div>
+<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;            i == 0 ? distances : all_distances + i * k * n,</div>
+<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;            i == 0 ? labels : all_labels + i * k * n</div>
+<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;        };</div>
+<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;        <span class="keywordflow">if</span> (threaded) {</div>
+<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;            qss[i] = Thread&lt;SplitQueryJob&gt; (qs);</div>
+<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;            qss[i].start();</div>
+<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;            qs.run();</div>
+<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;        }</div>
+<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;    }</div>
+<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;</div>
+<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;    <span class="keywordflow">if</span> (threaded) {</div>
+<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; qss.size(); i++) {</div>
+<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;            qss[i].wait();</div>
+<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;        }</div>
+<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;    }</div>
+<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;</div>
+<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;    <span class="keywordtype">long</span> factor = 1;</div>
+<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nshard; i++) {</div>
+<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;        <span class="keywordflow">if</span> (i &gt; 0) { <span class="comment">// results of 0 are already in the table</span></div>
+<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> *distances_i = all_distances + i * k * n;</div>
+<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;            <span class="keyword">const</span> idx_t *labels_i = all_labels + i * k * n;</div>
+<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; n; j++) {</div>
+<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;                <span class="keywordflow">if</span> (labels[j] &gt;= 0 &amp;&amp; labels_i[j] &gt;= 0) {</div>
+<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;                    labels[j] += labels_i[j] * factor;</div>
+<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;                    distances[j] += distances_i[j];</div>
+<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;                } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;                    labels[j] = -1;</div>
+<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;                    distances[j] = 0.0 / 0.0;</div>
+<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;                }</div>
+<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;            }</div>
+<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;        }</div>
+<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;        factor *= sub_indexes[i]-&gt;ntotal;</div>
+<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;    }</div>
+<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;</div>
+<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;}</div>
+<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;</div>
+<div class="line"><a name="l00711"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexSplitVectors.html#aafa4c780e325855fe247052453967845">  711</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexSplitVectors.html#aafa4c780e325855fe247052453967845">IndexSplitVectors::train</a>(idx_t <span class="comment">/*n*/</span>, <span class="keyword">const</span> <span class="keywordtype">float</span>* <span class="comment">/*x*/</span>) {</div>
+<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;  FAISS_THROW_MSG(<span class="stringliteral">&quot;not implemented&quot;</span>);</div>
+<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;}</div>
+<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;</div>
+<div class="line"><a name="l00715"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexSplitVectors.html#a8047981cb8d10c54107664c4955df402">  715</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexSplitVectors.html#a8047981cb8d10c54107664c4955df402">IndexSplitVectors::reset</a> ()</div>
+<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;{</div>
+<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;not implemented&quot;</span>);</div>
+<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;}</div>
+<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;</div>
+<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;</div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;IndexSplitVectors::~IndexSplitVectors ()</div>
+<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;{</div>
+<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;    <span class="keywordflow">if</span> (own_fields) {</div>
+<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> s = 0; s &lt; sub_indexes.size(); s++)</div>
+<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;            <span class="keyword">delete</span> sub_indexes [s];</div>
+<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;    }</div>
+<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;}</div>
+<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;</div>
+<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;</div>
+<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;</div>
 <div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;</div>
 <div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;</div>
 <div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;</div>
-<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;</div>
-<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;</div>
-<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;</div>
-<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;}; <span class="comment">// namespace faiss</span></div>
+<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;}; <span class="comment">// namespace faiss</span></div>
 <div class="ttc" id="structfaiss_1_1IndexShards_html_a36fbcc85eed9bf2ea15587f04be9ae0b"><div class="ttname"><a href="structfaiss_1_1IndexShards.html#a36fbcc85eed9bf2ea15587f04be9ae0b">faiss::IndexShards::train</a></div><div class="ttdeci">void train(idx_t n, const float *x) override</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00385">MetaIndexes.cpp:385</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexShards_html_ad987a18a1786919e32cc02ca36e5ab46"><div class="ttname"><a href="structfaiss_1_1IndexShards.html#ad987a18a1786919e32cc02ca36e5ab46">faiss::IndexShards::IndexShards</a></div><div class="ttdeci">IndexShards(idx_t d, bool threaded=false, bool successive_ids=true)</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00355">MetaIndexes.cpp:355</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html_a849361f5f0ab0aba8d419c86f2594191"><div class="ttname"><a href="structfaiss_1_1Index.html#a849361f5f0ab0aba8d419c86f2594191">faiss::Index::reset</a></div><div class="ttdeci">virtual void reset()=0</div><div class="ttdoc">removes all elements from the database. </div></div>
+<div class="ttc" id="structfaiss_1_1Index_html_a1ffe916c958605c38b0b1bfad42485e4"><div class="ttname"><a href="structfaiss_1_1Index.html#a1ffe916c958605c38b0b1bfad42485e4">faiss::Index::train</a></div><div class="ttdeci">virtual void train(idx_t, const float *)</div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00089">Index.h:89</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap_html_a2f36fa9150a465b48952afbba856e2a1"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html#a2f36fa9150a465b48952afbba856e2a1">faiss::IndexIDMap::search</a></div><div class="ttdeci">void search(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels) const override</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00069">MetaIndexes.cpp:69</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexShards_html_a1f771d50133494f682f05c9ab9e39ad9"><div class="ttname"><a href="structfaiss_1_1IndexShards.html#a1f771d50133494f682f05c9ab9e39ad9">faiss::IndexShards::add_with_ids</a></div><div class="ttdeci">void add_with_ids(idx_t n, const float *x, const long *xids) override</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00425">MetaIndexes.cpp:425</a></div></div>
 <div class="ttc" id="structfaiss_1_1IDSelector_html"><div class="ttname"><a href="structfaiss_1_1IDSelector.html">faiss::IDSelector</a></div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00052">AuxIndexStructures.h:52</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexShards_html_a83391295650370e8987358a898bb2cca"><div class="ttname"><a href="structfaiss_1_1IndexShards.html#a83391295650370e8987358a898bb2cca">faiss::IndexShards::search</a></div><div class="ttdeci">void search(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels) const override</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00486">MetaIndexes.cpp:486</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap2_html_a33ff76975891695c2fa45ed26fc8eae9"><div class="ttname"><a href="structfaiss_1_1IndexIDMap2.html#a33ff76975891695c2fa45ed26fc8eae9">faiss::IndexIDMap2::add_with_ids</a></div><div class="ttdeci">void add_with_ids(idx_t n, const float *x, const long *xids) override</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00130">MetaIndexes.cpp:130</a></div></div>
 <div class="ttc" id="structfaiss_1_1ScopeDeleter_html"><div class="ttname"><a href="structfaiss_1_1ScopeDeleter.html">faiss::ScopeDeleter</a></div><div class="ttdef"><b>Definition:</b> <a href="FaissException_8h_source.html#l00039">FaissException.h:39</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexSplitVectors_html_a8047981cb8d10c54107664c4955df402"><div class="ttname"><a href="structfaiss_1_1IndexSplitVectors.html#a8047981cb8d10c54107664c4955df402">faiss::IndexSplitVectors::reset</a></div><div class="ttdeci">void reset() override</div><div class="ttdoc">removes all elements from the database. </div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00718">MetaIndexes.cpp:718</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexSplitVectors_html_a8047981cb8d10c54107664c4955df402"><div class="ttname"><a href="structfaiss_1_1IndexSplitVectors.html#a8047981cb8d10c54107664c4955df402">faiss::IndexSplitVectors::reset</a></div><div class="ttdeci">void reset() override</div><div class="ttdoc">removes all elements from the database. </div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00715">MetaIndexes.cpp:715</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap_html_a16cce6c1e83d0d5f069c9b0399896450"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html#a16cce6c1e83d0d5f069c9b0399896450">faiss::IndexIDMap::add</a></div><div class="ttdeci">void add(idx_t n, const float *x) override</div><div class="ttdoc">this will fail. Use add_with_ids </div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00040">MetaIndexes.cpp:40</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexSplitVectors_html"><div class="ttname"><a href="structfaiss_1_1IndexSplitVectors.html">faiss::IndexSplitVectors</a></div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00131">MetaIndexes.h:131</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html_a2a002388d2c081c2dbab8508dcefe73d"><div class="ttname"><a href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">faiss::Index::d</a></div><div class="ttdeci">int d</div><div class="ttdoc">vector dimension </div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00064">Index.h:64</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap_html_ad1cc5658f1879f6a2b00d76cca58cf3b"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html#ad1cc5658f1879f6a2b00d76cca58cf3b">faiss::IndexIDMap::id_map</a></div><div class="ttdeci">std::vector&lt; long &gt; id_map</div><div class="ttdoc">! whether pointers are deleted in destructo </div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00029">MetaIndexes.h:29</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html_a1b5e9ac70adbce0897dd6c8276ad96f2"><div class="ttname"><a href="structfaiss_1_1Index.html#a1b5e9ac70adbce0897dd6c8276ad96f2">faiss::Index::add</a></div><div class="ttdeci">virtual void add(idx_t n, const float *x)=0</div></div>
-<div class="ttc" id="structfaiss_1_1IndexSplitVectors_html_aafa4c780e325855fe247052453967845"><div class="ttname"><a href="structfaiss_1_1IndexSplitVectors.html#aafa4c780e325855fe247052453967845">faiss::IndexSplitVectors::train</a></div><div class="ttdeci">void train(idx_t n, const float *x) override</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00713">MetaIndexes.cpp:713</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexSplitVectors_html_aafa4c780e325855fe247052453967845"><div class="ttname"><a href="structfaiss_1_1IndexSplitVectors.html#aafa4c780e325855fe247052453967845">faiss::IndexSplitVectors::train</a></div><div class="ttdeci">void train(idx_t n, const float *x) override</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00711">MetaIndexes.cpp:711</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexShards_html_a2e06889521c566525011eb46cc97cda6"><div class="ttname"><a href="structfaiss_1_1IndexShards.html#a2e06889521c566525011eb46cc97cda6">faiss::IndexShards::add</a></div><div class="ttdeci">void add(idx_t n, const float *x) override</div><div class="ttdoc">supported only for sub-indices that implement add_with_ids </div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00408">MetaIndexes.cpp:408</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html_a040c6aed1f224f3ea7bf58eebc0c31a4"><div class="ttname"><a href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a></div><div class="ttdeci">long idx_t</div><div class="ttdoc">all indices are this type </div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00062">Index.h:62</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html_a6970683faa021b7a6f1a0865c0d4eccd"><div class="ttname"><a href="structfaiss_1_1Index.html#a6970683faa021b7a6f1a0865c0d4eccd">faiss::Index::ntotal</a></div><div class="ttdeci">idx_t ntotal</div><div class="ttdoc">total nb of indexed vectors </div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00065">Index.h:65</a></div></div>
@@ -848,15 +846,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="structfaiss_1_1Index_html_aced51b1ebc33c47ab3ae15ea906559a7"><div class="ttname"><a href="structfaiss_1_1Index.html#aced51b1ebc33c47ab3ae15ea906559a7">faiss::Index::search</a></div><div class="ttdeci">virtual void search(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels) const =0</div></div>
 <div class="ttc" id="structfaiss_1_1IndexShards_html_aa7dc5d020de4a0552058cbf2844cb00f"><div class="ttname"><a href="structfaiss_1_1IndexShards.html#aa7dc5d020de4a0552058cbf2844cb00f">faiss::IndexShards::reset</a></div><div class="ttdeci">void reset() override</div><div class="ttdoc">removes all elements from the database. </div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00478">MetaIndexes.cpp:478</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap_html_a70aca5b0f665c5a109d5dadf1e13b448"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html#a70aca5b0f665c5a109d5dadf1e13b448">faiss::IndexIDMap::reset</a></div><div class="ttdeci">void reset() override</div><div class="ttdoc">removes all elements from the database. </div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00053">MetaIndexes.cpp:53</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexSplitVectors_html_a4a010daf51e44d9717e94400cc23c159"><div class="ttname"><a href="structfaiss_1_1IndexSplitVectors.html#a4a010daf51e44d9717e94400cc23c159">faiss::IndexSplitVectors::search</a></div><div class="ttdeci">void search(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels) const override</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00655">MetaIndexes.cpp:655</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexSplitVectors_html_a4a010daf51e44d9717e94400cc23c159"><div class="ttname"><a href="structfaiss_1_1IndexSplitVectors.html#a4a010daf51e44d9717e94400cc23c159">faiss::IndexSplitVectors::search</a></div><div class="ttdeci">void search(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels) const override</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00654">MetaIndexes.cpp:654</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap_html_a699ca4891bf3a437b2a182c04d33d9b9"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html#a699ca4891bf3a437b2a182c04d33d9b9">faiss::IndexIDMap::remove_ids</a></div><div class="ttdeci">long remove_ids(const IDSelector &amp;sel) override</div><div class="ttdoc">remove ids adapted to IndexFlat </div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00095">MetaIndexes.cpp:95</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html_a8e18f641854b2bde83ecff0a2f9a6f4e"><div class="ttname"><a href="structfaiss_1_1Index.html#a8e18f641854b2bde83ecff0a2f9a6f4e">faiss::Index::metric_type</a></div><div class="ttdeci">MetricType metric_type</div><div class="ttdoc">type of metric this index uses for search </div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00072">Index.h:72</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap2_html_a3660adb35a3299bc328988f5ff2199fe"><div class="ttname"><a href="structfaiss_1_1IndexIDMap2.html#a3660adb35a3299bc328988f5ff2199fe">faiss::IndexIDMap2::reconstruct</a></div><div class="ttdeci">void reconstruct(idx_t key, float *recons) const override</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00156">MetaIndexes.cpp:156</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap_html_ac873cb03aa323a06dca5d6f3af5fe559"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html#ac873cb03aa323a06dca5d6f3af5fe559">faiss::IndexIDMap::train</a></div><div class="ttdeci">void train(idx_t n, const float *x) override</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00047">MetaIndexes.cpp:47</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html"><div class="ttname"><a href="structfaiss_1_1Index.html">faiss::Index</a></div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00060">Index.h:60</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html_a6e92732617c4dbe364e7678dd8773a7f"><div class="ttname"><a href="structfaiss_1_1Index.html#a6e92732617c4dbe364e7678dd8773a7f">faiss::Index::is_trained</a></div><div class="ttdeci">bool is_trained</div><div class="ttdoc">set if the Index does not require training, or if training is done already </div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00069">Index.h:69</a></div></div>
-<div class="ttc" id="structfaiss_1_1Index_html_aaef6f4132b1f390121ebb11058baf190"><div class="ttname"><a href="structfaiss_1_1Index.html#aaef6f4132b1f390121ebb11058baf190">faiss::Index::reconstruct</a></div><div class="ttdeci">virtual void reconstruct(idx_t key, float *recons) const </div><div class="ttdef"><b>Definition:</b> <a href="Index_8cpp_source.html#l00044">Index.cpp:44</a></div></div>
-<div class="ttc" id="structfaiss_1_1Index_html_a8f67dfd73993e192dc78f2c93d9d9532"><div class="ttname"><a href="structfaiss_1_1Index.html#a8f67dfd73993e192dc78f2c93d9d9532">faiss::Index::train</a></div><div class="ttdeci">virtual void train(idx_t n, const float *x)</div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00089">Index.h:89</a></div></div>
+<div class="ttc" id="structfaiss_1_1Index_html_aaef6f4132b1f390121ebb11058baf190"><div class="ttname"><a href="structfaiss_1_1Index.html#aaef6f4132b1f390121ebb11058baf190">faiss::Index::reconstruct</a></div><div class="ttdeci">virtual void reconstruct(idx_t key, float *recons) const </div><div class="ttdef"><b>Definition:</b> <a href="Index_8cpp_source.html#l00043">Index.cpp:43</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap_html_aeace75e53648c052d05c357b744e090b"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html#aeace75e53648c052d05c357b744e090b">faiss::IndexIDMap::add_with_ids</a></div><div class="ttdeci">void add_with_ids(idx_t n, const float *x, const long *xids) override</div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00060">MetaIndexes.cpp:60</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexSplitVectors_html_a70ba3367a08722fe4466dc49c21a4d2b"><div class="ttname"><a href="structfaiss_1_1IndexSplitVectors.html#a70ba3367a08722fe4466dc49c21a4d2b">faiss::IndexSplitVectors::IndexSplitVectors</a></div><div class="ttdeci">IndexSplitVectors(idx_t d, bool threaded=false)</div><div class="ttdoc">sum of dimensions seen so far </div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8cpp_source.html#l00580">MetaIndexes.cpp:580</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap_html_affa8a764304410c96489c2b2e178bcdb"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html#affa8a764304410c96489c2b2e178bcdb">faiss::IndexIDMap::own_fields</a></div><div class="ttdeci">bool own_fields</div><div class="ttdoc">! the sub-index </div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00028">MetaIndexes.h:28</a></div></div>

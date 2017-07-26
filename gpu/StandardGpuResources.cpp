@@ -38,7 +38,12 @@ StandardGpuResources::~StandardGpuResources() {
   for (auto& entry : defaultStreams_) {
     DeviceScope scope(entry.first);
 
-    CUDA_VERIFY(cudaStreamDestroy(entry.second));
+    auto it = userDefaultStreams_.find(entry.first);
+    if (it == userDefaultStreams_.end()) {
+      // The user did not specify this stream, thus we are the ones
+      // who have created it
+      CUDA_VERIFY(cudaStreamDestroy(entry.second));
+    }
   }
 
   for (auto& entry : alternateStreams_) {
@@ -95,6 +100,25 @@ StandardGpuResources::setPinnedMemory(size_t size) {
 }
 
 void
+StandardGpuResources::setDefaultStream(int device, cudaStream_t stream) {
+  auto it = defaultStreams_.find(device);
+  if (it != defaultStreams_.end()) {
+    // Replace this stream with the user stream
+    CUDA_VERIFY(cudaStreamDestroy(it->second));
+    it->second = stream;
+  }
+
+  userDefaultStreams_[device] = stream;
+}
+
+void
+StandardGpuResources::setDefaultNullStreamAllDevices() {
+  for (int dev = 0; dev < getNumDevices(); ++dev) {
+    setDefaultStream(dev, nullptr);
+  }
+}
+
+void
 StandardGpuResources::initializeForDevice(int device) {
   // Use default streams as a marker for whether or not a certain
   // device has been initialized
@@ -125,8 +149,14 @@ StandardGpuResources::initializeForDevice(int device) {
 
   // Create streams
   cudaStream_t defaultStream = 0;
-  CUDA_VERIFY(cudaStreamCreateWithFlags(&defaultStream,
-                                        cudaStreamNonBlocking));
+  auto it = userDefaultStreams_.find(device);
+  if (it != userDefaultStreams_.end()) {
+    // We already have a stream provided by the user
+    defaultStream = it->second;
+  } else {
+    CUDA_VERIFY(cudaStreamCreateWithFlags(&defaultStream,
+                                          cudaStreamNonBlocking));
+  }
 
   defaultStreams_[device] = defaultStream;
 

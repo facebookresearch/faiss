@@ -337,195 +337,215 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;};</div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;</div>
-<div class="line"><a name="l00255"></a><span class="lineno"><a class="line" href="structfaiss_1_1HammingComputerM8.html">  255</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1HammingComputerM8.html">HammingComputerM8</a> {</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keyword">const</span> uint64_t *a;</div>
+<div class="line"><a name="l00255"></a><span class="lineno"><a class="line" href="structfaiss_1_1HammingComputerDefault.html">  255</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1HammingComputerDefault.html">HammingComputerDefault</a> {</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keyword">const</span> uint8_t *a;</div>
 <div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    <span class="keywordtype">int</span> n;</div>
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <a class="code" href="structfaiss_1_1HammingComputerM8.html">HammingComputerM8</a> (<span class="keyword">const</span> uint8_t *a8, <span class="keywordtype">int</span> code_size) {</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        assert (code_size % 8 == 0);</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        a =  (uint64_t *)a8;</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        n = code_size / 8;</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    }</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b8)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        <span class="keyword">const</span> uint64_t *b = (uint64_t *)b8;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        <span class="keywordtype">int</span> accu = 0;</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; n; i++)</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;            accu += popcount64 (a[i] ^ b[i]);</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        <span class="keywordflow">return</span> accu;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    }</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <a class="code" href="structfaiss_1_1HammingComputerDefault.html">HammingComputerDefault</a> (<span class="keyword">const</span> uint8_t *a8, <span class="keywordtype">int</span> code_size) {</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        a =  a8;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        n = code_size;</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    }</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b8)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        <span class="keywordtype">int</span> accu = 0;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; n; i++)</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;            accu += popcount64 (a[i] ^ b8[i]);</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        <span class="keywordflow">return</span> accu;</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    }</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;};</div>
 <div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;};</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;<span class="comment">// very inefficient...</span></div>
-<div class="line"><a name="l00276"></a><span class="lineno"><a class="line" href="structfaiss_1_1HammingComputerM4.html">  276</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1HammingComputerM4.html">HammingComputerM4</a> {</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    <span class="keyword">const</span> uint32_t *a;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    <span class="keywordtype">int</span> n;</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    <a class="code" href="structfaiss_1_1HammingComputerM4.html">HammingComputerM4</a> (<span class="keyword">const</span> uint8_t *a4, <span class="keywordtype">int</span> code_size) {</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;        assert (code_size % 4 == 0);</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;        a =  (uint32_t *)a4;</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;        n = code_size / 4;</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    }</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b8)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;        <span class="keyword">const</span> uint32_t *b = (uint32_t *)b8;</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;        <span class="keywordtype">int</span> accu = 0;</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; n; i++)</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;             accu += popcount64 (a[i] ^ b[i]);</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        <span class="keywordflow">return</span> accu;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    }</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;};</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;<span class="comment">/***************************************************************************</span></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;<span class="comment"> * Equivalence with a template class when code size is known at compile time</span></div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;<span class="comment"> **************************************************************************/</span></div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;</div>
+<div class="line"><a name="l00274"></a><span class="lineno"><a class="line" href="structfaiss_1_1HammingComputerM8.html">  274</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1HammingComputerM8.html">HammingComputerM8</a> {</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    <span class="keyword">const</span> uint64_t *a;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    <span class="keywordtype">int</span> n;</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    <a class="code" href="structfaiss_1_1HammingComputerM8.html">HammingComputerM8</a> (<span class="keyword">const</span> uint8_t *a8, <span class="keywordtype">int</span> code_size) {</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;        assert (code_size % 8 == 0);</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;        a =  (uint64_t *)a8;</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;        n = code_size / 8;</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    }</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b8)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;        <span class="keyword">const</span> uint64_t *b = (uint64_t *)b8;</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;        <span class="keywordtype">int</span> accu = 0;</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; n; i++)</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;            accu += popcount64 (a[i] ^ b[i]);</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;        <span class="keywordflow">return</span> accu;</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    }</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;};</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;<span class="comment">// very inefficient...</span></div>
+<div class="line"><a name="l00295"></a><span class="lineno"><a class="line" href="structfaiss_1_1HammingComputerM4.html">  295</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1HammingComputerM4.html">HammingComputerM4</a> {</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <span class="keyword">const</span> uint32_t *a;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    <span class="keywordtype">int</span> n;</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="comment">// default template</span></div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<span class="keyword">template</span>&lt;<span class="keywordtype">int</span> CODE_SIZE&gt;</div>
-<div class="line"><a name="l00301"></a><span class="lineno"><a class="line" href="structfaiss_1_1HammingComputer.html">  301</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1HammingComputer.html">HammingComputer</a>: <a class="code" href="structfaiss_1_1HammingComputerM8.html">HammingComputerM8</a> {</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    <a class="code" href="structfaiss_1_1HammingComputer.html">HammingComputer</a> (<span class="keyword">const</span> uint8_t *a, <span class="keywordtype">int</span> code_size):</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    <a class="code" href="structfaiss_1_1HammingComputerM8.html">HammingComputerM8</a>(a, code_size) {}</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;};</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;<span class="preprocessor">#define SPECIALIZED_HC(CODE_SIZE)                     \</span></div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="preprocessor">    template&lt;&gt; struct HammingComputer&lt;CODE_SIZE&gt;:     \</span></div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;<span class="preprocessor">            HammingComputer ## CODE_SIZE {            \</span></div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;<span class="preprocessor">        HammingComputer (const uint8_t *a):           \</span></div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;<span class="preprocessor">        HammingComputer ## CODE_SIZE(a, CODE_SIZE) {} \</span></div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="preprocessor">    }</span></div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;SPECIALIZED_HC(4);</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;SPECIALIZED_HC(8);</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;SPECIALIZED_HC(16);</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;SPECIALIZED_HC(20);</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;SPECIALIZED_HC(32);</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;SPECIALIZED_HC(64);</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;<span class="preprocessor">#undef SPECIALIZED_HC</span></div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;<span class="comment">/***************************************************************************</span></div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;<span class="comment"> * generalized Hamming = number of bytes that are different between</span></div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;<span class="comment"> * two codes.</span></div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;<span class="comment"> ***************************************************************************/</span></div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">int</span> generalized_hamming_64 (uint64_t a) {</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    a |= a &gt;&gt; 1;</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    a |= a &gt;&gt; 2;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    a |= a &gt;&gt; 4;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    a &amp;= 0x0101010101010101UL;</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    <span class="keywordflow">return</span> popcount64 (a);</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;}</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;</div>
-<div class="line"><a name="l00338"></a><span class="lineno"><a class="line" href="structfaiss_1_1GenHammingComputer8.html">  338</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1GenHammingComputer8.html">GenHammingComputer8</a> {</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    uint64_t a0;</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <a class="code" href="structfaiss_1_1GenHammingComputer8.html">GenHammingComputer8</a> (<span class="keyword">const</span> uint8_t *a, <span class="keywordtype">int</span> code_size) {</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;        assert (code_size == 8);</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;        a0 = *(uint64_t *)a;</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;    }</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;        <span class="keywordflow">return</span> generalized_hamming_64 (*(uint64_t *)b ^ a0);</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    }</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;};</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;</div>
-<div class="line"><a name="l00353"></a><span class="lineno"><a class="line" href="structfaiss_1_1GenHammingComputer16.html">  353</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1GenHammingComputer16.html">GenHammingComputer16</a> {</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    uint64_t a0, a1;</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    <a class="code" href="structfaiss_1_1GenHammingComputer16.html">GenHammingComputer16</a> (<span class="keyword">const</span> uint8_t *a8, <span class="keywordtype">int</span> code_size) {</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;        assert (code_size == 16);</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;        <span class="keyword">const</span> uint64_t *a = (uint64_t *)a8;</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;        a0 = a[0]; a1 = a[1];</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;    }</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b8)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;        <span class="keyword">const</span> uint64_t *b = (uint64_t *)b8;</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;        <span class="keywordflow">return</span> generalized_hamming_64 (b[0] ^ a0) +</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;            generalized_hamming_64 (b[1] ^ a1);</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    }</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;};</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    <a class="code" href="structfaiss_1_1HammingComputerM4.html">HammingComputerM4</a> (<span class="keyword">const</span> uint8_t *a4, <span class="keywordtype">int</span> code_size) {</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;        assert (code_size % 4 == 0);</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;        a =  (uint32_t *)a4;</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;        n = code_size / 4;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    }</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b8)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;        <span class="keyword">const</span> uint32_t *b = (uint32_t *)b8;</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        <span class="keywordtype">int</span> accu = 0;</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; n; i++)</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;             accu += popcount64 (a[i] ^ b[i]);</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        <span class="keywordflow">return</span> accu;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    }</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;};</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;<span class="comment">/***************************************************************************</span></div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;<span class="comment"> * Equivalence with a template class when code size is known at compile time</span></div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="comment"> **************************************************************************/</span></div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;<span class="comment">// default template</span></div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;<span class="keyword">template</span>&lt;<span class="keywordtype">int</span> CODE_SIZE&gt;</div>
+<div class="line"><a name="l00320"></a><span class="lineno"><a class="line" href="structfaiss_1_1HammingComputer.html">  320</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1HammingComputer.html">HammingComputer</a>: <a class="code" href="structfaiss_1_1HammingComputerM8.html">HammingComputerM8</a> {</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <a class="code" href="structfaiss_1_1HammingComputer.html">HammingComputer</a> (<span class="keyword">const</span> uint8_t *a, <span class="keywordtype">int</span> code_size):</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <a class="code" href="structfaiss_1_1HammingComputerM8.html">HammingComputerM8</a>(a, code_size) {}</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;};</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;<span class="preprocessor">#define SPECIALIZED_HC(CODE_SIZE)                     \</span></div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;<span class="preprocessor">    template&lt;&gt; struct HammingComputer&lt;CODE_SIZE&gt;:     \</span></div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;<span class="preprocessor">            HammingComputer ## CODE_SIZE {            \</span></div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;<span class="preprocessor">        HammingComputer (const uint8_t *a):           \</span></div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;<span class="preprocessor">        HammingComputer ## CODE_SIZE(a, CODE_SIZE) {} \</span></div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;<span class="preprocessor">    }</span></div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;SPECIALIZED_HC(4);</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;SPECIALIZED_HC(8);</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;SPECIALIZED_HC(16);</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;SPECIALIZED_HC(20);</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;SPECIALIZED_HC(32);</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;SPECIALIZED_HC(64);</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;<span class="preprocessor">#undef SPECIALIZED_HC</span></div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;<span class="comment">/***************************************************************************</span></div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;<span class="comment"> * generalized Hamming = number of bytes that are different between</span></div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;<span class="comment"> * two codes.</span></div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;<span class="comment"> ***************************************************************************/</span></div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">int</span> generalized_hamming_64 (uint64_t a) {</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;    a |= a &gt;&gt; 1;</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    a |= a &gt;&gt; 2;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    a |= a &gt;&gt; 4;</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    a &amp;= 0x0101010101010101UL;</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    <span class="keywordflow">return</span> popcount64 (a);</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;}</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;</div>
+<div class="line"><a name="l00357"></a><span class="lineno"><a class="line" href="structfaiss_1_1GenHammingComputer8.html">  357</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1GenHammingComputer8.html">GenHammingComputer8</a> {</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    uint64_t a0;</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    <a class="code" href="structfaiss_1_1GenHammingComputer8.html">GenHammingComputer8</a> (<span class="keyword">const</span> uint8_t *a, <span class="keywordtype">int</span> code_size) {</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;        assert (code_size == 8);</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;        a0 = *(uint64_t *)a;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    }</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;        <span class="keywordflow">return</span> generalized_hamming_64 (*(uint64_t *)b ^ a0);</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    }</div>
 <div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;</div>
-<div class="line"><a name="l00369"></a><span class="lineno"><a class="line" href="structfaiss_1_1GenHammingComputer32.html">  369</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1GenHammingComputer32.html">GenHammingComputer32</a> {</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    uint64_t a0, a1, a2, a3;</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;};</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;</div>
 <div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    <a class="code" href="structfaiss_1_1GenHammingComputer32.html">GenHammingComputer32</a> (<span class="keyword">const</span> uint8_t *a8, <span class="keywordtype">int</span> code_size) {</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;        assert (code_size == 32);</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;        <span class="keyword">const</span> uint64_t *a = (uint64_t *)a8;</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        a0 = a[0]; a1 = a[1]; a2 = a[2]; a3 = a[3];</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    }</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b8)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        <span class="keyword">const</span> uint64_t *b = (uint64_t *)b8;</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;        <span class="keywordflow">return</span> generalized_hamming_64 (b[0] ^ a0) +</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;            generalized_hamming_64 (b[1] ^ a1) +</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;            generalized_hamming_64 (b[2] ^ a2) +</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;            generalized_hamming_64 (b[3] ^ a3);</div>
+<div class="line"><a name="l00372"></a><span class="lineno"><a class="line" href="structfaiss_1_1GenHammingComputer16.html">  372</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1GenHammingComputer16.html">GenHammingComputer16</a> {</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    uint64_t a0, a1;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    <a class="code" href="structfaiss_1_1GenHammingComputer16.html">GenHammingComputer16</a> (<span class="keyword">const</span> uint8_t *a8, <span class="keywordtype">int</span> code_size) {</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        assert (code_size == 16);</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        <span class="keyword">const</span> uint64_t *a = (uint64_t *)a8;</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        a0 = a[0]; a1 = a[1];</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    }</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b8)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;        <span class="keyword">const</span> uint64_t *b = (uint64_t *)b8;</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;        <span class="keywordflow">return</span> generalized_hamming_64 (b[0] ^ a0) +</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;            generalized_hamming_64 (b[1] ^ a1);</div>
 <div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;    }</div>
 <div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;</div>
 <div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;};</div>
 <div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;</div>
-<div class="line"><a name="l00388"></a><span class="lineno"><a class="line" href="structfaiss_1_1GenHammingComputerM8.html">  388</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1GenHammingComputerM8.html">GenHammingComputerM8</a> {</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    <span class="keyword">const</span> uint64_t *a;</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;    <span class="keywordtype">int</span> n;</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;    <a class="code" href="structfaiss_1_1GenHammingComputerM8.html">GenHammingComputerM8</a> (<span class="keyword">const</span> uint8_t *a8, <span class="keywordtype">int</span> code_size) {</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        assert (code_size % 8 == 0);</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;        a =  (uint64_t *)a8;</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;        n = code_size / 8;</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;    }</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;    <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b8)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        <span class="keyword">const</span> uint64_t *b = (uint64_t *)b8;</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;        <span class="keywordtype">int</span> accu = 0;</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; n; i++)</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;            accu += generalized_hamming_64 (a[i] ^ b[i]);</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;        <span class="keywordflow">return</span> accu;</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    }</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;};</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;<span class="comment">/** generalized Hamming distances (= count number of code bytes that</span></div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;<span class="comment">    are the same) */</span></div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacefaiss.html#ae81da42f6f40356f7525917b3acb54c8">generalized_hammings_knn</a> (</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;        <a class="code" href="structfaiss_1_1HeapArray.html">int_maxheap_array_t</a> * ha,</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;        <span class="keyword">const</span> uint8_t * a,</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        <span class="keyword">const</span> uint8_t * b,</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;        <span class="keywordtype">size_t</span> nb,</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;        <span class="keywordtype">size_t</span> code_size,</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        <span class="keywordtype">int</span> ordered = <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;} <span class="comment">// namespace faiss</span></div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;</div>
+<div class="line"><a name="l00388"></a><span class="lineno"><a class="line" href="structfaiss_1_1GenHammingComputer32.html">  388</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1GenHammingComputer32.html">GenHammingComputer32</a> {</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    uint64_t a0, a1, a2, a3;</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;    <a class="code" href="structfaiss_1_1GenHammingComputer32.html">GenHammingComputer32</a> (<span class="keyword">const</span> uint8_t *a8, <span class="keywordtype">int</span> code_size) {</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;        assert (code_size == 32);</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        <span class="keyword">const</span> uint64_t *a = (uint64_t *)a8;</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;        a0 = a[0]; a1 = a[1]; a2 = a[2]; a3 = a[3];</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    }</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b8)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;        <span class="keyword">const</span> uint64_t *b = (uint64_t *)b8;</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        <span class="keywordflow">return</span> generalized_hamming_64 (b[0] ^ a0) +</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;            generalized_hamming_64 (b[1] ^ a1) +</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;            generalized_hamming_64 (b[2] ^ a2) +</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;            generalized_hamming_64 (b[3] ^ a3);</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    }</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;};</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;</div>
+<div class="line"><a name="l00407"></a><span class="lineno"><a class="line" href="structfaiss_1_1GenHammingComputerM8.html">  407</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1GenHammingComputerM8.html">GenHammingComputerM8</a> {</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;    <span class="keyword">const</span> uint64_t *a;</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;    <span class="keywordtype">int</span> n;</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    <a class="code" href="structfaiss_1_1GenHammingComputerM8.html">GenHammingComputerM8</a> (<span class="keyword">const</span> uint8_t *a8, <span class="keywordtype">int</span> code_size) {</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;        assert (code_size % 8 == 0);</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;        a =  (uint64_t *)a8;</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        n = code_size / 8;</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;    }</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;    <span class="keywordtype">int</span> hamming (<span class="keyword">const</span> uint8_t *b8)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;        <span class="keyword">const</span> uint64_t *b = (uint64_t *)b8;</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;        <span class="keywordtype">int</span> accu = 0;</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; n; i++)</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;            accu += generalized_hamming_64 (a[i] ^ b[i]);</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;        <span class="keywordflow">return</span> accu;</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    }</div>
 <div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;};</div>
 <div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* FAISS_hamming_h */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="structfaiss_1_1HammingComputerM4_html"><div class="ttname"><a href="structfaiss_1_1HammingComputerM4.html">faiss::HammingComputerM4</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00276">hamming.h:276</a></div></div>
-<div class="ttc" id="structfaiss_1_1HammingComputer_html"><div class="ttname"><a href="structfaiss_1_1HammingComputer.html">faiss::HammingComputer</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00301">hamming.h:301</a></div></div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;<span class="comment">/** generalized Hamming distances (= count number of code bytes that</span></div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;<span class="comment">    are the same) */</span></div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacefaiss.html#ae81da42f6f40356f7525917b3acb54c8">generalized_hammings_knn</a> (</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;        <a class="code" href="structfaiss_1_1HeapArray.html">int_maxheap_array_t</a> * ha,</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;        <span class="keyword">const</span> uint8_t * a,</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;        <span class="keyword">const</span> uint8_t * b,</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;        <span class="keywordtype">size_t</span> nb,</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;        <span class="keywordtype">size_t</span> code_size,</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;        <span class="keywordtype">int</span> ordered = <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;} <span class="comment">// namespace faiss</span></div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* FAISS_hamming_h */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="structfaiss_1_1HammingComputerM4_html"><div class="ttname"><a href="structfaiss_1_1HammingComputerM4.html">faiss::HammingComputerM4</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00295">hamming.h:295</a></div></div>
+<div class="ttc" id="structfaiss_1_1HammingComputer_html"><div class="ttname"><a href="structfaiss_1_1HammingComputer.html">faiss::HammingComputer</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00320">hamming.h:320</a></div></div>
 <div class="ttc" id="structfaiss_1_1HammingComputer20_html"><div class="ttname"><a href="structfaiss_1_1HammingComputer20.html">faiss::HammingComputer20</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00201">hamming.h:201</a></div></div>
-<div class="ttc" id="structfaiss_1_1GenHammingComputer16_html"><div class="ttname"><a href="structfaiss_1_1GenHammingComputer16.html">faiss::GenHammingComputer16</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00353">hamming.h:353</a></div></div>
-<div class="ttc" id="structfaiss_1_1GenHammingComputer8_html"><div class="ttname"><a href="structfaiss_1_1GenHammingComputer8.html">faiss::GenHammingComputer8</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00338">hamming.h:338</a></div></div>
+<div class="ttc" id="structfaiss_1_1GenHammingComputer16_html"><div class="ttname"><a href="structfaiss_1_1GenHammingComputer16.html">faiss::GenHammingComputer16</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00372">hamming.h:372</a></div></div>
+<div class="ttc" id="structfaiss_1_1GenHammingComputer8_html"><div class="ttname"><a href="structfaiss_1_1GenHammingComputer8.html">faiss::GenHammingComputer8</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00357">hamming.h:357</a></div></div>
 <div class="ttc" id="structfaiss_1_1HammingComputer8_html"><div class="ttname"><a href="structfaiss_1_1HammingComputer8.html">faiss::HammingComputer8</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00169">hamming.h:169</a></div></div>
 <div class="ttc" id="structfaiss_1_1HammingComputer64_html"><div class="ttname"><a href="structfaiss_1_1HammingComputer64.html">faiss::HammingComputer64</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00235">hamming.h:235</a></div></div>
-<div class="ttc" id="namespacefaiss_html_ae81da42f6f40356f7525917b3acb54c8"><div class="ttname"><a href="namespacefaiss.html#ae81da42f6f40356f7525917b3acb54c8">faiss::generalized_hammings_knn</a></div><div class="ttdeci">void generalized_hammings_knn(int_maxheap_array_t *ha, const uint8_t *a, const uint8_t *b, size_t nb, size_t code_size, int ordered)</div><div class="ttdef"><b>Definition:</b> <a href="hamming_8cpp_source.html#l00635">hamming.cpp:635</a></div></div>
+<div class="ttc" id="namespacefaiss_html_ae81da42f6f40356f7525917b3acb54c8"><div class="ttname"><a href="namespacefaiss.html#ae81da42f6f40356f7525917b3acb54c8">faiss::generalized_hammings_knn</a></div><div class="ttdeci">void generalized_hammings_knn(int_maxheap_array_t *ha, const uint8_t *a, const uint8_t *b, size_t nb, size_t code_size, int ordered)</div><div class="ttdef"><b>Definition:</b> <a href="hamming_8cpp_source.html#l00639">hamming.cpp:639</a></div></div>
 <div class="ttc" id="structfaiss_1_1HammingComputer16_html"><div class="ttname"><a href="structfaiss_1_1HammingComputer16.html">faiss::HammingComputer16</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00184">hamming.h:184</a></div></div>
 <div class="ttc" id="structfaiss_1_1HammingComputer4_html"><div class="ttname"><a href="structfaiss_1_1HammingComputer4.html">faiss::HammingComputer4</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00155">hamming.h:155</a></div></div>
-<div class="ttc" id="structfaiss_1_1GenHammingComputerM8_html"><div class="ttname"><a href="structfaiss_1_1GenHammingComputerM8.html">faiss::GenHammingComputerM8</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00388">hamming.h:388</a></div></div>
+<div class="ttc" id="structfaiss_1_1GenHammingComputerM8_html"><div class="ttname"><a href="structfaiss_1_1GenHammingComputerM8.html">faiss::GenHammingComputerM8</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00407">hamming.h:407</a></div></div>
 <div class="ttc" id="structfaiss_1_1HeapArray_html"><div class="ttname"><a href="structfaiss_1_1HeapArray.html">faiss::HeapArray</a></div><div class="ttdef"><b>Definition:</b> <a href="Heap_8h_source.html#l00350">Heap.h:350</a></div></div>
 <div class="ttc" id="namespacefaiss_html_ac0b4dc73a8470d61f510396dc460ca18"><div class="ttname"><a href="namespacefaiss.html#ac0b4dc73a8470d61f510396dc460ca18">faiss::hammings_knn</a></div><div class="ttdeci">void hammings_knn(int_maxheap_array_t *ha, const uint8_t *a, const uint8_t *b, size_t nb, size_t ncodes, int order)</div><div class="ttdef"><b>Definition:</b> <a href="hamming_8cpp_source.html#l00474">hamming.cpp:474</a></div></div>
 <div class="ttc" id="structfaiss_1_1HammingComputer32_html"><div class="ttname"><a href="structfaiss_1_1HammingComputer32.html">faiss::HammingComputer32</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00218">hamming.h:218</a></div></div>
-<div class="ttc" id="structfaiss_1_1GenHammingComputer32_html"><div class="ttname"><a href="structfaiss_1_1GenHammingComputer32.html">faiss::GenHammingComputer32</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00369">hamming.h:369</a></div></div>
-<div class="ttc" id="structfaiss_1_1HammingComputerM8_html"><div class="ttname"><a href="structfaiss_1_1HammingComputerM8.html">faiss::HammingComputerM8</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00255">hamming.h:255</a></div></div>
+<div class="ttc" id="structfaiss_1_1GenHammingComputer32_html"><div class="ttname"><a href="structfaiss_1_1GenHammingComputer32.html">faiss::GenHammingComputer32</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00388">hamming.h:388</a></div></div>
+<div class="ttc" id="structfaiss_1_1HammingComputerDefault_html"><div class="ttname"><a href="structfaiss_1_1HammingComputerDefault.html">faiss::HammingComputerDefault</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00255">hamming.h:255</a></div></div>
+<div class="ttc" id="structfaiss_1_1HammingComputerM8_html"><div class="ttname"><a href="structfaiss_1_1HammingComputerM8.html">faiss::HammingComputerM8</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00274">hamming.h:274</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

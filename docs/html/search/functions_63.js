@@ -14,7 +14,7 @@ var searchData=
   ['compute',['compute',['../structfaiss_1_1Score3Computer.html#a07a726903418960a2d8000506d88f8e6',1,'faiss::Score3Computer']]],
   ['compute_5fcode',['compute_code',['../structfaiss_1_1ProductQuantizer.html#a08b130e3a21f2699a4e3bbec121fb838',1,'faiss::ProductQuantizer']]],
   ['compute_5fcode_5ffrom_5fdistance_5ftable',['compute_code_from_distance_table',['../structfaiss_1_1ProductQuantizer.html#a95060fedd7c09eb20e968fd2fdb4b316',1,'faiss::ProductQuantizer']]],
-  ['compute_5fcodes',['compute_codes',['../structfaiss_1_1ScalarQuantizer.html#a2bccf276565c4f80fed3d0c715c58816',1,'faiss::ScalarQuantizer::compute_codes(const float *x, uint8_t *codes, size_t n) const '],['../structfaiss_1_1ScalarQuantizer.html#a2bccf276565c4f80fed3d0c715c58816',1,'faiss::ScalarQuantizer::compute_codes(const float *x, uint8_t *codes, size_t n) const '],['../structfaiss_1_1ProductQuantizer.html#ae5a340ee5a4b1d35a565b167de2a2ef1',1,'faiss::ProductQuantizer::compute_codes()']]],
+  ['compute_5fcodes',['compute_codes',['../structfaiss_1_1ScalarQuantizer.html#a2bccf276565c4f80fed3d0c715c58816',1,'faiss::ScalarQuantizer::compute_codes()'],['../structfaiss_1_1ProductQuantizer.html#ae5a340ee5a4b1d35a565b167de2a2ef1',1,'faiss::ProductQuantizer::compute_codes()']]],
   ['compute_5fcost',['compute_cost',['../structfaiss_1_1Score3Computer.html#a1c4537d67802aef28ccc57c4bd87f766',1,'faiss::Score3Computer']]],
   ['compute_5fdistance_5fsubset',['compute_distance_subset',['../structfaiss_1_1IndexFlat.html#a14b51786e7f98be1954eef35d02813a7',1,'faiss::IndexFlat']]],
   ['compute_5fdistance_5ftable',['compute_distance_table',['../structfaiss_1_1ProductQuantizer.html#a36361f41bcd2fa698f3c39eb7111ed09',1,'faiss::ProductQuantizer']]],

@@ -7,5 +7,5 @@ var searchData=
   ['threaded',['threaded',['../structfaiss_1_1IndexShards.html#a493da171720f2c3f35058f793fb9a6ce',1,'faiss::IndexShards']]],
   ['thresholds',['thresholds',['../structfaiss_1_1IndexLSH.html#ae203ad895b15ae16fc1a748661b84df3',1,'faiss::IndexLSH']]],
   ['train_5fthresholds',['train_thresholds',['../structfaiss_1_1IndexLSH.html#a5d4d6ea1fc709605d5b2061d1bce27d6',1,'faiss::IndexLSH']]],
-  ['trained',['trained',['../structfaiss_1_1ScalarQuantizer.html#a64d1560806e6746d6cd1fee089c6a13f',1,'faiss::ScalarQuantizer']]]
+  ['trained',['trained',['../structfaiss_1_1ScalarQuantizer.html#a30b411b10780a74079bbbfaff678c86f',1,'faiss::ScalarQuantizer']]]
 ];

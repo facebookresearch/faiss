@@ -144,6 +144,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HammingComputer64.html">HammingComputer64</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HammingComputerDefault.html">HammingComputerDefault</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HammingComputerM8.html">HammingComputerM8</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HammingComputerM4.html">HammingComputerM4</a></td></tr>
@@ -201,10 +203,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFPQCompact.html">IndexIVFPQCompact</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ScalarQuantizer.html">ScalarQuantizer</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexLSH.html">IndexLSH</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ArgSort.html">ArgSort</a></td></tr>
@@ -221,7 +219,11 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1MultiIndexQuantizer.html">MultiIndexQuantizer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ScalarQuantizer.html">ScalarQuantizer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexScalarQuantizer.html">IndexScalarQuantizer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIDMap.html">IndexIDMap</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -505,15 +507,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>write_VectorTransform
 <tr class="memitem:a3143984f302f56032b80948ddebc62af"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3143984f302f56032b80948ddebc62af"></a>
 <a class="el" href="structfaiss_1_1Index.html">Index</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>clone_index</b> (const <a class="el" href="structfaiss_1_1Index.html">Index</a> *index)</td></tr>
 <tr class="separator:a3143984f302f56032b80948ddebc62af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c5553442c8b9342a0ad449e2b67f275"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a7c5553442c8b9342a0ad449e2b67f275"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a7c5553442c8b9342a0ad449e2b67f275">partial_sort</a> (int k, int n, const typename C::T *vals, typename C::TI *perm)</td></tr>
+<tr class="separator:a7c5553442c8b9342a0ad449e2b67f275"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa080883b12dbcdff8034a7dc7a3f0979"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa080883b12dbcdff8034a7dc7a3f0979"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>search_with_probes_ip</b> (const <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a> &amp;index, const float *x, const idx_t *cent_ids, const float *cent_dis, const Quantizer &amp;quant, int k, float *simi, idx_t *idxi)</td></tr>
 <tr class="separator:aa080883b12dbcdff8034a7dc7a3f0979"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70a8f4d86e4a6fc9e71296d91b12c6a7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a70a8f4d86e4a6fc9e71296d91b12c6a7"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>search_with_probes_L2</b> (const <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a> &amp;index, const float *x_in, const idx_t *cent_ids, const <a class="el" href="structfaiss_1_1Index.html">Index</a> *quantizer, const Quantizer &amp;quant, int k, float *simi, idx_t *idxi)</td></tr>
 <tr class="separator:a70a8f4d86e4a6fc9e71296d91b12c6a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c5553442c8b9342a0ad449e2b67f275"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
-<tr class="memitem:a7c5553442c8b9342a0ad449e2b67f275"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a7c5553442c8b9342a0ad449e2b67f275">partial_sort</a> (int k, int n, const typename C::T *vals, typename C::TI *perm)</td></tr>
-<tr class="separator:a7c5553442c8b9342a0ad449e2b67f275"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1224ccbe0087fd6634d59b3008251b6"><td class="memTemplParams" colspan="2"><a class="anchor" id="ad1224ccbe0087fd6634d59b3008251b6"></a>
 template&lt;typename CT , class C &gt; </td></tr>
 <tr class="memitem:ad1224ccbe0087fd6634d59b3008251b6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>pq_estimators_from_tables_Mmul4</b> (int M, const CT *codes, size_t ncodes, const float *__restrict dis_table, size_t ksub, size_t k, float *heap_dis, long *heap_ids)</td></tr>
@@ -1045,7 +1047,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 </div><div class="memdoc">
 <p>generalized Hamming distances (= count number of code bytes that are the same) </p>
 
-<p>Definition at line <a class="el" href="hamming_8cpp_source.html#l00635">635</a> of file <a class="el" href="hamming_8cpp_source.html">hamming.cpp</a>.</p>
+<p>Definition at line <a class="el" href="hamming_8cpp_source.html#l00639">639</a> of file <a class="el" href="hamming_8cpp_source.html">hamming.cpp</a>.</p>
 
 </div>
 </div>

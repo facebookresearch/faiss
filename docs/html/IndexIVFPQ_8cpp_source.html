@@ -1453,220 +1453,219 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l01368"></a><span class="lineno"> 1368</span>&#160;    other.<a class="code" href="structfaiss_1_1IndexIVFPQR.html#a588bd0b733c8db18eaeb7bc287afd16e">refine_codes</a>.clear();</div>
 <div class="line"><a name="l01369"></a><span class="lineno"> 1369</span>&#160;}</div>
 <div class="line"><a name="l01370"></a><span class="lineno"> 1370</span>&#160;</div>
-<div class="line"><a name="l01371"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIVFPQR.html#acc5eeeeb8ac8d2581ef07947932d9f6c"> 1371</a></span>&#160;<span class="keywordtype">long</span> <a class="code" href="structfaiss_1_1IndexIVFPQR.html#acc5eeeeb8ac8d2581ef07947932d9f6c">IndexIVFPQR::remove_ids</a> (<span class="keyword">const</span> <a class="code" href="structfaiss_1_1IDSelector.html">IDSelector</a> &amp; sel)</div>
-<div class="line"><a name="l01372"></a><span class="lineno"> 1372</span>&#160;{</div>
-<div class="line"><a name="l01373"></a><span class="lineno"> 1373</span>&#160;  FAISS_THROW_MSG(<span class="stringliteral">&quot;not implemented&quot;</span>);</div>
-<div class="line"><a name="l01374"></a><span class="lineno"> 1374</span>&#160;  <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l01375"></a><span class="lineno"> 1375</span>&#160;}</div>
-<div class="line"><a name="l01376"></a><span class="lineno"> 1376</span>&#160;</div>
-<div class="line"><a name="l01377"></a><span class="lineno"> 1377</span>&#160;<span class="comment">/*****************************************</span></div>
-<div class="line"><a name="l01378"></a><span class="lineno"> 1378</span>&#160;<span class="comment"> * IndexIVFPQCompact implementation</span></div>
-<div class="line"><a name="l01379"></a><span class="lineno"> 1379</span>&#160;<span class="comment"> ******************************************/</span></div>
-<div class="line"><a name="l01380"></a><span class="lineno"> 1380</span>&#160;</div>
-<div class="line"><a name="l01381"></a><span class="lineno"> 1381</span>&#160;IndexIVFPQCompact::IndexIVFPQCompact ()</div>
-<div class="line"><a name="l01382"></a><span class="lineno"> 1382</span>&#160;{</div>
-<div class="line"><a name="l01383"></a><span class="lineno"> 1383</span>&#160;    alloc_type = <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#ab2698c5d65644a171c53ffe39e420b70a3d58d7b26146791f0fe34b35a9b0fd95">Alloc_type_none</a>;</div>
-<div class="line"><a name="l01384"></a><span class="lineno"> 1384</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l01385"></a><span class="lineno"> 1385</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a1fa62ed464c15768479c92646ed484c7">compact_ids</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l01386"></a><span class="lineno"> 1386</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#aaaf53cae0e47baf3fb1199ce4d789694">compact_codes</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l01387"></a><span class="lineno"> 1387</span>&#160;}</div>
+<div class="line"><a name="l01371"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIVFPQR.html#acc5eeeeb8ac8d2581ef07947932d9f6c"> 1371</a></span>&#160;<span class="keywordtype">long</span> <a class="code" href="structfaiss_1_1IndexIVFPQR.html#acc5eeeeb8ac8d2581ef07947932d9f6c">IndexIVFPQR::remove_ids</a>(<span class="keyword">const</span> <a class="code" href="structfaiss_1_1IDSelector.html">IDSelector</a>&amp; <span class="comment">/*sel*/</span>) {</div>
+<div class="line"><a name="l01372"></a><span class="lineno"> 1372</span>&#160;  FAISS_THROW_MSG(<span class="stringliteral">&quot;not implemented&quot;</span>);</div>
+<div class="line"><a name="l01373"></a><span class="lineno"> 1373</span>&#160;  <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l01374"></a><span class="lineno"> 1374</span>&#160;}</div>
+<div class="line"><a name="l01375"></a><span class="lineno"> 1375</span>&#160;</div>
+<div class="line"><a name="l01376"></a><span class="lineno"> 1376</span>&#160;<span class="comment">/*****************************************</span></div>
+<div class="line"><a name="l01377"></a><span class="lineno"> 1377</span>&#160;<span class="comment"> * IndexIVFPQCompact implementation</span></div>
+<div class="line"><a name="l01378"></a><span class="lineno"> 1378</span>&#160;<span class="comment"> ******************************************/</span></div>
+<div class="line"><a name="l01379"></a><span class="lineno"> 1379</span>&#160;</div>
+<div class="line"><a name="l01380"></a><span class="lineno"> 1380</span>&#160;IndexIVFPQCompact::IndexIVFPQCompact ()</div>
+<div class="line"><a name="l01381"></a><span class="lineno"> 1381</span>&#160;{</div>
+<div class="line"><a name="l01382"></a><span class="lineno"> 1382</span>&#160;    alloc_type = <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#ab2698c5d65644a171c53ffe39e420b70a3d58d7b26146791f0fe34b35a9b0fd95">Alloc_type_none</a>;</div>
+<div class="line"><a name="l01383"></a><span class="lineno"> 1383</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l01384"></a><span class="lineno"> 1384</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a1fa62ed464c15768479c92646ed484c7">compact_ids</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l01385"></a><span class="lineno"> 1385</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#aaaf53cae0e47baf3fb1199ce4d789694">compact_codes</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l01386"></a><span class="lineno"> 1386</span>&#160;}</div>
+<div class="line"><a name="l01387"></a><span class="lineno"> 1387</span>&#160;</div>
 <div class="line"><a name="l01388"></a><span class="lineno"> 1388</span>&#160;</div>
-<div class="line"><a name="l01389"></a><span class="lineno"> 1389</span>&#160;</div>
-<div class="line"><a name="l01390"></a><span class="lineno"> 1390</span>&#160;IndexIVFPQCompact::IndexIVFPQCompact (<span class="keyword">const</span> IndexIVFPQ &amp;other)</div>
-<div class="line"><a name="l01391"></a><span class="lineno"> 1391</span>&#160;{</div>
-<div class="line"><a name="l01392"></a><span class="lineno"> 1392</span>&#160;    FAISS_THROW_IF_NOT_MSG (other.ntotal &lt; (1UL &lt;&lt; 31),</div>
-<div class="line"><a name="l01393"></a><span class="lineno"> 1393</span>&#160;                      <span class="stringliteral">&quot;IndexIVFPQCompact cannot store more than 2G images&quot;</span>);</div>
-<div class="line"><a name="l01394"></a><span class="lineno"> 1394</span>&#160;</div>
-<div class="line"><a name="l01395"></a><span class="lineno"> 1395</span>&#160;    <span class="comment">// here it would be more convenient to just use the</span></div>
-<div class="line"><a name="l01396"></a><span class="lineno"> 1396</span>&#160;    <span class="comment">// copy-constructor, but it would copy the lists as well: too much</span></div>
-<div class="line"><a name="l01397"></a><span class="lineno"> 1397</span>&#160;    <span class="comment">// overhead...</span></div>
-<div class="line"><a name="l01398"></a><span class="lineno"> 1398</span>&#160;</div>
-<div class="line"><a name="l01399"></a><span class="lineno"> 1399</span>&#160;    <span class="comment">// copy fields from Index</span></div>
-<div class="line"><a name="l01400"></a><span class="lineno"> 1400</span>&#160;    d = other.d;</div>
-<div class="line"><a name="l01401"></a><span class="lineno"> 1401</span>&#160;    <a class="code" href="structfaiss_1_1Index.html#a6970683faa021b7a6f1a0865c0d4eccd">ntotal</a> = other.ntotal;</div>
-<div class="line"><a name="l01402"></a><span class="lineno"> 1402</span>&#160;    <a class="code" href="structfaiss_1_1Index.html#a5590d847c5c2b958affd2a05e58a6f23">verbose</a> = other.verbose;</div>
-<div class="line"><a name="l01403"></a><span class="lineno"> 1403</span>&#160;    <a class="code" href="structfaiss_1_1Index.html#a6e92732617c4dbe364e7678dd8773a7f">is_trained</a> = other.is_trained;</div>
-<div class="line"><a name="l01404"></a><span class="lineno"> 1404</span>&#160;    <a class="code" href="structfaiss_1_1Index.html#a8e18f641854b2bde83ecff0a2f9a6f4e">metric_type</a> = other.metric_type;</div>
-<div class="line"><a name="l01405"></a><span class="lineno"> 1405</span>&#160;</div>
-<div class="line"><a name="l01406"></a><span class="lineno"> 1406</span>&#160;    <span class="comment">// copy fields from IndexIVF (except ids)</span></div>
-<div class="line"><a name="l01407"></a><span class="lineno"> 1407</span>&#160;    nlist = other.nlist;</div>
-<div class="line"><a name="l01408"></a><span class="lineno"> 1408</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVF.html#affed235eadf27a13d753ee4d33a1dc58">nprobe</a> = other.nprobe;</div>
-<div class="line"><a name="l01409"></a><span class="lineno"> 1409</span>&#160;    quantizer = other.quantizer;</div>
-<div class="line"><a name="l01410"></a><span class="lineno"> 1410</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVF.html#a23ee7f75f8be4472a17778f2b33875de">quantizer_trains_alone</a> = other.quantizer_trains_alone;</div>
-<div class="line"><a name="l01411"></a><span class="lineno"> 1411</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVF.html#aed2e9757ad5f3c234fd8ad60175a2a73">own_fields</a> = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01412"></a><span class="lineno"> 1412</span>&#160;    direct_map = other.direct_map;</div>
-<div class="line"><a name="l01413"></a><span class="lineno"> 1413</span>&#160;</div>
-<div class="line"><a name="l01414"></a><span class="lineno"> 1414</span>&#160;    <span class="comment">// copy fields from IndexIVFPQ (except codes)</span></div>
-<div class="line"><a name="l01415"></a><span class="lineno"> 1415</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#afd13b471df293ae5a6e895704c69a4c3">by_residual</a> = other.by_residual;</div>
-<div class="line"><a name="l01416"></a><span class="lineno"> 1416</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a1c66ff073c18a1edbe8444c24d870583">use_precomputed_table</a> = other.use_precomputed_table;</div>
-<div class="line"><a name="l01417"></a><span class="lineno"> 1417</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a9b310195d610c3e326471b3758206b59">precomputed_table</a> = other.precomputed_table;</div>
-<div class="line"><a name="l01418"></a><span class="lineno"> 1418</span>&#160;    code_size = other.code_size;</div>
-<div class="line"><a name="l01419"></a><span class="lineno"> 1419</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a007303be116c8da65b6d058e3fc77d16">pq</a> = other.pq;</div>
-<div class="line"><a name="l01420"></a><span class="lineno"> 1420</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a9d5373633df7a9bec4de69400b9adeed">do_polysemous_training</a> = other.do_polysemous_training;</div>
-<div class="line"><a name="l01421"></a><span class="lineno"> 1421</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a2b14cbb5acb3fc28a4df8fde3f5567cd">polysemous_training</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l01422"></a><span class="lineno"> 1422</span>&#160;</div>
-<div class="line"><a name="l01423"></a><span class="lineno"> 1423</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a7430fc4fa030c96497abced3b68358d4">scan_table_threshold</a> = other.scan_table_threshold;</div>
-<div class="line"><a name="l01424"></a><span class="lineno"> 1424</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a77501995b3671e377102d2db1a93ade4">max_codes</a> = other.max_codes;</div>
-<div class="line"><a name="l01425"></a><span class="lineno"> 1425</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a3093a0a3e128eafce6e0583b75e9662e">polysemous_ht</a> = other.polysemous_ht;</div>
-<div class="line"><a name="l01426"></a><span class="lineno"> 1426</span>&#160;</div>
-<div class="line"><a name="l01427"></a><span class="lineno"> 1427</span>&#160;    <span class="comment">//allocate</span></div>
-<div class="line"><a name="l01428"></a><span class="lineno"> 1428</span>&#160;    alloc_type = <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#ab2698c5d65644a171c53ffe39e420b70acf2d6ba8878a2778383adc32593ba8e6">Alloc_type_new</a>;</div>
-<div class="line"><a name="l01429"></a><span class="lineno"> 1429</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a> = <span class="keyword">new</span> uint32_t [nlist + 1];</div>
-<div class="line"><a name="l01430"></a><span class="lineno"> 1430</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a1fa62ed464c15768479c92646ed484c7">compact_ids</a> = <span class="keyword">new</span> uint32_t [<a class="code" href="structfaiss_1_1Index.html#a6970683faa021b7a6f1a0865c0d4eccd">ntotal</a>];</div>
-<div class="line"><a name="l01431"></a><span class="lineno"> 1431</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#aaaf53cae0e47baf3fb1199ce4d789694">compact_codes</a> = <span class="keyword">new</span> uint8_t [<a class="code" href="structfaiss_1_1Index.html#a6970683faa021b7a6f1a0865c0d4eccd">ntotal</a> * <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a31c6fb2faa4dadea4c0594338be7be90">code_size</a>];</div>
+<div class="line"><a name="l01389"></a><span class="lineno"> 1389</span>&#160;IndexIVFPQCompact::IndexIVFPQCompact (<span class="keyword">const</span> IndexIVFPQ &amp;other)</div>
+<div class="line"><a name="l01390"></a><span class="lineno"> 1390</span>&#160;{</div>
+<div class="line"><a name="l01391"></a><span class="lineno"> 1391</span>&#160;    FAISS_THROW_IF_NOT_MSG (other.ntotal &lt; (1UL &lt;&lt; 31),</div>
+<div class="line"><a name="l01392"></a><span class="lineno"> 1392</span>&#160;                      <span class="stringliteral">&quot;IndexIVFPQCompact cannot store more than 2G images&quot;</span>);</div>
+<div class="line"><a name="l01393"></a><span class="lineno"> 1393</span>&#160;</div>
+<div class="line"><a name="l01394"></a><span class="lineno"> 1394</span>&#160;    <span class="comment">// here it would be more convenient to just use the</span></div>
+<div class="line"><a name="l01395"></a><span class="lineno"> 1395</span>&#160;    <span class="comment">// copy-constructor, but it would copy the lists as well: too much</span></div>
+<div class="line"><a name="l01396"></a><span class="lineno"> 1396</span>&#160;    <span class="comment">// overhead...</span></div>
+<div class="line"><a name="l01397"></a><span class="lineno"> 1397</span>&#160;</div>
+<div class="line"><a name="l01398"></a><span class="lineno"> 1398</span>&#160;    <span class="comment">// copy fields from Index</span></div>
+<div class="line"><a name="l01399"></a><span class="lineno"> 1399</span>&#160;    d = other.d;</div>
+<div class="line"><a name="l01400"></a><span class="lineno"> 1400</span>&#160;    <a class="code" href="structfaiss_1_1Index.html#a6970683faa021b7a6f1a0865c0d4eccd">ntotal</a> = other.ntotal;</div>
+<div class="line"><a name="l01401"></a><span class="lineno"> 1401</span>&#160;    <a class="code" href="structfaiss_1_1Index.html#a5590d847c5c2b958affd2a05e58a6f23">verbose</a> = other.verbose;</div>
+<div class="line"><a name="l01402"></a><span class="lineno"> 1402</span>&#160;    <a class="code" href="structfaiss_1_1Index.html#a6e92732617c4dbe364e7678dd8773a7f">is_trained</a> = other.is_trained;</div>
+<div class="line"><a name="l01403"></a><span class="lineno"> 1403</span>&#160;    <a class="code" href="structfaiss_1_1Index.html#a8e18f641854b2bde83ecff0a2f9a6f4e">metric_type</a> = other.metric_type;</div>
+<div class="line"><a name="l01404"></a><span class="lineno"> 1404</span>&#160;</div>
+<div class="line"><a name="l01405"></a><span class="lineno"> 1405</span>&#160;    <span class="comment">// copy fields from IndexIVF (except ids)</span></div>
+<div class="line"><a name="l01406"></a><span class="lineno"> 1406</span>&#160;    nlist = other.nlist;</div>
+<div class="line"><a name="l01407"></a><span class="lineno"> 1407</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVF.html#affed235eadf27a13d753ee4d33a1dc58">nprobe</a> = other.nprobe;</div>
+<div class="line"><a name="l01408"></a><span class="lineno"> 1408</span>&#160;    quantizer = other.quantizer;</div>
+<div class="line"><a name="l01409"></a><span class="lineno"> 1409</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVF.html#a23ee7f75f8be4472a17778f2b33875de">quantizer_trains_alone</a> = other.quantizer_trains_alone;</div>
+<div class="line"><a name="l01410"></a><span class="lineno"> 1410</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVF.html#aed2e9757ad5f3c234fd8ad60175a2a73">own_fields</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01411"></a><span class="lineno"> 1411</span>&#160;    direct_map = other.direct_map;</div>
+<div class="line"><a name="l01412"></a><span class="lineno"> 1412</span>&#160;</div>
+<div class="line"><a name="l01413"></a><span class="lineno"> 1413</span>&#160;    <span class="comment">// copy fields from IndexIVFPQ (except codes)</span></div>
+<div class="line"><a name="l01414"></a><span class="lineno"> 1414</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#afd13b471df293ae5a6e895704c69a4c3">by_residual</a> = other.by_residual;</div>
+<div class="line"><a name="l01415"></a><span class="lineno"> 1415</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a1c66ff073c18a1edbe8444c24d870583">use_precomputed_table</a> = other.use_precomputed_table;</div>
+<div class="line"><a name="l01416"></a><span class="lineno"> 1416</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a9b310195d610c3e326471b3758206b59">precomputed_table</a> = other.precomputed_table;</div>
+<div class="line"><a name="l01417"></a><span class="lineno"> 1417</span>&#160;    code_size = other.code_size;</div>
+<div class="line"><a name="l01418"></a><span class="lineno"> 1418</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a007303be116c8da65b6d058e3fc77d16">pq</a> = other.pq;</div>
+<div class="line"><a name="l01419"></a><span class="lineno"> 1419</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a9d5373633df7a9bec4de69400b9adeed">do_polysemous_training</a> = other.do_polysemous_training;</div>
+<div class="line"><a name="l01420"></a><span class="lineno"> 1420</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a2b14cbb5acb3fc28a4df8fde3f5567cd">polysemous_training</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l01421"></a><span class="lineno"> 1421</span>&#160;</div>
+<div class="line"><a name="l01422"></a><span class="lineno"> 1422</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a7430fc4fa030c96497abced3b68358d4">scan_table_threshold</a> = other.scan_table_threshold;</div>
+<div class="line"><a name="l01423"></a><span class="lineno"> 1423</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a77501995b3671e377102d2db1a93ade4">max_codes</a> = other.max_codes;</div>
+<div class="line"><a name="l01424"></a><span class="lineno"> 1424</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a3093a0a3e128eafce6e0583b75e9662e">polysemous_ht</a> = other.polysemous_ht;</div>
+<div class="line"><a name="l01425"></a><span class="lineno"> 1425</span>&#160;</div>
+<div class="line"><a name="l01426"></a><span class="lineno"> 1426</span>&#160;    <span class="comment">//allocate</span></div>
+<div class="line"><a name="l01427"></a><span class="lineno"> 1427</span>&#160;    alloc_type = <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#ab2698c5d65644a171c53ffe39e420b70acf2d6ba8878a2778383adc32593ba8e6">Alloc_type_new</a>;</div>
+<div class="line"><a name="l01428"></a><span class="lineno"> 1428</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a> = <span class="keyword">new</span> uint32_t [nlist + 1];</div>
+<div class="line"><a name="l01429"></a><span class="lineno"> 1429</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a1fa62ed464c15768479c92646ed484c7">compact_ids</a> = <span class="keyword">new</span> uint32_t [<a class="code" href="structfaiss_1_1Index.html#a6970683faa021b7a6f1a0865c0d4eccd">ntotal</a>];</div>
+<div class="line"><a name="l01430"></a><span class="lineno"> 1430</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#aaaf53cae0e47baf3fb1199ce4d789694">compact_codes</a> = <span class="keyword">new</span> uint8_t [<a class="code" href="structfaiss_1_1Index.html#a6970683faa021b7a6f1a0865c0d4eccd">ntotal</a> * <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a31c6fb2faa4dadea4c0594338be7be90">code_size</a>];</div>
+<div class="line"><a name="l01431"></a><span class="lineno"> 1431</span>&#160;</div>
 <div class="line"><a name="l01432"></a><span class="lineno"> 1432</span>&#160;</div>
-<div class="line"><a name="l01433"></a><span class="lineno"> 1433</span>&#160;</div>
-<div class="line"><a name="l01434"></a><span class="lineno"> 1434</span>&#160;    <span class="comment">// copy content from other</span></div>
-<div class="line"><a name="l01435"></a><span class="lineno"> 1435</span>&#160;    <span class="keywordtype">size_t</span> ofs = 0;</div>
-<div class="line"><a name="l01436"></a><span class="lineno"> 1436</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>; i++) {</div>
-<div class="line"><a name="l01437"></a><span class="lineno"> 1437</span>&#160;        <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a> [i] = ofs;</div>
-<div class="line"><a name="l01438"></a><span class="lineno"> 1438</span>&#160;        <span class="keyword">const</span> std::vector&lt;long&gt; &amp;other_ids = other.ids[i];</div>
-<div class="line"><a name="l01439"></a><span class="lineno"> 1439</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; other_ids.size(); j++) {</div>
-<div class="line"><a name="l01440"></a><span class="lineno"> 1440</span>&#160;            <span class="keywordtype">long</span> <span class="keywordtype">id</span> = other_ids[j];</div>
-<div class="line"><a name="l01441"></a><span class="lineno"> 1441</span>&#160;            FAISS_THROW_IF_NOT_MSG (<span class="keywordtype">id</span> &lt; (1UL &lt;&lt; 31),</div>
-<div class="line"><a name="l01442"></a><span class="lineno"> 1442</span>&#160;                              <span class="stringliteral">&quot;IndexIVFPQCompact cannot store ids &gt; 2G&quot;</span>);</div>
-<div class="line"><a name="l01443"></a><span class="lineno"> 1443</span>&#160;            <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a1fa62ed464c15768479c92646ed484c7">compact_ids</a>[ofs + j] = id;</div>
-<div class="line"><a name="l01444"></a><span class="lineno"> 1444</span>&#160;        }</div>
-<div class="line"><a name="l01445"></a><span class="lineno"> 1445</span>&#160;        memcpy (<a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#aaaf53cae0e47baf3fb1199ce4d789694">compact_codes</a> + ofs * code_size,</div>
-<div class="line"><a name="l01446"></a><span class="lineno"> 1446</span>&#160;                other.codes[i].data(),</div>
-<div class="line"><a name="l01447"></a><span class="lineno"> 1447</span>&#160;                other.codes[i].size());</div>
-<div class="line"><a name="l01448"></a><span class="lineno"> 1448</span>&#160;        ofs += other_ids.size();</div>
-<div class="line"><a name="l01449"></a><span class="lineno"> 1449</span>&#160;    }</div>
-<div class="line"><a name="l01450"></a><span class="lineno"> 1450</span>&#160;    FAISS_THROW_IF_NOT (ofs == <a class="code" href="structfaiss_1_1Index.html#a6970683faa021b7a6f1a0865c0d4eccd">ntotal</a>);</div>
-<div class="line"><a name="l01451"></a><span class="lineno"> 1451</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a> [<a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>] = ofs;</div>
-<div class="line"><a name="l01452"></a><span class="lineno"> 1452</span>&#160;</div>
-<div class="line"><a name="l01453"></a><span class="lineno"> 1453</span>&#160;}</div>
-<div class="line"><a name="l01454"></a><span class="lineno"> 1454</span>&#160;</div>
-<div class="line"><a name="l01455"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIVFPQCompact.html#ade7b46bbbcaf244ad680104380afb1b8"> 1455</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#ade7b46bbbcaf244ad680104380afb1b8">IndexIVFPQCompact::add</a> (<a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>, <span class="keyword">const</span> <span class="keywordtype">float</span> *) {</div>
-<div class="line"><a name="l01456"></a><span class="lineno"> 1456</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;cannot add to an IndexIVFPQCompact&quot;</span>);</div>
-<div class="line"><a name="l01457"></a><span class="lineno"> 1457</span>&#160;}</div>
-<div class="line"><a name="l01458"></a><span class="lineno"> 1458</span>&#160;</div>
-<div class="line"><a name="l01459"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIVFPQCompact.html#a8f5eccfb4d5e4098ff6c00acb3bc40a1"> 1459</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a8f5eccfb4d5e4098ff6c00acb3bc40a1">IndexIVFPQCompact::reset</a> () {</div>
-<div class="line"><a name="l01460"></a><span class="lineno"> 1460</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;cannot reset an IndexIVFPQCompact&quot;</span>);</div>
-<div class="line"><a name="l01461"></a><span class="lineno"> 1461</span>&#160;}</div>
-<div class="line"><a name="l01462"></a><span class="lineno"> 1462</span>&#160;</div>
-<div class="line"><a name="l01463"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIVFPQCompact.html#a0ef8132fae22a50616fe1201c8b20588"> 1463</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a0ef8132fae22a50616fe1201c8b20588">IndexIVFPQCompact::train</a> (<a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>, <span class="keyword">const</span> <span class="keywordtype">float</span> *) {</div>
-<div class="line"><a name="l01464"></a><span class="lineno"> 1464</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;cannot train an IndexIVFPQCompact&quot;</span>);</div>
-<div class="line"><a name="l01465"></a><span class="lineno"> 1465</span>&#160;}</div>
+<div class="line"><a name="l01433"></a><span class="lineno"> 1433</span>&#160;    <span class="comment">// copy content from other</span></div>
+<div class="line"><a name="l01434"></a><span class="lineno"> 1434</span>&#160;    <span class="keywordtype">size_t</span> ofs = 0;</div>
+<div class="line"><a name="l01435"></a><span class="lineno"> 1435</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>; i++) {</div>
+<div class="line"><a name="l01436"></a><span class="lineno"> 1436</span>&#160;        <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a> [i] = ofs;</div>
+<div class="line"><a name="l01437"></a><span class="lineno"> 1437</span>&#160;        <span class="keyword">const</span> std::vector&lt;long&gt; &amp;other_ids = other.ids[i];</div>
+<div class="line"><a name="l01438"></a><span class="lineno"> 1438</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; other_ids.size(); j++) {</div>
+<div class="line"><a name="l01439"></a><span class="lineno"> 1439</span>&#160;            <span class="keywordtype">long</span> <span class="keywordtype">id</span> = other_ids[j];</div>
+<div class="line"><a name="l01440"></a><span class="lineno"> 1440</span>&#160;            FAISS_THROW_IF_NOT_MSG (<span class="keywordtype">id</span> &lt; (1UL &lt;&lt; 31),</div>
+<div class="line"><a name="l01441"></a><span class="lineno"> 1441</span>&#160;                              <span class="stringliteral">&quot;IndexIVFPQCompact cannot store ids &gt; 2G&quot;</span>);</div>
+<div class="line"><a name="l01442"></a><span class="lineno"> 1442</span>&#160;            <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a1fa62ed464c15768479c92646ed484c7">compact_ids</a>[ofs + j] = id;</div>
+<div class="line"><a name="l01443"></a><span class="lineno"> 1443</span>&#160;        }</div>
+<div class="line"><a name="l01444"></a><span class="lineno"> 1444</span>&#160;        memcpy (<a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#aaaf53cae0e47baf3fb1199ce4d789694">compact_codes</a> + ofs * code_size,</div>
+<div class="line"><a name="l01445"></a><span class="lineno"> 1445</span>&#160;                other.codes[i].data(),</div>
+<div class="line"><a name="l01446"></a><span class="lineno"> 1446</span>&#160;                other.codes[i].size());</div>
+<div class="line"><a name="l01447"></a><span class="lineno"> 1447</span>&#160;        ofs += other_ids.size();</div>
+<div class="line"><a name="l01448"></a><span class="lineno"> 1448</span>&#160;    }</div>
+<div class="line"><a name="l01449"></a><span class="lineno"> 1449</span>&#160;    FAISS_THROW_IF_NOT (ofs == <a class="code" href="structfaiss_1_1Index.html#a6970683faa021b7a6f1a0865c0d4eccd">ntotal</a>);</div>
+<div class="line"><a name="l01450"></a><span class="lineno"> 1450</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a> [<a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>] = ofs;</div>
+<div class="line"><a name="l01451"></a><span class="lineno"> 1451</span>&#160;</div>
+<div class="line"><a name="l01452"></a><span class="lineno"> 1452</span>&#160;}</div>
+<div class="line"><a name="l01453"></a><span class="lineno"> 1453</span>&#160;</div>
+<div class="line"><a name="l01454"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIVFPQCompact.html#ade7b46bbbcaf244ad680104380afb1b8"> 1454</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#ade7b46bbbcaf244ad680104380afb1b8">IndexIVFPQCompact::add</a> (<a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>, <span class="keyword">const</span> <span class="keywordtype">float</span> *) {</div>
+<div class="line"><a name="l01455"></a><span class="lineno"> 1455</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;cannot add to an IndexIVFPQCompact&quot;</span>);</div>
+<div class="line"><a name="l01456"></a><span class="lineno"> 1456</span>&#160;}</div>
+<div class="line"><a name="l01457"></a><span class="lineno"> 1457</span>&#160;</div>
+<div class="line"><a name="l01458"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIVFPQCompact.html#a8f5eccfb4d5e4098ff6c00acb3bc40a1"> 1458</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a8f5eccfb4d5e4098ff6c00acb3bc40a1">IndexIVFPQCompact::reset</a> () {</div>
+<div class="line"><a name="l01459"></a><span class="lineno"> 1459</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;cannot reset an IndexIVFPQCompact&quot;</span>);</div>
+<div class="line"><a name="l01460"></a><span class="lineno"> 1460</span>&#160;}</div>
+<div class="line"><a name="l01461"></a><span class="lineno"> 1461</span>&#160;</div>
+<div class="line"><a name="l01462"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIVFPQCompact.html#a0ef8132fae22a50616fe1201c8b20588"> 1462</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a0ef8132fae22a50616fe1201c8b20588">IndexIVFPQCompact::train</a> (<a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>, <span class="keyword">const</span> <span class="keywordtype">float</span> *) {</div>
+<div class="line"><a name="l01463"></a><span class="lineno"> 1463</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;cannot train an IndexIVFPQCompact&quot;</span>);</div>
+<div class="line"><a name="l01464"></a><span class="lineno"> 1464</span>&#160;}</div>
+<div class="line"><a name="l01465"></a><span class="lineno"> 1465</span>&#160;</div>
 <div class="line"><a name="l01466"></a><span class="lineno"> 1466</span>&#160;</div>
 <div class="line"><a name="l01467"></a><span class="lineno"> 1467</span>&#160;</div>
 <div class="line"><a name="l01468"></a><span class="lineno"> 1468</span>&#160;</div>
-<div class="line"><a name="l01469"></a><span class="lineno"> 1469</span>&#160;</div>
-<div class="line"><a name="l01470"></a><span class="lineno"> 1470</span>&#160;IndexIVFPQCompact::~IndexIVFPQCompact ()</div>
-<div class="line"><a name="l01471"></a><span class="lineno"> 1471</span>&#160;{</div>
-<div class="line"><a name="l01472"></a><span class="lineno"> 1472</span>&#160;    <span class="keywordflow">if</span> (alloc_type == <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#ab2698c5d65644a171c53ffe39e420b70acf2d6ba8878a2778383adc32593ba8e6">Alloc_type_new</a>) {</div>
-<div class="line"><a name="l01473"></a><span class="lineno"> 1473</span>&#160;        <span class="keyword">delete</span> [] <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a>;</div>
-<div class="line"><a name="l01474"></a><span class="lineno"> 1474</span>&#160;        <span class="keyword">delete</span> [] <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#aaaf53cae0e47baf3fb1199ce4d789694">compact_codes</a>;</div>
-<div class="line"><a name="l01475"></a><span class="lineno"> 1475</span>&#160;        <span class="keyword">delete</span> [] <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a1fa62ed464c15768479c92646ed484c7">compact_ids</a>;</div>
-<div class="line"><a name="l01476"></a><span class="lineno"> 1476</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (alloc_type == <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#ab2698c5d65644a171c53ffe39e420b70a38c1b1ed9ebdbd4b0047be13080094bb">Alloc_type_mmap</a>) {</div>
-<div class="line"><a name="l01477"></a><span class="lineno"> 1477</span>&#160;        munmap (mmap_buffer, mmap_length);</div>
-<div class="line"><a name="l01478"></a><span class="lineno"> 1478</span>&#160;</div>
-<div class="line"><a name="l01479"></a><span class="lineno"> 1479</span>&#160;    }</div>
-<div class="line"><a name="l01480"></a><span class="lineno"> 1480</span>&#160;</div>
-<div class="line"><a name="l01481"></a><span class="lineno"> 1481</span>&#160;}</div>
-<div class="line"><a name="l01482"></a><span class="lineno"> 1482</span>&#160;</div>
-<div class="line"><a name="l01483"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIVFPQCompact.html#a583dd638a00cb9246ac7b54ee6d65f95"> 1483</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a583dd638a00cb9246ac7b54ee6d65f95">IndexIVFPQCompact::search_knn_with_key</a> (</div>
-<div class="line"><a name="l01484"></a><span class="lineno"> 1484</span>&#160;    <span class="keywordtype">size_t</span> nx,</div>
-<div class="line"><a name="l01485"></a><span class="lineno"> 1485</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">float</span> * qx,</div>
-<div class="line"><a name="l01486"></a><span class="lineno"> 1486</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">long</span> * keys,</div>
-<div class="line"><a name="l01487"></a><span class="lineno"> 1487</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">float</span> * coarse_dis,</div>
-<div class="line"><a name="l01488"></a><span class="lineno"> 1488</span>&#160;    <a class="code" href="structfaiss_1_1HeapArray.html">float_maxheap_array_t</a> * res,</div>
-<div class="line"><a name="l01489"></a><span class="lineno"> 1489</span>&#160;    <span class="keywordtype">bool</span> store_pairs)<span class="keyword"> const</span></div>
-<div class="line"><a name="l01490"></a><span class="lineno"> 1490</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l01491"></a><span class="lineno"> 1491</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> k = res-&gt;<a class="code" href="structfaiss_1_1HeapArray.html#a1ee98429c766c77235f78c6d9aa32bb4">k</a>;</div>
-<div class="line"><a name="l01492"></a><span class="lineno"> 1492</span>&#160;</div>
-<div class="line"><a name="l01493"></a><span class="lineno"> 1493</span>&#160;<span class="preprocessor">#pragma omp parallel</span></div>
-<div class="line"><a name="l01494"></a><span class="lineno"> 1494</span>&#160;<span class="preprocessor"></span>    {</div>
-<div class="line"><a name="l01495"></a><span class="lineno"> 1495</span>&#160;        InvertedListScanner&lt;uint32_t&gt; qt (*<span class="keyword">this</span>);</div>
-<div class="line"><a name="l01496"></a><span class="lineno"> 1496</span>&#160;        <span class="keywordtype">size_t</span> stats_nlist = 0;</div>
-<div class="line"><a name="l01497"></a><span class="lineno"> 1497</span>&#160;        <span class="keywordtype">size_t</span> stats_ncode = 0;</div>
-<div class="line"><a name="l01498"></a><span class="lineno"> 1498</span>&#160;        uint64_t init_query_cycles = 0;</div>
-<div class="line"><a name="l01499"></a><span class="lineno"> 1499</span>&#160;        uint64_t scan_cycles = 0;</div>
-<div class="line"><a name="l01500"></a><span class="lineno"> 1500</span>&#160;        uint64_t heap_cycles = 0;</div>
-<div class="line"><a name="l01501"></a><span class="lineno"> 1501</span>&#160;</div>
-<div class="line"><a name="l01502"></a><span class="lineno"> 1502</span>&#160;<span class="preprocessor">#pragma omp  for</span></div>
-<div class="line"><a name="l01503"></a><span class="lineno"> 1503</span>&#160;<span class="preprocessor"></span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++) {</div>
-<div class="line"><a name="l01504"></a><span class="lineno"> 1504</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> *qi = qx + i * <a class="code" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>;</div>
-<div class="line"><a name="l01505"></a><span class="lineno"> 1505</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">long</span> * keysi = keys + i * <a class="code" href="structfaiss_1_1IndexIVF.html#affed235eadf27a13d753ee4d33a1dc58">nprobe</a>;</div>
-<div class="line"><a name="l01506"></a><span class="lineno"> 1506</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> *coarse_dis_i = coarse_dis + i * <a class="code" href="structfaiss_1_1IndexIVF.html#affed235eadf27a13d753ee4d33a1dc58">nprobe</a>;</div>
-<div class="line"><a name="l01507"></a><span class="lineno"> 1507</span>&#160;            <span class="keywordtype">float</span> * heap_sim = res-&gt;<a class="code" href="structfaiss_1_1HeapArray.html#ae97911f6f85d152a5b45e459063b6858">get_val</a> (i);</div>
-<div class="line"><a name="l01508"></a><span class="lineno"> 1508</span>&#160;            <span class="keywordtype">long</span> * heap_ids = res-&gt;<a class="code" href="structfaiss_1_1HeapArray.html#af6aa57addaa1bc754d09a2a08be4df49">get_ids</a> (i);</div>
-<div class="line"><a name="l01509"></a><span class="lineno"> 1509</span>&#160;</div>
-<div class="line"><a name="l01510"></a><span class="lineno"> 1510</span>&#160;            uint64_t t0;</div>
-<div class="line"><a name="l01511"></a><span class="lineno"> 1511</span>&#160;            TIC;</div>
-<div class="line"><a name="l01512"></a><span class="lineno"> 1512</span>&#160;            maxheap_heapify (k, heap_sim, heap_ids);</div>
-<div class="line"><a name="l01513"></a><span class="lineno"> 1513</span>&#160;            heap_cycles += TOC;</div>
-<div class="line"><a name="l01514"></a><span class="lineno"> 1514</span>&#160;</div>
-<div class="line"><a name="l01515"></a><span class="lineno"> 1515</span>&#160;            TIC;</div>
-<div class="line"><a name="l01516"></a><span class="lineno"> 1516</span>&#160;            qt.init_query (qi);</div>
-<div class="line"><a name="l01517"></a><span class="lineno"> 1517</span>&#160;            init_query_cycles += TOC;</div>
-<div class="line"><a name="l01518"></a><span class="lineno"> 1518</span>&#160;</div>
-<div class="line"><a name="l01519"></a><span class="lineno"> 1519</span>&#160;            <span class="keywordtype">size_t</span> nscan = 0;</div>
-<div class="line"><a name="l01520"></a><span class="lineno"> 1520</span>&#160;</div>
-<div class="line"><a name="l01521"></a><span class="lineno"> 1521</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ik = 0; ik &lt; <a class="code" href="structfaiss_1_1IndexIVF.html#affed235eadf27a13d753ee4d33a1dc58">nprobe</a>; ik++) {</div>
-<div class="line"><a name="l01522"></a><span class="lineno"> 1522</span>&#160;                <span class="keywordtype">long</span> key = keysi[ik];  <span class="comment">/* select the list  */</span></div>
-<div class="line"><a name="l01523"></a><span class="lineno"> 1523</span>&#160;                <span class="keywordflow">if</span> (key &lt; 0) {</div>
-<div class="line"><a name="l01524"></a><span class="lineno"> 1524</span>&#160;                    <span class="comment">// not enough centroids for multiprobe</span></div>
-<div class="line"><a name="l01525"></a><span class="lineno"> 1525</span>&#160;                    <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l01526"></a><span class="lineno"> 1526</span>&#160;                }</div>
-<div class="line"><a name="l01527"></a><span class="lineno"> 1527</span>&#160;                <span class="keywordflow">if</span> (key &gt;= (<span class="keywordtype">long</span>) nlist) {</div>
-<div class="line"><a name="l01528"></a><span class="lineno"> 1528</span>&#160;                    fprintf (stderr, <span class="stringliteral">&quot;Invalid key=%ld nlist=%ld\n&quot;</span>, key, nlist);</div>
-<div class="line"><a name="l01529"></a><span class="lineno"> 1529</span>&#160;                    <span class="keywordflow">throw</span>;</div>
-<div class="line"><a name="l01530"></a><span class="lineno"> 1530</span>&#160;                }</div>
-<div class="line"><a name="l01531"></a><span class="lineno"> 1531</span>&#160;                <span class="keywordtype">size_t</span> list_size = <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a>[key + 1] - <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a>[key];</div>
-<div class="line"><a name="l01532"></a><span class="lineno"> 1532</span>&#160;                stats_nlist ++;</div>
-<div class="line"><a name="l01533"></a><span class="lineno"> 1533</span>&#160;                nscan += list_size;</div>
-<div class="line"><a name="l01534"></a><span class="lineno"> 1534</span>&#160;</div>
-<div class="line"><a name="l01535"></a><span class="lineno"> 1535</span>&#160;                <span class="keywordflow">if</span> (list_size == 0) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l01536"></a><span class="lineno"> 1536</span>&#160;</div>
-<div class="line"><a name="l01537"></a><span class="lineno"> 1537</span>&#160;                qt.init_list (key, coarse_dis_i[ik],</div>
-<div class="line"><a name="l01538"></a><span class="lineno"> 1538</span>&#160;                              list_size, <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a1fa62ed464c15768479c92646ed484c7">compact_ids</a> + limits[key],</div>
-<div class="line"><a name="l01539"></a><span class="lineno"> 1539</span>&#160;                              <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#aaaf53cae0e47baf3fb1199ce4d789694">compact_codes</a> + limits[key] * code_size);</div>
-<div class="line"><a name="l01540"></a><span class="lineno"> 1540</span>&#160;</div>
-<div class="line"><a name="l01541"></a><span class="lineno"> 1541</span>&#160;                TIC;</div>
-<div class="line"><a name="l01542"></a><span class="lineno"> 1542</span>&#160;                <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1IndexIVFPQ.html#a3093a0a3e128eafce6e0583b75e9662e">polysemous_ht</a> &gt; 0) {</div>
-<div class="line"><a name="l01543"></a><span class="lineno"> 1543</span>&#160;                    qt.scan_list_polysemous</div>
-<div class="line"><a name="l01544"></a><span class="lineno"> 1544</span>&#160;                        (k, heap_sim, heap_ids, store_pairs);</div>
-<div class="line"><a name="l01545"></a><span class="lineno"> 1545</span>&#160;                } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (list_size &gt; <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a7430fc4fa030c96497abced3b68358d4">scan_table_threshold</a>) {</div>
-<div class="line"><a name="l01546"></a><span class="lineno"> 1546</span>&#160;                   qt.scan_list_with_table (k, heap_sim, heap_ids, store_pairs);</div>
-<div class="line"><a name="l01547"></a><span class="lineno"> 1547</span>&#160;                } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l01548"></a><span class="lineno"> 1548</span>&#160;                   qt.scan_on_the_fly_dist (k, heap_sim, heap_ids, store_pairs);</div>
-<div class="line"><a name="l01549"></a><span class="lineno"> 1549</span>&#160;                }</div>
-<div class="line"><a name="l01550"></a><span class="lineno"> 1550</span>&#160;                scan_cycles += TOC;</div>
-<div class="line"><a name="l01551"></a><span class="lineno"> 1551</span>&#160;</div>
-<div class="line"><a name="l01552"></a><span class="lineno"> 1552</span>&#160;                <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1IndexIVFPQ.html#a77501995b3671e377102d2db1a93ade4">max_codes</a> &amp;&amp; nscan &gt;= <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a77501995b3671e377102d2db1a93ade4">max_codes</a>) <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l01553"></a><span class="lineno"> 1553</span>&#160;            }</div>
-<div class="line"><a name="l01554"></a><span class="lineno"> 1554</span>&#160;            stats_ncode += nscan;</div>
-<div class="line"><a name="l01555"></a><span class="lineno"> 1555</span>&#160;            TIC;</div>
-<div class="line"><a name="l01556"></a><span class="lineno"> 1556</span>&#160;            maxheap_reorder (k, heap_sim, heap_ids);</div>
-<div class="line"><a name="l01557"></a><span class="lineno"> 1557</span>&#160;</div>
-<div class="line"><a name="l01558"></a><span class="lineno"> 1558</span>&#160;            <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1Index.html#a8e18f641854b2bde83ecff0a2f9a6f4e">metric_type</a> == METRIC_INNER_PRODUCT) {</div>
-<div class="line"><a name="l01559"></a><span class="lineno"> 1559</span>&#160;                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; k; j++) {</div>
-<div class="line"><a name="l01560"></a><span class="lineno"> 1560</span>&#160;                    heap_sim[i] = -heap_sim[i];</div>
-<div class="line"><a name="l01561"></a><span class="lineno"> 1561</span>&#160;                }</div>
-<div class="line"><a name="l01562"></a><span class="lineno"> 1562</span>&#160;            }</div>
-<div class="line"><a name="l01563"></a><span class="lineno"> 1563</span>&#160;            heap_cycles += TOC;</div>
-<div class="line"><a name="l01564"></a><span class="lineno"> 1564</span>&#160;        }</div>
-<div class="line"><a name="l01565"></a><span class="lineno"> 1565</span>&#160;</div>
-<div class="line"><a name="l01566"></a><span class="lineno"> 1566</span>&#160;<span class="preprocessor">#pragma omp critical</span></div>
-<div class="line"><a name="l01567"></a><span class="lineno"> 1567</span>&#160;<span class="preprocessor"></span>        {</div>
-<div class="line"><a name="l01568"></a><span class="lineno"> 1568</span>&#160;            indexIVFPQ_stats.n_hamming_pass += qt.n_hamming_pass;</div>
-<div class="line"><a name="l01569"></a><span class="lineno"> 1569</span>&#160;            indexIVFPQ_stats.nlist += stats_nlist;</div>
-<div class="line"><a name="l01570"></a><span class="lineno"> 1570</span>&#160;            indexIVFPQ_stats.ncode += stats_ncode;</div>
-<div class="line"><a name="l01571"></a><span class="lineno"> 1571</span>&#160;</div>
-<div class="line"><a name="l01572"></a><span class="lineno"> 1572</span>&#160;            indexIVFPQ_stats.init_query_cycles += init_query_cycles;</div>
-<div class="line"><a name="l01573"></a><span class="lineno"> 1573</span>&#160;            indexIVFPQ_stats.init_list_cycles += qt.init_list_cycles;</div>
-<div class="line"><a name="l01574"></a><span class="lineno"> 1574</span>&#160;            indexIVFPQ_stats.scan_cycles += scan_cycles - qt.init_list_cycles;</div>
-<div class="line"><a name="l01575"></a><span class="lineno"> 1575</span>&#160;            indexIVFPQ_stats.heap_cycles += heap_cycles;</div>
-<div class="line"><a name="l01576"></a><span class="lineno"> 1576</span>&#160;        }</div>
-<div class="line"><a name="l01577"></a><span class="lineno"> 1577</span>&#160;</div>
-<div class="line"><a name="l01578"></a><span class="lineno"> 1578</span>&#160;    }</div>
-<div class="line"><a name="l01579"></a><span class="lineno"> 1579</span>&#160;    indexIVFPQ_stats.nq += nx;</div>
-<div class="line"><a name="l01580"></a><span class="lineno"> 1580</span>&#160;}</div>
+<div class="line"><a name="l01469"></a><span class="lineno"> 1469</span>&#160;IndexIVFPQCompact::~IndexIVFPQCompact ()</div>
+<div class="line"><a name="l01470"></a><span class="lineno"> 1470</span>&#160;{</div>
+<div class="line"><a name="l01471"></a><span class="lineno"> 1471</span>&#160;    <span class="keywordflow">if</span> (alloc_type == <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#ab2698c5d65644a171c53ffe39e420b70acf2d6ba8878a2778383adc32593ba8e6">Alloc_type_new</a>) {</div>
+<div class="line"><a name="l01472"></a><span class="lineno"> 1472</span>&#160;        <span class="keyword">delete</span> [] <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a>;</div>
+<div class="line"><a name="l01473"></a><span class="lineno"> 1473</span>&#160;        <span class="keyword">delete</span> [] <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#aaaf53cae0e47baf3fb1199ce4d789694">compact_codes</a>;</div>
+<div class="line"><a name="l01474"></a><span class="lineno"> 1474</span>&#160;        <span class="keyword">delete</span> [] <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a1fa62ed464c15768479c92646ed484c7">compact_ids</a>;</div>
+<div class="line"><a name="l01475"></a><span class="lineno"> 1475</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (alloc_type == <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#ab2698c5d65644a171c53ffe39e420b70a38c1b1ed9ebdbd4b0047be13080094bb">Alloc_type_mmap</a>) {</div>
+<div class="line"><a name="l01476"></a><span class="lineno"> 1476</span>&#160;        munmap (mmap_buffer, mmap_length);</div>
+<div class="line"><a name="l01477"></a><span class="lineno"> 1477</span>&#160;</div>
+<div class="line"><a name="l01478"></a><span class="lineno"> 1478</span>&#160;    }</div>
+<div class="line"><a name="l01479"></a><span class="lineno"> 1479</span>&#160;</div>
+<div class="line"><a name="l01480"></a><span class="lineno"> 1480</span>&#160;}</div>
+<div class="line"><a name="l01481"></a><span class="lineno"> 1481</span>&#160;</div>
+<div class="line"><a name="l01482"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIVFPQCompact.html#a583dd638a00cb9246ac7b54ee6d65f95"> 1482</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a583dd638a00cb9246ac7b54ee6d65f95">IndexIVFPQCompact::search_knn_with_key</a> (</div>
+<div class="line"><a name="l01483"></a><span class="lineno"> 1483</span>&#160;    <span class="keywordtype">size_t</span> nx,</div>
+<div class="line"><a name="l01484"></a><span class="lineno"> 1484</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">float</span> * qx,</div>
+<div class="line"><a name="l01485"></a><span class="lineno"> 1485</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">long</span> * keys,</div>
+<div class="line"><a name="l01486"></a><span class="lineno"> 1486</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">float</span> * coarse_dis,</div>
+<div class="line"><a name="l01487"></a><span class="lineno"> 1487</span>&#160;    <a class="code" href="structfaiss_1_1HeapArray.html">float_maxheap_array_t</a> * res,</div>
+<div class="line"><a name="l01488"></a><span class="lineno"> 1488</span>&#160;    <span class="keywordtype">bool</span> store_pairs)<span class="keyword"> const</span></div>
+<div class="line"><a name="l01489"></a><span class="lineno"> 1489</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l01490"></a><span class="lineno"> 1490</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> k = res-&gt;<a class="code" href="structfaiss_1_1HeapArray.html#a1ee98429c766c77235f78c6d9aa32bb4">k</a>;</div>
+<div class="line"><a name="l01491"></a><span class="lineno"> 1491</span>&#160;</div>
+<div class="line"><a name="l01492"></a><span class="lineno"> 1492</span>&#160;<span class="preprocessor">#pragma omp parallel</span></div>
+<div class="line"><a name="l01493"></a><span class="lineno"> 1493</span>&#160;<span class="preprocessor"></span>    {</div>
+<div class="line"><a name="l01494"></a><span class="lineno"> 1494</span>&#160;        InvertedListScanner&lt;uint32_t&gt; qt (*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l01495"></a><span class="lineno"> 1495</span>&#160;        <span class="keywordtype">size_t</span> stats_nlist = 0;</div>
+<div class="line"><a name="l01496"></a><span class="lineno"> 1496</span>&#160;        <span class="keywordtype">size_t</span> stats_ncode = 0;</div>
+<div class="line"><a name="l01497"></a><span class="lineno"> 1497</span>&#160;        uint64_t init_query_cycles = 0;</div>
+<div class="line"><a name="l01498"></a><span class="lineno"> 1498</span>&#160;        uint64_t scan_cycles = 0;</div>
+<div class="line"><a name="l01499"></a><span class="lineno"> 1499</span>&#160;        uint64_t heap_cycles = 0;</div>
+<div class="line"><a name="l01500"></a><span class="lineno"> 1500</span>&#160;</div>
+<div class="line"><a name="l01501"></a><span class="lineno"> 1501</span>&#160;<span class="preprocessor">#pragma omp  for</span></div>
+<div class="line"><a name="l01502"></a><span class="lineno"> 1502</span>&#160;<span class="preprocessor"></span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++) {</div>
+<div class="line"><a name="l01503"></a><span class="lineno"> 1503</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> *qi = qx + i * <a class="code" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>;</div>
+<div class="line"><a name="l01504"></a><span class="lineno"> 1504</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">long</span> * keysi = keys + i * <a class="code" href="structfaiss_1_1IndexIVF.html#affed235eadf27a13d753ee4d33a1dc58">nprobe</a>;</div>
+<div class="line"><a name="l01505"></a><span class="lineno"> 1505</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> *coarse_dis_i = coarse_dis + i * <a class="code" href="structfaiss_1_1IndexIVF.html#affed235eadf27a13d753ee4d33a1dc58">nprobe</a>;</div>
+<div class="line"><a name="l01506"></a><span class="lineno"> 1506</span>&#160;            <span class="keywordtype">float</span> * heap_sim = res-&gt;<a class="code" href="structfaiss_1_1HeapArray.html#ae97911f6f85d152a5b45e459063b6858">get_val</a> (i);</div>
+<div class="line"><a name="l01507"></a><span class="lineno"> 1507</span>&#160;            <span class="keywordtype">long</span> * heap_ids = res-&gt;<a class="code" href="structfaiss_1_1HeapArray.html#af6aa57addaa1bc754d09a2a08be4df49">get_ids</a> (i);</div>
+<div class="line"><a name="l01508"></a><span class="lineno"> 1508</span>&#160;</div>
+<div class="line"><a name="l01509"></a><span class="lineno"> 1509</span>&#160;            uint64_t t0;</div>
+<div class="line"><a name="l01510"></a><span class="lineno"> 1510</span>&#160;            TIC;</div>
+<div class="line"><a name="l01511"></a><span class="lineno"> 1511</span>&#160;            maxheap_heapify (k, heap_sim, heap_ids);</div>
+<div class="line"><a name="l01512"></a><span class="lineno"> 1512</span>&#160;            heap_cycles += TOC;</div>
+<div class="line"><a name="l01513"></a><span class="lineno"> 1513</span>&#160;</div>
+<div class="line"><a name="l01514"></a><span class="lineno"> 1514</span>&#160;            TIC;</div>
+<div class="line"><a name="l01515"></a><span class="lineno"> 1515</span>&#160;            qt.init_query (qi);</div>
+<div class="line"><a name="l01516"></a><span class="lineno"> 1516</span>&#160;            init_query_cycles += TOC;</div>
+<div class="line"><a name="l01517"></a><span class="lineno"> 1517</span>&#160;</div>
+<div class="line"><a name="l01518"></a><span class="lineno"> 1518</span>&#160;            <span class="keywordtype">size_t</span> nscan = 0;</div>
+<div class="line"><a name="l01519"></a><span class="lineno"> 1519</span>&#160;</div>
+<div class="line"><a name="l01520"></a><span class="lineno"> 1520</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ik = 0; ik &lt; <a class="code" href="structfaiss_1_1IndexIVF.html#affed235eadf27a13d753ee4d33a1dc58">nprobe</a>; ik++) {</div>
+<div class="line"><a name="l01521"></a><span class="lineno"> 1521</span>&#160;                <span class="keywordtype">long</span> key = keysi[ik];  <span class="comment">/* select the list  */</span></div>
+<div class="line"><a name="l01522"></a><span class="lineno"> 1522</span>&#160;                <span class="keywordflow">if</span> (key &lt; 0) {</div>
+<div class="line"><a name="l01523"></a><span class="lineno"> 1523</span>&#160;                    <span class="comment">// not enough centroids for multiprobe</span></div>
+<div class="line"><a name="l01524"></a><span class="lineno"> 1524</span>&#160;                    <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l01525"></a><span class="lineno"> 1525</span>&#160;                }</div>
+<div class="line"><a name="l01526"></a><span class="lineno"> 1526</span>&#160;                <span class="keywordflow">if</span> (key &gt;= (<span class="keywordtype">long</span>) nlist) {</div>
+<div class="line"><a name="l01527"></a><span class="lineno"> 1527</span>&#160;                    fprintf (stderr, <span class="stringliteral">&quot;Invalid key=%ld nlist=%ld\n&quot;</span>, key, nlist);</div>
+<div class="line"><a name="l01528"></a><span class="lineno"> 1528</span>&#160;                    <span class="keywordflow">throw</span>;</div>
+<div class="line"><a name="l01529"></a><span class="lineno"> 1529</span>&#160;                }</div>
+<div class="line"><a name="l01530"></a><span class="lineno"> 1530</span>&#160;                <span class="keywordtype">size_t</span> list_size = <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a>[key + 1] - <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a146ccc5a05aed1d2e96df8c1d3f7663d">limits</a>[key];</div>
+<div class="line"><a name="l01531"></a><span class="lineno"> 1531</span>&#160;                stats_nlist ++;</div>
+<div class="line"><a name="l01532"></a><span class="lineno"> 1532</span>&#160;                nscan += list_size;</div>
+<div class="line"><a name="l01533"></a><span class="lineno"> 1533</span>&#160;</div>
+<div class="line"><a name="l01534"></a><span class="lineno"> 1534</span>&#160;                <span class="keywordflow">if</span> (list_size == 0) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l01535"></a><span class="lineno"> 1535</span>&#160;</div>
+<div class="line"><a name="l01536"></a><span class="lineno"> 1536</span>&#160;                qt.init_list (key, coarse_dis_i[ik],</div>
+<div class="line"><a name="l01537"></a><span class="lineno"> 1537</span>&#160;                              list_size, <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#a1fa62ed464c15768479c92646ed484c7">compact_ids</a> + limits[key],</div>
+<div class="line"><a name="l01538"></a><span class="lineno"> 1538</span>&#160;                              <a class="code" href="structfaiss_1_1IndexIVFPQCompact.html#aaaf53cae0e47baf3fb1199ce4d789694">compact_codes</a> + limits[key] * code_size);</div>
+<div class="line"><a name="l01539"></a><span class="lineno"> 1539</span>&#160;</div>
+<div class="line"><a name="l01540"></a><span class="lineno"> 1540</span>&#160;                TIC;</div>
+<div class="line"><a name="l01541"></a><span class="lineno"> 1541</span>&#160;                <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1IndexIVFPQ.html#a3093a0a3e128eafce6e0583b75e9662e">polysemous_ht</a> &gt; 0) {</div>
+<div class="line"><a name="l01542"></a><span class="lineno"> 1542</span>&#160;                    qt.scan_list_polysemous</div>
+<div class="line"><a name="l01543"></a><span class="lineno"> 1543</span>&#160;                        (k, heap_sim, heap_ids, store_pairs);</div>
+<div class="line"><a name="l01544"></a><span class="lineno"> 1544</span>&#160;                } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (list_size &gt; <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a7430fc4fa030c96497abced3b68358d4">scan_table_threshold</a>) {</div>
+<div class="line"><a name="l01545"></a><span class="lineno"> 1545</span>&#160;                   qt.scan_list_with_table (k, heap_sim, heap_ids, store_pairs);</div>
+<div class="line"><a name="l01546"></a><span class="lineno"> 1546</span>&#160;                } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l01547"></a><span class="lineno"> 1547</span>&#160;                   qt.scan_on_the_fly_dist (k, heap_sim, heap_ids, store_pairs);</div>
+<div class="line"><a name="l01548"></a><span class="lineno"> 1548</span>&#160;                }</div>
+<div class="line"><a name="l01549"></a><span class="lineno"> 1549</span>&#160;                scan_cycles += TOC;</div>
+<div class="line"><a name="l01550"></a><span class="lineno"> 1550</span>&#160;</div>
+<div class="line"><a name="l01551"></a><span class="lineno"> 1551</span>&#160;                <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1IndexIVFPQ.html#a77501995b3671e377102d2db1a93ade4">max_codes</a> &amp;&amp; nscan &gt;= <a class="code" href="structfaiss_1_1IndexIVFPQ.html#a77501995b3671e377102d2db1a93ade4">max_codes</a>) <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l01552"></a><span class="lineno"> 1552</span>&#160;            }</div>
+<div class="line"><a name="l01553"></a><span class="lineno"> 1553</span>&#160;            stats_ncode += nscan;</div>
+<div class="line"><a name="l01554"></a><span class="lineno"> 1554</span>&#160;            TIC;</div>
+<div class="line"><a name="l01555"></a><span class="lineno"> 1555</span>&#160;            maxheap_reorder (k, heap_sim, heap_ids);</div>
+<div class="line"><a name="l01556"></a><span class="lineno"> 1556</span>&#160;</div>
+<div class="line"><a name="l01557"></a><span class="lineno"> 1557</span>&#160;            <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1Index.html#a8e18f641854b2bde83ecff0a2f9a6f4e">metric_type</a> == METRIC_INNER_PRODUCT) {</div>
+<div class="line"><a name="l01558"></a><span class="lineno"> 1558</span>&#160;                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; k; j++) {</div>
+<div class="line"><a name="l01559"></a><span class="lineno"> 1559</span>&#160;                    heap_sim[i] = -heap_sim[i];</div>
+<div class="line"><a name="l01560"></a><span class="lineno"> 1560</span>&#160;                }</div>
+<div class="line"><a name="l01561"></a><span class="lineno"> 1561</span>&#160;            }</div>
+<div class="line"><a name="l01562"></a><span class="lineno"> 1562</span>&#160;            heap_cycles += TOC;</div>
+<div class="line"><a name="l01563"></a><span class="lineno"> 1563</span>&#160;        }</div>
+<div class="line"><a name="l01564"></a><span class="lineno"> 1564</span>&#160;</div>
+<div class="line"><a name="l01565"></a><span class="lineno"> 1565</span>&#160;<span class="preprocessor">#pragma omp critical</span></div>
+<div class="line"><a name="l01566"></a><span class="lineno"> 1566</span>&#160;<span class="preprocessor"></span>        {</div>
+<div class="line"><a name="l01567"></a><span class="lineno"> 1567</span>&#160;            indexIVFPQ_stats.n_hamming_pass += qt.n_hamming_pass;</div>
+<div class="line"><a name="l01568"></a><span class="lineno"> 1568</span>&#160;            indexIVFPQ_stats.nlist += stats_nlist;</div>
+<div class="line"><a name="l01569"></a><span class="lineno"> 1569</span>&#160;            indexIVFPQ_stats.ncode += stats_ncode;</div>
+<div class="line"><a name="l01570"></a><span class="lineno"> 1570</span>&#160;</div>
+<div class="line"><a name="l01571"></a><span class="lineno"> 1571</span>&#160;            indexIVFPQ_stats.init_query_cycles += init_query_cycles;</div>
+<div class="line"><a name="l01572"></a><span class="lineno"> 1572</span>&#160;            indexIVFPQ_stats.init_list_cycles += qt.init_list_cycles;</div>
+<div class="line"><a name="l01573"></a><span class="lineno"> 1573</span>&#160;            indexIVFPQ_stats.scan_cycles += scan_cycles - qt.init_list_cycles;</div>
+<div class="line"><a name="l01574"></a><span class="lineno"> 1574</span>&#160;            indexIVFPQ_stats.heap_cycles += heap_cycles;</div>
+<div class="line"><a name="l01575"></a><span class="lineno"> 1575</span>&#160;        }</div>
+<div class="line"><a name="l01576"></a><span class="lineno"> 1576</span>&#160;</div>
+<div class="line"><a name="l01577"></a><span class="lineno"> 1577</span>&#160;    }</div>
+<div class="line"><a name="l01578"></a><span class="lineno"> 1578</span>&#160;    indexIVFPQ_stats.nq += nx;</div>
+<div class="line"><a name="l01579"></a><span class="lineno"> 1579</span>&#160;}</div>
+<div class="line"><a name="l01580"></a><span class="lineno"> 1580</span>&#160;</div>
 <div class="line"><a name="l01581"></a><span class="lineno"> 1581</span>&#160;</div>
 <div class="line"><a name="l01582"></a><span class="lineno"> 1582</span>&#160;</div>
-<div class="line"><a name="l01583"></a><span class="lineno"> 1583</span>&#160;</div>
-<div class="line"><a name="l01584"></a><span class="lineno"> 1584</span>&#160;} <span class="comment">// namespace faiss</span></div>
+<div class="line"><a name="l01583"></a><span class="lineno"> 1583</span>&#160;} <span class="comment">// namespace faiss</span></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFPQCompact_html_a1fa62ed464c15768479c92646ed484c7"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQCompact.html#a1fa62ed464c15768479c92646ed484c7">faiss::IndexIVFPQCompact::compact_ids</a></div><div class="ttdeci">uint32_t * compact_ids</div><div class="ttdoc">size ntotal </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8h_source.html#l00256">IndexIVFPQ.h:256</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVF_html"><div class="ttname"><a href="structfaiss_1_1IndexIVF.html">faiss::IndexIVF</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00045">IndexIVF.h:45</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFPQCompact_html_aaaf53cae0e47baf3fb1199ce4d789694"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQCompact.html#aaaf53cae0e47baf3fb1199ce4d789694">faiss::IndexIVFPQCompact::compact_codes</a></div><div class="ttdeci">uint8_t * compact_codes</div><div class="ttdoc">size ntotal * code_size </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8h_source.html#l00257">IndexIVFPQ.h:257</a></div></div>
@@ -1679,8 +1678,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="namespacefaiss_html_a7466bd32de31640860393a701eaac5ad"><div class="ttname"><a href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">faiss::fvec_L2sqr</a></div><div class="ttdeci">float fvec_L2sqr(const float *x, const float *y, size_t d)</div><div class="ttdoc">Squared L2 distance between two vectors. </div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00481">utils.cpp:481</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFPQ_html_a2b14cbb5acb3fc28a4df8fde3f5567cd"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQ.html#a2b14cbb5acb3fc28a4df8fde3f5567cd">faiss::IndexIVFPQ::polysemous_training</a></div><div class="ttdeci">PolysemousTraining * polysemous_training</div><div class="ttdoc">if NULL, use default </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8h_source.html#l00036">IndexIVFPQ.h:36</a></div></div>
 <div class="ttc" id="structfaiss_1_1HeapArray_html_ae97911f6f85d152a5b45e459063b6858"><div class="ttname"><a href="structfaiss_1_1HeapArray.html#ae97911f6f85d152a5b45e459063b6858">faiss::HeapArray::get_val</a></div><div class="ttdeci">T * get_val(size_t key)</div><div class="ttdoc">Return the list of values for a heap. </div><div class="ttdef"><b>Definition:</b> <a href="Heap_8h_source.html#l00360">Heap.h:360</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIVFPQCompact_html_ade7b46bbbcaf244ad680104380afb1b8"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQCompact.html#ade7b46bbbcaf244ad680104380afb1b8">faiss::IndexIVFPQCompact::add</a></div><div class="ttdeci">void add(idx_t, const float *) override</div><div class="ttdoc">the three following functions will fail at runtime </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l01455">IndexIVFPQ.cpp:1455</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIVFPQCompact_html_a583dd638a00cb9246ac7b54ee6d65f95"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQCompact.html#a583dd638a00cb9246ac7b54ee6d65f95">faiss::IndexIVFPQCompact::search_knn_with_key</a></div><div class="ttdeci">void search_knn_with_key(size_t nx, const float *qx, const long *keys, const float *coarse_dis, float_maxheap_array_t *res, bool store_pairs=false) const override</div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l01483">IndexIVFPQ.cpp:1483</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIVFPQCompact_html_ade7b46bbbcaf244ad680104380afb1b8"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQCompact.html#ade7b46bbbcaf244ad680104380afb1b8">faiss::IndexIVFPQCompact::add</a></div><div class="ttdeci">void add(idx_t, const float *) override</div><div class="ttdoc">the three following functions will fail at runtime </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l01454">IndexIVFPQ.cpp:1454</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIVFPQCompact_html_a583dd638a00cb9246ac7b54ee6d65f95"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQCompact.html#a583dd638a00cb9246ac7b54ee6d65f95">faiss::IndexIVFPQCompact::search_knn_with_key</a></div><div class="ttdeci">void search_knn_with_key(size_t nx, const float *qx, const long *keys, const float *coarse_dis, float_maxheap_array_t *res, bool store_pairs=false) const override</div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l01482">IndexIVFPQ.cpp:1482</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFPQR_html_a0f0d8fc6b2c6aa2431c1730111a3b22a"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQR.html#a0f0d8fc6b2c6aa2431c1730111a3b22a">faiss::IndexIVFPQR::reconstruct_n</a></div><div class="ttdeci">void reconstruct_n(idx_t i0, idx_t ni, float *recons) const override</div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l01345">IndexIVFPQ.cpp:1345</a></div></div>
 <div class="ttc" id="namespacefaiss_html_a14884d253128c7af5891a65082ad7dc6"><div class="ttname"><a href="namespacefaiss.html#a14884d253128c7af5891a65082ad7dc6">faiss::fvecs_maybe_subsample</a></div><div class="ttdeci">const float * fvecs_maybe_subsample(size_t d, size_t *n, size_t nmax, const float *x, bool verbose, long seed)</div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l01941">utils.cpp:1941</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVF_html_affed235eadf27a13d753ee4d33a1dc58"><div class="ttname"><a href="structfaiss_1_1IndexIVF.html#affed235eadf27a13d753ee4d33a1dc58">faiss::IndexIVF::nprobe</a></div><div class="ttdeci">size_t nprobe</div><div class="ttdoc">number of probes at query time </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00047">IndexIVF.h:47</a></div></div>
@@ -1718,7 +1717,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="structfaiss_1_1IndexIVFPQ_html_af6565a5d8bab7be3df19c50d235bd662"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQ.html#af6565a5d8bab7be3df19c50d235bd662">faiss::IndexIVFPQ::train_residual</a></div><div class="ttdeci">void train_residual(idx_t n, const float *x) override</div><div class="ttdoc">trains the product quantizer </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l00066">IndexIVFPQ.cpp:66</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFPQ_html"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQ.html">faiss::IndexIVFPQ</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8h_source.html#l00029">IndexIVFPQ.h:29</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFPQ_html_a1ae6cdd996bbd398fa4e87646c8f3ba6"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQ.html#a1ae6cdd996bbd398fa4e87646c8f3ba6">faiss::IndexIVFPQ::encode_multiple</a></div><div class="ttdeci">void encode_multiple(size_t n, long *keys, const float *x, uint8_t *codes, bool compute_keys=false) const </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l00149">IndexIVFPQ.cpp:149</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIVFPQCompact_html_a0ef8132fae22a50616fe1201c8b20588"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQCompact.html#a0ef8132fae22a50616fe1201c8b20588">faiss::IndexIVFPQCompact::train</a></div><div class="ttdeci">void train(idx_t, const float *) override</div><div class="ttdoc">Trains the quantizer and calls train_residual to train sub-quantizers. </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l01463">IndexIVFPQ.cpp:1463</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIVFPQCompact_html_a0ef8132fae22a50616fe1201c8b20588"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQCompact.html#a0ef8132fae22a50616fe1201c8b20588">faiss::IndexIVFPQCompact::train</a></div><div class="ttdeci">void train(idx_t, const float *) override</div><div class="ttdoc">Trains the quantizer and calls train_residual to train sub-quantizers. </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l01462">IndexIVFPQ.cpp:1462</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVF_html_aed2e9757ad5f3c234fd8ad60175a2a73"><div class="ttname"><a href="structfaiss_1_1IndexIVF.html#aed2e9757ad5f3c234fd8ad60175a2a73">faiss::IndexIVF::own_fields</a></div><div class="ttdeci">bool own_fields</div><div class="ttdoc">whether object owns the quantizer </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00051">IndexIVF.h:51</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a0feee45e4151547b7a0444c14bad398f"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a0feee45e4151547b7a0444c14bad398f">faiss::ProductQuantizer::ksub</a></div><div class="ttdeci">size_t ksub</div><div class="ttdoc">number of centroids for each subquantizer </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8h_source.html#l00035">ProductQuantizer.h:35</a></div></div>
 <div class="ttc" id="structfaiss_1_1HeapArray_html"><div class="ttname"><a href="structfaiss_1_1HeapArray.html">faiss::HeapArray</a></div><div class="ttdef"><b>Definition:</b> <a href="Heap_8h_source.html#l00350">Heap.h:350</a></div></div>
@@ -1748,7 +1747,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="structfaiss_1_1IndexIVFPQ_html_a31c6fb2faa4dadea4c0594338be7be90"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQ.html#a31c6fb2faa4dadea4c0594338be7be90">faiss::IndexIVFPQ::code_size</a></div><div class="ttdeci">size_t code_size</div><div class="ttdoc">code size per vector in bytes </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8h_source.html#l00032">IndexIVFPQ.h:32</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFPQR_html_acc5eeeeb8ac8d2581ef07947932d9f6c"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQR.html#acc5eeeeb8ac8d2581ef07947932d9f6c">faiss::IndexIVFPQR::remove_ids</a></div><div class="ttdeci">long remove_ids(const IDSelector &amp;sel) override</div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l01371">IndexIVFPQ.cpp:1371</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html">faiss::ProductQuantizer</a></div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8h_source.html#l00025">ProductQuantizer.h:25</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIVFPQCompact_html_a8f5eccfb4d5e4098ff6c00acb3bc40a1"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQCompact.html#a8f5eccfb4d5e4098ff6c00acb3bc40a1">faiss::IndexIVFPQCompact::reset</a></div><div class="ttdeci">void reset() override</div><div class="ttdoc">removes all elements from the database. </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l01459">IndexIVFPQ.cpp:1459</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIVFPQCompact_html_a8f5eccfb4d5e4098ff6c00acb3bc40a1"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQCompact.html#a8f5eccfb4d5e4098ff6c00acb3bc40a1">faiss::IndexIVFPQCompact::reset</a></div><div class="ttdeci">void reset() override</div><div class="ttdoc">removes all elements from the database. </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l01458">IndexIVFPQ.cpp:1458</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html_a6e92732617c4dbe364e7678dd8773a7f"><div class="ttname"><a href="structfaiss_1_1Index.html#a6e92732617c4dbe364e7678dd8773a7f">faiss::Index::is_trained</a></div><div class="ttdeci">bool is_trained</div><div class="ttdoc">set if the Index does not require training, or if training is done already </div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00069">Index.h:69</a></div></div>
 <div class="ttc" id="structfaiss_1_1ProductQuantizer_html_a4f0f33c011dffe633a1748a48a082c22"><div class="ttname"><a href="structfaiss_1_1ProductQuantizer.html#a4f0f33c011dffe633a1748a48a082c22">faiss::ProductQuantizer::get_centroids</a></div><div class="ttdeci">float * get_centroids(size_t m, size_t i)</div><div class="ttdoc">return the centroids associated with subvector m </div><div class="ttdef"><b>Definition:</b> <a href="ProductQuantizer_8h_source.html#l00055">ProductQuantizer.h:55</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFPQCompact_html_ab2698c5d65644a171c53ffe39e420b70acf2d6ba8878a2778383adc32593ba8e6"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQCompact.html#ab2698c5d65644a171c53ffe39e420b70acf2d6ba8878a2778383adc32593ba8e6">faiss::IndexIVFPQCompact::Alloc_type_new</a></div><div class="ttdoc">was allocated with new </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8h_source.html#l00249">IndexIVFPQ.h:249</a></div></div>

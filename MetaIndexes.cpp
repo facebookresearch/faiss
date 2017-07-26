@@ -607,9 +607,8 @@ void IndexSplitVectors::sync_with_sub_indexes ()
 
 }
 
-void IndexSplitVectors::add (idx_t n, const float *x)
-{
-    FAISS_THROW_MSG ("not implemented");
+void IndexSplitVectors::add(idx_t /*n*/, const float* /*x*/) {
+  FAISS_THROW_MSG("not implemented");
 }
 
 namespace {
@@ -709,10 +708,8 @@ void IndexSplitVectors::search (
 
 }
 
-
-void IndexSplitVectors::train (idx_t n, const float *x)
-{
-    FAISS_THROW_MSG ("not implemented");
+void IndexSplitVectors::train(idx_t /*n*/, const float* /*x*/) {
+  FAISS_THROW_MSG("not implemented");
 }
 
 void IndexSplitVectors::reset ()

@@ -41,4 +41,14 @@ GpuResources::getAsyncCopyStreamCurrentDevice() {
   return getAsyncCopyStream(getCurrentDevice());
 }
 
+void
+GpuResources::syncDefaultStream(int device) {
+  CUDA_VERIFY(cudaStreamSynchronize(getDefaultStream(device)));
+}
+
+void
+GpuResources::syncDefaultStreamCurrentDevice() {
+  syncDefaultStream(getCurrentDevice());
+}
+
 } } // namespace

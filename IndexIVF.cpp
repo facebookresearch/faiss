@@ -128,11 +128,10 @@ void IndexIVF::train (idx_t n, const float *x)
     is_trained = true;
 }
 
-void IndexIVF::train_residual (idx_t n, const float *x)
-{
-    if (verbose)
-        printf ("IndexIVF: no residual training\n");
-    // does nothing by default
+void IndexIVF::train_residual(idx_t /*n*/, const float* /*x*/) {
+  if (verbose)
+    printf("IndexIVF: no residual training\n");
+  // does nothing by default
 }
 
 
