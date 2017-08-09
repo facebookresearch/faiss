@@ -584,22 +584,31 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;    <span class="keywordflow">case</span> 16:</div>
 <div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;      CODE_DISTANCE(16);</div>
 <div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;    <span class="keywordflow">case</span> 32:</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;      CODE_DISTANCE(32);</div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;    <span class="keywordflow">case</span> 20:</div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;      CODE_DISTANCE(20);</div>
 <div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;      <span class="comment">// FIXME: larger sizes require too many registers - we need the</span></div>
-<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;      <span class="comment">// MM implementation working</span></div>
-<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;      FAISS_ASSERT(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;  }</div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;</div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;<span class="preprocessor">#undef CODE_DISTANCE</span></div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;  CUDA_TEST_ERROR();</div>
-<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;}</div>
-<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;</div>
-<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;} } <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;    <span class="keywordflow">case</span> 24:</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;      CODE_DISTANCE(24);</div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;    <span class="keywordflow">case</span> 28:</div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;      CODE_DISTANCE(28);</div>
+<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;    <span class="keywordflow">case</span> 32:</div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;      CODE_DISTANCE(32);</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;      <span class="comment">// FIXME: larger sizes require too many registers - we need the</span></div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;      <span class="comment">// MM implementation working</span></div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;      FAISS_ASSERT(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;  }</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;</div>
+<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;<span class="preprocessor">#undef CODE_DISTANCE</span></div>
+<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;  CUDA_TEST_ERROR();</div>
+<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;}</div>
+<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;</div>
+<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;} } <span class="comment">// namespace</span></div>
 <div class="ttc" id="structfaiss_1_1gpu_1_1Converter_html"><div class="ttname"><a href="structfaiss_1_1gpu_1_1Converter.html">faiss::gpu::Converter</a></div><div class="ttdef"><b>Definition:</b> <a href="PQCodeDistances_8cu_source.html#l00027">PQCodeDistances.cu:27</a></div></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1Tensor_html"><div class="ttname"><a href="classfaiss_1_1gpu_1_1Tensor.html">faiss::gpu::Tensor</a></div><div class="ttdoc">Our tensor type. </div><div class="ttdef"><b>Definition:</b> <a href="Tensor_8cuh_source.html#l00030">Tensor.cuh:30</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

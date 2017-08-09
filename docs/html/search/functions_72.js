@@ -8,7 +8,7 @@ var searchData=
   ['range_5fsearch',['range_search',['../structfaiss_1_1Index.html#a236897832a58dbb205e2d662c1929fb1',1,'faiss::Index::range_search()'],['../structfaiss_1_1IndexFlat.html#ac56b7ed90ab65fab9c586a1e56006d12',1,'faiss::IndexFlat::range_search()'],['../structfaiss_1_1IndexIVFFlat.html#ad2b306f160e153b5cfb572cf1d8ece24',1,'faiss::IndexIVFFlat::range_search()']]],
   ['range_5fsearch_5finner_5fproduct',['range_search_inner_product',['../namespacefaiss.html#ab29d725b808df6f142b80f21aa45e507',1,'faiss']]],
   ['range_5fsearch_5fl2sqr',['range_search_L2sqr',['../namespacefaiss.html#a1faa7bd079c9b1addf3058ddf882a000',1,'faiss']]],
-  ['rangesearchresult',['RangeSearchResult',['../structfaiss_1_1RangeSearchResult.html#a46e9fa31c3e232249cef508f357d856c',1,'faiss::RangeSearchResult']]],
+  ['rangesearchresult',['RangeSearchResult',['../structfaiss_1_1RangeSearchResult.html#a56dca2b151bcf16f5d488aff321b9501',1,'faiss::RangeSearchResult']]],
   ['ranklist_5fhandle_5fties',['ranklist_handle_ties',['../namespacefaiss.html#ae0ee1b6fbd3d6da0f1a3550a780ca24c',1,'faiss']]],
   ['ranklist_5fintersection_5fsize',['ranklist_intersection_size',['../namespacefaiss.html#a8dbc652ba48d41f126b8815004899448',1,'faiss']]],
   ['read_5findex',['read_index',['../namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad',1,'faiss']]],

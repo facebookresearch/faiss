@@ -20,6 +20,7 @@ import pdb
 try:
     from swigfaiss_gpu import *
 except ImportError as e:
+
     if e.args[0] != 'ImportError: No module named swigfaiss_gpu':
         # swigfaiss_gpu is there but failed to load: Warn user about it.
         sys.stderr.write("Failed to load GPU Faiss: %s\n" % e.args[0])
@@ -60,7 +61,7 @@ def handle_Clustering():
 handle_Clustering()
 
 
-def handle_ProductQuantizer():
+def handle_Quantizer(the_class):
 
     def replacement_train(self, x):
         n, d = x.shape
@@ -81,12 +82,13 @@ def handle_ProductQuantizer():
         self.decode_c(swig_ptr(codes), swig_ptr(x), n)
         return x
 
-    replace_method(ProductQuantizer, 'train', replacement_train)
-    replace_method(ProductQuantizer, 'compute_codes', replacement_compute_codes)
-    replace_method(ProductQuantizer, 'decode', replacement_decode)
+    replace_method(the_class, 'train', replacement_train)
+    replace_method(the_class, 'compute_codes', replacement_compute_codes)
+    replace_method(the_class, 'decode', replacement_decode)
 
 
-handle_ProductQuantizer()
+handle_Quantizer(ProductQuantizer)
+handle_Quantizer(ScalarQuantizer)
 
 
 def handle_Index(the_class):
@@ -100,7 +102,7 @@ def handle_Index(the_class):
     def replacement_add_with_ids(self, x, ids):
         n, d = x.shape
         assert d == self.d
-        assert ids.shape == (n, )
+        assert ids.shape == (n, ), 'not same nb of vectors as ids'
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
     def replacement_train(self, x):
@@ -110,7 +112,6 @@ def handle_Index(the_class):
         self.train_c(n, swig_ptr(x))
 
     def replacement_search(self, x, k):
-        assert x.flags.contiguous
         n, d = x.shape
         assert d == self.d
         distances = np.empty((n, k), dtype=np.float32)
@@ -144,6 +145,18 @@ def handle_Index(the_class):
         assert x.shape == (n, self.d)
         self.update_vectors_c(n, swig_ptr(keys), swig_ptr(x))
 
+    def replacement_range_search(self, x, thresh):
+        n, d = x.shape
+        assert d == self.d
+        res = RangeSearchResult(n)
+        self.range_search_c(n, swig_ptr(x), thresh, res)
+        # get pointers and copy them
+        lims = rev_swig_ptr(res.lims, n + 1).copy()
+        nd = int(lims[-1])
+        D = rev_swig_ptr(res.distances, nd).copy()
+        I = rev_swig_ptr(res.labels, nd).copy()
+        return lims, D, I
+
     replace_method(the_class, 'add', replacement_add)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'train', replacement_train)
@@ -151,6 +164,7 @@ def handle_Index(the_class):
     replace_method(the_class, 'remove_ids', replacement_remove_ids)
     replace_method(the_class, 'reconstruct', replacement_reconstruct)
     replace_method(the_class, 'reconstruct_n', replacement_reconstruct_n)
+    replace_method(the_class, 'range_search', replacement_range_search)
     replace_method(the_class, 'update_vectors', replacement_update_vectors,
                    ignore_missing=True)
 

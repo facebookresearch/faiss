@@ -465,7 +465,12 @@ GpuIndexIVFPQ::verifySettings_() const {
                      IVFPQ::isSupportedNoPrecomputedSubDimSize(
                        this->d / subQuantizers_),
                      "Number of dimensions per sub-quantizer (%d) "
-                     "is unsupported with precomputed codes",
+                     "is not currently supported without precomputed codes. "
+                     "Only 1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32 dims "
+                     "per sub-quantizer are currently supported with no "
+                     "precomputed codes. "
+                     "Precomputed codes supports any number of dimensions, but "
+                     "will involve memory overheads.",
                      this->d / subQuantizers_);
 
   // TODO: fully implement METRIC_INNER_PRODUCT

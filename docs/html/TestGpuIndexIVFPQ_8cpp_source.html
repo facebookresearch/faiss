@@ -115,11 +115,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;      28, 32, 40, 48, 56, 64, 96</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  };</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  std::vector&lt;int&gt; dimSizes{4, 8, 16, 32};</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  codes = codeSizes[faiss::gpu::randVal(0, codeSizes.size() - 1)];</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="comment">// Above 32 doesn&#39;t work with no precomputed codes</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  std::vector&lt;int&gt; dimSizes{4, 8, 10, 12, 16, 20, 24, 28, 32};</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    codes = codeSizes[faiss::gpu::randVal(0, codeSizes.size() - 1)];</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    dim = codes * dimSizes[faiss::gpu::randVal(0, dimSizes.size() - 1)];</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="comment">// for such a small test, super-low or high dim is more likely to</span></div>

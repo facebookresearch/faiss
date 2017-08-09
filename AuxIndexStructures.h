@@ -38,7 +38,7 @@ struct RangeSearchResult {
     size_t buffer_size; ///< size of the result buffers used
 
     /// lims must be allocated on input to range_search.
-    explicit RangeSearchResult (size_t nq);
+    explicit RangeSearchResult (idx_t nq, bool alloc_lims=true);
 
     /// called when lims contains the nb of elements result entries
     /// for each query

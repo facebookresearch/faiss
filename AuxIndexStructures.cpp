@@ -20,9 +20,13 @@ namespace faiss {
  * RangeSearchResult
  ***********************************************************************/
 
-RangeSearchResult::RangeSearchResult (size_t nq): nq (nq) {
-    lims = new size_t [nq + 1];
-    memset (lims, 0, sizeof(*lims) * (nq + 1));
+RangeSearchResult::RangeSearchResult (idx_t nq, bool alloc_lims): nq (nq) {
+    if (alloc_lims) {
+        lims = new size_t [nq + 1];
+        memset (lims, 0, sizeof(*lims) * (nq + 1));
+    } else {
+        lims = nullptr;
+    }
     labels = nullptr;
     distances = nullptr;
     buffer_size = 1024 * 256;

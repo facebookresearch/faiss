@@ -15,12 +15,14 @@
 // SWIGPYTHON: Python-specific code
 // GPU_WRAPPER: also compile interfaces for GPU.
 
-
 #ifdef GPU_WRAPPER
 %module swigfaiss_gpu;
 #else
 %module swigfaiss;
 #endif
+
+#pragma SWIG nowarn=321
+#pragma SWIG nowarn=403
 
 typedef unsigned long uint64_t;
 typedef uint64_t size_t;
@@ -69,13 +71,11 @@ extern "C" {
 
 #include "IndexFlat.h"
 #include "VectorTransform.h"
-
 #include "IndexLSH.h"
 #include "IndexPQ.h"
 #include "IndexIVF.h"
 #include "IndexIVFPQ.h"
 #include "IndexScalarQuantizer.h"
-
 #include "MetaIndexes.h"
 #include "FaissAssert.h"
 
@@ -84,7 +84,6 @@ extern "C" {
 #include "utils.h"
 #include "Heap.h"
 #include "AuxIndexStructures.h"
-
 
 #include "Clustering.h"
 
@@ -238,7 +237,6 @@ int get_num_gpus()
 %include "ProductQuantizer.h"
 
 %include "VectorTransform.h"
-
 %include "IndexFlat.h"
 %include "IndexLSH.h"
 %include "PolysemousTraining.h"
@@ -248,11 +246,6 @@ int get_num_gpus()
 
 %ignore faiss::IndexIVFPQ::alloc_type;
 %include "IndexIVFPQ.h"
-
-
-
-
-
 
 
 
@@ -583,6 +576,8 @@ PyObject * rev_swig_ptr(ctype *src, size_t size);
 REV_SWIG_PTR(float, NPY_FLOAT32);
 REV_SWIG_PTR(int, NPY_INT32);
 REV_SWIG_PTR(unsigned char, NPY_UINT8);
+REV_SWIG_PTR(unsigned long, NPY_UINT64);
+REV_SWIG_PTR(long, NPY_INT64);
 
 
 #endif
@@ -701,9 +696,6 @@ int * cast_integer_to_int_ptr (long x) {
 
 %include "AuxIndexStructures.h"
 
-
-
-
 %{
 // may be useful for lua code launched in background from shell
 
@@ -714,3 +706,6 @@ void ignore_SIGTTIN() {
 %}
 
 void ignore_SIGTTIN();
+
+
+// End of file...

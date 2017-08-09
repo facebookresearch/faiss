@@ -26,11 +26,11 @@ void pickEncoding(int& codes, int& dim) {
       28, 32, 40, 48, 56, 64, 96
   };
 
-  std::vector<int> dimSizes{4, 8, 16, 32};
-
-  codes = codeSizes[faiss::gpu::randVal(0, codeSizes.size() - 1)];
+  // Above 32 doesn't work with no precomputed codes
+  std::vector<int> dimSizes{4, 8, 10, 12, 16, 20, 24, 28, 32};
 
   while (true) {
+    codes = codeSizes[faiss::gpu::randVal(0, codeSizes.size() - 1)];
     dim = codes * dimSizes[faiss::gpu::randVal(0, dimSizes.size() - 1)];
 
     // for such a small test, super-low or high dim is more likely to

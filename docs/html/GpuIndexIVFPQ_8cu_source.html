@@ -554,15 +554,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;                     <a class="code" href="classfaiss_1_1gpu_1_1IVFPQ.html#a0eedf0295ad73125ee1254173a176674">IVFPQ::isSupportedNoPrecomputedSubDimSize</a>(</div>
 <div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;                       this-&gt;d / subQuantizers_),</div>
 <div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;                     <span class="stringliteral">&quot;Number of dimensions per sub-quantizer (%d) &quot;</span></div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;                     <span class="stringliteral">&quot;is unsupported with precomputed codes&quot;</span>,</div>
-<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;                     this-&gt;d / subQuantizers_);</div>
-<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;</div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;  <span class="comment">// TODO: fully implement METRIC_INNER_PRODUCT</span></div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;  FAISS_THROW_IF_NOT_MSG(this-&gt;<a class="code" href="structfaiss_1_1Index.html#a8e18f641854b2bde83ecff0a2f9a6f4e">metric_type</a> == faiss::METRIC_L2,</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;                     <span class="stringliteral">&quot;METRIC_INNER_PRODUCT is currently unsupported&quot;</span>);</div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;}</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;                     <span class="stringliteral">&quot;is not currently supported without precomputed codes. &quot;</span></div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;                     <span class="stringliteral">&quot;Only 1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32 dims &quot;</span></div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;                     <span class="stringliteral">&quot;per sub-quantizer are currently supported with no &quot;</span></div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;                     <span class="stringliteral">&quot;precomputed codes. &quot;</span></div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;                     <span class="stringliteral">&quot;Precomputed codes supports any number of dimensions, but &quot;</span></div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;                     <span class="stringliteral">&quot;will involve memory overheads.&quot;</span>,</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;                     this-&gt;d / subQuantizers_);</div>
 <div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;</div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;} } <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;  <span class="comment">// TODO: fully implement METRIC_INNER_PRODUCT</span></div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;  FAISS_THROW_IF_NOT_MSG(this-&gt;<a class="code" href="structfaiss_1_1Index.html#a8e18f641854b2bde83ecff0a2f9a6f4e">metric_type</a> == faiss::METRIC_L2,</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;                     <span class="stringliteral">&quot;METRIC_INNER_PRODUCT is currently unsupported&quot;</span>);</div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;}</div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;</div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;} } <span class="comment">// namespace</span></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_html_a5235cf241ef98e6012fd01907ec705d0"><div class="ttname"><a href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a5235cf241ef98e6012fd01907ec705d0">faiss::gpu::GpuIndexIVFPQ::getListIndices</a></div><div class="ttdeci">std::vector&lt; long &gt; getListIndices(int listId) const </div><div class="ttdef"><b>Definition:</b> <a href="GpuIndexIVFPQ_8cu_source.html#l00408">GpuIndexIVFPQ.cu:408</a></div></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_html_a42f619bee6ecb268442c7807e75896fe"><div class="ttname"><a href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a42f619bee6ecb268442c7807e75896fe">faiss::gpu::GpuIndexIVFPQ::searchImpl_</a></div><div class="ttdeci">void searchImpl_(faiss::Index::idx_t n, const float *x, faiss::Index::idx_t k, float *distances, faiss::Index::idx_t *labels) const override</div><div class="ttdoc">Called from GpuIndex for search. </div><div class="ttdef"><b>Definition:</b> <a href="GpuIndexIVFPQ_8cu_source.html#l00349">GpuIndexIVFPQ.cu:349</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFPQ_html_ad99c215aeaf92e995cb97f4044c4d267"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQ.html#ad99c215aeaf92e995cb97f4044c4d267">faiss::IndexIVFPQ::precompute_table</a></div><div class="ttdeci">void precompute_table()</div><div class="ttdoc">build precomputed table </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8cpp_source.html#l00391">IndexIVFPQ.cpp:391</a></div></div>

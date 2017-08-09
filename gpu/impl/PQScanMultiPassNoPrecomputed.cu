@@ -25,6 +25,7 @@
 
 namespace faiss { namespace gpu {
 
+// This must be kept in sync with PQCodeDistances.cu
 bool isSupportedNoPrecomputedSubDimSize(int dims) {
   switch (dims) {
     case 1:
@@ -36,6 +37,9 @@ bool isSupportedNoPrecomputedSubDimSize(int dims) {
     case 10:
     case 12:
     case 16:
+    case 20:
+    case 24:
+    case 28:
     case 32:
       return true;
     default:

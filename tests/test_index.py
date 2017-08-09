@@ -13,22 +13,24 @@ import unittest
 import faiss
 
 
+def get_dataset(d, nb, nt, nq):
+    rs = np.random.RandomState(123)
+    xb = rs.rand(nb, d).astype('float32')
+    xt = rs.rand(nt, d).astype('float32')
+    xq = rs.rand(nq, d).astype('float32')
+
+    return (xt, xb, xq)
+
+
 class EvalIVFPQAccuracy(unittest.TestCase):
 
-    def get_dataset(self):
+    def test_IndexIVFPQ(self):
         d = 64
         nb = 1000
         nt = 1500
         nq = 200
-        np.random.seed(123)
-        xb = np.random.random(size=(nb, d)).astype('float32')
-        xt = np.random.random(size=(nt, d)).astype('float32')
-        xq = np.random.random(size=(nq, d)).astype('float32')
 
-        return (xt, xb, xq)
-
-    def test_IndexIVFPQ(self):
-        (xt, xb, xq) = self.get_dataset()
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
         d = xt.shape[1]
 
         gt_index = faiss.IndexFlatL2(d)
@@ -54,12 +56,11 @@ class TestMultiIndexQuantizer(unittest.TestCase):
         # verify codepath for k = 1 and k > 1
 
         d = 64
+        nb = 0
         nt = 1500
         nq = 200
-        np.random.seed(123)
 
-        xt = np.random.random(size=(nt, d)).astype('float32')
-        xq = np.random.random(size=(nq, d)).astype('float32')
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
 
         miq = faiss.MultiIndexQuantizer(d, 2, 6)
 
@@ -81,11 +82,7 @@ class TestScalarQuantizer(unittest.TestCase):
         nq = 200
         nb = 10000
 
-        np.random.seed(123)
-
-        xt = np.random.random(size=(nt, d)).astype('float32')
-        xq = np.random.random(size=(nq, d)).astype('float32')
-        xb = np.random.random(size=(nb, d)).astype('float32')
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
 
         # common quantizer
         quantizer = faiss.IndexFlatL2(d)
@@ -131,11 +128,7 @@ class TestScalarQuantizer(unittest.TestCase):
         nq = 200
         nb = 10000
 
-        np.random.seed(123)
-
-        xt = np.random.random(size=(nt, d)).astype('float32')
-        xq = np.random.random(size=(nq, d)).astype('float32')
-        xb = np.random.random(size=(nb, d)).astype('float32')
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
 
         index_gt = faiss.IndexFlatL2(d)
         index_gt.add(xb)
@@ -158,6 +151,34 @@ class TestScalarQuantizer(unittest.TestCase):
         self.assertGreaterEqual(nok['QT_8bit'], nok['QT_8bit_uniform'])
         self.assertGreaterEqual(nok['QT_4bit'], nok['QT_4bit_uniform'])
 
+
+class TestRangeSearch(unittest.TestCase):
+
+    def test_range_search(self):
+        d = 4
+        nt = 100
+        nq = 10
+        nb = 50
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        index = faiss.IndexFlatL2(d)
+        index.add(xb)
+
+        Dref, Iref = index.search(xq, 5)
+
+        thresh = 0.1   # *squared* distance
+        lims, D, I = index.range_search(xq, thresh)
+
+        for i in range(nq):
+            Iline = I[lims[i]:lims[i + 1]]
+            Dline = D[lims[i]:lims[i + 1]]
+            for j, dis in zip(Iref[i], Dref[i]):
+                if dis < thresh:
+                    li, = np.where(Iline == j)
+                    self.assertTrue(li.size == 1)
+                    idx = li[0]
+                    self.assertGreaterEqual(1e-4, abs(Dline[idx] - dis))
 
 
 if __name__ == '__main__':
