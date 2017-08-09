@@ -76,6 +76,11 @@ class GpuIndexIVF : public GpuIndex {
  protected:
   void trainQuantizer_(faiss::Index::idx_t n, const float* x);
 
+ public:
+  /// Exposed as IndexIVF does to allow overriding clustering
+  /// parameters
+  ClusteringParameters cp;
+
  protected:
   GpuIndexIVFConfig ivfConfig_;
 
@@ -84,9 +89,6 @@ class GpuIndexIVF : public GpuIndex {
 
   /// Number of inverted list probes per query
   int nprobe_;
-
-  /// Ability to override default clustering parameters
-  ClusteringParameters cp_;
 
   /// Quantizer for inverted lists
   GpuIndexFlat* quantizer_;

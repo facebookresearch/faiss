@@ -8,6 +8,5 @@ var searchData=
   ['compact_5fids',['compact_ids',['../structfaiss_1_1IndexIVFPQCompact.html#a1fa62ed464c15768479c92646ed484c7',1,'faiss::IndexIVFPQCompact']]],
   ['config_5f',['config_',['../classfaiss_1_1gpu_1_1GpuIndexFlat.html#a9efdc92bf03d2d6820fb989cf77e8067',1,'faiss::gpu::GpuIndexFlat']]],
   ['continuous_5fupdate',['continuous_update',['../structfaiss_1_1IndexFlat1D.html#a8b025a468b088a343cf8079006de45e2',1,'faiss::IndexFlat1D']]],
-  ['cp',['cp',['../structfaiss_1_1IndexIVF.html#a9746bcd42ecec1501f221e918b25e8e7',1,'faiss::IndexIVF::cp()'],['../structfaiss_1_1ProductQuantizer.html#af265acf5aa1bcda60898002287e6a3d6',1,'faiss::ProductQuantizer::cp()']]],
-  ['cp_5f',['cp_',['../classfaiss_1_1gpu_1_1GpuIndexIVF.html#ab493fc0176caab18976363b984832381',1,'faiss::gpu::GpuIndexIVF']]]
+  ['cp',['cp',['../classfaiss_1_1gpu_1_1GpuIndexIVF.html#a520803e209b44c904b876d6b8dad23c9',1,'faiss::gpu::GpuIndexIVF::cp()'],['../structfaiss_1_1IndexIVF.html#a9746bcd42ecec1501f221e918b25e8e7',1,'faiss::IndexIVF::cp()'],['../structfaiss_1_1ProductQuantizer.html#af265acf5aa1bcda60898002287e6a3d6',1,'faiss::ProductQuantizer::cp()']]]
 ];

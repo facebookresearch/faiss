@@ -2549,6 +2549,9 @@ class GpuIndexIVF(GpuIndex):
     def setNumProbes(self, *args): return _swigfaiss_gpu.GpuIndexIVF_setNumProbes(self, *args)
     def getNumProbes(self): return _swigfaiss_gpu.GpuIndexIVF_getNumProbes(self)
     def add(self, *args): return _swigfaiss_gpu.GpuIndexIVF_add(self, *args)
+    __swig_setmethods__["cp"] = _swigfaiss_gpu.GpuIndexIVF_cp_set
+    __swig_getmethods__["cp"] = _swigfaiss_gpu.GpuIndexIVF_cp_get
+    if _newclass:cp = _swig_property(_swigfaiss_gpu.GpuIndexIVF_cp_get, _swigfaiss_gpu.GpuIndexIVF_cp_set)
 GpuIndexIVF_swigregister = _swigfaiss_gpu.GpuIndexIVF_swigregister
 GpuIndexIVF_swigregister(GpuIndexIVF)
 

@@ -42,13 +42,13 @@ GpuIndexIVF::init_() {
 
   // Spherical by default if the metric is inner_product
   if (this->metric_type == faiss::METRIC_INNER_PRODUCT) {
-    cp_.spherical = true;
+    this->cp.spherical = true;
   }
 
   // here we set a low # iterations because this is typically used
   // for large clusterings
-  cp_.niter = 10;
-  cp_.verbose = this->verbose;
+  this->cp.niter = 10;
+  this->cp.verbose = this->verbose;
 
   if (!quantizer_) {
     // Construct an empty quantizer
@@ -186,7 +186,7 @@ GpuIndexIVF::copyTo(faiss::IndexIVF* index) const {
   index->quantizer = q;
   index->quantizer_trains_alone = false;
   index->own_fields = true;
-  index->cp = cp_;
+  index->cp = this->cp;
   index->ids.clear();
   index->ids.resize(nlist_);
   index->maintain_direct_map = false;
@@ -246,7 +246,7 @@ GpuIndexIVF::trainQuantizer_(faiss::Index::idx_t n, const float* x) {
   // leverage the CPU-side k-means code, which works for the GPU
   // flat index as well
   quantizer_->reset();
-  Clustering clus(this->d, nlist_, cp_);
+  Clustering clus(this->d, nlist_, this->cp);
   clus.verbose = verbose;
   clus.train(n, x, *quantizer_);
   quantizer_->is_trained = true;

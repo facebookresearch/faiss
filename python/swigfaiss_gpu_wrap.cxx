@@ -45527,6 +45527,58 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_GpuIndexIVF_cp_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuIndexIVF *arg1 = (faiss::gpu::GpuIndexIVF *) 0 ;
+  faiss::ClusteringParameters *arg2 = (faiss::ClusteringParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GpuIndexIVF_cp_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexIVF, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndexIVF_cp_set" "', argument " "1"" of type '" "faiss::gpu::GpuIndexIVF *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuIndexIVF * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__ClusteringParameters, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GpuIndexIVF_cp_set" "', argument " "2"" of type '" "faiss::ClusteringParameters *""'"); 
+  }
+  arg2 = reinterpret_cast< faiss::ClusteringParameters * >(argp2);
+  if (arg1) (arg1)->cp = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GpuIndexIVF_cp_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuIndexIVF *arg1 = (faiss::gpu::GpuIndexIVF *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  faiss::ClusteringParameters *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GpuIndexIVF_cp_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexIVF, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndexIVF_cp_get" "', argument " "1"" of type '" "faiss::gpu::GpuIndexIVF *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuIndexIVF * >(argp1);
+  result = (faiss::ClusteringParameters *)& ((arg1)->cp);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__ClusteringParameters, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *GpuIndexIVF_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
@@ -61853,6 +61905,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GpuIndexIVF_setNumProbes", _wrap_GpuIndexIVF_setNumProbes, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexIVF_getNumProbes", _wrap_GpuIndexIVF_getNumProbes, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexIVF_add", _wrap_GpuIndexIVF_add, METH_VARARGS, NULL},
+	 { (char *)"GpuIndexIVF_cp_set", _wrap_GpuIndexIVF_cp_set, METH_VARARGS, NULL},
+	 { (char *)"GpuIndexIVF_cp_get", _wrap_GpuIndexIVF_cp_get, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexIVF_swigregister", GpuIndexIVF_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_GpuIndexIVFPQConfig", _wrap_new_GpuIndexIVFPQConfig, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexIVFPQConfig_useFloat16LookupTables_set", _wrap_GpuIndexIVFPQConfig_useFloat16LookupTables_set, METH_VARARGS, NULL},
