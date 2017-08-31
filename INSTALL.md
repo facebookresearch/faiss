@@ -3,8 +3,8 @@
 [//]: # "** INSTALL file for Faiss (Fair AI Similarity Search    **"
 [//]: # "**********************************************************"
 
-INSTALL file for Faiss (Fair AI Similarity Search
-=================================================
+INSTALL file for Faiss (Fair AI Similarity Search)
+==================================================
 
 The Faiss installation works in 3 steps, from easiest to most
 involved:
