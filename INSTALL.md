@@ -257,13 +257,21 @@ Python example with GPU support
 -------------------------------
 
 The auto-tuning example above also runs on the GPU. Edit
+`python/demo_auto_tune.py` around line 100 with the values
+
+```python
+keys_to_test = keys_gpu
+use_gpu = True
+```
+
+and you can run
 
 ```
 export PYTHONPATH=.
 python/demo_auto_tune.py
 ```
 
-to enable and run it.
+to test the GPU code.
 
 
 Docker instructions
