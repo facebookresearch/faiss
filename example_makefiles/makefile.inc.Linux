@@ -49,8 +49,12 @@ FAISSSHAREDFLAGS=-shared
 #
 # BLASCFLAGS=-DFINTEGER=long
 #
-# you may have to set the LD_LIBRARY_PATH=$MKLROOT/lib/intel64 at runtime
-#
+# you may have to set the LD_LIBRARY_PATH=$MKLROOT/lib/intel64 at runtime.
+# If at runtime you get the error:
+#   Intel MKL FATAL ERROR: Cannot load libmkl_avx2.so or libmkl_def.so.
+# You may add set
+#   LD_PRELOAD=$MKLROOT/lib/intel64/libmkl_core.so:$MKLROOT/lib/intel64/libmkl_sequential.so
+# at runtime as well.
 
 #
 # 2. Openblas
