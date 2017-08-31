@@ -44,7 +44,7 @@ FAISSSHAREDFLAGS=-shared
 #
 # MKLROOT=/opt/intel/compilers_and_libraries/linux/mkl/
 #
-# BLASLDFLAGS=-Wl,--no-as-needed -L$(MKLROOT)/lib/intel64   -lmkl_intel_ilp64 \
+# BLASLDFLAGS=-L$(MKLROOT)/lib/intel64   -lmkl_intel_ilp64 \
 # -lmkl_core -lmkl_gnu_thread -ldl -lpthread
 #
 # BLASCFLAGS=-DFINTEGER=long
