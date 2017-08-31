@@ -2,7 +2,16 @@ FROM nvidia/cuda:8.0-devel-ubuntu16.04
 MAINTAINER Pierre Letessier <pletessier@ina.fr>
 
 RUN apt-get update -y
-RUN apt-get install -y libopenblas-dev python-numpy python-dev swig git python-pip wget
+RUN apt-get install -y libopenblas-dev libpcre3 libpcre3-dev python-numpy python-dev git python-pip wget
+
+RUN mkdir /opt/swig && cd /opt/swig && \
+    wget http://downloads.sourceforge.net/swig/swig-3.0.1.tar.gz && \
+    tar -xvzf swig-3.0.1.tar.gz && cd swig-3.0.1 && \
+    ./configure --prefix=/usr && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -fr swig-3.0.1.tar.gz swig-3.0.1
 
 RUN pip install matplotlib
 

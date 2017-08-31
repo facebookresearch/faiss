@@ -17,6 +17,7 @@ all: .env_ok $(LIBNAME).a tests/demo_ivfpq_indexing
 
 py: _swigfaiss.so
 
+.PHONY: .env_ok .swig_ok
 
 
 #############################
@@ -74,7 +75,7 @@ HFILES = IndexFlat.h Index.h IndexLSH.h IndexPQ.h IndexIVF.h \
     Clustering.h hamming.h AutoTune.h IndexScalarQuantizer.h FaissException.h
 
 # also silently generates python/swigfaiss.py
-python/swigfaiss_wrap.cxx: swigfaiss.swig $(HFILES)
+python/swigfaiss_wrap.cxx: .swig_ok swigfaiss.swig $(HFILES)
 	$(SWIGEXEC) -python -c++ -Doverride= -o $@ $<
 
 
@@ -85,6 +86,20 @@ python/_swigfaiss.so: python/swigfaiss_wrap.cxx $(LIBNAME).a
 
 _swigfaiss.so: python/_swigfaiss.so
 	cp python/_swigfaiss.so python/swigfaiss.py .
+
+
+#############################
+# Docker
+
+DOCKER ?= docker
+DOCKER_IMAGE = faiss
+
+docker/build:
+	$(DOCKER) build -t $(DOCKER_IMAGE) .
+
+docker/py:
+	$(DOCKER) run --rm -itv ${PWD}/python:/opt/faiss/python --entrypoint make $(DOCKER_IMAGE) clean py
+
 
 #############################
 # Dependencies
@@ -155,3 +170,7 @@ endif
 ifeq ($(shell command -v $(SWIGEXEC) 2>/dev/null),)
 	$(error Cannot find $(SWIGEXEC), please refer to $(CURDIR)/makefile.inc to set up your environment)
 endif
+ifneq ($(shell $(SWIGEXEC) -version | grep 'SWIG Version'), 'SWIG Version 3.0.1')
+	$(error $(SWIGEXEC) wrong version number, please install swig version 3.0.1)
+endif
+
