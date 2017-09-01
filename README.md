@@ -43,6 +43,18 @@ The main authors of Faiss are:
 - [Matthijs Douze](https://github.com/mdouze) implemented most of the CPU Faiss
 - [Jeff Johnson](https://github.com/wickedfoo) implemented all of the GPU Faiss
 
+## Reference
+
+Reference to cite when you use Faiss in a research paper:
+
+```
+@article{JDH17,
+  title={Billion-scale similarity search with GPUs},
+  author={Johnson, Jeff and Douze, Matthijs and J{\'e}gou, Herv{\'e}},
+  journal={arXiv preprint arXiv:1702.08734},
+  year={2017}
+}
+```
 
 ## Join the Faiss community
 
