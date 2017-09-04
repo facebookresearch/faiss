@@ -59,7 +59,9 @@ FAISSSHAREDFLAGS=-shared
 #
 # 2. Openblas
 #
-# The library contains both BLAS and Lapack. About 30% slower than MKL.
+# The library contains both BLAS and Lapack. About 30% slower than MKL. Please see 
+#   https://github.com/facebookresearch/faiss/wiki/Troubleshooting#slow-brute-force-search-with-openblas
+# to fix performance problemes with OpenBLAS 
 
 BLASCFLAGS=-DFINTEGER=int
 
