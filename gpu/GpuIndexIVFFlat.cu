@@ -101,24 +101,25 @@ GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
                        ivfFlatConfig_.indicesOptions,
                        memorySpace_);
 
-  FAISS_ASSERT(index->vecs.size() == index->ids.size());
-  for (size_t i = 0; i < index->vecs.size(); ++i) {
-    auto& vecs = index->vecs[i];
+  FAISS_ASSERT(index->codes.size() == index->ids.size());
+  for (size_t i = 0; i < index->ids.size(); ++i) {
+    auto& cvecs = index->codes[i];
     auto& ids = index->ids[i];
 
-    FAISS_ASSERT(vecs.size() % this->d == 0);
-    auto numVecs = vecs.size() / this->d;
-    FAISS_ASSERT(numVecs == ids.size());
+    FAISS_ASSERT(cvecs.size() == (this->d * sizeof(float) * ids.size()));
+    auto numVecs = ids.size();
 
     // GPU index can only support max int entries per list
-    FAISS_THROW_IF_NOT_FMT(ids.size() <=
+    FAISS_THROW_IF_NOT_FMT(numVecs <=
                        (size_t) std::numeric_limits<int>::max(),
                        "GPU inverted list can only support "
                        "%zu entries; %zu found",
                        (size_t) std::numeric_limits<int>::max(),
                        ids.size());
 
-    index_->addCodeVectorsFromCpu(i, vecs.data(), ids.data(), numVecs);
+    index_->addCodeVectorsFromCpu(
+             i, (const float*)(cvecs.data()),
+             ids.data(), numVecs);
   }
 }
 
@@ -134,13 +135,16 @@ GpuIndexIVFFlat::copyTo(faiss::IndexIVFFlat* index) const {
   GpuIndexIVF::copyTo(index);
 
   // Clear out the old inverted lists
-  index->vecs.clear();
-  index->vecs.resize(nlist_);
+  index->codes.clear();
+  index->codes.resize(nlist_);
 
   // Copy the inverted lists
   if (index_) {
     for (int i = 0; i < nlist_; ++i) {
-      index->vecs[i] = index_->getListVectors(i);
+      std::vector<float> vec = index_->getListVectors(i);
+      size_t nbyte = sizeof(float) * vec.size();
+      index->codes[i].resize(nbyte);
+      memcpy(index->codes[i].data(), vec.data(), nbyte);
       index->ids[i] = index_->getListIndices(i);
     }
   }

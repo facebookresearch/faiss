@@ -153,7 +153,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>add_core()
 : <a class="el" href="structfaiss_1_1IndexIVFFlat.html#aea729c3d8c70bdd93f8e413e834851a4">faiss::IndexIVFFlat</a>
-, <a class="el" href="structfaiss_1_1IndexIVFFlatIPBounds.html#a938285c16dafe294775643b820637444">faiss::IndexIVFFlatIPBounds</a>
 , <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a186b746f22b65ddf416b1e821b0866ec">faiss::IndexIVFPQR</a>
 </li>
 <li>add_core_o()
@@ -163,8 +162,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structfaiss_1_1ParameterSpace.html#aeaa27a715fe3fceef5da18d894976833">faiss::ParameterSpace</a>
 </li>
 <li>add_with_ids()
-: <a class="el" href="structfaiss_1_1IndexIVFFlat.html#a5f7356766632d3ce2838f285aa6b8e76">faiss::IndexIVFFlat</a>
-, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#a981c2748bfbd9b018494f119279a0342">faiss::IndexIVFPQ</a>
+: <a class="el" href="structfaiss_1_1IndexIVFPQ.html#a981c2748bfbd9b018494f119279a0342">faiss::IndexIVFPQ</a>
 , <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a4b6154a5194d574d037ba78c137a2fa5">faiss::IndexIVFPQR</a>
 , <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#afa95c17787b7e3dbed9309b440d4d748">faiss::IndexIVFScalarQuantizer</a>
 , <a class="el" href="structfaiss_1_1IndexIDMap.html#aeace75e53648c052d05c357b744e090b">faiss::IndexIDMap</a>
@@ -173,16 +171,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="structfaiss_1_1IndexPreTransform.html#a07fef0553b2ef2907f394470f61898b2">faiss::IndexPreTransform</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a47f6969fe60d82b8e3407557ba9eec88">faiss::gpu::GpuIndex</a>
 , <a class="el" href="structfaiss_1_1Index.html#aa6931dfe054b33b02c842ff75f7a0c7f">faiss::Index</a>
+, <a class="el" href="structfaiss_1_1IndexIVFFlat.html#a5f7356766632d3ce2838f285aa6b8e76">faiss::IndexIVFFlat</a>
 </li>
 <li>addCodeVectorsFromCpu()
-: <a class="el" href="classfaiss_1_1gpu_1_1IVFFlat.html#a0bedde6dcb7c2f10f277461b97486f52">faiss::gpu::IVFFlat</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1IVFPQ.html#a9992b38226dc8f92ca2691582fabb675">faiss::gpu::IVFPQ</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1IVFPQ.html#a9992b38226dc8f92ca2691582fabb675">faiss::gpu::IVFPQ</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1IVFFlat.html#a0bedde6dcb7c2f10f277461b97486f52">faiss::gpu::IVFFlat</a>
 </li>
 <li>addImpl_()
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#ae0c916b911eda2f1a09a55f42ebc729c">faiss::gpu::GpuIndexFlat</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a345819c6214c2a6eb7874dde1145036f">faiss::gpu::GpuIndex</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a64bd89e18b8199ae7a88066890b10a0e">faiss::gpu::GpuIndexIVFFlat</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a345819c6214c2a6eb7874dde1145036f">faiss::gpu::GpuIndex</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#ae0c916b911eda2f1a09a55f42ebc729c">faiss::gpu::GpuIndexFlat</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a50e74f0621ca2fe5688825f434ad2bb2">faiss::gpu::GpuIndexIVFPQ</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a64bd89e18b8199ae7a88066890b10a0e">faiss::gpu::GpuIndexIVFFlat</a>
 </li>
 <li>addIndex()
 : <a class="el" href="classfaiss_1_1gpu_1_1IndexProxy.html#af9bb81e75f8d5471094e4d4776a56f63">faiss::gpu::IndexProxy</a>
@@ -211,15 +210,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>apply_noalloc()
 : <a class="el" href="structfaiss_1_1LinearTransform.html#af9c20b4ae67691b5713489884ca9f80f">faiss::LinearTransform</a>
 , <a class="el" href="structfaiss_1_1NormalizationTransform.html#a80c94dc7d17c9a7a9edc627150401571">faiss::NormalizationTransform</a>
-, <a class="el" href="structfaiss_1_1RemapDimensionsTransform.html#a550be3d40c221d2134bf06a13dd33c4d">faiss::RemapDimensionsTransform</a>
 , <a class="el" href="structfaiss_1_1VectorTransform.html#a90f1a218c224c049f1bd8b77a78d6aa0">faiss::VectorTransform</a>
+, <a class="el" href="structfaiss_1_1RemapDimensionsTransform.html#a550be3d40c221d2134bf06a13dd33c4d">faiss::RemapDimensionsTransform</a>
 </li>
 <li>apply_preprocess()
 : <a class="el" href="structfaiss_1_1IndexLSH.html#ae7bb111e0aa6bd1b2a13e5efa8ef9cea">faiss::IndexLSH</a>
 </li>
 <li>as()
-: <a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor.html#a0d32586e8f6f22f5f90bca566d901d0b">faiss::gpu::detail::SubTensor&lt; TensorType, SubDim, PtrTraits &gt;</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor.html#aefdafcf236e5c49ad3bce1646797f8f2">faiss::gpu::detail::SubTensor&lt; TensorType, SubDim, PtrTraits &gt;</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor_3_01TensorType_00_010_00_01PtrTraits_01_4.html#a67bfa92466e03834b7f007cb9cdf8d50">faiss::gpu::detail::SubTensor&lt; TensorType, 0, PtrTraits &gt;</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor.html#a0d32586e8f6f22f5f90bca566d901d0b">faiss::gpu::detail::SubTensor&lt; TensorType, SubDim, PtrTraits &gt;</a>
 </li>
 <li>assign()
 : <a class="el" href="structfaiss_1_1Index.html#a8bc5d8d1cd0dd7b34b3c98a9f76b4a9c">faiss::Index</a>

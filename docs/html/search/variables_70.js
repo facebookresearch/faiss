@@ -1,7 +1,6 @@
 var searchData=
 [
   ['parameter_5franges',['parameter_ranges',['../structfaiss_1_1ParameterSpace.html#a334c1bb54bc2b70950a4a63950728cbb',1,'faiss::ParameterSpace']]],
-  ['part_5fnorms',['part_norms',['../structfaiss_1_1IndexIVFFlatIPBounds.html#a07b988f02cc2f6fc3eb951609bfc0817',1,'faiss::IndexIVFFlatIPBounds']]],
   ['pcamat',['PCAMat',['../structfaiss_1_1PCAMatrix.html#aef5c130774e5d4f697a3e1c82647bfd3',1,'faiss::PCAMatrix']]],
   ['perf',['perf',['../structfaiss_1_1OperatingPoint.html#ad218d1641b6e32d043a215542485a457',1,'faiss::OperatingPoint']]],
   ['perm',['perm',['../structfaiss_1_1IndexFlat1D.html#a3442f0d86a14108534f99eea0b7d4d3f',1,'faiss::IndexFlat1D']]],

@@ -191,8 +191,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFFlat.html">IndexIVFFlat</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFFlatIPBounds.html">IndexIVFFlatIPBounds</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1CodeCmp.html">CodeCmp</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFPQ.html">IndexIVFPQ</a></td></tr>
@@ -510,12 +508,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>write_VectorTransform
 <tr class="memitem:a7c5553442c8b9342a0ad449e2b67f275"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
 <tr class="memitem:a7c5553442c8b9342a0ad449e2b67f275"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a7c5553442c8b9342a0ad449e2b67f275">partial_sort</a> (int k, int n, const typename C::T *vals, typename C::TI *perm)</td></tr>
 <tr class="separator:a7c5553442c8b9342a0ad449e2b67f275"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa080883b12dbcdff8034a7dc7a3f0979"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa080883b12dbcdff8034a7dc7a3f0979"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>search_with_probes_ip</b> (const <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a> &amp;index, const float *x, const idx_t *cent_ids, const float *cent_dis, const Quantizer &amp;quant, int k, float *simi, idx_t *idxi)</td></tr>
-<tr class="separator:aa080883b12dbcdff8034a7dc7a3f0979"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70a8f4d86e4a6fc9e71296d91b12c6a7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a70a8f4d86e4a6fc9e71296d91b12c6a7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>search_with_probes_L2</b> (const <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a> &amp;index, const float *x_in, const idx_t *cent_ids, const <a class="el" href="structfaiss_1_1Index.html">Index</a> *quantizer, const Quantizer &amp;quant, int k, float *simi, idx_t *idxi)</td></tr>
-<tr class="separator:a70a8f4d86e4a6fc9e71296d91b12c6a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a3fad4754b4124fc2a9b6fc6f10dce2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3a3fad4754b4124fc2a9b6fc6f10dce2"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>search_with_probes_ip</b> (const <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a> &amp;index, const float *x, const idx_t *cent_ids, const float *cent_dis, const Quantizer &amp;quant, int k, float *simi, idx_t *idxi, bool store_pairs)</td></tr>
+<tr class="separator:a3a3fad4754b4124fc2a9b6fc6f10dce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11be36e4030b8f97b23d4472cbeb57f7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a11be36e4030b8f97b23d4472cbeb57f7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>search_with_probes_L2</b> (const <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a> &amp;index, const float *x_in, const idx_t *cent_ids, const <a class="el" href="structfaiss_1_1Index.html">Index</a> *quantizer, const Quantizer &amp;quant, int k, float *simi, idx_t *idxi, bool store_pairs)</td></tr>
+<tr class="separator:a11be36e4030b8f97b23d4472cbeb57f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1224ccbe0087fd6634d59b3008251b6"><td class="memTemplParams" colspan="2"><a class="anchor" id="ad1224ccbe0087fd6634d59b3008251b6"></a>
 template&lt;typename CT , class C &gt; </td></tr>
 <tr class="memitem:ad1224ccbe0087fd6634d59b3008251b6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>pq_estimators_from_tables_Mmul4</b> (int M, const CT *codes, size_t ncodes, const float *__restrict dis_table, size_t ksub, size_t k, float *heap_dis, long *heap_ids)</td></tr>

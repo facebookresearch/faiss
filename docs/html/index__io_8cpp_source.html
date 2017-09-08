@@ -360,11 +360,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;        WRITEVECTOR (idxs-&gt;codes);</div>
 <div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexIVFFlat * ivfl =</div>
 <div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;              dynamic_cast&lt;const IndexIVFFlat *&gt; (idx)) {</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IvFl&quot;</span>);</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IvFL&quot;</span>);</div>
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;        WRITE1 (h);</div>
 <div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;        write_ivf_header (ivfl, f);</div>
 <div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; ivfl-&gt;nlist; i++)</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;            WRITEVECTOR (ivfl-&gt;vecs[i]);</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;            WRITEVECTOR (ivfl-&gt;codes[i]);</div>
 <div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexIVFScalarQuantizer * ivsc =</div>
 <div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;              dynamic_cast&lt;const IndexIVFScalarQuantizer *&gt; (idx)) {</div>
 <div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IvSQ&quot;</span>);</div>
@@ -679,179 +679,191 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;            idxp-&gt;<a class="code" href="structfaiss_1_1Index.html#a8e18f641854b2bde83ecff0a2f9a6f4e">metric_type</a> = METRIC_L2;</div>
 <div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;        }</div>
 <div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;        idx = idxp;</div>
-<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;IvFl&quot;</span>)) {</div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;IvFl&quot;</span>) || h == fourcc(<span class="stringliteral">&quot;IvFL&quot;</span>)) {</div>
 <div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;        <a class="code" href="structfaiss_1_1IndexIVFFlat.html">IndexIVFFlat</a> * ivfl = <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexIVFFlat.html">IndexIVFFlat</a> ();</div>
 <div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;        read_ivf_header (ivfl, f);</div>
-<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;        ivfl-&gt;<a class="code" href="structfaiss_1_1IndexIVFFlat.html#a52f87a2c6a9282b5b74a8615fef1b4b7">vecs</a>.resize (ivfl-&gt;<a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>);</div>
-<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ivfl-&gt;<a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>; i++)</div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;            READVECTOR (ivfl-&gt;<a class="code" href="structfaiss_1_1IndexIVFFlat.html#a52f87a2c6a9282b5b74a8615fef1b4b7">vecs</a>[i]);</div>
-<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;        idx = ivfl;</div>
-<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;IxSQ&quot;</span>)) {</div>
-<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;        <a class="code" href="structfaiss_1_1IndexScalarQuantizer.html">IndexScalarQuantizer</a> * idxs = <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexScalarQuantizer.html">IndexScalarQuantizer</a> ();</div>
-<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;        read_index_header (idxs, f);</div>
-<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;        read_ScalarQuantizer (&amp;idxs-&gt;<a class="code" href="structfaiss_1_1IndexScalarQuantizer.html#a71381f74754d8a54812e80af46a2a83a">sq</a>, f);</div>
-<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;        READVECTOR (idxs-&gt;<a class="code" href="structfaiss_1_1IndexScalarQuantizer.html#a861fa059f9d4ced9147e08193a2be9be">codes</a>);</div>
-<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;        idxs-&gt;code_size = idxs-&gt;<a class="code" href="structfaiss_1_1IndexScalarQuantizer.html#a71381f74754d8a54812e80af46a2a83a">sq</a>.<a class="code" href="structfaiss_1_1ScalarQuantizer.html#a647b8774e4cd8ca5623a194f5c7f8a33">code_size</a>;</div>
-<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;        idx = idxs;</div>
-<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;IvSQ&quot;</span>)) {</div>
-<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;        <a class="code" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a> * ivsc = <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a>();</div>
-<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;        read_ivf_header (ivsc, f);</div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;        ivsc-&gt;<a class="code" href="structfaiss_1_1IndexIVFScalarQuantizer.html#abc335510a1855faecb3e445c49a9b204">codes</a>.resize(ivsc-&gt;<a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>);</div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;        read_ScalarQuantizer (&amp;ivsc-&gt;sq, f);</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;        READ1 (ivsc-&gt;code_size);</div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; ivsc-&gt;<a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>; i++)</div>
-<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;            READVECTOR (ivsc-&gt;<a class="code" href="structfaiss_1_1IndexIVFScalarQuantizer.html#abc335510a1855faecb3e445c49a9b204">codes</a>[i]);</div>
-<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;        idx = ivsc;</div>
-<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;IvPQ&quot;</span>) || h == fourcc (<span class="stringliteral">&quot;IvQR&quot;</span>) ||</div>
-<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;              h == fourcc (<span class="stringliteral">&quot;IvPC&quot;</span>)) {</div>
-<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;</div>
-<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;        idx = read_ivfpq (f, h, try_mmap);</div>
-<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;</div>
-<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;IxPT&quot;</span>)) {</div>
-<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;        <a class="code" href="structfaiss_1_1IndexPreTransform.html">IndexPreTransform</a> * ixpt = <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexPreTransform.html">IndexPreTransform</a>();</div>
-<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;        ixpt-&gt;<a class="code" href="structfaiss_1_1IndexPreTransform.html#ae5ec3f184eb211e7d6e204082b52c8c0">own_fields</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;        read_index_header (ixpt, f);</div>
-<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;        <span class="keywordtype">int</span> nt;</div>
-<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;        <span class="keywordflow">if</span> (read_old_fmt_hack == 2) {</div>
-<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;            nt = 1;</div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;            READ1 (nt);</div>
-<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;        }</div>
-<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nt; i++) {</div>
-<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;            ixpt-&gt;chain.push_back (read_VectorTransform (f));</div>
-<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;        }</div>
-<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;        ixpt-&gt;<a class="code" href="structfaiss_1_1IndexPreTransform.html#aee3cbbe7915ec9ed13d59ca9276bdefc">index</a> = <a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (f);</div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;        idx = ixpt;</div>
-<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;Imiq&quot;</span>)) {</div>
-<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;        <a class="code" href="structfaiss_1_1MultiIndexQuantizer.html">MultiIndexQuantizer</a> * imiq = <span class="keyword">new</span> <a class="code" href="structfaiss_1_1MultiIndexQuantizer.html">MultiIndexQuantizer</a> ();</div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;        read_index_header (imiq, f);</div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;        read_ProductQuantizer (&amp;imiq-&gt;pq, f);</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;        idx = imiq;</div>
-<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;IxRF&quot;</span>)) {</div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;        <a class="code" href="structfaiss_1_1IndexRefineFlat.html">IndexRefineFlat</a> *idxrf = <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexRefineFlat.html">IndexRefineFlat</a> ();</div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;        read_index_header (idxrf, f);</div>
-<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;        idxrf-&gt;<a class="code" href="structfaiss_1_1IndexRefineFlat.html#a4acc0b3a8c33e5dd8851448ac162dfd0">base_index</a> = <a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a>(f);</div>
-<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;        idxrf-&gt;<a class="code" href="structfaiss_1_1IndexRefineFlat.html#aaf0f6a094de0e9409effa81bedb9c7e2">own_fields</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;        <a class="code" href="structfaiss_1_1IndexFlat.html">IndexFlat</a> *rf = <span class="keyword">dynamic_cast&lt;</span><a class="code" href="structfaiss_1_1IndexFlat.html">IndexFlat</a>*<span class="keyword">&gt;</span> (<a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (f));</div>
-<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;        std::swap (*rf, idxrf-&gt;<a class="code" href="structfaiss_1_1IndexRefineFlat.html#aab99f32713ece942ccefccf306292ca0">refine_index</a>);</div>
-<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;        <span class="keyword">delete</span> rf;</div>
-<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;        READ1 (idxrf-&gt;<a class="code" href="structfaiss_1_1IndexRefineFlat.html#a7383fabb28db5b0df45ca4ea81f7acd4">k_factor</a>);</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;        idx = idxrf;</div>
-<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;IxMp&quot;</span>) || h == fourcc (<span class="stringliteral">&quot;IxM2&quot;</span>)) {</div>
-<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;        <span class="keywordtype">bool</span> is_map2 = h == fourcc (<span class="stringliteral">&quot;IxM2&quot;</span>);</div>
-<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;        <a class="code" href="structfaiss_1_1IndexIDMap.html">IndexIDMap</a> * idxmap = is_map2 ? <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexIDMap2.html">IndexIDMap2</a> () : <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexIDMap.html">IndexIDMap</a> ();</div>
-<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;        read_index_header (idxmap, f);</div>
-<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;        idxmap-&gt;index = <a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (f);</div>
-<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;        idxmap-&gt;<a class="code" href="structfaiss_1_1IndexIDMap.html#affa8a764304410c96489c2b2e178bcdb">own_fields</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;        READVECTOR (idxmap-&gt;<a class="code" href="structfaiss_1_1IndexIDMap.html#ad1cc5658f1879f6a2b00d76cca58cf3b">id_map</a>);</div>
-<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;        <span class="keywordflow">if</span> (is_map2) {</div>
-<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;            <span class="keyword">static_cast&lt;</span>IndexIDMap2*<span class="keyword">&gt;</span>(idxmap)-&gt;construct_rev_map ();</div>
-<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;        }</div>
-<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;        idx = idxmap;</div>
-<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;        fprintf (stderr, <span class="stringliteral">&quot;Index type 0x%08x not supported\n&quot;</span>, h);</div>
-<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;        abort ();</div>
-<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;    }</div>
-<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;    <span class="keywordflow">return</span> idx;</div>
-<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;}</div>
-<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;</div>
-<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;</div>
-<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;</div>
-<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;Index *<a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (<span class="keyword">const</span> <span class="keywordtype">char</span> *fname, <span class="keywordtype">bool</span> try_mmap) {</div>
-<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;    FILE *f = fopen (fname, <span class="stringliteral">&quot;r&quot;</span>);</div>
-<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;    FAISS_THROW_IF_NOT_FMT (f, <span class="stringliteral">&quot;cannot open %s for reading:&quot;</span>, fname);</div>
-<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;    Index *idx = <a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (f, try_mmap);</div>
-<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;    fclose (f);</div>
-<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;    <span class="keywordflow">return</span> idx;</div>
-<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;}</div>
-<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;</div>
-<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;VectorTransform *read_VectorTransform (<span class="keyword">const</span> <span class="keywordtype">char</span> *fname) {</div>
-<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;    FILE *f = fopen (fname, <span class="stringliteral">&quot;r&quot;</span>);</div>
-<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;    <span class="keywordflow">if</span> (!f) {</div>
-<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;        fprintf (stderr, <span class="stringliteral">&quot;cannot open %s for reading:&quot;</span>, fname);</div>
-<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;        perror (<span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;        abort ();</div>
-<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;    }</div>
-<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;    VectorTransform *vt = read_VectorTransform (f);</div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;        ivfl-&gt;<a class="code" href="structfaiss_1_1IndexIVF.html#a46d1aeddb60643c5b3f096147c3e028f">code_size</a> = ivfl-&gt;<a class="code" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a> * <span class="keyword">sizeof</span>(float);</div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;        ivfl-&gt;codes.resize (ivfl-&gt;<a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>);</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;        <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;IvFL&quot;</span>)) {</div>
+<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ivfl-&gt;<a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>; i++) {</div>
+<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;                READVECTOR (ivfl-&gt;codes[i]);</div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;            }</div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;        } <span class="keywordflow">else</span> { <span class="comment">// old format</span></div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ivfl-&gt;<a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>; i++) {</div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;                std::vector&lt;float&gt; vec;</div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;                READVECTOR (vec);</div>
+<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;                ivfl-&gt;codes[i].resize(vec.size() * <span class="keyword">sizeof</span>(float));</div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;                memcpy(ivfl-&gt;codes[i].data(), vec.data(),</div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;                       ivfl-&gt;codes[i].size());</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;            }</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;        }</div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;        idx = ivfl;</div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;IxSQ&quot;</span>)) {</div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;        <a class="code" href="structfaiss_1_1IndexScalarQuantizer.html">IndexScalarQuantizer</a> * idxs = <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexScalarQuantizer.html">IndexScalarQuantizer</a> ();</div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;        read_index_header (idxs, f);</div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;        read_ScalarQuantizer (&amp;idxs-&gt;<a class="code" href="structfaiss_1_1IndexScalarQuantizer.html#a71381f74754d8a54812e80af46a2a83a">sq</a>, f);</div>
+<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;        READVECTOR (idxs-&gt;<a class="code" href="structfaiss_1_1IndexScalarQuantizer.html#a861fa059f9d4ced9147e08193a2be9be">codes</a>);</div>
+<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;        idxs-&gt;code_size = idxs-&gt;<a class="code" href="structfaiss_1_1IndexScalarQuantizer.html#a71381f74754d8a54812e80af46a2a83a">sq</a>.<a class="code" href="structfaiss_1_1ScalarQuantizer.html#a647b8774e4cd8ca5623a194f5c7f8a33">code_size</a>;</div>
+<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;        idx = idxs;</div>
+<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;IvSQ&quot;</span>)) {</div>
+<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;        <a class="code" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a> * ivsc = <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a>();</div>
+<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;        read_ivf_header (ivsc, f);</div>
+<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;        ivsc-&gt;codes.resize(ivsc-&gt;<a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>);</div>
+<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;        read_ScalarQuantizer (&amp;ivsc-&gt;sq, f);</div>
+<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;        READ1 (ivsc-&gt;<a class="code" href="structfaiss_1_1IndexIVF.html#a46d1aeddb60643c5b3f096147c3e028f">code_size</a>);</div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; ivsc-&gt;<a class="code" href="structfaiss_1_1IndexIVF.html#ab38fde4c923abefc4185eb7450b5b95b">nlist</a>; i++)</div>
+<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;            READVECTOR (ivsc-&gt;codes[i]);</div>
+<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;        idx = ivsc;</div>
+<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;IvPQ&quot;</span>) || h == fourcc (<span class="stringliteral">&quot;IvQR&quot;</span>) ||</div>
+<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;              h == fourcc (<span class="stringliteral">&quot;IvPC&quot;</span>)) {</div>
+<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;</div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;        idx = read_ivfpq (f, h, try_mmap);</div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;</div>
+<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;IxPT&quot;</span>)) {</div>
+<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;        <a class="code" href="structfaiss_1_1IndexPreTransform.html">IndexPreTransform</a> * ixpt = <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexPreTransform.html">IndexPreTransform</a>();</div>
+<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;        ixpt-&gt;<a class="code" href="structfaiss_1_1IndexPreTransform.html#ae5ec3f184eb211e7d6e204082b52c8c0">own_fields</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;        read_index_header (ixpt, f);</div>
+<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;        <span class="keywordtype">int</span> nt;</div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;        <span class="keywordflow">if</span> (read_old_fmt_hack == 2) {</div>
+<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;            nt = 1;</div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;            READ1 (nt);</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;        }</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nt; i++) {</div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;            ixpt-&gt;chain.push_back (read_VectorTransform (f));</div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;        }</div>
+<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;        ixpt-&gt;<a class="code" href="structfaiss_1_1IndexPreTransform.html#aee3cbbe7915ec9ed13d59ca9276bdefc">index</a> = <a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (f);</div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;        idx = ixpt;</div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;Imiq&quot;</span>)) {</div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;        <a class="code" href="structfaiss_1_1MultiIndexQuantizer.html">MultiIndexQuantizer</a> * imiq = <span class="keyword">new</span> <a class="code" href="structfaiss_1_1MultiIndexQuantizer.html">MultiIndexQuantizer</a> ();</div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;        read_index_header (imiq, f);</div>
+<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;        read_ProductQuantizer (&amp;imiq-&gt;pq, f);</div>
+<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;        idx = imiq;</div>
+<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;IxRF&quot;</span>)) {</div>
+<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;        <a class="code" href="structfaiss_1_1IndexRefineFlat.html">IndexRefineFlat</a> *idxrf = <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexRefineFlat.html">IndexRefineFlat</a> ();</div>
+<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;        read_index_header (idxrf, f);</div>
+<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;        idxrf-&gt;<a class="code" href="structfaiss_1_1IndexRefineFlat.html#a4acc0b3a8c33e5dd8851448ac162dfd0">base_index</a> = <a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a>(f);</div>
+<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;        idxrf-&gt;<a class="code" href="structfaiss_1_1IndexRefineFlat.html#aaf0f6a094de0e9409effa81bedb9c7e2">own_fields</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;        <a class="code" href="structfaiss_1_1IndexFlat.html">IndexFlat</a> *rf = <span class="keyword">dynamic_cast&lt;</span><a class="code" href="structfaiss_1_1IndexFlat.html">IndexFlat</a>*<span class="keyword">&gt;</span> (<a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (f));</div>
+<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;        std::swap (*rf, idxrf-&gt;<a class="code" href="structfaiss_1_1IndexRefineFlat.html#aab99f32713ece942ccefccf306292ca0">refine_index</a>);</div>
+<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;        <span class="keyword">delete</span> rf;</div>
+<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;        READ1 (idxrf-&gt;<a class="code" href="structfaiss_1_1IndexRefineFlat.html#a7383fabb28db5b0df45ca4ea81f7acd4">k_factor</a>);</div>
+<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;        idx = idxrf;</div>
+<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(h == fourcc (<span class="stringliteral">&quot;IxMp&quot;</span>) || h == fourcc (<span class="stringliteral">&quot;IxM2&quot;</span>)) {</div>
+<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;        <span class="keywordtype">bool</span> is_map2 = h == fourcc (<span class="stringliteral">&quot;IxM2&quot;</span>);</div>
+<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;        <a class="code" href="structfaiss_1_1IndexIDMap.html">IndexIDMap</a> * idxmap = is_map2 ? <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexIDMap2.html">IndexIDMap2</a> () : <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexIDMap.html">IndexIDMap</a> ();</div>
+<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;        read_index_header (idxmap, f);</div>
+<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;        idxmap-&gt;index = <a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (f);</div>
+<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;        idxmap-&gt;<a class="code" href="structfaiss_1_1IndexIDMap.html#affa8a764304410c96489c2b2e178bcdb">own_fields</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;        READVECTOR (idxmap-&gt;<a class="code" href="structfaiss_1_1IndexIDMap.html#ad1cc5658f1879f6a2b00d76cca58cf3b">id_map</a>);</div>
+<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;        <span class="keywordflow">if</span> (is_map2) {</div>
+<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;            <span class="keyword">static_cast&lt;</span>IndexIDMap2*<span class="keyword">&gt;</span>(idxmap)-&gt;construct_rev_map ();</div>
+<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;        }</div>
+<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;        idx = idxmap;</div>
+<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;        fprintf (stderr, <span class="stringliteral">&quot;Index type 0x%08x not supported\n&quot;</span>, h);</div>
+<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;        abort ();</div>
+<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;    }</div>
+<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;    <span class="keywordflow">return</span> idx;</div>
+<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;}</div>
+<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;</div>
+<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;</div>
+<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;</div>
+<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;Index *<a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (<span class="keyword">const</span> <span class="keywordtype">char</span> *fname, <span class="keywordtype">bool</span> try_mmap) {</div>
+<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;    FILE *f = fopen (fname, <span class="stringliteral">&quot;r&quot;</span>);</div>
+<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;    FAISS_THROW_IF_NOT_FMT (f, <span class="stringliteral">&quot;cannot open %s for reading:&quot;</span>, fname);</div>
+<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;    Index *idx = <a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (f, try_mmap);</div>
 <div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;    fclose (f);</div>
-<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;    <span class="keywordflow">return</span> vt;</div>
+<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;    <span class="keywordflow">return</span> idx;</div>
 <div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;}</div>
 <div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;</div>
-<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;<span class="comment">/*************************************************************</span></div>
-<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;<span class="comment"> * cloning functions</span></div>
-<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;<span class="comment"> **************************************************************/</span></div>
-<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;</div>
-<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;</div>
-<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;</div>
-<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;Index * clone_index (<span class="keyword">const</span> Index *index)</div>
-<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;{</div>
-<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;    Cloner cl;</div>
-<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;    <span class="keywordflow">return</span> cl.clone_Index (index);</div>
+<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;VectorTransform *read_VectorTransform (<span class="keyword">const</span> <span class="keywordtype">char</span> *fname) {</div>
+<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;    FILE *f = fopen (fname, <span class="stringliteral">&quot;r&quot;</span>);</div>
+<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;    <span class="keywordflow">if</span> (!f) {</div>
+<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;        fprintf (stderr, <span class="stringliteral">&quot;cannot open %s for reading:&quot;</span>, fname);</div>
+<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;        perror (<span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;        abort ();</div>
+<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;    }</div>
+<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;    VectorTransform *vt = read_VectorTransform (f);</div>
+<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;    fclose (f);</div>
+<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;    <span class="keywordflow">return</span> vt;</div>
 <div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;}</div>
 <div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;</div>
-<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;<span class="comment">// assumes there is a copy constructor ready. Always try from most</span></div>
-<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;<span class="comment">// specific to most general</span></div>
-<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;<span class="preprocessor">#define TRYCLONE(classname, obj) \</span></div>
-<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;<span class="preprocessor">    if (const classname *clo = dynamic_cast&lt;const classname *&gt;(obj)) { \</span></div>
-<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;<span class="preprocessor">        return new classname(*clo); \</span></div>
-<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;<span class="preprocessor">    } else</span></div>
-<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;VectorTransform *Cloner::clone_VectorTransform (<span class="keyword">const</span> VectorTransform *vt)</div>
-<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;{</div>
-<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;    TRYCLONE (RemapDimensionsTransform, vt)</div>
-<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;    TRYCLONE (OPQMatrix, vt)</div>
-<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;    TRYCLONE (PCAMatrix, vt)</div>
-<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;    TRYCLONE (RandomRotationMatrix, vt)</div>
-<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;    TRYCLONE (LinearTransform, vt)</div>
-<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;    {</div>
-<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;      FAISS_THROW_MSG(<span class="stringliteral">&quot;clone not supported for this type of VectorTransform&quot;</span>);</div>
-<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;    }</div>
-<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;}</div>
-<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;</div>
-<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;IndexIVF * Cloner::clone_IndexIVF (<span class="keyword">const</span> IndexIVF *ivf)</div>
-<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;{</div>
-<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;    TRYCLONE (IndexIVFPQR, ivf)</div>
-<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;    TRYCLONE (IndexIVFPQ, ivf)</div>
-<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;    TRYCLONE (IndexIVFFlat, ivf)</div>
-<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;    TRYCLONE (IndexIVFScalarQuantizer, ivf)</div>
+<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;<span class="comment">/*************************************************************</span></div>
+<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;<span class="comment"> * cloning functions</span></div>
+<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;<span class="comment"> **************************************************************/</span></div>
+<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;</div>
+<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;</div>
+<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;</div>
+<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;Index * clone_index (<span class="keyword">const</span> Index *index)</div>
+<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;{</div>
+<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;    Cloner cl;</div>
+<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;    <span class="keywordflow">return</span> cl.clone_Index (index);</div>
+<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;}</div>
+<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;</div>
+<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;<span class="comment">// assumes there is a copy constructor ready. Always try from most</span></div>
+<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;<span class="comment">// specific to most general</span></div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;<span class="preprocessor">#define TRYCLONE(classname, obj) \</span></div>
+<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;<span class="preprocessor">    if (const classname *clo = dynamic_cast&lt;const classname *&gt;(obj)) { \</span></div>
+<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;<span class="preprocessor">        return new classname(*clo); \</span></div>
+<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;<span class="preprocessor">    } else</span></div>
+<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;VectorTransform *Cloner::clone_VectorTransform (<span class="keyword">const</span> VectorTransform *vt)</div>
+<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;{</div>
+<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;    TRYCLONE (RemapDimensionsTransform, vt)</div>
+<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;    TRYCLONE (OPQMatrix, vt)</div>
+<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;    TRYCLONE (PCAMatrix, vt)</div>
+<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;    TRYCLONE (RandomRotationMatrix, vt)</div>
+<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;    TRYCLONE (LinearTransform, vt)</div>
 <div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;    {</div>
-<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;      FAISS_THROW_MSG(<span class="stringliteral">&quot;clone not supported for this type of IndexIVF&quot;</span>);</div>
+<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;      FAISS_THROW_MSG(<span class="stringliteral">&quot;clone not supported for this type of VectorTransform&quot;</span>);</div>
 <div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;    }</div>
 <div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
 <div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;}</div>
 <div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;</div>
-<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;Index *Cloner::clone_Index (<span class="keyword">const</span> Index *index)</div>
+<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;IndexIVF * Cloner::clone_IndexIVF (<span class="keyword">const</span> IndexIVF *ivf)</div>
 <div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;{</div>
-<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;    TRYCLONE (IndexPQ, index)</div>
-<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;    TRYCLONE (IndexLSH, index)</div>
-<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;    TRYCLONE (IndexFlatL2, index)</div>
-<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;    TRYCLONE (IndexFlatIP, index)</div>
-<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;    TRYCLONE (IndexFlat, index)</div>
-<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;    TRYCLONE (IndexScalarQuantizer, index)</div>
-<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;    TRYCLONE (MultiIndexQuantizer, index)</div>
-<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;    if (const IndexIVF * ivf = dynamic_cast&lt;const IndexIVF*&gt;(index)) {</div>
-<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;        IndexIVF *res = clone_IndexIVF (ivf);</div>
-<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;        res-&gt;own_fields = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;        res-&gt;quantizer = clone_Index (ivf-&gt;quantizer);</div>
-<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;        <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> IndexPreTransform * ipt =</div>
-<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;               dynamic_cast&lt;const IndexPreTransform*&gt; (index)) {</div>
-<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;        IndexPreTransform *res = <span class="keyword">new</span> IndexPreTransform ();</div>
-<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;        res-&gt;d = ipt-&gt;d;</div>
-<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;        res-&gt;index = clone_Index (ipt-&gt;index);</div>
-<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; ipt-&gt;chain.size(); i++)</div>
-<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;            res-&gt;chain.push_back (clone_VectorTransform (ipt-&gt;chain[i]));</div>
-<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;        res-&gt;own_fields = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;        <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;        FAISS_THROW_MSG( <span class="stringliteral">&quot;clone not supported for this type of Index&quot;</span>);</div>
-<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;    }</div>
-<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;}</div>
-<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;</div>
-<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;</div>
-<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;} <span class="comment">// namespace faiss</span></div>
+<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;    TRYCLONE (IndexIVFPQR, ivf)</div>
+<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;    TRYCLONE (IndexIVFPQ, ivf)</div>
+<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;    TRYCLONE (IndexIVFFlat, ivf)</div>
+<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;    TRYCLONE (IndexIVFScalarQuantizer, ivf)</div>
+<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;    {</div>
+<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;      FAISS_THROW_MSG(<span class="stringliteral">&quot;clone not supported for this type of IndexIVF&quot;</span>);</div>
+<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;    }</div>
+<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;}</div>
+<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;</div>
+<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;Index *Cloner::clone_Index (<span class="keyword">const</span> Index *index)</div>
+<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;{</div>
+<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;    TRYCLONE (IndexPQ, index)</div>
+<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;    TRYCLONE (IndexLSH, index)</div>
+<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;    TRYCLONE (IndexFlatL2, index)</div>
+<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;    TRYCLONE (IndexFlatIP, index)</div>
+<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;    TRYCLONE (IndexFlat, index)</div>
+<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;    TRYCLONE (IndexScalarQuantizer, index)</div>
+<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;    TRYCLONE (MultiIndexQuantizer, index)</div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    if (const IndexIVF * ivf = dynamic_cast&lt;const IndexIVF*&gt;(index)) {</div>
+<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;        IndexIVF *res = clone_IndexIVF (ivf);</div>
+<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;        res-&gt;own_fields = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;        res-&gt;quantizer = clone_Index (ivf-&gt;quantizer);</div>
+<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;        <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> IndexPreTransform * ipt =</div>
+<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;               dynamic_cast&lt;const IndexPreTransform*&gt; (index)) {</div>
+<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;        IndexPreTransform *res = <span class="keyword">new</span> IndexPreTransform ();</div>
+<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;        res-&gt;d = ipt-&gt;d;</div>
+<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;        res-&gt;index = clone_Index (ipt-&gt;index);</div>
+<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; ipt-&gt;chain.size(); i++)</div>
+<div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;            res-&gt;chain.push_back (clone_VectorTransform (ipt-&gt;chain[i]));</div>
+<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;        res-&gt;own_fields = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;        <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;        FAISS_THROW_MSG( <span class="stringliteral">&quot;clone not supported for this type of Index&quot;</span>);</div>
+<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;    }</div>
+<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;}</div>
+<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;</div>
+<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;</div>
+<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;} <span class="comment">// namespace faiss</span></div>
 <div class="ttc" id="structfaiss_1_1ScopeFileCloser_html"><div class="ttname"><a href="structfaiss_1_1ScopeFileCloser.html">faiss::ScopeFileCloser</a></div><div class="ttdef"><b>Definition:</b> <a href="index__io_8cpp_source.html#l00095">index_io.cpp:95</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexPQ_html_a490b64b12384951ed66548a3a48f91e5"><div class="ttname"><a href="structfaiss_1_1IndexPQ.html#a490b64b12384951ed66548a3a48f91e5">faiss::IndexPQ::codes</a></div><div class="ttdeci">std::vector&lt; uint8_t &gt; codes</div><div class="ttdoc">Codes. Size ntotal * pq.code_size. </div><div class="ttdef"><b>Definition:</b> <a href="IndexPQ_8h_source.html#l00034">IndexPQ.h:34</a></div></div>
 <div class="ttc" id="structfaiss_1_1ScalarQuantizer_html_a647b8774e4cd8ca5623a194f5c7f8a33"><div class="ttname"><a href="structfaiss_1_1ScalarQuantizer.html#a647b8774e4cd8ca5623a194f5c7f8a33">faiss::ScalarQuantizer::code_size</a></div><div class="ttdeci">size_t code_size</div><div class="ttdoc">bytes per vector </div><div class="ttdef"><b>Definition:</b> <a href="IndexScalarQuantizer_8h_source.html#l00060">IndexScalarQuantizer.h:60</a></div></div>
@@ -869,11 +881,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="structfaiss_1_1IndexLSH_html_a5d4d6ea1fc709605d5b2061d1bce27d6"><div class="ttname"><a href="structfaiss_1_1IndexLSH.html#a5d4d6ea1fc709605d5b2061d1bce27d6">faiss::IndexLSH::train_thresholds</a></div><div class="ttdeci">bool train_thresholds</div><div class="ttdoc">whether we train thresholds or use 0 </div><div class="ttdef"><b>Definition:</b> <a href="IndexLSH_8h_source.html#l00030">IndexLSH.h:30</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexPreTransform_html"><div class="ttname"><a href="structfaiss_1_1IndexPreTransform.html">faiss::IndexPreTransform</a></div><div class="ttdef"><b>Definition:</b> <a href="VectorTransform_8h_source.html#l00239">VectorTransform.h:239</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap_html"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html">faiss::IndexIDMap</a></div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00026">MetaIndexes.h:26</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIVFFlat_html"><div class="ttname"><a href="structfaiss_1_1IndexIVFFlat.html">faiss::IndexIVFFlat</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00132">IndexIVF.h:132</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIVFFlat_html"><div class="ttname"><a href="structfaiss_1_1IndexIVFFlat.html">faiss::IndexIVFFlat</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00174">IndexIVF.h:174</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexFlatIP_html"><div class="ttname"><a href="structfaiss_1_1IndexFlatIP.html">faiss::IndexFlatIP</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00073">IndexFlat.h:73</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexRefineFlat_html_a4acc0b3a8c33e5dd8851448ac162dfd0"><div class="ttname"><a href="structfaiss_1_1IndexRefineFlat.html#a4acc0b3a8c33e5dd8851448ac162dfd0">faiss::IndexRefineFlat::base_index</a></div><div class="ttdeci">Index * base_index</div><div class="ttdoc">faster index to pre-select the vectors that should be filtered </div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00109">IndexFlat.h:109</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexRefineFlat_html"><div class="ttname"><a href="structfaiss_1_1IndexRefineFlat.html">faiss::IndexRefineFlat</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00103">IndexFlat.h:103</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIVFScalarQuantizer_html_abc335510a1855faecb3e445c49a9b204"><div class="ttname"><a href="structfaiss_1_1IndexIVFScalarQuantizer.html#abc335510a1855faecb3e445c49a9b204">faiss::IndexIVFScalarQuantizer::codes</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; uint8_t &gt; &gt; codes</div><div class="ttdoc">inverted list codes. </div><div class="ttdef"><b>Definition:</b> <a href="IndexScalarQuantizer_8h_source.html#l00135">IndexScalarQuantizer.h:135</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexRefineFlat_html_aab99f32713ece942ccefccf306292ca0"><div class="ttname"><a href="structfaiss_1_1IndexRefineFlat.html#aab99f32713ece942ccefccf306292ca0">faiss::IndexRefineFlat::refine_index</a></div><div class="ttdeci">IndexFlat refine_index</div><div class="ttdoc">storage for full vectors </div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00106">IndexFlat.h:106</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexRefineFlat_html_aaf0f6a094de0e9409effa81bedb9c7e2"><div class="ttname"><a href="structfaiss_1_1IndexRefineFlat.html#aaf0f6a094de0e9409effa81bedb9c7e2">faiss::IndexRefineFlat::own_fields</a></div><div class="ttdeci">bool own_fields</div><div class="ttdoc">should the base index be deallocated? </div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00110">IndexFlat.h:110</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html_a2a002388d2c081c2dbab8508dcefe73d"><div class="ttname"><a href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">faiss::Index::d</a></div><div class="ttdeci">int d</div><div class="ttdoc">vector dimension </div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00064">Index.h:64</a></div></div>
@@ -896,9 +907,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="structfaiss_1_1IndexFlat_html_a9001de47890fe5d2eced9551d3613d47"><div class="ttname"><a href="structfaiss_1_1IndexFlat.html#a9001de47890fe5d2eced9551d3613d47">faiss::IndexFlat::xb</a></div><div class="ttdeci">std::vector&lt; float &gt; xb</div><div class="ttdoc">database vectors, size ntotal * d </div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00025">IndexFlat.h:25</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexPQ_html_aff455f2adff6064939494dad6e3017bc"><div class="ttname"><a href="structfaiss_1_1IndexPQ.html#aff455f2adff6064939494dad6e3017bc">faiss::IndexPQ::polysemous_ht</a></div><div class="ttdeci">int polysemous_ht</div><div class="ttdoc">Hamming threshold used for polysemy. </div><div class="ttdef"><b>Definition:</b> <a href="IndexPQ_8h_source.html#l00091">IndexPQ.h:91</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexRefineFlat_html_a7383fabb28db5b0df45ca4ea81f7acd4"><div class="ttname"><a href="structfaiss_1_1IndexRefineFlat.html#a7383fabb28db5b0df45ca4ea81f7acd4">faiss::IndexRefineFlat::k_factor</a></div><div class="ttdeci">float k_factor</div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00114">IndexFlat.h:114</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIVF_html_a46d1aeddb60643c5b3f096147c3e028f"><div class="ttname"><a href="structfaiss_1_1IndexIVF.html#a46d1aeddb60643c5b3f096147c3e028f">faiss::IndexIVF::code_size</a></div><div class="ttdeci">size_t code_size</div><div class="ttdoc">code size per vector in bytes </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00057">IndexIVF.h:57</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexLSH_html_a71e9142e1256705f125ded9d647f4497"><div class="ttname"><a href="structfaiss_1_1IndexLSH.html#a71e9142e1256705f125ded9d647f4497">faiss::IndexLSH::rotate_data</a></div><div class="ttdeci">bool rotate_data</div><div class="ttdoc">whether to apply a random rotation to input </div><div class="ttdef"><b>Definition:</b> <a href="IndexLSH_8h_source.html#l00029">IndexLSH.h:29</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexLSH_html_a55c0f1127850af0d06ef22fc8b791572"><div class="ttname"><a href="structfaiss_1_1IndexLSH.html#a55c0f1127850af0d06ef22fc8b791572">faiss::IndexLSH::codes</a></div><div class="ttdeci">std::vector&lt; uint8_t &gt; codes</div><div class="ttdoc">encoded dataset </div><div class="ttdef"><b>Definition:</b> <a href="IndexLSH_8h_source.html#l00037">IndexLSH.h:37</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIVFFlat_html_a52f87a2c6a9282b5b74a8615fef1b4b7"><div class="ttname"><a href="structfaiss_1_1IndexIVFFlat.html#a52f87a2c6a9282b5b74a8615fef1b4b7">faiss::IndexIVFFlat::vecs</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; float &gt; &gt; vecs</div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00135">IndexIVF.h:135</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap_html_affa8a764304410c96489c2b2e178bcdb"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html#affa8a764304410c96489c2b2e178bcdb">faiss::IndexIDMap::own_fields</a></div><div class="ttdeci">bool own_fields</div><div class="ttdoc">! the sub-index </div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00028">MetaIndexes.h:28</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

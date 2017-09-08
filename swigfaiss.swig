@@ -125,6 +125,7 @@ namespace std {
 %template(OperatingPointVector) std::vector<faiss::OperatingPoint>;
 %template(FloatVectorVector) std::vector<std::vector<float> >;
 %template(ByteVectorVector) std::vector<std::vector<unsigned char> >;
+%template(LongVectorVector) std::vector<std::vector<long> >;
 
 
 

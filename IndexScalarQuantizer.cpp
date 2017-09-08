@@ -814,11 +814,10 @@ IndexIVFScalarQuantizer::IndexIVFScalarQuantizer
 {
     code_size = sq.code_size;
     is_trained = false;
-    codes.resize(nlist);
 }
 
 IndexIVFScalarQuantizer::IndexIVFScalarQuantizer ():
-      IndexIVF (), code_size (0)
+      IndexIVF ()
 {}
 
 void IndexIVFScalarQuantizer::train_residual (idx_t n, const float *x)
@@ -885,7 +884,8 @@ void search_with_probes_ip (const IndexIVFScalarQuantizer & index,
                             const float *x,
                             const idx_t *cent_ids, const float *cent_dis,
                             const Quantizer & quant,
-                            int k, float *simi, idx_t *idxi)
+                            int k, float *simi, idx_t *idxi,
+                            bool store_pairs)
 {
     int nprobe = index.nprobe;
     size_t code_size = index.code_size;
@@ -908,7 +908,8 @@ void search_with_probes_ip (const IndexIVFScalarQuantizer & index,
 
             if (accu > simi [0]) {
                 minheap_pop (k, simi, idxi);
-                minheap_push (k, simi, idxi, accu, ids[j]);
+                long id = store_pairs ? (list_no << 32 | j) : ids[j];
+                minheap_push (k, simi, idxi, accu, id);
             }
             codes += code_size;
         }
@@ -922,7 +923,8 @@ void search_with_probes_L2 (const IndexIVFScalarQuantizer & index,
                             const idx_t *cent_ids,
                             const Index *quantizer,
                             const Quantizer & quant,
-                            int k, float *simi, idx_t *idxi)
+                            int k, float *simi, idx_t *idxi,
+                            bool store_pairs)
 {
     int nprobe = index.nprobe;
     size_t code_size = index.code_size;
@@ -947,7 +949,8 @@ void search_with_probes_L2 (const IndexIVFScalarQuantizer & index,
 
             if (dis < simi [0]) {
                 maxheap_pop (k, simi, idxi);
-                maxheap_push (k, simi, idxi, dis, ids[j]);
+                long id = store_pairs ? (list_no << 32 | j) : ids[j];
+                maxheap_push (k, simi, idxi, dis, id);
             }
             codes += code_size;
         }
@@ -955,48 +958,34 @@ void search_with_probes_L2 (const IndexIVFScalarQuantizer & index,
     maxheap_reorder (k, simi, idxi);
 }
 
-
-void IndexIVFScalarQuantizer::search (idx_t n, const float *x, idx_t k,
-                                      float *distances, idx_t *labels) const
+void IndexIVFScalarQuantizer::search_preassigned (
+                             idx_t n, const float *x, idx_t k,
+                             const idx_t *idx,
+                             const float *dis,
+                             float *distances, idx_t *labels,
+                             bool store_pairs) const
 {
     FAISS_THROW_IF_NOT (is_trained);
-    idx_t *idx = new idx_t [n * nprobe];
-    ScopeDeleter<idx_t> del (idx);
-    float *dis = new float [n * nprobe];
-    ScopeDeleter<float> del2 (dis);
-
-    quantizer->search (n, x, nprobe, dis, idx);
 
     Quantizer *squant = select_quantizer (sq);
-    ScopeDeleter1<Quantizer> del3(squant);
+    ScopeDeleter1<Quantizer> del(squant);
 
     if (metric_type == METRIC_INNER_PRODUCT) {
 #pragma omp parallel for
         for (size_t i = 0; i < n; i++) {
             search_with_probes_ip (*this, x + i * d,
                                    idx + i * nprobe, dis + i * nprobe, *squant,
-                                   k, distances + i * k, labels + i * k);
+                                   k, distances + i * k, labels + i * k,
+                                   store_pairs);
         }
     } else {
 #pragma omp parallel for
         for (size_t i = 0; i < n; i++) {
             search_with_probes_L2 (*this, x + i * d,
                                    idx + i * nprobe, quantizer, *squant,
-                                   k, distances + i * k, labels + i * k);
+                                   k, distances + i * k, labels + i * k,
+                                   store_pairs);
         }
-    }
-
-}
-
-
-void IndexIVFScalarQuantizer::merge_from_residuals (IndexIVF & other_in) {
-    IndexIVFScalarQuantizer &other =
-        dynamic_cast<IndexIVFScalarQuantizer &> (other_in);
-    for (int i = 0; i < nlist; i++) {
-        std::vector<uint8_t> & src = other.codes[i];
-        std::vector<uint8_t> & dest = codes[i];
-        dest.insert (dest.end(), src.begin (), src.end ());
-        src.clear ();
     }
 
 }

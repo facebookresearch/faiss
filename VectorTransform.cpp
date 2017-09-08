@@ -373,7 +373,7 @@ void PCAMatrix::train (Index::idx_t n, const float *x)
 
         eig (n, gramd.data (), eigenvaluesd.data (), verbose);
 
-        PCAMat.resize(d_in * d_in);
+        PCAMat.resize(d_in * n);
 
         for (size_t i = 0; i < n * n; i++)
             gram [i] = gramd [i];
@@ -393,7 +393,6 @@ void PCAMatrix::train (Index::idx_t n, const float *x)
                     &one, PCAMat.data(), &di);
         }
 
-
         if(verbose && d_in <= 10) {
             float *ci = PCAMat.data();
             printf("PCAMat=\n");
@@ -406,8 +405,6 @@ void PCAMatrix::train (Index::idx_t n, const float *x)
         fvec_renorm_L2 (d_in, n, PCAMat.data());
 
     }
-
-
 
     prepare_Ab();
     is_trained = true;
@@ -427,6 +424,10 @@ void PCAMatrix::prepare_Ab ()
 {
 
     if (!random_rotation) {
+        FAISS_THROW_IF_NOT_MSG (
+            d_out * d_in <= PCAMat.size(),
+            "PCA matrix was trained on too few examples "
+            "to output this number of dimensions");
         A = PCAMat;
         A.resize(d_out * d_in); // strip off useless dimensions
 

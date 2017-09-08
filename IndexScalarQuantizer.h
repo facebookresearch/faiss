@@ -129,11 +129,6 @@ struct IndexScalarQuantizer: Index {
 struct IndexIVFScalarQuantizer:IndexIVF {
     ScalarQuantizer sq;
 
-    size_t code_size;
-
-    /// inverted list codes.
-    std::vector<std::vector<uint8_t> > codes;
-
     IndexIVFScalarQuantizer(Index *quantizer, size_t d, size_t nlist,
                             ScalarQuantizer::QuantizerType qtype,
                             MetricType metric = METRIC_L2);
@@ -144,14 +139,12 @@ struct IndexIVFScalarQuantizer:IndexIVF {
 
     void add_with_ids(idx_t n, const float* x, const long* xids) override;
 
-    void search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const override;
+    void search_preassigned (idx_t n, const float *x, idx_t k,
+                             const idx_t *assign,
+                             const float *centroid_dis,
+                             float *distances, idx_t *labels,
+                             bool store_pairs) const override;
 
-    void merge_from_residuals(IndexIVF& other) override;
 };
 
 

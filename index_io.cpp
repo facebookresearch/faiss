@@ -275,11 +275,11 @@ void write_index (const Index *idx, FILE *f) {
         WRITEVECTOR (idxs->codes);
     } else if(const IndexIVFFlat * ivfl =
               dynamic_cast<const IndexIVFFlat *> (idx)) {
-        uint32_t h = fourcc ("IvFl");
+        uint32_t h = fourcc ("IvFL");
         WRITE1 (h);
         write_ivf_header (ivfl, f);
         for(int i = 0; i < ivfl->nlist; i++)
-            WRITEVECTOR (ivfl->vecs[i]);
+            WRITEVECTOR (ivfl->codes[i]);
     } else if(const IndexIVFScalarQuantizer * ivsc =
               dynamic_cast<const IndexIVFScalarQuantizer *> (idx)) {
         uint32_t h = fourcc ("IvSQ");
@@ -594,12 +594,24 @@ Index *read_index (FILE * f, bool try_mmap) {
             idxp->metric_type = METRIC_L2;
         }
         idx = idxp;
-    } else if(h == fourcc ("IvFl")) {
+    } else if (h == fourcc ("IvFl") || h == fourcc("IvFL")) {
         IndexIVFFlat * ivfl = new IndexIVFFlat ();
         read_ivf_header (ivfl, f);
-        ivfl->vecs.resize (ivfl->nlist);
-        for (size_t i = 0; i < ivfl->nlist; i++)
-            READVECTOR (ivfl->vecs[i]);
+        ivfl->code_size = ivfl->d * sizeof(float);
+        ivfl->codes.resize (ivfl->nlist);
+        if (h == fourcc ("IvFL")) {
+            for (size_t i = 0; i < ivfl->nlist; i++) {
+                READVECTOR (ivfl->codes[i]);
+            }
+        } else { // old format
+            for (size_t i = 0; i < ivfl->nlist; i++) {
+                std::vector<float> vec;
+                READVECTOR (vec);
+                ivfl->codes[i].resize(vec.size() * sizeof(float));
+                memcpy(ivfl->codes[i].data(), vec.data(),
+                       ivfl->codes[i].size());
+            }
+        }
         idx = ivfl;
     } else if (h == fourcc ("IxSQ")) {
         IndexScalarQuantizer * idxs = new IndexScalarQuantizer ();

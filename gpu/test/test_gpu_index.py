@@ -6,6 +6,7 @@
 
 #! /usr/bin/env python2
 
+import time
 import libfb.py.mkl  # noqa
 
 import numpy as np
@@ -17,11 +18,17 @@ import faiss
 
 class EvalIVFPQAccuracy(testutil.BaseFacebookTestCase):
 
-    def get_dataset(self):
-        d = 128
-        nb = 100000
-        nt = 15000
-        nq = 2000
+    def get_dataset(self, small_one=False):
+        if not small_one:
+            d = 128
+            nb = 100000
+            nt = 15000
+            nq = 2000
+        else:
+            d = 32
+            nb = 1000
+            nt = 1000
+            nq = 200
         np.random.seed(123)
 
         # generate points in a low-dim subspace to make the resutls
@@ -35,43 +42,6 @@ class EvalIVFPQAccuracy(testutil.BaseFacebookTestCase):
 
         return (make_mat(nt), make_mat(nb), make_mat(nq))
 
-    def test_IndexIVFPQ(self):
-        (xt, xb, xq) = self.get_dataset()
-        d = xt.shape[1]
-
-        dev_no = 0
-        usePrecomputed = True
-
-        res = faiss.StandardGpuResources()
-
-        flat_config = faiss.GpuIndexFlatConfig()
-        flat_config.device = dev_no
-
-        gt_index = faiss.GpuIndexFlatL2(res, d, flat_config)
-        gt_index.add(xb)
-        D, gt_nns = gt_index.search(xq, 1)
-
-        coarse_quantizer = faiss.IndexFlatL2(d)
-        ncentroids = int(np.sqrt(xb.shape[0])) * 4
-
-        index = faiss.IndexIVFPQ(coarse_quantizer, d, ncentroids, 32, 8)
-        # add implemented on GPU but not train
-        index.train(xt)
-
-        ivfpq_config = faiss.GpuIndexIVFPQConfig()
-        ivfpq_config.device = dev_no
-        ivfpq_config.usePrecomputedTables = usePrecomputed
-
-        gpuIndex = faiss.GpuIndexIVFPQ(res, index, ivfpq_config)
-        gpuIndex.setNumProbes(64)
-        index.add(xb)
-
-        D, nns = index.search(xq, 10)
-        n_ok = (nns == gt_nns).sum()
-        nq = xq.shape[0]
-        print ncentroids, n_ok, nq
-
-        self.assertGreater(n_ok, nq * 0.2)
 
     def test_mm(self):
         # trouble with MKL+fbmake that appears only at runtime. Check it here
@@ -79,3 +49,64 @@ class EvalIVFPQAccuracy(testutil.BaseFacebookTestCase):
         mat = faiss.PCAMatrix(20, 10)
         mat.train(x)
         mat.apply_py(x)
+
+    def do_cpu_to_gpu(self, index_key):
+        ts = []
+        ts.append(time.time())
+        (xt, xb, xq) = self.get_dataset(small_one=True)
+        nb, d = xb.shape
+
+        index = faiss.index_factory(d, index_key)
+        if index.__class__ == faiss.IndexIVFPQ:
+            # speed up test
+            index.pq.cp.niter = 2
+            index.do_polysemous_training = False
+        ts.append(time.time())
+
+        index.train(xt)
+        ts.append(time.time())
+
+        # adding some ids because there was a bug in this case
+        index.add_with_ids(xb, np.arange(nb) * 3 + 12345)
+        ts.append(time.time())
+
+        index.nprobe = 4
+        D, Iref = index.search(xq, 10)
+        ts.append(time.time())
+
+        res = faiss.StandardGpuResources()
+        gpu_index = faiss.index_cpu_to_gpu(res, 0, index)
+        ts.append(time.time())
+
+        gpu_index.setNumProbes(4)
+
+        D, Inew = gpu_index.search(xq, 10)
+        ts.append(time.time())
+        print 'times:', [t - ts[0] for t in ts]
+
+        self.assertGreaterEqual((Iref == Inew).sum(), Iref.size)
+
+        if faiss.get_num_gpus() == 1:
+            return
+
+        for shard in False, True:
+
+            # test on just 2 GPUs
+            res = [faiss.StandardGpuResources() for i in range(2)]
+            co = faiss.GpuMultipleClonerOptions()
+            co.shard = shard
+
+            gpu_index = faiss.index_cpu_to_gpu_multiple_py(res, index, co)
+
+            faiss.GpuParameterSpace().set_index_parameter(
+                gpu_index, 'nprobe', 4)
+
+            D, Inew = gpu_index.search(xq, 10)
+
+            self.assertGreaterEqual((Iref == Inew).sum(), Iref.size)
+
+    def test_cpu_to_gpu_IVFPQ(self):
+        self.do_cpu_to_gpu('IVF128,PQ4')
+
+    def test_cpu_to_gpu_IVFFlat(self):
+        self.do_cpu_to_gpu('IVF128,Flat')

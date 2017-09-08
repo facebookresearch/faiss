@@ -54,6 +54,9 @@ struct IndexIVF: Index {
 
     std::vector < std::vector<long> > ids;  ///< Inverted lists for indexes
 
+    size_t code_size;              ///< code size per vector in bytes
+    std::vector < std::vector<uint8_t> > codes; // binary codes, size nlist
+
     /// map for direct access to the elements. Enables reconstruct().
     bool maintain_direct_map;
     std::vector <long> direct_map;
@@ -78,13 +81,52 @@ struct IndexIVF: Index {
     /// does nothing by default
     virtual void train_residual (idx_t n, const float *x);
 
+
+    /** search a set of vectors, that are pre-quantized by the IVF
+     *  quantizer. Fill in the corresponding heaps with the query
+     *  results. search() calls this.
+     *
+     * @param n      nb of vectors to query
+     * @param x      query vectors, size nx * d
+     * @param assign coarse quantization indices, size nx * nprobe
+     * @param centroid_dis
+     *               distances to coarse centroids, size nx * nprobe
+     * @param distance
+     *               output distances, size n * k
+     * @param labels output labels, size n * k
+     * @param store_pairs store inv list index + inv list offset
+     *                     instead in upper/lower 32 bit of result,
+     *                     instead of ids (used for reranking).
+     */
+    virtual void search_preassigned (idx_t n, const float *x, idx_t k,
+                                     const idx_t *assign,
+                                     const float *centroid_dis,
+                                     float *distances, idx_t *labels,
+                                     bool store_pairs) const = 0;
+
+    /** assign the vectors, then call search_preassign */
+    virtual void search (idx_t n, const float *x, idx_t k,
+                         float *distances, idx_t *labels) const override;
+
+
+    /// Dataset manipulation functions
+
+    long remove_ids(const IDSelector& sel) override;
+
     /** moves the entries from another dataset to self. On output,
      * other is empty. add_id is added to all moved ids (for
      * sequential ids, this would be this->ntotal */
     virtual void merge_from (IndexIVF &other, idx_t add_id);
 
-    /** implemented by sub-classes */
-    virtual void merge_from_residuals (IndexIVF &other) = 0;
+    /** copy a subset of the entries index to the other index
+     *
+     * if subset_type == 0: copies ids in [a1, a2)
+     * if subset_type == 1: copies ids if id % a1 == a2
+     * if subset_type == 2: copies inverted lists such that a1
+     *                      elements are left before and a2 elements are after
+     */
+    virtual void copy_subset_to (IndexIVF & other, int subset_type,
+                                 long a1, long a2) const;
 
     ~IndexIVF() override;
 
@@ -127,12 +169,9 @@ extern IndexIVFFlatStats indexIVFFlat_stats;
 
 /** Inverted file with stored vectors. Here the inverted file
  * pre-selects the vectors to be searched, but they are not otherwise
- * encoded.
+ * encoded, the code array just contains the raw float entries.
  */
 struct IndexIVFFlat: IndexIVF {
-    /** Inverted list of original vectors. Each list is a nl * d
-     * matrix, where nl is the nb of vectors stored in the list. */
-    std::vector < std::vector<float> > vecs;
 
     IndexIVFFlat (
             Index * quantizer, size_t d, size_t nlist_,
@@ -145,47 +184,17 @@ struct IndexIVFFlat: IndexIVF {
     /// implemented for all IndexIVF* classes
     void add_with_ids(idx_t n, const float* x, const long* xids) override;
 
-    void search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const override;
-
-    /// perform search, without computing the assignment to the quantizer
     void search_preassigned (idx_t n, const float *x, idx_t k,
                              const idx_t *assign,
-                             float *distances, idx_t *labels) const;
+                             const float *centroid_dis,
+                             float *distances, idx_t *labels,
+                             bool store_pairs) const override;
 
     void range_search(
         idx_t n,
         const float* x,
         float radius,
         RangeSearchResult* result) const override;
-
-    /** copy a subset of the entries index to the other index
-     *
-     * if subset_type == 0: copies ids in [a1, a2)
-     * if subset_type == 1: copies ids if id % a1 == a2
-     */
-    void copy_subset_to (IndexIVFFlat & other, int subset_type,
-                         long a1, long a2) const;
-
-    void reset() override;
-
-    long remove_ids(const IDSelector& sel) override;
-
-    /// Implementation of the search for the inner product metric
-    void search_knn_inner_product (
-            size_t nx, const float * x,
-            const long * keys,
-            float_minheap_array_t * res) const;
-
-    /// Implementation of the search for the L2 metric
-    void search_knn_L2sqr (
-            size_t nx, const float * x,
-            const long * keys,
-            float_maxheap_array_t * res) const;
 
     /** Update a subset of vectors.
      *
@@ -199,35 +208,7 @@ struct IndexIVFFlat: IndexIVF {
 
     void reconstruct(idx_t key, float* recons) const override;
 
-    void merge_from_residuals(IndexIVF& other) override;
-
     IndexIVFFlat () {}
-};
-
-struct IndexIVFFlatIPBounds: IndexIVFFlat {
-
-    /// nb of dimensions of pre-filter
-    size_t fsize;
-
-    /// norm of remainder (dimensions fsize:d)
-    std::vector<std::vector<float> > part_norms;
-
-    IndexIVFFlatIPBounds (
-           Index * quantizer, size_t d, size_t nlist,
-           size_t fsize);
-
-    void add_core(
-        idx_t n,
-        const float* x,
-        const long* xids,
-        const long* precomputed_idx) override;
-
-    void search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const override;
 };
 
 

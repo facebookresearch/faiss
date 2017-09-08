@@ -213,7 +213,6 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
 
     Index *clone_Index(const Index *index) override {
         long n = sub_cloners.size();
-
         if (n == 1)
             return sub_cloners[0].clone_Index(index);
 
@@ -259,14 +258,15 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
                         idx2.nprobe = index_ivfpq->nprobe;
                         idx2.use_precomputed_table = 0;
                         idx2.is_trained = index->is_trained;
-                        index_ivfpq->copy_subset_to(idx2, 0, i0, i1);
+                        index_ivfpq->copy_subset_to(idx2, 2, i0, i1);
+                        FAISS_ASSERT(idx2.ntotal == i1 - i0);
                         shards[i] = sub_cloners[i].clone_Index(&idx2);
                     } else if (index_ivfflat) {
                         faiss::IndexIVFFlat idx2(
                               index_ivfflat->quantizer, index->d,
                               index_ivfflat->nlist, index_ivfflat->metric_type);
                         idx2.nprobe = index_ivfflat->nprobe;
-                        index_ivfflat->copy_subset_to(idx2, 0, i0, i1);
+                        index_ivfflat->copy_subset_to(idx2, 2, i0, i1);
                         idx2.nprobe = index_ivfflat->nprobe;
                         shards[i] = sub_cloners[i].clone_Index(&idx2);
                     }

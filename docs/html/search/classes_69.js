@@ -13,7 +13,6 @@ var searchData=
   ['indexidmap2',['IndexIDMap2',['../structfaiss_1_1IndexIDMap2.html',1,'faiss']]],
   ['indexivf',['IndexIVF',['../structfaiss_1_1IndexIVF.html',1,'faiss']]],
   ['indexivfflat',['IndexIVFFlat',['../structfaiss_1_1IndexIVFFlat.html',1,'faiss']]],
-  ['indexivfflatipbounds',['IndexIVFFlatIPBounds',['../structfaiss_1_1IndexIVFFlatIPBounds.html',1,'faiss']]],
   ['indexivfflatstats',['IndexIVFFlatStats',['../structfaiss_1_1IndexIVFFlatStats.html',1,'faiss']]],
   ['indexivfpq',['IndexIVFPQ',['../structfaiss_1_1IndexIVFPQ.html',1,'faiss']]],
   ['indexivfpqcompact',['IndexIVFPQCompact',['../structfaiss_1_1IndexIVFPQCompact.html',1,'faiss']]],
