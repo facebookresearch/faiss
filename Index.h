@@ -39,7 +39,7 @@
 namespace faiss {
 
 
-/// Some algorithms support both an inner product vetsion and a L2 search version.
+/// Some algorithms support both an inner product version and a L2 search version.
 enum MetricType {
     METRIC_INNER_PRODUCT = 0,
     METRIC_L2 = 1,
