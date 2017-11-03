@@ -4,8 +4,8 @@
 # Tested on macOS Sierra (10.12.2) with llvm installed using Homebrew (https://brew.sh)
 # brew install llvm
 CC=/usr/local/opt/llvm/bin/clang++
-CFLAGS=-fPIC -m64 -Wall -g -O3 -msse4 -mpopcnt -fopenmp -Wno-sign-compare -I/usr/local/opt/llvm/include -std=c++11
-LDFLAGS=-g -fPIC -fopenmp -L/usr/local/opt/llvm/lib
+CFLAGS=-fPIC -m64 -Wall -g -O3 -msse4 -mpopcnt -fopenmp -Wno-sign-compare -I/usr/local/opt/llvm/include -std=c++11 -L/usr/local/Cellar/llvm/5.0.0/lib
+LDFLAGS=-g -fPIC -fopenmp -L/usr/local/opt/llvm/lib -L/usr/local/Cellar/llvm/5.0.0/lib
 
 # common mac flags
 SHAREDEXT=dylib
