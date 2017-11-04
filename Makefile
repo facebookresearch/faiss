@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright (c) 2015-present, Facebook, Inc.
 # All rights reserved.
 #
@@ -55,7 +57,7 @@ BLASLDFLAGSSO ?= $(BLASLDFLAGS)
 # pure C++ test in the test directory
 
 tests/test_blas: tests/test_blas.cpp
-	$(CC) $(CFLAGS) $< -o $@ $(BLASLDFLAGS) $(BLASCFLAGS)
+	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) $(BLASLDFLAGS) $(BLASCFLAGS)
 
 
 tests/demo_ivfpq_indexing: tests/demo_ivfpq_indexing.cpp $(LIBNAME).a
