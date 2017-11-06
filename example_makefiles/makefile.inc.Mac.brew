@@ -5,7 +5,8 @@
 # brew install llvm
 CC=/usr/local/opt/llvm/bin/clang++
 CFLAGS=-fPIC -m64 -Wall -g -O3 -msse4 -mpopcnt -fopenmp -Wno-sign-compare -I/usr/local/opt/llvm/include -std=c++11
-LDFLAGS=-g -fPIC -fopenmp -L/usr/local/opt/llvm/lib
+LLVM_VERSION_PATH=$(shell ls -rt /usr/local/Cellar/llvm/ | tail -n1)
+LDFLAGS=-g -fPIC -fopenmp -L/usr/local/opt/llvm/lib -L/usr/local/Cellar/llvm/${LLVM_VERSION_PATH}/lib
 
 # common mac flags
 SHAREDEXT=dylib
@@ -77,17 +78,11 @@ BLASLDFLAGS=-framework Accelerate
 
 SWIGEXEC=/usr/local/bin/swig
 
-# The Python include directories for the current python executable can
-# typically be found with
-#
-# python -c "import distutils.sysconfig; print distutils.sysconfig.get_python_inc()"
-# python -c "import numpy ; print numpy.get_include()"
-#
-# the paths below are for the system python (not the macports one)
+# The Python include directories for the current python executable
 
-PYTHONCFLAGS=-I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 \
--I/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/numpy/core/include
-
+PYTHON_INC=$(shell python -c "import distutils.sysconfig; print(distutils.sysconfig.get_python_inc())")
+NUMPY_INC=$(shell python -c "import numpy ; print(numpy.get_include())")
+PYTHONCFLAGS=-I${PYTHON_INC} -I${NUMPY_INC}
 
 ##########################################################################
 # Faiss GPU
