@@ -1,6 +1,7 @@
 var searchData=
 [
   ['centroids',['centroids',['../structfaiss_1_1Clustering.html#a64c5ec0b4a7967d8be2872974b455ff1',1,'faiss::Clustering::centroids()'],['../structfaiss_1_1ProductQuantizer.html#aab1109a29ba0544358e274d727b23cae',1,'faiss::ProductQuantizer::centroids()']]],
+  ['clustering_5findex',['clustering_index',['../structfaiss_1_1IndexIVF.html#a9795f618f962afbb79681b4af36d1d86',1,'faiss::IndexIVF']]],
   ['cno',['cno',['../structfaiss_1_1OperatingPoint.html#a2c023f1484e4748e3e97681bb1f4b78e',1,'faiss::OperatingPoint']]],
   ['code_5fsize',['code_size',['../structfaiss_1_1IndexIVF.html#a46d1aeddb60643c5b3f096147c3e028f',1,'faiss::IndexIVF::code_size()'],['../structfaiss_1_1ScalarQuantizer.html#a647b8774e4cd8ca5623a194f5c7f8a33',1,'faiss::ScalarQuantizer::code_size()'],['../structfaiss_1_1ProductQuantizer.html#aa61330eadb84772b71018b093773a5f9',1,'faiss::ProductQuantizer::code_size()']]],
   ['codes',['codes',['../structfaiss_1_1IndexLSH.html#a55c0f1127850af0d06ef22fc8b791572',1,'faiss::IndexLSH::codes()'],['../structfaiss_1_1IndexPQ.html#a490b64b12384951ed66548a3a48f91e5',1,'faiss::IndexPQ::codes()'],['../structfaiss_1_1IndexScalarQuantizer.html#a861fa059f9d4ced9147e08193a2be9be',1,'faiss::IndexScalarQuantizer::codes()']]],

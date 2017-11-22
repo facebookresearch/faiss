@@ -307,228 +307,228 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;}</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;</div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> write_ivf_header (<span class="keyword">const</span> IndexIVF * ivf, FILE *f,</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;                              <span class="keywordtype">bool</span> include_ids = <span class="keyword">true</span>) {</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    write_index_header (ivf, f);</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    WRITE1 (ivf-&gt;nlist);</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    WRITE1 (ivf-&gt;nprobe);</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    write_index (ivf-&gt;quantizer, f);</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="keywordflow">if</span> (include_ids) {</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ivf-&gt;nlist; i++)</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;            WRITEVECTOR (ivf-&gt;ids[i]);</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    }</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    WRITE1 (ivf-&gt;maintain_direct_map);</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    WRITEVECTOR (ivf-&gt;direct_map);</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;}</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="keywordtype">void</span> write_index (<span class="keyword">const</span> Index *idx, FILE *f) {</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">const</span> IndexFlat * idxf = dynamic_cast&lt;const IndexFlat *&gt; (idx)) {</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        uint32_t h = fourcc (</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;              idxf-&gt;metric_type == METRIC_INNER_PRODUCT ? <span class="stringliteral">&quot;IxFI&quot;</span> :</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;              idxf-&gt;metric_type == METRIC_L2 ? <span class="stringliteral">&quot;IxF2&quot;</span> : <span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        WRITE1 (h);</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        write_index_header (idx, f);</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        WRITEVECTOR (idxf-&gt;xb);</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexLSH * idxl = dynamic_cast&lt;const IndexLSH *&gt; (idx)) {</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IxHe&quot;</span>);</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        WRITE1 (h);</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        write_index_header (idx, f);</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        WRITE1 (idxl-&gt;nbits);</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        WRITE1 (idxl-&gt;rotate_data);</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        WRITE1 (idxl-&gt;train_thresholds);</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        WRITEVECTOR (idxl-&gt;thresholds);</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        WRITE1 (idxl-&gt;bytes_per_vec);</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        write_VectorTransform (&amp;idxl-&gt;rrot, f);</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        WRITEVECTOR (idxl-&gt;codes);</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexPQ * idxp = dynamic_cast&lt;const IndexPQ *&gt; (idx)) {</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IxPq&quot;</span>);</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        WRITE1 (h);</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        write_index_header (idx, f);</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        write_ProductQuantizer (&amp;idxp-&gt;pq, f);</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        WRITEVECTOR (idxp-&gt;codes);</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        <span class="comment">// search params -- maybe not useful to store?</span></div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        WRITE1 (idxp-&gt;search_type);</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        WRITE1 (idxp-&gt;encode_signs);</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        WRITE1 (idxp-&gt;polysemous_ht);</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexScalarQuantizer * idxs =</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;              dynamic_cast&lt;const IndexScalarQuantizer *&gt; (idx)) {</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IxSQ&quot;</span>);</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        WRITE1 (h);</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;        write_index_header (idx, f);</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        write_ScalarQuantizer (&amp;idxs-&gt;sq, f);</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;        WRITEVECTOR (idxs-&gt;codes);</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexIVFFlat * ivfl =</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;              dynamic_cast&lt;const IndexIVFFlat *&gt; (idx)) {</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IvFL&quot;</span>);</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;        WRITE1 (h);</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;        write_ivf_header (ivfl, f);</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; ivfl-&gt;nlist; i++)</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;            WRITEVECTOR (ivfl-&gt;codes[i]);</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexIVFScalarQuantizer * ivsc =</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;              dynamic_cast&lt;const IndexIVFScalarQuantizer *&gt; (idx)) {</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IvSQ&quot;</span>);</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;        WRITE1 (h);</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;        write_ivf_header (ivsc, f);</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;        write_ScalarQuantizer (&amp;ivsc-&gt;sq, f);</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;        WRITE1 (ivsc-&gt;code_size);</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; ivsc-&gt;nlist; i++)</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;            WRITEVECTOR (ivsc-&gt;codes[i]);</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexIVFPQ * ivpq =</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;              dynamic_cast&lt;const IndexIVFPQ *&gt; (idx)) {</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;        <span class="keyword">const</span> IndexIVFPQR * ivfpqr = <span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>IndexIVFPQR *<span class="keyword">&gt;</span> (idx);</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;        <span class="keyword">const</span> IndexIVFPQCompact * ivfpqc =</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;            <span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>IndexIVFPQCompact *<span class="keyword">&gt;</span> (idx);</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;        uint32_t h = fourcc (ivfpqr ? <span class="stringliteral">&quot;IvQR&quot;</span> : ivfpqc ? <span class="stringliteral">&quot;IvPC&quot;</span> : <span class="stringliteral">&quot;IvPQ&quot;</span>);</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;        WRITE1 (h);</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        write_ivf_header (ivpq, f, !ivfpqc);</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;        WRITE1 (ivpq-&gt;by_residual);</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;        WRITE1 (ivpq-&gt;code_size);</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;        write_ProductQuantizer (&amp;ivpq-&gt;pq, f);</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;        <span class="keywordflow">if</span> (!ivfpqc) {</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;            <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; ivpq-&gt;codes.size(); i++)</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;                WRITEVECTOR (ivpq-&gt;codes[i]);</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        }</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        <span class="keywordflow">if</span> (ivfpqr) {</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;            write_ProductQuantizer (&amp;ivfpqr-&gt;refine_pq, f);</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;            WRITEVECTOR (ivfpqr-&gt;refine_codes);</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;            WRITE1 (ivfpqr-&gt;k_factor);</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;        }</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;        <span class="keywordflow">if</span> (ivfpqc) {</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;            WRITETABPAD16 (ivfpqc-&gt;limits, ivfpqc-&gt;nlist + 1);</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;            WRITETABPAD16 (ivfpqc-&gt;compact_ids, ivfpqc-&gt;ntotal);</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;            WRITETABPAD16 (ivfpqc-&gt;compact_codes,</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;                           ivfpqc-&gt;ntotal * ivfpqc-&gt;code_size);</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        }</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexPreTransform * ixpt =</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;              dynamic_cast&lt;const IndexPreTransform *&gt; (idx)) {</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IxPT&quot;</span>);</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        WRITE1 (h);</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        write_index_header (ixpt, f);</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        <span class="keywordtype">int</span> nt = ixpt-&gt;chain.size();</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        WRITE1 (nt);</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nt; i++)</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;            write_VectorTransform (ixpt-&gt;chain[i], f);</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;        write_index (ixpt-&gt;index, f);</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> MultiIndexQuantizer * imiq =</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;              dynamic_cast&lt;const MultiIndexQuantizer *&gt; (idx)) {</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;Imiq&quot;</span>);</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        WRITE1 (h);</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;        write_index_header (imiq, f);</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;        write_ProductQuantizer (&amp;imiq-&gt;pq, f);</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexRefineFlat * idxrf =</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;              dynamic_cast&lt;const IndexRefineFlat *&gt; (idx)) {</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IxRF&quot;</span>);</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;        WRITE1 (h);</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;        write_index_header (idxrf, f);</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;        write_index (idxrf-&gt;base_index, f);</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        write_index (&amp;idxrf-&gt;refine_index, f);</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;        WRITE1 (idxrf-&gt;k_factor);</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexIDMap * idxmap =</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;              dynamic_cast&lt;const IndexIDMap *&gt; (idx)) {</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        uint32_t h =</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;            <span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>IndexIDMap2 *<span class="keyword">&gt;</span> (idx) ? fourcc (<span class="stringliteral">&quot;IxM2&quot;</span>) :</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;            fourcc (<span class="stringliteral">&quot;IxMp&quot;</span>);</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;        <span class="comment">// no need to store additional info for IndexIDMap2</span></div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;        WRITE1 (h);</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;        write_index_header (idxmap, f);</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;        write_index (idxmap-&gt;index, f);</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;        WRITEVECTOR (idxmap-&gt;id_map);</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      FAISS_THROW_MSG (<span class="stringliteral">&quot;don&#39;t know how to serialize this type of index&quot;</span>);</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    }</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;}</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;<span class="keywordtype">void</span> write_index (<span class="keyword">const</span> Index *idx, <span class="keyword">const</span> <span class="keywordtype">char</span> *fname) {</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    FILE *f = fopen (fname, <span class="stringliteral">&quot;w&quot;</span>);</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;    FAISS_THROW_IF_NOT_FMT (f, <span class="stringliteral">&quot;cannot open %s for writing&quot;</span>, fname);</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    ScopeFileCloser closer(f);</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    write_index (idx, f);</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;}</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;<span class="keywordtype">void</span> write_VectorTransform (<span class="keyword">const</span> VectorTransform *vt, <span class="keyword">const</span> <span class="keywordtype">char</span> *fname) {</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    FILE *f = fopen (fname, <span class="stringliteral">&quot;w&quot;</span>);</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;    FAISS_THROW_IF_NOT_FMT (f, <span class="stringliteral">&quot;cannot open %s for writing&quot;</span>, fname);</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    ScopeFileCloser closer(f);</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    write_VectorTransform (vt, f);</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;}</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;<span class="comment">/*************************************************************</span></div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;<span class="comment"> * Read</span></div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;<span class="comment"> **************************************************************/</span></div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> read_index_header (Index *idx, FILE *f) {</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    READ1 (idx-&gt;d);</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    READ1 (idx-&gt;ntotal);</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    <a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> dummy;</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> write_ivf_header (<span class="keyword">const</span> IndexIVF * ivf, FILE *f,</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;                              <span class="keywordtype">bool</span> include_ids = <span class="keyword">true</span>) {</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    write_index_header (ivf, f);</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    WRITE1 (ivf-&gt;nlist);</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    WRITE1 (ivf-&gt;nprobe);</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    write_index (ivf-&gt;quantizer, f);</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="keywordflow">if</span> (include_ids) {</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ivf-&gt;nlist; i++)</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;            WRITEVECTOR (ivf-&gt;ids[i]);</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    }</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    WRITE1 (ivf-&gt;maintain_direct_map);</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    WRITEVECTOR (ivf-&gt;direct_map);</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;}</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="keywordtype">void</span> write_index (<span class="keyword">const</span> Index *idx, FILE *f) {</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">const</span> IndexFlat * idxf = dynamic_cast&lt;const IndexFlat *&gt; (idx)) {</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;        uint32_t h = fourcc (</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;              idxf-&gt;metric_type == METRIC_INNER_PRODUCT ? <span class="stringliteral">&quot;IxFI&quot;</span> :</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;              idxf-&gt;metric_type == METRIC_L2 ? <span class="stringliteral">&quot;IxF2&quot;</span> : <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        WRITE1 (h);</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        write_index_header (idx, f);</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        WRITEVECTOR (idxf-&gt;xb);</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexLSH * idxl = dynamic_cast&lt;const IndexLSH *&gt; (idx)) {</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IxHe&quot;</span>);</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        WRITE1 (h);</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        write_index_header (idx, f);</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        WRITE1 (idxl-&gt;nbits);</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        WRITE1 (idxl-&gt;rotate_data);</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        WRITE1 (idxl-&gt;train_thresholds);</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        WRITEVECTOR (idxl-&gt;thresholds);</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        WRITE1 (idxl-&gt;bytes_per_vec);</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        write_VectorTransform (&amp;idxl-&gt;rrot, f);</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        WRITEVECTOR (idxl-&gt;codes);</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexPQ * idxp = dynamic_cast&lt;const IndexPQ *&gt; (idx)) {</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IxPq&quot;</span>);</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        WRITE1 (h);</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        write_index_header (idx, f);</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        write_ProductQuantizer (&amp;idxp-&gt;pq, f);</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        WRITEVECTOR (idxp-&gt;codes);</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        <span class="comment">// search params -- maybe not useful to store?</span></div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        WRITE1 (idxp-&gt;search_type);</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        WRITE1 (idxp-&gt;encode_signs);</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        WRITE1 (idxp-&gt;polysemous_ht);</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexScalarQuantizer * idxs =</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;              dynamic_cast&lt;const IndexScalarQuantizer *&gt; (idx)) {</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IxSQ&quot;</span>);</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        WRITE1 (h);</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        write_index_header (idx, f);</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;        write_ScalarQuantizer (&amp;idxs-&gt;sq, f);</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        WRITEVECTOR (idxs-&gt;codes);</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexIVFFlat * ivfl =</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;              dynamic_cast&lt;const IndexIVFFlat *&gt; (idx)) {</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IvFL&quot;</span>);</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        WRITE1 (h);</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;        write_ivf_header (ivfl, f);</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; ivfl-&gt;nlist; i++)</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;            WRITEVECTOR (ivfl-&gt;codes[i]);</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexIVFScalarQuantizer * ivsc =</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;              dynamic_cast&lt;const IndexIVFScalarQuantizer *&gt; (idx)) {</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IvSQ&quot;</span>);</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;        WRITE1 (h);</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;        write_ivf_header (ivsc, f);</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;        write_ScalarQuantizer (&amp;ivsc-&gt;sq, f);</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;        WRITE1 (ivsc-&gt;code_size);</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; ivsc-&gt;nlist; i++)</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;            WRITEVECTOR (ivsc-&gt;codes[i]);</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexIVFPQ * ivpq =</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;              dynamic_cast&lt;const IndexIVFPQ *&gt; (idx)) {</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;        <span class="keyword">const</span> IndexIVFPQR * ivfpqr = <span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>IndexIVFPQR *<span class="keyword">&gt;</span> (idx);</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;        <span class="keyword">const</span> IndexIVFPQCompact * ivfpqc =</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;            <span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>IndexIVFPQCompact *<span class="keyword">&gt;</span> (idx);</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        uint32_t h = fourcc (ivfpqr ? <span class="stringliteral">&quot;IvQR&quot;</span> : ivfpqc ? <span class="stringliteral">&quot;IvPC&quot;</span> : <span class="stringliteral">&quot;IvPQ&quot;</span>);</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;        WRITE1 (h);</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;        write_ivf_header (ivpq, f, !ivfpqc);</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        WRITE1 (ivpq-&gt;by_residual);</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;        WRITE1 (ivpq-&gt;code_size);</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;        write_ProductQuantizer (&amp;ivpq-&gt;pq, f);</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;        <span class="keywordflow">if</span> (!ivfpqc) {</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;            <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; ivpq-&gt;codes.size(); i++)</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;                WRITEVECTOR (ivpq-&gt;codes[i]);</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;        }</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        <span class="keywordflow">if</span> (ivfpqr) {</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;            write_ProductQuantizer (&amp;ivfpqr-&gt;refine_pq, f);</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;            WRITEVECTOR (ivfpqr-&gt;refine_codes);</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;            WRITE1 (ivfpqr-&gt;k_factor);</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        }</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;        <span class="keywordflow">if</span> (ivfpqc) {</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;            WRITETABPAD16 (ivfpqc-&gt;limits, ivfpqc-&gt;nlist + 1);</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;            WRITETABPAD16 (ivfpqc-&gt;compact_ids, ivfpqc-&gt;ntotal);</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;            WRITETABPAD16 (ivfpqc-&gt;compact_codes,</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;                           ivfpqc-&gt;ntotal * ivfpqc-&gt;code_size);</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        }</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexPreTransform * ixpt =</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;              dynamic_cast&lt;const IndexPreTransform *&gt; (idx)) {</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IxPT&quot;</span>);</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        WRITE1 (h);</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        write_index_header (ixpt, f);</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        <span class="keywordtype">int</span> nt = ixpt-&gt;chain.size();</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        WRITE1 (nt);</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nt; i++)</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;            write_VectorTransform (ixpt-&gt;chain[i], f);</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;        write_index (ixpt-&gt;index, f);</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> MultiIndexQuantizer * imiq =</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;              dynamic_cast&lt;const MultiIndexQuantizer *&gt; (idx)) {</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;Imiq&quot;</span>);</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        WRITE1 (h);</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        write_index_header (imiq, f);</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;        write_ProductQuantizer (&amp;imiq-&gt;pq, f);</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexRefineFlat * idxrf =</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;              dynamic_cast&lt;const IndexRefineFlat *&gt; (idx)) {</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;        uint32_t h = fourcc (<span class="stringliteral">&quot;IxRF&quot;</span>);</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;        WRITE1 (h);</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;        write_index_header (idxrf, f);</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;        write_index (idxrf-&gt;base_index, f);</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;        write_index (&amp;idxrf-&gt;refine_index, f);</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        WRITE1 (idxrf-&gt;k_factor);</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">const</span> IndexIDMap * idxmap =</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;              dynamic_cast&lt;const IndexIDMap *&gt; (idx)) {</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;        uint32_t h =</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;            <span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>IndexIDMap2 *<span class="keyword">&gt;</span> (idx) ? fourcc (<span class="stringliteral">&quot;IxM2&quot;</span>) :</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;            fourcc (<span class="stringliteral">&quot;IxMp&quot;</span>);</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;        <span class="comment">// no need to store additional info for IndexIDMap2</span></div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;        WRITE1 (h);</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;        write_index_header (idxmap, f);</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;        write_index (idxmap-&gt;index, f);</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;        WRITEVECTOR (idxmap-&gt;id_map);</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;      FAISS_THROW_MSG (<span class="stringliteral">&quot;don&#39;t know how to serialize this type of index&quot;</span>);</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    }</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;}</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;<span class="keywordtype">void</span> write_index (<span class="keyword">const</span> Index *idx, <span class="keyword">const</span> <span class="keywordtype">char</span> *fname) {</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    FILE *f = fopen (fname, <span class="stringliteral">&quot;w&quot;</span>);</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    FAISS_THROW_IF_NOT_FMT (f, <span class="stringliteral">&quot;cannot open %s for writing&quot;</span>, fname);</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;    ScopeFileCloser closer(f);</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    write_index (idx, f);</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;}</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;<span class="keywordtype">void</span> write_VectorTransform (<span class="keyword">const</span> VectorTransform *vt, <span class="keyword">const</span> <span class="keywordtype">char</span> *fname) {</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    FILE *f = fopen (fname, <span class="stringliteral">&quot;w&quot;</span>);</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    FAISS_THROW_IF_NOT_FMT (f, <span class="stringliteral">&quot;cannot open %s for writing&quot;</span>, fname);</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;    ScopeFileCloser closer(f);</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    write_VectorTransform (vt, f);</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;}</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;<span class="comment">/*************************************************************</span></div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;<span class="comment"> * Read</span></div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;<span class="comment"> **************************************************************/</span></div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> read_index_header (Index *idx, FILE *f) {</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;    READ1 (idx-&gt;d);</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    READ1 (idx-&gt;ntotal);</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    <a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> dummy;</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    READ1 (dummy);</div>
 <div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    READ1 (dummy);</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    READ1 (dummy);</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    READ1 (idx-&gt;is_trained);</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    READ1 (idx-&gt;metric_type);</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;    idx-&gt;verbose = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;}</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;VectorTransform* read_VectorTransform (FILE *f) {</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;    uint32_t h;</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    READ1 (h);</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    VectorTransform *vt = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;    <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;rrot&quot;</span>) || h == fourcc (<span class="stringliteral">&quot;PCAm&quot;</span>) ||</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;        h == fourcc (<span class="stringliteral">&quot;LTra&quot;</span>) || h == fourcc (<span class="stringliteral">&quot;PcAm&quot;</span>)) {</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        LinearTransform *lt = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;        <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;rrot&quot;</span>)) {</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;            lt = <span class="keyword">new</span> RandomRotationMatrix ();</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;PCAm&quot;</span>) ||</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;                   h == fourcc (<span class="stringliteral">&quot;PcAm&quot;</span>)) {</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;            PCAMatrix * pca = <span class="keyword">new</span> PCAMatrix ();</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;            READ1 (pca-&gt;eigen_power);</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;            READ1 (pca-&gt;random_rotation);</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;            <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;PcAm&quot;</span>))</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;                READ1 (pca-&gt;balanced_bins);</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;            READVECTOR (pca-&gt;mean);</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;            READVECTOR (pca-&gt;eigenvalues);</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;            READVECTOR (pca-&gt;PCAMat);</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;            lt = pca;</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;LTra&quot;</span>)) {</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;            lt = <span class="keyword">new</span> LinearTransform ();</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;        }</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;        READ1 (lt-&gt;have_bias);</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;        READVECTOR (lt-&gt;A);</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;        READVECTOR (lt-&gt;b);</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;        vt = lt;</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;RmDT&quot;</span>)) {</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;        RemapDimensionsTransform *rdt = <span class="keyword">new</span> RemapDimensionsTransform ();</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;        READVECTOR (rdt-&gt;map);</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        vt = rdt;</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;VNrm&quot;</span>)) {</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;        NormalizationTransform *nt = <span class="keyword">new</span> NormalizationTransform ();</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;        READ1 (nt-&gt;norm);</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;        vt = nt;</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;        FAISS_THROW_MSG(<span class="stringliteral">&quot;fourcc not recognized&quot;</span>);</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;    }</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    READ1 (vt-&gt;d_in);</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    READ1 (vt-&gt;d_out);</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;    READ1 (vt-&gt;is_trained);</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;    <span class="keywordflow">return</span> vt;</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;}</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> read_ProductQuantizer (ProductQuantizer *pq, FILE *f) {</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    READ1 (pq-&gt;d);</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;    READ1 (pq-&gt;M);</div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;    READ1 (pq-&gt;nbits);</div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    pq-&gt;set_derived_values ();</div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;    READVECTOR (pq-&gt;centroids);</div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;}</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> read_ScalarQuantizer (ScalarQuantizer *ivsc, FILE *f) {</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;    READ1 (ivsc-&gt;qtype);</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;    READ1 (ivsc-&gt;rangestat);</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;    READ1 (ivsc-&gt;rangestat_arg);</div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;    READ1 (ivsc-&gt;d);</div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;    READ1 (ivsc-&gt;code_size);</div>
-<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;    READVECTOR (ivsc-&gt;trained);</div>
-<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;}</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    READ1 (idx-&gt;is_trained);</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    READ1 (idx-&gt;metric_type);</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    idx-&gt;verbose = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;}</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;VectorTransform* read_VectorTransform (FILE *f) {</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;    uint32_t h;</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;    READ1 (h);</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    VectorTransform *vt = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;    <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;rrot&quot;</span>) || h == fourcc (<span class="stringliteral">&quot;PCAm&quot;</span>) ||</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;        h == fourcc (<span class="stringliteral">&quot;LTra&quot;</span>) || h == fourcc (<span class="stringliteral">&quot;PcAm&quot;</span>)) {</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;        LinearTransform *lt = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;rrot&quot;</span>)) {</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;            lt = <span class="keyword">new</span> RandomRotationMatrix ();</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;PCAm&quot;</span>) ||</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;                   h == fourcc (<span class="stringliteral">&quot;PcAm&quot;</span>)) {</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;            PCAMatrix * pca = <span class="keyword">new</span> PCAMatrix ();</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;            READ1 (pca-&gt;eigen_power);</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;            READ1 (pca-&gt;random_rotation);</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;            <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;PcAm&quot;</span>))</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;                READ1 (pca-&gt;balanced_bins);</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;            READVECTOR (pca-&gt;mean);</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;            READVECTOR (pca-&gt;eigenvalues);</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;            READVECTOR (pca-&gt;PCAMat);</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;            lt = pca;</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;LTra&quot;</span>)) {</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;            lt = <span class="keyword">new</span> LinearTransform ();</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;        }</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;        READ1 (lt-&gt;have_bias);</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;        READVECTOR (lt-&gt;A);</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;        READVECTOR (lt-&gt;b);</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;        vt = lt;</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;RmDT&quot;</span>)) {</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        RemapDimensionsTransform *rdt = <span class="keyword">new</span> RemapDimensionsTransform ();</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;        READVECTOR (rdt-&gt;map);</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;        vt = rdt;</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (h == fourcc (<span class="stringliteral">&quot;VNrm&quot;</span>)) {</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;        NormalizationTransform *nt = <span class="keyword">new</span> NormalizationTransform ();</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;        READ1 (nt-&gt;norm);</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;        vt = nt;</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;        FAISS_THROW_MSG(<span class="stringliteral">&quot;fourcc not recognized&quot;</span>);</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    }</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;    READ1 (vt-&gt;d_in);</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    READ1 (vt-&gt;d_out);</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    READ1 (vt-&gt;is_trained);</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;    <span class="keywordflow">return</span> vt;</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;}</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> read_ProductQuantizer (ProductQuantizer *pq, FILE *f) {</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;    READ1 (pq-&gt;d);</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    READ1 (pq-&gt;M);</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;    READ1 (pq-&gt;nbits);</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;    pq-&gt;set_derived_values ();</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    READVECTOR (pq-&gt;centroids);</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;}</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> read_ScalarQuantizer (ScalarQuantizer *ivsc, FILE *f) {</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;    READ1 (ivsc-&gt;qtype);</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;    READ1 (ivsc-&gt;rangestat);</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;    READ1 (ivsc-&gt;rangestat_arg);</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;    READ1 (ivsc-&gt;d);</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;    READ1 (ivsc-&gt;code_size);</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;    READVECTOR (ivsc-&gt;trained);</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;}</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;</div>
 <div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;</div>
 <div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;ProductQuantizer * read_ProductQuantizer (<span class="keyword">const</span> <span class="keywordtype">char</span>*fname) {</div>
 <div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;    FILE *f = fopen (fname, <span class="stringliteral">&quot;r&quot;</span>);</div>
@@ -761,8 +761,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;        }</div>
 <div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;        idx = idxmap;</div>
 <div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;        fprintf (stderr, <span class="stringliteral">&quot;Index type 0x%08x not supported\n&quot;</span>, h);</div>
-<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;        abort ();</div>
+<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;        FAISS_THROW_FMT(<span class="stringliteral">&quot;Index type 0x%08x not supported\n&quot;</span>, h);</div>
+<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;        idx = <span class="keyword">nullptr</span>;</div>
 <div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;    }</div>
 <div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;    <span class="keywordflow">return</span> idx;</div>
 <div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;}</div>
@@ -870,7 +870,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="structfaiss_1_1IndexFlat_html"><div class="ttname"><a href="structfaiss_1_1IndexFlat.html">faiss::IndexFlat</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00023">IndexFlat.h:23</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexPreTransform_html_aee3cbbe7915ec9ed13d59ca9276bdefc"><div class="ttname"><a href="structfaiss_1_1IndexPreTransform.html#aee3cbbe7915ec9ed13d59ca9276bdefc">faiss::IndexPreTransform::index</a></div><div class="ttdeci">Index * index</div><div class="ttdoc">! chain of tranforms </div><div class="ttdef"><b>Definition:</b> <a href="VectorTransform_8h_source.html#l00242">VectorTransform.h:242</a></div></div>
 <div class="ttc" id="structfaiss_1_1RandomRotationMatrix_html"><div class="ttname"><a href="structfaiss_1_1RandomRotationMatrix.html">faiss::RandomRotationMatrix</a></div><div class="ttdoc">Randomly rotate a set of vectors. </div><div class="ttdef"><b>Definition:</b> <a href="VectorTransform_8h_source.html#l00107">VectorTransform.h:107</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIDMap2_html"><div class="ttname"><a href="structfaiss_1_1IndexIDMap2.html">faiss::IndexIDMap2</a></div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00060">MetaIndexes.h:60</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIDMap2_html"><div class="ttname"><a href="structfaiss_1_1IndexIDMap2.html">faiss::IndexIDMap2</a></div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00063">MetaIndexes.h:63</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexScalarQuantizer_html"><div class="ttname"><a href="structfaiss_1_1IndexScalarQuantizer.html">faiss::IndexScalarQuantizer</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexScalarQuantizer_8h_source.html#l00082">IndexScalarQuantizer.h:82</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexPQ_html"><div class="ttname"><a href="structfaiss_1_1IndexPQ.html">faiss::IndexPQ</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexPQ_8h_source.html#l00028">IndexPQ.h:28</a></div></div>
 <div class="ttc" id="namespacefaiss_html_aa46fe38a858ecfde7e0fc0744939d5ad"><div class="ttname"><a href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">faiss::read_index</a></div><div class="ttdeci">Index * read_index(FILE *f, bool try_mmap)</div><div class="ttdef"><b>Definition:</b> <a href="index__io_8cpp_source.html#l00536">index_io.cpp:536</a></div></div>
@@ -881,7 +881,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="structfaiss_1_1IndexLSH_html_a5d4d6ea1fc709605d5b2061d1bce27d6"><div class="ttname"><a href="structfaiss_1_1IndexLSH.html#a5d4d6ea1fc709605d5b2061d1bce27d6">faiss::IndexLSH::train_thresholds</a></div><div class="ttdeci">bool train_thresholds</div><div class="ttdoc">whether we train thresholds or use 0 </div><div class="ttdef"><b>Definition:</b> <a href="IndexLSH_8h_source.html#l00030">IndexLSH.h:30</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexPreTransform_html"><div class="ttname"><a href="structfaiss_1_1IndexPreTransform.html">faiss::IndexPreTransform</a></div><div class="ttdef"><b>Definition:</b> <a href="VectorTransform_8h_source.html#l00239">VectorTransform.h:239</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap_html"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html">faiss::IndexIDMap</a></div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00026">MetaIndexes.h:26</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIVFFlat_html"><div class="ttname"><a href="structfaiss_1_1IndexIVFFlat.html">faiss::IndexIVFFlat</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00174">IndexIVF.h:174</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIVFFlat_html"><div class="ttname"><a href="structfaiss_1_1IndexIVFFlat.html">faiss::IndexIVFFlat</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00181">IndexIVF.h:181</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexFlatIP_html"><div class="ttname"><a href="structfaiss_1_1IndexFlatIP.html">faiss::IndexFlatIP</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00073">IndexFlat.h:73</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexRefineFlat_html_a4acc0b3a8c33e5dd8851448ac162dfd0"><div class="ttname"><a href="structfaiss_1_1IndexRefineFlat.html#a4acc0b3a8c33e5dd8851448ac162dfd0">faiss::IndexRefineFlat::base_index</a></div><div class="ttdeci">Index * base_index</div><div class="ttdoc">faster index to pre-select the vectors that should be filtered </div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00109">IndexFlat.h:109</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexRefineFlat_html"><div class="ttname"><a href="structfaiss_1_1IndexRefineFlat.html">faiss::IndexRefineFlat</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00103">IndexFlat.h:103</a></div></div>
@@ -907,7 +907,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="structfaiss_1_1IndexFlat_html_a9001de47890fe5d2eced9551d3613d47"><div class="ttname"><a href="structfaiss_1_1IndexFlat.html#a9001de47890fe5d2eced9551d3613d47">faiss::IndexFlat::xb</a></div><div class="ttdeci">std::vector&lt; float &gt; xb</div><div class="ttdoc">database vectors, size ntotal * d </div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00025">IndexFlat.h:25</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexPQ_html_aff455f2adff6064939494dad6e3017bc"><div class="ttname"><a href="structfaiss_1_1IndexPQ.html#aff455f2adff6064939494dad6e3017bc">faiss::IndexPQ::polysemous_ht</a></div><div class="ttdeci">int polysemous_ht</div><div class="ttdoc">Hamming threshold used for polysemy. </div><div class="ttdef"><b>Definition:</b> <a href="IndexPQ_8h_source.html#l00091">IndexPQ.h:91</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexRefineFlat_html_a7383fabb28db5b0df45ca4ea81f7acd4"><div class="ttname"><a href="structfaiss_1_1IndexRefineFlat.html#a7383fabb28db5b0df45ca4ea81f7acd4">faiss::IndexRefineFlat::k_factor</a></div><div class="ttdeci">float k_factor</div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00114">IndexFlat.h:114</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIVF_html_a46d1aeddb60643c5b3f096147c3e028f"><div class="ttname"><a href="structfaiss_1_1IndexIVF.html#a46d1aeddb60643c5b3f096147c3e028f">faiss::IndexIVF::code_size</a></div><div class="ttdeci">size_t code_size</div><div class="ttdoc">code size per vector in bytes </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00057">IndexIVF.h:57</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIVF_html_a46d1aeddb60643c5b3f096147c3e028f"><div class="ttname"><a href="structfaiss_1_1IndexIVF.html#a46d1aeddb60643c5b3f096147c3e028f">faiss::IndexIVF::code_size</a></div><div class="ttdeci">size_t code_size</div><div class="ttdoc">code size per vector in bytes </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00064">IndexIVF.h:64</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexLSH_html_a71e9142e1256705f125ded9d647f4497"><div class="ttname"><a href="structfaiss_1_1IndexLSH.html#a71e9142e1256705f125ded9d647f4497">faiss::IndexLSH::rotate_data</a></div><div class="ttdeci">bool rotate_data</div><div class="ttdoc">whether to apply a random rotation to input </div><div class="ttdef"><b>Definition:</b> <a href="IndexLSH_8h_source.html#l00029">IndexLSH.h:29</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexLSH_html_a55c0f1127850af0d06ef22fc8b791572"><div class="ttname"><a href="structfaiss_1_1IndexLSH.html#a55c0f1127850af0d06ef22fc8b791572">faiss::IndexLSH::codes</a></div><div class="ttdeci">std::vector&lt; uint8_t &gt; codes</div><div class="ttdoc">encoded dataset </div><div class="ttdef"><b>Definition:</b> <a href="IndexLSH_8h_source.html#l00037">IndexLSH.h:37</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIDMap_html_affa8a764304410c96489c2b2e178bcdb"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html#affa8a764304410c96489c2b2e178bcdb">faiss::IndexIDMap::own_fields</a></div><div class="ttdeci">bool own_fields</div><div class="ttdoc">! the sub-index </div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00028">MetaIndexes.h:28</a></div></div>

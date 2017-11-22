@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: faiss::gpu::NoTypeTensor&lt; Dim, Contig, IndexT &gt; Class Template Reference</title>
+<title>Faiss: faiss::gpu::NoTypeTensor&lt; Dim, InnerContig, IndexT &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -90,45 +90,47 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classfaiss_1_1gpu_1_1NoTypeTensor-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">faiss::gpu::NoTypeTensor&lt; Dim, Contig, IndexT &gt; Class Template Reference</div>  </div>
+<div class="title">faiss::gpu::NoTypeTensor&lt; Dim, InnerContig, IndexT &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad1e518e6a1c1fb93161be0953f48cf50"><td class="memTemplParams" colspan="2"><a class="anchor" id="ad1e518e6a1c1fb93161be0953f48cf50"></a>
+<tr class="memitem:ac670ba4d123569a01362cafa453c8fec"><td class="memTemplParams" colspan="2"><a class="anchor" id="ac670ba4d123569a01362cafa453c8fec"></a>
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ad1e518e6a1c1fb93161be0953f48cf50"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>NoTypeTensor</b> (<a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; T, Dim, Contig, IndexT &gt; &amp;t)</td></tr>
-<tr class="separator:ad1e518e6a1c1fb93161be0953f48cf50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8827c104e8b1524c45ea42b40819c5d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8827c104e8b1524c45ea42b40819c5d2"></a>
+<tr class="memitem:ac670ba4d123569a01362cafa453c8fec"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>NoTypeTensor</b> (<a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; T, Dim, InnerContig, IndexT &gt; &amp;t)</td></tr>
+<tr class="separator:ac670ba4d123569a01362cafa453c8fec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa4c432ae1c562496afe3a91e827e99"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aafa4c432ae1c562496afe3a91e827e99"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>NoTypeTensor</b> (void *mem, int typeSize, std::initializer_list&lt; IndexT &gt; sizes)</td></tr>
-<tr class="separator:a8827c104e8b1524c45ea42b40819c5d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b1fa6c841b9113b601ed6b7fe2e29da"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4b1fa6c841b9113b601ed6b7fe2e29da"></a>
+<tr class="separator:aafa4c432ae1c562496afe3a91e827e99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0da608a9c10a4dd6e99fc342929f1ee"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af0da608a9c10a4dd6e99fc342929f1ee"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>NoTypeTensor</b> (void *mem, int typeSize, int sizes[Dim])</td></tr>
-<tr class="separator:a4b1fa6c841b9113b601ed6b7fe2e29da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ea47f4d47ed7baac2a7e22ea254a3bf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9ea47f4d47ed7baac2a7e22ea254a3bf"></a>
+<tr class="separator:af0da608a9c10a4dd6e99fc342929f1ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a978923b3ef86bf357261f7c2dab92746"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a978923b3ef86bf357261f7c2dab92746"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>NoTypeTensor</b> (void *mem, int typeSize, IndexT sizes[Dim], IndexT strides[Dim])</td></tr>
-<tr class="separator:a9ea47f4d47ed7baac2a7e22ea254a3bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85d70eb22a4b4925221a6272b7b70ab0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a85d70eb22a4b4925221a6272b7b70ab0"></a>
+<tr class="separator:a978923b3ef86bf357261f7c2dab92746"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af305fe356475b9861f3f37b27c654541"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af305fe356475b9861f3f37b27c654541"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>getTypeSize</b> () const </td></tr>
-<tr class="separator:a85d70eb22a4b4925221a6272b7b70ab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4fe3e093ebcb8f323ba6f0d9044cbac"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae4fe3e093ebcb8f323ba6f0d9044cbac"></a>
+<tr class="separator:af305fe356475b9861f3f37b27c654541"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a3e220d59f3465c78aa76e7afce3ca7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3a3e220d59f3465c78aa76e7afce3ca7"></a>
 IndexT&#160;</td><td class="memItemRight" valign="bottom"><b>getSize</b> (int dim) const </td></tr>
-<tr class="separator:ae4fe3e093ebcb8f323ba6f0d9044cbac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17a6bbc833a7a9b28134dc047d3d1682"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a17a6bbc833a7a9b28134dc047d3d1682"></a>
+<tr class="separator:a3a3e220d59f3465c78aa76e7afce3ca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0c40b39b915d9813d04279daebbb764"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad0c40b39b915d9813d04279daebbb764"></a>
 IndexT&#160;</td><td class="memItemRight" valign="bottom"><b>getStride</b> (int dim) const </td></tr>
-<tr class="separator:a17a6bbc833a7a9b28134dc047d3d1682"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9e031090894ae91c0388878d7817bea"><td class="memTemplParams" colspan="2"><a class="anchor" id="ac9e031090894ae91c0388878d7817bea"></a>
+<tr class="separator:ad0c40b39b915d9813d04279daebbb764"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7978b2dc69b63dd7fc3a2c63f52fa442"><td class="memTemplParams" colspan="2"><a class="anchor" id="a7978b2dc69b63dd7fc3a2c63f52fa442"></a>
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ac9e031090894ae91c0388878d7817bea"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; T, Dim, Contig, IndexT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>toTensor</b> ()</td></tr>
-<tr class="separator:ac9e031090894ae91c0388878d7817bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9808d596a4fa9059094f0141036d51d5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9808d596a4fa9059094f0141036d51d5"></a>
-<a class="el" href="classfaiss_1_1gpu_1_1NoTypeTensor.html">NoTypeTensor</a>&lt; Dim, Contig, IndexT &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>narrowOutermost</b> (IndexT start, IndexT size)</td></tr>
-<tr class="separator:a9808d596a4fa9059094f0141036d51d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7978b2dc69b63dd7fc3a2c63f52fa442"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; T, Dim, InnerContig, <br class="typebreak"/>
+IndexT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>toTensor</b> ()</td></tr>
+<tr class="separator:a7978b2dc69b63dd7fc3a2c63f52fa442"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8b7e7dd5242cbcaf7e58f696189cc8c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8b7e7dd5242cbcaf7e58f696189cc8c"></a>
+<a class="el" href="classfaiss_1_1gpu_1_1NoTypeTensor.html">NoTypeTensor</a>&lt; Dim, InnerContig, <br class="typebreak"/>
+IndexT &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>narrowOutermost</b> (IndexT start, IndexT size)</td></tr>
+<tr class="separator:aa8b7e7dd5242cbcaf7e58f696189cc8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;int Dim, bool Contig = false, typename IndexT = int&gt;<br/>
-class faiss::gpu::NoTypeTensor&lt; Dim, Contig, IndexT &gt;</h3>
+<div class="textblock"><h3>template&lt;int Dim, bool InnerContig = false, typename IndexT = int&gt;<br/>
+class faiss::gpu::NoTypeTensor&lt; Dim, InnerContig, IndexT &gt;</h3>
 
 
 <p>Definition at line <a class="el" href="NoTypeTensor_8cuh_source.html#l00020">20</a> of file <a class="el" href="NoTypeTensor_8cuh_source.html">NoTypeTensor.cuh</a>.</p>

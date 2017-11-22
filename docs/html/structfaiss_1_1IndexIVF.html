@@ -187,10 +187,8 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 <a class="el" href="structfaiss_1_1Index.html">Index</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a4b40cc7a70dff41196a3b8769586667a">quantizer</a></td></tr>
 <tr class="memdesc:a4b40cc7a70dff41196a3b8769586667a"><td class="mdescLeft">&#160;</td><td class="mdescRight">quantizer that maps vectors to inverted lists <br/></td></tr>
 <tr class="separator:a4b40cc7a70dff41196a3b8769586667a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23ee7f75f8be4472a17778f2b33875de"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a23ee7f75f8be4472a17778f2b33875de"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a23ee7f75f8be4472a17778f2b33875de">quantizer_trains_alone</a></td></tr>
-<tr class="memdesc:a23ee7f75f8be4472a17778f2b33875de"><td class="mdescLeft">&#160;</td><td class="mdescRight">just pass over the trainset to quantizer <br/></td></tr>
-<tr class="separator:a23ee7f75f8be4472a17778f2b33875de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28c248ae6a2b0991c012ab7abe13574a"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a28c248ae6a2b0991c012ab7abe13574a">quantizer_trains_alone</a></td></tr>
+<tr class="separator:a28c248ae6a2b0991c012ab7abe13574a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed2e9757ad5f3c234fd8ad60175a2a73"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed2e9757ad5f3c234fd8ad60175a2a73"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#aed2e9757ad5f3c234fd8ad60175a2a73">own_fields</a></td></tr>
 <tr class="memdesc:aed2e9757ad5f3c234fd8ad60175a2a73"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether object owns the quantizer <br/></td></tr>
@@ -199,6 +197,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <a class="el" href="structfaiss_1_1ClusteringParameters.html">ClusteringParameters</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a9746bcd42ecec1501f221e918b25e8e7">cp</a></td></tr>
 <tr class="memdesc:a9746bcd42ecec1501f221e918b25e8e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">to override default clustering params <br/></td></tr>
 <tr class="separator:a9746bcd42ecec1501f221e918b25e8e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9795f618f962afbb79681b4af36d1d86"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9795f618f962afbb79681b4af36d1d86"></a>
+<a class="el" href="structfaiss_1_1Index.html">Index</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a9795f618f962afbb79681b4af36d1d86">clustering_index</a></td></tr>
+<tr class="memdesc:a9795f618f962afbb79681b4af36d1d86"><td class="mdescLeft">&#160;</td><td class="mdescRight">to override index used during clustering <br/></td></tr>
+<tr class="separator:a9795f618f962afbb79681b4af36d1d86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af16d325f5bef22b2e5f90ceea796e80d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af16d325f5bef22b2e5f90ceea796e80d"></a>
 std::vector&lt; std::vector&lt; long &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#af16d325f5bef22b2e5f90ceea796e80d">ids</a></td></tr>
 <tr class="memdesc:af16d325f5bef22b2e5f90ceea796e80d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inverted lists for indexes. <br/></td></tr>
@@ -344,7 +346,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>copy a subset of the entries index to the other index</p>
 <p>if subset_type == 0: copies ids in [a1, a2) if subset_type == 1: copies ids if id % a1 == a2 if subset_type == 2: copies inverted lists such that a1 elements are left before and a2 elements are after </p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00248">248</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00272">272</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -369,7 +371,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00069">69</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00071">71</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -408,7 +410,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a31a1fec2a88b410ea96ce5be7d527be9">faiss::IndexIVFPQR</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00221">221</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00245">245</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -467,7 +469,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a3e982ee6f1a3a025148270701867d04f">faiss::IndexIVFPQR</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00094">94</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00096">96</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -591,7 +593,23 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a68ed7cae5bec89fcdcb6a1d2addbd5a8">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#ac05d7fbfed59c85d1cf8ae526d279744">faiss::IndexIVFScalarQuantizer</a>, and <a class="el" href="structfaiss_1_1IndexIVFPQ.html#af6565a5d8bab7be3df19c50d235bd662">faiss::IndexIVFPQ</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00184">184</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00208">208</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a28c248ae6a2b0991c012ab7abe13574a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char faiss::IndexIVF::quantizer_trains_alone</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>= 0: use the quantizer as index in a kmeans training = 1: just pass on the training set to the <a class="el" href="structfaiss_1_1IndexIVF.html#a7a1d5eec194db0977b2318c6ed6a2b86" title="Trains the quantizer and calls train_residual to train sub-quantizers. ">train()</a> of the quantizer = 2: kmeans training on a flat index + add the centroids to the quantizer </p>
+
+<p>Definition at line <a class="el" href="IndexIVF_8h_source.html#l00056">56</a> of file <a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a>.</p>
 
 </div>
 </div>

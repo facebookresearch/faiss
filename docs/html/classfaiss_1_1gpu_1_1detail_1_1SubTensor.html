@@ -159,12 +159,12 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a3f29fab81a72a8bdd93901851af98ec7"><td class="memTemplItemLeft" align="right" valign="top">__device__ T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor.html#a3f29fab81a72a8bdd93901851af98ec7">ldgAs</a> () const </td></tr>
 <tr class="memdesc:a3f29fab81a72a8bdd93901851af98ec7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use the texture cache for reads; cast as a particular type. <br/></td></tr>
 <tr class="separator:a3f29fab81a72a8bdd93901851af98ec7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ea642a74fc7070130a4a20635dc7b3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; typename <br class="typebreak"/>
+<tr class="memitem:a62aa5465abe64321c40763f74cfb028a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; typename <br class="typebreak"/>
 TensorType::DataType, SubDim, <br class="typebreak"/>
-TensorType::IsContig, typename <br class="typebreak"/>
-TensorType::IndexType, <br class="typebreak"/>
-PtrTraits &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor.html#a0ea642a74fc7070130a4a20635dc7b3c">view</a> ()</td></tr>
-<tr class="separator:a0ea642a74fc7070130a4a20635dc7b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+TensorType::IsInnerContig, <br class="typebreak"/>
+typename TensorType::IndexType, <br class="typebreak"/>
+PtrTraits &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor.html#a62aa5465abe64321c40763f74cfb028a">view</a> ()</td></tr>
+<tr class="separator:a62aa5465abe64321c40763f74cfb028a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -189,10 +189,10 @@ Friends</h2></td></tr>
 class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor.html#a33929e7387099e4e49be139ba467ebfc">SubTensor&lt; TensorType, SubDim+1, PtrTraits &gt;</a></td></tr>
 <tr class="memdesc:a33929e7387099e4e49be139ba467ebfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">One dimension greater can create us. <br/></td></tr>
 <tr class="separator:a33929e7387099e4e49be139ba467ebfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae095aab5ad40d0b021d5cdf8bea83f67"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae095aab5ad40d0b021d5cdf8bea83f67"></a>
-class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor.html#ae095aab5ad40d0b021d5cdf8bea83f67">Tensor&lt; typename TensorType::DataType, TensorType::NumDim, TensorType::IsContig, typename TensorType::IndexType, PtrTraits &gt;</a></td></tr>
-<tr class="memdesc:ae095aab5ad40d0b021d5cdf8bea83f67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Our parent tensor can create us. <br/></td></tr>
-<tr class="separator:ae095aab5ad40d0b021d5cdf8bea83f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7d47a355bc7a671447c9bc86919c2bc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab7d47a355bc7a671447c9bc86919c2bc"></a>
+class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor.html#ab7d47a355bc7a671447c9bc86919c2bc">Tensor&lt; typename TensorType::DataType, TensorType::NumDim, TensorType::IsInnerContig, typename TensorType::IndexType, PtrTraits &gt;</a></td></tr>
+<tr class="memdesc:ab7d47a355bc7a671447c9bc86919c2bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Our parent tensor can create us. <br/></td></tr>
+<tr class="separator:ab7d47a355bc7a671447c9bc86919c2bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename TensorType, int SubDim, template&lt; typename U &gt; class PtrTraits&gt;<br/>
@@ -227,7 +227,7 @@ template&lt;typename TensorType , int SubDim, template&lt; typename U &gt; class
 </div><div class="memdoc">
 <p>Returns a view of the data located at our offset (the dimension <code>SubDim</code> - 1 tensor). </p>
 
-<p>Definition at line <a class="el" href="Tensor_8cuh_source.html#l00495">495</a> of file <a class="el" href="Tensor_8cuh_source.html">Tensor.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor_8cuh_source.html#l00499">499</a> of file <a class="el" href="Tensor_8cuh_source.html">Tensor.cuh</a>.</p>
 
 </div>
 </div>
@@ -256,11 +256,11 @@ template&lt;typename TensorType , int SubDim, template&lt; typename U &gt; class
 </div><div class="memdoc">
 <p>Returns a view of the data located at our offset (the dimension <code>SubDim</code> - 1 tensor) (const). </p>
 
-<p>Definition at line <a class="el" href="Tensor_8cuh_source.html#l00511">511</a> of file <a class="el" href="Tensor_8cuh_source.html">Tensor.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor_8cuh_source.html#l00515">515</a> of file <a class="el" href="Tensor_8cuh_source.html">Tensor.cuh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a0ea642a74fc7070130a4a20635dc7b3c"></a>
+<a class="anchor" id="a62aa5465abe64321c40763f74cfb028a"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -270,7 +270,7 @@ template&lt;typename TensorType , int SubDim, template&lt; typename U &gt; class
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt;typename TensorType::DataType, SubDim, TensorType::IsContig, typename TensorType::IndexType, PtrTraits&gt; <a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor.html">faiss::gpu::detail::SubTensor</a>&lt; TensorType, SubDim, PtrTraits &gt;::view </td>
+          <td class="memname"><a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt;typename TensorType::DataType, SubDim, TensorType::IsInnerContig, typename TensorType::IndexType, PtrTraits&gt; <a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor.html">faiss::gpu::detail::SubTensor</a>&lt; TensorType, SubDim, PtrTraits &gt;::view </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -284,7 +284,7 @@ template&lt;typename TensorType , int SubDim, template&lt; typename U &gt; class
 </div><div class="memdoc">
 <p>Returns a tensor that is a view of the SubDim-dimensional slice of this tensor, starting where our data begins </p>
 
-<p>Definition at line <a class="el" href="Tensor_8cuh_source.html#l00595">595</a> of file <a class="el" href="Tensor_8cuh_source.html">Tensor.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor_8cuh_source.html#l00599">599</a> of file <a class="el" href="Tensor_8cuh_source.html">Tensor.cuh</a>.</p>
 
 </div>
 </div>

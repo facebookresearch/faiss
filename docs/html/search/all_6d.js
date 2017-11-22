@@ -14,7 +14,7 @@ var searchData=
   ['max_5fpoints_5fper_5fcentroid',['max_points_per_centroid',['../structfaiss_1_1ClusteringParameters.html#a993e0a035248faad6e292a5ef9af1953',1,'faiss::ClusteringParameters']]],
   ['max_5fpoints_5fper_5fd',['max_points_per_d',['../structfaiss_1_1PCAMatrix.html#abdce90f57a3c4401f5230f03da901e0d',1,'faiss::PCAMatrix']]],
   ['max_5ftrain_5fpoints',['max_train_points',['../structfaiss_1_1OPQMatrix.html#afdd5b2c74d19ccc5c7a6e0199333321a',1,'faiss::OPQMatrix']]],
-  ['maxdiff',['maxDiff',['../classfaiss_1_1gpu_1_1HostTensor.html#a61823ac9c1cfcf296357c383b50d9010',1,'faiss::gpu::HostTensor']]],
+  ['maxdiff',['maxDiff',['../classfaiss_1_1gpu_1_1HostTensor.html#a4f8c1a0467513d62277b693dd65238c5',1,'faiss::gpu::HostTensor']]],
   ['maxlistlength_5f',['maxListLength_',['../classfaiss_1_1gpu_1_1IVFBase.html#ae25ea0901fb628844868413f51c85bda',1,'faiss::gpu::IVFBase']]],
   ['mean',['mean',['../structfaiss_1_1PCAMatrix.html#a721c338c1df5c99471db82e6d3dc8f93',1,'faiss::PCAMatrix']]],
   ['memoryspace',['memorySpace',['../structfaiss_1_1gpu_1_1GpuIndexConfig.html#adf7c9461009108a9a433a077ab322d2e',1,'faiss::gpu::GpuIndexConfig']]],

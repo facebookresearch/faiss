@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: faiss::gpu::TensorInfo&lt; T &gt; Struct Template Reference</title>
+<title>Faiss: faiss::gpu::TensorInfo&lt; T, IndexT &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,34 +91,34 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="structfaiss_1_1gpu_1_1TensorInfo-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">faiss::gpu::TensorInfo&lt; T &gt; Struct Template Reference</div>  </div>
+<div class="title">faiss::gpu::TensorInfo&lt; T, IndexT &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a0507389f198263e3c107ecda9d3f84b1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0507389f198263e3c107ecda9d3f84b1"></a>
+<tr class="memitem:a92f167b1b4d63d075d1ac3ab3f09239e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a92f167b1b4d63d075d1ac3ab3f09239e"></a>
 T *&#160;</td><td class="memItemRight" valign="bottom"><b>data</b></td></tr>
-<tr class="separator:a0507389f198263e3c107ecda9d3f84b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a948a875ae4d27647e07dc6082ac689f7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a948a875ae4d27647e07dc6082ac689f7"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>sizes</b> [kMaxDims]</td></tr>
-<tr class="separator:a948a875ae4d27647e07dc6082ac689f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a670d95dfaab08bd102048013a18e250b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a670d95dfaab08bd102048013a18e250b"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>strides</b> [kMaxDims]</td></tr>
-<tr class="separator:a670d95dfaab08bd102048013a18e250b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ef920f85a0ded07a0c6ccb39e095902"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9ef920f85a0ded07a0c6ccb39e095902"></a>
+<tr class="separator:a92f167b1b4d63d075d1ac3ab3f09239e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a56515341f4513cdda422486a843163"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8a56515341f4513cdda422486a843163"></a>
+IndexT&#160;</td><td class="memItemRight" valign="bottom"><b>sizes</b> [kMaxDims]</td></tr>
+<tr class="separator:a8a56515341f4513cdda422486a843163"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7be85793ed10824be97af00e05ce812c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7be85793ed10824be97af00e05ce812c"></a>
+IndexT&#160;</td><td class="memItemRight" valign="bottom"><b>strides</b> [kMaxDims]</td></tr>
+<tr class="separator:a7be85793ed10824be97af00e05ce812c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a596e4d6a5ac22383ccecd70b24733468"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a596e4d6a5ac22383ccecd70b24733468"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>dims</b></td></tr>
-<tr class="separator:a9ef920f85a0ded07a0c6ccb39e095902"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a596e4d6a5ac22383ccecd70b24733468"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a120e56a1b01c030c159210e443a38823"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a120e56a1b01c030c159210e443a38823"></a>
+<tr class="memitem:a670c7397fe34a969f8516be36cd08264"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a670c7397fe34a969f8516be36cd08264"></a>
 static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>kMaxDims</b> = 8</td></tr>
-<tr class="separator:a120e56a1b01c030c159210e443a38823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a670c7397fe34a969f8516be36cd08264"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename T&gt;<br/>
-struct faiss::gpu::TensorInfo&lt; T &gt;</h3>
+<div class="textblock"><h3>template&lt;typename T, typename IndexT&gt;<br/>
+struct faiss::gpu::TensorInfo&lt; T, IndexT &gt;</h3>
 
 
 <p>Definition at line <a class="el" href="Transpose_8cuh_source.html#l00023">23</a> of file <a class="el" href="Transpose_8cuh_source.html">Transpose.cuh</a>.</p>

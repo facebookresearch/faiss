@@ -145,28 +145,40 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">/// Generates a collection of random vectors in the range [0, 1]</span></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment"></span>std::vector&lt;float&gt; randVecs(<span class="keywordtype">size_t</span> num, <span class="keywordtype">size_t</span> dim);</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">/// Compare two indices via query for similarity</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment"></span><span class="keywordtype">void</span> compareIndices(<a class="code" href="structfaiss_1_1Index.html">faiss::Index</a>&amp; refIndex,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                    <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a>&amp; testIndex,</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                    <span class="keywordtype">int</span> numQuery, <span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> k,</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                    <span class="keyword">const</span> std::string&amp; configMsg,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                    <span class="keywordtype">float</span> maxRelativeError = 6e-5f,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                    <span class="keywordtype">float</span> pctMaxDiff1 = 0.1f,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                    <span class="keywordtype">float</span> pctMaxDiffN = 0.005f);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">/// Display specific differences in the two (distance, index) lists</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"></span><span class="keywordtype">void</span> compareLists(<span class="keyword">const</span> <span class="keywordtype">float</span>* refDist,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                  <span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a>* refInd,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                  <span class="keyword">const</span> <span class="keywordtype">float</span>* testDist,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                  <span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a>* testInd,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                  <span class="keywordtype">int</span> dim1, <span class="keywordtype">int</span> dim2,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                  <span class="keyword">const</span> std::string&amp; configMsg,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                  <span class="keywordtype">bool</span> printBasicStats, <span class="keywordtype">bool</span> printDiffs, <span class="keywordtype">bool</span> assertOnErr,</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                  <span class="keywordtype">float</span> maxRelativeError = 6e-5f,</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                  <span class="keywordtype">float</span> pctMaxDiff1 = 0.1f,</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                  <span class="keywordtype">float</span> pctMaxDiffN = 0.005f);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;} }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">/// Compare two indices via query for similarity, with a user-specified set of</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">/// query vectors</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment"></span><span class="keywordtype">void</span> compareIndices(<span class="keyword">const</span> std::vector&lt;float&gt;&amp; queryVecs,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                    <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a>&amp; refIndex,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                    <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a>&amp; testIndex,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                    <span class="keywordtype">int</span> numQuery, <span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> k,</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                    <span class="keyword">const</span> std::string&amp; configMsg,</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                    <span class="keywordtype">float</span> maxRelativeError = 6e-5f,</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                    <span class="keywordtype">float</span> pctMaxDiff1 = 0.1f,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                    <span class="keywordtype">float</span> pctMaxDiffN = 0.005f);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">/// Compare two indices via query for similarity, generating random query</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">/// vectors</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment"></span><span class="keywordtype">void</span> compareIndices(<a class="code" href="structfaiss_1_1Index.html">faiss::Index</a>&amp; refIndex,</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                    <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a>&amp; testIndex,</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                    <span class="keywordtype">int</span> numQuery, <span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> k,</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                    <span class="keyword">const</span> std::string&amp; configMsg,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                    <span class="keywordtype">float</span> maxRelativeError = 6e-5f,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                    <span class="keywordtype">float</span> pctMaxDiff1 = 0.1f,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                    <span class="keywordtype">float</span> pctMaxDiffN = 0.005f);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">/// Display specific differences in the two (distance, index) lists</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment"></span><span class="keywordtype">void</span> compareLists(<span class="keyword">const</span> <span class="keywordtype">float</span>* refDist,</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                  <span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a>* refInd,</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                  <span class="keyword">const</span> <span class="keywordtype">float</span>* testDist,</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                  <span class="keyword">const</span> <a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a>* testInd,</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                  <span class="keywordtype">int</span> dim1, <span class="keywordtype">int</span> dim2,</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                  <span class="keyword">const</span> std::string&amp; configMsg,</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                  <span class="keywordtype">bool</span> printBasicStats, <span class="keywordtype">bool</span> printDiffs, <span class="keywordtype">bool</span> assertOnErr,</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                  <span class="keywordtype">float</span> maxRelativeError = 6e-5f,</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                  <span class="keywordtype">float</span> pctMaxDiff1 = 0.1f,</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                  <span class="keywordtype">float</span> pctMaxDiffN = 0.005f);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;} }</div>
 <div class="ttc" id="structfaiss_1_1Index_html_a040c6aed1f224f3ea7bf58eebc0c31a4"><div class="ttname"><a href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a></div><div class="ttdeci">long idx_t</div><div class="ttdoc">all indices are this type </div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00062">Index.h:62</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html"><div class="ttname"><a href="structfaiss_1_1Index.html">faiss::Index</a></div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00060">Index.h:60</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

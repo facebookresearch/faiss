@@ -140,12 +140,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIDMap.html#a70aca5b0f665c5a109d5dadf1e13b448">reset</a> () override</td></tr>
 <tr class="memdesc:a70aca5b0f665c5a109d5dadf1e13b448 inherit pub_methods_structfaiss_1_1IndexIDMap"><td class="mdescLeft">&#160;</td><td class="mdescRight">removes all elements from the database. <br/></td></tr>
 <tr class="separator:a70aca5b0f665c5a109d5dadf1e13b448 inherit pub_methods_structfaiss_1_1IndexIDMap"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dbeaf9d44d6783d371f12405e8b7f40 inherit pub_methods_structfaiss_1_1IndexIDMap"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIDMap.html#a7dbeaf9d44d6783d371f12405e8b7f40">range_search</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, float radius, <a class="el" href="structfaiss_1_1RangeSearchResult.html">RangeSearchResult</a> *result) const override</td></tr>
+<tr class="separator:a7dbeaf9d44d6783d371f12405e8b7f40 inherit pub_methods_structfaiss_1_1IndexIDMap"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structfaiss_1_1Index"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structfaiss_1_1Index')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structfaiss_1_1Index.html">faiss::Index</a></td></tr>
 <tr class="memitem:a18475cb29370bd6ac3c9f41d39f2e8ec inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a18475cb29370bd6ac3c9f41d39f2e8ec"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Index</b> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> <a class="el" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>=0, <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">MetricType</a> metric=METRIC_INNER_PRODUCT)</td></tr>
 <tr class="separator:a18475cb29370bd6ac3c9f41d39f2e8ec inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a236897832a58dbb205e2d662c1929fb1 inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a236897832a58dbb205e2d662c1929fb1">range_search</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, float radius, <a class="el" href="structfaiss_1_1RangeSearchResult.html">RangeSearchResult</a> *result) const </td></tr>
-<tr class="separator:a236897832a58dbb205e2d662c1929fb1 inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8bc5d8d1cd0dd7b34b3c98a9f76b4a9c inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a8bc5d8d1cd0dd7b34b3c98a9f76b4a9c">assign</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *labels, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> k=1)</td></tr>
 <tr class="separator:a8bc5d8d1cd0dd7b34b3c98a9f76b4a9c inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1936604fffe16b0ef2a3879305950738 inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a1936604fffe16b0ef2a3879305950738">reconstruct_n</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> i0, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> ni, float *recons) const </td></tr>
@@ -205,7 +205,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>same as <a class="el" href="structfaiss_1_1IndexIDMap.html">IndexIDMap</a> but also provides an efficient reconstruction implementation via a 2-way index </p>
 
-<p>Definition at line <a class="el" href="MetaIndexes_8h_source.html#l00060">60</a> of file <a class="el" href="MetaIndexes_8h_source.html">MetaIndexes.h</a>.</p>
+<p>Definition at line <a class="el" href="MetaIndexes_8h_source.html#l00063">63</a> of file <a class="el" href="MetaIndexes_8h_source.html">MetaIndexes.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a33ff76975891695c2fa45ed26fc8eae9"></a>
 <div class="memitem">
@@ -254,7 +254,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1IndexIDMap.html#aeace75e53648c052d05c357b744e090b">faiss::IndexIDMap</a>.</p>
 
-<p>Definition at line <a class="el" href="MetaIndexes_8cpp_source.html#l00130">130</a> of file <a class="el" href="MetaIndexes_8cpp_source.html">MetaIndexes.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MetaIndexes_8cpp_source.html#l00142">142</a> of file <a class="el" href="MetaIndexes_8cpp_source.html">MetaIndexes.cpp</a>.</p>
 
 </div>
 </div>
@@ -301,7 +301,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#aaef6f4132b1f390121ebb11058baf190">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="MetaIndexes_8cpp_source.html#l00156">156</a> of file <a class="el" href="MetaIndexes_8cpp_source.html">MetaIndexes.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MetaIndexes_8cpp_source.html#l00168">168</a> of file <a class="el" href="MetaIndexes_8cpp_source.html">MetaIndexes.cpp</a>.</p>
 
 </div>
 </div>

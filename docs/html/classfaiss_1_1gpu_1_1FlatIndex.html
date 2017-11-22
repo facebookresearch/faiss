@@ -126,9 +126,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <a class="el" href="classfaiss_1_1gpu_1_1DeviceTensor.html">DeviceTensor</a>&lt; float, 2, true &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html#a6057667e09193d786c25d90355d28838">getVectorsFloat32Copy</a> (int from, int num, cudaStream_t stream)</td></tr>
 <tr class="memdesc:a6057667e09193d786c25d90355d28838"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns only a subset of the vectors. <br/></td></tr>
 <tr class="separator:a6057667e09193d786c25d90355d28838"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fc3a2350214138f41ba338db6ba3281"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5fc3a2350214138f41ba338db6ba3281"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>query</b> (<a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; float, 2, true &gt; &amp;vecs, int k, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; float, 2, true &gt; &amp;outDistances, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; int, 2, true &gt; &amp;outIndices, bool exactDistance, int tileSize=-1)</td></tr>
-<tr class="separator:a5fc3a2350214138f41ba338db6ba3281"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25facbf9a1a5f463fc8e4131df8da552"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a25facbf9a1a5f463fc8e4131df8da552"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>query</b> (<a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; float, 2, true &gt; &amp;vecs, int k, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; float, 2, true &gt; &amp;outDistances, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html">Tensor</a>&lt; int, 2, true &gt; &amp;outIndices, bool exactDistance)</td></tr>
+<tr class="separator:a25facbf9a1a5f463fc8e4131df8da552"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab91c9ddf7dd258620f424619cb029e22"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html#ab91c9ddf7dd258620f424619cb029e22">add</a> (const float *data, int numVecs, cudaStream_t stream)</td></tr>
 <tr class="separator:ab91c9ddf7dd258620f424619cb029e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae06cb2ffd46659b6639b97297546096e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae06cb2ffd46659b6639b97297546096e"></a>
@@ -172,7 +172,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div><div class="memdoc">
 <p>Add vectors to ourselves; the pointer passed can be on the host or the device </p>
 
-<p>Definition at line <a class="el" href="FlatIndex_8cu_source.html#l00201">201</a> of file <a class="el" href="FlatIndex_8cu_source.html">FlatIndex.cu</a>.</p>
+<p>Definition at line <a class="el" href="FlatIndex_8cu_source.html#l00195">195</a> of file <a class="el" href="FlatIndex_8cu_source.html">FlatIndex.cu</a>.</p>
 
 </div>
 </div>

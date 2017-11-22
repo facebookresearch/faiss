@@ -152,6 +152,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="structfaiss_1_1IndexPQ.html#a491ba3ed34093513e6a850fbca0abdd2">faiss::IndexPQ</a>
 , <a class="el" href="structfaiss_1_1MultiIndexQuantizer.html#a999ee03f4e65f453377e209d10e25681">faiss::MultiIndexQuantizer</a>
 </li>
+<li>search_and_reconstruct()
+: <a class="el" href="structfaiss_1_1IndexIVFPQ.html#a6310771a6e161e0bb4c46719550895f8">faiss::IndexIVFPQ</a>
+</li>
 <li>search_ip()
 : <a class="el" href="structfaiss_1_1ProductQuantizer.html#a66be226806ca2abcaaf1653cdc690aa6">faiss::ProductQuantizer</a>
 </li>
@@ -169,10 +172,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#afedeff5442b6ed94f856cecb8d8e598d">faiss::gpu::GpuIndexFlat</a>
 </li>
 <li>searchImpl_()
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a3285302b227052fee57b3df10c2a482b">faiss::gpu::GpuIndexIVFFlat</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#ac99bfd11ff5150f29cf054ea55fc8fe4">faiss::gpu::GpuIndexFlat</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a3285302b227052fee57b3df10c2a482b">faiss::gpu::GpuIndexIVFFlat</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a42f619bee6ecb268442c7807e75896fe">faiss::gpu::GpuIndexIVFPQ</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a482408e73bfa420d46eed690f2936e04">faiss::gpu::GpuIndex</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#ac99bfd11ff5150f29cf054ea55fc8fe4">faiss::gpu::GpuIndexFlat</a>
 </li>
 <li>seed
 : <a class="el" href="structfaiss_1_1ClusteringParameters.html#a509c65e2ebe6ecabebd163ecb03c5579">faiss::ClusteringParameters</a>
@@ -227,15 +230,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>shard
 : <a class="el" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html#a7c5bd7a840f6641d5d68699f4416d79d">faiss::gpu::GpuMultipleClonerOptions</a>
 </li>
+<li>shard_type
+: <a class="el" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html#a9548f823297298b0a78109dec7feb45e">faiss::gpu::GpuMultipleClonerOptions</a>
+</li>
 <li>SimulatedAnnealingOptimizer()
 : <a class="el" href="structfaiss_1_1SimulatedAnnealingOptimizer.html#ab258eaf892742e37dd2c3bfd3b1c39e1">faiss::SimulatedAnnealingOptimizer</a>
 </li>
 <li>size_
 : <a class="el" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#a3df7ba513acd46aa69180585cb4e7aac">faiss::gpu::StackDeviceMemory::Stack</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#afe1bd60ecb861eabafaad7362a68ec1f">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#ad96fbf0f5e7c06a1031b8b18f7fc01d7">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
 <li>sizes()
-: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#ac3e0306267da475d8140bf6d12cf4af6">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#abc0ecc4f882ee09632b5a06be0619adb">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
 <li>source_dis
 : <a class="el" href="structfaiss_1_1ReproduceDistancesObjective.html#a6681846eb7751b32a907d075fff6770b">faiss::ReproduceDistancesObjective</a>
@@ -283,17 +289,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classfaiss_1_1gpu_1_1WorkerThread.html#a68963d8c18822d7736c96e82367f2f12">faiss::gpu::WorkerThread</a>
 </li>
 <li>storeTransposed
-: <a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a5f2470ec5b2a8fe7aae0542f113b781d">faiss::gpu::GpuClonerOptions</a>
-, <a class="el" href="structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html#a0342a26f5e59563bfe04f3f80e3b27f0">faiss::gpu::GpuIndexFlatConfig</a>
+: <a class="el" href="structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html#a0342a26f5e59563bfe04f3f80e3b27f0">faiss::gpu::GpuIndexFlatConfig</a>
+, <a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a5f2470ec5b2a8fe7aae0542f113b781d">faiss::gpu::GpuClonerOptions</a>
 </li>
 <li>streamWaitOnEvent()
 : <a class="el" href="classfaiss_1_1gpu_1_1CudaEvent.html#ad8968b298b95788c7679d7e5aa0571eb">faiss::gpu::CudaEvent</a>
 </li>
 <li>stride_
-: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a46c20e6be3ce16feb99f8d3a5ee268c9">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#af4b8fe4b632cdca51ee7972ed93fc3fa">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
 <li>strides()
-: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a9a0a293f287e9cba68f31c9e57b79c64">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a87a777247486756e99060547a3cc833a">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
 <li>SubTensor&lt; TensorType, 1, PtrTraits &gt;
 : <a class="el" href="classfaiss_1_1gpu_1_1detail_1_1SubTensor_3_01TensorType_00_010_00_01PtrTraits_01_4.html#a5aa8367d35e6c281c29855d7cf24bd6d">faiss::gpu::detail::SubTensor&lt; TensorType, 0, PtrTraits &gt;</a>

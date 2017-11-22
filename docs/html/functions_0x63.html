@@ -125,20 +125,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div>
 
 <h3><a class="anchor" id="index_c"></a>- c -</h3><ul>
-<li>canCastIndexType()
-: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a080cf59b73bee015c02947009e70ce07">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
-</li>
 <li>canCastResize()
-: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a9b3a5fb3a903295b7d2f8cb2caae0352">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a7fbbf51f8ef6bea9cc863a86e20d994e">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
+</li>
+<li>canUseIndexType()
+: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a2ac9dc9fa8d81f2651a1be486c14ba62">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
 <li>cast()
-: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a0bee6b10584a0a201dad5db3e3d37720">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a79a16bd4300ca8fdba52932c7c97cce9">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
 <li>castIndexType()
-: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#afa66c4592bc873a3f663d765cb9ea2c0">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a9f0c817e9751fe02926c2346a97f0350">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
 <li>castResize()
-: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#aab60b0711646ffe587b62a5434d53c6a">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6c9640c365134ccc33cdb2695b016eb3">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
 <li>centroids
 : <a class="el" href="structfaiss_1_1Clustering.html#a64c5ec0b4a7967d8be2872974b455ff1">faiss::Clustering</a>
@@ -153,6 +153,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>Clustering()
 : <a class="el" href="structfaiss_1_1Clustering.html#a2fa90a2681dc42faaf2435e63a5ae9b4">faiss::Clustering</a>
+</li>
+<li>clustering_index
+: <a class="el" href="structfaiss_1_1IndexIVF.html#a9795f618f962afbb79681b4af36d1d86">faiss::IndexIVF</a>
 </li>
 <li>ClusteringParameters()
 : <a class="el" href="structfaiss_1_1ClusteringParameters.html#a86c8802261041f5d49b1a0d296da60be">faiss::ClusteringParameters</a>
@@ -232,27 +235,27 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structfaiss_1_1IndexIVF.html#a2fc63f9bbfe64e05106366465ece2187">faiss::IndexIVF</a>
 </li>
 <li>copyFrom()
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#a9a9de859274bb73e6d8ea02cae5ca9a6">faiss::gpu::GpuIndexFlatL2</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a94c2c171f9a2d27085dea9101067bdf2">faiss::gpu::GpuIndexIVF</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#aa181b1778a8dca81ac5cf6cd6a3d5f1d">faiss::gpu::GpuIndexFlatIP</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a94c2c171f9a2d27085dea9101067bdf2">faiss::gpu::GpuIndexIVF</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#a9a9de859274bb73e6d8ea02cae5ca9a6">faiss::gpu::GpuIndexFlatL2</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#abb964875e0893de1d8334ca5ad0f62dc">faiss::gpu::GpuIndexFlat</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#ae981a94263044f38be89d690dd958426">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a8d48f79af9080b55706050244fc24f0e">faiss::gpu::GpuIndexIVFPQ</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a96fd66c31c7e46b1549ed61d1b3476f3">faiss::gpu::GpuIndexIVFFlat</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a8d48f79af9080b55706050244fc24f0e">faiss::gpu::GpuIndexIVFPQ</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6dc00c182a92389b74c89ba7fcab40d3">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#aa181b1778a8dca81ac5cf6cd6a3d5f1d">faiss::gpu::GpuIndexFlatIP</a>
 </li>
 <li>copyTo()
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#ab21960d379190b98aaa05ae3877dea09">faiss::gpu::GpuIndexFlatL2</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#af70d0fe80cf3bf16ffffd8b16ed64f08">faiss::gpu::GpuIndexFlatIP</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#aad10de2407911e9adf42c1be5c5dd390">faiss::gpu::GpuIndexIVFPQ</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#aad10de2407911e9adf42c1be5c5dd390">faiss::gpu::GpuIndexIVFPQ</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a1db0a796b8b2917d989952c5f07fbe55">faiss::gpu::GpuIndexIVF</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a345980d7ae4b5baadf93f647fc6cb0b1">faiss::gpu::GpuIndexIVFFlat</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#a046007ff2fafcafc6ae328769c700e39">faiss::gpu::GpuIndexFlat</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6ce60d784817469d5b47b560da177b92">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#ab21960d379190b98aaa05ae3877dea09">faiss::gpu::GpuIndexFlatL2</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6cc21376070a03d77661d6e333972c6a">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a345980d7ae4b5baadf93f647fc6cb0b1">faiss::gpu::GpuIndexIVFFlat</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#af70d0fe80cf3bf16ffffd8b16ed64f08">faiss::gpu::GpuIndexFlatIP</a>
 </li>
 <li>cp
-: <a class="el" href="structfaiss_1_1ProductQuantizer.html#af265acf5aa1bcda60898002287e6a3d6">faiss::ProductQuantizer</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a520803e209b44c904b876d6b8dad23c9">faiss::gpu::GpuIndexIVF</a>
+, <a class="el" href="structfaiss_1_1ProductQuantizer.html#af265acf5aa1bcda60898002287e6a3d6">faiss::ProductQuantizer</a>
 , <a class="el" href="structfaiss_1_1IndexIVF.html#a9746bcd42ecec1501f221e918b25e8e7">faiss::IndexIVF</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a520803e209b44c904b876d6b8dad23c9">faiss::gpu::GpuIndexIVF</a>
 </li>
 <li>CpuTimer()
 : <a class="el" href="classfaiss_1_1gpu_1_1CpuTimer.html#af2f8e832b4c5425e152834ae7aa2af49">faiss::gpu::CpuTimer</a>

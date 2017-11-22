@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['upcastinner',['upcastInner',['../classfaiss_1_1gpu_1_1Tensor.html#a70308137b566362d4cc37d3e71b3ae98',1,'faiss::gpu::Tensor']]],
-  ['upcastouter',['upcastOuter',['../classfaiss_1_1gpu_1_1Tensor.html#ad6df1805b76f74018bc94fffab8987ac',1,'faiss::gpu::Tensor']]],
+  ['upcastinner',['upcastInner',['../classfaiss_1_1gpu_1_1Tensor.html#aee5cf46d16344e2a055cf63adb07d24a',1,'faiss::gpu::Tensor']]],
+  ['upcastouter',['upcastOuter',['../classfaiss_1_1gpu_1_1Tensor.html#a309eb97e9c6dbfdecf383343c072d38c',1,'faiss::gpu::Tensor']]],
   ['update_5fbounds',['update_bounds',['../structfaiss_1_1ParameterSpace.html#ab7039882ec68aabc6c52cff883f75c28',1,'faiss::ParameterSpace']]],
   ['update_5fi_5fcross',['update_i_cross',['../structfaiss_1_1Score3Computer.html#acf371848bac76ba275ceb5e10f805d33',1,'faiss::Score3Computer']]],
   ['update_5findex',['update_index',['../structfaiss_1_1ClusteringParameters.html#a27d6192097920fa981cff0acedfaac91',1,'faiss::ClusteringParameters']]],

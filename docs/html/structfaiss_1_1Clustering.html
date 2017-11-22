@@ -168,6 +168,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ClusteringParameters.html#a27d6192097920fa981cff0acedfaac91">update_index</a></td></tr>
 <tr class="memdesc:a27d6192097920fa981cff0acedfaac91 inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="mdescLeft">&#160;</td><td class="mdescRight">update index after each iteration? <br/></td></tr>
 <tr class="separator:a27d6192097920fa981cff0acedfaac91 inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad142063e035f2a0414233f9711e16215 inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad142063e035f2a0414233f9711e16215"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ClusteringParameters.html#ad142063e035f2a0414233f9711e16215">frozen_centroids</a></td></tr>
+<tr class="memdesc:ad142063e035f2a0414233f9711e16215 inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="mdescLeft">&#160;</td><td class="mdescRight">use the centroids provided as input and do not change them during iterations <br/></td></tr>
+<tr class="separator:ad142063e035f2a0414233f9711e16215 inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5af907901147a9b1e748b13305839924 inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5af907901147a9b1e748b13305839924"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ClusteringParameters.html#a5af907901147a9b1e748b13305839924">min_points_per_centroid</a></td></tr>
 <tr class="memdesc:a5af907901147a9b1e748b13305839924 inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="mdescLeft">&#160;</td><td class="mdescRight">otherwise you get a warning <br/></td></tr>
@@ -187,7 +191,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 <p>On output, the centoids table is set to the latest version of the centroids and they are also added to the index. If the centroids table it is not empty on input, it is also used for initialization.</p>
 <p>To do several clusterings, just call <a class="el" href="structfaiss_1_1Clustering.html#a839f210abb11c7a1c7162e336e0ff9cf" title="Index is used during the assignment stage. ">train()</a> several times on different training sets, clearing the centroid table in between. </p>
 
-<p>Definition at line <a class="el" href="Clustering_8h_source.html#l00056">56</a> of file <a class="el" href="Clustering_8h_source.html">Clustering.h</a>.</p>
+<p>Definition at line <a class="el" href="Clustering_8h_source.html#l00057">57</a> of file <a class="el" href="Clustering_8h_source.html">Clustering.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a class="anchor" id="a91e32da946477bb751706a68c5cd3327"></a>
 <div class="memitem">
@@ -200,7 +204,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 </div><div class="memdoc">
 <p>objective values (sum of distances reported by index) over iterations </p>
 
-<p>Definition at line <a class="el" href="Clustering_8h_source.html#l00066">66</a> of file <a class="el" href="Clustering_8h_source.html">Clustering.h</a>.</p>
+<p>Definition at line <a class="el" href="Clustering_8h_source.html#l00067">67</a> of file <a class="el" href="Clustering_8h_source.html">Clustering.h</a>.</p>
 
 </div>
 </div>

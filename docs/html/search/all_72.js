@@ -9,7 +9,7 @@ var searchData=
   ['randomrotationmatrix',['RandomRotationMatrix',['../structfaiss_1_1RandomRotationMatrix.html',1,'faiss']]],
   ['randomrotationmatrix',['RandomRotationMatrix',['../structfaiss_1_1RandomRotationMatrix.html#a64e406c8f73c7692bcf7d97b27305fc6',1,'faiss::RandomRotationMatrix']]],
   ['range',['Range',['../structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range.html',1,'faiss::gpu::StackDeviceMemory']]],
-  ['range_5fsearch',['range_search',['../structfaiss_1_1Index.html#a236897832a58dbb205e2d662c1929fb1',1,'faiss::Index::range_search()'],['../structfaiss_1_1IndexFlat.html#ac56b7ed90ab65fab9c586a1e56006d12',1,'faiss::IndexFlat::range_search()'],['../structfaiss_1_1IndexIVFFlat.html#ad2b306f160e153b5cfb572cf1d8ece24',1,'faiss::IndexIVFFlat::range_search()']]],
+  ['range_5fsearch',['range_search',['../structfaiss_1_1Index.html#a236897832a58dbb205e2d662c1929fb1',1,'faiss::Index::range_search()'],['../structfaiss_1_1IndexFlat.html#ac56b7ed90ab65fab9c586a1e56006d12',1,'faiss::IndexFlat::range_search()'],['../structfaiss_1_1IndexIVFFlat.html#ad2b306f160e153b5cfb572cf1d8ece24',1,'faiss::IndexIVFFlat::range_search()'],['../structfaiss_1_1IndexIDMap.html#a7dbeaf9d44d6783d371f12405e8b7f40',1,'faiss::IndexIDMap::range_search()']]],
   ['range_5fsearch_5finner_5fproduct',['range_search_inner_product',['../namespacefaiss.html#ab29d725b808df6f142b80f21aa45e507',1,'faiss']]],
   ['range_5fsearch_5fl2sqr',['range_search_L2sqr',['../namespacefaiss.html#a1faa7bd079c9b1addf3058ddf882a000',1,'faiss']]],
   ['rangesearchpartialresult',['RangeSearchPartialResult',['../structfaiss_1_1RangeSearchPartialResult.html',1,'faiss']]],

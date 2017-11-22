@@ -302,7 +302,7 @@ Enumerations</h2></td></tr>
 <tr class="memitem:afd12191c638da74760ff397cf319752c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">MetricType</a> { <b>METRIC_INNER_PRODUCT</b> = 0, 
 <b>METRIC_L2</b> = 1
  }</td></tr>
-<tr class="memdesc:afd12191c638da74760ff397cf319752c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Some algorithms support both an inner product vetsion and a L2 search version. <br/></td></tr>
+<tr class="memdesc:afd12191c638da74760ff397cf319752c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Some algorithms support both an inner product version and a L2 search version. <br/></td></tr>
 <tr class="separator:afd12191c638da74760ff397cf319752c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -508,12 +508,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>write_VectorTransform
 <tr class="memitem:a7c5553442c8b9342a0ad449e2b67f275"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
 <tr class="memitem:a7c5553442c8b9342a0ad449e2b67f275"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a7c5553442c8b9342a0ad449e2b67f275">partial_sort</a> (int k, int n, const typename C::T *vals, typename C::TI *perm)</td></tr>
 <tr class="separator:a7c5553442c8b9342a0ad449e2b67f275"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a3fad4754b4124fc2a9b6fc6f10dce2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3a3fad4754b4124fc2a9b6fc6f10dce2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>search_with_probes_ip</b> (const <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a> &amp;index, const float *x, const idx_t *cent_ids, const float *cent_dis, const Quantizer &amp;quant, int k, float *simi, idx_t *idxi, bool store_pairs)</td></tr>
-<tr class="separator:a3a3fad4754b4124fc2a9b6fc6f10dce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11be36e4030b8f97b23d4472cbeb57f7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a11be36e4030b8f97b23d4472cbeb57f7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>search_with_probes_L2</b> (const <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a> &amp;index, const float *x_in, const idx_t *cent_ids, const <a class="el" href="structfaiss_1_1Index.html">Index</a> *quantizer, const Quantizer &amp;quant, int k, float *simi, idx_t *idxi, bool store_pairs)</td></tr>
-<tr class="separator:a11be36e4030b8f97b23d4472cbeb57f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1224ccbe0087fd6634d59b3008251b6"><td class="memTemplParams" colspan="2"><a class="anchor" id="ad1224ccbe0087fd6634d59b3008251b6"></a>
 template&lt;typename CT , class C &gt; </td></tr>
 <tr class="memitem:ad1224ccbe0087fd6634d59b3008251b6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>pq_estimators_from_tables_Mmul4</b> (int M, const CT *codes, size_t ncodes, const float *__restrict dis_table, size_t ksub, size_t k, float *heap_dis, long *heap_ids)</td></tr>
@@ -611,8 +605,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>inner_product_to_L2sq
 <tr class="separator:afb68fe89ad5e948974da1b70d7b4157c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d9c7db82d43c1f0ab1d28b92bc9fe57"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a3d9c7db82d43c1f0ab1d28b92bc9fe57">pairwise_L2sqr</a> (long d, long nq, const float *xq, long nb, const float *xb, float *dis, long ldq, long ldb, long ldd)</td></tr>
 <tr class="separator:a3d9c7db82d43c1f0ab1d28b92bc9fe57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1cfbe51f2d77dc5094e0140f5955165"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#ad1cfbe51f2d77dc5094e0140f5955165">km_update_centroids</a> (const float *x, float *centroids, long *assign, size_t d, size_t k, size_t n)</td></tr>
-<tr class="separator:ad1cfbe51f2d77dc5094e0140f5955165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2c6a9e87a64bba8e8014e14f70bde21"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#aa2c6a9e87a64bba8e8014e14f70bde21">km_update_centroids</a> (const float *x, float *centroids, long *assign, size_t d, size_t k, size_t n, size_t k_frozen)</td></tr>
+<tr class="separator:aa2c6a9e87a64bba8e8014e14f70bde21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0ee1b6fbd3d6da0f1a3550a780ca24c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#ae0ee1b6fbd3d6da0f1a3550a780ca24c">ranklist_handle_ties</a> (int k, long *idx, const float *dis)</td></tr>
 <tr class="separator:ae0ee1b6fbd3d6da0f1a3550a780ca24c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb7b33f6892678ba79aaf5e71777837c"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#afb7b33f6892678ba79aaf5e71777837c">merge_result_table_with</a> (size_t n, size_t k, long *I0, float *D0, const long *I1, const float *D1, bool keep_min, long translation)</td></tr>
@@ -749,7 +743,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01615">1615</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01647">1647</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -805,7 +799,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01855">1855</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01887">1887</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -853,7 +847,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 <p>same as fvec_madd, also return index of the min of the result table </p>
 <dl class="section return"><dt>Returns</dt><dd>index of the min of table c </dd></dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01929">1929</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01961">1961</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -882,7 +876,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 </div><div class="memdoc">
 <p>squared norm of a vector </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00538">538</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00632">632</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -992,7 +986,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>x or an array allocated with new [] with *n vectors </dd></dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01941">1941</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01973">1973</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1305,11 +1299,11 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>Build and index with the sequence of processing steps described in the string. </p>
 
-<p>Definition at line <a class="el" href="AutoTune_8cpp_source.html#l00639">639</a> of file <a class="el" href="AutoTune_8cpp_source.html">AutoTune.cpp</a>.</p>
+<p>Definition at line <a class="el" href="AutoTune_8cpp_source.html#l00668">668</a> of file <a class="el" href="AutoTune_8cpp_source.html">AutoTune.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ad1cfbe51f2d77dc5094e0140f5955165"></a>
+<a class="anchor" id="aa2c6a9e87a64bba8e8014e14f70bde21"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1347,7 +1341,13 @@ template&lt;class C &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>n</em>&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k_frozen</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1356,9 +1356,19 @@ template&lt;class C &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>For k-means: update stage. Returns nb of split clusters. </p>
+<p>For k-means: update stage.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>training vectors, size n * d </td></tr>
+    <tr><td class="paramname">centroids</td><td>centroid vectors, size k * d </td></tr>
+    <tr><td class="paramname">assign</td><td>nearest centroid for each training vector, size n </td></tr>
+    <tr><td class="paramname">k_frozen</td><td>do not update the k_frozen first centroids </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>nb of spliting operations to fight empty clusters </dd></dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01369">1369</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01399">1399</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1416,7 +1426,7 @@ template&lt;class C &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>final quantization error </dd></dl>
 
-<p>Definition at line <a class="el" href="Clustering_8cpp_source.html#l00204">204</a> of file <a class="el" href="Clustering_8cpp_source.html">Clustering.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Clustering_8cpp_source.html#l00217">217</a> of file <a class="el" href="Clustering_8cpp_source.html">Clustering.cpp</a>.</p>
 
 </div>
 </div>
@@ -1477,7 +1487,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00915">915</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00946">946</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1530,7 +1540,7 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>Same as knn_inner_product, for the L2 distance </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00935">935</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00966">966</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1595,7 +1605,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00955">955</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00986">986</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1636,7 +1646,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01289">1289</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01320">1320</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1711,7 +1721,7 @@ template&lt;class C &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>nb of values that were taken from the second table </dd></dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01477">1477</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01509">1509</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1794,7 +1804,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01311">1311</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01342">1342</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1905,7 +1915,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01234">1234</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01265">1265</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1940,7 +1950,7 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>distances are supposed to be sorted. Sorts indices with same distance </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01461">1461</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01493">1493</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1981,7 +1991,7 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>count the number of comon elements between v1 and v2 algorithm = sorting + bissection to avoid double-counting duplicates </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01542">1542</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01574">1574</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>

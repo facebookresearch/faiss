@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: faiss::gpu::TensorInfoOffset&lt; T,-1 &gt; Struct Template Reference</title>
+<title>Faiss: TestFlatOptions Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -80,34 +80,42 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="namespacefaiss.html">faiss</a></li><li class="navelem"><b>gpu</b></li><li class="navelem"><a class="el" href="structfaiss_1_1gpu_1_1TensorInfoOffset_3_01T_00-1_01_4.html">TensorInfoOffset< T,-1 ></a></li>  </ul>
-</div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="structfaiss_1_1gpu_1_1TensorInfoOffset_3_01T_00-1_01_4-members.html">List of all members</a>  </div>
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structTestFlatOptions-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">faiss::gpu::TensorInfoOffset&lt; T,-1 &gt; Struct Template Reference</div>  </div>
+<div class="title">TestFlatOptions Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a9921a69cabdf0befe89c586ae1e93ca8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9921a69cabdf0befe89c586ae1e93ca8"></a>
-static __device__ unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> (const <a class="el" href="structfaiss_1_1gpu_1_1TensorInfo.html">TensorInfo</a>&lt; T &gt; &amp;info, unsigned int linearId)</td></tr>
-<tr class="separator:a9921a69cabdf0befe89c586ae1e93ca8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a6cb638ee6d959f84c7ff5f2e165fe45b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6cb638ee6d959f84c7ff5f2e165fe45b"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>useL2</b></td></tr>
+<tr class="separator:a6cb638ee6d959f84c7ff5f2e165fe45b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd2661f480d3faaac832f9e80bb99ecc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abd2661f480d3faaac832f9e80bb99ecc"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>useFloat16</b></td></tr>
+<tr class="separator:abd2661f480d3faaac832f9e80bb99ecc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2474c584b84f0e3fa631ddb01a186d91"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2474c584b84f0e3fa631ddb01a186d91"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>useTransposed</b></td></tr>
+<tr class="separator:a2474c584b84f0e3fa631ddb01a186d91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61c3bc12488bbdfa29351121d91348cd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a61c3bc12488bbdfa29351121d91348cd"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>numVecsOverride</b></td></tr>
+<tr class="separator:a61c3bc12488bbdfa29351121d91348cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a159752cd2d39fc0a9fadfa9afef7757a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a159752cd2d39fc0a9fadfa9afef7757a"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>numQueriesOverride</b></td></tr>
+<tr class="separator:a159752cd2d39fc0a9fadfa9afef7757a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae441280b23a756a9bd6b695e339927ce"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae441280b23a756a9bd6b695e339927ce"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>kOverride</b></td></tr>
+<tr class="separator:ae441280b23a756a9bd6b695e339927ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename T&gt;<br/>
-struct faiss::gpu::TensorInfoOffset&lt; T,-1 &gt;</h3>
-
-
-<p>Definition at line <a class="el" href="Transpose_8cuh_source.html#l00055">55</a> of file <a class="el" href="Transpose_8cuh_source.html">Transpose.cuh</a>.</p>
+<div class="textblock">
+<p>Definition at line <a class="el" href="TestGpuIndexFlat_8cpp_source.html#l00024">24</a> of file <a class="el" href="TestGpuIndexFlat_8cpp_source.html">TestGpuIndexFlat.cpp</a>.</p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/utils/<a class="el" href="Transpose_8cuh_source.html">Transpose.cuh</a></li>
+<li>/data/users/matthijs/github_faiss/faiss/gpu/test/<a class="el" href="TestGpuIndexFlat_8cpp_source.html">TestGpuIndexFlat.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
