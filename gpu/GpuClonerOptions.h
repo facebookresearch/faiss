@@ -47,6 +47,9 @@ struct GpuMultipleClonerOptions : public GpuClonerOptions {
   /// Whether to shard the index across GPUs, versus replication
   /// across GPUs
   bool shard;
+
+  /// IndexIVF::copy_subset_to subset type
+  int shard_type;
 };
 
 } } // namespace

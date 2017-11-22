@@ -10,18 +10,18 @@
 
 namespace faiss { namespace gpu {
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-HostTensor<T, Dim, Contig, IndexT, PtrTraits>::HostTensor() :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(),
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor() :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(),
     state_(AllocState::NotOwner) {
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-HostTensor<T, Dim, Contig, IndexT, PtrTraits>::~HostTensor() {
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::~HostTensor() {
   if (state_ == AllocState::Owner) {
     FAISS_ASSERT(this->data_ != nullptr);
     delete[] this->data_;
@@ -29,67 +29,67 @@ HostTensor<T, Dim, Contig, IndexT, PtrTraits>::~HostTensor() {
   }
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-HostTensor<T, Dim, Contig, IndexT, PtrTraits>::HostTensor(
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
   const IndexT sizes[Dim]) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(nullptr, sizes),
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes),
     state_(AllocState::Owner) {
 
   this->data_ = new T[this->numElements()];
   FAISS_ASSERT(this->data_ != nullptr);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-HostTensor<T, Dim, Contig, IndexT, PtrTraits>::HostTensor(
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
   std::initializer_list<IndexT> sizes) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(nullptr, sizes),
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes),
     state_(AllocState::Owner) {
   this->data_ = new T[this->numElements()];
   FAISS_ASSERT(this->data_ != nullptr);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-HostTensor<T, Dim, Contig, IndexT, PtrTraits>::HostTensor(
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
   DataPtrType data,
   const IndexT sizes[Dim]) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(data, sizes),
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(data, sizes),
     state_(AllocState::NotOwner) {
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-HostTensor<T, Dim, Contig, IndexT, PtrTraits>::HostTensor(
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
   DataPtrType data,
   std::initializer_list<IndexT> sizes) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(data, sizes),
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(data, sizes),
     state_(AllocState::NotOwner) {
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-HostTensor<T, Dim, Contig, IndexT, PtrTraits>::HostTensor(
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
   DataPtrType data,
   const IndexT sizes[Dim],
   const IndexT strides[Dim]) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(data, sizes, strides),
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(data, sizes, strides),
     state_(AllocState::NotOwner) {
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-HostTensor<T, Dim, Contig, IndexT, PtrTraits>::HostTensor(
-  Tensor<T, Dim, Contig, IndexT, PtrTraits>& t,
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
   cudaStream_t stream) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(nullptr, t.sizes(), t.strides()),
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, t.sizes(), t.strides()),
     state_(AllocState::Owner) {
   // Only contiguous arrays handled for now
   FAISS_ASSERT(t.isContiguous());
@@ -99,10 +99,10 @@ HostTensor<T, Dim, Contig, IndexT, PtrTraits>::HostTensor(
 }
 
 /// Call to zero out memory
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
-__host__ HostTensor<T, Dim, Contig, IndexT, PtrTraits>&
-HostTensor<T, Dim, Contig, IndexT, PtrTraits>::zero() {
+__host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>&
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::zero() {
   // Region must be contiguous
   FAISS_ASSERT(this->isContiguous());
 
@@ -113,17 +113,17 @@ HostTensor<T, Dim, Contig, IndexT, PtrTraits>::zero() {
   return *this;
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ T
-HostTensor<T, Dim, Contig, IndexT, PtrTraits>::maxDiff(
-  const HostTensor<T, Dim, Contig, IndexT, PtrTraits>& t) const {
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::maxDiff(
+  const HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>& t) const {
   auto size = this->numElements();
 
   FAISS_ASSERT(size == t.numElements());
   FAISS_ASSERT(size > 0);
 
-  if (Contig) {
+  if (InnerContig) {
     auto a = this->data();
     auto b = t.data();
 

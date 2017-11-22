@@ -114,6 +114,15 @@ struct IndexIVFPQ: IndexIVF {
                              float *distances, idx_t *labels,
                              bool store_pairs) const override;
 
+    /** Same as the search function, but also reconstruct approximate
+     * vectors for the search results
+     *
+     * @param reconstructed    size (n, k, d)
+     **/
+    void search_and_reconstruct (idx_t n, const float *x, idx_t k,
+                                 float *distances, idx_t *labels,
+                                 float *reconstructed);
+
 
     /// build precomputed table
     void precompute_table ();

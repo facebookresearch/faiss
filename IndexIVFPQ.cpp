@@ -291,8 +291,7 @@ void IndexIVFPQ::reconstruct_n (idx_t i0, idx_t ni, float *recons) const
                 for (int j = 0; j < d; j++) {
                     r[j] += centroid[j];
                 }
-            }
-            else {
+            } else {
                 pq.decode (code_line + ofs * pq.code_size, r);
             }
         }
@@ -303,6 +302,7 @@ void IndexIVFPQ::reconstruct_n (idx_t i0, idx_t ni, float *recons) const
 void IndexIVFPQ::reconstruct (idx_t key, float * recons) const
 {
     FAISS_THROW_IF_NOT (direct_map.size() == ntotal);
+
     int list_no = direct_map[key] >> 32;
     int ofs = direct_map[key] & 0xffffffff;
 
@@ -1027,6 +1027,51 @@ void IndexIVFPQ::search_preassigned (idx_t nx, const float *qx, idx_t k,
     }
     indexIVFPQ_stats.nq += nx;
 }
+
+
+void IndexIVFPQ::search_and_reconstruct (idx_t n, const float *x, idx_t k,
+                                         float *distances, idx_t *labels,
+                                         float *reconstructed)
+{
+    long * idx = new long [n * nprobe];
+    ScopeDeleter<long> del (idx);
+    float * coarse_dis = new float [n * nprobe];
+    ScopeDeleter<float> del2 (coarse_dis);
+
+    quantizer->search (n, x, nprobe, coarse_dis, idx);
+
+    search_preassigned (n, x, k, idx, coarse_dis,
+                        distances, labels, true);
+
+    for (long i = 0; i < n; i++) {
+        for (long j = 0; j < k; j++) {
+            long ij = i * k + j;
+            idx_t res = labels[ij];
+            float *recons = reconstructed + d * (ij);
+            if (res < 0) {
+                // fill with NaNs
+                memset(recons, -1, sizeof(*recons) * d);
+            } else {
+                int list_no = res >> 32;
+                int ofs = res & 0xffffffff;
+                labels[ij] = ids[list_no][ofs];
+
+                quantizer->reconstruct (list_no, recons);
+                const uint8_t * code = &(codes[list_no][ofs * pq.code_size]);
+
+                for (size_t m = 0; m < pq.M; m++) {
+                    float * out = recons + m * pq.dsub;
+                    const float * cent = pq.get_centroids (m, code[m]);
+                    for (size_t l = 0; l < pq.dsub; l++) {
+                        out[l] += cent[l];
+                    }
+                }
+            }
+        }
+    }
+
+}
+
 
 
 

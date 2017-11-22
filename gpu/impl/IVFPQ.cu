@@ -195,10 +195,7 @@ IVFPQ::classifyAndAddVectors(Tensor<float, 2, true>& vecs,
                   closestSubQDistanceView,
                   closestSubQIndexView,
                   // We don't care about distances
-                  true,
-                  // Much larger tile size, since these vectors are a
-                  // lot smaller than query vectors
-                  1024);
+                  true);
   }
 
   // Now, we have the nearest sub-q centroid for each slice of the

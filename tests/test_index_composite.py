@@ -42,6 +42,42 @@ class TestRemove(unittest.TestCase):
         else:
             assert False, 'should have raised an exception'
 
+    def test_remove_id_map_2(self):
+        # from https://github.com/facebookresearch/faiss/issues/255
+        rs = np.random.RandomState(1234)
+        X = rs.randn(10, 10).astype(np.float32)
+        idx = np.array([0, 10, 20, 30, 40, 5, 15, 25, 35, 45], np.int64)
+        remove_set = np.array([10, 30], dtype=np.int64)
+        index = faiss.index_factory(10, 'IDMap,Flat')
+        index.add_with_ids(X[:5, :], idx[:5])
+        index.remove_ids(remove_set)
+        index.add_with_ids(X[5:, :], idx[5:])
+
+        print (index.search(X, 1))
+
+        for i in range(10):
+            _, searchres = index.search(X[i:i + 1, :], 1)
+            if idx[i] in remove_set:
+                assert searchres[0] != idx[i]
+            else:
+                assert searchres[0] == idx[i]
+
+
+
+class TestRangeSearch(unittest.TestCase):
+
+    def test_range_search_id_map(self):
+        sub_index = faiss.IndexFlat(5, 1)  # L2 search instead of inner product
+        xb = np.zeros((10, 5), dtype='float32')
+        xb[:, 0] = np.arange(10) + 1000
+        index = faiss.IndexIDMap2(sub_index)
+        index.add_with_ids(xb, np.arange(10) + 100)
+        dist = float(np.linalg.norm(xb[3] - xb[0])) * 0.99
+        res_subindex = sub_index.range_search(xb[[0], :], dist)
+        res_index = index.range_search(xb[[0], :], dist)
+        assert len(res_subindex[2]) == 2
+        np.testing.assert_array_equal(res_subindex[2] + 100, res_index[2])
+
 
 class TestUpdate(unittest.TestCase):
 

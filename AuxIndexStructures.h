@@ -25,7 +25,7 @@ namespace faiss {
 /** The objective is to have a simple result structure while
  *  minimizing the number of mem copies in the result. The method
  *  do_allocation can be overloaded to allocate the result tables in
- *  the matrix type of a srcipting language like Lua or Python. */
+ *  the matrix type of a scripting language like Lua or Python. */
 struct RangeSearchResult {
     size_t nq;      ///< nb of queries
     size_t *lims;   ///< size (nq + 1)

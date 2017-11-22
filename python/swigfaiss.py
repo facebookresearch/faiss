@@ -80,6 +80,7 @@ class FloatVector(_object):
         try: self.this.append(this)
         except: self.this = this
     def push_back(self, *args): return _swigfaiss.FloatVector_push_back(self, *args)
+    def clear(self): return _swigfaiss.FloatVector_clear(self)
     def data(self): return _swigfaiss.FloatVector_data(self)
     def size(self): return _swigfaiss.FloatVector_size(self)
     def at(self, *args): return _swigfaiss.FloatVector_at(self, *args)
@@ -88,6 +89,27 @@ class FloatVector(_object):
     __del__ = lambda self : None;
 FloatVector_swigregister = _swigfaiss.FloatVector_swigregister
 FloatVector_swigregister(FloatVector)
+
+class DoubleVector(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, DoubleVector, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, DoubleVector, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _swigfaiss.new_DoubleVector()
+        try: self.this.append(this)
+        except: self.this = this
+    def push_back(self, *args): return _swigfaiss.DoubleVector_push_back(self, *args)
+    def clear(self): return _swigfaiss.DoubleVector_clear(self)
+    def data(self): return _swigfaiss.DoubleVector_data(self)
+    def size(self): return _swigfaiss.DoubleVector_size(self)
+    def at(self, *args): return _swigfaiss.DoubleVector_at(self, *args)
+    def resize(self, *args): return _swigfaiss.DoubleVector_resize(self, *args)
+    __swig_destroy__ = _swigfaiss.delete_DoubleVector
+    __del__ = lambda self : None;
+DoubleVector_swigregister = _swigfaiss.DoubleVector_swigregister
+DoubleVector_swigregister(DoubleVector)
 
 class ByteVector(_object):
     __swig_setmethods__ = {}
@@ -100,6 +122,7 @@ class ByteVector(_object):
         try: self.this.append(this)
         except: self.this = this
     def push_back(self, *args): return _swigfaiss.ByteVector_push_back(self, *args)
+    def clear(self): return _swigfaiss.ByteVector_clear(self)
     def data(self): return _swigfaiss.ByteVector_data(self)
     def size(self): return _swigfaiss.ByteVector_size(self)
     def at(self, *args): return _swigfaiss.ByteVector_at(self, *args)
@@ -120,6 +143,7 @@ class Uint64Vector(_object):
         try: self.this.append(this)
         except: self.this = this
     def push_back(self, *args): return _swigfaiss.Uint64Vector_push_back(self, *args)
+    def clear(self): return _swigfaiss.Uint64Vector_clear(self)
     def data(self): return _swigfaiss.Uint64Vector_data(self)
     def size(self): return _swigfaiss.Uint64Vector_size(self)
     def at(self, *args): return _swigfaiss.Uint64Vector_at(self, *args)
@@ -140,6 +164,7 @@ class LongVector(_object):
         try: self.this.append(this)
         except: self.this = this
     def push_back(self, *args): return _swigfaiss.LongVector_push_back(self, *args)
+    def clear(self): return _swigfaiss.LongVector_clear(self)
     def data(self): return _swigfaiss.LongVector_data(self)
     def size(self): return _swigfaiss.LongVector_size(self)
     def at(self, *args): return _swigfaiss.LongVector_at(self, *args)
@@ -160,6 +185,7 @@ class IntVector(_object):
         try: self.this.append(this)
         except: self.this = this
     def push_back(self, *args): return _swigfaiss.IntVector_push_back(self, *args)
+    def clear(self): return _swigfaiss.IntVector_clear(self)
     def data(self): return _swigfaiss.IntVector_data(self)
     def size(self): return _swigfaiss.IntVector_size(self)
     def at(self, *args): return _swigfaiss.IntVector_at(self, *args)
@@ -180,6 +206,7 @@ class VectorTransformVector(_object):
         try: self.this.append(this)
         except: self.this = this
     def push_back(self, *args): return _swigfaiss.VectorTransformVector_push_back(self, *args)
+    def clear(self): return _swigfaiss.VectorTransformVector_clear(self)
     def data(self): return _swigfaiss.VectorTransformVector_data(self)
     def size(self): return _swigfaiss.VectorTransformVector_size(self)
     def at(self, *args): return _swigfaiss.VectorTransformVector_at(self, *args)
@@ -200,6 +227,7 @@ class OperatingPointVector(_object):
         try: self.this.append(this)
         except: self.this = this
     def push_back(self, *args): return _swigfaiss.OperatingPointVector_push_back(self, *args)
+    def clear(self): return _swigfaiss.OperatingPointVector_clear(self)
     def data(self): return _swigfaiss.OperatingPointVector_data(self)
     def size(self): return _swigfaiss.OperatingPointVector_size(self)
     def at(self, *args): return _swigfaiss.OperatingPointVector_at(self, *args)
@@ -220,6 +248,7 @@ class FloatVectorVector(_object):
         try: self.this.append(this)
         except: self.this = this
     def push_back(self, *args): return _swigfaiss.FloatVectorVector_push_back(self, *args)
+    def clear(self): return _swigfaiss.FloatVectorVector_clear(self)
     def data(self): return _swigfaiss.FloatVectorVector_data(self)
     def size(self): return _swigfaiss.FloatVectorVector_size(self)
     def at(self, *args): return _swigfaiss.FloatVectorVector_at(self, *args)
@@ -240,6 +269,7 @@ class ByteVectorVector(_object):
         try: self.this.append(this)
         except: self.this = this
     def push_back(self, *args): return _swigfaiss.ByteVectorVector_push_back(self, *args)
+    def clear(self): return _swigfaiss.ByteVectorVector_clear(self)
     def data(self): return _swigfaiss.ByteVectorVector_data(self)
     def size(self): return _swigfaiss.ByteVectorVector_size(self)
     def at(self, *args): return _swigfaiss.ByteVectorVector_at(self, *args)
@@ -260,6 +290,7 @@ class LongVectorVector(_object):
         try: self.this.append(this)
         except: self.this = this
     def push_back(self, *args): return _swigfaiss.LongVectorVector_push_back(self, *args)
+    def clear(self): return _swigfaiss.LongVectorVector_clear(self)
     def data(self): return _swigfaiss.LongVectorVector_data(self)
     def size(self): return _swigfaiss.LongVectorVector_size(self)
     def at(self, *args): return _swigfaiss.LongVectorVector_at(self, *args)
@@ -876,6 +907,9 @@ class ClusteringParameters(_object):
     __swig_setmethods__["update_index"] = _swigfaiss.ClusteringParameters_update_index_set
     __swig_getmethods__["update_index"] = _swigfaiss.ClusteringParameters_update_index_get
     if _newclass:update_index = _swig_property(_swigfaiss.ClusteringParameters_update_index_get, _swigfaiss.ClusteringParameters_update_index_set)
+    __swig_setmethods__["frozen_centroids"] = _swigfaiss.ClusteringParameters_frozen_centroids_set
+    __swig_getmethods__["frozen_centroids"] = _swigfaiss.ClusteringParameters_frozen_centroids_get
+    if _newclass:frozen_centroids = _swig_property(_swigfaiss.ClusteringParameters_frozen_centroids_get, _swigfaiss.ClusteringParameters_frozen_centroids_set)
     __swig_setmethods__["min_points_per_centroid"] = _swigfaiss.ClusteringParameters_min_points_per_centroid_set
     __swig_getmethods__["min_points_per_centroid"] = _swigfaiss.ClusteringParameters_min_points_per_centroid_get
     if _newclass:min_points_per_centroid = _swig_property(_swigfaiss.ClusteringParameters_min_points_per_centroid_get, _swigfaiss.ClusteringParameters_min_points_per_centroid_set)
@@ -1720,6 +1754,9 @@ class IndexIVF(Index):
     __swig_setmethods__["cp"] = _swigfaiss.IndexIVF_cp_set
     __swig_getmethods__["cp"] = _swigfaiss.IndexIVF_cp_get
     if _newclass:cp = _swig_property(_swigfaiss.IndexIVF_cp_get, _swigfaiss.IndexIVF_cp_set)
+    __swig_setmethods__["clustering_index"] = _swigfaiss.IndexIVF_clustering_index_set
+    __swig_getmethods__["clustering_index"] = _swigfaiss.IndexIVF_clustering_index_get
+    if _newclass:clustering_index = _swig_property(_swigfaiss.IndexIVF_clustering_index_get, _swigfaiss.IndexIVF_clustering_index_set)
     __swig_setmethods__["ids"] = _swigfaiss.IndexIVF_ids_set
     __swig_getmethods__["ids"] = _swigfaiss.IndexIVF_ids_get
     if _newclass:ids = _swig_property(_swigfaiss.IndexIVF_ids_get, _swigfaiss.IndexIVF_ids_set)
@@ -1949,6 +1986,7 @@ class IndexIVFPQ(IndexIVF):
     def encode_multiple(self, *args): return _swigfaiss.IndexIVFPQ_encode_multiple(self, *args)
     def decode_multiple(self, *args): return _swigfaiss.IndexIVFPQ_decode_multiple(self, *args)
     def search_preassigned(self, *args): return _swigfaiss.IndexIVFPQ_search_preassigned(self, *args)
+    def search_and_reconstruct(self, *args): return _swigfaiss.IndexIVFPQ_search_and_reconstruct(self, *args)
     def precompute_table(self): return _swigfaiss.IndexIVFPQ_precompute_table(self)
     def __init__(self, *args): 
         this = _swigfaiss.new_IndexIVFPQ(*args)
@@ -2107,6 +2145,7 @@ class IndexIDMap(Index):
     def train(self, *args): return _swigfaiss.IndexIDMap_train(self, *args)
     def reset(self): return _swigfaiss.IndexIDMap_reset(self)
     def remove_ids(self, *args): return _swigfaiss.IndexIDMap_remove_ids(self, *args)
+    def range_search(self, *args): return _swigfaiss.IndexIDMap_range_search(self, *args)
     __swig_destroy__ = _swigfaiss.delete_IndexIDMap
     __del__ = lambda self : None;
     def __init__(self, *args): 
@@ -2775,6 +2814,27 @@ RangeSearchPartialResult_swigregister(RangeSearchPartialResult)
 def ignore_SIGTTIN():
   return _swigfaiss.ignore_SIGTTIN()
 ignore_SIGTTIN = _swigfaiss.ignore_SIGTTIN
+class MapLong2Long(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, MapLong2Long, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, MapLong2Long, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["map"] = _swigfaiss.MapLong2Long_map_set
+    __swig_getmethods__["map"] = _swigfaiss.MapLong2Long_map_get
+    if _newclass:map = _swig_property(_swigfaiss.MapLong2Long_map_get, _swigfaiss.MapLong2Long_map_set)
+    def add(self, *args): return _swigfaiss.MapLong2Long_add(self, *args)
+    def search(self, *args): return _swigfaiss.MapLong2Long_search(self, *args)
+    def search_multiple(self, *args): return _swigfaiss.MapLong2Long_search_multiple(self, *args)
+    def __init__(self): 
+        this = _swigfaiss.new_MapLong2Long()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _swigfaiss.delete_MapLong2Long
+    __del__ = lambda self : None;
+MapLong2Long_swigregister = _swigfaiss.MapLong2Long_swigregister
+MapLong2Long_swigregister(MapLong2Long)
+
 # This file is compatible with both classic and new-style classes.
 
 

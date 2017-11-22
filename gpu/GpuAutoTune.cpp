@@ -8,6 +8,7 @@
 
 // Copyright 2004-present Facebook. All Rights Reserved.
 #include "GpuAutoTune.h"
+#include <typeinfo>
 
 #include "GpuIndex.h"
 #include "../FaissAssert.h"
@@ -97,17 +98,6 @@ faiss::Index * index_gpu_to_cpu(const faiss::Index *gpu_index)
 
 
 
-GpuClonerOptions::GpuClonerOptions():
-    indicesOptions(INDICES_64_BIT),
-    useFloat16CoarseQuantizer(false),
-    useFloat16(false),
-    usePrecomputed(true),
-    reserveVecs(0),
-    storeTransposed(false),
-    verbose(0)
-{}
-
-
 struct ToGpuCloner: faiss::Cloner, GpuClonerOptions {
     GpuResources *resources;
     int device;
@@ -185,9 +175,6 @@ faiss::Index * index_cpu_to_gpu(
     return cl.clone_Index(index);
 }
 
-GpuMultipleClonerOptions::GpuMultipleClonerOptions(): shard(false)
-{}
-
 struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
     std::vector<ToGpuCloner> sub_cloners;
 
@@ -211,6 +198,28 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
     {}
 
 
+    void copy_ivf_shard (const IndexIVF *index_ivf, IndexIVF *idx2,
+                         long n, long i) {
+        if (shard_type == 2) {
+            long i0 = i * index_ivf->ntotal / n;
+            long i1 = (i + 1) * index_ivf->ntotal / n;
+
+            if(verbose)
+                printf("IndexShards shard %ld indices %ld:%ld\n",
+                       i, i0, i1);
+            index_ivf->copy_subset_to(*idx2, 2, i0, i1);
+            FAISS_ASSERT(idx2->ntotal == i1 - i0);
+        } else if (shard_type == 1) {
+            if(verbose)
+                printf("IndexShards shard %ld select modulo %ld = %ld\n",
+                       i, n, i);
+            index_ivf->copy_subset_to(*idx2, 1, n, i);
+        } else {
+            FAISS_THROW_FMT ("shard_type %d not implemented", shard_type);
+        }
+
+    }
+
     Index *clone_Index(const Index *index) override {
         long n = sub_cloners.size();
         if (n == 1)
@@ -231,19 +240,13 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
                     dynamic_cast<const faiss::IndexIVFPQ *>(index);
                 auto index_ivfflat =
                     dynamic_cast<const faiss::IndexIVFFlat *>(index);
-                FAISS_ASSERT_MSG (index_ivfpq || index_ivfflat,
+                FAISS_THROW_IF_NOT_MSG (index_ivfpq || index_ivfflat,
                               "IndexShards implemented only for "
                               "IndexIVFFlat or IndexIVFPQ");
                 std::vector<faiss::Index*> shards(n);
 
                 for(long i = 0; i < n; i++) {
                     // make a shallow copy
-                    long i0 = i * index->ntotal / n;
-                    long i1 = (i + 1) * index->ntotal / n;
-                    if(verbose)
-                        printf("IndexShards shard %ld indices %ld:%ld\n",
-                               i, i0, i1);
-
                     if(reserveVecs)
                         sub_cloners[i].reserveVecs =
                             (reserveVecs + n - 1) / n;
@@ -258,18 +261,19 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
                         idx2.nprobe = index_ivfpq->nprobe;
                         idx2.use_precomputed_table = 0;
                         idx2.is_trained = index->is_trained;
-                        index_ivfpq->copy_subset_to(idx2, 2, i0, i1);
-                        FAISS_ASSERT(idx2.ntotal == i1 - i0);
+                        copy_ivf_shard (index_ivfpq, &idx2, n, i);
                         shards[i] = sub_cloners[i].clone_Index(&idx2);
                     } else if (index_ivfflat) {
                         faiss::IndexIVFFlat idx2(
                               index_ivfflat->quantizer, index->d,
                               index_ivfflat->nlist, index_ivfflat->metric_type);
                         idx2.nprobe = index_ivfflat->nprobe;
-                        index_ivfflat->copy_subset_to(idx2, 2, i0, i1);
                         idx2.nprobe = index_ivfflat->nprobe;
+                        copy_ivf_shard (index_ivfflat, &idx2, n, i);
                         shards[i] = sub_cloners[i].clone_Index(&idx2);
                     }
+
+
                 }
                 faiss::IndexShards *res =
                     new faiss::IndexShards(index->d, true, false);
@@ -372,33 +376,26 @@ void GpuParameterSpace::initialize (const Index * index)
 void GpuParameterSpace::set_index_parameter (
         Index * index, const std::string & name, double val) const
 {
-    if (DC (IndexPreTransform)) {
-        index = ix->index;
-    }
     if (DC (IndexProxy)) {
         for (int i = 0; i < ix->count(); i++)
             set_index_parameter (ix->at(i), name, val);
         return;
     }
-    if (DC (faiss::IndexShards)) {
-        for (auto sub_index : ix->shard_indexes)
-            set_index_parameter (sub_index, name, val);
-        return;
+    if (DC (GpuIndexIVF)) {
+        if (name == "nprobe") {
+            ix->setNumProbes (int (val));
+            return;
+        }
     }
-    if (name == "nprobe") {
-      DC (GpuIndexIVF);
-      FAISS_ASSERT(ix);
-      ix->setNumProbes (int (val));
-      return;
-    }
-    if (name == "use_precomputed_table") {
-      DC (GpuIndexIVFPQ);
-      FAISS_ASSERT(ix);
-      ix->setPrecomputedCodes(bool (val));
-      return;
+    if(DC (GpuIndexIVFPQ)) {
+        if (name == "use_precomputed_table") {
+            ix->setPrecomputedCodes(bool (val));
+            return;
+        }
     }
 
-    FAISS_ASSERT_MSG (false, "unknown parameter");
+    // maybe norma lindex parameters apply?
+    ParameterSpace::set_index_parameter (index, name, val);
 }
 
 

@@ -61,16 +61,14 @@ class FlatIndex {
              int k,
              Tensor<float, 2, true>& outDistances,
              Tensor<int, 2, true>& outIndices,
-             bool exactDistance,
-             int tileSize = -1);
+             bool exactDistance);
 
 #ifdef FAISS_USE_FLOAT16
   void query(Tensor<half, 2, true>& vecs,
              int k,
              Tensor<half, 2, true>& outDistances,
              Tensor<int, 2, true>& outIndices,
-             bool exactDistance,
-             int tileSize = -1);
+             bool exactDistance);
 #endif
 
   /// Add vectors to ourselves; the pointer passed can be on the host

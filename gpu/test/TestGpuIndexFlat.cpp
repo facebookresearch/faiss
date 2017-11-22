@@ -21,29 +21,47 @@
 constexpr float kF16MaxRelErr = 0.07f;
 constexpr float kF32MaxRelErr = 6e-3f;
 
-void testFlat(bool useL2,
-              bool useFloat16,
-              bool useTransposed,
-              int kOverride = -1) {
-  int numVecs = faiss::gpu::randVal(1000, 20000);
+struct TestFlatOptions {
+  TestFlatOptions()
+      : useL2(true),
+        useFloat16(false),
+        useTransposed(false),
+        numVecsOverride(-1),
+        numQueriesOverride(-1),
+        kOverride(-1) {
+  }
+
+  bool useL2;
+  bool useFloat16;
+  bool useTransposed;
+  int numVecsOverride;
+  int numQueriesOverride;
+  int kOverride;
+};
+
+void testFlat(const TestFlatOptions& opt) {
+  int numVecs = opt.numVecsOverride > 0 ?
+    opt.numVecsOverride : faiss::gpu::randVal(1000, 20000);
   int dim = faiss::gpu::randVal(50, 800);
-  int numQuery = faiss::gpu::randVal(1, 512);
+  int numQuery = opt.numQueriesOverride > 0 ?
+    opt.numQueriesOverride : faiss::gpu::randVal(1, 512);
 
   // Due to loss of precision in a float16 accumulator, for large k,
   // the number of differences is pretty huge. Restrict ourselves to a
   // fairly small `k` for float16
-  int k = useFloat16 ?
+  int k = opt.useFloat16 ?
     std::min(faiss::gpu::randVal(1, 50), numVecs) :
     std::min(faiss::gpu::randVal(1, 1024), numVecs);
-  if (kOverride > 0) {
-    k = kOverride;
+  if (opt.kOverride > 0) {
+    k = opt.kOverride;
   }
 
   faiss::IndexFlatIP cpuIndexIP(dim);
   faiss::IndexFlatL2 cpuIndexL2(dim);
 
   faiss::IndexFlat* cpuIndex =
-    useL2 ? (faiss::IndexFlat*) &cpuIndexL2 : (faiss::IndexFlat*) &cpuIndexIP;
+    opt.useL2 ? (faiss::IndexFlat*) &cpuIndexL2 :
+    (faiss::IndexFlat*) &cpuIndexIP;
 
   // Construct on a random device to test multi-device, if we have
   // multiple devices
@@ -55,14 +73,14 @@ void testFlat(bool useL2,
 
   faiss::gpu::GpuIndexFlatConfig config;
   config.device = device;
-  config.useFloat16 = useFloat16;
-  config.storeTransposed = useTransposed;
+  config.useFloat16 = opt.useFloat16;
+  config.storeTransposed = opt.useTransposed;
 
   faiss::gpu::GpuIndexFlatIP gpuIndexIP(&res, dim, config);
   faiss::gpu::GpuIndexFlatL2 gpuIndexL2(&res, dim, config);
 
   faiss::gpu::GpuIndexFlat* gpuIndex =
-    useL2 ? (faiss::gpu::GpuIndexFlat*) &gpuIndexL2 :
+    opt.useL2 ? (faiss::gpu::GpuIndexFlat*) &gpuIndexL2 :
     (faiss::gpu::GpuIndexFlat*) &gpuIndexIP;
 
   std::vector<float> vecs = faiss::gpu::randVecs(numVecs, dim);
@@ -70,37 +88,53 @@ void testFlat(bool useL2,
   gpuIndex->add(numVecs, vecs.data());
 
   std::stringstream str;
-  str << (useL2 ? "L2" : "IP") << " numVecs " << numVecs
+  str << (opt.useL2 ? "L2" : "IP") << " numVecs " << numVecs
       << " dim " << dim
-      << " useFloat16 " << useFloat16
-      << " transposed " << useTransposed
+      << " useFloat16 " << opt.useFloat16
+      << " transposed " << opt.useTransposed
       << " numQuery " << numQuery
       << " k " << k;
 
   // To some extent, we depend upon the relative error for the test
   // for float16
   faiss::gpu::compareIndices(*cpuIndex, *gpuIndex, numQuery, dim, k, str.str(),
-                             useFloat16 ? kF16MaxRelErr : kF32MaxRelErr,
+                             opt.useFloat16 ? kF16MaxRelErr : kF32MaxRelErr,
                              // FIXME: the fp16 bounds are
                              // useless when math (the accumulator) is
                              // in fp16. Figure out another way to test
-                             useFloat16 ? 0.99f : 0.1f,
-                             useFloat16 ? 0.65f : 0.015f);
+                             opt.useFloat16 ? 0.99f : 0.1f,
+                             opt.useFloat16 ? 0.65f : 0.015f);
 }
 
 TEST(TestGpuIndexFlat, IP_Float32) {
   for (int tries = 0; tries < 5; ++tries) {
     faiss::gpu::newTestSeed();
-    testFlat(false, false, false);
-    testFlat(false, false, true);
+
+    TestFlatOptions opt;
+    opt.useL2 = false;
+    opt.useFloat16 = false;
+    opt.useTransposed = false;
+
+    testFlat(opt);
+
+    opt.useTransposed = true;
+    testFlat(opt);
   }
 }
 
 TEST(TestGpuIndexFlat, L2_Float32) {
   for (int tries = 0; tries < 5; ++tries) {
     faiss::gpu::newTestSeed();
-    testFlat(true, false, false);
-    testFlat(true, false, true);
+
+    TestFlatOptions opt;
+    opt.useL2 = true;
+    opt.useFloat16 = false;
+    opt.useTransposed = false;
+
+    testFlat(opt);
+
+    opt.useTransposed = true;
+    testFlat(opt);
   }
 }
 
@@ -108,24 +142,46 @@ TEST(TestGpuIndexFlat, L2_Float32) {
 TEST(TestGpuIndexFlat, L2_Float32_K1) {
   for (int tries = 0; tries < 5; ++tries) {
     faiss::gpu::newTestSeed();
-    testFlat(true, false, false, 1);
-    testFlat(true, false, true, 1);
+
+    TestFlatOptions opt;
+    opt.useL2 = true;
+    opt.useFloat16 = false;
+    opt.useTransposed = false;
+    opt.kOverride = 1;
+
+    testFlat(opt);
   }
 }
 
 TEST(TestGpuIndexFlat, IP_Float16) {
   for (int tries = 0; tries < 5; ++tries) {
     faiss::gpu::newTestSeed();
-    testFlat(false, true, false);
-    testFlat(false, true, false);
+
+    TestFlatOptions opt;
+    opt.useL2 = false;
+    opt.useFloat16 = true;
+    opt.useTransposed = false;
+
+    testFlat(opt);
+
+    opt.useTransposed = true;
+    testFlat(opt);
   }
 }
 
 TEST(TestGpuIndexFlat, L2_Float16) {
   for (int tries = 0; tries < 5; ++tries) {
     faiss::gpu::newTestSeed();
-    testFlat(true, true, false);
-    testFlat(true, true, true);
+
+    TestFlatOptions opt;
+    opt.useL2 = true;
+    opt.useFloat16 = true;
+    opt.useTransposed = false;
+
+    testFlat(opt);
+
+    opt.useTransposed = true;
+    testFlat(opt);
   }
 }
 
@@ -133,8 +189,33 @@ TEST(TestGpuIndexFlat, L2_Float16) {
 TEST(TestGpuIndexFlat, L2_Float16_K1) {
   for (int tries = 0; tries < 5; ++tries) {
     faiss::gpu::newTestSeed();
-    testFlat(true, true, false, 1);
-    testFlat(true, true, true, 1);
+
+    TestFlatOptions opt;
+    opt.useL2 = true;
+    opt.useFloat16 = true;
+    opt.useTransposed = false;
+    opt.kOverride = 1;
+
+    testFlat(opt);
+  }
+}
+
+// test tiling along a huge vector set
+TEST(TestGpuIndexFlat, L2_Tiling) {
+  for (int tries = 0; tries < 3; ++tries) {
+    faiss::gpu::newTestSeed();
+
+    TestFlatOptions opt;
+    opt.useL2 = true;
+    opt.useFloat16 = false;
+    opt.useTransposed = false;
+    opt.numVecsOverride = 1000000;
+    opt.numQueriesOverride = 8;
+
+    testFlat(opt);
+
+    opt.useTransposed = true;
+    testFlat(opt);
   }
 }
 

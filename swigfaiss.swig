@@ -23,6 +23,7 @@
 
 #pragma SWIG nowarn=321
 #pragma SWIG nowarn=403
+#pragma SWIG nowarn=325
 
 typedef unsigned long uint64_t;
 typedef uint64_t size_t;
@@ -108,6 +109,7 @@ namespace std {
     public:
         vector();
         void push_back(T);
+        void clear();
         T * data();
         size_t size();
         T at (size_t n) const;
@@ -117,6 +119,7 @@ namespace std {
 
 
 %template(FloatVector) std::vector<float>;
+%template(DoubleVector) std::vector<double>;
 %template(ByteVector) std::vector<uint8_t>;
 %template(Uint64Vector) std::vector<uint64_t>;
 %template(LongVector) std::vector<long>;
@@ -708,5 +711,37 @@ void ignore_SIGTTIN() {
 
 void ignore_SIGTTIN();
 
+
+%inline %{
+
+// numpy misses a hash table implementation, hence this class. It
+// represents not found values as -1 like in the Index implementation
+
+struct MapLong2Long {
+    std::unordered_map<long, long> map;
+
+    void add(size_t n, const long *keys, const long *vals) {
+        map.reserve(map.size() + n);
+        for (size_t i = 0; i < n; i++) {
+            map[keys[i]] = vals[i];
+        }
+    }
+
+    long search(long key) {
+        if (map.count(key) == 0) {
+            return -1;
+        } else {
+            return map[key];
+        }
+    }
+
+    void search_multiple(size_t n, const long *keys, long * vals) {
+        for (size_t i = 0; i < n; i++) {
+            vals[i] = search(keys[i]);
+        }
+    }
+};
+
+%}
 
 // End of file...

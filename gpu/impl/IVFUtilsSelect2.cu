@@ -10,10 +10,10 @@
 
 #include "IVFUtils.cuh"
 #include "../utils/DeviceUtils.h"
+#include "../utils/Limits.cuh"
 #include "../utils/Select.cuh"
 #include "../utils/StaticUtils.h"
 #include "../utils/Tensor.cuh"
-#include <limits>
 
 //
 // This kernel is split into a separate compilation unit to cut down
@@ -21,9 +21,6 @@
 //
 
 namespace faiss { namespace gpu {
-
-constexpr auto kMax = std::numeric_limits<float>::max();
-constexpr auto kMin = std::numeric_limits<float>::min();
 
 // This is warp divergence central, but this is really a final step
 // and happening a small number of times
@@ -71,7 +68,7 @@ pass2SelectLists(Tensor<float, 2, true> heapDistances,
   __shared__ float smemK[kNumWarps * NumWarpQ];
   __shared__ int smemV[kNumWarps * NumWarpQ];
 
-  constexpr auto kInit = Dir ? kMin : kMax;
+  constexpr auto kInit = Dir ? kFloatMin : kFloatMax;
   BlockSelect<float, int, Dir, Comparator<float>,
             NumWarpQ, NumThreadQ, ThreadsPerBlock>
     heap(kInit, -1, smemK, smemV, k);

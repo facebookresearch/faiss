@@ -34,8 +34,9 @@ IndexIVF::IndexIVF (Index * quantizer, size_t d, size_t nlist,
     nlist (nlist),
     nprobe (1),
     quantizer (quantizer),
-    quantizer_trains_alone (false),
+    quantizer_trains_alone (0),
     own_fields (false),
+    clustering_index (nullptr),
     ids (nlist),
     maintain_direct_map (false)
 {
@@ -56,7 +57,8 @@ IndexIVF::IndexIVF (Index * quantizer, size_t d, size_t nlist,
 
 IndexIVF::IndexIVF ():
     nlist (0), nprobe (1), quantizer (nullptr),
-    quantizer_trains_alone (false), own_fields (false),
+    quantizer_trains_alone (0), own_fields (false),
+    clustering_index (nullptr),
     maintain_direct_map (false)
 {}
 
@@ -157,22 +159,44 @@ void IndexIVF::train (idx_t n, const float *x)
     if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
         if (verbose)
             printf ("IVF quantizer does not need training.\n");
-    } else if (quantizer_trains_alone) {
+    } else if (quantizer_trains_alone == 1) {
         if (verbose)
             printf ("IVF quantizer trains alone...\n");
         quantizer->train (n, x);
+        quantizer->verbose = verbose;
         FAISS_THROW_IF_NOT_MSG (quantizer->ntotal == nlist,
                           "nlist not consistent with quantizer size");
-    } else {
+    } else if (quantizer_trains_alone == 0) {
         if (verbose)
             printf ("Training IVF quantizer on %ld vectors in %dD\n",
                     n, d);
 
         Clustering clus (d, nlist, cp);
-
         quantizer->reset();
-        clus.train (n, x, *quantizer);
+        if (clustering_index) {
+            clus.train (n, x, *clustering_index);
+            quantizer->add (nlist, clus.centroids.data());
+        } else {
+            clus.train (n, x, *quantizer);
+        }
         quantizer->is_trained = true;
+    } else if (quantizer_trains_alone == 2) {
+        if (verbose)
+            printf (
+                "Training L2 quantizer on %ld vectors in %dD%s\n",
+                n, d,
+                clustering_index ? "(user provided index)" : "");
+        FAISS_THROW_IF_NOT (metric_type == METRIC_L2);
+        Clustering clus (d, nlist, cp);
+        if (!clustering_index) {
+            IndexFlatL2 assigner (d);
+            clus.train(n, x, assigner);
+        } else {
+            clus.train(n, x, *clustering_index);
+        }
+        if (verbose)
+            printf ("Adding centroids to quantizer\n");
+        quantizer->add (nlist, clus.centroids.data());
     }
     if (verbose)
         printf ("Training IVF residual\n");
@@ -250,8 +274,9 @@ void IndexIVF::copy_subset_to (IndexIVF & other, int subset_type,
 {
     FAISS_THROW_IF_NOT (nlist == other.nlist);
     FAISS_THROW_IF_NOT (!other.maintain_direct_map);
-    FAISS_THROW_IF_NOT_MSG (subset_type == 0 || subset_type == 2,
-                            "this subset type is not implemented");
+    FAISS_THROW_IF_NOT_FMT (
+          subset_type == 0 || subset_type == 1 || subset_type == 2,
+          "subset type %d not implemented", subset_type);
 
     size_t accu_n = 0;
     size_t accu_a1 = 0;
@@ -275,15 +300,24 @@ void IndexIVF::copy_subset_to (IndexIVF & other, int subset_type,
                     other.ntotal++;
                 }
             }
+        } else if (subset_type == 1) {
+            for (long i = 0; i < n; i++) {
+                idx_t id = ids_in[i];
+                if (id % a1 == a2) {
+                    ids_out.push_back (id);
+                    codes_out.insert (codes_out.end(),
+                                      codes_in.begin() + i * code_size,
+                                  codes_in.begin() + (i + 1) * code_size);
+                    other.ntotal++;
+                }
+            }
         } else if (subset_type == 2) {
             // see what is allocated to a1 and to a2
             size_t next_accu_n = accu_n + n;
             size_t next_accu_a1 = next_accu_n * a1 / ntotal;
             size_t i1 = next_accu_a1 - accu_a1;
-            accu_a1 = next_accu_a1;
             size_t next_accu_a2 = next_accu_n * a2 / ntotal;
             size_t i2 = next_accu_a2 - accu_a2;
-            accu_a2 = next_accu_a2;
             ids_out.insert(ids_out.end(),
                            ids_in.begin() + i1,
                            ids_in.begin() + i2);
@@ -291,6 +325,8 @@ void IndexIVF::copy_subset_to (IndexIVF & other, int subset_type,
                               codes_in.begin() + i1 * code_size,
                               codes_in.begin() + i2 * code_size);
             other.ntotal += i2 - i1;
+            accu_a1 = next_accu_a1;
+            accu_a2 = next_accu_a2;
         }
         accu_n += n;
     }

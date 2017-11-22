@@ -17,8 +17,8 @@ class TestClustering(unittest.TestCase):
     def test_clustering(self):
         d = 64
         n = 1000
-        np.random.seed(123)
-        x = np.random.random(size=(n, d)).astype('float32')
+        rs = np.random.RandomState(123)
+        x = rs.uniform(size=(n, d)).astype('float32')
 
         km = faiss.Kmeans(d, 32, niter=10)
         err32 = km.train(x)
@@ -37,14 +37,34 @@ class TestClustering(unittest.TestCase):
 
     def test_nasty_clustering(self):
         d = 2
-        np.random.seed(123)
+        rs = np.random.RandomState(123)
         x = np.zeros((100, d), dtype='float32')
         for i in range(5):
-            x[i * 20:i * 20 + 20] = np.random.random(size=d)
+            x[i * 20:i * 20 + 20] = rs.uniform(size=d)
 
         # we have 5 distinct points but ask for 10 centroids...
         km = faiss.Kmeans(d, 10, niter=10, verbose=True)
         km.train(x)
+
+    def test_redo(self):
+        d = 64
+        n = 1000
+
+        rs = np.random.RandomState(123)
+        x = rs.uniform(size=(n, d)).astype('float32')
+
+        clus = faiss.Clustering(d, 20)
+        clus.nredo = 1
+        clus.train(x, faiss.IndexFlatL2(d))
+        obj1 = faiss.vector_to_array(clus.obj)
+
+        clus = faiss.Clustering(d, 20)
+        clus.nredo = 10
+        clus.train(x, faiss.IndexFlatL2(d))
+        obj10 = faiss.vector_to_array(clus.obj)
+
+        self.assertGreater(obj1[-1], obj10[-1])
+
 
 
 class TestPCA(unittest.TestCase):
@@ -87,7 +107,6 @@ class TestProductQuantizer(unittest.TestCase):
         self.assertGreater(2500, diff)
 
 
-
 class TestRevSwigPtr(unittest.TestCase):
 
     def test_rev_swig_ptr(self):
@@ -126,6 +145,19 @@ class TestException(unittest.TestCase):
             assert 'could not parse' in str(e)
         else:
             assert False, 'exception did not fire???'
+
+class TestMapLong2Long:
+
+    def test_do_it(self):
+        keys = np.array([13, 45, 67])
+        vals = np.array([3, 8, 2])
+
+        m = faiss.MapLong2Long()
+        m.add(keys, vals)
+
+        assert np.all(m.search_multiple(keys) == vals)
+
+        assert m.search(12343) == -1
 
 
 if __name__ == '__main__':

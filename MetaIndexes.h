@@ -51,6 +51,9 @@ struct IndexIDMap : Index {
     /// remove ids adapted to IndexFlat
     long remove_ids(const IDSelector& sel) override;
 
+    void range_search (idx_t n, const float *x, float radius,
+                       RangeSearchResult *result) const override;
+
     ~IndexIDMap() override;
     IndexIDMap () {own_fields=false; index=nullptr; }
 };

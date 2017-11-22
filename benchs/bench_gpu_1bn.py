@@ -521,7 +521,7 @@ def compute_populated_index(preproc):
     co.verbose = True
     co.reserveVecs = max_add if max_add > 0 else xb.shape[0]
     co.shard = True
-
+    assert co.shard_type in (0, 1, 2)
     vres, vdev = make_vres_vdev()
     gpu_index = faiss.index_cpu_to_gpu_multiple(
         vres, vdev, indexall, co)
@@ -630,7 +630,7 @@ def get_populated_index(preproc):
     co.usePrecomputed = use_precomputed_tables
     co.indicesOptions = 0
     co.verbose = True
-    co.shard = True # the replicas will be made "manually"
+    co.shard = True    # the replicas will be made "manually"
     t0 = time.time()
     print "CPU index contains %d vectors, move to GPU" % indexall.ntotal
     if replicas == 1:

@@ -10,10 +10,10 @@
 
 #include "IVFUtils.cuh"
 #include "../utils/DeviceUtils.h"
+#include "../utils/Limits.cuh"
 #include "../utils/Select.cuh"
 #include "../utils/StaticUtils.h"
 #include "../utils/Tensor.cuh"
-#include <limits>
 
 //
 // This kernel is split into a separate compilation unit to cut down
@@ -21,9 +21,6 @@
 //
 
 namespace faiss { namespace gpu {
-
-constexpr auto kMax = std::numeric_limits<float>::max();
-constexpr auto kMin = std::numeric_limits<float>::min();
 
 template <int ThreadsPerBlock, int NumWarpQ, int NumThreadQ, bool Dir>
 __global__ void
@@ -38,9 +35,9 @@ pass1SelectLists(Tensor<int, 2, true> prefixSumOffsets,
   __shared__ float smemK[kNumWarps * NumWarpQ];
   __shared__ int smemV[kNumWarps * NumWarpQ];
 
-  constexpr auto kInit = Dir ? kMin : kMax;
+  constexpr auto kInit = Dir ? kFloatMin : kFloatMax;
   BlockSelect<float, int, Dir, Comparator<float>,
-            NumWarpQ, NumThreadQ, ThreadsPerBlock>
+              NumWarpQ, NumThreadQ, ThreadsPerBlock>
     heap(kInit, -1, smemK, smemV, k);
 
   auto queryId = blockIdx.y;

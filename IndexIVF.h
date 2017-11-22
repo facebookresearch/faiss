@@ -47,10 +47,17 @@ struct IndexIVF: Index {
     size_t nprobe;            ///< number of probes at query time
 
     Index * quantizer;        ///< quantizer that maps vectors to inverted lists
-    bool quantizer_trains_alone;   ///< just pass over the trainset to quantizer
+
+    /**
+     * = 0: use the quantizer as index in a kmeans training
+     * = 1: just pass on the training set to the train() of the quantizer
+     * = 2: kmeans training on a flat index + add the centroids to the quantizer
+     */
+    char quantizer_trains_alone;
     bool own_fields;          ///< whether object owns the quantizer
 
     ClusteringParameters cp; ///< to override default clustering params
+    Index *clustering_index; ///< to override index used during clustering
 
     std::vector < std::vector<long> > ids;  ///< Inverted lists for indexes
 

@@ -64,24 +64,23 @@ std::vector<float> randVecs(size_t num, size_t dim) {
   return v;
 }
 
-void compareIndices(faiss::Index& refIndex,
+void compareIndices(const std::vector<float>& queryVecs,
+                    faiss::Index& refIndex,
                     faiss::Index& testIndex,
                     int numQuery, int dim, int k,
                     const std::string& configMsg,
                     float maxRelativeError,
                     float pctMaxDiff1,
                     float pctMaxDiffN) {
-  auto queries = faiss::gpu::randVecs(numQuery, dim);
-
   // Compare
   std::vector<float> refDistance(numQuery * k, 0);
   std::vector<faiss::Index::idx_t> refIndices(numQuery * k, -1);
-  refIndex.search(numQuery, queries.data(),
+  refIndex.search(numQuery, queryVecs.data(),
                   k, refDistance.data(), refIndices.data());
 
   std::vector<float> testDistance(numQuery * k, 0);
   std::vector<faiss::Index::idx_t> testIndices(numQuery * k, -1);
-  testIndex.search(numQuery, queries.data(),
+  testIndex.search(numQuery, queryVecs.data(),
                    k, testDistance.data(), testIndices.data());
 
   faiss::gpu::compareLists(refDistance.data(),
@@ -92,6 +91,25 @@ void compareIndices(faiss::Index& refIndex,
                            configMsg,
                            true, false, true,
                            maxRelativeError, pctMaxDiff1, pctMaxDiffN);
+}
+
+void compareIndices(faiss::Index& refIndex,
+                    faiss::Index& testIndex,
+                    int numQuery, int dim, int k,
+                    const std::string& configMsg,
+                    float maxRelativeError,
+                    float pctMaxDiff1,
+                    float pctMaxDiffN) {
+  auto queryVecs = faiss::gpu::randVecs(numQuery, dim);
+
+  compareIndices(queryVecs,
+                 refIndex,
+                 testIndex,
+                 numQuery, dim, k,
+                 configMsg,
+                 maxRelativeError,
+                 pctMaxDiff1,
+                 pctMaxDiffN);
 }
 
 template <typename T>

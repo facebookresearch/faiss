@@ -31,28 +31,29 @@ namespace faiss { namespace gpu {
 // T: the type we are doing the math in (e.g., float, half)
 // TVec: the potentially vectorized type we are loading in (e.g.,
 // float4, half2)
-template <typename T, typename TVec,
+template <typename T, typename TVec, typename TIndex,
           int RowTileSize, bool NormLoop, bool NormSquared>
-__global__ void l2Norm(Tensor<TVec, 2, true> input,
-                       Tensor<T, 1, true> output) {
+__global__ void l2Norm(Tensor<TVec, 2, true, TIndex> input,
+                       Tensor<T, 1, true, TIndex> output) {
   extern __shared__ char smemByte[]; // #warps * RowTileSize elements
   T* smem = (T*) smemByte;
 
-  int numWarps = utils::divUp(blockDim.x, kWarpSize);
-  int laneId = getLaneId();
-  int warpId = threadIdx.x / kWarpSize;
+  TIndex numWarps = utils::divUp(blockDim.x, kWarpSize);
+  TIndex laneId = getLaneId();
+  TIndex warpId = threadIdx.x / kWarpSize;
 
   bool lastRowTile = (blockIdx.x == (gridDim.x - 1));
-  int rowStart = RowTileSize * blockIdx.x;
+  TIndex rowStart = RowTileSize * blockIdx.x;
   T rowNorm[RowTileSize];
 
   if (lastRowTile) {
     // We are handling the very end of the input matrix rows
-    for (int row = 0; row < input.getSize(0) - rowStart; ++row) {
+    for (TIndex row = 0; row < input.getSize(0) - rowStart; ++row) {
       if (NormLoop) {
         rowNorm[0] = Math<T>::zero();
 
-        for (int col = threadIdx.x; col < input.getSize(1); col += blockDim.x) {
+        for (TIndex col = threadIdx.x;
+             col < input.getSize(1); col += blockDim.x) {
           TVec val = input[rowStart + row][col];
           val = Math<TVec>::mul(val, val);
           rowNorm[0] = Math<T>::add(rowNorm[0], Math<TVec>::reduceAdd(val));
@@ -82,7 +83,8 @@ __global__ void l2Norm(Tensor<TVec, 2, true> input,
         rowNorm[row] = Math<T>::zero();
       }
 
-      for (int col = threadIdx.x; col < input.getSize(1); col += blockDim.x) {
+      for (TIndex col = threadIdx.x;
+           col < input.getSize(1); col += blockDim.x) {
 #pragma unroll
         for (int row = 0; row < RowTileSize; ++row) {
           tmp[row] = input[rowStart + row][col];
@@ -172,44 +174,44 @@ __global__ void l2Norm(Tensor<TVec, 2, true> input,
   }
 }
 
-template <typename T, typename TVec>
-void runL2Norm(Tensor<T, 2, true>& input,
-               Tensor<T, 1, true>& output,
+template <typename T, typename TVec, typename TIndex>
+void runL2Norm(Tensor<T, 2, true, TIndex>& input,
+               Tensor<T, 1, true, TIndex>& output,
                bool normSquared,
                cudaStream_t stream) {
   FAISS_ASSERT(input.getSize(0) == output.getSize(0));
 
-  int maxThreads = getMaxThreadsCurrentDevice();
+  TIndex maxThreads = (TIndex) getMaxThreadsCurrentDevice();
   constexpr int rowTileSize = 8;
 
-#define RUN_L2(TYPE_T, TYPE_TVEC, INPUT)                         \
-  do {                                                           \
-    if (normLoop) {                                              \
-      if (normSquared) {                                         \
-        l2Norm<TYPE_T, TYPE_TVEC, rowTileSize, true, true>       \
-          <<<grid, block, smem, stream>>>(INPUT, output);        \
-      } else {                                                   \
-        l2Norm<TYPE_T, TYPE_TVEC, rowTileSize, true, false>      \
-          <<<grid, block, smem, stream>>>(INPUT, output);        \
-      }                                                          \
-    } else {                                                     \
-      if (normSquared) {                                         \
-        l2Norm<TYPE_T, TYPE_TVEC, rowTileSize, false, true>      \
-          <<<grid, block, smem, stream>>>(INPUT, output);        \
-      } else {                                                   \
-        l2Norm<TYPE_T, TYPE_TVEC, rowTileSize, false, false>     \
-          <<<grid, block, smem, stream>>>(INPUT, output);        \
-      }                                                          \
-    }                                                            \
+#define RUN_L2(TYPE_T, TYPE_TVEC, INPUT)                                \
+  do {                                                                  \
+    if (normLoop) {                                                     \
+      if (normSquared) {                                                \
+        l2Norm<TYPE_T, TYPE_TVEC, TIndex, rowTileSize, true, true>      \
+          <<<grid, block, smem, stream>>>(INPUT, output);               \
+      } else {                                                          \
+        l2Norm<TYPE_T, TYPE_TVEC, TIndex, rowTileSize, true, false>     \
+          <<<grid, block, smem, stream>>>(INPUT, output);               \
+      }                                                                 \
+    } else {                                                            \
+      if (normSquared) {                                                \
+        l2Norm<TYPE_T, TYPE_TVEC, TIndex, rowTileSize, false, true>     \
+          <<<grid, block, smem, stream>>>(INPUT, output);               \
+      } else {                                                          \
+        l2Norm<TYPE_T, TYPE_TVEC, TIndex, rowTileSize, false, false>    \
+          <<<grid, block, smem, stream>>>(INPUT, output);               \
+      }                                                                 \
+    }                                                                   \
   } while (0)
 
   if (input.template canCastResize<TVec>()) {
     // Can load using the vectorized type
     auto inputV = input.template castResize<TVec>();
 
-    int dim = inputV.getSize(1);
+    auto dim = inputV.getSize(1);
     bool normLoop = dim > maxThreads;
-    int numThreads = min(dim, maxThreads);
+    auto numThreads = min(dim, maxThreads);
 
     auto grid = dim3(utils::divUp(inputV.getSize(0), rowTileSize));
     auto block = dim3(numThreads);
@@ -220,9 +222,9 @@ void runL2Norm(Tensor<T, 2, true>& input,
   } else {
     // Can't load using the vectorized type
 
-    int dim = input.getSize(1);
+    auto dim = input.getSize(1);
     bool normLoop = dim > maxThreads;
-    int numThreads = min(dim, maxThreads);
+    auto numThreads = min(dim, maxThreads);
 
     auto grid = dim3(utils::divUp(input.getSize(0), rowTileSize));
     auto block = dim3(numThreads);
@@ -241,7 +243,13 @@ void runL2Norm(Tensor<float, 2, true>& input,
                Tensor<float, 1, true>& output,
                bool normSquared,
                cudaStream_t stream) {
-  runL2Norm<float, float4>(input, output, normSquared, stream);
+  if (input.canUseIndexType<int>()) {
+    runL2Norm<float, float4, int>(input, output, normSquared, stream);
+  } else {
+    auto inputCast = input.castIndexType<long>();
+    auto outputCast = output.castIndexType<long>();
+    runL2Norm<float, float4, long>(inputCast, outputCast, normSquared, stream);
+  }
 }
 
 #ifdef FAISS_USE_FLOAT16
@@ -249,7 +257,13 @@ void runL2Norm(Tensor<half, 2, true>& input,
                Tensor<half, 1, true>& output,
                bool normSquared,
                cudaStream_t stream) {
-  runL2Norm<half, half2>(input, output, normSquared, stream);
+  if (input.canUseIndexType<int>()) {
+    runL2Norm<half, half2, int>(input, output, normSquared, stream);
+  } else {
+    auto inputCast = input.castIndexType<long>();
+    auto outputCast = output.castIndexType<long>();
+    runL2Norm<half, half2, long>(inputCast, outputCast, normSquared, stream);
+  }
 }
 #endif
 

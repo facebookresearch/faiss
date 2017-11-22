@@ -41,8 +41,7 @@ long Index::remove_ids(const IDSelector& /*sel*/) {
 
 
 void Index::reconstruct (idx_t, float * ) const {
-  FAISS_THROW_MSG ("Can not compute reconstruct without "
-                    "knowing how to do so");
+  FAISS_THROW_MSG ("reconstruct not implemented for this type of index");
 }
 
 

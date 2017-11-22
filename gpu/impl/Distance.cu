@@ -29,54 +29,116 @@ namespace faiss { namespace gpu {
 
 namespace {
 
-constexpr int kDefaultTileSize = 256;
-
 template <typename T>
-int chooseTileSize(int tileSizeOverride,
-                   size_t numCentroids,
-                   size_t tempMemAvailable) {
-  if (tileSizeOverride > 0) {
-    return tileSizeOverride;
-  }
-
-  size_t tileSize =
-    sizeof(T) < 4 ? kDefaultTileSize * 2 : kDefaultTileSize;
-
-  while (tileSize > 64) {
-    size_t memRequirement = 2 * tileSize * numCentroids * sizeof(T);
-
-    if (memRequirement <= tempMemAvailable) {
-      // This fits entirely into our temporary memory
-      return tileSize;
+Tensor<T, 2, true> sliceCentroids(Tensor<T, 2, true>& centroids,
+                                  Tensor<T, 2, true>* centroidsTransposed,
+                                  int startCentroid,
+                                  int num) {
+  if (startCentroid == 0 && num == centroids.getSize(0)) {
+    if (centroidsTransposed) {
+      return *centroidsTransposed;
+    } else {
+      return centroids;
     }
-
-    // Otherwise, halve the tile size
-    tileSize /= 2;
   }
 
-  // We use 64 as the minimum acceptable tile size
-  FAISS_ASSERT(tileSize >= 64);
+  if (centroidsTransposed) {
+    // (dim, num)
+    return centroidsTransposed->narrow(1, startCentroid, num);
+  } else {
+    return centroids.narrow(0, startCentroid, num);
+  }
+}
 
-  // FIXME: if we're running with no available temp memory, do we try
-  // and go larger based on free memory available on the device?
+// For each chunk of k indices, increment the index by chunk * increment
+template <typename T>
+__global__ void incrementIndex(Tensor<T, 2, true> indices,
+                               int k,
+                               int increment) {
+  for (int i = threadIdx.x; i < k; i += blockDim.x) {
+    indices[blockIdx.y][blockIdx.x * k + i] += blockIdx.x * increment;
+  }
+}
 
-  return tileSize;
+// Used to update result indices in distance computation where the number of
+// centroids is high, and is tiled
+template <typename T>
+void runIncrementIndex(Tensor<T, 2, true>& indices,
+                       int k,
+                       int increment,
+                       cudaStream_t stream) {
+  dim3 grid(indices.getSize(1) / k, indices.getSize(0));
+  int block = std::min(k, 512);
+
+  // should be exact
+  FAISS_ASSERT(grid.x * k == indices.getSize(1));
+
+  incrementIndex<<<grid, block, 0, stream>>>(indices, k, increment);
+
+  cudaDeviceSynchronize();
+}
+
+// If the inner size (dim) of the vectors is small, we want a larger query tile
+// size, like 1024
+
+void chooseTileSize(int numQueries,
+                    int numCentroids,
+                    int dim,
+                    int elementSize,
+                    size_t tempMemAvailable,
+                    int& tileRows,
+                    int& tileCols) {
+  // The matrix multiplication should be large enough to be efficient, but if it
+  // is too large, we seem to lose efficiency as opposed to double-streaming.
+  // Each tile size here defines 1/2 of the memory use due to double streaming.
+  // We ignore available temporary memory, as that is adjusted independently by
+  // the user and can thus meet these requirements (or not).
+  // For <= 4 GB GPUs, prefer 512 MB of usage.
+  // For <= 8 GB GPUs, prefer 768 MB of usage.
+  // Otherwise, prefer 1 GB of usage.
+  auto totalMem = getCurrentDeviceProperties().totalGlobalMem;
+
+  int targetUsage = 0;
+
+  if (totalMem <= ((size_t) 4) * 1024 * 1024 * 1024) {
+    targetUsage = 512 * 1024 * 1024;
+  } else if (totalMem <= ((size_t) 8) * 1024 * 1024 * 1024) {
+    targetUsage = 768 * 1024 * 1024;
+  } else {
+    targetUsage = 1024 * 1024 * 1024;
+  }
+
+  targetUsage /= 2 * elementSize;
+
+  // 512 seems to be a batch size sweetspot for float32.
+  // If we are on float16, increase to 512.
+  // If the k size (vec dim) of the matrix multiplication is small (<= 32),
+  // increase to 1024.
+  int preferredTileRows = 512;
+  if (dim <= 32) {
+    preferredTileRows = 1024;
+  }
+
+  tileRows = std::min(preferredTileRows, numQueries);
+
+  // tileCols is the remainder size
+  tileCols = std::min(targetUsage / preferredTileRows, numCentroids);
 }
 
 }
 
 template <typename T>
-void runL2Distance(GpuResources* resources,
-                   Tensor<T, 2, true>& centroids,
-                   Tensor<T, 2, true>* centroidsTransposed,
-                   Tensor<T, 1, true>* centroidNorms,
-                   Tensor<T, 2, true>& queries,
-                   int k,
-                   Tensor<T, 2, true>& outDistances,
-                   Tensor<int, 2, true>& outIndices,
-                   bool useHgemm,
-                   bool ignoreOutDistances = false,
-                   int tileSizeOverride = -1) {
+void runDistance(bool computeL2,
+                 GpuResources* resources,
+                 Tensor<T, 2, true>& centroids,
+                 Tensor<T, 2, true>* centroidsTransposed,
+                 Tensor<T, 1, true>* centroidNorms,
+                 Tensor<T, 2, true>& queries,
+                 int k,
+                 Tensor<T, 2, true>& outDistances,
+                 Tensor<int, 2, true>& outIndices,
+                 bool useHgemm,
+                 bool ignoreOutDistances) {
   FAISS_ASSERT(outDistances.getSize(0) == queries.getSize(0));
   FAISS_ASSERT(outIndices.getSize(0) == queries.getSize(0));
   FAISS_ASSERT(outDistances.getSize(1) == k);
@@ -98,9 +160,9 @@ void runL2Distance(GpuResources* resources,
     return;
   }
 
-  // If ||c||^2 is not pre-computed, calculate it
+  // L2: If ||c||^2 is not pre-computed, calculate it
   DeviceTensor<T, 1, true> cNorms;
-  if (!centroidNorms) {
+  if (computeL2 && !centroidNorms) {
     cNorms = std::move(DeviceTensor<T, 1, true>(
                        mem,
                        {centroids.getSize(0)}, defaultStream));
@@ -115,79 +177,173 @@ void runL2Distance(GpuResources* resources,
   DeviceTensor<T, 1, true> queryNorms(mem, qNormSize, defaultStream);
 
   // ||q||^2
-  runL2Norm(queries, queryNorms, true, defaultStream);
+  if (computeL2) {
+    runL2Norm(queries, queryNorms, true, defaultStream);
+  }
 
-  //
-  // Handle the problem in row tiles, to avoid excessive temporary
-  // memory requests
-  //
+  // By default, aim to use up to 512 MB of memory for the processing, with both
+  // number of queries and number of centroids being at least 512.
+  int tileRows = 0;
+  int tileCols = 0;
+  chooseTileSize(queries.getSize(0),
+                 centroids.getSize(0),
+                 queries.getSize(1),
+                 sizeof(T),
+                 mem.getSizeAvailable(),
+                 tileRows,
+                 tileCols);
+
+  int numColTiles = utils::divUp(centroids.getSize(0), tileCols);
 
   FAISS_ASSERT(k <= centroids.getSize(0));
   FAISS_ASSERT(k <= 1024); // select limitation
 
-  int tileSize =
-    chooseTileSize<T>(
-      tileSizeOverride,
-      centroids.getSize(0),
-      resources->getMemoryManagerCurrentDevice().getSizeAvailable());
-
-  int maxQueriesPerIteration = std::min(tileSize, queries.getSize(0));
-
   // Temporary output memory space we'll use
   DeviceTensor<T, 2, true> distanceBuf1(
-    mem, {maxQueriesPerIteration, centroids.getSize(0)}, defaultStream);
+    mem, {tileRows, tileCols}, defaultStream);
   DeviceTensor<T, 2, true> distanceBuf2(
-    mem, {maxQueriesPerIteration, centroids.getSize(0)}, defaultStream);
+    mem, {tileRows, tileCols}, defaultStream);
   DeviceTensor<T, 2, true>* distanceBufs[2] =
     {&distanceBuf1, &distanceBuf2};
+
+  DeviceTensor<T, 2, true> outDistanceBuf1(
+    mem, {tileRows, numColTiles * k}, defaultStream);
+  DeviceTensor<T, 2, true> outDistanceBuf2(
+    mem, {tileRows, numColTiles * k}, defaultStream);
+  DeviceTensor<T, 2, true>* outDistanceBufs[2] =
+    {&outDistanceBuf1, &outDistanceBuf2};
+
+  DeviceTensor<int, 2, true> outIndexBuf1(
+    mem, {tileRows, numColTiles * k}, defaultStream);
+  DeviceTensor<int, 2, true> outIndexBuf2(
+    mem, {tileRows, numColTiles * k}, defaultStream);
+  DeviceTensor<int, 2, true>* outIndexBufs[2] =
+    {&outIndexBuf1, &outIndexBuf2};
 
   auto streams = resources->getAlternateStreamsCurrentDevice();
   streamWait(streams, {defaultStream});
 
   int curStream = 0;
 
-  for (int i = 0; i < queries.getSize(0); i += maxQueriesPerIteration) {
-    int numQueriesForIteration = std::min(maxQueriesPerIteration,
-                                          queries.getSize(0) - i);
+  // Tile over the input queries
+  for (int i = 0; i < queries.getSize(0); i += tileRows) {
+    int curQuerySize = std::min(tileRows, queries.getSize(0) - i);
 
-    auto distanceBufView =
-      distanceBufs[curStream]->narrowOutermost(0, numQueriesForIteration);
-    auto queryView =
-      queries.narrowOutermost(i, numQueriesForIteration);
     auto outDistanceView =
-      outDistances.narrowOutermost(i, numQueriesForIteration);
+      outDistances.narrow(0, i, curQuerySize);
     auto outIndexView =
-      outIndices.narrowOutermost(i, numQueriesForIteration);
+      outIndices.narrow(0, i, curQuerySize);
+
+    auto queryView =
+      queries.narrow(0, i, curQuerySize);
     auto queryNormNiew =
-      queryNorms.narrowOutermost(i, numQueriesForIteration);
+      queryNorms.narrow(0, i, curQuerySize);
 
-    // L2 distance is ||c||^2 - 2qc + ||q||^2
+    auto outDistanceBufRowView =
+      outDistanceBufs[curStream]->narrow(0, 0, curQuerySize);
+    auto outIndexBufRowView =
+      outIndexBufs[curStream]->narrow(0, 0, curQuerySize);
 
-    // -2qc
-    // (query id x dim) x (centroid id, dim)' = (query id, centroid id)
-    runMatrixMult(distanceBufView, false,
-                  queryView, false,
-                  centroidsTransposed ? *centroidsTransposed : centroids,
-                  centroidsTransposed ? false : true,
-                  -2.0f, 0.0f, useHgemm,
-                  resources->getBlasHandleCurrentDevice(),
-                  streams[curStream]);
+    // Tile over the centroids
+    for (int j = 0; j < centroids.getSize(0); j += tileCols) {
+      int curCentroidSize = std::min(tileCols, centroids.getSize(0) - j);
 
-    // For L2 distance, we use this fused kernel that performs both
-    // adding ||c||^2 to -2qc and k-selection, so we only need two
-    // passes (one write by the gemm, one read here) over the huge
-    // region of output memory
-    runL2SelectMin(distanceBufView,
-                   *centroidNorms,
-                   outDistanceView,
-                   outIndexView,
-                   k,
-                   streams[curStream]);
+      int curColTile = j / tileCols;
 
-    if (!ignoreOutDistances) {
-      // expand (query id) to (query id, k) by duplicating along rows
-      // top-k ||c||^2 - 2qc + ||q||^2 in the form (query id, k)
-      runSumAlongRows(queryNormNiew, outDistanceView, streams[curStream]);
+      auto centroidsView =
+        sliceCentroids(centroids, centroidsTransposed, j, curCentroidSize);
+
+      auto distanceBufView = distanceBufs[curStream]->
+        narrow(0, 0, curQuerySize).narrow(1, 0, curCentroidSize);
+
+      auto outDistanceBufColView =
+        outDistanceBufRowView.narrow(1, k * curColTile, k);
+      auto outIndexBufColView =
+        outIndexBufRowView.narrow(1, k * curColTile, k);
+
+      // L2: distance is ||c||^2 - 2qc + ||q||^2, we compute -2qc
+      // IP: just compute qc
+      // (query id x dim) x (centroid id, dim)' = (query id, centroid id)
+      runMatrixMult(distanceBufView, false,
+                    queryView, false,
+                    centroidsView,
+                    centroidsTransposed ? false : true,
+                    computeL2 ? -2.0f : 1.0f, 0.0f, useHgemm,
+                    resources->getBlasHandleCurrentDevice(),
+                    streams[curStream]);
+
+      if (computeL2) {
+        // For L2 distance, we use this fused kernel that performs both
+        // adding ||c||^2 to -2qc and k-selection, so we only need two
+        // passes (one write by the gemm, one read here) over the huge
+        // region of output memory
+        //
+        // If we aren't tiling along the number of centroids, we can perform the
+        // output work directly
+        if (tileCols == centroids.getSize(0)) {
+          // Write into the final output
+          runL2SelectMin(distanceBufView,
+                         *centroidNorms,
+                         outDistanceView,
+                         outIndexView,
+                         k,
+                         streams[curStream]);
+
+          if (!ignoreOutDistances) {
+            // expand (query id) to (query id, k) by duplicating along rows
+            // top-k ||c||^2 - 2qc + ||q||^2 in the form (query id, k)
+            runSumAlongRows(queryNormNiew, outDistanceView, streams[curStream]);
+          }
+        } else {
+          auto centroidNormsView =
+            centroidNorms->narrow(0, j, curCentroidSize);
+
+          // Write into our intermediate output
+          runL2SelectMin(distanceBufView,
+                         centroidNormsView,
+                         outDistanceBufColView,
+                         outIndexBufColView,
+                         k,
+                         streams[curStream]);
+
+          if (!ignoreOutDistances) {
+            // expand (query id) to (query id, k) by duplicating along rows
+            // top-k ||c||^2 - 2qc + ||q||^2 in the form (query id, k)
+            runSumAlongRows(queryNormNiew,
+                            outDistanceBufColView,
+                            streams[curStream]);
+          }
+        }
+      } else {
+        // For IP, just k-select the output for this tile
+        if (tileCols == centroids.getSize(0)) {
+          // Write into the final output
+          runBlockSelect(distanceBufView,
+                         outDistanceView,
+                         outIndexView,
+                         true, k, streams[curStream]);
+        } else {
+          // Write into the intermediate output
+          runBlockSelect(distanceBufView,
+                         outDistanceBufColView,
+                         outIndexBufColView,
+                         true, k, streams[curStream]);
+        }
+      }
+    }
+
+    // As we're finished with processing a full set of centroids, perform the
+    // final k-selection
+    if (tileCols != centroids.getSize(0)) {
+      // The indices are tile-relative; for each tile of k, we need to add
+      // tileCols to the index
+      runIncrementIndex(outIndexBufRowView, k, tileCols, streams[curStream]);
+
+      runBlockSelectPair(outDistanceBufRowView,
+                         outIndexBufRowView,
+                         outDistanceView,
+                         outIndexView,
+                         computeL2 ? false : true, k, streams[curStream]);
     }
 
     curStream = (curStream + 1) % 2;
@@ -198,6 +354,30 @@ void runL2Distance(GpuResources* resources,
 }
 
 template <typename T>
+void runL2Distance(GpuResources* resources,
+                   Tensor<T, 2, true>& centroids,
+                   Tensor<T, 2, true>* centroidsTransposed,
+                   Tensor<T, 1, true>* centroidNorms,
+                   Tensor<T, 2, true>& queries,
+                   int k,
+                   Tensor<T, 2, true>& outDistances,
+                   Tensor<int, 2, true>& outIndices,
+                   bool useHgemm,
+                   bool ignoreOutDistances = false) {
+  runDistance<T>(true, // L2
+                 resources,
+                 centroids,
+                 centroidsTransposed,
+                 centroidNorms,
+                 queries,
+                 k,
+                 outDistances,
+                 outIndices,
+                 useHgemm,
+                 ignoreOutDistances);
+}
+
+template <typename T>
 void runIPDistance(GpuResources* resources,
                    Tensor<T, 2, true>& centroids,
                    Tensor<T, 2, true>* centroidsTransposed,
@@ -205,91 +385,18 @@ void runIPDistance(GpuResources* resources,
                    int k,
                    Tensor<T, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices,
-                   bool useHgemm,
-                   int tileSizeOverride = -1) {
-  FAISS_ASSERT(outDistances.getSize(0) == queries.getSize(0));
-  FAISS_ASSERT(outIndices.getSize(0) == queries.getSize(0));
-  FAISS_ASSERT(outDistances.getSize(1) == k);
-  FAISS_ASSERT(outIndices.getSize(1) == k);
-
-  auto& mem = resources->getMemoryManagerCurrentDevice();
-  auto defaultStream = resources->getDefaultStreamCurrentDevice();
-
-  // If we're quering against a 0 sized set, just return empty results
-  if (centroids.numElements() == 0) {
-    thrust::fill(thrust::cuda::par.on(defaultStream),
-                 outDistances.data(), outDistances.end(),
-                 Limits<T>::getMax());
-
-    thrust::fill(thrust::cuda::par.on(defaultStream),
-                 outIndices.data(), outIndices.end(),
-                 -1);
-
-    return;
-  }
-
-  //
-  // Handle the problem in row tiles, to avoid excessive temporary
-  // memory requests
-  //
-
-  FAISS_ASSERT(k <= centroids.getSize(0));
-  FAISS_ASSERT(k <= 1024); // select limitation
-
-  int tileSize =
-    chooseTileSize<T>(
-      tileSizeOverride,
-      centroids.getSize(0),
-      resources->getMemoryManagerCurrentDevice().getSizeAvailable());
-
-  int maxQueriesPerIteration = std::min(tileSize, queries.getSize(0));
-
-  // Temporary output memory space we'll use
-  DeviceTensor<T, 2, true> distanceBuf1(
-    mem, {maxQueriesPerIteration, centroids.getSize(0)}, defaultStream);
-  DeviceTensor<T, 2, true> distanceBuf2(
-    mem, {maxQueriesPerIteration, centroids.getSize(0)}, defaultStream);
-  DeviceTensor<T, 2, true>* distanceBufs[2] =
-    {&distanceBuf1, &distanceBuf2};
-
-  auto streams = resources->getAlternateStreamsCurrentDevice();
-  streamWait(streams, {defaultStream});
-
-  int curStream = 0;
-
-  for (int i = 0; i < queries.getSize(0); i += maxQueriesPerIteration) {
-    int numQueriesForIteration = std::min(maxQueriesPerIteration,
-                                          queries.getSize(0) - i);
-
-    auto distanceBufView =
-      distanceBufs[curStream]->narrowOutermost(0, numQueriesForIteration);
-    auto queryView =
-      queries.narrowOutermost(i, numQueriesForIteration);
-    auto outDistanceView =
-      outDistances.narrowOutermost(i, numQueriesForIteration);
-    auto outIndexView =
-      outIndices.narrowOutermost(i, numQueriesForIteration);
-
-    // (query id x dim) x (centroid id, dim)' = (query id, centroid id)
-    runMatrixMult(distanceBufView, false,
-                  queryView, false,
-                  centroidsTransposed ? *centroidsTransposed : centroids,
-                  centroidsTransposed ? false : true,
-                  1.0f, 0.0f, useHgemm,
-                  resources->getBlasHandleCurrentDevice(),
-                  streams[curStream]);
-
-    // top-k of dot products
-    // (query id, top k centroids)
-    runBlockSelect(distanceBufView,
-                 outDistanceView,
-                 outIndexView,
-                 true, k, streams[curStream]);
-
-    curStream = (curStream + 1) % 2;
-  }
-
-  streamWait({defaultStream}, streams);
+                   bool useHgemm) {
+  runDistance<T>(false, // IP
+                 resources,
+                 centroids,
+                 centroidsTransposed,
+                 nullptr,
+                 queries,
+                 k,
+                 outDistances,
+                 outIndices,
+                 useHgemm,
+                 false);
 }
 
 //
@@ -303,8 +410,7 @@ runIPDistance(GpuResources* resources,
               Tensor<float, 2, true>& queries,
               int k,
               Tensor<float, 2, true>& outDistances,
-              Tensor<int, 2, true>& outIndices,
-              int tileSizeOverride) {
+              Tensor<int, 2, true>& outIndices) {
   runIPDistance<float>(resources,
                        vectors,
                        vectorsTransposed,
@@ -312,8 +418,7 @@ runIPDistance(GpuResources* resources,
                        k,
                        outDistances,
                        outIndices,
-                       false,
-                       tileSizeOverride);
+                       false);
 }
 
 #ifdef FAISS_USE_FLOAT16
@@ -325,8 +430,7 @@ runIPDistance(GpuResources* resources,
               int k,
               Tensor<half, 2, true>& outDistances,
               Tensor<int, 2, true>& outIndices,
-              bool useHgemm,
-              int tileSizeOverride) {
+              bool useHgemm) {
   runIPDistance<half>(resources,
                       vectors,
                       vectorsTransposed,
@@ -334,8 +438,7 @@ runIPDistance(GpuResources* resources,
                       k,
                       outDistances,
                       outIndices,
-                      useHgemm,
-                      tileSizeOverride);
+                      useHgemm);
 }
 #endif
 
@@ -348,8 +451,7 @@ runL2Distance(GpuResources* resources,
               int k,
               Tensor<float, 2, true>& outDistances,
               Tensor<int, 2, true>& outIndices,
-              bool ignoreOutDistances,
-              int tileSizeOverride) {
+              bool ignoreOutDistances) {
   runL2Distance<float>(resources,
                        vectors,
                        vectorsTransposed,
@@ -359,8 +461,7 @@ runL2Distance(GpuResources* resources,
                        outDistances,
                        outIndices,
                        false,
-                       ignoreOutDistances,
-                       tileSizeOverride);
+                       ignoreOutDistances);
 }
 
 #ifdef FAISS_USE_FLOAT16
@@ -374,8 +475,7 @@ runL2Distance(GpuResources* resources,
               Tensor<half, 2, true>& outDistances,
               Tensor<int, 2, true>& outIndices,
               bool useHgemm,
-              bool ignoreOutDistances,
-              int tileSizeOverride) {
+              bool ignoreOutDistances) {
   runL2Distance<half>(resources,
                       vectors,
                       vectorsTransposed,
@@ -385,8 +485,7 @@ runL2Distance(GpuResources* resources,
                       outDistances,
                       outIndices,
                       useHgemm,
-                      ignoreOutDistances,
-                      tileSizeOverride);
+                      ignoreOutDistances);
 }
 #endif
 

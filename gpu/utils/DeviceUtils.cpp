@@ -43,7 +43,7 @@ void synchronizeAllDevices() {
   }
 }
 
-cudaDeviceProp& getDeviceProperties(int device) {
+const cudaDeviceProp& getDeviceProperties(int device) {
   static std::mutex mutex;
   static std::unordered_map<int, cudaDeviceProp> properties;
 
@@ -59,6 +59,10 @@ cudaDeviceProp& getDeviceProperties(int device) {
   }
 
   return it->second;
+}
+
+const cudaDeviceProp& getCurrentDeviceProperties() {
+  return getDeviceProperties(getCurrentDevice());
 }
 
 int getMaxThreads(int device) {

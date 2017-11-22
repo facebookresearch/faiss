@@ -22,7 +22,9 @@ GpuClonerOptions::GpuClonerOptions()
 }
 
 GpuMultipleClonerOptions::GpuMultipleClonerOptions()
-    : shard(false) {
+    : shard(false),
+      shard_type(1)
+{
 }
 
 } } // namespace

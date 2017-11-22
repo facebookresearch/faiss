@@ -29,11 +29,14 @@ DEFINE_int32(num, 128, "# of vecs");
 DEFINE_int32(dim, 128, "# of dimensions");
 DEFINE_int32(num_queries, 3, "number of query vectors");
 DEFINE_bool(diff, true, "show exact distance + index output discrepancies");
-DEFINE_bool(use_float16, false, "use encodings in float16 instead of float32");
+DEFINE_bool(use_float16, false, "use encodings in float16");
+DEFINE_bool(use_float16_math, false, "perform math in float16");
 DEFINE_bool(transposed, false, "store vectors transposed");
 DEFINE_int64(seed, -1, "specify random seed");
 DEFINE_int32(num_gpus, 1, "number of gpus to use");
 DEFINE_int64(pinned_mem, 0, "pinned memory allocation to use");
+DEFINE_bool(cpu, true, "run the CPU code for timing and comparison");
+DEFINE_bool(use_unified_mem, false, "use Pascal unified memory for the index");
 
 using namespace faiss::gpu;
 
@@ -72,7 +75,10 @@ int main(int argc, char** argv) {
     GpuIndexFlatConfig config;
     config.device = dev;
     config.useFloat16 = FLAGS_use_float16;
+    config.useFloat16Accumulator = FLAGS_use_float16_math;
     config.storeTransposed = FLAGS_transposed;
+    config.memorySpace = FLAGS_use_unified_mem ?
+    MemorySpace::Unified : MemorySpace::Device;
 
     auto p = std::unique_ptr<faiss::gpu::GpuIndexFlatL2>(
       new faiss::gpu::GpuIndexFlatL2(res, index.get(), config));
@@ -90,9 +96,9 @@ int main(int argc, char** argv) {
   HostTensor<float, 2, true> cpuDistances({numQueries, FLAGS_k});
   HostTensor<faiss::Index::idx_t, 2, true> cpuIndices({numQueries, FLAGS_k});
 
-  float cpuTime = 0.0f;
+  if (FLAGS_cpu) {
+    float cpuTime = 0.0f;
 
-  {
     CpuTimer timer;
     index->search(numQueries,
                   cpuQuery.data(),
@@ -101,9 +107,8 @@ int main(int argc, char** argv) {
                   cpuIndices.data());
 
     cpuTime = timer.elapsedMilliseconds();
+    printf("CPU time %.3f ms\n", cpuTime);
   }
-
-  printf("CPU time %.3f ms\n", cpuTime);
 
   HostTensor<float, 2, true> gpuDistances({numQueries, FLAGS_k});
   HostTensor<faiss::Index::idx_t, 2, true> gpuIndices({numQueries, FLAGS_k});
@@ -131,14 +136,14 @@ int main(int argc, char** argv) {
   CUDA_VERIFY(cudaProfilerStop());
   printf("GPU time %.3f ms\n", gpuTime);
 
-  compareLists(cpuDistances.data(), cpuIndices.data(),
-               gpuDistances.data(), gpuIndices.data(),
-               numQueries, FLAGS_k,
-               "", true, FLAGS_diff, false);
+  if (FLAGS_cpu) {
+    compareLists(cpuDistances.data(), cpuIndices.data(),
+                 gpuDistances.data(), gpuIndices.data(),
+                 numQueries, FLAGS_k,
+                 "", true, FLAGS_diff, false);
+  }
 
   CUDA_VERIFY(cudaDeviceSynchronize());
-  // printf("\ncudaMalloc usage %zd\n",
-  //        resources.getMemoryManager().getHighWaterCudaMalloc());
 
   return 0;
 }

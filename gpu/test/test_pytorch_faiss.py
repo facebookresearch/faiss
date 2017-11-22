@@ -38,14 +38,14 @@ def search_index_pytorch(index, x, k, D=None, I=None):
         assert I.__class__ in (torch.LongTensor, torch.cuda.LongTensor)
         assert I.size() == (n, k)
         assert I.is_contiguous()
-
+    torch.cuda.synchronize()
     xptr = x.storage().data_ptr()
     Iptr = I.storage().data_ptr()
     Dptr = D.storage().data_ptr()
     index.search_c(n, faiss.cast_integer_to_float_ptr(xptr),
                    k, faiss.cast_integer_to_float_ptr(Dptr),
                    faiss.cast_integer_to_long_ptr(Iptr))
-
+    torch.cuda.synchronize()
     return D, I
 
 

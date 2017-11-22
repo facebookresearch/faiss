@@ -28,6 +28,7 @@ struct ClusteringParameters {
     bool verbose;
     bool spherical;     ///< do we want normalized centroids?
     bool update_index;  ///< update index after each iteration?
+    bool frozen_centroids;  ///< use the centroids provided as input and do not change them during iterations
 
     int min_points_per_centroid; ///< otherwise you get a warning
     int max_points_per_centroid;  ///< to limit size of dataset

@@ -121,6 +121,18 @@ def handle_Index(the_class):
                       swig_ptr(labels))
         return distances, labels
 
+    def replacement_search_and_reconstruct(self, x, k):
+        n, d = x.shape
+        assert d == self.d
+        distances = np.empty((n, k), dtype=np.float32)
+        labels = np.empty((n, k), dtype=np.int64)
+        recons = np.empty((n, k, d), dtype=np.float32)
+        self.search_and_reconstruct_c(n, swig_ptr(x),
+                                      k, swig_ptr(distances),
+                                      swig_ptr(labels),
+                                      swig_ptr(recons))
+        return distances, labels, recons
+
     def replacement_remove_ids(self, x):
         if isinstance(x, IDSelector):
             sel = x
@@ -167,6 +179,8 @@ def handle_Index(the_class):
     replace_method(the_class, 'range_search', replacement_range_search)
     replace_method(the_class, 'update_vectors', replacement_update_vectors,
                    ignore_missing=True)
+    replace_method(the_class, 'search_and_reconstruct',
+                   replacement_search_and_reconstruct, ignore_missing=True)
 
 def handle_VectorTransform(the_class):
 
@@ -258,10 +272,50 @@ def index_cpu_to_gpu_multiple_py(resources, index, co=None):
     return index_cpu_to_gpu_multiple(vres, vdev, index, co)
 
 
-def vector_float_to_array(v):
-    a = np.empty(v.size(), dtype='float32')
-    memcpy(swig_ptr(a), v.data(), 4 * v.size())
+def index_cpu_to_all_gpus(index, co=None, ngpu=-1):
+    if ngpu == -1:
+        ngpu = get_num_gpus()
+    res = [StandardGpuResources() for i in range(ngpu)]
+    index2 = index_cpu_to_gpu_multiple_py(res, index, co)
+    index2.dont_dealloc = res
+    return index2
+
+
+# mapping from vector names in swigfaiss.swig and the numpy dtype names
+vector_name_map = {
+    'Float': 'float32',
+    'Byte': 'uint8',
+    'Uint64': 'uint64',
+    'Long': 'int64',
+    'Int': 'int32',
+    'Double': 'float64'
+    }
+
+def vector_to_array(v):
+    """ convert a C++ vector to a numpy array """
+    classname = v.__class__.__name__
+    assert classname.endswith('Vector')
+    dtype = np.dtype(vector_name_map[classname[:-6]])
+    a = np.empty(v.size(), dtype=dtype)
+    memcpy(swig_ptr(a), v.data(), a.nbytes)
     return a
+
+
+def vector_float_to_array(v):
+    return vector_to_array(v)
+
+
+def copy_array_to_vector(a, v):
+    """ copy a numpy array to a vector """
+    n, = a.shape
+    classname = v.__class__.__name__
+    assert classname.endswith('Vector')
+    dtype = np.dtype(vector_name_map[classname[:-6]])
+    assert dtype == a.dtype, (
+        'cannot copy a %s array to a %s (should be %s)' % (
+            a.dtype, classname, dtype))
+    v.resize(n)
+    memcpy(v.data(), swig_ptr(a), a.nbytes)
 
 
 class Kmeans:
@@ -364,3 +418,18 @@ def eval_intersection(I1, I2):
 
 def normalize_L2(x):
     fvec_renorm_L2(x.shape[1], x.shape[0], swig_ptr(x))
+
+
+def replacement_map_add(self, keys, vals):
+    n, = keys.shape
+    assert (n,) == keys.shape
+    self.add_c(n, swig_ptr(keys), swig_ptr(vals))
+
+def replacement_map_search_multiple(self, keys):
+    n, = keys.shape
+    vals = np.empty(n, dtype='uint64')
+    self.search_multiple_c(n, swig_ptr(keys), swig_ptr(vals))
+    return vals
+
+replace_method(MapLong2Long, 'add', replacement_map_add)
+replace_method(MapLong2Long, 'search_multiple', replacement_map_search_multiple)

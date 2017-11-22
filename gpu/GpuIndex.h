@@ -26,7 +26,7 @@ struct GpuIndexConfig {
   /// GPU device on which the index is resident
   int device;
 
-  /// What memory space to use for primary storae.
+  /// What memory space to use for primary storage.
   /// On Pascal and above (CC 6+) architectures, allows GPUs to use
   /// more memory than is available on the GPU.
   MemorySpace memorySpace;

@@ -222,7 +222,6 @@ void write_ProductQuantizer (const ProductQuantizer*pq, const char *fname) {
 }
 
 
-
 static void write_ivf_header (const IndexIVF * ivf, FILE *f,
                               bool include_ids = true) {
     write_index_header (ivf, f);
@@ -444,6 +443,7 @@ static void read_ScalarQuantizer (ScalarQuantizer *ivsc, FILE *f) {
     READ1 (ivsc->code_size);
     READVECTOR (ivsc->trained);
 }
+
 
 ProductQuantizer * read_ProductQuantizer (const char*fname) {
     FILE *f = fopen (fname, "r");
@@ -676,8 +676,8 @@ Index *read_index (FILE * f, bool try_mmap) {
         }
         idx = idxmap;
     } else {
-        fprintf (stderr, "Index type 0x%08x not supported\n", h);
-        abort ();
+        FAISS_THROW_FMT("Index type 0x%08x not supported\n", h);
+        idx = nullptr;
     }
     return idx;
 }

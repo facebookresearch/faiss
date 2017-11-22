@@ -16,10 +16,10 @@ namespace faiss { namespace gpu {
 
 template <typename T,
           int Dim,
-          bool Contig = false,
+          bool InnerContig = false,
           typename IndexT = int,
           template <typename U> class PtrTraits = traits::DefaultPtrTraits>
-class HostTensor : public Tensor<T, Dim, Contig, IndexT, PtrTraits> {
+class HostTensor : public Tensor<T, Dim, InnerContig, IndexT, PtrTraits> {
  public:
   typedef IndexT IndexType;
   typedef typename PtrTraits<T>::PtrType DataPtrType;
@@ -51,19 +51,19 @@ class HostTensor : public Tensor<T, Dim, Contig, IndexT, PtrTraits> {
   /// Copies a tensor into ourselves, allocating memory for it
   /// locally. If the tensor is on the GPU, then we will copy it to
   /// ourselves wrt the given stream.
-  __host__ HostTensor(Tensor<T, Dim, Contig, IndexT, PtrTraits>& t,
+  __host__ HostTensor(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
                       cudaStream_t stream);
 
   /// Call to zero out memory
-  __host__ HostTensor<T, Dim, Contig, IndexT, PtrTraits>& zero();
+  __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>& zero();
 
   /// Returns the maximum difference seen between two tensors
   __host__ T
-  maxDiff(const HostTensor<T, Dim, Contig, IndexT, PtrTraits>& t) const;
+  maxDiff(const HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>& t) const;
 
   /// Are the two tensors exactly equal?
   __host__ bool
-  equal(const HostTensor<T, Dim, Contig, IndexT, PtrTraits>& t) const {
+  equal(const HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>& t) const {
     return (maxDiff(t) == (T) 0);
   }
 

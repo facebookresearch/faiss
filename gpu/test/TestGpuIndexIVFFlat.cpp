@@ -14,6 +14,7 @@
 #include "../StandardGpuResources.h"
 #include "../utils/DeviceUtils.h"
 #include "../test/TestUtils.h"
+#include <cmath>
 #include <gtest/gtest.h>
 #include <glog/logging.h>
 #include <sstream>
@@ -388,6 +389,68 @@ TEST(TestGpuIndexIVFFlat, Float32_16_CopyTo) {
 
 TEST(TestGpuIndexIVFFlat, Float32_32_CopyTo) {
   copyToTest(false, false);
+}
+
+TEST(TestGpuIndexIVFFlat, Float32_negative) {
+  faiss::gpu::newTestSeed();
+
+  Options opt;
+
+  auto trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
+  auto addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+
+  // Put all vecs on negative side
+  for (auto& f : trainVecs) {
+    f = std::abs(f) * -1.0f;
+  }
+
+  for (auto& f : addVecs) {
+    f *= std::abs(f) * -1.0f;
+  }
+
+  faiss::IndexFlatIP quantizerIP(opt.dim);
+  faiss::Index* quantizer = (faiss::Index*) &quantizerIP;
+
+  faiss::IndexIVFFlat cpuIndex(quantizer,
+                               opt.dim, opt.numCentroids,
+                               faiss::METRIC_INNER_PRODUCT);
+  cpuIndex.train(opt.numTrain, trainVecs.data());
+  cpuIndex.add(opt.numAdd, addVecs.data());
+  cpuIndex.nprobe = opt.nprobe;
+
+  faiss::gpu::StandardGpuResources res;
+  res.noTempMemory();
+
+  faiss::gpu::GpuIndexIVFFlatConfig config;
+  config.device = opt.device;
+  config.indicesOptions = opt.indicesOpt;
+
+  faiss::gpu::GpuIndexIVFFlat gpuIndex(&res,
+                                       cpuIndex.d,
+                                       cpuIndex.nlist,
+                                       cpuIndex.metric_type,
+                                       config);
+  gpuIndex.copyFrom(&cpuIndex);
+  gpuIndex.setNumProbes(opt.nprobe);
+
+  // Construct a positive test set
+  auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
+
+  // Put all vecs on positive size
+  for (auto& f : queryVecs) {
+    f = std::abs(f);
+  }
+
+  bool compFloat16 = false;
+  faiss::gpu::compareIndices(queryVecs,
+                             cpuIndex, gpuIndex,
+                             opt.numQuery, opt.dim, opt.k, opt.toString(),
+                             compFloat16 ? kF16MaxRelErr : kF32MaxRelErr,
+                             // FIXME: the fp16 bounds are
+                             // useless when math (the accumulator) is
+                             // in fp16. Figure out another way to test
+                             compFloat16 ? 0.99f : 0.1f,
+                             compFloat16 ? 0.65f : 0.015f);
 }
 
 //

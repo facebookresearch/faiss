@@ -18,10 +18,10 @@ namespace faiss { namespace gpu {
 
 template <typename T,
           int Dim,
-          bool Contig = false,
+          bool InnerContig = false,
           typename IndexT = int,
           template <typename U> class PtrTraits = traits::DefaultPtrTraits>
-class DeviceTensor : public Tensor<T, Dim, Contig, IndexT, PtrTraits> {
+class DeviceTensor : public Tensor<T, Dim, InnerContig, IndexT, PtrTraits> {
  public:
   typedef IndexT IndexType;
   typedef typename PtrTraits<T>::PtrType DataPtrType;
@@ -33,11 +33,11 @@ class DeviceTensor : public Tensor<T, Dim, Contig, IndexT, PtrTraits> {
   __host__ ~DeviceTensor();
 
   /// Move constructor
-  __host__ DeviceTensor(DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>&& t);
+  __host__ DeviceTensor(DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t);
 
   /// Move assignment
-  __host__ DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>&
-  operator=(DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>&& t);
+  __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>&
+  operator=(DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t);
 
   /// Constructs a tensor of the given size, allocating memory for it
   /// locally
@@ -76,19 +76,19 @@ class DeviceTensor : public Tensor<T, Dim, Contig, IndexT, PtrTraits> {
                         MemorySpace space = MemorySpace::Device);
 
   /// Copies a tensor into ourselves, allocating memory for it locally
-  __host__ DeviceTensor(Tensor<T, Dim, Contig, IndexT, PtrTraits>& t,
+  __host__ DeviceTensor(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
                         cudaStream_t stream,
                         MemorySpace space = MemorySpace::Device);
 
   /// Copies a tensor into ourselves, reserving a temporary
   /// memory reservation via a memory manager.
   __host__ DeviceTensor(DeviceMemory& m,
-                        Tensor<T, Dim, Contig, IndexT, PtrTraits>& t,
+                        Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
                         cudaStream_t stream,
                         MemorySpace space = MemorySpace::Device);
 
   /// Call to zero out memory
-  __host__ DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>&
+  __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>&
   zero(cudaStream_t stream);
 
  private:

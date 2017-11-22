@@ -114,8 +114,7 @@ FlatIndex::query(Tensor<float, 2, true>& input,
                  int k,
                  Tensor<float, 2, true>& outDistances,
                  Tensor<int, 2, true>& outIndices,
-                 bool exactDistance,
-                 int tileSize) {
+                 bool exactDistance) {
   auto stream = resources_->getDefaultStreamCurrentDevice();
   auto& mem = resources_->getMemoryManagerCurrentDevice();
 
@@ -127,7 +126,7 @@ FlatIndex::query(Tensor<float, 2, true>& input,
     DeviceTensor<half, 2, true> outDistancesHalf(
       mem, {outDistances.getSize(0), outDistances.getSize(1)}, stream);
 
-    query(inputHalf, k, outDistancesHalf, outIndices, exactDistance, tileSize);
+    query(inputHalf, k, outDistancesHalf, outIndices, exactDistance);
 
     if (exactDistance) {
       // Convert outDistances back
@@ -145,8 +144,7 @@ FlatIndex::query(Tensor<float, 2, true>& input,
                     outDistances,
                     outIndices,
                     // FIXME
-                    !exactDistance,
-                    tileSize);
+                    !exactDistance);
     } else {
       runIPDistance(resources_,
                     vectors_,
@@ -154,8 +152,7 @@ FlatIndex::query(Tensor<float, 2, true>& input,
                     input,
                     k,
                     outDistances,
-                    outIndices,
-                    tileSize);
+                    outIndices);
     }
   }
 }
@@ -166,8 +163,7 @@ FlatIndex::query(Tensor<half, 2, true>& input,
                  int k,
                  Tensor<half, 2, true>& outDistances,
                  Tensor<int, 2, true>& outIndices,
-                 bool exactDistance,
-                 int tileSize) {
+                 bool exactDistance) {
   FAISS_ASSERT(useFloat16_);
 
   if (l2Distance_) {
@@ -181,8 +177,7 @@ FlatIndex::query(Tensor<half, 2, true>& input,
                   outIndices,
                   useFloat16Accumulator_,
                   // FIXME
-                  !exactDistance,
-                  tileSize);
+                  !exactDistance);
   } else {
     runIPDistance(resources_,
                   vectorsHalf_,
@@ -191,8 +186,7 @@ FlatIndex::query(Tensor<half, 2, true>& input,
                   k,
                   outDistances,
                   outIndices,
-                  useFloat16Accumulator_,
-                  tileSize);
+                  useFloat16Accumulator_);
   }
 }
 #endif
@@ -217,12 +211,14 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
 
     rawData_.append((char*) devDataHalf.data(),
                     devDataHalf.getSizeInBytes(),
-                    stream);
+                    stream,
+                    true /* reserve exactly */);
 #endif
   } else {
     rawData_.append((char*) data,
                     (size_t) dim_ * numVecs * sizeof(float),
-                    stream);
+                    stream,
+                    true /* reserve exactly */);
   }
 
   num_ += numVecs;

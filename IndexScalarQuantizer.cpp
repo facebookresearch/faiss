@@ -124,8 +124,8 @@ struct Codec4bit {
 
 struct SimilarityL2 {
     const float *y, *yi;
-    explicit SimilarityL2 (const float * y): y(y) {}
 
+    explicit SimilarityL2 (const float * y): y(y) {}
 
     /******* scalar accumulator *******/
 
@@ -676,19 +676,19 @@ void ScalarQuantizer::compute_codes (const float * x,
                                      size_t n) const
 {
     Quantizer *squant = select_quantizer (*this);
+    ScopeDeleter1<Quantizer> del(squant);
 #pragma omp parallel for
     for (size_t i = 0; i < n; i++)
         squant->encode_vector (x + i * d, codes + i * code_size);
-    delete squant;
 }
 
 void ScalarQuantizer::decode (const uint8_t *codes, float *x, size_t n) const
 {
     Quantizer *squant = select_quantizer (*this);
+    ScopeDeleter1<Quantizer> del(squant);
 #pragma omp parallel for
     for (size_t i = 0; i < n; i++)
         squant->decode_vector (codes + i * code_size, x + i * d);
-    delete squant;
 }
 
 /*******************************************************************
@@ -754,6 +754,7 @@ void IndexScalarQuantizer::search(
                 }
                 ci += code_size;
             }
+            minheap_reorder (k, simi, idxi);
         }
     } else {
 #pragma omp parallel for
@@ -774,7 +775,7 @@ void IndexScalarQuantizer::search(
                 }
                 ci += code_size;
             }
-
+            maxheap_reorder (k, simi, idxi);
         }
     }
 
@@ -855,6 +856,7 @@ void IndexIVFScalarQuantizer::add_with_ids
         int nt = omp_get_num_threads();
         int rank = omp_get_thread_num();
 
+        // each thread takes care of a subset of lists
         for (size_t i = 0; i < n; i++) {
 
             long list_no = idx [i];
@@ -879,6 +881,7 @@ void IndexIVFScalarQuantizer::add_with_ids
     ntotal += nadd;
 }
 
+namespace {
 
 void search_with_probes_ip (const IndexIVFScalarQuantizer & index,
                             const float *x,
@@ -957,6 +960,8 @@ void search_with_probes_L2 (const IndexIVFScalarQuantizer & index,
     }
     maxheap_reorder (k, simi, idxi);
 }
+
+} // anonymous namespace
 
 void IndexIVFScalarQuantizer::search_preassigned (
                              idx_t n, const float *x, idx_t k,

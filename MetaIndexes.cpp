@@ -76,6 +76,17 @@ void IndexIDMap::search (idx_t n, const float *x, idx_t k,
     }
 }
 
+
+void IndexIDMap::range_search (idx_t n, const float *x, float radius,
+                   RangeSearchResult *result) const
+{
+  index->range_search(n, x, radius, result);
+  for (idx_t i = 0; i < result->lims[result->nq]; i++) {
+      result->labels[i] = result->labels[i] < 0 ?
+        result->labels[i] : id_map[result->labels[i]];
+  }
+}
+
 namespace {
 
 struct IDTranslatedSelector: IDSelector {
@@ -109,6 +120,7 @@ long IndexIDMap::remove_ids (const IDSelector & sel)
     }
     FAISS_ASSERT (j == index->ntotal);
     ntotal = j;
+    id_map.resize(ntotal);
     return nremove;
 }
 

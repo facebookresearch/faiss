@@ -56,7 +56,19 @@ T randSelect(std::initializer_list<T> vals) {
 /// Generates a collection of random vectors in the range [0, 1]
 std::vector<float> randVecs(size_t num, size_t dim);
 
-/// Compare two indices via query for similarity
+/// Compare two indices via query for similarity, with a user-specified set of
+/// query vectors
+void compareIndices(const std::vector<float>& queryVecs,
+                    faiss::Index& refIndex,
+                    faiss::Index& testIndex,
+                    int numQuery, int dim, int k,
+                    const std::string& configMsg,
+                    float maxRelativeError = 6e-5f,
+                    float pctMaxDiff1 = 0.1f,
+                    float pctMaxDiffN = 0.005f);
+
+/// Compare two indices via query for similarity, generating random query
+/// vectors
 void compareIndices(faiss::Index& refIndex,
                     faiss::Index& testIndex,
                     int numQuery, int dim, int k,

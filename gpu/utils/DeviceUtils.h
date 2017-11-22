@@ -31,7 +31,10 @@ int getNumDevices();
 void synchronizeAllDevices();
 
 /// Returns a cached cudaDeviceProp for the given device
-cudaDeviceProp& getDeviceProperties(int device);
+const cudaDeviceProp& getDeviceProperties(int device);
+
+/// Returns the cached cudaDeviceProp for the current device
+const cudaDeviceProp& getCurrentDeviceProperties();
 
 /// Returns the maximum number of threads available for the given GPU
 /// device

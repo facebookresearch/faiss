@@ -184,7 +184,7 @@ GpuIndexIVF::copyTo(faiss::IndexIVF* index) const {
   }
 
   index->quantizer = q;
-  index->quantizer_trains_alone = false;
+  index->quantizer_trains_alone = 0;
   index->own_fields = true;
   index->cp = this->cp;
   index->ids.clear();

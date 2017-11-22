@@ -96,7 +96,6 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
   FAISS_ASSERT(index->pq.byte_per_idx == 1);
   FAISS_ASSERT(index->by_residual);
   FAISS_ASSERT(index->polysemous_ht == 0);
-  ivfpqConfig_.usePrecomputedTables = (bool) index->use_precomputed_table;
 
   verifySettings_();
 

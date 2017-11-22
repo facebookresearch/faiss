@@ -67,6 +67,10 @@ int sorgqr_(FINTEGER *m, FINTEGER *n, FINTEGER *k, float *a,
 
 namespace faiss {
 
+#ifdef __AVX__
+#define USE_AVX
+#endif
+
 double getmillisecs () {
     struct timeval tv;
     gettimeofday (&tv, nullptr);
@@ -455,7 +459,7 @@ float fvec_norm_L2sqr_ref (const float * __restrict x,
 
 
 /*********************************************************
- * SSE implementations
+ * SSE and AVX implementations
  */
 
 // reads 0 <= d < 4 floats as __m128
@@ -475,7 +479,96 @@ static inline __m128 masked_read (int d, const float *x)
     // cannot use AVX2 _mm_mask_set1_epi32
 }
 
+#ifdef USE_AVX
 
+// reads 0 <= d < 8 floats as __m256
+static inline __m256 masked_read_8 (int d, const float *x)
+{
+    assert (0 <= d && d < 8);
+    if (d < 4) {
+        __m256 res = _mm256_setzero_ps ();
+        res = _mm256_insertf128_ps (res, masked_read (d, x), 0);
+        return res;
+    } else {
+        __m256 res = _mm256_setzero_ps ();
+        res = _mm256_insertf128_ps (res, _mm_loadu_ps (x), 0);
+        res = _mm256_insertf128_ps (res, masked_read (d - 4, x + 4), 1);
+        return res;
+    }
+}
+
+float fvec_inner_product (const float * x,
+                          const float * y,
+                          size_t d)
+{
+    __m256 msum1 = _mm256_setzero_ps();
+
+    while (d >= 8) {
+        __m256 mx = _mm256_loadu_ps (x); x += 8;
+        __m256 my = _mm256_loadu_ps (y); y += 8;
+        msum1 = _mm256_add_ps (msum1, _mm256_mul_ps (mx, my));
+        d -= 8;
+    }
+
+    __m128 msum2 = _mm256_extractf128_ps(msum1, 1);
+    msum2 +=       _mm256_extractf128_ps(msum1, 0);
+
+    if (d >= 4) {
+        __m128 mx = _mm_loadu_ps (x); x += 4;
+        __m128 my = _mm_loadu_ps (y); y += 4;
+        msum2 = _mm_add_ps (msum2, _mm_mul_ps (mx, my));
+        d -= 4;
+    }
+
+    if (d > 0) {
+        __m128 mx = masked_read (d, x);
+        __m128 my = masked_read (d, y);
+        msum2 = _mm_add_ps (msum2, _mm_mul_ps (mx, my));
+    }
+
+    msum2 = _mm_hadd_ps (msum2, msum2);
+    msum2 = _mm_hadd_ps (msum2, msum2);
+    return  _mm_cvtss_f32 (msum2);
+}
+
+float fvec_L2sqr (const float * x,
+                 const float * y,
+                 size_t d)
+{
+    __m256 msum1 = _mm256_setzero_ps();
+
+    while (d >= 8) {
+        __m256 mx = _mm256_loadu_ps (x); x += 8;
+        __m256 my = _mm256_loadu_ps (y); y += 8;
+        const __m256 a_m_b1 = mx - my;
+        msum1 += a_m_b1 * a_m_b1;
+        d -= 8;
+    }
+
+    __m128 msum2 = _mm256_extractf128_ps(msum1, 1);
+    msum2 +=       _mm256_extractf128_ps(msum1, 0);
+
+    if (d >= 4) {
+        __m128 mx = _mm_loadu_ps (x); x += 4;
+        __m128 my = _mm_loadu_ps (y); y += 4;
+        const __m128 a_m_b1 = mx - my;
+        msum2 += a_m_b1 * a_m_b1;
+        d -= 4;
+    }
+
+    if (d > 0) {
+        __m128 mx = masked_read (d, x);
+        __m128 my = masked_read (d, y);
+        __m128 a_m_b1 = mx - my;
+        msum2 += a_m_b1 * a_m_b1;
+    }
+
+    msum2 = _mm_hadd_ps (msum2, msum2);
+    msum2 = _mm_hadd_ps (msum2, msum2);
+    return  _mm_cvtss_f32 (msum2);
+}
+
+#else
 
 /* SSE-implementation of L2 distance */
 float fvec_L2sqr (const float * x,
@@ -534,6 +627,7 @@ float fvec_inner_product (const float * x,
 
 
 
+#endif
 
 float fvec_norm_L2sqr (const float *  x,
                       size_t d)
@@ -554,69 +648,6 @@ float fvec_norm_L2sqr (const float *  x,
     msum1 = _mm_hadd_ps (msum1, msum1);
     return  _mm_cvtss_f32 (msum1);
 }
-
-
-
-/*********************************************************
- * AVX implementations
- *
- * Disabled for now, it is not faster than SSE on current machines
- * see P57425519
- */
-
-#if 0
-
-
-
-// reads 0 <= d < 8 floats as __m256
-static inline __m256 masked_read_8 (int d, const float *x)
-{
-    assert (0 <= d && d < 8);
-    if (d < 4) {
-        __m256 res = _mm256_setzero_ps ();
-        res = _mm256_insertf128_ps (res, masked_read (d, x), 0);
-        return res;
-    } else {
-        __m256 res;
-        res = _mm256_insertf128_ps (res, _mm_loadu_ps (x), 0);
-        res = _mm256_insertf128_ps (res, masked_read (d - 4, x + 4), 1);
-        return res;
-    }
-}
-
-
-float fvec_L2sqr (const float * x,
-                 const float * y,
-                 size_t d)
-{
-    __m256 msum1 = _mm256_setzero_ps();
-
-    while (d >= 8) {
-        __m256 mx = _mm256_loadu_ps (x); x += 8;
-        __m256 my = _mm256_loadu_ps (y); y += 8;
-        const __m256 a_m_b1 = mx - my;
-        msum1 += a_m_b1 * a_m_b1;
-        d -= 8;
-    }
-
-    if (d > 0) {
-        // add the last 1, 2 or 3 values
-        __m256 mx = masked_read_8 (d, x);
-        __m256 my = masked_read_8 (d, y);
-        __m256 a_m_b1 = mx - my;
-        msum1 += a_m_b1 * a_m_b1;
-    }
-
-    __m128 msum2 = _mm256_extractf128_ps(msum1, 1);
-    msum2 +=       _mm256_extractf128_ps(msum1, 0);
-
-    msum2 = _mm_hadd_ps (msum2, msum2);
-    msum2 = _mm_hadd_ps (msum2, msum2);
-    return  _mm_cvtss_f32 (msum2);
-}
-
-#endif
-
 
 
 
@@ -1365,15 +1396,17 @@ void pairwise_L2sqr (long d,
 #define EPS (1 / 1024.)
 
 /* For k-means, compute centroids given assignment of vectors to centroids */
-/* NOTE: This could be multi-threaded (use histogram of indexes) */
 int km_update_centroids (const float * x,
-                          float * centroids,
-                          long * assign,
-                          size_t d, size_t k, size_t n)
+                         float * centroids,
+                         long * assign,
+                         size_t d, size_t k, size_t n,
+                         size_t k_frozen)
 {
+    k -= k_frozen;
+    centroids += k_frozen * d;
+
     std::vector<size_t> hassign(k);
     memset (centroids, 0, sizeof(*centroids) * d * k);
-
 
 #pragma omp parallel
     {
@@ -1383,12 +1416,12 @@ int km_update_centroids (const float * x,
         size_t c0 = (k * rank) / nt;
         size_t c1 = (k * (rank + 1)) / nt;
         const float *xi = x;
-        // printf("thread %d/%d: centroids %ld:%ld\n", rank, nt, c0, c1);
         size_t nacc = 0;
 
         for (size_t i = 0; i < n; i++) {
             long ci = assign[i];
-            assert (ci >= 0 && ci < k);
+            assert (ci >= 0 && ci < k + k_frozen);
+            ci -= k_frozen;
             if (ci >= c0 && ci < c1)  {
                 float * c = centroids + ci * d;
                 hassign[ci]++;
@@ -1398,7 +1431,6 @@ int km_update_centroids (const float * x,
             }
             xi += d;
         }
-        // printf("thread %d/%d: nacc = %ld/%ld\n", rank, nt, nacc, n);
 
     }
 

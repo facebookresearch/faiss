@@ -77,10 +77,10 @@ IntersectionCriterion::IntersectionCriterion (idx_t nq, idx_t R):
 
 double IntersectionCriterion::evaluate(const float* /*D*/, const idx_t* I)
     const {
-  FAISS_THROW_IF_NOT_MSG(
+    FAISS_THROW_IF_NOT_MSG(
       (gt_I.size() == gt_nnn * nq && gt_nnn >= R && nnn >= R),
       "ground truth not initialized");
-  long n_ok = 0;
+    long n_ok = 0;
 #pragma omp parallel for reduction(+: n_ok)
     for (idx_t q = 0; q < nq; q++) {
         n_ok += ranklist_intersection_size (
@@ -345,11 +345,13 @@ void ParameterSpace::initialize (const Index * index)
     }
 
     if (DC (IndexIVF)) {
-        ParameterRange & pr = add_range("nprobe");
-        for (int i = 0; i < 13; i++) {
-            size_t nprobe = 1 << i;
-            if (nprobe >= ix->nlist) break;
-            pr.values.push_back (nprobe);
+        {
+            ParameterRange & pr = add_range("nprobe");
+            for (int i = 0; i < 13; i++) {
+                size_t nprobe = 1 << i;
+                if (nprobe >= ix->nlist) break;
+                pr.values.push_back (nprobe);
+            }
         }
     }
     if (DC (IndexPQ)) {
@@ -371,7 +373,6 @@ void ParameterSpace::initialize (const Index * index)
         }
     }
     if (DC (IndexIVFPQR)) {
-        assert (ix);
         ParameterRange & pr = add_range("k_factor");
         for (int i = 0; i <= 6; i++) {
             pr.values.push_back (1 << i);
@@ -427,12 +428,21 @@ void ParameterSpace::set_index_parameter (
 
     if (name == "verbose") {
         index->verbose = int(val);
+        // and fall through to also enable it on sub-indexes
     }
     if (DC (IndexPreTransform)) {
         index = ix->index;
     }
+    if (DC (IndexShards)) {
+        // call on all sub-indexes
+        for (auto & shard_index : ix->shard_indexes) {
+            set_index_parameter (shard_index, name, val);
+        }
+        return;
+    }
     if (name == "verbose") {
         index->verbose = int(val);
+        // in case it was an IndexPreTransform
     }
     if (DC (IndexRefineFlat)) {
         if (name == "k_factor_rf") {
@@ -449,9 +459,12 @@ void ParameterSpace::set_index_parameter (
         return; // last verbose that we could find
     }
     if (name == "nprobe") {
-        DC(IndexIVF);
-        ix->nprobe = int(val);
-    } else if (name == "ht") {
+        if ( DC(IndexIVF)) {
+            ix->nprobe = int(val);
+            return;
+        }
+    }
+    if (name == "ht") {
         if (DC (IndexPQ)) {
             if (val >= ix->pq.code_size * 8) {
                 ix->search_type = IndexPQ::ST_PQ;
@@ -459,25 +472,32 @@ void ParameterSpace::set_index_parameter (
                 ix->search_type = IndexPQ::ST_polysemous;
                 ix->polysemous_ht = int(val);
             }
+            return;
         } else if (DC (IndexIVFPQ)) {
             if (val >= ix->pq.code_size * 8) {
                 ix->polysemous_ht = 0;
             } else {
                 ix->polysemous_ht = int(val);
             }
+            return;
         }
-    } else if (name == "k_factor") {
-        DC (IndexIVFPQR);
-        ix->k_factor = val;
-    } else if (name == "max_codes") {
-        DC (IndexIVFPQ);
-        ix->max_codes = finite(val) ? size_t(val) : 0;
-    } else {
-        FAISS_THROW_FMT (
-                "ParameterSpace::set_index_parameter:"
-                "could not set parameter %s",
-                name.c_str());
     }
+
+    if (name == "k_factor") {
+        if (DC (IndexIVFPQR)) {
+            ix->k_factor = val;
+            return;
+        }
+    }
+    if (name == "max_codes") {
+        if (DC (IndexIVFPQ)) {
+            ix->max_codes = finite(val) ? size_t(val) : 0;
+            return;
+        }
+    }
+    FAISS_THROW_FMT ("ParameterSpace::set_index_parameter:"
+                     "could not set parameter %s",
+                     name.c_str());
 }
 
 void ParameterSpace::display () const
@@ -634,6 +654,15 @@ struct VTChain {
     }
 };
 
+
+/// what kind of training does this coarse quantizer require?
+char get_trains_alone(const Index *coarse_quantizer) {
+    return
+        dynamic_cast<const MultiIndexQuantizer*>(coarse_quantizer) ? 1 :
+        0;
+}
+
+
 }
 
 Index *index_factory (int d, const char *description_in, MetricType metric)
@@ -656,6 +685,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
          tok;
          tok = strtok_r (nullptr, " ,", &ptr)) {
         int d_out, opq_M, nbit, M, M2;
+        char option[100];
         std::string stok(tok);
 
         // to avoid mem leaks with exceptions:
@@ -686,7 +716,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
         } else if (stok == "L2norm") {
             vt_1 = new NormalizationTransform (d, 2.0);
 
-        // coarse quantizers
+
         } else if (!coarse_quantizer &&
                    sscanf (tok, "IVF%d", &ncentroids) == 1) {
             if (metric == METRIC_L2) {
@@ -709,8 +739,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                 IndexIVF *index_ivf = new IndexIVFFlat (
                     coarse_quantizer, d, ncentroids, metric);
                 index_ivf->quantizer_trains_alone =
-                    dynamic_cast<MultiIndexQuantizer*>(coarse_quantizer)
-                    != nullptr;
+                    get_trains_alone (coarse_quantizer);
                 index_ivf->cp.spherical = metric == METRIC_INNER_PRODUCT;
                 del_coarse_quantizer.release ();
                 index_ivf->own_fields = true;
@@ -728,8 +757,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                     new IndexIVFScalarQuantizer (
                       coarse_quantizer, d, ncentroids, qt, metric);
                 index_ivf->quantizer_trains_alone =
-                    dynamic_cast<MultiIndexQuantizer*>(coarse_quantizer)
-                    != nullptr;
+                    get_trains_alone (coarse_quantizer);
                 del_coarse_quantizer.release ();
                 index_ivf->own_fields = true;
                 index_1 = index_ivf;
@@ -744,29 +772,31 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             IndexIVFPQR *index_ivf = new IndexIVFPQR (
                   coarse_quantizer, d, ncentroids, M, 8, M2, 8);
             index_ivf->quantizer_trains_alone =
-                dynamic_cast<MultiIndexQuantizer*>(coarse_quantizer)
-                != nullptr;
+                    get_trains_alone (coarse_quantizer);
             del_coarse_quantizer.release ();
             index_ivf->own_fields = true;
             index_1 = index_ivf;
-        } else if (!index && sscanf (tok, "PQ%d", &M) == 1) {
+        } else if (!index && sscanf (tok, "PQ%d%10s", &M, option) == 2) {
+            std::string soption = option;
+            // np to disable polysemous trainign
+            FAISS_THROW_IF_NOT(soption == "" || soption == "np");
             if (coarse_quantizer) {
                 IndexIVFPQ *index_ivf = new IndexIVFPQ (
                     coarse_quantizer, d, ncentroids, M, 8);
                 index_ivf->quantizer_trains_alone =
-                    dynamic_cast<MultiIndexQuantizer*>(coarse_quantizer)
-                    != nullptr;
+                    get_trains_alone (coarse_quantizer);
                 index_ivf->metric_type = metric;
                 index_ivf->cp.spherical = metric == METRIC_INNER_PRODUCT;
                 del_coarse_quantizer.release ();
                 index_ivf->own_fields = true;
-                index_ivf->do_polysemous_training = true;
+                index_ivf->do_polysemous_training = soption != "np";
                 index_1 = index_ivf;
             } else {
                 IndexPQ *index_pq = new IndexPQ (d, M, 8, metric);
-                index_pq->do_polysemous_training = true;
+                index_pq->do_polysemous_training = soption != "np";
                 index_1 = index_pq;
             }
+
         } else if (stok == "RFlat") {
             make_IndexRefineFlat = true;
         } else {
