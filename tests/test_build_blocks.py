@@ -132,7 +132,7 @@ class TestException(unittest.TestCase):
         try:
             # an unsupported operation for IndexFlat
             index.add_with_ids(a, b)
-        except RuntimeError, e:
+        except RuntimeError as e:
             assert 'add_with_ids not implemented' in str(e)
         else:
             assert False, 'exception did not fire???'
@@ -141,7 +141,7 @@ class TestException(unittest.TestCase):
 
         try:
             faiss.index_factory(12, 'IVF256,Flat,PQ8')
-        except RuntimeError, e:
+        except RuntimeError as e:
             assert 'could not parse' in str(e)
         else:
             assert False, 'exception did not fire???'
