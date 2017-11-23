@@ -133,8 +133,6 @@ for index_key in keys_to_test:
         # transfer to GPU (may be partial)
         index = faiss.index_cpu_to_gpu(res, dev_no, index)
         params = faiss.GpuParameterSpace()
-        print "GGGG"
-        raw_input()
     else:
         params = faiss.ParameterSpace()
 
