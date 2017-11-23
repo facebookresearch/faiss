@@ -285,9 +285,13 @@ struct Math<half> {
   }
 
   static inline __device__ half zero() {
+#if CUDA_VERSION >= 9000
+    return 0;
+#else
     half h;
     h.x = 0;
     return h;
+#endif
   }
 };
 

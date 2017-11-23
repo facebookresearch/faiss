@@ -7,16 +7,12 @@
 #! /usr/bin/env python2
 
 import time
-import libfb.py.mkl  # noqa
-
+import unittest
 import numpy as np
-
-from libfb import testutil
-
 import faiss
 
 
-class EvalIVFPQAccuracy(testutil.BaseFacebookTestCase):
+class EvalIVFPQAccuracy(unittest.TestCase):
 
     def get_dataset(self, small_one=False):
         if not small_one:
@@ -110,3 +106,9 @@ class EvalIVFPQAccuracy(testutil.BaseFacebookTestCase):
 
     def test_cpu_to_gpu_IVFFlat(self):
         self.do_cpu_to_gpu('IVF128,Flat')
+
+    def test_set_gpu_param(self):
+        index = faiss.index_factory(12, "PCAR8,IVF10,PQ4")
+        res = faiss.StandardGpuResources()
+        gpu_index = faiss.index_cpu_to_gpu(res, 0, index)
+        faiss.GpuParameterSpace().set_index_parameter(index, "nprobe", 3)

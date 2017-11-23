@@ -260,7 +260,6 @@ static size_t polysemous_inner_loop (
 void IndexPQ::search_core_polysemous (idx_t n, const float *x, idx_t k,
                                           float *distances, idx_t *labels) const
 {
-    FAISS_THROW_IF_NOT (pq.code_size % 8 == 0);
     FAISS_THROW_IF_NOT (pq.byte_per_idx == 1);
 
     // PQ distance tables
@@ -319,12 +318,17 @@ void IndexPQ::search_core_polysemous (idx_t n, const float *x, idx_t k,
                     (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
                 break;
             default:
-                if (pq.code_size % 8 == 0)
+                if (pq.code_size % 8 == 0) {
                     n_pass += polysemous_inner_loop<HammingComputerM8>
                         (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
-                else
+                } else if (pq.code_size % 4 == 0) {
                     n_pass += polysemous_inner_loop<HammingComputerM4>
                         (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
+                } else {
+                    FAISS_THROW_FMT(
+                         "code size %zd not supported for polysemous",
+                         pq.code_size);
+                }
                 break;
             }
         } else {
@@ -342,8 +346,14 @@ void IndexPQ::search_core_polysemous (idx_t n, const float *x, idx_t k,
                     (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
                 break;
             default:
-                n_pass += polysemous_inner_loop<GenHammingComputerM8>
-                    (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
+                if (pq.code_size % 8 == 0) {
+                    n_pass += polysemous_inner_loop<GenHammingComputerM8>
+                        (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
+                } else {
+                    FAISS_THROW_FMT(
+                         "code size %zd not supported for polysemous",
+                         pq.code_size);
+                }
                 break;
             }
         }

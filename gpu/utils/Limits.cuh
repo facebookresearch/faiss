@@ -39,9 +39,15 @@ struct Limits<float> {
 #ifdef FAISS_USE_FLOAT16
 
 inline __device__ __host__ half kGetHalf(unsigned short v) {
+#if CUDA_VERSION >= 9000
+  __half_raw h;
+  h.x = v;
+  return __half(h);
+#else
   half h;
   h.x = v;
   return h;
+#endif
 }
 
 template <>

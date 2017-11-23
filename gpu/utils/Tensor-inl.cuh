@@ -30,6 +30,37 @@ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor()
 template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor(
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t) {
+  this->operator=(t);
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__ __device__
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor(
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t) {
+  this->operator=(std::move(t));
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__ __device__
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::operator=(
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t) {
+  data_ = t.data_;
+  for (int i = 0; i < Dim; ++i) {
+    size_[i] = t.size_[i];
+    stride_[i] = t.stride_[i];
+  }
+
+  return *this;
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__ __device__
 Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&
 Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::operator=(
   Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t) {

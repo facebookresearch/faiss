@@ -60,7 +60,7 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResources* resources,
     reserveMemoryVecs_(0),
     index_(nullptr) {
 #ifndef FAISS_USE_FLOAT16
-  FAISS_ASSERT(!useFloat16LookupTables_);
+  FAISS_ASSERT(!config.useFloat16LookupTables);
 #endif
 
   verifySettings_();

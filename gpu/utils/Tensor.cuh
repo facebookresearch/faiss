@@ -87,16 +87,14 @@ class Tensor {
   __host__ __device__ Tensor();
 
   /// Copy constructor
-  __host__ __device__ Tensor(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t)
-  = default;
+  __host__ __device__ Tensor(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t);
 
   /// Move constructor
-  __host__ __device__ Tensor(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t)
-  = default;
+  __host__ __device__ Tensor(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t);
 
   /// Assignment
   __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&
-  operator=(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t) = default;
+  operator=(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t);
 
   /// Move assignment
   __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&

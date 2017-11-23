@@ -506,7 +506,6 @@ void runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
   }
 #else
   FAISS_ASSERT(!useFloat16Lookup);
-  int codeSize = sizeof(float);
 #endif
 
   int totalCodeDistancesSize =

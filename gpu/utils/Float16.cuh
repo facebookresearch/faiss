@@ -149,7 +149,7 @@ DeviceTensor<float, Dim, true> fromHalf(GpuResources* resources,
   return out;
 }
 
-half hostFloat2Half(float v);
+__half hostFloat2Half(float v);
 
 #endif // FAISS_USE_FLOAT16
 

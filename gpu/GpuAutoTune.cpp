@@ -381,20 +381,20 @@ void GpuParameterSpace::set_index_parameter (
             set_index_parameter (ix->at(i), name, val);
         return;
     }
-    if (DC (GpuIndexIVF)) {
-        if (name == "nprobe") {
+    if (name == "nprobe") {
+        if (DC (GpuIndexIVF)) {
             ix->setNumProbes (int (val));
             return;
         }
     }
-    if(DC (GpuIndexIVFPQ)) {
-        if (name == "use_precomputed_table") {
+    if (name == "use_precomputed_table") {
+        if (DC (GpuIndexIVFPQ)) {
             ix->setPrecomputedCodes(bool (val));
             return;
         }
     }
 
-    // maybe norma lindex parameters apply?
+    // maybe normal index parameters apply?
     ParameterSpace::set_index_parameter (index, name, val);
 }
 

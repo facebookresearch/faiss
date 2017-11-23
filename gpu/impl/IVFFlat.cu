@@ -45,10 +45,6 @@ IVFFlat::IVFFlat(GpuResources* resources,
             space),
     l2Distance_(l2Distance),
     useFloat16_(useFloat16) {
-#ifndef FAISS_USE_FLOAT16
-  FAISS_ASSERT_MSG(!useFloat16, "float16 unsupported");
-  useFloat16_ = false;
-#endif
 }
 
 IVFFlat::~IVFFlat() {
@@ -95,6 +91,9 @@ IVFFlat::addCodeVectorsFromCpu(int listId,
                      lengthInBytes,
                      stream,
                      true /* exact reserved size */);
+#else
+    // we are not compiling with float16 support
+    FAISS_ASSERT(false);
 #endif
   } else {
     listData->append((unsigned char*) vecs,

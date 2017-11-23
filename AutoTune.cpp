@@ -431,7 +431,8 @@ void ParameterSpace::set_index_parameter (
         // and fall through to also enable it on sub-indexes
     }
     if (DC (IndexPreTransform)) {
-        index = ix->index;
+        set_index_parameter (ix->index, name, val);
+        return;
     }
     if (DC (IndexShards)) {
         // call on all sub-indexes
@@ -440,30 +441,28 @@ void ParameterSpace::set_index_parameter (
         }
         return;
     }
-    if (name == "verbose") {
-        index->verbose = int(val);
-        // in case it was an IndexPreTransform
-    }
     if (DC (IndexRefineFlat)) {
         if (name == "k_factor_rf") {
             ix->k_factor = int(val);
             return;
         }
-        index = ix->base_index;
+        // otherwise it is for the sub-index
+        set_index_parameter (&ix->refine_index, name, val);
+        return;
     }
-    if (DC (IndexPreTransform)) {
-        index = ix->index;
-    }
+
     if (name == "verbose") {
         index->verbose = int(val);
         return; // last verbose that we could find
     }
+
     if (name == "nprobe") {
         if ( DC(IndexIVF)) {
             ix->nprobe = int(val);
             return;
         }
     }
+
     if (name == "ht") {
         if (DC (IndexPQ)) {
             if (val >= ix->pq.code_size * 8) {
@@ -685,7 +684,6 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
          tok;
          tok = strtok_r (nullptr, " ,", &ptr)) {
         int d_out, opq_M, nbit, M, M2;
-        char option[100];
         std::string stok(tok);
 
         // to avoid mem leaks with exceptions:
@@ -776,10 +774,9 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             del_coarse_quantizer.release ();
             index_ivf->own_fields = true;
             index_1 = index_ivf;
-        } else if (!index && sscanf (tok, "PQ%d%10s", &M, option) == 2) {
-            std::string soption = option;
-            // np to disable polysemous trainign
-            FAISS_THROW_IF_NOT(soption == "" || soption == "np");
+        } else if (!index && (sscanf (tok, "PQ%d", &M) == 1 ||
+                              sscanf (tok, "PQ%dnp", &M) == 1)) {
+            bool do_polysemous_training = stok.find("np") == std::string::npos;
             if (coarse_quantizer) {
                 IndexIVFPQ *index_ivf = new IndexIVFPQ (
                     coarse_quantizer, d, ncentroids, M, 8);
@@ -789,11 +786,11 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                 index_ivf->cp.spherical = metric == METRIC_INNER_PRODUCT;
                 del_coarse_quantizer.release ();
                 index_ivf->own_fields = true;
-                index_ivf->do_polysemous_training = soption != "np";
+                index_ivf->do_polysemous_training = do_polysemous_training;
                 index_1 = index_ivf;
             } else {
                 IndexPQ *index_pq = new IndexPQ (d, M, 8, metric);
-                index_pq->do_polysemous_training = soption != "np";
+                index_pq->do_polysemous_training = do_polysemous_training;
                 index_1 = index_pq;
             }
 
