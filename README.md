@@ -60,6 +60,8 @@ Reference to cite when you use Faiss in a research paper:
 
 ## Join the Faiss community
 
+For public discussion of Faiss or for questions, there is a Facebook public discussion group at https://www.facebook.com/groups/faissusers/
+
 We monitor the [issues page](http://github.com/facebookresearch/faiss/issues) of the repository. You can report bugs, ask questions, etc.
 
 ## License
