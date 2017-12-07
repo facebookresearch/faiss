@@ -16,19 +16,23 @@ xb[:, 0] += np.arange(nb) / 1000.
 xq = np.random.random((nq, d)).astype('float32')
 xq[:, 0] += np.arange(nq) / 1000.
 
-import faiss
+import faiss                   # make faiss available
 
-nlist = 100
-m = 8
-k = 4
-quantizer = faiss.IndexFlatL2(d)  # this remains the same
-index = faiss.IndexIVFPQ(quantizer, d, nlist, m, 8)
-                                  # 8 specifies that each sub-vector is encoded as 8 bits
-index.train(xb)
-index.add(xb)
+print("number of GPUs:", faiss.get_num_gpus())
+
+index = faiss.IndexFlatL2(d)   # build the index
+
+res = faiss.StandardGpuResources()
+
+index = faiss.index_cpu_to_gpu(res, 0, index)
+
+index.add(xb)                  # add vectors to the index
+print(index.ntotal)
+
+k = 4                          # we want to see 4 nearest neighbors
 D, I = index.search(xb[:5], k) # sanity check
 print(I)
 print(D)
-index.nprobe = 10              # make comparable with experiment above
-D, I = index.search(xq, k)     # search
-print(I[-5:])
+D, I = index.search(xq, k)     # actual search
+print(I[:5])                   # neighbors of the 5 first queries
+print(I[-5:])                  # neighbors of the 5 last queries
