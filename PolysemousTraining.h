@@ -25,7 +25,7 @@ namespace faiss {
 struct SimulatedAnnealingParameters {
 
     // optimization parameters
-    double init_temperature;   // init probaility of accepting a bad swap
+    double init_temperature;   // init probability of accepting a bad swap
     double temperature_decay;  // at each iteration the temp is multiplied by this
     int n_iter; // nb of iterations
     int n_redo; // nb of runs of the simulation
