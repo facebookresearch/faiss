@@ -4,7 +4,7 @@
 # This source code is licensed under the BSD+Patents license found in the
 # LICENSE file in the root directory of this source tree.
 
-.SUFFIXES: .cpp .o
+.SUFFIXES: .c .cpp .o
 
 
 MAKEFILE_INC=makefile.inc
@@ -37,9 +37,12 @@ $(LIBNAME).a: $(LIBOBJ)
 	ar r $(LIBNAME).a $^
 
 $(LIBNAME).$(SHAREDEXT): $(LIBOBJ)
-	$(CC) $(LDFLAGS) $(FAISSSHAREDFLAGS) -o $(LIBNAME).$(SHAREDEXT) $^ $(BLASLDFLAGS)
+	$(CXX) $(LDFLAGS) $(FAISSSHAREDFLAGS) -o $(LIBNAME).$(SHAREDEXT) $^ $(BLASLDFLAGS)
 
 .cpp.o:
+	$(CXX) $(CXXFLAGS) -c $< -o $@ $(FLAGS) $(EXTRAFLAGS)
+
+.c.o:
 	$(CC) $(CFLAGS) -c $< -o $@ $(FLAGS) $(EXTRAFLAGS)
 
 utils.o:             EXTRAFLAGS=$(BLASCFLAGS)
@@ -57,13 +60,13 @@ BLASLDFLAGSSO ?= $(BLASLDFLAGS)
 # pure C++ test in the test directory
 
 tests/test_blas: tests/test_blas.cpp
-	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) $(BLASLDFLAGS) $(BLASCFLAGS)
+	$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS) $(BLASLDFLAGS) $(BLASCFLAGS)
 
 demos/demo_ivfpq_indexing: demos/demo_ivfpq_indexing.cpp $(LIBNAME).a
-	$(CC) -o $@ $(CFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
+	$(CXX) -o $@ $(CFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
 
 demos/demo_sift1M: demos/demo_sift1M.cpp $(LIBNAME).a
-	$(CC) -o $@ $(CFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
+	$(CXX) -o $@ $(CFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
 
 
 #############################
@@ -81,7 +84,7 @@ python/swigfaiss_wrap.cxx: swigfaiss.swig $(HFILES)
 
 # extension is .so even on the mac
 python/_swigfaiss.so: python/swigfaiss_wrap.cxx $(LIBNAME).a
-	$(CC) -I. $(CFLAGS) $(LDFLAGS) $(PYTHONCFLAGS) $(SHAREDFLAGS) \
+	$(CXX) -I. $(CXXFLAGS) $(LDFLAGS) $(PYTHONCFLAGS) $(SHAREDFLAGS) \
 	-o $@ $^ $(BLASLDFLAGSSO)
 
 _swigfaiss.so: python/_swigfaiss.so
@@ -164,8 +167,8 @@ clean:
 ifeq ($(wildcard $(MAKEFILE_INC)),)
 	$(error Cannot find $(MAKEFILE_INC). Did you forget to copy the relevant file from ./example_makefiles?)
 endif
-ifeq ($(shell command -v $(CC) 2>/dev/null),)
-	$(error Cannot find $(CC), please refer to $(CURDIR)/makefile.inc to set up your environment)
+ifeq ($(shell command -v $(CXX) 2>/dev/null),)
+	$(error Cannot find $(CXX), please refer to $(CURDIR)/makefile.inc to set up your environment)
 endif
 
 .swig_ok: .env_ok

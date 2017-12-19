@@ -9,7 +9,8 @@
 # port install g++-mp-6
 CC=/opt/local/bin/g++-mp-6
 
-CFLAGS=-fPIC -m64 -Wall -g -O3  -msse4 -mpopcnt -fopenmp -Wno-sign-compare -std=c++11
+CFLAGS=-fPIC -m64 -Wall -g -O3  -msse4 -mpopcnt -fopenmp -Wno-sign-compare
+CXXFLAGS=$(CFLAGS) -std=c++11
 LDFLAGS=-g -fPIC  -fopenmp
 
 
