@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -21,28 +20,39 @@ namespace faiss { namespace gpu {
 class GpuIndexFlat;
 class IVFPQ;
 
+struct GpuIndexIVFPQConfig : public GpuIndexIVFConfig {
+  inline GpuIndexIVFPQConfig()
+      : useFloat16LookupTables(false),
+        usePrecomputedTables(false) {
+  }
+
+  /// Whether or not float16 residual distance tables are used in the
+  /// list scanning kernels. When subQuantizers * 2^bitsPerCode >
+  /// 16384, this is required.
+  bool useFloat16LookupTables;
+
+  /// Whether or not we enable the precomputed table option for
+  /// search, which can substantially increase the memory requirement.
+  bool usePrecomputedTables;
+};
+
 /// IVFPQ index for the GPU
 class GpuIndexIVFPQ : public GpuIndexIVF {
  public:
   /// Construct from a pre-existing faiss::IndexIVFPQ instance, copying
   /// data over to the given GPU, if the input index is trained.
   GpuIndexIVFPQ(GpuResources* resources,
-                int device,
-                IndicesOptions indicesOptions,
-                bool useFloat16LookupTables,
-                const faiss::IndexIVFPQ* index);
+                const faiss::IndexIVFPQ* index,
+                GpuIndexIVFPQConfig config = GpuIndexIVFPQConfig());
 
   /// Construct an empty index
   GpuIndexIVFPQ(GpuResources* resources,
-                int device,
                 int dims,
                 int nlist,
                 int subQuantizers,
                 int bitsPerCode,
-                bool usePrecomputed,
-                IndicesOptions indicesOptions,
-                bool useFloat16LookupTables,
-                faiss::MetricType metric);
+                faiss::MetricType metric,
+                GpuIndexIVFPQConfig config = GpuIndexIVFPQConfig());
 
   ~GpuIndexIVFPQ() override;
 
@@ -66,9 +76,6 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
   /// Are pre-computed codes enabled?
   bool getPrecomputedCodes() const;
 
-  /// Are float16 residual distance lookup tables enabled?
-  bool getFloat16LookupTables() const;
-
   /// Return the number of sub-quantizers we are using
   int getNumSubQuantizers() const;
 
@@ -88,22 +95,6 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
 
   void train(Index::idx_t n, const float* x) override;
 
-  /// `x` and `xids` can be resident on the CPU or any GPU; the proper
-  /// copies are performed
-  void add_with_ids(Index::idx_t n,
-                    const float* x,
-                    const Index::idx_t* xids) override;
-
-  /// `x`, `distances` and `labels` can be resident on the CPU or any
-  /// GPU; copies are performed as needed
-  void search(faiss::Index::idx_t n,
-              const float* x,
-              faiss::Index::idx_t k,
-              float* distances,
-              faiss::Index::idx_t* labels) const override;
-
-  void set_typename() override;
-
   /// For debugging purposes, return the list length of a particular
   /// list
   int getListLength(int listId) const;
@@ -116,23 +107,34 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
   /// list
   std::vector<long> getListIndices(int listId) const;
 
+ protected:
+  /// Called from GpuIndex for add/add_with_ids
+  void addImpl_(
+      faiss::Index::idx_t n,
+      const float* x,
+      const faiss::Index::idx_t* ids) override;
+
+  /// Called from GpuIndex for search
+  void searchImpl_(
+      faiss::Index::idx_t n,
+      const float* x,
+      faiss::Index::idx_t k,
+      float* distances,
+      faiss::Index::idx_t* labels) const override;
+
  private:
-  void assertSettings_() const;
+  void verifySettings_() const;
 
   void trainResidualQuantizer_(Index::idx_t n, const float* x);
 
  private:
-  /// Do we use float16 residual distance lookup tables for query?
-  const bool useFloat16LookupTables_;
+  GpuIndexIVFPQConfig ivfpqConfig_;
 
   /// Number of sub-quantizers per encoded vector
   int subQuantizers_;
 
   /// Bits per sub-quantizer code
   int bitsPerCode_;
-
-  /// Should we or should we not use precomputed codes?
-  bool usePrecomputed_;
 
   /// Desired inverted list memory reservation
   size_t reserveMemoryVecs_;

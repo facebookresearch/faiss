@@ -128,11 +128,11 @@ Taccu&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="str
 Taccu&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Score3Computer.html#acf371848bac76ba275ceb5e10f805d33">update_i_cross</a> (const int *perm, int iw, int jw, int ip0, int ip, const Ttab *n_gt_i) const </td></tr>
 <tr class="memdesc:acf371848bac76ba275ceb5e10f805d33"><td class="mdescLeft">&#160;</td><td class="mdescRight">considers the 2 pairs of crossing lines j=iw or jw and k = iw or kw <br/></td></tr>
 <tr class="separator:acf371848bac76ba275ceb5e10f805d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49fe0b8ba9665f6997e4f413409c174c"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Score3Computer.html#a49fe0b8ba9665f6997e4f413409c174c">compute_cost</a> (const int *perm) const </td></tr>
-<tr class="separator:a49fe0b8ba9665f6997e4f413409c174c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc34a00dace6355b0bda77a0841dc654"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afc34a00dace6355b0bda77a0841dc654"></a>
-virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>cost_update</b> (const int *perm, int iw, int jw) const </td></tr>
-<tr class="separator:afc34a00dace6355b0bda77a0841dc654"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c4537d67802aef28ccc57c4bd87f766"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Score3Computer.html#a1c4537d67802aef28ccc57c4bd87f766">compute_cost</a> (const int *perm) const override</td></tr>
+<tr class="separator:a1c4537d67802aef28ccc57c4bd87f766"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbce8973c5294f8495a89100c111c5b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acbce8973c5294f8495a89100c111c5b3"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>cost_update</b> (const int *perm, int iw, int jw) const override</td></tr>
+<tr class="separator:acbce8973c5294f8495a89100c111c5b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -153,7 +153,7 @@ struct faiss::Score3Computer&lt; Ttab, Taccu &gt;</h3>
 
 <p>Maintains a 3D table of elementary costs. Accumulates elements based on Hamming distance comparisons </p>
 
-<p>Definition at line <a class="el" href="PolysemousTraining_8cpp_source.html#l00452">452</a> of file <a class="el" href="PolysemousTraining_8cpp_source.html">PolysemousTraining.cpp</a>.</p>
+<p>Definition at line <a class="el" href="PolysemousTraining_8cpp_source.html#l00443">443</a> of file <a class="el" href="PolysemousTraining_8cpp_source.html">PolysemousTraining.cpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a07a726903418960a2d8000506d88f8e6"></a>
 <div class="memitem">
@@ -180,11 +180,11 @@ template&lt;typename Ttab, typename Taccu&gt; </div>
 </div><div class="memdoc">
 <p>the cost is a triple loop on the nc * nc * nc matrix of entries. </p>
 
-<p>Definition at line <a class="el" href="PolysemousTraining_8cpp_source.html#l00464">464</a> of file <a class="el" href="PolysemousTraining_8cpp_source.html">PolysemousTraining.cpp</a>.</p>
+<p>Definition at line <a class="el" href="PolysemousTraining_8cpp_source.html#l00455">455</a> of file <a class="el" href="PolysemousTraining_8cpp_source.html">PolysemousTraining.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a49fe0b8ba9665f6997e4f413409c174c"></a>
+<a class="anchor" id="a1c4537d67802aef28ccc57c4bd87f766"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -194,7 +194,7 @@ template&lt;typename Ttab, typename Taccu&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual double <a class="el" href="structfaiss_1_1Score3Computer.html">faiss::Score3Computer</a>&lt; Ttab, Taccu &gt;::compute_cost </td>
+          <td class="memname">double <a class="el" href="structfaiss_1_1Score3Computer.html">faiss::Score3Computer</a>&lt; Ttab, Taccu &gt;::compute_cost </td>
           <td>(</td>
           <td class="paramtype">const int *&#160;</td>
           <td class="paramname"><em>perm</em></td><td>)</td>
@@ -203,7 +203,7 @@ template&lt;typename Ttab, typename Taccu&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -211,7 +211,7 @@ template&lt;typename Ttab, typename Taccu&gt; </div>
 
 <p>Implements <a class="el" href="structfaiss_1_1PermutationObjective.html">faiss::PermutationObjective</a>.</p>
 
-<p>Definition at line <a class="el" href="PolysemousTraining_8cpp_source.html#l00640">640</a> of file <a class="el" href="PolysemousTraining_8cpp_source.html">PolysemousTraining.cpp</a>.</p>
+<p>Definition at line <a class="el" href="PolysemousTraining_8cpp_source.html#l00631">631</a> of file <a class="el" href="PolysemousTraining_8cpp_source.html">PolysemousTraining.cpp</a>.</p>
 
 </div>
 </div>
@@ -257,12 +257,12 @@ template&lt;typename Ttab, typename Taccu&gt; </div>
 <p>cost update if entries iw and jw of the permutation would be swapped.</p>
 <p>The computation is optimized by avoiding elements in the nc*nc*nc cube that are known not to change. For nc=256, this reduces the nb of cells to visit to about 6/256 th of the cells. Practical speedup is about 8x, and the code is quite complex :-/ </p>
 
-<p>Definition at line <a class="el" href="PolysemousTraining_8cpp_source.html#l00495">495</a> of file <a class="el" href="PolysemousTraining_8cpp_source.html">PolysemousTraining.cpp</a>.</p>
+<p>Definition at line <a class="el" href="PolysemousTraining_8cpp_source.html#l00486">486</a> of file <a class="el" href="PolysemousTraining_8cpp_source.html">PolysemousTraining.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li><a class="el" href="PolysemousTraining_8cpp_source.html">PolysemousTraining.cpp</a></li>
+<li>/data/users/matthijs/github_faiss/faiss/<a class="el" href="PolysemousTraining_8cpp_source.html">PolysemousTraining.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

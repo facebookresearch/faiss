@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -252,6 +251,25 @@ struct HammingComputer64 {
     }
 
 };
+
+struct HammingComputerDefault {
+    const uint8_t *a;
+    int n;
+
+    HammingComputerDefault (const uint8_t *a8, int code_size) {
+        a =  a8;
+        n = code_size;
+    }
+
+    int hamming (const uint8_t *b8) const {
+        int accu = 0;
+        for (int i = 0; i < n; i++)
+            accu += popcount64 (a[i] ^ b8[i]);
+        return accu;
+    }
+
+};
+
 
 struct HammingComputerM8 {
     const uint64_t *a;

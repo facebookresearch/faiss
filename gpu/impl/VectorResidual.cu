@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -77,6 +76,8 @@ void calcResidual(Tensor<float, 2, true>& vecs,
     calcResidual<CentroidT, false><<<grid, block, 0, stream>>>(
       vecs, centroids, vecToCentroid, residuals);
   }
+
+  CUDA_TEST_ERROR();
 }
 
 void runCalcResidual(Tensor<float, 2, true>& vecs,

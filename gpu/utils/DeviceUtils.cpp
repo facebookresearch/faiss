@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -44,7 +43,7 @@ void synchronizeAllDevices() {
   }
 }
 
-cudaDeviceProp& getDeviceProperties(int device) {
+const cudaDeviceProp& getDeviceProperties(int device) {
   static std::mutex mutex;
   static std::unordered_map<int, cudaDeviceProp> properties;
 
@@ -60,6 +59,10 @@ cudaDeviceProp& getDeviceProperties(int device) {
   }
 
   return it->second;
+}
+
+const cudaDeviceProp& getCurrentDeviceProperties() {
+  return getDeviceProperties(getCurrentDevice());
 }
 
 int getMaxThreads(int device) {
@@ -98,6 +101,15 @@ int getDeviceForAddress(const void* p) {
   } else {
     return att.device;
   }
+}
+
+bool getFullUnifiedMemSupport(int device) {
+  const auto& prop = getDeviceProperties(device);
+  return (prop.major >= 6);
+}
+
+bool getFullUnifiedMemSupportCurrentDevice() {
+  return getFullUnifiedMemSupport(getCurrentDevice());
 }
 
 DeviceScope::DeviceScope(int device) {

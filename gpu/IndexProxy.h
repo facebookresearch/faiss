@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -67,8 +66,6 @@ class IndexProxy : public faiss::Index {
   /// reconstructs from the first index
   void reconstruct(idx_t, float *v) const override;
 
-  void set_typename() override;
-
   bool own_fields;
 
   int count() const {return indices_.size(); }
@@ -98,7 +95,8 @@ class IndexProxy : public faiss::Index {
 float kmeans_clustering_gpu (int ngpu, size_t d, size_t n, size_t k,
                              const float *x,
                              float *centroids,
-                             bool useFloat16);
+                             bool useFloat16,
+                             bool storeTransposed);
 
 
 

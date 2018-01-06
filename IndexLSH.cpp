@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -38,9 +37,8 @@ IndexLSH::IndexLSH (idx_t d, int nbits, bool rotate_data, bool train_thresholds)
     if (rotate_data) {
         rrot.init(5);
     } else {
-        FAISS_ASSERT(d >= nbits);
+        FAISS_THROW_IF_NOT (d >= nbits);
     }
-    set_typename();
 }
 
 IndexLSH::IndexLSH ():
@@ -48,13 +46,6 @@ IndexLSH::IndexLSH ():
 {
 }
 
-
-void IndexLSH::set_typename()
-{
-    std::stringstream s;
-    s << "LSH_" << nbits << (rotate_data ? "r" : "");
-    index_typename = s.str();
-}
 
 const float * IndexLSH::apply_preprocess (idx_t n, const float *x) const
 {
@@ -97,14 +88,15 @@ void IndexLSH::train (idx_t n, const float *x)
         thresholds.resize (nbits);
         train_thresholds = false;
         const float *xt = apply_preprocess (n, x);
+        ScopeDeleter<float> del (xt == x ? nullptr : xt);
         train_thresholds = true;
 
         float * transposed_x = new float [n * nbits];
+        ScopeDeleter<float> del2 (transposed_x);
 
         for (idx_t i = 0; i < n; i++)
             for (idx_t j = 0; j < nbits; j++)
                 transposed_x [j * n + i] = xt [i * nbits + j];
-        if (xt != x) delete [] xt;
 
         for (idx_t i = 0; i < nbits; i++) {
             float *xi = transposed_x + i * n;
@@ -123,13 +115,12 @@ void IndexLSH::train (idx_t n, const float *x)
 
 void IndexLSH::add (idx_t n, const float *x)
 {
-    FAISS_ASSERT (is_trained);
+    FAISS_THROW_IF_NOT (is_trained);
     const float *xt = apply_preprocess (n, x);
+    ScopeDeleter<float> del (xt == x ? nullptr : xt);
 
     codes.resize ((ntotal + n) * bytes_per_vec);
     fvecs2bitvecs (xt, &codes[ntotal * bytes_per_vec], nbits, n);
-    if (x != xt)
-        delete [] xt;
     ntotal += n;
 }
 
@@ -141,34 +132,34 @@ void IndexLSH::search (
         float *distances,
         idx_t *labels) const
 {
-    FAISS_ASSERT (is_trained);
+    FAISS_THROW_IF_NOT (is_trained);
     const float *xt = apply_preprocess (n, x);
+    ScopeDeleter<float> del (xt == x ? nullptr : xt);
 
     uint8_t * qcodes = new uint8_t [n * bytes_per_vec];
+    ScopeDeleter<uint8_t> del2 (qcodes);
+
     fvecs2bitvecs (xt, qcodes, nbits, n);
 
-    if (x != xt)
-        delete [] xt;
-
     int * idistances = new int [n * k];
+    ScopeDeleter<int> del3 (idistances);
+
     int_maxheap_array_t res = { size_t(n), size_t(k), labels, idistances};
 
     hammings_knn (&res, qcodes, codes.data(),
                   ntotal, bytes_per_vec, true);
 
-    delete [] qcodes;
 
     // convert distances to floats
     for (int i = 0; i < k * n; i++)
         distances[i] = idistances[i];
-    delete [] idistances;
 
 }
 
 
 void IndexLSH::transfer_thresholds (LinearTransform *vt) {
     if (!train_thresholds) return;
-    FAISS_ASSERT (nbits == vt->d_out);
+    FAISS_THROW_IF_NOT (nbits == vt->d_out);
     if (!vt->have_bias) {
         vt->b.resize (nbits, 0);
         vt->have_bias = true;

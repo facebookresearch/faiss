@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -26,11 +25,13 @@ namespace faiss { namespace gpu {
 IVFBase::IVFBase(GpuResources* resources,
                  FlatIndex* quantizer,
                  int bytesPerVector,
-                 IndicesOptions indicesOptions) :
+                 IndicesOptions indicesOptions,
+                 MemorySpace space) :
     resources_(resources),
     quantizer_(quantizer),
     bytesPerVector_(bytesPerVector),
     indicesOptions_(indicesOptions),
+    space_(space),
     dim_(quantizer->getDim()),
     numLists_(quantizer->getSize()),
     maxListLength_(0) {
@@ -82,10 +83,10 @@ IVFBase::reset() {
   for (size_t i = 0; i < numLists_; ++i) {
     deviceListData_.emplace_back(
       std::unique_ptr<DeviceVector<unsigned char>>(
-        new DeviceVector<unsigned char>()));
+        new DeviceVector<unsigned char>(space_)));
     deviceListIndices_.emplace_back(
       std::unique_ptr<DeviceVector<unsigned char>>(
-        new DeviceVector<unsigned char>()));
+        new DeviceVector<unsigned char>(space_)));
     listOffsetToUserIndex_.emplace_back(std::vector<long>());
   }
 

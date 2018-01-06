@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -41,7 +40,7 @@ DEFINE_int32(index, 2, "0 = no indices on GPU; 1 = 32 bit, 2 = 64 bit on GPU");
 using namespace faiss::gpu;
 
 int main(int argc, char** argv) {
-  google::ParseCommandLineFlags(&argc, &argv, true);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   CUDA_VERIFY(cudaProfilerStop());
 
@@ -81,13 +80,15 @@ int main(int argc, char** argv) {
   auto initFn = [precomp, indicesOpt, useFloat16Lookup, &index]
     (faiss::gpu::GpuResources* res, int dev) ->
     std::unique_ptr<faiss::gpu::GpuIndexIVFPQ> {
+
+    faiss::gpu::GpuIndexIVFPQConfig config;
+    config.device = dev;
+    config.usePrecomputedTables = precomp;
+    config.indicesOptions = indicesOpt;
+    config.useFloat16LookupTables = useFloat16Lookup;
+
     auto p = std::unique_ptr<faiss::gpu::GpuIndexIVFPQ>(
-      new faiss::gpu::GpuIndexIVFPQ(res,
-                                    dev,
-                                    indicesOpt,
-                                    useFloat16Lookup,
-                                    index.get()));
-    p->setPrecomputedCodes(precomp);
+      new faiss::gpu::GpuIndexIVFPQ(res, index.get(), config));
 
     return p;
   };

@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -14,6 +13,7 @@
 #include "../utils/DeviceTensor.cuh"
 #include "../utils/DeviceVector.cuh"
 #include "../utils/Float16.cuh"
+#include "../utils/MemorySpace.h"
 
 namespace faiss { namespace gpu {
 
@@ -25,7 +25,10 @@ class FlatIndex {
   FlatIndex(GpuResources* res,
             int dim,
             bool l2Distance,
-            bool useFloat16);
+            bool useFloat16,
+            bool useFloat16Accumulator,
+            bool storeTransposed,
+            MemorySpace space);
 
   bool getUseFloat16() const;
 
@@ -33,6 +36,9 @@ class FlatIndex {
   int getSize() const;
 
   int getDim() const;
+
+  /// Reserve storage that can contain at least this many vectors
+  void reserve(size_t numVecs, cudaStream_t stream);
 
   /// Returns a reference to our vectors currently in use
   Tensor<float, 2, true>& getVectorsFloat32Ref();
@@ -55,16 +61,14 @@ class FlatIndex {
              int k,
              Tensor<float, 2, true>& outDistances,
              Tensor<int, 2, true>& outIndices,
-             bool exactDistance,
-             int tileSize = -1);
+             bool exactDistance);
 
 #ifdef FAISS_USE_FLOAT16
   void query(Tensor<half, 2, true>& vecs,
              int k,
              Tensor<half, 2, true>& outDistances,
              Tensor<int, 2, true>& outIndices,
-             bool exactDistance,
-             int tileSize = -1);
+             bool exactDistance);
 #endif
 
   /// Add vectors to ourselves; the pointer passed can be on the host
@@ -84,8 +88,18 @@ class FlatIndex {
   /// Float16 data format
   const bool useFloat16_;
 
+  /// For supporting hardware, whether or not we use Hgemm
+  const bool useFloat16Accumulator_;
+
+  /// Store vectors in transposed layout for speed; makes addition to
+  /// the index slower
+  const bool storeTransposed_;
+
   /// L2 or inner product distance?
   bool l2Distance_;
+
+  /// Memory space for our allocations
+  MemorySpace space_;
 
   /// How many vectors we have
   int num_;
@@ -95,10 +109,12 @@ class FlatIndex {
 
   /// Vectors currently in rawData_
   DeviceTensor<float, 2, true> vectors_;
+  DeviceTensor<float, 2, true> vectorsTransposed_;
 
 #ifdef FAISS_USE_FLOAT16
   /// Vectors currently in rawData_, float16 form
   DeviceTensor<half, 2, true> vectorsHalf_;
+  DeviceTensor<half, 2, true> vectorsHalfTransposed_;
 #endif
 
   /// Precomputed L2 norms

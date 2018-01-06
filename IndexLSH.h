@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -51,25 +50,24 @@ struct IndexLSH:Index {
      */
     const float *apply_preprocess (idx_t n, const float *x) const;
 
-    virtual void set_typename () override;
+    void train(idx_t n, const float* x) override;
 
-    virtual void train (idx_t n, const float *x) override;
+    void add(idx_t n, const float* x) override;
 
-    virtual void add (idx_t n, const float *x) override;
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 
-    virtual void search (
-            idx_t n,
-            const float *x, idx_t k,
-            float *distances,
-            idx_t *labels) const override;
-
-    virtual void reset() override;
+    void reset() override;
 
     /// transfer the thresholds to a pre-processing stage (and unset
     /// train_thresholds)
     void transfer_thresholds (LinearTransform * vt);
 
-    virtual ~IndexLSH () {}
+    ~IndexLSH() override {}
 
     IndexLSH ();
 };

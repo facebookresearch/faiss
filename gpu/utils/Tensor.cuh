@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -25,7 +24,7 @@ namespace faiss { namespace gpu {
 /// Our tensor type
 template <typename T,
           int Dim,
-          bool Contig,
+          bool InnerContig,
           typename IndexT,
           template <typename U> class PtrTraits>
 class Tensor;
@@ -59,7 +58,7 @@ struct DefaultPtrTraits {
 
    - `T` is the contained type (e.g., `float`)
    - `Dim` is the tensor rank
-   - If `Contig` is true, then the tensor is assumed to be
+   - If `InnerContig` is true, then the tensor is assumed to be innermost
    - contiguous, and only operations that make sense on contiguous
    - arrays are allowed (e.g., no transpose). Strides are still
    - calculated, but innermost stride is assumed to be 1.
@@ -72,7 +71,7 @@ struct DefaultPtrTraits {
 */
 template <typename T,
           int Dim,
-          bool Contig = false,
+          bool InnerContig = false,
           typename IndexT = int,
           template <typename U> class PtrTraits = traits::DefaultPtrTraits>
 class Tensor {
@@ -80,28 +79,26 @@ class Tensor {
   enum { NumDim = Dim };
   typedef T DataType;
   typedef IndexT IndexType;
-  enum { IsContig = Contig };
+  enum { IsInnerContig = InnerContig };
   typedef typename PtrTraits<T>::PtrType DataPtrType;
-  typedef Tensor<T, Dim, Contig, IndexT, PtrTraits> TensorType;
+  typedef Tensor<T, Dim, InnerContig, IndexT, PtrTraits> TensorType;
 
   /// Default constructor
   __host__ __device__ Tensor();
 
   /// Copy constructor
-  __host__ __device__ Tensor(Tensor<T, Dim, Contig, IndexT, PtrTraits>& t)
-  = default;
+  __host__ __device__ Tensor(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t);
 
   /// Move constructor
-  __host__ __device__ Tensor(Tensor<T, Dim, Contig, IndexT, PtrTraits>&& t)
-  = default;
+  __host__ __device__ Tensor(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t);
 
   /// Assignment
-  __host__ __device__ Tensor<T, Dim, Contig, IndexT, PtrTraits>&
-  operator=(Tensor<T, Dim, Contig, IndexT, PtrTraits>& t) = default;
+  __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&
+  operator=(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t);
 
   /// Move assignment
-  __host__ __device__ Tensor<T, Dim, Contig, IndexT, PtrTraits>&
-  operator=(Tensor<T, Dim, Contig, IndexT, PtrTraits>&& t);
+  __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&
+  operator=(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t);
 
   /// Constructor that calculates strides with no padding
   __host__ __device__ Tensor(DataPtrType data,
@@ -117,28 +114,33 @@ class Tensor {
                              const IndexT strides[Dim]);
 
   /// Copies a tensor into ourselves; sizes must match
-  __host__ void copyFrom(Tensor<T, Dim, Contig, IndexT, PtrTraits>& t,
+  __host__ void copyFrom(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
                          cudaStream_t stream);
 
   /// Copies ourselves into a tensor; sizes must match
-  __host__ void copyTo(Tensor<T, Dim, Contig, IndexT, PtrTraits>& t,
+  __host__ void copyTo(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
                        cudaStream_t stream);
 
   /// Returns true if the two tensors are of the same dimensionality,
   /// size and stride.
-  template <int OtherDim>
+  template <typename OtherT, int OtherDim>
   __host__ __device__ bool
-  isSame(const Tensor<T, OtherDim, Contig, IndexT, PtrTraits>& rhs) const;
+  isSame(const Tensor<OtherT, OtherDim, InnerContig, IndexT, PtrTraits>& rhs) const;
+
+  /// Returns true if the two tensors are of the same dimensionality and size
+  template <typename OtherT, int OtherDim>
+  __host__ __device__ bool
+  isSameSize(const Tensor<OtherT, OtherDim, InnerContig, IndexT, PtrTraits>& rhs) const;
 
   /// Cast to a tensor of a different type of the same size and
   /// stride. U and our type T must be of the same size
   template <typename U>
-  __host__ __device__ Tensor<U, Dim, Contig, IndexT, PtrTraits> cast();
+  __host__ __device__ Tensor<U, Dim, InnerContig, IndexT, PtrTraits> cast();
 
   /// Const version of `cast`
   template <typename U>
   __host__ __device__
-  const Tensor<U, Dim, Contig, IndexT, PtrTraits> cast() const;
+  const Tensor<U, Dim, InnerContig, IndexT, PtrTraits> cast() const;
 
   /// Cast to a tensor of a different type which is potentially a
   /// different size than our type T. Tensor must be aligned and the
@@ -147,16 +149,28 @@ class Tensor {
   /// must be contiguous. The stride of all outer dimensions must be a
   /// multiple of sizeof(U) / sizeof(T) as well.
   template <typename U>
-  __host__ __device__ Tensor<U, Dim, Contig, IndexT, PtrTraits> castResize();
+  __host__ __device__ Tensor<U, Dim, InnerContig, IndexT, PtrTraits> castResize();
 
   /// Const version of `castResize`
   template <typename U>
-  __host__ __device__ const Tensor<U, Dim, Contig, IndexT, PtrTraits>
+  __host__ __device__ const Tensor<U, Dim, InnerContig, IndexT, PtrTraits>
   castResize() const;
 
   /// Returns true if we can castResize() this tensor to the new type
   template <typename U>
   __host__ __device__ bool canCastResize() const;
+
+  /// Attempts to cast this tensor to a tensor of a different IndexT.
+  /// Fails if size or stride entries are not representable in the new
+  /// IndexT.
+  template <typename NewIndexT>
+  __host__ Tensor<T, Dim, InnerContig, NewIndexT, PtrTraits>
+  castIndexType() const;
+
+  /// Returns true if we can use this indexing type to access all elements
+  /// index type
+  template <typename NewIndexT>
+  __host__ bool canUseIndexType() const;
 
   /// Returns a raw pointer to the start of our data.
   __host__ __device__ inline DataPtrType data() {
@@ -219,12 +233,12 @@ class Tensor {
 
   /// Returns the total number of elements contained within our data
   /// (product of `getSize(i)`)
-  __host__ __device__ IndexT numElements() const;
+  __host__ __device__ size_t numElements() const;
 
   /// If we are contiguous, returns the total size in bytes of our
   /// data
   __host__ __device__ size_t getSizeInBytes() const {
-    return (size_t) numElements() * sizeof(T);
+    return numElements() * sizeof(T);
   }
 
   /// Returns the size array.
@@ -262,21 +276,21 @@ class Tensor {
   /// dimensions given. Does not actually move elements; transposition
   /// is made by permuting the size/stride arrays.
   /// If the dimensions are not valid, asserts.
-  __host__ __device__ Tensor<T, Dim, Contig, IndexT, PtrTraits>
+  __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>
   transpose(int dim1, int dim2) const;
 
   /// Upcast a tensor of dimension `D` to some tensor of dimension
   /// D' > D by padding the leading dimensions by 1
   /// e.g., upcasting a 2-d tensor `[2][3]` to a 4-d tensor `[1][1][2][3]`
   template <int NewDim>
-  __host__ __device__ Tensor<T, NewDim, Contig, IndexT, PtrTraits>
+  __host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits>
   upcastOuter();
 
   /// Upcast a tensor of dimension `D` to some tensor of dimension
   /// D' > D by padding the lowest/most varying dimensions by 1
   /// e.g., upcasting a 2-d tensor `[2][3]` to a 4-d tensor `[2][3][1][1]`
   template <int NewDim>
-  __host__ __device__ Tensor<T, NewDim, Contig, IndexT, PtrTraits>
+  __host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits>
   upcastInner();
 
   /// Downcast a tensor of dimension `D` to some tensor of dimension
@@ -284,46 +298,45 @@ class Tensor {
   /// padding on the leading dimensions.
   template <int NewDim>
   __host__ __device__
-  Tensor<T, NewDim, Contig, IndexT, PtrTraits> downcastOuter();
+  Tensor<T, NewDim, InnerContig, IndexT, PtrTraits> downcastOuter();
 
   /// Downcast a tensor of dimension `D` to some tensor of dimension
   /// D' < D by collapsing the leading dimensions. asserts if there is
   /// padding on the leading dimensions.
   template <int NewDim>
   __host__ __device__
-  Tensor<T, NewDim, Contig, IndexT, PtrTraits> downcastInner();
+  Tensor<T, NewDim, InnerContig, IndexT, PtrTraits> downcastInner();
 
   /// Returns a tensor that is a view of the `SubDim`-dimensional slice
   /// of this tensor, starting at `at`.
   template <int SubDim>
-  __host__ __device__ Tensor<T, SubDim, Contig, IndexT, PtrTraits>
+  __host__ __device__ Tensor<T, SubDim, InnerContig, IndexT, PtrTraits>
   view(DataPtrType at);
 
   /// Returns a tensor that is a view of the `SubDim`-dimensional slice
   /// of this tensor, starting where our data begins
   template <int SubDim>
-  __host__ __device__ Tensor<T, SubDim, Contig, IndexT, PtrTraits>
+  __host__ __device__ Tensor<T, SubDim, InnerContig, IndexT, PtrTraits>
   view();
 
   /// Returns a tensor of the same dimension that is a view of the
   /// original tensor with the specified dimension restricted to the
   /// elements in the range [start, start + size)
-  __host__ __device__ Tensor<T, Dim, Contig, IndexT, PtrTraits>
+  __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>
   narrowOutermost(IndexT start, IndexT size);
 
   /// Returns a tensor of the same dimension that is a view of the
   /// original tensor with the specified dimension restricted to the
   /// elements in the range [start, start + size).
-  /// Can occur in an arbitrary dimension, and is possibly
-  /// non-contiguous
-  __host__ __device__ Tensor<T, Dim, false, IndexT, PtrTraits>
+  /// Can occur in an arbitrary dimension
+  __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>
   narrow(int dim, IndexT start, IndexT size);
 
   /// Returns a view of the given tensor expressed as a tensor of a
   /// different number of dimensions.
   /// Only works if we are contiguous.
   template <int NewDim>
-  __host__ __device__ Tensor<T, NewDim, Contig, IndexT, PtrTraits>
+  __host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits>
   view(std::initializer_list<IndexT> sizes);
 
   protected:
@@ -336,6 +349,27 @@ class Tensor {
   /// Size per each dimension
   IndexT size_[Dim];
 };
+
+// Utilities for checking a collection of tensors
+namespace detail {
+
+template <typename IndexType>
+bool canUseIndexType() {
+  return true;
+}
+
+template <typename IndexType, typename T, typename... U>
+bool canUseIndexType(const T& arg, const U&... args) {
+  return arg.canUseIndexType<IndexType>() &&
+    canUseIndexType(args...);
+}
+
+} // namespace detail
+
+template <typename IndexType, typename... T>
+bool canUseIndexType(const T&... args) {
+  return detail::canUseIndexType(args...);
+}
 
 namespace detail {
 
@@ -432,7 +466,7 @@ class SubTensor<TensorType, 0, PtrTraits> {
   /// Our parent tensor can create us
   friend class Tensor<typename TensorType::DataType,
                       1,
-                      TensorType::IsContig,
+                      TensorType::IsInnerContig,
                       typename TensorType::IndexType,
                       PtrTraits>;
 
@@ -461,7 +495,7 @@ class SubTensor {
   __host__ __device__ inline
   SubTensor<TensorType, SubDim - 1, PtrTraits>
     operator[](typename TensorType::IndexType index) {
-    if (TensorType::IsContig && SubDim == 1) {
+    if (TensorType::IsInnerContig && SubDim == 1) {
       // Innermost dimension is stride 1 for contiguous arrays
       return SubTensor<TensorType, SubDim - 1, PtrTraits>(
         tensor_, data_ + index);
@@ -477,7 +511,7 @@ class SubTensor {
   __host__ __device__ inline
   const SubTensor<TensorType, SubDim - 1, PtrTraits>
     operator[](typename TensorType::IndexType index) const {
-    if (TensorType::IsContig && SubDim == 1) {
+    if (TensorType::IsInnerContig && SubDim == 1) {
       // Innermost dimension is stride 1 for contiguous arrays
       return SubTensor<TensorType, SubDim - 1, PtrTraits>(
         tensor_, data_ + index);
@@ -558,7 +592,7 @@ class SubTensor {
   /// of this tensor, starting where our data begins
   Tensor<typename TensorType::DataType,
          SubDim,
-         TensorType::IsContig,
+         TensorType::IsInnerContig,
          typename TensorType::IndexType,
          PtrTraits> view() {
     return tensor_.template view<SubDim>(data_);
@@ -572,7 +606,7 @@ class SubTensor {
   friend class
   Tensor<typename TensorType::DataType,
          TensorType::NumDim,
-         TensorType::IsContig,
+         TensorType::IsInnerContig,
          typename TensorType::IndexType,
          PtrTraits>;
 
@@ -592,23 +626,23 @@ class SubTensor {
 
 } // namespace detail
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__ inline
-detail::SubTensor<Tensor<T, Dim, Contig, IndexT, PtrTraits>,
+detail::SubTensor<Tensor<T, Dim, InnerContig, IndexT, PtrTraits>,
                   Dim - 1, PtrTraits>
-  Tensor<T, Dim, Contig, IndexT, PtrTraits>::operator[](IndexT index) {
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::operator[](IndexT index) {
   return detail::SubTensor<TensorType, Dim - 1, PtrTraits>(
     detail::SubTensor<TensorType, Dim, PtrTraits>(
       *this, data_)[index]);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__ inline
-const detail::SubTensor<Tensor<T, Dim, Contig, IndexT, PtrTraits>,
+const detail::SubTensor<Tensor<T, Dim, InnerContig, IndexT, PtrTraits>,
                         Dim - 1, PtrTraits>
-  Tensor<T, Dim, Contig, IndexT, PtrTraits>::operator[](IndexT index) const {
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::operator[](IndexT index) const {
   return detail::SubTensor<TensorType, Dim - 1, PtrTraits>(
     detail::SubTensor<TensorType, Dim, PtrTraits>(
       const_cast<TensorType&>(*this), data_)[index]);

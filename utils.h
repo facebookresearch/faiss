@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -55,7 +54,7 @@ struct RandomGenerator {
     unsigned rand_state;
 #endif
 
-    /// random 31-bit positive integer 
+    /// random 31-bit positive integer
     int rand_int ();
 
     /// random long < 2 ^ 62
@@ -86,6 +85,7 @@ void byte_rand (uint8_t * x, size_t n, long seed);
 
 /* random permutation */
 void rand_perm (int * perm, size_t n, long seed);
+
 
 
  /*********************************************************
@@ -228,11 +228,13 @@ void knn_L2sqr_base_shift (
          float_maxheap_array_t * res,
          const float *base_shift);
 
-
+/* Find the nearest neighbors for nx queries in a set of ny vectors
+ * indexed by ids. May be useful for re-ranking a pre-selected vector list
+ */
 void knn_inner_products_by_idx (
         const float * x,
         const float * y,
-        const long * __restrict ids,
+        const long *  ids,
         size_t d, size_t nx, size_t ny,
         float_minheap_array_t * res);
 
@@ -305,12 +307,20 @@ int fvec_madd_and_argmin (size_t n, const float *a,
 void reflection (const float * u, float * x, size_t n, size_t d, size_t nu);
 
 
-/** For k-means: update stage. Returns nb of split clusters. */
+/** For k-means: update stage.
+ *
+ * @param x          training vectors, size n * d
+ * @param centroids  centroid vectors, size k * d
+ * @param assign     nearest centroid for each training vector, size n
+ * @param k_frozen   do not update the k_frozen first centroids
+ * @return           nb of spliting operations to fight empty clusters
+ */
 int km_update_centroids (
         const float * x,
         float * centroids,
         long * assign,
-        size_t d, size_t k, size_t n);
+        size_t d, size_t k, size_t n,
+        size_t k_frozen);
 
 /** compute the Q of the QR decomposition for m > n
  * @param a   size n * m: input matrix and output Q
@@ -325,6 +335,21 @@ void ranklist_handle_ties (int k, long *idx, const float *dis);
  */
 size_t ranklist_intersection_size (size_t k1, const long *v1,
                                    size_t k2, const long *v2);
+
+/** merge a result table into another one
+ *
+ * @param I0, D0       first result table, size (n, k)
+ * @param I1, D1       second result table, size (n, k)
+ * @param keep_min     if true, keep min values, otherwise keep max
+ * @param translation  add this value to all I1's indexes
+ * @return             nb of values that were taken from the second table
+ */
+size_t merge_result_table_with (size_t n, size_t k,
+                                long *I0, float *D0,
+                                const long *I1, const float *D1,
+                                bool keep_min = true,
+                                long translation = 0);
+
 
 
 void fvec_argsort (size_t n, const float *vals,
@@ -348,6 +373,19 @@ void bincode_hist(size_t n, size_t nbits, const uint8_t *codes, int *hist);
 /// compute a checksum on a table.
 size_t ivec_checksum (size_t n, const int *a);
 
+
+/** random subsamples a set of vectors if there are too many of them
+ *
+ * @param d      dimension of the vectors
+ * @param n      on input: nb of input vectors, output: nb of output vectors
+ * @param nmax   max nb of vectors to keep
+ * @param x      input array, size *n-by-d
+ * @param seed   random seed to use for sampling
+ * @return       x or an array allocated with new [] with *n vectors
+ */
+const float *fvecs_maybe_subsample (
+       size_t d, size_t *n, size_t nmax, const float *x,
+       bool verbose = false, long seed = 1234);
 
 } // namspace faiss
 

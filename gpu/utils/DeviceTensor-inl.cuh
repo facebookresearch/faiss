@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -13,47 +12,50 @@
 
 namespace faiss { namespace gpu {
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor() :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(),
-    state_(AllocState::NotOwner) {
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor() :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(),
+    state_(AllocState::NotOwner),
+    space_(MemorySpace::Device) {
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor(
-  DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>&& t) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(),
-    state_(AllocState::NotOwner) {
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
+  DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t) :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(),
+    state_(AllocState::NotOwner),
+    space_(MemorySpace::Device) {
   this->operator=(std::move(t));
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>&
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::operator=(
-  DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>&& t) {
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>&
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::operator=(
+  DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t) {
   if (this->state_ == AllocState::Owner) {
     CUDA_VERIFY(cudaFree(this->data_));
   }
 
-  this->Tensor<T, Dim, Contig, IndexT, PtrTraits>::operator=(
+  this->Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::operator=(
     std::move(t));
 
   this->state_ = t.state_; t.state_ = AllocState::NotOwner;
+  this->space_ = t.space_;
   this->reservation_ = std::move(t.reservation_);
 
   return *this;
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::~DeviceTensor() {
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::~DeviceTensor() {
   if (state_ == AllocState::Owner) {
     FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
     CUDA_VERIFY(cudaFree(this->data_));
@@ -64,45 +66,48 @@ DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::~DeviceTensor() {
   // destructor will return the reservation
 }
 
-// cudaMalloc constructor
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor(
-  const IndexT sizes[Dim]) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(nullptr, sizes),
-    state_(AllocState::Owner) {
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
+  const IndexT sizes[Dim],
+  MemorySpace space) :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes),
+    state_(AllocState::Owner),
+    space_(space) {
 
-  CUDA_VERIFY(cudaMalloc(&this->data_, this->getSizeInBytes()));
+  allocMemorySpace(space, (void**) &this->data_, this->getSizeInBytes());
   FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor(
-  std::initializer_list<IndexT> sizes) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(nullptr, sizes),
-    state_(AllocState::Owner) {
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
+  std::initializer_list<IndexT> sizes,
+  MemorySpace space) :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes),
+    state_(AllocState::Owner),
+    space_(space) {
 
-  CUDA_VERIFY(cudaMalloc(&this->data_, this->getSizeInBytes()));
-  if(!(this->data_ || this->getSizeInBytes() == 0)) {
-    fprintf(stderr, "could not cudaMalloc %ld bytes!\n",  this->getSizeInBytes()); 
-    abort();
-  }
+  allocMemorySpace(space, (void**) &this->data_, this->getSizeInBytes());
+  FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
 }
 
 // memory reservation constructor
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor(
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
   DeviceMemory& m,
   const IndexT sizes[Dim],
-  cudaStream_t stream) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(nullptr, sizes),
-    state_(AllocState::Reservation) {
+  cudaStream_t stream,
+  MemorySpace space) :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes),
+    state_(AllocState::Reservation),
+    space_(space) {
 
+  // FIXME: add MemorySpace to DeviceMemory
   auto memory = m.getMemory(stream, this->getSizeInBytes());
 
   this->data_ = (T*) memory.get();
@@ -111,79 +116,92 @@ DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor(
 }
 
 // memory reservation constructor
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor(
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
   DeviceMemory& m,
   std::initializer_list<IndexT> sizes,
-  cudaStream_t stream) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(nullptr, sizes),
-    state_(AllocState::Reservation) {
+  cudaStream_t stream,
+  MemorySpace space) :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes),
+    state_(AllocState::Reservation),
+    space_(space) {
 
-  auto memory =
-    m.getMemory(stream, this->getSizeInBytes());
+  // FIXME: add MemorySpace to DeviceMemory
+  auto memory = m.getMemory(stream, this->getSizeInBytes());
 
   this->data_ = (T*) memory.get();
   FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
   reservation_ = std::move(memory);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor(
-  DataPtrType data,
-  const IndexT sizes[Dim]) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(data, sizes),
-    state_(AllocState::NotOwner) {
-}
-
-template <typename T, int Dim, bool Contig,
-          typename IndexT, template <typename U> class PtrTraits>
-__host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor(
-  DataPtrType data,
-  std::initializer_list<IndexT> sizes) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(data, sizes),
-    state_(AllocState::NotOwner) {
-}
-
-template <typename T, int Dim, bool Contig,
-          typename IndexT, template <typename U> class PtrTraits>
-__host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor(
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
   DataPtrType data,
   const IndexT sizes[Dim],
-  const IndexT strides[Dim]) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(data, sizes, strides),
-    state_(AllocState::NotOwner) {
+  MemorySpace space) :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(data, sizes),
+    state_(AllocState::NotOwner),
+    space_(space) {
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor(
-  Tensor<T, Dim, Contig, IndexT, PtrTraits>& t,
-  cudaStream_t stream) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(nullptr, t.sizes(), t.strides()),
-    state_(AllocState::Owner) {
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
+  DataPtrType data,
+  std::initializer_list<IndexT> sizes,
+  MemorySpace space) :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(data, sizes),
+    state_(AllocState::NotOwner),
+    space_(space) {
+}
 
-  CUDA_VERIFY(cudaMalloc(&this->data_, this->getSizeInBytes()));
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
+  DataPtrType data,
+  const IndexT sizes[Dim],
+  const IndexT strides[Dim],
+  MemorySpace space) :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(data, sizes, strides),
+    state_(AllocState::NotOwner),
+    space_(space) {
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
+  cudaStream_t stream,
+  MemorySpace space) :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, t.sizes(), t.strides()),
+    state_(AllocState::Owner),
+    space_(space) {
+
+  allocMemorySpace(space_, (void**) &this->data_, this->getSizeInBytes());
   FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
   this->copyFrom(t, stream);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor(
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
   DeviceMemory& m,
-  Tensor<T, Dim, Contig, IndexT, PtrTraits>& t,
-  cudaStream_t stream) :
-    Tensor<T, Dim, Contig, IndexT, PtrTraits>(nullptr, t.sizes(), t.strides()),
-    state_(AllocState::Reservation) {
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
+  cudaStream_t stream,
+  MemorySpace space) :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, t.sizes(), t.strides()),
+    state_(AllocState::Reservation),
+    space_(space) {
 
+  // FIXME: add MemorySpace to DeviceMemory
   auto memory = m.getMemory(stream, this->getSizeInBytes());
 
   this->data_ = (T*) memory.get();
@@ -193,10 +211,10 @@ DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::DeviceTensor(
   this->copyFrom(t, stream);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
-__host__ DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>&
-DeviceTensor<T, Dim, Contig, IndexT, PtrTraits>::zero(
+__host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>&
+DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::zero(
   cudaStream_t stream) {
   if (this->data_) {
     // Region must be contiguous

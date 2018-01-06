@@ -1,5 +1,9 @@
 var searchData=
 [
+  ['scalarquantizer',['ScalarQuantizer',['../structfaiss_1_1ScalarQuantizer.html',1,'faiss']]],
+  ['scopedeleter',['ScopeDeleter',['../structfaiss_1_1ScopeDeleter.html',1,'faiss']]],
+  ['scopedeleter1',['ScopeDeleter1',['../structfaiss_1_1ScopeDeleter1.html',1,'faiss']]],
+  ['scopefilecloser',['ScopeFileCloser',['../structfaiss_1_1ScopeFileCloser.html',1,'faiss']]],
   ['score3computer',['Score3Computer',['../structfaiss_1_1Score3Computer.html',1,'faiss']]],
   ['score3computer_3c_20float_2c_20double_20_3e',['Score3Computer&lt; float, double &gt;',['../structfaiss_1_1Score3Computer.html',1,'faiss']]],
   ['segmentedreduce',['SegmentedReduce',['../structfaiss_1_1gpu_1_1SegmentedReduce.html',1,'faiss::gpu']]],

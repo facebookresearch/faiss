@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -41,8 +40,9 @@ template <int NumThreads, typename K, typename V, int NumWarpQ,
           bool Dir, typename Comp>
 struct FinalBlockMerge<2, NumThreads, K, V, NumWarpQ, Dir, Comp> {
   static inline __device__ void merge(K* sharedK, V* sharedV) {
+    // Final merge doesn't need to fully merge the second list
     blockMerge<NumThreads, K, V, NumThreads / (kWarpSize * 2),
-               NumWarpQ, !Dir, Comp>(sharedK, sharedV);
+               NumWarpQ, !Dir, Comp, false>(sharedK, sharedV);
   }
 };
 
@@ -52,8 +52,9 @@ struct FinalBlockMerge<4, NumThreads, K, V, NumWarpQ, Dir, Comp> {
   static inline __device__ void merge(K* sharedK, V* sharedV) {
     blockMerge<NumThreads, K, V, NumThreads / (kWarpSize * 2),
                NumWarpQ, !Dir, Comp>(sharedK, sharedV);
+    // Final merge doesn't need to fully merge the second list
     blockMerge<NumThreads, K, V, NumThreads / (kWarpSize * 4),
-               NumWarpQ * 2, !Dir, Comp>(sharedK, sharedV);
+               NumWarpQ * 2, !Dir, Comp, false>(sharedK, sharedV);
   }
 };
 
@@ -65,8 +66,9 @@ struct FinalBlockMerge<8, NumThreads, K, V, NumWarpQ, Dir, Comp> {
                NumWarpQ, !Dir, Comp>(sharedK, sharedV);
     blockMerge<NumThreads, K, V, NumThreads / (kWarpSize * 4),
                NumWarpQ * 2, !Dir, Comp>(sharedK, sharedV);
+    // Final merge doesn't need to fully merge the second list
     blockMerge<NumThreads, K, V, NumThreads / (kWarpSize * 8),
-               NumWarpQ * 4, !Dir, Comp>(sharedK, sharedV);
+               NumWarpQ * 4, !Dir, Comp, false>(sharedK, sharedV);
   }
 };
 
@@ -83,18 +85,24 @@ struct BlockSelect {
   static constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
   static constexpr int kTotalWarpSortSize = NumWarpQ;
 
-  __device__ inline BlockSelect(K initK, V initV, K* smemK, V* smemV, int k) :
+  __device__ inline BlockSelect(K initKVal,
+                                V initVVal,
+                                K* smemK,
+                                V* smemV,
+                                int k) :
+      initK(initKVal),
+      initV(initVVal),
+      numVals(0),
+      warpKTop(initKVal),
       sharedK(smemK),
       sharedV(smemV),
-      warpKTop(initK),
       kMinus1(k - 1) {
     static_assert(utils::isPowerOf2(ThreadsPerBlock),
                   "threads must be a power-of-2");
     static_assert(utils::isPowerOf2(NumWarpQ),
                   "warp queue must be power-of-2");
 
-    // Fill the per-thread queue keys with the default value; values
-    // can remain uninitialized
+    // Fill the per-thread queue keys with the default value
 #pragma unroll
     for (int i = 0; i < NumThreadQ; ++i) {
       threadK[i] = initK;
@@ -117,42 +125,46 @@ struct BlockSelect {
   }
 
   __device__ inline void addThreadQ(K k, V v) {
-    // If we're greater or equal to the highest element, then we don't
-    // need to add. In the equal to case, the element we have is
-    // sufficient.
-    if (Dir ? Comp::gt(k, threadK[0]) : Comp::lt(k, threadK[0])) {
+    if (Dir ? Comp::gt(k, warpKTop) : Comp::lt(k, warpKTop)) {
+      // Rotate right
+#pragma unroll
+      for (int i = NumThreadQ - 1; i > 0; --i) {
+        threadK[i] = threadK[i - 1];
+        threadV[i] = threadV[i - 1];
+      }
+
       threadK[0] = k;
       threadV[0] = v;
-
-      // Perform in-register bubble sort of this new element
-#pragma unroll
-      for (int i = 1; i < NumThreadQ; ++i) {
-        bool swap = Dir ? Comp::lt(threadK[i], threadK[i - 1]) :
-          Comp::gt(threadK[i], threadK[i - 1]);
-
-        K tmpK = threadK[i];
-        threadK[i] = swap ? threadK[i - 1] : tmpK;
-        threadK[i - 1] = swap ? tmpK : threadK[i - 1];
-
-        V tmpV = threadV[i];
-        threadV[i] = swap ? threadV[i - 1] : tmpV;
-        threadV[i - 1] = swap ? tmpV : threadV[i - 1];
-      }
+      ++numVals;
     }
   }
 
   __device__ inline void checkThreadQ() {
-    // There is no need to merge queues if no thread-local queue is
-    // better than the warp-wide queue
-    bool needSort = (Dir ?
-                     Comp::gt(threadK[0], warpKTop) :
-                     Comp::lt(threadK[0], warpKTop));
-    if (!__any(needSort)) {
+    bool needSort = (numVals == NumThreadQ);
+
+#if CUDA_VERSION >= 9000
+    needSort = __any_sync(0xffffffff, needSort);
+#else
+    needSort = __any(needSort);
+#endif
+
+    if (!needSort) {
+      // no lanes have triggered a sort
       return;
     }
 
     // This has a trailing warpFence
     mergeWarpQ();
+
+    // Any top-k elements have been merged into the warp queue; we're
+    // free to reset the thread queues
+    numVals = 0;
+
+#pragma unroll
+    for (int i = 0; i < NumThreadQ; ++i) {
+      threadK[i] = initK;
+      threadV[i] = initV;
+    }
 
     // We have to beat at least this element
     warpKTop = warpK[kMinus1];
@@ -184,7 +196,8 @@ struct BlockSelect {
     // The warp queue is already sorted, and now that we've sorted the
     // per-thread queue, merge both sorted lists together, producing
     // one sorted list
-    warpMergeAnyRegisters<K, V, kNumWarpQRegisters, NumThreadQ, !Dir, Comp>(
+    warpMergeAnyRegisters<K, V,
+                          kNumWarpQRegisters, NumThreadQ, !Dir, Comp, false>(
       warpKRegisters, warpVRegisters, threadK, threadV);
 
     // Write back out the warp queue
@@ -195,27 +208,6 @@ struct BlockSelect {
     }
 
     warpFence();
-
-    // Re-map the registers for our per-thread queues
-    K tmpThreadK[NumThreadQ];
-    V tmpThreadV[NumThreadQ];
-
-#pragma unroll
-    for (int i = 0; i < NumThreadQ; ++i) {
-      tmpThreadK[i] = threadK[i];
-      tmpThreadV[i] = threadV[i];
-    }
-
-#pragma unroll
-    for (int i = 0; i < NumThreadQ; ++i) {
-      // After merging, the data is in the order small -> large.
-      // We wish to reload data in our thread queues, which have the
-      // order large -> small by indexing, so it will be reverse order.
-      // However, we also wish to give every thread an equal shot at the
-      // largest elements, so we interleave the loading.
-      threadK[i] = tmpThreadK[NumThreadQ - i - 1];
-      threadV[i] = tmpThreadV[NumThreadQ - i - 1];
-    }
   }
 
   /// WARNING: all threads in a warp must participate in this.
@@ -243,7 +235,19 @@ struct BlockSelect {
     // The block-wide merge has a trailing syncthreads
   }
 
-  // threadK[0] is lowest (Dir) or highest (!Dir)
+  // Default element key
+  const K initK;
+
+  // Default element value
+  const V initV;
+
+  // Number of valid elements in our thread queue
+  int numVals;
+
+  // The k-th highest (Dir) or lowest (!Dir) element
+  K warpKTop;
+
+  // Thread queue values
   K threadK[NumThreadQ];
   V threadV[NumThreadQ];
 
@@ -255,10 +259,6 @@ struct BlockSelect {
   // warpK[0] is highest (Dir) or lowest (!Dir)
   K* warpK;
   V* warpV;
-
-  // Warp queue head value cached in a register, so we needn't read
-  // shared memory as frequently
-  K warpKTop;
 
   // This is a cached k-1 value
   int kMinus1;
@@ -371,16 +371,18 @@ template <typename K,
 struct WarpSelect {
   static constexpr int kNumWarpQRegisters = NumWarpQ / kWarpSize;
 
-  __device__ inline WarpSelect(K initK, V initV, int k) :
-      warpKTop(initK),
+  __device__ inline WarpSelect(K initKVal, V initVVal, int k) :
+      initK(initKVal),
+      initV(initVVal),
+      numVals(0),
+      warpKTop(initKVal),
       kLane((k - 1) % kWarpSize) {
     static_assert(utils::isPowerOf2(ThreadsPerBlock),
                   "threads must be a power-of-2");
     static_assert(utils::isPowerOf2(NumWarpQ),
                   "warp queue must be power-of-2");
 
-    // Fill the per-thread queue keys with the default value; values
-    // can remain uninitialized
+    // Fill the per-thread queue keys with the default value
 #pragma unroll
     for (int i = 0; i < NumThreadQ; ++i) {
       threadK[i] = initK;
@@ -396,41 +398,45 @@ struct WarpSelect {
   }
 
   __device__ inline void addThreadQ(K k, V v) {
-    // If we're greater or equal to the highest element, then we don't
-    // need to add. In the equal to case, the element we have is
-    // sufficient.
-    if (Dir ? Comp::gt(k, threadK[0]) : Comp::lt(k, threadK[0])) {
+    if (Dir ? Comp::gt(k, warpKTop) : Comp::lt(k, warpKTop)) {
+      // Rotate right
+#pragma unroll
+      for (int i = NumThreadQ - 1; i > 0; --i) {
+        threadK[i] = threadK[i - 1];
+        threadV[i] = threadV[i - 1];
+      }
+
       threadK[0] = k;
       threadV[0] = v;
-
-      // Perform in-register bubble sort of this new element
-#pragma unroll
-      for (int i = 1; i < NumThreadQ; ++i) {
-        bool swap = Dir ? Comp::lt(threadK[i], threadK[i - 1]) :
-          Comp::gt(threadK[i], threadK[i - 1]);
-
-        K tmpK = threadK[i];
-        threadK[i] = swap ? threadK[i - 1] : tmpK;
-        threadK[i - 1] = swap ? tmpK : threadK[i - 1];
-
-        V tmpV = threadV[i];
-        threadV[i] = swap ? threadV[i - 1] : tmpV;
-        threadV[i - 1] = swap ? tmpV : threadV[i - 1];
-      }
+      ++numVals;
     }
   }
 
   __device__ inline void checkThreadQ() {
-    // There is no need to merge queues if no thread-local queue is
-    // better than the warp-wide queue
-    bool needSort = (Dir ?
-                     Comp::gt(threadK[0], warpKTop) :
-                     Comp::lt(threadK[0], warpKTop));
-    if (!__any(needSort)) {
+    bool needSort = (numVals == NumThreadQ);
+
+#if CUDA_VERSION >= 9000
+    needSort = __any_sync(0xffffffff, needSort);
+#else
+    needSort = __any(needSort);
+#endif
+
+    if (!needSort) {
+      // no lanes have triggered a sort
       return;
     }
 
     mergeWarpQ();
+
+    // Any top-k elements have been merged into the warp queue; we're
+    // free to reset the thread queues
+    numVals = 0;
+
+#pragma unroll
+    for (int i = 0; i < NumThreadQ; ++i) {
+      threadK[i] = initK;
+      threadV[i] = initV;
+    }
 
     // We have to beat at least this element
     warpKTop = shfl(warpK[kNumWarpQRegisters - 1], kLane);
@@ -446,29 +452,9 @@ struct WarpSelect {
     // The warp queue is already sorted, and now that we've sorted the
     // per-thread queue, merge both sorted lists together, producing
     // one sorted list
-    warpMergeAnyRegisters<K, V, kNumWarpQRegisters, NumThreadQ, !Dir, Comp>(
+    warpMergeAnyRegisters<K, V,
+                          kNumWarpQRegisters, NumThreadQ, !Dir, Comp, false>(
       warpK, warpV, threadK, threadV);
-
-    // Re-map the registers for our per-thread queues
-    K tmpThreadK[NumThreadQ];
-    V tmpThreadV[NumThreadQ];
-
-#pragma unroll
-    for (int i = 0; i < NumThreadQ; ++i) {
-      tmpThreadK[i] = threadK[i];
-      tmpThreadV[i] = threadV[i];
-    }
-
-#pragma unroll
-    for (int i = 0; i < NumThreadQ; ++i) {
-      // After merging, the data is in the order small -> large.
-      // We wish to reload data in our thread queues, which have the
-      // order large -> small by indexing, so it will be reverse order.
-      // However, we also wish to give every thread an equal shot at the
-      // largest elements, so we interleave the loading.
-      threadK[i] = tmpThreadK[NumThreadQ - i - 1];
-      threadV[i] = tmpThreadV[NumThreadQ - i - 1];
-    }
   }
 
   /// WARNING: all threads in a warp must participate in this.
@@ -499,17 +485,25 @@ struct WarpSelect {
     }
   }
 
-  // threadK[0] is lowest (Dir) or highest (!Dir)
+  // Default element key
+  const K initK;
+
+  // Default element value
+  const V initV;
+
+  // Number of valid elements in our thread queue
+  int numVals;
+
+  // The k-th highest (Dir) or lowest (!Dir) element
+  K warpKTop;
+
+  // Thread queue values
   K threadK[NumThreadQ];
   V threadV[NumThreadQ];
 
   // warpK[0] is highest (Dir) or lowest (!Dir)
   K warpK[kNumWarpQRegisters];
   V warpV[kNumWarpQRegisters];
-
-  // Warp queue head value cached in a register, so we needn't read
-  // shared memory as frequently
-  K warpKTop;
 
   // This is what lane we should load an approximation (>=k) to the
   // kth element from the last register in the warp queue (i.e.,

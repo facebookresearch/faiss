@@ -1,23 +1,23 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include "../../FaissAssert.h"
+#include "../GpuFaissAssert.h"
 #include "DeviceUtils.h"
+#include <limits>
 
 namespace faiss { namespace gpu {
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::Tensor()
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor()
     : data_(nullptr) {
   static_assert(Dim > 0, "must have > 0 dimensions");
 
@@ -27,12 +27,43 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::Tensor()
   }
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__
-Tensor<T, Dim, Contig, IndexT, PtrTraits>&
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::operator=(
-  Tensor<T, Dim, Contig, IndexT, PtrTraits>&& t) {
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor(
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t) {
+  this->operator=(t);
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__ __device__
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor(
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t) {
+  this->operator=(std::move(t));
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__ __device__
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::operator=(
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t) {
+  data_ = t.data_;
+  for (int i = 0; i < Dim; ++i) {
+    size_[i] = t.size_[i];
+    stride_[i] = t.stride_[i];
+  }
+
+  return *this;
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__ __device__
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::operator=(
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t) {
   data_ = t.data_; t.data_ = nullptr;
   for (int i = 0; i < Dim; ++i) {
     stride_[i] = t.stride_[i]; t.stride_[i] = 0;
@@ -42,10 +73,10 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::operator=(
   return *this;
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::
 Tensor(DataPtrType data, const IndexT sizes[Dim])
     : data_(data) {
   static_assert(Dim > 0, "must have > 0 dimensions");
@@ -60,13 +91,13 @@ Tensor(DataPtrType data, const IndexT sizes[Dim])
   }
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::
 Tensor(DataPtrType data, std::initializer_list<IndexT> sizes)
     : data_(data) {
-  assert(sizes.size() == Dim);
+  GPU_FAISS_ASSERT(sizes.size() == Dim);
   static_assert(Dim > 0, "must have > 0 dimensions");
 
   int i = 0;
@@ -81,10 +112,10 @@ Tensor(DataPtrType data, std::initializer_list<IndexT> sizes)
 }
 
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::Tensor(
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor(
   DataPtrType data, const IndexT sizes[Dim], const IndexT strides[Dim])
     : data_(data) {
   static_assert(Dim > 0, "must have > 0 dimensions");
@@ -95,22 +126,23 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::Tensor(
   }
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ void
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::copyFrom(
-  Tensor<T, Dim, Contig, IndexT, PtrTraits>& t,
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyFrom(
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
   cudaStream_t stream) {
-  static_assert(Contig, "only contiguous tensors handled");
+  // The tensor must be fully contiguous
+  GPU_FAISS_ASSERT(this->isContiguous());
 
   // Size must be the same (since dimensions are checked and
   // continuity is assumed, we need only check total number of
   // elements
-  FAISS_ASSERT(this->numElements() == t.numElements());
+  GPU_FAISS_ASSERT(this->numElements() == t.numElements());
 
   if (t.numElements() > 0) {
-    FAISS_ASSERT(this->data_);
-    FAISS_ASSERT(t.data());
+    GPU_FAISS_ASSERT(this->data_);
+    GPU_FAISS_ASSERT(t.data());
 
     int ourDev = getDeviceForAddress(this->data_);
     int tDev = getDeviceForAddress(t.data());
@@ -133,22 +165,23 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::copyFrom(
   }
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ void
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::copyTo(
-  Tensor<T, Dim, Contig, IndexT, PtrTraits>& t,
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyTo(
+  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
   cudaStream_t stream) {
-  static_assert(Contig, "only contiguous tensors handled");
+  // The tensor must be fully contiguous
+  GPU_FAISS_ASSERT(this->isContiguous());
 
   // Size must be the same (since dimensions are checked and
   // continuity is assumed, we need only check total number of
   // elements
-  FAISS_ASSERT(this->numElements() == t.numElements());
+  GPU_FAISS_ASSERT(this->numElements() == t.numElements());
 
   if (t.numElements() > 0) {
-    FAISS_ASSERT(this->data_);
-    FAISS_ASSERT(t.data());
+    GPU_FAISS_ASSERT(this->data_);
+    GPU_FAISS_ASSERT(t.data());
 
     int ourDev = getDeviceForAddress(this->data_);
     int tDev = getDeviceForAddress(t.data());
@@ -171,62 +204,79 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::copyTo(
   }
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
-template <int OtherDim>
+template <typename OtherT, int OtherDim>
 __host__ __device__ bool
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::isSame(
-  const Tensor<T, OtherDim, Contig, IndexT, PtrTraits>& rhs) const {
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::isSame(
+  const Tensor<OtherT, OtherDim, InnerContig, IndexT, PtrTraits>& rhs) const {
   if (Dim != OtherDim) {
     return false;
   }
 
   for (int i = 0; i < Dim; ++i) {
-    if (size_[i] != rhs.size_[i]) {
+    if (this->getSize(i) != rhs.getSize(i)) {
       return false;
     }
 
-    if (!Contig) {
-      if (stride_[i] != rhs.stride_[i]) {
-        return false;
-      }
+    if (this->getStride(i) != rhs.getStride(i)) {
+      return false;
     }
   }
 
   return true;
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+template <typename OtherT, int OtherDim>
+__host__ __device__ bool
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::isSameSize(
+  const Tensor<OtherT, OtherDim, InnerContig, IndexT, PtrTraits>& rhs) const {
+  if (Dim != OtherDim) {
+    return false;
+  }
+
+  for (int i = 0; i < Dim; ++i) {
+    if (this->getSize(i) != rhs.getSize(i)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 template <typename U>
-__host__ __device__ Tensor<U, Dim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::cast() {
+__host__ __device__ Tensor<U, Dim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::cast() {
   static_assert(sizeof(U) == sizeof(T), "cast must be to same size object");
 
-  return Tensor<U, Dim, Contig, IndexT, PtrTraits>(
+  return Tensor<U, Dim, InnerContig, IndexT, PtrTraits>(
     reinterpret_cast<U*>(data_), size_, stride_);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 template <typename U>
-__host__ __device__ const Tensor<U, Dim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::cast() const {
+__host__ __device__ const Tensor<U, Dim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::cast() const {
   static_assert(sizeof(U) == sizeof(T), "cast must be to same size object");
 
-  return Tensor<U, Dim, Contig, IndexT, PtrTraits>(
+  return Tensor<U, Dim, InnerContig, IndexT, PtrTraits>(
     reinterpret_cast<U*>(data_), size_, stride_);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 template <typename U>
-__host__ __device__ Tensor<U, Dim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::castResize() {
+__host__ __device__ Tensor<U, Dim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::castResize() {
   static_assert(sizeof(U) >= sizeof(T), "only handles greater sizes");
   constexpr int kMultiple = sizeof(U) / sizeof(T);
 
-  assert(canCastResize<U>());
+  GPU_FAISS_ASSERT(canCastResize<U>());
 
   IndexT newSize[Dim];
   IndexT newStride[Dim];
@@ -239,24 +289,24 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::castResize() {
   newStride[Dim - 1] = 1; // this is the same as the old stride
   newSize[Dim - 1] = size_[Dim - 1] / kMultiple;
 
-  return Tensor<U, Dim, Contig, IndexT, PtrTraits>(
+  return Tensor<U, Dim, InnerContig, IndexT, PtrTraits>(
     reinterpret_cast<U*>(data_), newSize, newStride);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 template <typename U>
-__host__ __device__ const Tensor<U, Dim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::castResize() const {
-  return const_cast<Tensor<T, Dim, Contig, IndexT, PtrTraits>*>(this)->
+__host__ __device__ const Tensor<U, Dim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::castResize() const {
+  return const_cast<Tensor<T, Dim, InnerContig, IndexT, PtrTraits>*>(this)->
     castResize<U>();
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 template <typename U>
 __host__ __device__ bool
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::canCastResize() const {
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::canCastResize() const {
   static_assert(sizeof(U) >= sizeof(T), "only handles greater sizes");
   constexpr int kMultiple = sizeof(U) / sizeof(T);
 
@@ -279,23 +329,71 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::canCastResize() const {
   return true;
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
-__host__ __device__ IndexT
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::numElements() const {
-  long size = getSize(0);
+template <typename NewIndexT>
+__host__ Tensor<T, Dim, InnerContig, NewIndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::castIndexType() const {
+  if (sizeof(NewIndexT) < sizeof(IndexT)) {
+    GPU_FAISS_ASSERT(this->canUseIndexType<NewIndexT>());
+  }
+
+  NewIndexT newSize[Dim];
+  NewIndexT newStride[Dim];
+  for (int i = 0; i < Dim; ++i) {
+    newSize[i] = (NewIndexT) size_[i];
+    newStride[i] = (NewIndexT) stride_[i];
+  }
+
+  return Tensor<T, Dim, InnerContig, NewIndexT, PtrTraits>(
+    data_, newSize, newStride);
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+template <typename NewIndexT>
+__host__ bool
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::canUseIndexType() const {
+  static_assert(sizeof(size_t) >= sizeof(IndexT),
+                "index size too large");
+  static_assert(sizeof(size_t) >= sizeof(NewIndexT),
+                "new index size too large");
+
+  // Find maximum offset that can be calculated
+  // FIXME: maybe also consider offset in bytes? multiply by sizeof(T)?
+  size_t maxOffset = 0;
+
+  for (int i = 0; i < Dim; ++i) {
+    size_t curMaxOffset = (size_t) size_[i] * (size_t) stride_[i];
+    if (curMaxOffset > maxOffset) {
+      maxOffset = curMaxOffset;
+    }
+  }
+
+  if (maxOffset > (size_t) std::numeric_limits<NewIndexT>::max()) {
+    return false;
+  }
+
+  return true;
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__ __device__ size_t
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::numElements() const {
+  size_t size = (size_t) getSize(0);
 
   for (int i = 1; i < Dim; ++i) {
-    size *= getSize(i);
+    size *= (size_t) getSize(i);
   }
 
   return size;
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__ bool
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::isContiguous() const {
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::isContiguous() const {
   long prevSize = 1;
 
   for (int i = Dim - 1; i >= 0; --i) {
@@ -311,10 +409,10 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::isContiguous() const {
   return true;
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__ bool
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::isConsistentlySized(int i) const {
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::isConsistentlySized(int i) const {
   if (i == 0 && getStride(i) > 0 && getSize(i) > 0) {
     return true;
   } else if ((i > 0) && (i < Dim) && (getStride(i) > 0) &&
@@ -325,10 +423,10 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::isConsistentlySized(int i) const {
   return false;
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__ bool
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::isConsistentlySized() const {
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::isConsistentlySized() const {
   for (int i = 0; i < Dim; ++i) {
     if (!isConsistentlySized(i)) {
       return false;
@@ -338,23 +436,28 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::isConsistentlySized() const {
   return true;
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__ bool
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::isContiguousDim(int i) const {
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::isContiguousDim(int i) const {
   return (i == Dim - 1) || // just in case
     ((i < Dim - 1) &&
      ((getStride(i) / getStride(i + 1)) == getSize(i + 1)));
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
-__host__ __device__ Tensor<T, Dim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::transpose(int dim1,
+__host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::transpose(int dim1,
                                                      int dim2) const {
-  assert(dim1 >= 0 && dim1 < Dim);
-  assert(dim1 >= 0 && dim2 < Dim);
-  static_assert(!Contig, "cannot transpose contiguous arrays");
+  GPU_FAISS_ASSERT(dim1 >= 0 && dim1 < Dim);
+  GPU_FAISS_ASSERT(dim1 >= 0 && dim2 < Dim);
+
+  // If a tensor is innermost contiguous, one cannot transpose the innermost
+  // dimension
+  if (InnerContig) {
+    GPU_FAISS_ASSERT(dim1 != Dim - 1 && dim2 != Dim - 1);
+  }
 
   IndexT newSize[Dim];
   IndexT newStride[Dim];
@@ -372,14 +475,14 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::transpose(int dim1,
   newStride[dim1] = newStride[dim2];
   newStride[dim2] = tmp;
 
-  return Tensor<T, Dim, Contig, IndexT, PtrTraits>(data_, newSize, newStride);
+  return Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(data_, newSize, newStride);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 template <int NewDim>
-__host__ __device__ Tensor<T, NewDim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::upcastOuter() {
+__host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::upcastOuter() {
   // Can only create tensors of greater dimension
   static_assert(NewDim > Dim, "Can only upcast to greater dim");
 
@@ -400,15 +503,15 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::upcastOuter() {
     }
   }
 
-  return Tensor<T, NewDim, Contig, IndexT, PtrTraits>(
+  return Tensor<T, NewDim, InnerContig, IndexT, PtrTraits>(
     data_, newSize, newStride);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 template <int NewDim>
-__host__ __device__ Tensor<T, NewDim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::upcastInner() {
+__host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::upcastInner() {
   // Can only create tensors of greater dimension
   static_assert(NewDim > Dim, "Can only upcast to greater dim");
 
@@ -427,15 +530,15 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::upcastInner() {
     }
   }
 
-  return Tensor<T, NewDim, Contig, IndexT, PtrTraits>(
+  return Tensor<T, NewDim, InnerContig, IndexT, PtrTraits>(
     data_, newSize, newStride);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 template <int NewDim>
-__host__ __device__ Tensor<T, NewDim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::downcastOuter() {
+__host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::downcastOuter() {
   // Can only create tensors of lesser dimension
   static_assert(NewDim < Dim, "Can only downcast to lesser dim");
 
@@ -445,7 +548,7 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::downcastOuter() {
   // them).
   for (int i = 0; i < Dim - NewDim; ++i) {
     bool cont = isContiguousDim(i);
-    assert(cont);
+    GPU_FAISS_ASSERT(cont);
   }
 
   IndexT newSize[NewDim];
@@ -472,15 +575,15 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::downcastOuter() {
     }
   }
 
-  return Tensor<T, NewDim, Contig, IndexT, PtrTraits>(
+  return Tensor<T, NewDim, InnerContig, IndexT, PtrTraits>(
     data_, newSize, newStride);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 template <int NewDim>
-__host__ __device__ Tensor<T, NewDim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::downcastInner() {
+__host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::downcastInner() {
   // Can only create tensors of lesser dimension
   static_assert(NewDim < Dim, "Can only downcast to lesser dim");
 
@@ -489,7 +592,7 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::downcastInner() {
   // in all of the dimensions we are collapsing (no padding in
   // them).
   for (int i = NewDim; i < Dim; ++i) {
-    assert(isContiguousDim(i));
+    GPU_FAISS_ASSERT(isContiguousDim(i));
   }
 
   IndexT newSize[NewDim];
@@ -515,15 +618,15 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::downcastInner() {
     }
   }
 
-  return Tensor<T, NewDim, Contig, IndexT, PtrTraits>(
+  return Tensor<T, NewDim, InnerContig, IndexT, PtrTraits>(
     data_, newSize, newStride);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 template <int SubDim>
-__host__ __device__ Tensor<T, SubDim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::view(DataPtrType at) {
+__host__ __device__ Tensor<T, SubDim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::view(DataPtrType at) {
   static_assert(SubDim >= 1 && SubDim < Dim,
                 "can only create view of lesser dim");
 
@@ -535,89 +638,76 @@ Tensor<T, Dim, Contig, IndexT, PtrTraits>::view(DataPtrType at) {
     viewStrides[i] = stride_[Dim - SubDim + i];
   }
 
-  return Tensor<T, SubDim, Contig, IndexT, PtrTraits>(
+  return Tensor<T, SubDim, InnerContig, IndexT, PtrTraits>(
     at, viewSizes, viewStrides);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 template <int SubDim>
-__host__ __device__ Tensor<T, SubDim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::view() {
+__host__ __device__ Tensor<T, SubDim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::view() {
   return view<SubDim>(data_);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
-__host__ __device__ Tensor<T, Dim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::narrowOutermost(IndexT start,
-                                                           IndexT size) {
-  DataPtrType newData = data_;
-
-  if (start > 0) {
-    newData += start * stride_[0];
-  }
-
-  IndexT newSize[Dim];
-  for (int i = 0; i < Dim; ++i) {
-    if (i == 0) {
-      assert(start + size <= size_[0]);
-      newSize[i] = size;
-    } else {
-      newSize[i] = size_[i];
-    }
-  }
-
-  return Tensor<T, Dim, Contig, IndexT, PtrTraits>(newData, newSize, stride_);
+__host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::narrowOutermost(IndexT start,
+                                                                IndexT size) {
+  return this->narrow(0, start, size);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
-__host__ __device__ Tensor<T, Dim, false, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::narrow(int dim,
-                                                  IndexT start,
-                                                  IndexT size) {
+__host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::narrow(int dim,
+                                                       IndexT start,
+                                                       IndexT size) {
   DataPtrType newData = data_;
 
+  GPU_FAISS_ASSERT(start >= 0 &&
+                   start < size_[dim] &&
+                   (start + size) <= size_[dim]);
+
   if (start > 0) {
-    newData += start * stride_[dim];
+    newData += (size_t) start * stride_[dim];
   }
 
   IndexT newSize[Dim];
   for (int i = 0; i < Dim; ++i) {
     if (i == dim) {
-      assert(start + size <= size_[dim]);
+      GPU_FAISS_ASSERT(start + size <= size_[dim]);
       newSize[i] = size;
     } else {
       newSize[i] = size_[i];
     }
   }
 
-  // The narrowed tensor is not necessarily contiguous
-  return Tensor<T, Dim, false, IndexT, PtrTraits>(newData, newSize, stride_);
+  // If we were innermost contiguous before, we are still innermost contiguous
+  return Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(newData, newSize, stride_);
 }
 
-template <typename T, int Dim, bool Contig,
+template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 template <int NewDim>
-__host__ __device__ Tensor<T, NewDim, Contig, IndexT, PtrTraits>
-Tensor<T, Dim, Contig, IndexT, PtrTraits>::view(
+__host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::view(
   std::initializer_list<IndexT> sizes) {
-  static_assert(Contig, "on contiguous tensors only");
+  GPU_FAISS_ASSERT(this->isContiguous());
 
-  assert(sizes.size() == NewDim);
+  GPU_FAISS_ASSERT(sizes.size() == NewDim);
 
   // The total size of the new view must be the same as the total size
   // of the old view
   size_t curSize = numElements();
-
   size_t newSize = 1;
 
   for (auto s : sizes) {
     newSize *= s;
   }
 
-  assert(curSize == newSize);
+  GPU_FAISS_ASSERT(curSize == newSize);
   return Tensor<T, NewDim, true, IndexT, PtrTraits>(data(), sizes);
 }
 

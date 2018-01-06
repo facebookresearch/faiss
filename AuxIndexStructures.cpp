@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -21,9 +20,13 @@ namespace faiss {
  * RangeSearchResult
  ***********************************************************************/
 
-RangeSearchResult::RangeSearchResult (size_t nq): nq (nq) {
-    lims = new size_t [nq + 1];
-    memset (lims, 0, sizeof(*lims) * (nq + 1));
+RangeSearchResult::RangeSearchResult (idx_t nq, bool alloc_lims): nq (nq) {
+    if (alloc_lims) {
+        lims = new size_t [nq + 1];
+        memset (lims, 0, sizeof(*lims) * (nq + 1));
+    } else {
+        lims = nullptr;
+    }
     labels = nullptr;
     distances = nullptr;
     buffer_size = 1024 * 256;
@@ -159,6 +162,10 @@ void RangeSearchPartialResult::set_result (bool incremental)
 }
 
 
+/***********************************************************************
+ * IDSelectorRange
+ ***********************************************************************/
+
 IDSelectorRange::IDSelectorRange (idx_t imin, idx_t imax):
     imin (imin), imax (imax)
 {
@@ -170,6 +177,9 @@ bool IDSelectorRange::is_member (idx_t id) const
 }
 
 
+/***********************************************************************
+ * IDSelectorBatch
+ ***********************************************************************/
 
 IDSelectorBatch::IDSelectorBatch (long n, const idx_t *indices)
 {

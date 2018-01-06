@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -254,7 +253,7 @@ void runSumAlongColumns(Tensor<T, 1, true>& input,
       <<<grid, block, 0, stream>>>(input, output);
   }
 
-  CUDA_VERIFY(cudaGetLastError());
+  CUDA_TEST_ERROR();
 }
 
 void runSumAlongColumns(Tensor<float, 1, true>& input,
@@ -304,7 +303,7 @@ void runAssignAlongColumns(Tensor<T, 1, true>& input,
       <<<grid, block, 0, stream>>>(input, output);
   }
 
-  CUDA_VERIFY(cudaGetLastError());
+  CUDA_TEST_ERROR();
 }
 
 void runAssignAlongColumns(Tensor<float, 1, true>& input,
@@ -345,7 +344,7 @@ void runSumAlongRows(Tensor<T, 1, true>& input,
     sumAlongRows<T, T><<<grid, block, 0, stream>>>(input, output);
   }
 
-  CUDA_VERIFY(cudaGetLastError());
+  CUDA_TEST_ERROR();
 }
 
 void runSumAlongRows(Tensor<float, 1, true>& input,
@@ -361,6 +360,5 @@ void runSumAlongRows(Tensor<half, 1, true>& input,
   runSumAlongRows<half, half2>(input, output, stream);
 }
 #endif
-
 
 } } // namespace

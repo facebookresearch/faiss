@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -41,7 +40,7 @@ DEFINE_int32(index, 2, "0 = no indices on GPU; 1 = 32 bit, 2 = 64 bit on GPU");
 using namespace faiss::gpu;
 
 int main(int argc, char** argv) {
-  google::ParseCommandLineFlags(&argc, &argv, true);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   cudaProfilerStop();
 
@@ -71,14 +70,18 @@ int main(int argc, char** argv) {
 
   auto initFn = [&index](faiss::gpu::GpuResources* res, int dev) ->
     std::unique_ptr<faiss::gpu::GpuIndexIVFFlat> {
+    GpuIndexIVFFlatConfig config;
+    config.device = dev;
+    config.indicesOptions = (faiss::gpu::IndicesOptions) FLAGS_index;
+    config.flatConfig.useFloat16 = FLAGS_use_float16_coarse;
+    config.useFloat16IVFStorage = FLAGS_use_float16;
+
     auto p = std::unique_ptr<faiss::gpu::GpuIndexIVFFlat>(
       new faiss::gpu::GpuIndexIVFFlat(res,
-                                      dev,
-                                      FLAGS_use_float16_coarse,
-                                      FLAGS_use_float16,
-                                      index->d, index->nlist,
-                                      (faiss::gpu::IndicesOptions) FLAGS_index,
-                                      index->metric_type));
+                                      index->d,
+                                      index->nlist,
+                                      index->metric_type,
+                                      config));
     p->copyFrom(index.get());
     return p;
   };

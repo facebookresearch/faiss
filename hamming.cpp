@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -428,7 +427,7 @@ void hammings (
         size_t ncodes,
         hamdis_t * __restrict dis)
 {
-    FAISS_ASSERT (ncodes % 8 == 0);
+    FAISS_THROW_IF_NOT (ncodes % 8 == 0);
     switch (ncodes) {
         case 8:
             faiss::hammings <64>  (C64(a), C64(b), na, nb, dis); return;
@@ -451,7 +450,7 @@ void hammings_knn_core (
         size_t nb,
         size_t ncodes)
 {
-    FAISS_ASSERT (ncodes % 8 == 0);
+    FAISS_THROW_IF_NOT (ncodes % 8 == 0);
 
     switch (ncodes) {
         hammings_knn_1 (ha, C64(a), C64(b), nb, false, true);
@@ -499,10 +498,14 @@ void hammings_knn (
             (32, ha, a, b, nb, order, true);
         break;
     default:
-        FAISS_ASSERT (ncodes % 8 == 0);
-        hammings_knn_hc<faiss::HammingComputerM8>
-            (ncodes, ha, a, b, nb, order, true);
+        if(ncodes % 8 == 0) {
+            hammings_knn_hc<faiss::HammingComputerM8>
+                (ncodes, ha, a, b, nb, order, true);
+        } else {
+            hammings_knn_hc<faiss::HammingComputerDefault>
+                (ncodes, ha, a, b, nb, order, true);
 
+        }
     }
 }
 
@@ -537,7 +540,7 @@ void hamming_count_thres (
                                               n1, n2, ht, nptr);
             return;
         default:
-            FAISS_ASSERT (!"not-implemented for this number of bits");
+          FAISS_THROW_FMT ("not implemented for %zu bits", ncodes);
     }
 }
 
@@ -564,7 +567,7 @@ void crosshamming_count_thres (
             faiss::crosshamming_count_thres <512> (C64(dbs), n, ht, nptr);
             return;
         default:
-            FAISS_ASSERT (!"not-implemented for this number of bits");
+            FAISS_THROW_FMT ("not implemented for %zu bits", ncodes);
     }
 }
 
@@ -594,7 +597,8 @@ size_t match_hamming_thres (
           return faiss::match_hamming_thres <512> (C64(bs1), C64(bs2),
                                                    n1, n2, ht, idx, dis);
         default:
-            FAISS_ASSERT (!"not-implemented for this number of bits");
+            FAISS_THROW_FMT ("not implemented for %zu bits", ncodes);
+            return 0;
     }
 }
 

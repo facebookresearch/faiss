@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -53,7 +52,7 @@ bool randBool() {
   return randSelect<bool>({true, false});
 }
 
-std::vector<float> randVecs(int num, int dim) {
+std::vector<float> randVecs(size_t num, size_t dim) {
   std::vector<float> v(num * dim);
   static bool first = true;
 
@@ -65,24 +64,23 @@ std::vector<float> randVecs(int num, int dim) {
   return v;
 }
 
-void compareIndices(faiss::Index& refIndex,
+void compareIndices(const std::vector<float>& queryVecs,
+                    faiss::Index& refIndex,
                     faiss::Index& testIndex,
                     int numQuery, int dim, int k,
                     const std::string& configMsg,
                     float maxRelativeError,
                     float pctMaxDiff1,
                     float pctMaxDiffN) {
-  auto queries = faiss::gpu::randVecs(numQuery, dim);
-
   // Compare
   std::vector<float> refDistance(numQuery * k, 0);
   std::vector<faiss::Index::idx_t> refIndices(numQuery * k, -1);
-  refIndex.search(numQuery, queries.data(),
+  refIndex.search(numQuery, queryVecs.data(),
                   k, refDistance.data(), refIndices.data());
 
   std::vector<float> testDistance(numQuery * k, 0);
   std::vector<faiss::Index::idx_t> testIndices(numQuery * k, -1);
-  testIndex.search(numQuery, queries.data(),
+  testIndex.search(numQuery, queryVecs.data(),
                    k, testDistance.data(), testIndices.data());
 
   faiss::gpu::compareLists(refDistance.data(),
@@ -95,8 +93,27 @@ void compareIndices(faiss::Index& refIndex,
                            maxRelativeError, pctMaxDiff1, pctMaxDiffN);
 }
 
+void compareIndices(faiss::Index& refIndex,
+                    faiss::Index& testIndex,
+                    int numQuery, int dim, int k,
+                    const std::string& configMsg,
+                    float maxRelativeError,
+                    float pctMaxDiff1,
+                    float pctMaxDiffN) {
+  auto queryVecs = faiss::gpu::randVecs(numQuery, dim);
+
+  compareIndices(queryVecs,
+                 refIndex,
+                 testIndex,
+                 numQuery, dim, k,
+                 configMsg,
+                 maxRelativeError,
+                 pctMaxDiff1,
+                 pctMaxDiffN);
+}
+
 template <typename T>
-inline T lookup(const T* p, int i, int j, int dim1, int dim2) {
+inline T lookup(const T* p, int i, int j, int /*dim1*/, int dim2) {
   return p[i * dim2 + j];
 }
 
@@ -195,7 +212,9 @@ void compareLists(const float* refDist,
 
       if (assertOnErr) {
         EXPECT_LE(relErr, maxRelativeError) << configMsg
-                                            << " " << query << " " << result;
+                                            << " (" << query << ", " << result
+                                            << ") refD: " << refD
+                                            << " testD: " << testD;
       }
 
       maxRelErr = std::max(maxRelErr, relErr);

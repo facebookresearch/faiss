@@ -106,14 +106,14 @@ Inheritance diagram for faiss::gpu::GpuMultipleClonerOptions:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a7c5bd7a840f6641d5d68699f4416d79d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7c5bd7a840f6641d5d68699f4416d79d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html#a7c5bd7a840f6641d5d68699f4416d79d">shard</a></td></tr>
-<tr class="memdesc:a7c5bd7a840f6641d5d68699f4416d79d"><td class="mdescLeft">&#160;</td><td class="mdescRight">shard rather than copying to each GPU <br/></td></tr>
+<tr class="memitem:a7c5bd7a840f6641d5d68699f4416d79d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html#a7c5bd7a840f6641d5d68699f4416d79d">shard</a></td></tr>
 <tr class="separator:a7c5bd7a840f6641d5d68699f4416d79d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9548f823297298b0a78109dec7feb45e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9548f823297298b0a78109dec7feb45e"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html#a9548f823297298b0a78109dec7feb45e">shard_type</a></td></tr>
+<tr class="memdesc:a9548f823297298b0a78109dec7feb45e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structfaiss_1_1IndexIVF.html#a2fc63f9bbfe64e05106366465ece2187">IndexIVF::copy_subset_to</a> subset type. <br/></td></tr>
+<tr class="separator:a9548f823297298b0a78109dec7feb45e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html">faiss::gpu::GpuClonerOptions</a></td></tr>
-<tr class="memitem:ad960ac51b7cc607fcb1a1b07efc32a9e inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad960ac51b7cc607fcb1a1b07efc32a9e"></a>
-IndicesOptions&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ad960ac51b7cc607fcb1a1b07efc32a9e">indicesOptions</a></td></tr>
-<tr class="memdesc:ad960ac51b7cc607fcb1a1b07efc32a9e inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="mdescLeft">&#160;</td><td class="mdescRight">how should indices be stored on <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html" title="IVFPQ index for the GPU. ">GpuIndexIVFPQ</a>? <br/></td></tr>
+<tr class="memitem:ad960ac51b7cc607fcb1a1b07efc32a9e inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="memItemLeft" align="right" valign="top">IndicesOptions&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ad960ac51b7cc607fcb1a1b07efc32a9e">indicesOptions</a></td></tr>
 <tr class="separator:ad960ac51b7cc607fcb1a1b07efc32a9e inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85f3093908b6e9a503c24bb226b17b1b inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a85f3093908b6e9a503c24bb226b17b1b"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a85f3093908b6e9a503c24bb226b17b1b">useFloat16CoarseQuantizer</a></td></tr>
@@ -129,16 +129,37 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ab60dd87e51af59373a48d73852573f04">reserveVecs</a></td></tr>
 <tr class="memdesc:ab60dd87e51af59373a48d73852573f04 inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="mdescLeft">&#160;</td><td class="mdescRight">reserve vectors in the invfiles? <br/></td></tr>
 <tr class="separator:ab60dd87e51af59373a48d73852573f04 inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a543141eeff6eaeaf607a19c95a50eda6 inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a543141eeff6eaeaf607a19c95a50eda6"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>verbose</b></td></tr>
-<tr class="separator:a543141eeff6eaeaf607a19c95a50eda6 inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f2470ec5b2a8fe7aae0542f113b781d inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f2470ec5b2a8fe7aae0542f113b781d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a5f2470ec5b2a8fe7aae0542f113b781d">storeTransposed</a></td></tr>
+<tr class="memdesc:a5f2470ec5b2a8fe7aae0542f113b781d inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="mdescLeft">&#160;</td><td class="mdescRight">For <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html">GpuIndexFlat</a>, store data in transposed layout? <br/></td></tr>
+<tr class="separator:a5f2470ec5b2a8fe7aae0542f113b781d inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc7d0451773e0f2f640338533abc1397 inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abc7d0451773e0f2f640338533abc1397"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#abc7d0451773e0f2f640338533abc1397">verbose</a></td></tr>
+<tr class="memdesc:abc7d0451773e0f2f640338533abc1397 inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set verbose options on the index. <br/></td></tr>
+<tr class="separator:abc7d0451773e0f2f640338533abc1397 inherit pub_attribs_structfaiss_1_1gpu_1_1GpuClonerOptions"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="GpuAutoTune_8h_source.html#l00054">54</a> of file <a class="el" href="GpuAutoTune_8h_source.html">GpuAutoTune.h</a>.</p>
-</div><hr/>The documentation for this struct was generated from the following files:<ul>
-<li><a class="el" href="GpuAutoTune_8h_source.html">GpuAutoTune.h</a></li>
-<li><a class="el" href="GpuAutoTune_8cpp_source.html">GpuAutoTune.cpp</a></li>
+<p>Definition at line <a class="el" href="GpuClonerOptions_8h_source.html#l00044">44</a> of file <a class="el" href="GpuClonerOptions_8h_source.html">GpuClonerOptions.h</a>.</p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a7c5bd7a840f6641d5d68699f4416d79d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool faiss::gpu::GpuMultipleClonerOptions::shard</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Whether to shard the index across GPUs, versus replication across GPUs </p>
+
+<p>Definition at line <a class="el" href="GpuClonerOptions_8h_source.html#l00049">49</a> of file <a class="el" href="GpuClonerOptions_8h_source.html">GpuClonerOptions.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following files:<ul>
+<li>/data/users/matthijs/github_faiss/faiss/gpu/<a class="el" href="GpuClonerOptions_8h_source.html">GpuClonerOptions.h</a></li>
+<li>/data/users/matthijs/github_faiss/faiss/gpu/<a class="el" href="GpuClonerOptions_8cpp_source.html">GpuClonerOptions.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

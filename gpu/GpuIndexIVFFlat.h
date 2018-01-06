@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -20,37 +19,33 @@ namespace faiss { namespace gpu {
 class IVFFlat;
 class GpuIndexFlat;
 
+struct GpuIndexIVFFlatConfig : public GpuIndexIVFConfig {
+  inline GpuIndexIVFFlatConfig()
+      : useFloat16IVFStorage(false) {
+  }
+
+  /// Whether or not IVFFlat inverted list storage is in float16;
+  /// supported on all architectures
+  bool useFloat16IVFStorage;
+};
+
 /// Wrapper around the GPU implementation that looks like
 /// faiss::IndexIVFFlat
 class GpuIndexIVFFlat : public GpuIndexIVF {
  public:
+  /// Construct from a pre-existing faiss::IndexIVFFlat instance, copying
+  /// data over to the given GPU, if the input index is trained.
+  GpuIndexIVFFlat(GpuResources* resources,
+                  const faiss::IndexIVFFlat* index,
+                  GpuIndexIVFFlatConfig config = GpuIndexIVFFlatConfig());
+
   /// Constructs a new instance with an empty flat quantizer; the user
   /// provides the number of lists desired.
   GpuIndexIVFFlat(GpuResources* resources,
-                  int device,
-                  // Does the coarse quantizer use float16?
-                  bool useFloat16CoarseQuantizer,
-                  // Is our IVF storage of vectors in float16?
-                  bool useFloat16IVFStorage,
                   int dims,
                   int nlist,
-                  IndicesOptions indicesOptions,
-                  faiss::MetricType metric);
-
-  /// Call to initialize ourselves from a GpuIndexFlat instance. The
-  /// quantizer must match the dimension parameters specified; if
-  /// populated, it must also match the number of list elements
-  /// available.
-  /// The index must also be present on the same device as ourselves.
-  /// We do not own this quantizer instance.
-  GpuIndexIVFFlat(GpuResources* resources,
-                  int device,
-                  GpuIndexFlat* quantizer,
-                  bool useFloat16,
-                  int dims,
-                  int nlist,
-                  IndicesOptions indicesOptions,
-                  faiss::MetricType metric);
+                  faiss::MetricType metric,
+                  GpuIndexIVFFlatConfig config = GpuIndexIVFFlatConfig());
 
   ~GpuIndexIVFFlat() override;
 
@@ -73,25 +68,23 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
 
   void train(Index::idx_t n, const float* x) override;
 
-  /// `x` and `xids` can be resident on the CPU or any GPU; the proper
-  /// copies are performed
-  void add_with_ids(Index::idx_t n,
-                    const float* x,
-                    const Index::idx_t* xids) override;
+ protected:
+  /// Called from GpuIndex for add/add_with_ids
+  void addImpl_(
+      faiss::Index::idx_t n,
+      const float* x,
+      const faiss::Index::idx_t* ids) override;
 
-  /// `x`, `distances` and `labels` can be resident on the CPU or any
-  /// GPU; copies are performed as needed
-  void search(faiss::Index::idx_t n,
-              const float* x,
-              faiss::Index::idx_t k,
-              float* distances,
-              faiss::Index::idx_t* labels) const override;
-
-  void set_typename() override;
+  /// Called from GpuIndex for search
+  void searchImpl_(
+      faiss::Index::idx_t n,
+      const float* x,
+      faiss::Index::idx_t k,
+      float* distances,
+      faiss::Index::idx_t* labels) const override;
 
  private:
-  /// Is float16 encoding enabled for our IVF data?
-  bool useFloat16IVFStorage_;
+  GpuIndexIVFFlatConfig ivfFlatConfig_;
 
   /// Desired inverted list memory reservation
   size_t reserveMemoryVecs_;

@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -16,12 +15,7 @@
 #define FAISS_AUX_INDEX_STRUCTURES_H
 
 #include <vector>
-
-#if __cplusplus >= 201103L
 #include <unordered_set>
-#endif
-
-#include <set>
 
 
 #include "Index.h"
@@ -31,7 +25,7 @@ namespace faiss {
 /** The objective is to have a simple result structure while
  *  minimizing the number of mem copies in the result. The method
  *  do_allocation can be overloaded to allocate the result tables in
- *  the matrix type of a srcipting language like Lua or Python. */
+ *  the matrix type of a scripting language like Lua or Python. */
 struct RangeSearchResult {
     size_t nq;      ///< nb of queries
     size_t *lims;   ///< size (nq + 1)
@@ -44,7 +38,7 @@ struct RangeSearchResult {
     size_t buffer_size; ///< size of the result buffers used
 
     /// lims must be allocated on input to range_search.
-    explicit RangeSearchResult (size_t nq);
+    explicit RangeSearchResult (idx_t nq, bool alloc_lims=true);
 
     /// called when lims contains the nb of elements result entries
     /// for each query
@@ -68,9 +62,8 @@ struct IDSelectorRange: IDSelector {
     idx_t imin, imax;
 
     IDSelectorRange (idx_t imin, idx_t imax);
-    virtual bool is_member (idx_t id) const override;
-    virtual ~IDSelectorRange () {}
-
+    bool is_member(idx_t id) const override;
+    ~IDSelectorRange() override {}
 };
 
 
@@ -82,11 +75,7 @@ struct IDSelectorRange: IDSelector {
  * hash collisions if lsb's are always the same */
 struct IDSelectorBatch: IDSelector {
 
-#if __cplusplus >= 201103L
     std::unordered_set<idx_t> set;
-#else
-    std::set<idx_t> set;
-#endif
 
     typedef unsigned char uint8_t;
     std::vector<uint8_t> bloom; // assumes low bits of id are a good hash value
@@ -94,9 +83,8 @@ struct IDSelectorBatch: IDSelector {
     idx_t mask;
 
     IDSelectorBatch (long n, const idx_t *indices);
-    virtual bool is_member (idx_t id) const override;
-    virtual ~IDSelectorBatch() {}
-
+    bool is_member(idx_t id) const override;
+    ~IDSelectorBatch() override {}
 };
 
 

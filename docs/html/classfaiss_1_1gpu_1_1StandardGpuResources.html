@@ -115,50 +115,100 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a99ee4e66cb497873de804b9bd9042705"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9acb23ac323f85fa5dab4ed968ccd51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#af9acb23ac323f85fa5dab4ed968ccd51">setPinnedMemory</a> (size_t size)</td></tr>
 <tr class="separator:af9acb23ac323f85fa5dab4ed968ccd51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5924b424c36dba8300866f1b98c438cb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5924b424c36dba8300866f1b98c438cb"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#a5924b424c36dba8300866f1b98c438cb">setDefaultStream</a> (int device, cudaStream_t stream)</td></tr>
+<tr class="memdesc:a5924b424c36dba8300866f1b98c438cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to change the stream for work ordering. <br/></td></tr>
+<tr class="separator:a5924b424c36dba8300866f1b98c438cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5374f336f1957c266d7a5c185eb962a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#a5374f336f1957c266d7a5c185eb962a1">setDefaultNullStreamAllDevices</a> ()</td></tr>
+<tr class="separator:a5374f336f1957c266d7a5c185eb962a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb2729678638ed89f7b8b38470f96056"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adb2729678638ed89f7b8b38470f96056"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#adb2729678638ed89f7b8b38470f96056">initializeForDevice</a> (int device) override</td></tr>
 <tr class="memdesc:adb2729678638ed89f7b8b38470f96056"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal system calls. <br/></td></tr>
 <tr class="separator:adb2729678638ed89f7b8b38470f96056"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7560435c7f45fd59d94ee947330a58da"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7560435c7f45fd59d94ee947330a58da"></a>
-cublasHandle_t&#160;</td><td class="memItemRight" valign="bottom"><b>getBlasHandle</b> (int device) override</td></tr>
+cublasHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#a7560435c7f45fd59d94ee947330a58da">getBlasHandle</a> (int device) override</td></tr>
+<tr class="memdesc:a7560435c7f45fd59d94ee947330a58da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the cuBLAS handle that we use for the given device. <br/></td></tr>
 <tr class="separator:a7560435c7f45fd59d94ee947330a58da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a954f34ef68fd36b8d502ca3a21f7e8a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a954f34ef68fd36b8d502ca3a21f7e8a8"></a>
-cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><b>getDefaultStream</b> (int device) override</td></tr>
+<tr class="memitem:a954f34ef68fd36b8d502ca3a21f7e8a8"><td class="memItemLeft" align="right" valign="top">cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#a954f34ef68fd36b8d502ca3a21f7e8a8">getDefaultStream</a> (int device) override</td></tr>
 <tr class="separator:a954f34ef68fd36b8d502ca3a21f7e8a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ebf68604864cb890a4c2e3d0a6f9952"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9ebf68604864cb890a4c2e3d0a6f9952"></a>
-std::vector&lt; cudaStream_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getAlternateStreams</b> (int device) override</td></tr>
+std::vector&lt; cudaStream_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#a9ebf68604864cb890a4c2e3d0a6f9952">getAlternateStreams</a> (int device) override</td></tr>
+<tr class="memdesc:a9ebf68604864cb890a4c2e3d0a6f9952"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of alternative streams that we use for the given device. <br/></td></tr>
 <tr class="separator:a9ebf68604864cb890a4c2e3d0a6f9952"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35da92117dd4b47ee773444af716d634"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a35da92117dd4b47ee773444af716d634"></a>
-<a class="el" href="classfaiss_1_1gpu_1_1DeviceMemory.html">DeviceMemory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getMemoryManager</b> (int device) override</td></tr>
+<a class="el" href="classfaiss_1_1gpu_1_1DeviceMemory.html">DeviceMemory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#a35da92117dd4b47ee773444af716d634">getMemoryManager</a> (int device) override</td></tr>
+<tr class="memdesc:a35da92117dd4b47ee773444af716d634"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the temporary memory manager for the given device. <br/></td></tr>
 <tr class="separator:a35da92117dd4b47ee773444af716d634"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7418f127cac2ac663ac0ae2e6f88e8d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae7418f127cac2ac663ac0ae2e6f88e8d"></a>
-std::pair&lt; void *, size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getPinnedMemory</b> () override</td></tr>
+std::pair&lt; void *, size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#ae7418f127cac2ac663ac0ae2e6f88e8d">getPinnedMemory</a> () override</td></tr>
+<tr class="memdesc:ae7418f127cac2ac663ac0ae2e6f88e8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the available CPU pinned memory buffer. <br/></td></tr>
 <tr class="separator:ae7418f127cac2ac663ac0ae2e6f88e8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf89d4731c826df889f51fe42287b15d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adf89d4731c826df889f51fe42287b15d"></a>
-cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><b>getAsyncCopyStream</b> (int device) override</td></tr>
+cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#adf89d4731c826df889f51fe42287b15d">getAsyncCopyStream</a> (int device) override</td></tr>
+<tr class="memdesc:adf89d4731c826df889f51fe42287b15d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the stream on which we perform async CPU &lt;-&gt; GPU copies. <br/></td></tr>
 <tr class="separator:adf89d4731c826df889f51fe42287b15d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classfaiss_1_1gpu_1_1GpuResources')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">faiss::gpu::GpuResources</a></td></tr>
 <tr class="memitem:a00cb7bcbc5f1a00da673f30749149b12 inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a00cb7bcbc5f1a00da673f30749149b12"></a>
-cublasHandle_t&#160;</td><td class="memItemRight" valign="bottom"><b>getBlasHandleCurrentDevice</b> ()</td></tr>
+cublasHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#a00cb7bcbc5f1a00da673f30749149b12">getBlasHandleCurrentDevice</a> ()</td></tr>
+<tr class="memdesc:a00cb7bcbc5f1a00da673f30749149b12 inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls getBlasHandle with the current device. <br/></td></tr>
 <tr class="separator:a00cb7bcbc5f1a00da673f30749149b12 inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0354aa570c24e17a9f8a6a45b153ed2 inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa0354aa570c24e17a9f8a6a45b153ed2"></a>
-cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><b>getDefaultStreamCurrentDevice</b> ()</td></tr>
+cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#aa0354aa570c24e17a9f8a6a45b153ed2">getDefaultStreamCurrentDevice</a> ()</td></tr>
+<tr class="memdesc:aa0354aa570c24e17a9f8a6a45b153ed2 inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls getDefaultStream with the current device. <br/></td></tr>
 <tr class="separator:aa0354aa570c24e17a9f8a6a45b153ed2 inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a130deab9f6d49cbdde8f9da45ce868fd inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#a130deab9f6d49cbdde8f9da45ce868fd">syncDefaultStream</a> (int device)</td></tr>
+<tr class="separator:a130deab9f6d49cbdde8f9da45ce868fd inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf6a5653ec2bbb0e9d58a0e1dd73897f inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adf6a5653ec2bbb0e9d58a0e1dd73897f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#adf6a5653ec2bbb0e9d58a0e1dd73897f">syncDefaultStreamCurrentDevice</a> ()</td></tr>
+<tr class="memdesc:adf6a5653ec2bbb0e9d58a0e1dd73897f inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls syncDefaultStream for the current device. <br/></td></tr>
+<tr class="separator:adf6a5653ec2bbb0e9d58a0e1dd73897f inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a622f95597cc2ed2f10f3ae9400dc685b inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a622f95597cc2ed2f10f3ae9400dc685b"></a>
-std::vector&lt; cudaStream_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getAlternateStreamsCurrentDevice</b> ()</td></tr>
+std::vector&lt; cudaStream_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#a622f95597cc2ed2f10f3ae9400dc685b">getAlternateStreamsCurrentDevice</a> ()</td></tr>
+<tr class="memdesc:a622f95597cc2ed2f10f3ae9400dc685b inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls getAlternateStreams for the current device. <br/></td></tr>
 <tr class="separator:a622f95597cc2ed2f10f3ae9400dc685b inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1dda2dc3db1bd62cde6657c5cdbfb6e1 inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1dda2dc3db1bd62cde6657c5cdbfb6e1"></a>
-<a class="el" href="classfaiss_1_1gpu_1_1DeviceMemory.html">DeviceMemory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getMemoryManagerCurrentDevice</b> ()</td></tr>
+<a class="el" href="classfaiss_1_1gpu_1_1DeviceMemory.html">DeviceMemory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#a1dda2dc3db1bd62cde6657c5cdbfb6e1">getMemoryManagerCurrentDevice</a> ()</td></tr>
+<tr class="memdesc:a1dda2dc3db1bd62cde6657c5cdbfb6e1 inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls getMemoryManager for the current device. <br/></td></tr>
 <tr class="separator:a1dda2dc3db1bd62cde6657c5cdbfb6e1 inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefb90d15fade57cdfcff03ec800183d4 inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aefb90d15fade57cdfcff03ec800183d4"></a>
-cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><b>getAsyncCopyStreamCurrentDevice</b> ()</td></tr>
+cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#aefb90d15fade57cdfcff03ec800183d4">getAsyncCopyStreamCurrentDevice</a> ()</td></tr>
+<tr class="memdesc:aefb90d15fade57cdfcff03ec800183d4 inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls getAsyncCopyStream for the current device. <br/></td></tr>
 <tr class="separator:aefb90d15fade57cdfcff03ec800183d4 inherit pub_methods_classfaiss_1_1gpu_1_1GpuResources"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Default implementation of <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> that allocates a cuBLAS stream and 2 streams for use, as well as temporary memory </p>
 
-<p>Definition at line <a class="el" href="StandardGpuResources_8h_source.html#l00024">24</a> of file <a class="el" href="StandardGpuResources_8h_source.html">StandardGpuResources.h</a>.</p>
+<p>Definition at line <a class="el" href="StandardGpuResources_8h_source.html#l00023">23</a> of file <a class="el" href="StandardGpuResources_8h_source.html">StandardGpuResources.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a954f34ef68fd36b8d502ca3a21f7e8a8"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">cudaStream_t faiss::gpu::StandardGpuResources::getDefaultStream </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>device</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns the stream that we order all computation on for the given device </p>
+
+<p>Implements <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#a6c564198df6ba675920c993e2af34b8c">faiss::gpu::GpuResources</a>.</p>
+
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00211">211</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a6431477a7328ac147797b3b4e3fcf651"></a>
 <div class="memitem">
 <div class="memproto">
@@ -173,7 +223,25 @@ cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><b>getAsyncCopyS
 </div><div class="memdoc">
 <p>Disable allocation of temporary memory; all temporary memory requests will call cudaMalloc / cudaFree at the point of use </p>
 
-<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00072">72</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00076">76</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5374f336f1957c266d7a5c185eb962a1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::gpu::StandardGpuResources::setDefaultNullStreamAllDevices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Called to change the work ordering streams to the null stream for all devices </p>
+
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00115">115</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
 
 </div>
 </div>
@@ -192,7 +260,7 @@ cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><b>getAsyncCopyS
 </div><div class="memdoc">
 <p>Set amount of pinned memory to allocate, for async GPU &lt;-&gt; CPU transfers </p>
 
-<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00090">90</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00094">94</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
 
 </div>
 </div>
@@ -211,7 +279,7 @@ cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><b>getAsyncCopyS
 </div><div class="memdoc">
 <p>Specify that we wish to use a certain fixed size of memory on all devices as temporary memory </p>
 
-<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00077">77</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00081">81</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
 
 </div>
 </div>
@@ -230,13 +298,13 @@ cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><b>getAsyncCopyS
 </div><div class="memdoc">
 <p>Specify that we wish to use a certain fraction of memory on all devices as temporary memory </p>
 
-<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00083">83</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00087">87</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="StandardGpuResources_8h_source.html">StandardGpuResources.h</a></li>
-<li><a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a></li>
+<li>/data/users/matthijs/github_faiss/faiss/gpu/<a class="el" href="StandardGpuResources_8h_source.html">StandardGpuResources.h</a></li>
+<li>/data/users/matthijs/github_faiss/faiss/gpu/<a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

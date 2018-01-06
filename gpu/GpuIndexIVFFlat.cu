@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -24,67 +23,44 @@
 namespace faiss { namespace gpu {
 
 GpuIndexIVFFlat::GpuIndexIVFFlat(GpuResources* resources,
-                                 int device,
-                                 bool useFloat16CoarseQuantizer,
-                                 bool useFloat16IVFStorage,
-                                 int dims,
-                                 int nlist,
-                                 IndicesOptions indicesOptions,
-                                 faiss::MetricType metric) :
+                                 const faiss::IndexIVFFlat* index,
+                                 GpuIndexIVFFlatConfig config) :
     GpuIndexIVF(resources,
-                device,
-                indicesOptions,
-                useFloat16CoarseQuantizer,
-                dims,
-                metric,
-                nlist),
-    useFloat16IVFStorage_(useFloat16IVFStorage),
+                index->d,
+                index->metric_type,
+                index->nlist,
+                config),
+    ivfFlatConfig_(config),
     reserveMemoryVecs_(0),
     index_(nullptr) {
-  DeviceScope scope(device_);
+#ifndef FAISS_USE_FLOAT16
+  FAISS_THROW_IF_NOT_MSG(!ivfFlatConfig_.useFloat16IVFStorage,
+                     "float16 unsupported; need CUDA SDK >= 7.5");
+#endif
+
+  copyFrom(index);
+}
+
+GpuIndexIVFFlat::GpuIndexIVFFlat(GpuResources* resources,
+                                 int dims,
+                                 int nlist,
+                                 faiss::MetricType metric,
+                                 GpuIndexIVFFlatConfig config) :
+    GpuIndexIVF(resources, dims, metric, nlist, config),
+    ivfFlatConfig_(config),
+    reserveMemoryVecs_(0),
+    index_(nullptr) {
 
   // faiss::Index params
   this->is_trained = false;
 
 #ifndef FAISS_USE_FLOAT16
-  FAISS_ASSERT(!useFloat16IVFStorage_,
-               "float16 unsupported; need CUDA SDK >= 7.5");
+  FAISS_THROW_IF_NOT_MSG(!ivfFlatConfig_.useFloat16IVFStorage,
+                     "float16 unsupported; need CUDA SDK >= 7.5");
 #endif
 
   // We haven't trained ourselves, so don't construct the IVFFlat
   // index yet
-}
-
-GpuIndexIVFFlat::GpuIndexIVFFlat(GpuResources* resources,
-                                 int device,
-                                 GpuIndexFlat* quantizer,
-                                 bool useFloat16IVFStorage,
-                                 int dims,
-                                 int nlist,
-                                 IndicesOptions indicesOptions,
-                                 faiss::MetricType metric) :
-    GpuIndexIVF(resources, device, indicesOptions, dims,
-                metric, nlist, quantizer),
-    useFloat16IVFStorage_(useFloat16IVFStorage),
-    reserveMemoryVecs_(0),
-    index_(nullptr) {
-  DeviceScope scope(device_);
-
-  // faiss::Index params
-  this->is_trained = (quantizer->ntotal > 0);
-
-#ifndef FAISS_USE_FLOAT16
-  FAISS_ASSERT(!useFloat16IVFStorage_,
-               "float16 unsupported; need CUDA SDK >= 7.5");
-#endif
-
-  if (this->is_trained) {
-    index_ = new IVFFlat(resources_,
-                         quantizer_->getGpuData(),
-                         quantizer_->metric_type == faiss::METRIC_L2,
-                         useFloat16IVFStorage_,
-                         indicesOptions_);
-  }
 }
 
 GpuIndexIVFFlat::~GpuIndexIVFFlat() {
@@ -121,19 +97,29 @@ GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
   index_ = new IVFFlat(resources_,
                        quantizer_->getGpuData(),
                        index->metric_type == faiss::METRIC_L2,
-                       useFloat16IVFStorage_,
-                       indicesOptions_);
+                       ivfFlatConfig_.useFloat16IVFStorage,
+                       ivfFlatConfig_.indicesOptions,
+                       memorySpace_);
 
-  FAISS_ASSERT(index->vecs.size() == index->ids.size());
-  for (size_t i = 0; i < index->vecs.size(); ++i) {
-    auto& vecs = index->vecs[i];
+  FAISS_ASSERT(index->codes.size() == index->ids.size());
+  for (size_t i = 0; i < index->ids.size(); ++i) {
+    auto& cvecs = index->codes[i];
     auto& ids = index->ids[i];
 
-    FAISS_ASSERT(vecs.size() % this->d == 0);
-    auto numVecs = vecs.size() / this->d;
-    FAISS_ASSERT(numVecs == ids.size());
+    FAISS_ASSERT(cvecs.size() == (this->d * sizeof(float) * ids.size()));
+    auto numVecs = ids.size();
 
-    index_->addCodeVectorsFromCpu(i, vecs.data(), ids.data(), numVecs);
+    // GPU index can only support max int entries per list
+    FAISS_THROW_IF_NOT_FMT(numVecs <=
+                       (size_t) std::numeric_limits<int>::max(),
+                       "GPU inverted list can only support "
+                       "%zu entries; %zu found",
+                       (size_t) std::numeric_limits<int>::max(),
+                       ids.size());
+
+    index_->addCodeVectorsFromCpu(
+             i, (const float*)(cvecs.data()),
+             ids.data(), numVecs);
   }
 }
 
@@ -142,18 +128,23 @@ GpuIndexIVFFlat::copyTo(faiss::IndexIVFFlat* index) const {
   DeviceScope scope(device_);
 
   // We must have the indices in order to copy to ourselves
-  FAISS_ASSERT(indicesOptions_ != INDICES_IVF);
+  FAISS_THROW_IF_NOT_MSG(ivfFlatConfig_.indicesOptions != INDICES_IVF,
+                     "Cannot copy to CPU as GPU index doesn't retain "
+                     "indices (INDICES_IVF)");
 
   GpuIndexIVF::copyTo(index);
 
   // Clear out the old inverted lists
-  index->vecs.clear();
-  index->vecs.resize(nlist_);
+  index->codes.clear();
+  index->codes.resize(nlist_);
 
   // Copy the inverted lists
   if (index_) {
     for (int i = 0; i < nlist_; ++i) {
-      index->vecs[i] = index_->getListVectors(i);
+      std::vector<float> vec = index_->getListVectors(i);
+      size_t nbyte = sizeof(float) * vec.size();
+      index->codes[i].resize(nbyte);
+      memcpy(index->codes[i].data(), vec.data(), nbyte);
       index->ids[i] = index_->getListIndices(i);
     }
   }
@@ -201,8 +192,10 @@ GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
   index_ = new IVFFlat(resources_,
                        quantizer_->getGpuData(),
                        this->metric_type == faiss::METRIC_L2,
-                       useFloat16IVFStorage_,
-                       indicesOptions_);
+                       ivfFlatConfig_.useFloat16IVFStorage,
+                       ivfFlatConfig_.indicesOptions,
+                       memorySpace_);
+
   if (reserveMemoryVecs_) {
     index_->reserveMemory(reserveMemoryVecs_);
   }
@@ -211,13 +204,13 @@ GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
 }
 
 void
-GpuIndexIVFFlat::add_with_ids(Index::idx_t n,
-                              const float* x,
-                              const Index::idx_t* xids) {
-  FAISS_ASSERT(this->is_trained);
+GpuIndexIVFFlat::addImpl_(Index::idx_t n,
+                          const float* x,
+                          const Index::idx_t* xids) {
+  // Device is already set in GpuIndex::addInternal_
   FAISS_ASSERT(index_);
+  FAISS_ASSERT(n > 0);
 
-  DeviceScope scope(device_);
   auto stream = resources_->getDefaultStreamCurrentDevice();
 
   auto deviceVecs =
@@ -241,19 +234,15 @@ GpuIndexIVFFlat::add_with_ids(Index::idx_t n,
 }
 
 void
-GpuIndexIVFFlat::search(faiss::Index::idx_t n,
-                        const float* x,
-                        faiss::Index::idx_t k,
-                        float* distances,
-                        faiss::Index::idx_t* labels) const {
-  if (n == 0) {
-    return;
-  }
-
-  FAISS_ASSERT(this->is_trained);
+GpuIndexIVFFlat::searchImpl_(faiss::Index::idx_t n,
+                             const float* x,
+                             faiss::Index::idx_t k,
+                             float* distances,
+                             faiss::Index::idx_t* labels) const {
+  // Device is already set in GpuIndex::search
   FAISS_ASSERT(index_);
+  FAISS_ASSERT(n > 0);
 
-  DeviceScope scope(device_);
   auto stream = resources_->getDefaultStream(device_);
 
   // Make sure arguments are on the device we desire; use temporary
@@ -284,9 +273,5 @@ GpuIndexIVFFlat::search(faiss::Index::idx_t n,
   fromDevice<faiss::Index::idx_t, 2>(devLabels, labels, stream);
 }
 
-void
-GpuIndexIVFFlat::set_typename() {
-  this->index_typename = "GpuIndexIVFFlat";
-}
 
 } } // namespace

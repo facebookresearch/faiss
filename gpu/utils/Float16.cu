@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -49,10 +48,16 @@ void runConvertToFloat32(float* out,
                     in, in + num, out, HalfToFloat());
 }
 
-half hostFloat2Half(float a) {
-  half h;
+__half hostFloat2Half(float a) {
+#if CUDA_VERSION >= 9000
+  __half_raw raw;
+  raw.x = cpu_float2half_rn(a).x;
+  return __half(raw);
+#else
+  __half h;
   h.x = cpu_float2half_rn(a).x;
   return h;
+#endif
 }
 
 } } // namespace

@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -17,7 +16,7 @@
 
 namespace faiss { namespace gpu {
 
-template <int Dim, bool Contig = false, typename IndexT = int>
+template <int Dim, bool InnerContig = false, typename IndexT = int>
 class NoTypeTensor {
  public:
   NoTypeTensor()
@@ -26,7 +25,7 @@ class NoTypeTensor {
   }
 
   template <typename T>
-  NoTypeTensor(Tensor<T, Dim, Contig, IndexT>& t)
+  NoTypeTensor(Tensor<T, Dim, InnerContig, IndexT>& t)
       : mem_(t.data()),
         typeSize_(sizeof(T)) {
     for (int i = 0; i < Dim; ++i) {
@@ -88,13 +87,14 @@ class NoTypeTensor {
   }
 
   template <typename T>
-  Tensor<T, Dim, Contig, IndexT> toTensor() {
+  Tensor<T, Dim, InnerContig, IndexT> toTensor() {
     FAISS_ASSERT(sizeof(T) == typeSize_);
 
-    return Tensor<T, Dim, Contig, IndexT>((T*) mem_, size_, stride_);
+    return Tensor<T, Dim, InnerContig, IndexT>((T*) mem_, size_, stride_);
   }
 
-  NoTypeTensor<Dim, Contig, IndexT> narrowOutermost(IndexT start, IndexT size) {
+  NoTypeTensor<Dim, InnerContig, IndexT> narrowOutermost(IndexT start,
+                                                         IndexT size) {
     char* newPtr = (char*) mem_;
 
     if (start > 0) {
@@ -111,7 +111,7 @@ class NoTypeTensor {
       }
     }
 
-    return NoTypeTensor<Dim, Contig, IndexT>(
+    return NoTypeTensor<Dim, InnerContig, IndexT>(
       newPtr, typeSize_, newSize, stride_);
   }
 

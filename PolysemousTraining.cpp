@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -74,7 +73,7 @@ SimulatedAnnealingOptimizer::SimulatedAnnealingOptimizer (
     logfile (nullptr)
 {
     rnd = new RandomGenerator (p.seed);
-    FAISS_ASSERT (n < 100000 && n >=0 );
+    FAISS_THROW_IF_NOT (n < 100000 && n >=0 );
 }
 
 SimulatedAnnealingOptimizer::~SimulatedAnnealingOptimizer ()
@@ -193,73 +192,65 @@ struct ReproduceWithHammingObjective : PermutationObjective {
     std::vector<double> weights;    // weights for each distance (size n^2)
 
     // cost = quadratic difference between actual distance and Hamming distance
-    virtual double compute_cost (const int *perm) const
-    {
-        double cost = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                double wanted = target_dis [i * n + j];
-                double w = weights [i * n + j];
-                double actual = hamming_dis (perm[i], perm[j]);
-                cost += w * sqr (wanted - actual);
-            }
+    double compute_cost(const int* perm) const override {
+      double cost = 0;
+      for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+          double wanted = target_dis[i * n + j];
+          double w = weights[i * n + j];
+          double actual = hamming_dis(perm[i], perm[j]);
+          cost += w * sqr(wanted - actual);
         }
-        return cost;
+      }
+      return cost;
     }
 
 
     // what would the cost update be if iw and jw were swapped?
     // computed in O(n) instead of O(n^2) for the full re-computation
-    double cost_update (const int *perm, int iw, int jw) const
-    {
-        double delta_cost = 0;
+    double cost_update(const int* perm, int iw, int jw) const override {
+      double delta_cost = 0;
 
-        for (int i = 0; i < n; i++) {
-            if (i == iw) {
-                for (int j = 0; j < n; j++) {
-                    double wanted = target_dis [i * n + j],
-                        w = weights [i * n + j];
-                    double actual = hamming_dis (perm[i], perm[j]);
-                    delta_cost -= w * sqr (wanted - actual);
-                    double new_actual = hamming_dis (
-                           perm[jw],
-                           perm[j == iw ? jw : j == jw ? iw : j]);
-                    delta_cost += w * sqr (wanted - new_actual);
-                }
-            } else if (i == jw) {
-                for (int j = 0; j < n; j++) {
-                    double wanted = target_dis [i * n + j],
-                        w = weights [i * n + j];
-                    double actual = hamming_dis (perm[i], perm[j]);
-                    delta_cost -= w * sqr (wanted - actual);
-                    double new_actual = hamming_dis (
-                           perm[iw],
-                           perm[j == iw ? jw : j == jw ? iw : j]);
-                    delta_cost += w * sqr (wanted - new_actual);
-                }
-            } else  {
-                int j = iw;
-                {
-                    double wanted = target_dis [i * n + j],
-                        w = weights [i * n + j];
-                    double actual = hamming_dis (perm[i], perm[j]);
-                    delta_cost -= w * sqr (wanted - actual);
-                    double new_actual = hamming_dis (perm[i], perm[jw]);
-                    delta_cost += w * sqr (wanted - new_actual);
-                }
-                j = jw;
-                {
-                    double wanted = target_dis [i * n + j],
-                        w = weights [i * n + j];
-                    double actual = hamming_dis (perm[i], perm[j]);
-                    delta_cost -= w * sqr (wanted - actual);
-                    double new_actual = hamming_dis (perm[i], perm[iw]);
-                    delta_cost += w * sqr (wanted - new_actual);
-                }
-            }
+      for (int i = 0; i < n; i++) {
+        if (i == iw) {
+          for (int j = 0; j < n; j++) {
+            double wanted = target_dis[i * n + j], w = weights[i * n + j];
+            double actual = hamming_dis(perm[i], perm[j]);
+            delta_cost -= w * sqr(wanted - actual);
+            double new_actual =
+                hamming_dis(perm[jw], perm[j == iw ? jw : j == jw ? iw : j]);
+            delta_cost += w * sqr(wanted - new_actual);
+          }
+        } else if (i == jw) {
+          for (int j = 0; j < n; j++) {
+            double wanted = target_dis[i * n + j], w = weights[i * n + j];
+            double actual = hamming_dis(perm[i], perm[j]);
+            delta_cost -= w * sqr(wanted - actual);
+            double new_actual =
+                hamming_dis(perm[iw], perm[j == iw ? jw : j == jw ? iw : j]);
+            delta_cost += w * sqr(wanted - new_actual);
+          }
+        } else {
+          int j = iw;
+          {
+            double wanted = target_dis[i * n + j], w = weights[i * n + j];
+            double actual = hamming_dis(perm[i], perm[j]);
+            delta_cost -= w * sqr(wanted - actual);
+            double new_actual = hamming_dis(perm[i], perm[jw]);
+            delta_cost += w * sqr(wanted - new_actual);
+          }
+          j = jw;
+          {
+            double wanted = target_dis[i * n + j], w = weights[i * n + j];
+            double actual = hamming_dis(perm[i], perm[j]);
+            delta_cost -= w * sqr(wanted - actual);
+            double new_actual = hamming_dis(perm[i], perm[iw]);
+            delta_cost += w * sqr(wanted - new_actual);
+          }
         }
+      }
 
-        return delta_cost;
+      return delta_cost;
     }
 
 
@@ -271,7 +262,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
         nbits (nbits), dis_weight_factor (dis_weight_factor)
     {
         n = 1 << nbits;
-        FAISS_ASSERT (dis_table.size() == n * n);
+        FAISS_THROW_IF_NOT (dis_table.size() == n * n);
         set_affine_target_dis (dis_table);
     }
 
@@ -299,7 +290,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
 
     }
 
-    virtual ~ReproduceWithHammingObjective () {}
+    ~ReproduceWithHammingObjective() override {}
 };
 
 } // anonymous namespace
@@ -637,20 +628,16 @@ struct Score3Computer: PermutationObjective {
     /// PermutationObjective implementeation (just negates the scores
     /// for minimization)
 
-    virtual double compute_cost (const int *perm) const {
-        return -compute (perm);
+    double compute_cost(const int* perm) const override {
+      return -compute(perm);
     }
 
-
-
-    virtual double cost_update (const int *perm, int iw, int jw) const
-    {
-        double ret = -compute_update (perm, iw, jw);
-        return ret;
+    double cost_update(const int* perm, int iw, int jw) const override {
+      double ret = -compute_update(perm, iw, jw);
+      return ret;
     }
 
-    virtual ~Score3Computer () {}
-
+    ~Score3Computer() override {}
 };
 
 
@@ -811,7 +798,7 @@ void PolysemousTraining::optimize_reproduce_distances (
             snprintf (fname, 256, log_pattern.c_str(), m);
             printf ("opening log file %s\n", fname);
             optim.logfile = fopen (fname, "w");
-            FAISS_ASSERT (optim.logfile || !"could not open logfile");
+            FAISS_THROW_IF_NOT_MSG (optim.logfile, "could not open logfile");
         }
         double final_cost = optim.run_optimization (perm.data());
 
@@ -848,7 +835,7 @@ void PolysemousTraining::optimize_ranking (
 
     pq.compute_codes (x, all_codes.data(), n);
 
-    FAISS_ASSERT (pq.byte_per_idx == 1);
+    FAISS_THROW_IF_NOT (pq.byte_per_idx == 1);
 
     if (n == 0)
         pq.compute_sdc_table ();
@@ -899,6 +886,8 @@ void PolysemousTraining::optimize_ranking (
                   nbits, nq, nb,
                   codes.data(), codes.data() + nq,
                   gt_distances.data ());
+        ScopeDeleter1<PermutationObjective> del (obj);
+
         if (verbose > 0) {
             printf("   m=%d, nq=%ld, nb=%ld, intialize RankingScore "
                    "in %.3f ms\n",
@@ -912,7 +901,8 @@ void PolysemousTraining::optimize_ranking (
             snprintf (fname, 256, log_pattern.c_str(), m);
             printf ("opening log file %s\n", fname);
             optim.logfile = fopen (fname, "w");
-            FAISS_ASSERT (optim.logfile || !"could not open logfile");
+            FAISS_THROW_IF_NOT_FMT (optim.logfile,
+                                    "could not open logfile %s", fname);
         }
 
         std::vector<int> perm (pq.ksub);
@@ -922,8 +912,6 @@ void PolysemousTraining::optimize_ranking (
                 m, optim.init_cost, final_cost);
 
         if (log_pattern.size()) fclose (optim.logfile);
-
-        delete obj;
 
         float * centroids = pq.get_centroids (m, 0);
 

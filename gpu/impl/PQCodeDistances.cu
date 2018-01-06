@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -123,6 +122,8 @@ pqCodeDistances(Tensor<float, 2, true> queries,
            i < DimsPerSubQuantizer;
            i += blockDim.x - codesPerSubQuantizer) {
         auto coarseId = coarseIds[0];
+        // In case NaNs were in the original query data
+        coarseId = coarseId == -1 ? 0 : coarseId;
         auto coarseCentroidSubQuantizer =
           coarseCentroids[coarseId][subQuantizer * dimsPerSubQuantizer].data();
 
@@ -144,6 +145,9 @@ pqCodeDistances(Tensor<float, 2, true> queries,
           // terminate
           if (coarse != (topQueryToCentroid.getSize(1) - 1)) {
             auto coarseId = coarseIds[coarse + 1];
+            // In case NaNs were in the original query data
+            coarseId = coarseId == -1 ? 0 : coarseId;
+
             auto coarseCentroidSubQuantizer =
               coarseCentroids[coarseId][subQuantizer * dimsPerSubQuantizer].data();
 
@@ -260,7 +264,8 @@ runResidualVector(Tensor<float, 3, true>& pqCentroids,
   residualVector<<<grid, block, 0, stream>>>(
     queries, coarseCentroids, topQueryToCentroid, pqCentroids.getSize(1),
     residual);
-  CUDA_VERIFY(cudaGetLastError());
+
+  CUDA_TEST_ERROR();
 }
 
 void
@@ -490,6 +495,15 @@ runPQCodeDistances(Tensor<float, 3, true>& pqCentroids,
     case 16:
       CODE_DISTANCE(16);
       break;
+    case 20:
+      CODE_DISTANCE(20);
+      break;
+    case 24:
+      CODE_DISTANCE(24);
+      break;
+    case 28:
+      CODE_DISTANCE(28);
+      break;
     case 32:
       CODE_DISTANCE(32);
       break;
@@ -502,7 +516,7 @@ runPQCodeDistances(Tensor<float, 3, true>& pqCentroids,
 
 #undef CODE_DISTANCE
 
-  CUDA_VERIFY(cudaGetLastError());
+  CUDA_TEST_ERROR();
 }
 
 } } // namespace

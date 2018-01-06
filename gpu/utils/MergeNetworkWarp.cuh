@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -11,6 +10,7 @@
 #pragma once
 
 #include "DeviceDefs.cuh"
+#include "MergeNetworkUtils.cuh"
 #include "PtxUtils.cuh"
 #include "StaticUtils.h"
 #include "WarpShuffles.cuh"
@@ -78,13 +78,6 @@ namespace faiss { namespace gpu {
 // perfoming both < and > comparisons with the variables, so I just
 // stick with this.
 
-template <typename T>
-inline __device__ void swap(bool swap, T& x, T& y) {
-  T tmp = x;
-  x = swap ? y : x;
-  y = swap ? tmp : y;
-}
-
 // This function merges kWarpSize / 2L lists in parallel using warp
 // shuffles.
 // It works on at most size-16 lists, as we need 32 threads for this
@@ -115,13 +108,13 @@ inline __device__ void warpBitonicMergeLE16(K& k, V& v) {
       // comparisons in the warp seems to win out over the
       // alternatives in practice
       bool s = small ? Comp::gt(k, otherK) : Comp::lt(k, otherK);
-      swap(s, k, otherK);
-      swap(s, v, otherV);
+      assign(s, k, otherK);
+      assign(s, v, otherV);
 
     } else {
       bool s = small ? Comp::lt(k, otherK) : Comp::gt(k, otherK);
-      swap(s, k, otherK);
-      swap(s, v, otherV);
+      assign(s, k, otherK);
+      assign(s, v, otherV);
     }
   }
 
@@ -135,13 +128,13 @@ inline __device__ void warpBitonicMergeLE16(K& k, V& v) {
 
     if (Dir) {
       bool s = small ? Comp::gt(k, otherK) : Comp::lt(k, otherK);
-      swap(s, k, otherK);
-      swap(s, v, otherV);
+      assign(s, k, otherK);
+      assign(s, v, otherV);
 
     } else {
       bool s = small ? Comp::lt(k, otherK) : Comp::gt(k, otherK);
-      swap(s, k, otherK);
-      swap(s, v, otherV);
+      assign(s, k, otherK);
+      assign(s, v, otherV);
     }
   }
 }
@@ -385,7 +378,13 @@ struct BitonicMergeStep<K, V, N, Dir, Comp, false, false> {
 /// i.e., merges a sorted k/v list of size kWarpSize * N1 with a
 /// sorted k/v list of size kWarpSize * N2, where N1 and N2 are any
 /// value >= 1
-template <typename K, typename V, int N1, int N2, bool Dir, typename Comp>
+template <typename K,
+          typename V,
+          int N1,
+          int N2,
+          bool Dir,
+          typename Comp,
+          bool FullMerge = true>
 inline __device__ void warpMergeAnyRegisters(K k1[N1], V v1[N1],
                                              K k2[N2], V v2[N2]) {
   constexpr int kSmallestN = N1 < N2 ? N1 : N2;
@@ -398,8 +397,14 @@ inline __device__ void warpMergeAnyRegisters(K k1[N1], V v1[N1],
     K& kb = k2[i];
     V& vb = v2[i];
 
-    K otherKa = shfl_xor(ka, kWarpSize - 1);
-    V otherVa = shfl_xor(va, kWarpSize - 1);
+    K otherKa;
+    V otherVa;
+
+    if (FullMerge) {
+      // We need the other values
+      otherKa = shfl_xor(ka, kWarpSize - 1);
+      otherVa = shfl_xor(va, kWarpSize - 1);
+    }
 
     K otherKb = shfl_xor(kb, kWarpSize - 1);
     V otherVb = shfl_xor(vb, kWarpSize - 1);
@@ -407,20 +412,28 @@ inline __device__ void warpMergeAnyRegisters(K k1[N1], V v1[N1],
     // ka is always first in the list, so we needn't use our lane
     // in this comparison
     bool swapa = Dir ? Comp::gt(ka, otherKb) : Comp::lt(ka, otherKb);
-    swap(swapa, ka, otherKb);
-    swap(swapa, va, otherVb);
+    assign(swapa, ka, otherKb);
+    assign(swapa, va, otherVb);
 
     // kb is always second in the list, so we needn't use our lane
     // in this comparison
-    bool swapb = Dir ? Comp::lt(kb, otherKa) : Comp::gt(kb, otherKa);
-    swap(swapb, kb, otherKa);
-    swap(swapb, vb, otherVa);
+    if (FullMerge) {
+      bool swapb = Dir ? Comp::lt(kb, otherKa) : Comp::gt(kb, otherKa);
+      assign(swapb, kb, otherKa);
+      assign(swapb, vb, otherVa);
+
+    } else {
+      // We don't care about updating elements in the second list
+    }
   }
 
   BitonicMergeStep<K, V, N1, Dir, Comp,
                    true, utils::isPowerOf2(N1)>::merge(k1, v1);
-  BitonicMergeStep<K, V, N2, Dir, Comp,
-                   false, utils::isPowerOf2(N2)>::merge(k2, v2);
+  if (FullMerge) {
+    // Only if we care about N2 do we need to bother merging it fully
+    BitonicMergeStep<K, V, N2, Dir, Comp,
+                     false, utils::isPowerOf2(N2)>::merge(k2, v2);
+  }
 }
 
 // Recursive template that uses the above bitonic merge to perform a

@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -11,10 +10,10 @@
 
 #include "IVFUtils.cuh"
 #include "../utils/DeviceUtils.h"
+#include "../utils/Limits.cuh"
 #include "../utils/Select.cuh"
 #include "../utils/StaticUtils.h"
 #include "../utils/Tensor.cuh"
-#include <limits>
 
 //
 // This kernel is split into a separate compilation unit to cut down
@@ -22,9 +21,6 @@
 //
 
 namespace faiss { namespace gpu {
-
-constexpr auto kMax = std::numeric_limits<float>::max();
-constexpr auto kMin = std::numeric_limits<float>::min();
 
 template <int ThreadsPerBlock, int NumWarpQ, int NumThreadQ, bool Dir>
 __global__ void
@@ -39,9 +35,9 @@ pass1SelectLists(Tensor<int, 2, true> prefixSumOffsets,
   __shared__ float smemK[kNumWarps * NumWarpQ];
   __shared__ int smemV[kNumWarps * NumWarpQ];
 
-  constexpr auto kInit = Dir ? kMin : kMax;
+  constexpr auto kInit = Dir ? kFloatMin : kFloatMax;
   BlockSelect<float, int, Dir, Comparator<float>,
-            NumWarpQ, NumThreadQ, ThreadsPerBlock>
+              NumWarpQ, NumThreadQ, ThreadsPerBlock>
     heap(kInit, -1, smemK, smemV, k);
 
   auto queryId = blockIdx.y;
@@ -109,6 +105,7 @@ runPass1SelectLists(Tensor<int, 2, true>& prefixSumOffsets,
                                    k,                                   \
                                    heapDistances,                       \
                                    heapIndices);                        \
+    CUDA_TEST_ERROR();                                                  \
     return; /* success */                                               \
   } while (0)
 
@@ -138,7 +135,7 @@ runPass1SelectLists(Tensor<int, 2, true>& prefixSumOffsets,
   }
 
   // unimplemented / too many resources
-  FAISS_ASSERT(false);
+  FAISS_ASSERT_FMT(false, "unimplemented k value (%d)", k);
 
 #undef RUN_PASS_DIR
 #undef RUN_PASS

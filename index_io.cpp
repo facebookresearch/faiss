@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -24,16 +23,29 @@
 #include "IndexPQ.h"
 #include "IndexIVF.h"
 #include "IndexIVFPQ.h"
+#include "MetaIndexes.h"
+#include "IndexScalarQuantizer.h"
 
 /*************************************************************
  * The I/O format is the content of the class. For objects that are
- * inherited, like Index, a 4-character-code indicates which child
- * class this is an instance of.
+ * inherited, like Index, a 4-character-code (fourcc) indicates which
+ * child class this is an instance of.
  *
  * In this case, the fields of the parent class are written first,
  * then the ones for the child classes. Note that this requires
  * classes to be serialized to have a constructor without parameters,
- * so that the fields can be filled in later.
+ * so that the fields can be filled in later. The default constructor
+ * should set reasonable defaults for all fields.
+ *
+ * The fourccs are assigned arbitrarily. When the class changed (added
+ * or deprecated fields), the fourcc can be replaced. New code should
+ * be able to read the old fourcc and fill in new classes.
+ *
+ * TODO: serialization to strings for use in Python pickle or Torch
+ * serialization.
+ *
+ * TODO: in this file, the read functions that encouter errors may
+ * leak memory.
  **************************************************************/
 
 
@@ -55,12 +67,12 @@ static uint32_t fourcc (const char sx[4]) {
 
 #define WRITEANDCHECK(ptr, n) {                                 \
         size_t ret = fwrite (ptr, sizeof (* (ptr)), n, f);      \
-        FAISS_ASSERT (ret == (n) || !"write error");                  \
+        FAISS_THROW_IF_NOT_MSG (ret == (n), "write error");     \
     }
 
 #define READANDCHECK(ptr, n) {                                  \
         size_t ret = fread (ptr, sizeof (* (ptr)), n, f);       \
-        FAISS_ASSERT (ret == (n) || !"write error");                  \
+        FAISS_THROW_IF_NOT_MSG (ret == (n), "read error");      \
     }
 
 #define WRITE1(x) WRITEANDCHECK(&(x), 1)
@@ -75,11 +87,16 @@ static uint32_t fourcc (const char sx[4]) {
 #define READVECTOR(vec) {                       \
         long size;                            \
         READANDCHECK (&size, 1);                \
-        FAISS_ASSERT (size >= 0 && size < (1L << 40));  \
+        FAISS_THROW_IF_NOT (size >= 0 && size < (1L << 40));  \
         (vec).resize (size);                    \
         READANDCHECK ((vec).data (), size);     \
     }
 
+struct ScopeFileCloser {
+    FILE *f;
+    ScopeFileCloser (FILE *f): f (f) {}
+    ~ScopeFileCloser () {fclose (f); }
+};
 
 // Macros for read/write arrays aligned to 16 bytes in the
 // file. Useful when mmapped.
@@ -97,10 +114,10 @@ static uint32_t fourcc (const char sx[4]) {
 #define READTABPAD16(tab, basetype, expected_size) {     \
     size_t size;                                \
     READANDCHECK (&size, 1);                    \
-    FAISS_ASSERT ((expected_size) == size);           \
+    FAISS_THROW_IF_NOT ((expected_size) == size);           \
     uint8_t padding[16], npad;                  \
     READ1(npad);                                \
-    FAISS_ASSERT (npad < 16);                         \
+    FAISS_THROW_IF_NOT (npad < 16);                         \
     READANDCHECK (padding, npad);               \
     (tab) = new basetype [size];       \
     READANDCHECK ((tab), size);                 \
@@ -110,10 +127,10 @@ static uint32_t fourcc (const char sx[4]) {
 #define TABOFFSETPAD16(taboffset, basetype, expected_size) {    \
     size_t size;                                                \
     READANDCHECK (&size, 1);                                    \
-    FAISS_ASSERT ((expected_size) == size);                           \
+    FAISS_THROW_IF_NOT ((expected_size) == size);                           \
     uint8_t padding[16], npad;                                  \
     READ1(npad);                                                \
-    FAISS_ASSERT (npad < 16);                                         \
+    FAISS_THROW_IF_NOT (npad < 16);                                         \
     READANDCHECK (padding, npad);                               \
     taboffset = ftell(f);                                       \
     fseek (f, sizeof(basetype) * size, SEEK_CUR);               \
@@ -167,7 +184,14 @@ void write_VectorTransform (const VectorTransform *vt, FILE *f) {
         uint32_t h = fourcc ("RmDT");
         WRITE1 (h);
         WRITEVECTOR (rdt->map);
-    } else FAISS_ASSERT (!"cannot serialize this");
+    } else if (const NormalizationTransform *nt =
+               dynamic_cast<const NormalizationTransform *>(vt)) {
+        uint32_t h = fourcc ("VNrm");
+        WRITE1 (h);
+        WRITE1 (nt->norm);
+    } else {
+        FAISS_THROW_MSG ("cannot serialize this");
+    }
     // common fields
     WRITE1 (vt->d_in);
     WRITE1 (vt->d_out);
@@ -181,17 +205,21 @@ static void write_ProductQuantizer (const ProductQuantizer *pq, FILE *f) {
     WRITEVECTOR (pq->centroids);
 }
 
-void write_ProductQuantizer (const ProductQuantizer*pq, const char *fname) {
-    FILE *f = fopen (fname, "w");
-    if (!f) {
-        fprintf (stderr, "cannot open %s for writing:", fname);
-        perror ("");
-        abort ();
-    }
-    write_ProductQuantizer (pq, f);
-    fclose (f);
+static void write_ScalarQuantizer (const ScalarQuantizer *ivsc, FILE *f) {
+    WRITE1 (ivsc->qtype);
+    WRITE1 (ivsc->rangestat);
+    WRITE1 (ivsc->rangestat_arg);
+    WRITE1 (ivsc->d);
+    WRITE1 (ivsc->code_size);
+    WRITEVECTOR (ivsc->trained);
 }
 
+void write_ProductQuantizer (const ProductQuantizer*pq, const char *fname) {
+    FILE *f = fopen (fname, "w");
+    FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for writing", fname);
+    ScopeFileCloser closer(f);
+    write_ProductQuantizer (pq, f);
+}
 
 
 static void write_ivf_header (const IndexIVF * ivf, FILE *f,
@@ -237,13 +265,29 @@ void write_index (const Index *idx, FILE *f) {
         WRITE1 (idxp->search_type);
         WRITE1 (idxp->encode_signs);
         WRITE1 (idxp->polysemous_ht);
+    } else if(const IndexScalarQuantizer * idxs =
+              dynamic_cast<const IndexScalarQuantizer *> (idx)) {
+        uint32_t h = fourcc ("IxSQ");
+        WRITE1 (h);
+        write_index_header (idx, f);
+        write_ScalarQuantizer (&idxs->sq, f);
+        WRITEVECTOR (idxs->codes);
     } else if(const IndexIVFFlat * ivfl =
               dynamic_cast<const IndexIVFFlat *> (idx)) {
-        uint32_t h = fourcc ("IvFl");
+        uint32_t h = fourcc ("IvFL");
         WRITE1 (h);
         write_ivf_header (ivfl, f);
         for(int i = 0; i < ivfl->nlist; i++)
-            WRITEVECTOR (ivfl->vecs[i]);
+            WRITEVECTOR (ivfl->codes[i]);
+    } else if(const IndexIVFScalarQuantizer * ivsc =
+              dynamic_cast<const IndexIVFScalarQuantizer *> (idx)) {
+        uint32_t h = fourcc ("IvSQ");
+        WRITE1 (h);
+        write_ivf_header (ivsc, f);
+        write_ScalarQuantizer (&ivsc->sq, f);
+        WRITE1 (ivsc->code_size);
+        for(int i = 0; i < ivsc->nlist; i++)
+            WRITEVECTOR (ivsc->codes[i]);
     } else if(const IndexIVFPQ * ivpq =
               dynamic_cast<const IndexIVFPQ *> (idx)) {
         const IndexIVFPQR * ivfpqr = dynamic_cast<const IndexIVFPQR *> (idx);
@@ -294,31 +338,33 @@ void write_index (const Index *idx, FILE *f) {
         write_index (idxrf->base_index, f);
         write_index (&idxrf->refine_index, f);
         WRITE1 (idxrf->k_factor);
+    } else if(const IndexIDMap * idxmap =
+              dynamic_cast<const IndexIDMap *> (idx)) {
+        uint32_t h =
+            dynamic_cast<const IndexIDMap2 *> (idx) ? fourcc ("IxM2") :
+            fourcc ("IxMp");
+        // no need to store additional info for IndexIDMap2
+        WRITE1 (h);
+        write_index_header (idxmap, f);
+        write_index (idxmap->index, f);
+        WRITEVECTOR (idxmap->id_map);
     } else {
-        FAISS_ASSERT (!"don't know how to serialize this type of index");
+      FAISS_THROW_MSG ("don't know how to serialize this type of index");
     }
 }
 
 void write_index (const Index *idx, const char *fname) {
     FILE *f = fopen (fname, "w");
-    if (!f) {
-        fprintf (stderr, "cannot open %s for writing:", fname);
-        perror ("");
-        abort ();
-    }
+    FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for writing", fname);
+    ScopeFileCloser closer(f);
     write_index (idx, f);
-    fclose (f);
 }
 
 void write_VectorTransform (const VectorTransform *vt, const char *fname) {
     FILE *f = fopen (fname, "w");
-    if (!f) {
-        fprintf (stderr, "cannot open %s for writing:", fname);
-        perror ("");
-        abort ();
-    }
+    FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for writing", fname);
+    ScopeFileCloser closer(f);
     write_VectorTransform (vt, f);
-    fclose (f);
 }
 
 /*************************************************************
@@ -368,7 +414,13 @@ VectorTransform* read_VectorTransform (FILE *f) {
         RemapDimensionsTransform *rdt = new RemapDimensionsTransform ();
         READVECTOR (rdt->map);
         vt = rdt;
-    } else FAISS_ASSERT(!"fourcc not recognized");
+    } else if (h == fourcc ("VNrm")) {
+        NormalizationTransform *nt = new NormalizationTransform ();
+        READ1 (nt->norm);
+        vt = nt;
+    } else {
+        FAISS_THROW_MSG("fourcc not recognized");
+    }
     READ1 (vt->d_in);
     READ1 (vt->d_out);
     READ1 (vt->is_trained);
@@ -383,16 +435,24 @@ static void read_ProductQuantizer (ProductQuantizer *pq, FILE *f) {
     READVECTOR (pq->centroids);
 }
 
+static void read_ScalarQuantizer (ScalarQuantizer *ivsc, FILE *f) {
+    READ1 (ivsc->qtype);
+    READ1 (ivsc->rangestat);
+    READ1 (ivsc->rangestat_arg);
+    READ1 (ivsc->d);
+    READ1 (ivsc->code_size);
+    READVECTOR (ivsc->trained);
+}
+
+
 ProductQuantizer * read_ProductQuantizer (const char*fname) {
     FILE *f = fopen (fname, "r");
-    if (!f) {
-        fprintf (stderr, "cannot open %s for reading:", fname);
-        perror ("");
-        abort ();
-    }
+    FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for writing", fname);
+    ScopeFileCloser closer(f);
     ProductQuantizer *pq = new ProductQuantizer();
+    ScopeDeleter1<ProductQuantizer> del (pq);
     read_ProductQuantizer(pq, f);
-    fclose(f);
+    del.release ();
     return pq;
 }
 
@@ -483,7 +543,8 @@ Index *read_index (FILE * f, bool try_mmap) {
         else                      idxf = new IndexFlatL2 ();
         read_index_header (idxf, f);
         READVECTOR (idxf->xb);
-        FAISS_ASSERT (idxf->xb.size() == idxf->ntotal * idxf->d);
+        FAISS_THROW_IF_NOT (idxf->xb.size() == idxf->ntotal * idxf->d);
+        // leak!
         idx = idxf;
     } else if (h == fourcc("IxHE") || h == fourcc("IxHe")) {
         IndexLSH * idxl = new IndexLSH ();
@@ -494,22 +555,25 @@ Index *read_index (FILE * f, bool try_mmap) {
         READVECTOR (idxl->thresholds);
         READ1 (idxl->bytes_per_vec);
         if (h == fourcc("IxHE")) {
-            FAISS_ASSERT (idxl->nbits % 64 == 0 ||
-                          !"can only read old format IndexLSH with "
-                          "nbits multiple of 64");
+            FAISS_THROW_IF_NOT_FMT (idxl->nbits % 64 == 0,
+                            "can only read old format IndexLSH with "
+                            "nbits multiple of 64 (got %d)",
+                            (int) idxl->nbits);
+            // leak
             idxl->bytes_per_vec *= 8;
         }
         {
             RandomRotationMatrix *rrot = dynamic_cast<RandomRotationMatrix *>
                 (read_VectorTransform (f));
-            FAISS_ASSERT(rrot || !"expected a random rotation");
+            FAISS_THROW_IF_NOT_MSG(rrot, "expected a random rotation");
             idxl->rrot = *rrot;
             delete rrot;
         }
         READVECTOR (idxl->codes);
-        FAISS_ASSERT (idxl->rrot.d_in == idxl->d &&
+        FAISS_THROW_IF_NOT (idxl->rrot.d_in == idxl->d &&
                       idxl->rrot.d_out == idxl->nbits);
-        FAISS_ASSERT (idxl->codes.size() == idxl->ntotal * idxl->bytes_per_vec);
+        FAISS_THROW_IF_NOT (
+               idxl->codes.size() == idxl->ntotal * idxl->bytes_per_vec);
         idx = idxl;
     } else if (h == fourcc ("IxPQ") || h == fourcc ("IxPo") ||
                h == fourcc ("IxPq")) {
@@ -530,14 +594,41 @@ Index *read_index (FILE * f, bool try_mmap) {
             idxp->metric_type = METRIC_L2;
         }
         idx = idxp;
-    } else if(h == fourcc ("IvFl")) {
+    } else if (h == fourcc ("IvFl") || h == fourcc("IvFL")) {
         IndexIVFFlat * ivfl = new IndexIVFFlat ();
         read_ivf_header (ivfl, f);
-        ivfl->vecs.resize (ivfl->nlist);
-        for (size_t i = 0; i < ivfl->nlist; i++)
-            READVECTOR (ivfl->vecs[i]);
+        ivfl->code_size = ivfl->d * sizeof(float);
+        ivfl->codes.resize (ivfl->nlist);
+        if (h == fourcc ("IvFL")) {
+            for (size_t i = 0; i < ivfl->nlist; i++) {
+                READVECTOR (ivfl->codes[i]);
+            }
+        } else { // old format
+            for (size_t i = 0; i < ivfl->nlist; i++) {
+                std::vector<float> vec;
+                READVECTOR (vec);
+                ivfl->codes[i].resize(vec.size() * sizeof(float));
+                memcpy(ivfl->codes[i].data(), vec.data(),
+                       ivfl->codes[i].size());
+            }
+        }
         idx = ivfl;
-
+    } else if (h == fourcc ("IxSQ")) {
+        IndexScalarQuantizer * idxs = new IndexScalarQuantizer ();
+        read_index_header (idxs, f);
+        read_ScalarQuantizer (&idxs->sq, f);
+        READVECTOR (idxs->codes);
+        idxs->code_size = idxs->sq.code_size;
+        idx = idxs;
+    } else if(h == fourcc ("IvSQ")) {
+        IndexIVFScalarQuantizer * ivsc = new IndexIVFScalarQuantizer();
+        read_ivf_header (ivsc, f);
+        ivsc->codes.resize(ivsc->nlist);
+        read_ScalarQuantizer (&ivsc->sq, f);
+        READ1 (ivsc->code_size);
+        for(int i = 0; i < ivsc->nlist; i++)
+            READVECTOR (ivsc->codes[i]);
+        idx = ivsc;
     } else if(h == fourcc ("IvPQ") || h == fourcc ("IvQR") ||
               h == fourcc ("IvPC")) {
 
@@ -553,8 +644,9 @@ Index *read_index (FILE * f, bool try_mmap) {
         } else {
             READ1 (nt);
         }
-        for (int i = 0; i < nt; i++)
+        for (int i = 0; i < nt; i++) {
             ixpt->chain.push_back (read_VectorTransform (f));
+        }
         ixpt->index = read_index (f);
         idx = ixpt;
     } else if(h == fourcc ("Imiq")) {
@@ -572,21 +664,29 @@ Index *read_index (FILE * f, bool try_mmap) {
         delete rf;
         READ1 (idxrf->k_factor);
         idx = idxrf;
+    } else if(h == fourcc ("IxMp") || h == fourcc ("IxM2")) {
+        bool is_map2 = h == fourcc ("IxM2");
+        IndexIDMap * idxmap = is_map2 ? new IndexIDMap2 () : new IndexIDMap ();
+        read_index_header (idxmap, f);
+        idxmap->index = read_index (f);
+        idxmap->own_fields = true;
+        READVECTOR (idxmap->id_map);
+        if (is_map2) {
+            static_cast<IndexIDMap2*>(idxmap)->construct_rev_map ();
+        }
+        idx = idxmap;
     } else {
-        fprintf (stderr, "Index type 0x%08x not supported\n", h);
-        abort ();
+        FAISS_THROW_FMT("Index type 0x%08x not supported\n", h);
+        idx = nullptr;
     }
-    idx->set_typename();
     return idx;
 }
 
+
+
 Index *read_index (const char *fname, bool try_mmap) {
     FILE *f = fopen (fname, "r");
-    if (!f) {
-        fprintf (stderr, "cannot open %s for reading:", fname);
-        perror ("");
-        abort ();
-    }
+    FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for reading:", fname);
     Index *idx = read_index (f, try_mmap);
     fclose (f);
     return idx;
@@ -631,7 +731,7 @@ VectorTransform *Cloner::clone_VectorTransform (const VectorTransform *vt)
     TRYCLONE (RandomRotationMatrix, vt)
     TRYCLONE (LinearTransform, vt)
     {
-        FAISS_ASSERT(!"clone not supported for this type of VectorTransform");
+      FAISS_THROW_MSG("clone not supported for this type of VectorTransform");
     }
     return nullptr;
 }
@@ -641,8 +741,9 @@ IndexIVF * Cloner::clone_IndexIVF (const IndexIVF *ivf)
     TRYCLONE (IndexIVFPQR, ivf)
     TRYCLONE (IndexIVFPQ, ivf)
     TRYCLONE (IndexIVFFlat, ivf)
+    TRYCLONE (IndexIVFScalarQuantizer, ivf)
     {
-        FAISS_ASSERT(!"clone not supported for this type of IndexIVF");
+      FAISS_THROW_MSG("clone not supported for this type of IndexIVF");
     }
     return nullptr;
 }
@@ -654,6 +755,7 @@ Index *Cloner::clone_Index (const Index *index)
     TRYCLONE (IndexFlatL2, index)
     TRYCLONE (IndexFlatIP, index)
     TRYCLONE (IndexFlat, index)
+    TRYCLONE (IndexScalarQuantizer, index)
     TRYCLONE (MultiIndexQuantizer, index)
     if (const IndexIVF * ivf = dynamic_cast<const IndexIVF*>(index)) {
         IndexIVF *res = clone_IndexIVF (ivf);
@@ -670,7 +772,7 @@ Index *Cloner::clone_Index (const Index *index)
         res->own_fields = true;
         return res;
     } else {
-        FAISS_ASSERT(!"clone not supported for this type of Index");
+        FAISS_THROW_MSG( "clone not supported for this type of Index");
     }
     return nullptr;
 }

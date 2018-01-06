@@ -97,7 +97,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>set some options on how to copy to GPU  
  <a href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="GpuAutoTune_8h_source.html">GpuAutoTune.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="GpuClonerOptions_8h_source.html">GpuClonerOptions.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for faiss::gpu::GpuClonerOptions:</div>
 <div class="dyncontent">
@@ -112,9 +112,7 @@ Inheritance diagram for faiss::gpu::GpuClonerOptions:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ad960ac51b7cc607fcb1a1b07efc32a9e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad960ac51b7cc607fcb1a1b07efc32a9e"></a>
-IndicesOptions&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ad960ac51b7cc607fcb1a1b07efc32a9e">indicesOptions</a></td></tr>
-<tr class="memdesc:ad960ac51b7cc607fcb1a1b07efc32a9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">how should indices be stored on <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html" title="IVFPQ index for the GPU. ">GpuIndexIVFPQ</a>? <br/></td></tr>
+<tr class="memitem:ad960ac51b7cc607fcb1a1b07efc32a9e"><td class="memItemLeft" align="right" valign="top">IndicesOptions&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ad960ac51b7cc607fcb1a1b07efc32a9e">indicesOptions</a></td></tr>
 <tr class="separator:ad960ac51b7cc607fcb1a1b07efc32a9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85f3093908b6e9a503c24bb226b17b1b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a85f3093908b6e9a503c24bb226b17b1b"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a85f3093908b6e9a503c24bb226b17b1b">useFloat16CoarseQuantizer</a></td></tr>
@@ -130,15 +128,35 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ab60dd87e51af59373a48d73852573f04">reserveVecs</a></td></tr>
 <tr class="memdesc:ab60dd87e51af59373a48d73852573f04"><td class="mdescLeft">&#160;</td><td class="mdescRight">reserve vectors in the invfiles? <br/></td></tr>
 <tr class="separator:ab60dd87e51af59373a48d73852573f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a543141eeff6eaeaf607a19c95a50eda6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a543141eeff6eaeaf607a19c95a50eda6"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>verbose</b></td></tr>
-<tr class="separator:a543141eeff6eaeaf607a19c95a50eda6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f2470ec5b2a8fe7aae0542f113b781d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f2470ec5b2a8fe7aae0542f113b781d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a5f2470ec5b2a8fe7aae0542f113b781d">storeTransposed</a></td></tr>
+<tr class="memdesc:a5f2470ec5b2a8fe7aae0542f113b781d"><td class="mdescLeft">&#160;</td><td class="mdescRight">For <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html">GpuIndexFlat</a>, store data in transposed layout? <br/></td></tr>
+<tr class="separator:a5f2470ec5b2a8fe7aae0542f113b781d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc7d0451773e0f2f640338533abc1397"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abc7d0451773e0f2f640338533abc1397"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#abc7d0451773e0f2f640338533abc1397">verbose</a></td></tr>
+<tr class="memdesc:abc7d0451773e0f2f640338533abc1397"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set verbose options on the index. <br/></td></tr>
+<tr class="separator:abc7d0451773e0f2f640338533abc1397"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>set some options on how to copy to GPU </p>
 
-<p>Definition at line <a class="el" href="GpuAutoTune_8h_source.html#l00031">31</a> of file <a class="el" href="GpuAutoTune_8h_source.html">GpuAutoTune.h</a>.</p>
+<p>Definition at line <a class="el" href="GpuClonerOptions_8h_source.html#l00017">17</a> of file <a class="el" href="GpuClonerOptions_8h_source.html">GpuClonerOptions.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="ad960ac51b7cc607fcb1a1b07efc32a9e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IndicesOptions faiss::gpu::GpuClonerOptions::indicesOptions</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>how should indices be stored on index types that support indices (anything but GpuIndexFlat*)? </p>
+
+<p>Definition at line <a class="el" href="GpuClonerOptions_8h_source.html#l00022">22</a> of file <a class="el" href="GpuClonerOptions_8h_source.html">GpuClonerOptions.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ac7cc57d6091d6a79ea6020bf8d1fbe27"></a>
 <div class="memitem">
 <div class="memproto">
@@ -150,13 +168,13 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>verbose</b></td></tr>
 </div><div class="memdoc">
 <p>for <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html">GpuIndexIVFFlat</a>, is storage in float16? for <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html" title="IVFPQ index for the GPU. ">GpuIndexIVFPQ</a>, are intermediate calculations in float16? </p>
 
-<p>Definition at line <a class="el" href="GpuAutoTune_8h_source.html#l00038">38</a> of file <a class="el" href="GpuAutoTune_8h_source.html">GpuAutoTune.h</a>.</p>
+<p>Definition at line <a class="el" href="GpuClonerOptions_8h_source.html#l00029">29</a> of file <a class="el" href="GpuClonerOptions_8h_source.html">GpuClonerOptions.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li><a class="el" href="GpuAutoTune_8h_source.html">GpuAutoTune.h</a></li>
-<li><a class="el" href="GpuAutoTune_8cpp_source.html">GpuAutoTune.cpp</a></li>
+<li>/data/users/matthijs/github_faiss/faiss/gpu/<a class="el" href="GpuClonerOptions_8h_source.html">GpuClonerOptions.h</a></li>
+<li>/data/users/matthijs/github_faiss/faiss/gpu/<a class="el" href="GpuClonerOptions_8cpp_source.html">GpuClonerOptions.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

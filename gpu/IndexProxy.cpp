@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -92,8 +91,8 @@ IndexProxy::runOnIndex(std::function<void(faiss::Index*)> f) {
   }
 
   // Blocking wait for completion
-  for (auto& f : v) {
-    f.get();
+  for (auto& func : v) {
+    func.get();
   }
 }
 
@@ -128,7 +127,7 @@ IndexProxy::search(faiss::Index::idx_t n,
                         float* distances,
                         faiss::Index::idx_t* labels) const {
   FAISS_ASSERT(!indices_.empty());
-  if (indices_.empty()) {
+  if (n == 0) {
     return;
   }
 
@@ -168,12 +167,6 @@ IndexProxy::search(faiss::Index::idx_t n,
   }
 }
 
-void
-IndexProxy::set_typename() {
-  // FIXME: implement
-  FAISS_ASSERT(false);
-}
-
 
 
 //
@@ -183,7 +176,8 @@ IndexProxy::set_typename() {
 float kmeans_clustering_gpu (int ngpu, size_t d, size_t n, size_t k,
                              const float *x,
                              float *centroids,
-                             bool useFloat16)
+                             bool useFloat16,
+                             bool storeTransposed)
 {
     Clustering clus (d, k);
     // display logs if > 16Gflop per iteration
@@ -194,8 +188,15 @@ float kmeans_clustering_gpu (int ngpu, size_t d, size_t n, size_t k,
     std::vector<std::unique_ptr<GpuIndexFlatL2> > sub_indices;
     for(int dev_no = 0; dev_no < ngpu; dev_no++) {
         res.emplace_back(new StandardGpuResources());
+
+
+        GpuIndexFlatConfig config;
+        config.device = dev_no;
+        config.useFloat16 = useFloat16;
+        config.storeTransposed = storeTransposed;
+
         sub_indices.emplace_back(
-          new GpuIndexFlatL2(res.back().get(), dev_no, d, useFloat16));
+          new GpuIndexFlatL2(res.back().get(), d, config));
     }
 
     IndexProxy proxy;

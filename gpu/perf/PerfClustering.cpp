@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -28,6 +27,7 @@ DEFINE_int32(dim, 128, "# of dimensions");
 DEFINE_int32(niter, 10, "# of iterations");
 DEFINE_bool(L2_metric, true, "If true, use L2 metric. If false, use IP metric");
 DEFINE_bool(use_float16, false, "use float16 vectors and math");
+DEFINE_bool(transposed, false, "transposed vector storage");
 DEFINE_bool(verbose, false, "turn on clustering logging");
 DEFINE_int64(seed, -1, "specify random seed");
 DEFINE_int32(num_gpus, 1, "number of gpus to use");
@@ -38,7 +38,7 @@ DEFINE_int32(max_points, -1, "max points per centroid");
 using namespace faiss::gpu;
 
 int main(int argc, char** argv) {
-  google::ParseCommandLineFlags(&argc, &argv, true);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   cudaProfilerStop();
 
@@ -52,6 +52,7 @@ int main(int argc, char** argv) {
          FLAGS_L2_metric ? "L2" : "IP",
          FLAGS_dim, FLAGS_k, FLAGS_num, FLAGS_niter);
   printf("float16 math %s\n", FLAGS_use_float16 ? "enabled" : "disabled");
+  printf("transposed storage %s\n", FLAGS_transposed ? "enabled" : "disabled");
   printf("verbose %s\n", FLAGS_verbose ? "enabled" : "disabled");
 
   auto initFn = [](faiss::gpu::GpuResources* res, int dev) ->
@@ -61,12 +62,17 @@ int main(int argc, char** argv) {
         FLAGS_pinned_mem);
     }
 
+    GpuIndexFlatConfig config;
+    config.device = dev;
+    config.useFloat16 = FLAGS_use_float16;
+    config.storeTransposed = FLAGS_transposed;
+
     auto p = std::unique_ptr<faiss::gpu::GpuIndexFlat>(
       FLAGS_L2_metric ?
       (faiss::gpu::GpuIndexFlat*)
-      new faiss::gpu::GpuIndexFlatL2(res, dev, FLAGS_dim, FLAGS_use_float16) :
+      new faiss::gpu::GpuIndexFlatL2(res, FLAGS_dim, config) :
       (faiss::gpu::GpuIndexFlat*)
-      new faiss::gpu::GpuIndexFlatIP(res, dev, FLAGS_dim, FLAGS_use_float16));
+      new faiss::gpu::GpuIndexFlatIP(res, FLAGS_dim, config));
 
     if (FLAGS_min_paging_size >= 0) {
       p->setMinPagingSize(FLAGS_min_paging_size);

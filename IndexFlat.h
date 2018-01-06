@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -27,30 +26,24 @@ struct IndexFlat: Index {
 
     explicit IndexFlat (idx_t d, MetricType metric = METRIC_INNER_PRODUCT);
 
-    virtual void set_typename() override;
+    void add(idx_t n, const float* x) override;
 
-    virtual void add (idx_t n, const float *x) override;
+    void reset() override;
 
-    virtual void reset() override;
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 
-    virtual void search (
-            idx_t n,
-            const float *x,
-            idx_t k,
-            float *distances,
-            idx_t *labels) const override;
+    void range_search(
+        idx_t n,
+        const float* x,
+        float radius,
+        RangeSearchResult* result) const override;
 
-
-
-    virtual void range_search (
-            idx_t n,
-            const float *x,
-            float radius,
-            RangeSearchResult *result) const override;
-
-    virtual void reconstruct (idx_t key, float * recons)
-        const override;
-
+    void reconstruct(idx_t key, float* recons) const override;
 
     /** compute distance with a subset of vectors
      *
@@ -66,6 +59,11 @@ struct IndexFlat: Index {
             idx_t k,
             float *distances,
             const idx_t *labels) const;
+
+    /** remove some ids. NB that Because of the structure of the
+     * indexing structre, the semantics of this operation are
+     * different from the usual ones: the new ids are shifted */
+    long remove_ids(const IDSelector& sel) override;
 
     IndexFlat () {}
 };
@@ -90,12 +88,12 @@ struct IndexFlatL2BaseShift: IndexFlatL2 {
 
     IndexFlatL2BaseShift (idx_t d, size_t nshift, const float *shift);
 
-    virtual void search (
-            idx_t n,
-            const float *x,
-            idx_t k,
-            float *distances,
-            idx_t *labels) const override;
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 };
 
 
@@ -119,22 +117,20 @@ struct IndexRefineFlat: Index {
 
     IndexRefineFlat ();
 
-    virtual void train (idx_t n, const float *x) override;
+    void train(idx_t n, const float* x) override;
 
-    virtual void add (idx_t n, const float *x) override;
+    void add(idx_t n, const float* x) override;
 
-    virtual void reset() override;
+    void reset() override;
 
-    virtual void search (
-            idx_t n,
-            const float *x,
-            idx_t k,
-            float *distances,
-            idx_t *labels) const override;
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 
-    virtual void set_typename () override;
-
-    virtual ~IndexRefineFlat ();
+    ~IndexRefineFlat() override;
 };
 
 
@@ -150,19 +146,17 @@ struct IndexFlat1D:IndexFlatL2 {
     /// the first search
     void update_permutation ();
 
-    virtual void add (idx_t n, const float *x) override;
+    void add(idx_t n, const float* x) override;
 
-    virtual void reset() override;
+    void reset() override;
 
     /// Warn: the distances returned are L1 not L2
-    virtual void search (
-            idx_t n,
-            const float *x,
-            idx_t k,
-            float *distances,
-            idx_t *labels) const override;
-
-
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
 };
 
 

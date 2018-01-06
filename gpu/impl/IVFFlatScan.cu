@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -707,6 +706,8 @@ runIVFFlatScanTile(Tensor<float, 2, true>& queries,
     HANDLE_DIM_CASE(-1);
   }
 
+  CUDA_TEST_ERROR();
+
 #undef HANDLE_DIM_CASE
 #undef RUN_IVF_FLAT
 
@@ -735,8 +736,6 @@ runIVFFlatScanTile(Tensor<float, 2, true>& queries,
                       outDistances,
                       outIndices,
                       stream);
-
-  CUDA_VERIFY(cudaGetLastError());
 }
 
 void

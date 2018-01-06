@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -36,7 +35,8 @@ struct CublasGemm<float> {
                              int ldb,
                              float fBeta,
                              float *C,
-                             int ldc) {
+                             int ldc,
+                             bool useHgemm) {
     return cublasSgemm(handle, transa, transb, m, n, k,
                        &fAlpha, A, lda, B, ldb, &fBeta, C, ldc);
   }
@@ -58,8 +58,9 @@ struct CublasGemm<half> {
                              int ldb,
                              const float fBeta,
                              half *C,
-                             int ldc) {
-    if (getDeviceSupportsFloat16Math(getCurrentDevice())) {
+                             int ldc,
+                             bool useHgemm) {
+    if (getDeviceSupportsFloat16Math(getCurrentDevice()) && useHgemm) {
       half hAlpha = hostFloat2Half(fAlpha);
       half hBeta = hostFloat2Half(fBeta);
 
@@ -91,6 +92,7 @@ runMatrixMult(Tensor<T, 2, true>& c, bool transC,
               Tensor<T, 2, true>& b, bool transB,
               float alpha,
               float beta,
+              bool useHgemm,
               cublasHandle_t handle,
               cudaStream_t stream) {
   cublasSetStream(handle, stream);
@@ -110,6 +112,10 @@ runMatrixMult(Tensor<T, 2, true>& c, bool transC,
   FAISS_ASSERT(aK == bK);
   FAISS_ASSERT(bN == cN);
 
+  FAISS_ASSERT(a.getStride(1) == 1);
+  FAISS_ASSERT(b.getStride(1) == 1);
+  FAISS_ASSERT(c.getStride(1) == 1);
+
   // Now, we have to represent the matrix multiplication in
   // column-major layout
   T* pA = transC ? a.data() : b.data();
@@ -120,9 +126,9 @@ runMatrixMult(Tensor<T, 2, true>& c, bool transC,
   int n = c.getSize(0); // other size
   int k = transA ? a.getSize(0) : a.getSize(1);
 
-  int lda = transC ? a.getSize(1) : b.getSize(1);
-  int ldb = transC ? b.getSize(1) : a.getSize(1);
-  int ldc = c.getSize(1);
+  int lda = transC ? a.getStride(0) : b.getStride(0);
+  int ldb = transC ? b.getStride(0) : a.getStride(0);
+  int ldc = c.getStride(0);
 
   auto gemmTrA = transB ? CUBLAS_OP_T : CUBLAS_OP_N;
   auto gemmTrB = transA ? CUBLAS_OP_T : CUBLAS_OP_N;
@@ -136,10 +142,17 @@ runMatrixMult(Tensor<T, 2, true>& c, bool transC,
                                  gemmTrA, gemmTrB,
                                  m, n, k, alpha,
                                  pA, lda, pB, ldb, beta,
-                                 pC, ldc);
+                                 pC, ldc, useHgemm);
 
-  FAISS_ASSERT(err == CUBLAS_STATUS_SUCCESS);
-  CUDA_VERIFY(cudaGetLastError());
+  FAISS_ASSERT_FMT(err == CUBLAS_STATUS_SUCCESS,
+                   "cublas failed (%d): %s "
+                   "(%d, %d)%s x (%d, %d)%s = (%d, %d)%s",
+                   (int) err,
+                   useHgemm ? "Hgemm" : "Sgemm",
+                   a.getSize(0), a.getSize(1), transA ? "'" : "",
+                   b.getSize(0), b.getSize(1), transB ? "'" : "",
+                   c.getSize(0), c.getSize(1), transC ? "'" : "");
+  CUDA_TEST_ERROR();
 }
 
 void runMatrixMult(Tensor<float, 2, true>& c, bool transC,
@@ -147,10 +160,11 @@ void runMatrixMult(Tensor<float, 2, true>& c, bool transC,
                    Tensor<float, 2, true>& b, bool transB,
                    float alpha,
                    float beta,
+                   bool useHgemm,
                    cublasHandle_t handle,
                    cudaStream_t stream) {
   return runMatrixMult<float>(c, transC, a, transA, b, transB,
-                              alpha, beta, handle, stream);
+                              alpha, beta, useHgemm, handle, stream);
 }
 
 #ifdef FAISS_USE_FLOAT16
@@ -159,10 +173,11 @@ void runMatrixMult(Tensor<half, 2, true>& c, bool transC,
                    Tensor<half, 2, true>& b, bool transB,
                    float alpha,
                    float beta,
+                   bool useHgemm,
                    cublasHandle_t handle,
                    cudaStream_t stream) {
   return runMatrixMult<half>(c, transC, a, transA, b, transB,
-                             alpha, beta, handle, stream);
+                             alpha, beta, useHgemm, handle, stream);
 }
 #endif
 
@@ -185,7 +200,7 @@ runIteratedMatrixMult(Tensor<float, 3, true>& c, bool transC,
     runMatrixMult(cView, transC,
                   aView, transA,
                   bView, transB,
-                  alpha, beta, handle, stream);
+                  alpha, beta, false, handle, stream);
   }
 }
 
@@ -227,9 +242,9 @@ runBatchMatrixMult(Tensor<float, 3, true>& c, bool transC,
   int n = c.getSize(1); // other size
   int k = transA ? a.getSize(1) : a.getSize(2);
 
-  int lda = transC ? a.getSize(2) : b.getSize(2);
-  int ldb = transC ? b.getSize(2) : a.getSize(2);
-  int ldc = c.getSize(2);
+  int lda = transC ? a.getStride(1) : b.getStride(1);
+  int ldb = transC ? b.getStride(1) : a.getStride(1);
+  int ldc = c.getStride(1);
 
   auto gemmTrA = transB ? CUBLAS_OP_T : CUBLAS_OP_N;
   auto gemmTrB = transA ? CUBLAS_OP_T : CUBLAS_OP_N;
@@ -243,9 +258,9 @@ runBatchMatrixMult(Tensor<float, 3, true>& c, bool transC,
   HostTensor<float*, 1, true> hostB({b.getSize(0)});
   HostTensor<float*, 1, true> hostC({c.getSize(0)});
 
-  size_t aOffset = a.getSize(1) * a.getSize(2);
-  size_t bOffset = b.getSize(1) * b.getSize(2);
-  size_t cOffset = c.getSize(1) * c.getSize(2);
+  size_t aOffset = a.getStride(0);
+  size_t bOffset = b.getStride(0);
+  size_t cOffset = c.getStride(0);
 
   for (int i = 0; i < a.getSize(0); ++i) {
     hostA[i] = transC ? a.data() + i * aOffset : b.data() + i * bOffset;
@@ -264,8 +279,9 @@ runBatchMatrixMult(Tensor<float, 3, true>& c, bool transC,
                        (const float**) deviceA.data(), lda,
                        (const float**) deviceB.data(), ldb, &beta,
                        deviceC.data(), ldc, a.getSize(0));
-  FAISS_ASSERT(err == CUBLAS_STATUS_SUCCESS);
-  CUDA_VERIFY(cudaGetLastError());
+  FAISS_ASSERT_FMT(err == CUBLAS_STATUS_SUCCESS,
+                   "cublasSgemmBatched failed (%d)", (int) err);
+  CUDA_TEST_ERROR();
 }
 
 } } // namespace

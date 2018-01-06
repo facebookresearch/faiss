@@ -1,5 +1,9 @@
 # Faiss 
 
+*NEW: there is now a Facebook public discussion group for Faiss users at https://www.facebook.com/groups/faissusers/*
+
+*UPDATE: As of July 30 2017, the license on Faiss was relaxed to BSD from CC-BY-NC. Read LICENSE for details.*
+
 Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size, up to ones that possibly do not fit in RAM. It also contains supporting code for evaluation and parameter tuning. Faiss is written in C++ with complete wrappers for Python/numpy. Some of the most useful algorithms are implemented on the GPU. It is developed by [Facebook AI Research](https://research.fb.com/category/facebook-ai-research-fair/).
 
 ## Introduction
@@ -12,7 +16,7 @@ The GPU implementation can accept input from either CPU or GPU memory. On a serv
 
 ## Building 
 
-The library is mostly implemented in C++, with optional GPU support provided via CUDA, and an optional Python interface. The CPU version requires a BLAS library. It compiles with a Makefile. See [INSTALL](INSTALL) for details.
+The library is mostly implemented in C++, with optional GPU support provided via CUDA, and an optional Python interface. The CPU version requires a BLAS library. It compiles with a Makefile and can be packaged in a docker image. See [INSTALL.md](INSTALL.md) for details.
 
 ## How Faiss works
 
@@ -30,16 +34,37 @@ The optional GPU implementation provides what is likely (as of March 2017) the f
 
 The following are entry points for documentation: 
 
-- the full documentation, including a tutorial can be found in the [wiki page](http://github.com/facebookresearch/faiss/wiki)
+- the full documentation, including a [tutorial](https://github.com/facebookresearch/faiss/wiki/Getting-started-tutorial), a [FAQ](https://github.com/facebookresearch/faiss/wiki/FAQ) and a [troubleshooting section](https://github.com/facebookresearch/faiss/wiki/Troubleshooting) can be found on the [wiki page](http://github.com/facebookresearch/faiss/wiki)
 - the [doxygen documentation](http://rawgithub.com/facebookresearch/faiss/master/docs/html/annotated.html) gives per-class information
 - to reproduce results from our research papers, [Polysemous codes](https://arxiv.org/abs/1609.01882) and [Billion-scale similarity search with GPUs](https://arxiv.org/abs/1702.08734), refer to the [benchmarks README](benchs/README.md).
 
+## Authors
+
+The main authors of Faiss are:
+- [Hervé Jégou](https://github.com/jegou) initiated the Faiss project and wrote its first implementation
+- [Matthijs Douze](https://github.com/mdouze) implemented most of the CPU Faiss
+- [Jeff Johnson](https://github.com/wickedfoo) implemented all of the GPU Faiss
+
+## Reference
+
+Reference to cite when you use Faiss in a research paper:
+
+```
+@article{JDH17,
+  title={Billion-scale similarity search with GPUs},
+  author={Johnson, Jeff and Douze, Matthijs and J{\'e}gou, Herv{\'e}},
+  journal={arXiv preprint arXiv:1702.08734},
+  year={2017}
+}
+```
 
 ## Join the Faiss community
+
+For public discussion of Faiss or for questions, there is a Facebook public discussion group at https://www.facebook.com/groups/faissusers/
 
 We monitor the [issues page](http://github.com/facebookresearch/faiss/issues) of the repository. You can report bugs, ask questions, etc.
 
 ## License
 
-Faiss is licenced under CC-by-NC, see the LICENCE file for details. This licence may be relaxed to BSD in the future.
+Faiss  is BSD-licensed. We also provide an additional patent grant.
 
