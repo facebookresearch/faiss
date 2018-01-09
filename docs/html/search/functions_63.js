@@ -13,9 +13,11 @@ var searchData=
   ['combination_5fname',['combination_name',['../structfaiss_1_1ParameterSpace.html#a7bb416dbab456bb1ecd9ace433fa5312',1,'faiss::ParameterSpace']]],
   ['compute',['compute',['../structfaiss_1_1Score3Computer.html#a07a726903418960a2d8000506d88f8e6',1,'faiss::Score3Computer']]],
   ['compute_5fcode',['compute_code',['../structfaiss_1_1ProductQuantizer.html#a08b130e3a21f2699a4e3bbec121fb838',1,'faiss::ProductQuantizer']]],
+  ['compute_5fcode_5fdistance',['compute_code_distance',['../structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html#a96caf21f52fcf6591d7b6b4f3fc8a729',1,'faiss::ScalarQuantizer::DistanceComputer']]],
   ['compute_5fcode_5ffrom_5fdistance_5ftable',['compute_code_from_distance_table',['../structfaiss_1_1ProductQuantizer.html#a95060fedd7c09eb20e968fd2fdb4b316',1,'faiss::ProductQuantizer']]],
   ['compute_5fcodes',['compute_codes',['../structfaiss_1_1ScalarQuantizer.html#a2bccf276565c4f80fed3d0c715c58816',1,'faiss::ScalarQuantizer::compute_codes()'],['../structfaiss_1_1ProductQuantizer.html#ae5a340ee5a4b1d35a565b167de2a2ef1',1,'faiss::ProductQuantizer::compute_codes()']]],
   ['compute_5fcost',['compute_cost',['../structfaiss_1_1Score3Computer.html#a1c4537d67802aef28ccc57c4bd87f766',1,'faiss::Score3Computer']]],
+  ['compute_5fdistance',['compute_distance',['../structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html#a6776bc6fc6c48335f132afa4ac38df33',1,'faiss::ScalarQuantizer::DistanceComputer']]],
   ['compute_5fdistance_5fsubset',['compute_distance_subset',['../structfaiss_1_1IndexFlat.html#a14b51786e7f98be1954eef35d02813a7',1,'faiss::IndexFlat']]],
   ['compute_5fdistance_5ftable',['compute_distance_table',['../structfaiss_1_1ProductQuantizer.html#a36361f41bcd2fa698f3c39eb7111ed09',1,'faiss::ProductQuantizer']]],
   ['compute_5fdistance_5ftables',['compute_distance_tables',['../structfaiss_1_1ProductQuantizer.html#a3521b9a36c28219fd6180cc7a9ce8207',1,'faiss::ProductQuantizer']]],
@@ -29,5 +31,6 @@ var searchData=
   ['copyto',['copyTo',['../classfaiss_1_1gpu_1_1GpuIndexFlat.html#a046007ff2fafcafc6ae328769c700e39',1,'faiss::gpu::GpuIndexFlat::copyTo()'],['../classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#ab21960d379190b98aaa05ae3877dea09',1,'faiss::gpu::GpuIndexFlatL2::copyTo()'],['../classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#af70d0fe80cf3bf16ffffd8b16ed64f08',1,'faiss::gpu::GpuIndexFlatIP::copyTo()'],['../classfaiss_1_1gpu_1_1GpuIndexIVF.html#a1db0a796b8b2917d989952c5f07fbe55',1,'faiss::gpu::GpuIndexIVF::copyTo()'],['../classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a345980d7ae4b5baadf93f647fc6cb0b1',1,'faiss::gpu::GpuIndexIVFFlat::copyTo()'],['../classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#aad10de2407911e9adf42c1be5c5dd390',1,'faiss::gpu::GpuIndexIVFPQ::copyTo()'],['../classfaiss_1_1gpu_1_1Tensor.html#a6cc21376070a03d77661d6e333972c6a',1,'faiss::gpu::Tensor::copyTo()']]],
   ['cputimer',['CpuTimer',['../classfaiss_1_1gpu_1_1CpuTimer.html#af2f8e832b4c5425e152834ae7aa2af49',1,'faiss::gpu::CpuTimer']]],
   ['cpuwaitonevent',['cpuWaitOnEvent',['../classfaiss_1_1gpu_1_1CudaEvent.html#a9c85540093aaf87de80ece9f854e7c57',1,'faiss::gpu::CudaEvent']]],
-  ['cudaevent',['CudaEvent',['../classfaiss_1_1gpu_1_1CudaEvent.html#af7f5fa36dbff9e6126c1b01218f147e1',1,'faiss::gpu::CudaEvent']]]
+  ['cudaevent',['CudaEvent',['../classfaiss_1_1gpu_1_1CudaEvent.html#af7f5fa36dbff9e6126c1b01218f147e1',1,'faiss::gpu::CudaEvent']]],
+  ['cum_5fnb_5fneighbors',['cum_nb_neighbors',['../structfaiss_1_1HNSW.html#a49b512eaaa54ead77b564cad8e3e6ebd',1,'faiss::HNSW']]]
 ];
