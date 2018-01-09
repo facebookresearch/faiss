@@ -1,5 +1,7 @@
 # Faiss 
 
+*NEW: latest commit (2018-01-09) includes an implementation of the HNSW indexing method, see benchs/bench_hnsw.py*
+
 *NEW: there is now a Facebook public discussion group for Faiss users at https://www.facebook.com/groups/faissusers/*
 
 *UPDATE: As of July 30 2017, the license on Faiss was relaxed to BSD from CC-BY-NC. Read LICENSE for details.*
