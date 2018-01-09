@@ -150,6 +150,8 @@ dep:
  ../VectorTransform.h ../MetaIndexes.h GpuIndexFlat.h GpuIndexIVFFlat.h \
  GpuIndexIVF.h ../Clustering.h GpuIndexIVFPQ.h IndexProxy.h \
  utils/WorkerThread.h
+./GpuClonerOptions.o: GpuClonerOptions.cpp GpuClonerOptions.h \
+ GpuIndicesOptions.h
 impl/RemapIndices.o: impl/RemapIndices.cpp impl/RemapIndices.h \
  impl/../../FaissAssert.h impl/../../FaissException.h
 utils/DeviceMemory.o: utils/DeviceMemory.cpp utils/DeviceMemory.h \

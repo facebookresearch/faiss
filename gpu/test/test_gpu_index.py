@@ -111,4 +111,4 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         index = faiss.index_factory(12, "PCAR8,IVF10,PQ4")
         res = faiss.StandardGpuResources()
         gpu_index = faiss.index_cpu_to_gpu(res, 0, index)
-        faiss.GpuParameterSpace().set_index_parameter(index, "nprobe", 3)
+        faiss.GpuParameterSpace().set_index_parameter(gpu_index, "nprobe", 3)

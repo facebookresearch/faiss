@@ -803,6 +803,7 @@ MultiIndexQuantizer::MultiIndexQuantizer (int d,
 
 void MultiIndexQuantizer::train(idx_t n, const float *x)
 {
+    pq.verbose = verbose;
     pq.train (n, x);
     is_trained = true;
     // count virtual elements in index

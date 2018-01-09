@@ -95,11 +95,12 @@ void VectorTransform::reverse_transform (
 /*********************************************
  * LinearTransform
  *********************************************/
+
 /// both d_in > d_out and d_out < d_in are supported
 LinearTransform::LinearTransform (int d_in, int d_out,
                                   bool have_bias):
     VectorTransform (d_in, d_out), have_bias (have_bias),
-    verbose (false)
+    is_orthonormal (false), verbose (false)
 {}
 
 void LinearTransform::apply_noalloc (Index::idx_t n, const float * x,
@@ -156,6 +157,56 @@ void LinearTransform::transform_transpose (idx_t n, const float * y,
     if (have_bias) delete [] y;
 }
 
+void LinearTransform::set_is_orthonormal ()
+{
+    if (d_out > d_in) {
+        // not clear what we should do in this case
+        is_orthonormal = false;
+        return;
+    }
+    if (d_out == 0) { // borderline case, unnormalized matrix
+        is_orthonormal = true;
+        return;
+    }
+
+    double eps = 4e-5;
+    FAISS_ASSERT(A.size() >= d_out * d_in);
+    {
+        std::vector<float> ATA(d_out * d_out);
+        FINTEGER dii = d_in, doi = d_out;
+        float one = 1.0, zero = 0.0;
+
+        sgemm_ ("Transposed", "Not", &doi, &doi, &dii,
+                &one, A.data (), &dii,
+                A.data(), &dii,
+                &zero, ATA.data(), &doi);
+
+        is_orthonormal = true;
+        for (long i = 0; i < d_out; i++) {
+            for (long j = 0; j < d_out; j++) {
+                float v = ATA[i + j * d_out];
+                if (i == j) v-= 1;
+                if (fabs(v) > eps) {
+                    is_orthonormal = false;
+                }
+            }
+        }
+    }
+
+}
+
+
+void LinearTransform::reverse_transform (idx_t n, const float * xt,
+                                         float *x) const
+{
+    if (is_orthonormal) {
+        transform_transpose (n, xt, x);
+    } else {
+        FAISS_THROW_MSG ("reverse transform not implemented for non-orthonormal matrices");
+    }
+}
+
+
 
 /*********************************************
  * RandomRotationMatrix
@@ -183,13 +234,7 @@ void RandomRotationMatrix::init (int seed)
         }
         A.resize(d_in * d_out);
     }
-
-}
-
-void RandomRotationMatrix::reverse_transform (idx_t n, const float * xt,
-                                              float *x) const
-{
-    transform_transpose (n, xt, x);
+    is_orthonormal = true;
 }
 
 /*********************************************
@@ -422,12 +467,12 @@ void PCAMatrix::copy_from (const PCAMatrix & other)
 
 void PCAMatrix::prepare_Ab ()
 {
+    FAISS_THROW_IF_NOT_FMT (
+            d_out * d_in <= PCAMat.size(),
+            "PCA matrix cannot output %d dimensions from %d ",
+            d_out, d_in);
 
     if (!random_rotation) {
-        FAISS_THROW_IF_NOT_MSG (
-            d_out * d_in <= PCAMat.size(),
-            "PCA matrix was trained on too few examples "
-            "to output this number of dimensions");
         A = PCAMat;
         A.resize(d_out * d_in); // strip off useless dimensions
 
@@ -480,8 +525,8 @@ void PCAMatrix::prepare_Ab ()
 
     } else {
         FAISS_THROW_IF_NOT_MSG (balanced_bins == 0,
-                          "both balancing bins and applying a random rotation "
-                          "does not make sense");
+             "both balancing bins and applying a random rotation "
+             "does not make sense");
         RandomRotationMatrix rr(d_out, d_out);
 
         rr.init(5);
@@ -517,14 +562,8 @@ void PCAMatrix::prepare_Ab ()
         b[i] = accu;
     }
 
-}
+    is_orthonormal = eigen_power == 0;
 
-void PCAMatrix::reverse_transform (idx_t n, const float * xt,
-                                   float *x) const
-{
-    FAISS_THROW_IF_NOT_MSG (eigen_power == 0,
-                      "reverse only implemented for orthogonal transforms");
-    transform_transpose (n, xt, x);
 }
 
 /*********************************************
@@ -701,15 +740,7 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
     }
 
     is_trained = true;
-}
-
-
-
-
-void OPQMatrix::reverse_transform (idx_t n, const float * xt,
-                                   float *x) const
-{
-    transform_transpose (n, xt, x);
+    is_orthonormal = true;
 }
 
 
@@ -736,6 +767,12 @@ void NormalizationTransform::apply_noalloc
     } else {
         FAISS_THROW_MSG ("not implemented");
     }
+}
+
+void NormalizationTransform::reverse_transform (idx_t n, const float* xt,
+                                                float* x) const
+{
+    memcpy (x, xt, sizeof (xt[0]) * n * d_in);
 }
 
 /*********************************************
@@ -810,6 +847,7 @@ void IndexPreTransform::train (idx_t n, const float *x)
     }
 
     for (int i = 0; i <= last_untrained; i++) {
+
         if (i < chain.size()) {
             VectorTransform *ltrans = chain [i];
             if (!ltrans->is_trained) {
@@ -835,6 +873,7 @@ void IndexPreTransform::train (idx_t n, const float *x)
         }
 
         float * xt = chain[i]->apply (n, prev_x);
+
         if (prev_x != x) delete [] prev_x;
         prev_x = xt;
         del.set(xt);
@@ -857,6 +896,20 @@ const float *IndexPreTransform::apply_chain (idx_t n, const float *x) const
     }
     del.release ();
     return prev_x;
+}
+
+void IndexPreTransform::reverse_chain (idx_t n, const float* xt, float* x) const
+{
+    const float* next_x = xt;
+    ScopeDeleter<float> del;
+
+    for (int i = chain.size() - 1; i >= 0; i--) {
+        float* prev_x = (i == 0) ? x : new float [n * chain[i]->d_in];
+        ScopeDeleter<float> del2 ((prev_x == x) ? nullptr : prev_x);
+        chain [i]->reverse_transform (n, next_x, prev_x);
+        del2.swap (del);
+        next_x = prev_x;
+    }
 }
 
 void IndexPreTransform::add (idx_t n, const float *x)
@@ -903,23 +956,46 @@ long IndexPreTransform::remove_ids (const IDSelector & sel) {
 }
 
 
+void IndexPreTransform::reconstruct (idx_t key, float * recons) const
+{
+    float *x = chain.empty() ? recons : new float [index->d];
+    ScopeDeleter<float> del (recons == x ? nullptr : x);
+    // Initial reconstruction
+    index->reconstruct (key, x);
+
+    // Revert transformations from last to first
+    reverse_chain (1, x, recons);
+}
+
+
 void IndexPreTransform::reconstruct_n (idx_t i0, idx_t ni, float *recons) const
 {
     float *x = chain.empty() ? recons : new float [ni * index->d];
     ScopeDeleter<float> del (recons == x ? nullptr : x);
-    // initial reconstruction
+    // Initial reconstruction
     index->reconstruct_n (i0, ni, x);
 
-    // revert transformations from last to first
-    for (int i = chain.size() - 1; i >= 0; i--) {
-        float *x_pre = i == 0 ? recons : new float [chain[i]->d_in * ni];
-        ScopeDeleter<float> del2 (x_pre == recons ? nullptr : x_pre);
-        chain [i]->reverse_transform (ni, x, x_pre);
-        del2.swap (del);  // delete [] x;
-        x = x_pre;
-    }
+    // Revert transformations from last to first
+    reverse_chain (ni, x, recons);
 }
 
+
+void IndexPreTransform::search_and_reconstruct (
+      idx_t n, const float *x, idx_t k,
+      float *distances, idx_t *labels, float* recons) const
+{
+    FAISS_THROW_IF_NOT (is_trained);
+
+    const float* xt = apply_chain (n, x);
+    ScopeDeleter<float> del ((xt == x) ? nullptr : xt);
+
+    float* recons_temp = chain.empty() ? recons : new float [n * k * index->d];
+    ScopeDeleter<float> del2 ((recons_temp == recons) ? nullptr : recons_temp);
+    index->search_and_reconstruct (n, xt, k, distances, labels, recons_temp);
+
+    // Revert transformations from last to first
+    reverse_chain (n * k, recons_temp, recons);
+}
 
 
 /*********************************************

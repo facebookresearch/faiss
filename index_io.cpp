@@ -25,6 +25,7 @@
 #include "IndexIVFPQ.h"
 #include "MetaIndexes.h"
 #include "IndexScalarQuantizer.h"
+#include "IndexHNSW.h"
 
 /*************************************************************
  * The I/O format is the content of the class. For objects that are
@@ -153,8 +154,6 @@ static void write_index_header (const Index *idx, FILE *f) {
     WRITE1 (idx->metric_type);
 }
 
-
-
 void write_VectorTransform (const VectorTransform *vt, FILE *f) {
     if (const LinearTransform * lt =
            dynamic_cast < const LinearTransform *> (vt)) {
@@ -221,6 +220,21 @@ void write_ProductQuantizer (const ProductQuantizer*pq, const char *fname) {
     write_ProductQuantizer (pq, f);
 }
 
+static void write_HNSW (const HNSW *hnsw, FILE *f) {
+
+    WRITEVECTOR (hnsw->assign_probas);
+    WRITEVECTOR (hnsw->cum_nneighbor_per_level);
+    WRITEVECTOR (hnsw->levels);
+    WRITEVECTOR (hnsw->offsets);
+    WRITEVECTOR (hnsw->neighbors);
+
+    WRITE1 (hnsw->entry_point);
+    WRITE1 (hnsw->max_level);
+    WRITE1 (hnsw->efConstruction);
+    WRITE1 (hnsw->efSearch);
+    WRITE1 (hnsw->upper_beam);
+
+}
 
 static void write_ivf_header (const IndexIVF * ivf, FILE *f,
                               bool include_ids = true) {
@@ -265,6 +279,19 @@ void write_index (const Index *idx, FILE *f) {
         WRITE1 (idxp->search_type);
         WRITE1 (idxp->encode_signs);
         WRITE1 (idxp->polysemous_ht);
+    } else if(const Index2Layer * idxp =
+              dynamic_cast<const Index2Layer *> (idx)) {
+        uint32_t h = fourcc ("Ix2L");
+        WRITE1 (h);
+        write_index_header (idx, f);
+        write_index (idxp->q1.quantizer, f);
+        WRITE1 (idxp->q1.nlist);
+        WRITE1 (idxp->q1.quantizer_trains_alone);
+        write_ProductQuantizer (&idxp->pq, f);
+        WRITE1 (idxp->code_size_1);
+        WRITE1 (idxp->code_size_2);
+        WRITE1 (idxp->code_size);
+        WRITEVECTOR (idxp->codes);
     } else if(const IndexScalarQuantizer * idxs =
               dynamic_cast<const IndexScalarQuantizer *> (idx)) {
         uint32_t h = fourcc ("IxSQ");
@@ -348,6 +375,19 @@ void write_index (const Index *idx, FILE *f) {
         write_index_header (idxmap, f);
         write_index (idxmap->index, f);
         WRITEVECTOR (idxmap->id_map);
+    } else if(const IndexHNSW * idxhnsw =
+              dynamic_cast<const IndexHNSW *> (idx)) {
+        uint32_t h =
+            dynamic_cast<const IndexHNSWFlat*>(idx)   ? fourcc("IHNf") :
+            dynamic_cast<const IndexHNSWPQ*>(idx)     ? fourcc("IHNp") :
+            dynamic_cast<const IndexHNSWSQ*>(idx)     ? fourcc("IHNs") :
+            dynamic_cast<const IndexHNSW2Level*>(idx) ? fourcc("IHN2") :
+            0;
+        FAISS_THROW_IF_NOT (h != 0);
+        WRITE1 (h);
+        write_index_header (idxhnsw, f);
+        write_HNSW (&idxhnsw->hnsw, f);
+        write_index (idxhnsw->storage, f);
     } else {
       FAISS_THROW_MSG ("don't know how to serialize this type of index");
     }
@@ -409,6 +449,9 @@ VectorTransform* read_VectorTransform (FILE *f) {
         READ1 (lt->have_bias);
         READVECTOR (lt->A);
         READVECTOR (lt->b);
+        FAISS_THROW_IF_NOT (lt->A.size() >= lt->d_in * lt->d_out);
+        FAISS_THROW_IF_NOT (!lt->have_bias || lt->b.size() >= lt->d_out);
+        lt->set_is_orthonormal();
         vt = lt;
     } else if (h == fourcc ("RmDT")) {
         RemapDimensionsTransform *rdt = new RemapDimensionsTransform ();
@@ -444,6 +487,19 @@ static void read_ScalarQuantizer (ScalarQuantizer *ivsc, FILE *f) {
     READVECTOR (ivsc->trained);
 }
 
+static void read_HNSW (HNSW *hnsw, FILE *f) {
+    READVECTOR (hnsw->assign_probas);
+    READVECTOR (hnsw->cum_nneighbor_per_level);
+    READVECTOR (hnsw->levels);
+    READVECTOR (hnsw->offsets);
+    READVECTOR (hnsw->neighbors);
+
+    READ1 (hnsw->entry_point);
+    READ1 (hnsw->max_level);
+    READ1 (hnsw->efConstruction);
+    READ1 (hnsw->efSearch);
+    READ1 (hnsw->upper_beam);
+}
 
 ProductQuantizer * read_ProductQuantizer (const char*fname) {
     FILE *f = fopen (fname, "r");
@@ -675,6 +731,33 @@ Index *read_index (FILE * f, bool try_mmap) {
             static_cast<IndexIDMap2*>(idxmap)->construct_rev_map ();
         }
         idx = idxmap;
+    } else if (h == fourcc ("Ix2L")) {
+        Index2Layer * idxp = new Index2Layer ();
+        read_index_header (idxp, f);
+        idxp->q1.quantizer = read_index (f);
+        READ1 (idxp->q1.nlist);
+        READ1 (idxp->q1.quantizer_trains_alone);
+        read_ProductQuantizer (&idxp->pq, f);
+        READ1 (idxp->code_size_1);
+        READ1 (idxp->code_size_2);
+        READ1 (idxp->code_size);
+        READVECTOR (idxp->codes);
+        idx = idxp;
+    } else if(h == fourcc("IHNf") || h == fourcc("IHNp") ||
+              h == fourcc("IHNs") || h == fourcc("IHN2")) {
+        IndexHNSW *idxhnsw = nullptr;
+        if (h == fourcc("IHNf")) idxhnsw = new IndexHNSWFlat ();
+        if (h == fourcc("IHNp")) idxhnsw = new IndexHNSWPQ ();
+        if (h == fourcc("IHNs")) idxhnsw = new IndexHNSWSQ ();
+        if (h == fourcc("IHN2")) idxhnsw = new IndexHNSW2Level ();
+        read_index_header (idxhnsw, f);
+        read_HNSW (&idxhnsw->hnsw, f);
+        idxhnsw->storage = read_index (f);
+        idxhnsw->own_fields = true;
+        if (h == fourcc("IHNp")) {
+            dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table ();
+        }
+        idx = idxhnsw;
     } else {
         FAISS_THROW_FMT("Index type 0x%08x not supported\n", h);
         idx = nullptr;
@@ -770,6 +853,12 @@ Index *Cloner::clone_Index (const Index *index)
         for (int i = 0; i < ipt->chain.size(); i++)
             res->chain.push_back (clone_VectorTransform (ipt->chain[i]));
         res->own_fields = true;
+        return res;
+    } else if (const IndexIDMap *idmap =
+               dynamic_cast<const IndexIDMap*> (index)) {
+        IndexIDMap *res = new IndexIDMap (*idmap);
+        res->own_fields = true;
+        res->index = clone_Index (idmap->index);
         return res;
     } else {
         FAISS_THROW_MSG( "clone not supported for this type of Index");

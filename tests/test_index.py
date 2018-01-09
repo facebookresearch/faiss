@@ -11,6 +11,8 @@
 import numpy as np
 import unittest
 import faiss
+import tempfile
+import os
 
 
 def get_dataset(d, nb, nt, nq):
@@ -56,6 +58,7 @@ class EvalIVFPQAccuracy(unittest.TestCase):
 
         coarse_quantizer = faiss.IndexFlatL2(d)
         index = faiss.IndexIVFPQ(coarse_quantizer, d, 32, 8, 8)
+        index.cp.min_points_per_centroid = 5    # quiet warning
         index.train(xt)
         index.add(xb)
         index.nprobe = 4
@@ -64,6 +67,23 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         nq = xq.shape[0]
 
         self.assertGreater(n_ok, nq * 0.66)
+
+        # check that and Index2Layer gives the same reconstruction
+        # this is a bit fragile: it assumes 2 runs of training give
+        # the exact same result.
+        index2 = faiss.Index2Layer(coarse_quantizer, 32, 8)
+        if True:
+            index2.train(xt)
+        else:
+            index2.pq = index.pq
+            index2.is_trained = True
+        index2.add(xb)
+        ref_recons = index.reconstruct_n(0, nb)
+        new_recons = index2.reconstruct_n(0, nb)
+        self.assertTrue(np.all(ref_recons == new_recons))
+
+
+
 
 
 class TestMultiIndexQuantizer(unittest.TestCase):
@@ -114,6 +134,7 @@ class TestScalarQuantizer(unittest.TestCase):
 
         index = faiss.IndexIVFFlat(quantizer, d, ncent,
                                    faiss.METRIC_L2)
+        index.cp.min_points_per_centroid = 5    # quiet warning
         index.nprobe = 4
         index.train(xt)
         index.add(xb)
@@ -199,6 +220,176 @@ class TestRangeSearch(unittest.TestCase):
                     self.assertTrue(li.size == 1)
                     idx = li[0]
                     self.assertGreaterEqual(1e-4, abs(Dline[idx] - dis))
+
+
+class TestSearchAndReconstruct(unittest.TestCase):
+
+    def run_search_and_reconstruct(self, index, xb, xq, k=10, eps=None):
+        n, d = xb.shape
+        assert xq.shape[1] == d
+        assert index.d == d
+
+        D_ref, I_ref = index.search(xq, k)
+        R_ref = index.reconstruct_n(0, n)
+        D, I, R = index.search_and_reconstruct(xq, k)
+
+        self.assertTrue((D == D_ref).all())
+        self.assertTrue((I == I_ref).all())
+        self.assertEqual(R.shape[:2], I.shape)
+        self.assertEqual(R.shape[2], d)
+
+        # (n, k, ..) -> (n * k, ..)
+        I_flat = I.reshape(-1)
+        R_flat = R.reshape(-1, d)
+        # Filter out -1s when not enough results
+        R_flat = R_flat[I_flat >= 0]
+        I_flat = I_flat[I_flat >= 0]
+
+        recons_ref_err = np.mean(np.linalg.norm(R_flat - R_ref[I_flat]))
+        self.assertLessEqual(recons_ref_err, 1e-6)
+
+        def norm1(x):
+            return np.sqrt((x ** 2).sum(axis=1))
+
+        recons_err = np.mean(norm1(R_flat - xb[I_flat]))
+
+        print('Reconstruction error = %.3f' % recons_err)
+        if eps is not None:
+            self.assertLessEqual(recons_err, eps)
+
+        return D, I, R
+
+    def test_IndexFlat(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        index = faiss.IndexFlatL2(d)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=0.0)
+
+    def test_IndexIVFFlat(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFFlat(quantizer, d, 32, faiss.METRIC_L2)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.nprobe = 4
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=0.0)
+
+    def test_IndexIVFPQ(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFPQ(quantizer, d, 32, 8, 8)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.nprobe = 4
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
+
+    def test_MultiIndex(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        index = faiss.index_factory(d, "IMI2x5,PQ8np")
+        faiss.ParameterSpace().set_index_parameter(index, "nprobe", 4)
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
+
+    def test_IndexTransform(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        index = faiss.index_factory(d, "L2norm,PCA8,IVF32,PQ8np")
+        faiss.ParameterSpace().set_index_parameter(index, "nprobe", 4)
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq)
+
+
+class TestHNSW(unittest.TestCase):
+
+    def __init__(self, *args, **kwargs):
+        unittest.TestCase.__init__(self, *args, **kwargs)
+        d = 32
+        nt = 0
+        nb = 1500
+        nq = 500
+
+        (_, self.xb, self.xq) = get_dataset_2(d, nb, nt, nq)
+        index = faiss.IndexFlatL2(d)
+        index.add(self.xb)
+        Dref, Iref = index.search(self.xq, 1)
+        self.Iref = Iref
+
+    def test_hnsw(self):
+        d = self.xq.shape[1]
+
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.add(self.xb)
+        Dhnsw, Ihnsw = index.search(self.xq, 1)
+
+        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 460)
+
+        self.io_and_retest(index, Dhnsw, Ihnsw)
+
+    def io_and_retest(self, index, Dhnsw, Ihnsw):
+        _, tmpfile = tempfile.mkstemp()
+        try:
+            faiss.write_index(index, tmpfile)
+            index2 = faiss.read_index(tmpfile)
+        finally:
+            if os.path.exists(tmpfile):
+                os.unlink(tmpfile)
+
+        Dhnsw2, Ihnsw2 = index2.search(self.xq, 1)
+
+        self.assertTrue(np.all(Dhnsw2 == Dhnsw))
+        self.assertTrue(np.all(Ihnsw2 == Ihnsw))
+
+    def test_hnsw_2level(self):
+        d = self.xq.shape[1]
+
+        quant = faiss.IndexFlatL2(d)
+
+        index = faiss.IndexHNSW2Level(quant, 256, 8, 8)
+        index.train(self.xb)
+        index.add(self.xb)
+        Dhnsw, Ihnsw = index.search(self.xq, 1)
+
+        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 310)
+
+        self.io_and_retest(index, Dhnsw, Ihnsw)
 
 
 if __name__ == '__main__':

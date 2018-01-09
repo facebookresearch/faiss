@@ -24,6 +24,81 @@
 namespace faiss {
 
 /*****************************************
+ * Level1Quantizer implementation
+ ******************************************/
+
+
+Level1Quantizer::Level1Quantizer (Index * quantizer, size_t nlist):
+    quantizer (quantizer),
+    nlist (nlist),
+    quantizer_trains_alone (0),
+    own_fields (false),
+    clustering_index (nullptr)
+{
+    cp.niter = 10;
+}
+
+Level1Quantizer::Level1Quantizer ():
+    quantizer (nullptr),
+    nlist (0),
+    quantizer_trains_alone (0), own_fields (false),
+    clustering_index (nullptr)
+{}
+
+Level1Quantizer::~Level1Quantizer ()
+{
+    if (own_fields) delete quantizer;
+}
+
+void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricType metric_type)
+{
+    size_t d = quantizer->d;
+    if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
+        if (verbose)
+            printf ("IVF quantizer does not need training.\n");
+    } else if (quantizer_trains_alone == 1) {
+        if (verbose)
+            printf ("IVF quantizer trains alone...\n");
+        quantizer->train (n, x);
+        quantizer->verbose = verbose;
+        FAISS_THROW_IF_NOT_MSG (quantizer->ntotal == nlist,
+                          "nlist not consistent with quantizer size");
+    } else if (quantizer_trains_alone == 0) {
+        if (verbose)
+            printf ("Training level-1 quantizer on %ld vectors in %ldD\n",
+                    n, d);
+
+        Clustering clus (d, nlist, cp);
+        quantizer->reset();
+        if (clustering_index) {
+            clus.train (n, x, *clustering_index);
+            quantizer->add (nlist, clus.centroids.data());
+        } else {
+            clus.train (n, x, *quantizer);
+        }
+        quantizer->is_trained = true;
+    } else if (quantizer_trains_alone == 2) {
+        if (verbose)
+            printf (
+                "Training L2 quantizer on %ld vectors in %ldD%s\n",
+                n, d,
+                clustering_index ? "(user provided index)" : "");
+        FAISS_THROW_IF_NOT (metric_type == METRIC_L2);
+        Clustering clus (d, nlist, cp);
+        if (!clustering_index) {
+            IndexFlatL2 assigner (d);
+            clus.train(n, x, assigner);
+        } else {
+            clus.train(n, x, *clustering_index);
+        }
+        if (verbose)
+            printf ("Adding centroids to quantizer\n");
+        quantizer->add (nlist, clus.centroids.data());
+    }
+}
+
+
+/*****************************************
  * IndexIVF implementation
  ******************************************/
 
@@ -31,13 +106,9 @@ namespace faiss {
 IndexIVF::IndexIVF (Index * quantizer, size_t d, size_t nlist,
                     MetricType metric):
     Index (d, metric),
-    nlist (nlist),
+    Level1Quantizer (quantizer, nlist),
     nprobe (1),
-    quantizer (quantizer),
-    quantizer_trains_alone (0),
-    own_fields (false),
-    clustering_index (nullptr),
-    ids (nlist),
+    max_codes (0),
     maintain_direct_map (false)
 {
     FAISS_THROW_IF_NOT (d == quantizer->d);
@@ -49,16 +120,13 @@ IndexIVF::IndexIVF (Index * quantizer, size_t d, size_t nlist,
     // here we set a low # iterations because this is typically used
     // for large clusterings (nb this is not used for the MultiIndex,
     // for which quantizer_trains_alone = true)
-    cp.niter = 10;
-    cp.verbose = verbose;
     code_size = 0; // let sub-classes set this
-    codes.resize(nlist);
+    ids.resize (nlist);
+    codes.resize (nlist);
 }
 
 IndexIVF::IndexIVF ():
-    nlist (0), nprobe (1), quantizer (nullptr),
-    quantizer_trains_alone (0), own_fields (false),
-    clustering_index (nullptr),
+    nprobe (1), max_codes (0),
     maintain_direct_map (false)
 {}
 
@@ -109,6 +177,78 @@ void IndexIVF::search (idx_t n, const float *x, idx_t k,
 }
 
 
+void IndexIVF::reconstruct (idx_t key, float* recons) const
+{
+    FAISS_THROW_IF_NOT_MSG (direct_map.size() == ntotal,
+                            "direct map is not initialized");
+    long list_no = direct_map[key] >> 32;
+    long offset = direct_map[key] & 0xffffffff;
+    reconstruct_from_offset (list_no, offset, recons);
+}
+
+
+void IndexIVF::reconstruct_n (idx_t i0, idx_t ni, float* recons) const
+{
+    FAISS_THROW_IF_NOT (ni == 0 || (i0 >= 0 && i0 + ni <= ntotal));
+
+    for (long list_no = 0; list_no < nlist; list_no++) {
+        const std::vector<long>& idlist = ids[list_no];
+
+        for (long offset = 0; offset < idlist.size(); offset++) {
+            long id = idlist[offset];
+            if (!(id >= i0 && id < i0 + ni)) {
+              continue;
+            }
+
+            float* reconstructed = recons + (id - i0) * d;
+            reconstruct_from_offset (list_no, offset, reconstructed);
+        }
+    }
+}
+
+
+void IndexIVF::search_and_reconstruct (idx_t n, const float *x, idx_t k,
+                                       float *distances, idx_t *labels,
+                                       float *recons) const
+{
+    long * idx = new long [n * nprobe];
+    ScopeDeleter<long> del (idx);
+    float * coarse_dis = new float [n * nprobe];
+    ScopeDeleter<float> del2 (coarse_dis);
+
+    quantizer->search (n, x, nprobe, coarse_dis, idx);
+
+    // search_preassigned() with `store_pairs` enabled to obtain the list_no
+    // and offset into `codes` for reconstruction
+    search_preassigned (n, x, k, idx, coarse_dis,
+                        distances, labels, true /* store_pairs */);
+    for (idx_t i = 0; i < n; ++i) {
+      for (idx_t j = 0; j < k; ++j) {
+        idx_t ij = i * k + j;
+        idx_t key = labels[ij];
+        float* reconstructed = recons + ij * d;
+        if (key < 0) {
+          // Fill with NaNs
+          memset(reconstructed, -1, sizeof(*reconstructed) * d);
+        } else {
+          int list_no = key >> 32;
+          int offset = key & 0xffffffff;
+
+          // Update label to the actual id
+          labels[ij] = ids[list_no][offset];
+
+          reconstruct_from_offset (list_no, offset, reconstructed);
+        }
+      }
+    }
+}
+
+void IndexIVF::reconstruct_from_offset (long list_no, long offset,
+                                        float* recons) const
+{
+  FAISS_THROW_MSG ("reconstruct_from_offset not implemented");
+}
+
 void IndexIVF::reset ()
 {
     ntotal = 0;
@@ -156,48 +296,11 @@ long IndexIVF::remove_ids (const IDSelector & sel)
 
 void IndexIVF::train (idx_t n, const float *x)
 {
-    if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
-        if (verbose)
-            printf ("IVF quantizer does not need training.\n");
-    } else if (quantizer_trains_alone == 1) {
-        if (verbose)
-            printf ("IVF quantizer trains alone...\n");
-        quantizer->train (n, x);
-        quantizer->verbose = verbose;
-        FAISS_THROW_IF_NOT_MSG (quantizer->ntotal == nlist,
-                          "nlist not consistent with quantizer size");
-    } else if (quantizer_trains_alone == 0) {
-        if (verbose)
-            printf ("Training IVF quantizer on %ld vectors in %dD\n",
-                    n, d);
+    if (verbose)
+        printf ("Training level-1 quantizer\n");
 
-        Clustering clus (d, nlist, cp);
-        quantizer->reset();
-        if (clustering_index) {
-            clus.train (n, x, *clustering_index);
-            quantizer->add (nlist, clus.centroids.data());
-        } else {
-            clus.train (n, x, *quantizer);
-        }
-        quantizer->is_trained = true;
-    } else if (quantizer_trains_alone == 2) {
-        if (verbose)
-            printf (
-                "Training L2 quantizer on %ld vectors in %dD%s\n",
-                n, d,
-                clustering_index ? "(user provided index)" : "");
-        FAISS_THROW_IF_NOT (metric_type == METRIC_L2);
-        Clustering clus (d, nlist, cp);
-        if (!clustering_index) {
-            IndexFlatL2 assigner (d);
-            clus.train(n, x, assigner);
-        } else {
-            clus.train(n, x, *clustering_index);
-        }
-        if (verbose)
-            printf ("Adding centroids to quantizer\n");
-        quantizer->add (nlist, clus.centroids.data());
-    }
+    train_q1 (n, x, verbose, metric_type);
+
     if (verbose)
         printf ("Training IVF residual\n");
 
@@ -337,7 +440,6 @@ void IndexIVF::copy_subset_to (IndexIVF & other, int subset_type,
 
 IndexIVF::~IndexIVF()
 {
-    if (own_fields) delete quantizer;
 }
 
 
@@ -408,13 +510,13 @@ void IndexIVFFlat::add_core (idx_t n, const float * x, const long *xids,
     ntotal += n_add;
 }
 
-void IndexIVFFlatStats::reset()
+void IndexIVFStats::reset()
 {
     memset ((void*)this, 0, sizeof (*this));
 }
 
 
-IndexIVFFlatStats indexIVFFlat_stats;
+IndexIVFStats indexIVF_stats;
 
 namespace {
 
@@ -437,6 +539,7 @@ void search_knn_inner_product (const IndexIVFFlat & ivf,
         float * __restrict simi = res->get_val (i);
         long * __restrict idxi = res->get_ids (i);
         minheap_heapify (k, simi, idxi);
+        size_t nscan = 0;
 
         for (size_t ik = 0; ik < ivf.nprobe; ik++) {
             long key = keysi[ik];  /* select the list  */
@@ -462,13 +565,16 @@ void search_knn_inner_product (const IndexIVFFlat & ivf,
                     minheap_push (k, simi, idxi, ip, id);
                 }
             }
-            ndis += list_size;
+            nscan += list_size;
+            if (ivf.max_codes && nscan >= ivf.max_codes)
+                break;
         }
+        ndis += nscan;
         minheap_reorder (k, simi, idxi);
     }
-    indexIVFFlat_stats.nq += nx;
-    indexIVFFlat_stats.nlist += nlistv;
-    indexIVFFlat_stats.ndis += ndis;
+    indexIVF_stats.nq += nx;
+    indexIVF_stats.nlist += nlistv;
+    indexIVF_stats.ndis += ndis;
 }
 
 
@@ -489,6 +595,8 @@ void search_knn_L2sqr (const IndexIVFFlat &ivf,
         float * __restrict disi = res->get_val (i);
         long * __restrict idxi = res->get_ids (i);
         maxheap_heapify (k, disi, idxi);
+
+        size_t nscan = 0;
 
         for (size_t ik = 0; ik < ivf.nprobe; ik++) {
             long key = keysi[ik];  /* select the list  */
@@ -514,13 +622,16 @@ void search_knn_L2sqr (const IndexIVFFlat &ivf,
                     maxheap_push (k, disi, idxi, disij, id);
                 }
             }
-            ndis += list_size;
+            nscan += list_size;
+            if (ivf.max_codes && nscan >= ivf.max_codes)
+                break;
         }
+        ndis += nscan;
         maxheap_reorder (k, disi, idxi);
     }
-    indexIVFFlat_stats.nq += nx;
-    indexIVFFlat_stats.nlist += nlistv;
-    indexIVFFlat_stats.ndis += ndis;
+    indexIVF_stats.nq += nx;
+    indexIVF_stats.nlist += nlistv;
+    indexIVF_stats.ndis += ndis;
 }
 
 
@@ -639,20 +750,11 @@ void IndexIVFFlat::update_vectors (int n, idx_t *new_ids, const float *x)
 
 }
 
-
-
-
-
-void IndexIVFFlat::reconstruct (idx_t key, float * recons) const
+void IndexIVFFlat::reconstruct_from_offset (long list_no, long offset,
+                                            float* recons) const
 {
-    FAISS_THROW_IF_NOT_MSG (direct_map.size() == ntotal,
-                      "direct map is not initialized");
-    int list_no = direct_map[key] >> 32;
-    int ofs = direct_map[key] & 0xffffffff;
-    memcpy (recons, &codes[list_no][ofs * code_size], d * sizeof(recons[0]));
+    memcpy (recons, &codes[list_no][offset * code_size], d * sizeof(recons[0]));
 }
-
-
 
 
 } // namespace faiss

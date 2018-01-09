@@ -24,6 +24,38 @@
 namespace faiss {
 
 
+/** Encapsulates a quantizer object for the IndexIVF
+ *
+ * The class isolates the fields that are independent of the storage
+ * of the lists (especially training)
+ */
+struct Level1Quantizer {
+    Index * quantizer;        ///< quantizer that maps vectors to inverted lists
+    size_t nlist;             ///< number of possible key values
+
+    /**
+     * = 0: use the quantizer as index in a kmeans training
+     * = 1: just pass on the training set to the train() of the quantizer
+     * = 2: kmeans training on a flat index + add the centroids to the quantizer
+     */
+    char quantizer_trains_alone;
+    bool own_fields;          ///< whether object owns the quantizer
+
+    ClusteringParameters cp; ///< to override default clustering params
+    Index *clustering_index; ///< to override index used during clustering
+
+    /// Trains the quantizer and calls train_residual to train sub-quantizers
+    void train_q1 (size_t n, const float *x, bool verbose,
+                   MetricType metric_type);
+
+    Level1Quantizer (Index * quantizer, size_t nlist);
+
+    Level1Quantizer ();
+
+    ~Level1Quantizer ();
+
+};
+
 
 /** Index based on a inverted file (IVF)
  *
@@ -42,22 +74,9 @@ namespace faiss {
  * Sub-classes implement a post-filtering of the index that refines
  * the distance estimation from the query to databse vectors.
  */
-struct IndexIVF: Index {
-    size_t nlist;             ///< number of possible key values
+struct IndexIVF: Index, Level1Quantizer {
     size_t nprobe;            ///< number of probes at query time
-
-    Index * quantizer;        ///< quantizer that maps vectors to inverted lists
-
-    /**
-     * = 0: use the quantizer as index in a kmeans training
-     * = 1: just pass on the training set to the train() of the quantizer
-     * = 2: kmeans training on a flat index + add the centroids to the quantizer
-     */
-    char quantizer_trains_alone;
-    bool own_fields;          ///< whether object owns the quantizer
-
-    ClusteringParameters cp; ///< to override default clustering params
-    Index *clustering_index; ///< to override index used during clustering
+    size_t max_codes;         ///< max nb of codes to visit to do a query
 
     std::vector < std::vector<long> > ids;  ///< Inverted lists for indexes
 
@@ -74,7 +93,7 @@ struct IndexIVF: Index {
      * be deleted while the IndexIVF is in use.
      */
     IndexIVF (Index * quantizer, size_t d, size_t nlist,
-              MetricType metric = METRIC_INNER_PRODUCT);
+              MetricType metric = METRIC_L2);
 
     void reset() override;
 
@@ -114,6 +133,42 @@ struct IndexIVF: Index {
     /** assign the vectors, then call search_preassign */
     virtual void search (idx_t n, const float *x, idx_t k,
                          float *distances, idx_t *labels) const override;
+
+    void reconstruct (idx_t key, float* recons) const override;
+
+    /** Reconstruct a subset of the indexed vectors.
+     *
+     * Overrides default implementation to bypass reconstruct() which requires
+     * direct_map to be maintained.
+     *
+     * @param i0     first vector to reconstruct
+     * @param ni     nb of vectors to reconstruct
+     * @param recons output array of reconstructed vectors, size ni * d
+     */
+    void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
+
+    /** Similar to search, but also reconstructs the stored vectors (or an
+     * approximation in the case of lossy coding) for the search results.
+     *
+     * Overrides default implementation to avoid having to maintain direct_map
+     * and instead fetch the code offsets through the `store_pairs` flag in
+     * search_preassigned().
+     *
+     * @param recons      reconstructed vectors size (n, k, d)
+     */
+    void search_and_reconstruct (idx_t n, const float *x, idx_t k,
+                                 float *distances, idx_t *labels,
+                                 float *recons) const override;
+
+    /** Reconstruct a vector given the location in terms of (inv list index +
+     * inv list offset) instead of the id.
+     *
+     * Useful for reconstructing when the direct_map is not maintained and
+     * the inv list offset is computed by search_preassigned() with
+     * `store_pairs` set.
+     */
+    virtual void reconstruct_from_offset (long list_no, long offset,
+                                          float* recons) const;
 
 
     /// Dataset manipulation functions
@@ -157,18 +212,17 @@ struct IndexIVF: Index {
 };
 
 
-struct IndexIVFFlatStats {
+struct IndexIVFStats {
     size_t nq;       // nb of queries run
     size_t nlist;    // nb of inverted lists scanned
     size_t ndis;     // nb of distancs computed
-    size_t npartial; // nb of bound computations (IndexIVFFlatIPBounds)
 
-    IndexIVFFlatStats () {reset (); }
+    IndexIVFStats () {reset (); }
     void reset ();
 };
 
 // global var that collects them all
-extern IndexIVFFlatStats indexIVFFlat_stats;
+extern IndexIVFStats indexIVF_stats;
 
 
 
@@ -182,7 +236,7 @@ struct IndexIVFFlat: IndexIVF {
 
     IndexIVFFlat (
             Index * quantizer, size_t d, size_t nlist_,
-            MetricType = METRIC_INNER_PRODUCT);
+            MetricType = METRIC_L2);
 
     /// same as add_with_ids, with precomputed coarse quantizer
     virtual void add_core (idx_t n, const float * x, const long *xids,
@@ -213,7 +267,8 @@ struct IndexIVFFlat: IndexIVF {
      */
     void update_vectors (int nv, idx_t *idx, const float *v);
 
-    void reconstruct(idx_t key, float* recons) const override;
+    void reconstruct_from_offset (long list_no, long offset,
+                                  float* recons) const override;
 
     IndexIVFFlat () {}
 };

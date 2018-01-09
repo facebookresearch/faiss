@@ -427,7 +427,7 @@ def replacement_map_add(self, keys, vals):
 
 def replacement_map_search_multiple(self, keys):
     n, = keys.shape
-    vals = np.empty(n, dtype='uint64')
+    vals = np.empty(n, dtype='int64')
     self.search_multiple_c(n, swig_ptr(keys), swig_ptr(vals))
     return vals
 

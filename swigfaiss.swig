@@ -27,7 +27,8 @@
 
 typedef unsigned long uint64_t;
 typedef uint64_t size_t;
-typedef int int32_t ;
+typedef int int32_t;
+typedef unsigned char uint8_t;
 
 #define __restrict
 
@@ -77,6 +78,7 @@ extern "C" {
 #include "IndexIVF.h"
 #include "IndexIVFPQ.h"
 #include "IndexScalarQuantizer.h"
+#include "IndexHNSW.h"
 #include "MetaIndexes.h"
 #include "FaissAssert.h"
 
@@ -247,6 +249,7 @@ int get_num_gpus()
 %include "IndexPQ.h"
 %include "IndexIVF.h"
 %include "IndexScalarQuantizer.h"
+%include "IndexHNSW.h"
 
 %ignore faiss::IndexIVFPQ::alloc_type;
 %include "IndexIVFPQ.h"
@@ -431,6 +434,11 @@ struct AsyncIndexSearchC {
     DOWNCAST ( IndexLSH )
     DOWNCAST ( IndexPreTransform )
     DOWNCAST ( MultiIndexQuantizer )
+    DOWNCAST ( IndexHNSWFlat )
+    DOWNCAST ( IndexHNSWPQ )
+    DOWNCAST ( IndexHNSWSQ )
+    DOWNCAST ( IndexHNSW2Level )
+    DOWNCAST ( Index2Layer )
 #ifdef GPU_WRAPPER
     DOWNCAST_GPU ( IndexProxy )
     DOWNCAST_GPU ( GpuIndexIVFPQ )
@@ -537,11 +545,14 @@ PyObject *swig_ptr (PyObject *a)
     if(PyArray_TYPE(ao) == NPY_FLOAT32) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_float, 0);
     }
+    if(PyArray_TYPE(ao) == NPY_FLOAT64) {
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_double, 0);
+    }
     if(PyArray_TYPE(ao) == NPY_INT32) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_int, 0);
     }
     if(PyArray_TYPE(ao) == NPY_UINT8) {
-        return SWIG_NewPointerObj(data, SWIGTYPE_p_uint8_t, 0);
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_char, 0);
     }
     if(PyArray_TYPE(ao) == NPY_UINT64) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long, 0);
