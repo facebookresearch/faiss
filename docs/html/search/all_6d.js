@@ -10,7 +10,8 @@ var searchData=
   ['math_3c_20float4_20_3e',['Math&lt; float4 &gt;',['../structfaiss_1_1gpu_1_1Math_3_01float4_01_4.html',1,'faiss::gpu']]],
   ['matrix_5fqr',['matrix_qr',['../namespacefaiss.html#afb68fe89ad5e948974da1b70d7b4157c',1,'faiss']]],
   ['max',['Max',['../structfaiss_1_1gpu_1_1Max.html',1,'faiss::gpu']]],
-  ['max_5fcodes',['max_codes',['../structfaiss_1_1IndexIVFPQ.html#a77501995b3671e377102d2db1a93ade4',1,'faiss::IndexIVFPQ']]],
+  ['max_5fcodes',['max_codes',['../structfaiss_1_1IndexIVF.html#a7f2dd34f66f8770acba74a0a591fa4a8',1,'faiss::IndexIVF']]],
+  ['max_5flevel',['max_level',['../structfaiss_1_1HNSW.html#afba18a290f5f759a8a7a64ed35b950eb',1,'faiss::HNSW']]],
   ['max_5fpoints_5fper_5fcentroid',['max_points_per_centroid',['../structfaiss_1_1ClusteringParameters.html#a993e0a035248faad6e292a5ef9af1953',1,'faiss::ClusteringParameters']]],
   ['max_5fpoints_5fper_5fd',['max_points_per_d',['../structfaiss_1_1PCAMatrix.html#abdce90f57a3c4401f5230f03da901e0d',1,'faiss::PCAMatrix']]],
   ['max_5ftrain_5fpoints',['max_train_points',['../structfaiss_1_1OPQMatrix.html#afdd5b2c74d19ccc5c7a6e0199333321a',1,'faiss::OPQMatrix']]],
@@ -29,6 +30,6 @@ var searchData=
   ['min_5fpoints_5fper_5fcentroid',['min_points_per_centroid',['../structfaiss_1_1ClusteringParameters.html#a5af907901147a9b1e748b13305839924',1,'faiss::ClusteringParameters']]],
   ['minpagedsize_5f',['minPagedSize_',['../classfaiss_1_1gpu_1_1GpuIndexFlat.html#aad665a7b5888b4aafd47ae0f8d0e6c40',1,'faiss::gpu::GpuIndexFlat']]],
   ['minsumk',['MinSumK',['../structfaiss_1_1MinSumK.html',1,'faiss']]],
-  ['multiindexquantizer',['MultiIndexQuantizer',['../structfaiss_1_1MultiIndexQuantizer.html#a01a568055ebc1e841f7e4218722efa01',1,'faiss::MultiIndexQuantizer']]],
-  ['multiindexquantizer',['MultiIndexQuantizer',['../structfaiss_1_1MultiIndexQuantizer.html',1,'faiss']]]
+  ['multiindexquantizer',['MultiIndexQuantizer',['../structfaiss_1_1MultiIndexQuantizer.html',1,'faiss']]],
+  ['multiindexquantizer',['MultiIndexQuantizer',['../structfaiss_1_1MultiIndexQuantizer.html#a01a568055ebc1e841f7e4218722efa01',1,'faiss::MultiIndexQuantizer']]]
 ];

@@ -1,9 +1,11 @@
 var searchData=
 [
   ['generalized_5fhammings_5fknn',['generalized_hammings_knn',['../namespacefaiss.html#ae81da42f6f40356f7525917b3acb54c8',1,'faiss']]],
+  ['get',['get',['../structfaiss_1_1VisitedTable.html#a18a972137362ff04a38943d66fc19dcb',1,'faiss::VisitedTable']]],
   ['get_5fcentroids',['get_centroids',['../structfaiss_1_1ProductQuantizer.html#a4f0f33c011dffe633a1748a48a082c22',1,'faiss::ProductQuantizer']]],
   ['get_5fids',['get_ids',['../structfaiss_1_1HeapArray.html#af6aa57addaa1bc754d09a2a08be4df49',1,'faiss::HeapArray']]],
   ['get_5fmem_5fusage_5fkb',['get_mem_usage_kb',['../namespacefaiss.html#aa3af5769b0b649f112332a874c64d361',1,'faiss']]],
+  ['get_5fneighbor_5ftable',['get_neighbor_table',['../structfaiss_1_1ReconstructFromNeighbors.html#aed256bdd9f48dc93cb9e33cfdfd5bde7',1,'faiss::ReconstructFromNeighbors']]],
   ['get_5fval',['get_val',['../structfaiss_1_1HeapArray.html#ae97911f6f85d152a5b45e459063b6858',1,'faiss::HeapArray']]],
   ['getalloc',['getAlloc',['../structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#ab45d128f288728df5baf03defd50cec7',1,'faiss::gpu::StackDeviceMemory::Stack']]],
   ['getalternatestreams',['getAlternateStreams',['../classfaiss_1_1gpu_1_1GpuResources.html#afb469bf3b107f43ef0d6abe4a014bb5b',1,'faiss::gpu::GpuResources::getAlternateStreams()'],['../classfaiss_1_1gpu_1_1StandardGpuResources.html#a9ebf68604864cb890a4c2e3d0a6f9952',1,'faiss::gpu::StandardGpuResources::getAlternateStreams()']]],

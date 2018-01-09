@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['level1quantizer',['Level1Quantizer',['../structfaiss_1_1Level1Quantizer.html',1,'faiss']]],
   ['limits',['Limits',['../structfaiss_1_1gpu_1_1Limits.html',1,'faiss::gpu']]],
   ['limits_3c_20float_20_3e',['Limits&lt; float &gt;',['../structfaiss_1_1gpu_1_1Limits_3_01float_01_4.html',1,'faiss::gpu']]],
   ['limits_3c_20int_20_3e',['Limits&lt; int &gt;',['../structfaiss_1_1gpu_1_1Limits_3_01int_01_4.html',1,'faiss::gpu']]],

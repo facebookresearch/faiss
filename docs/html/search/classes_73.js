@@ -11,6 +11,7 @@ var searchData=
   ['simulatedannealingoptimizer',['SimulatedAnnealingOptimizer',['../structfaiss_1_1SimulatedAnnealingOptimizer.html',1,'faiss']]],
   ['simulatedannealingparameters',['SimulatedAnnealingParameters',['../structfaiss_1_1SimulatedAnnealingParameters.html',1,'faiss']]],
   ['sortedarray',['SortedArray',['../structfaiss_1_1SortedArray.html',1,'faiss']]],
+  ['sqdis',['SQDis',['../structfaiss_1_1SQDis.html',1,'faiss']]],
   ['stack',['Stack',['../structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html',1,'faiss::gpu::StackDeviceMemory']]],
   ['stackdevicememory',['StackDeviceMemory',['../classfaiss_1_1gpu_1_1StackDeviceMemory.html',1,'faiss::gpu']]],
   ['standardgpuresources',['StandardGpuResources',['../classfaiss_1_1gpu_1_1StandardGpuResources.html',1,'faiss::gpu']]],

@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['genericdistancecomputer',['GenericDistanceComputer',['../structfaiss_1_1GenericDistanceComputer.html',1,'faiss']]],
   ['genhammingcomputer16',['GenHammingComputer16',['../structfaiss_1_1GenHammingComputer16.html',1,'faiss']]],
   ['genhammingcomputer32',['GenHammingComputer32',['../structfaiss_1_1GenHammingComputer32.html',1,'faiss']]],
   ['genhammingcomputer8',['GenHammingComputer8',['../structfaiss_1_1GenHammingComputer8.html',1,'faiss']]],
