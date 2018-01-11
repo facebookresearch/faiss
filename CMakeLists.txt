@@ -4,7 +4,7 @@ cmake_policy(SET CMP0048 NEW)
 
 # faiss project
 project(faiss
-    VERSION 0.3.0
+    VERSION 0.1.0
     LANGUAGES C CXX)
 
 option(BUILD_TUTORIAL "Build tutorials" ON)

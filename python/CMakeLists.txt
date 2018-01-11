@@ -6,11 +6,12 @@ include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${PROJECT_SOURCE_DIR})
 
 set(SWIG_MODULE swig${PROJECT_NAME})
+set(SWIG_FILE ${SWIG_MODULE}.i)
 
-set_source_files_properties(${SWIG_MODULE}.i PROPERTIES CPLUSPLUS ON)
+set_source_files_properties(${SWIG_FILE} PROPERTIES CPLUSPLUS ON)
 # Add swig module
 swig_add_module(${SWIG_MODULE} python
-    swigfaiss.i)
+    ${SWIG_FILE})
 swig_link_libraries(${SWIG_MODULE} ${PROJECT_NAME} ${PYTHON_LIBRARIES})
 
 # Files to install with Python
