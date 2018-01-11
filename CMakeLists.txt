@@ -1,12 +1,17 @@
 cmake_minimum_required(VERSION 2.8.7)
+# set for version support
+cmake_policy(SET CMP0048 NEW)
 
 # faiss project
-project(faiss C CXX)
+project(faiss
+    VERSION 0.3.0
+    LANGUAGES C CXX)
 
 option(BUILD_TUTORIAL "Build tutorials" ON)
 option(BUILD_TEST "Build tests" ON)
 option(BUILD_WITH_GPU "Build faiss with gpu (cuda) support" ON)
 option(WITH_MKL "Build with MKL if ON (OpenBLAS if OFF)" OFF)
+option(BUILD_PYTHON "Build with python binding (via SWIG)" ON)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
@@ -55,3 +60,7 @@ endif(BUILD_TUTORIAL)
 if(BUILD_TEST)
     add_subdirectory(tests)
 endif(BUILD_TEST)
+
+if(BUILD_PYTHON)
+    add_subdirectory(python)
+endif(BUILD_PYTHON)
