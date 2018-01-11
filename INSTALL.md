@@ -354,6 +354,7 @@ is enabled), the build process can be done by the following commands:
 
 ```
 mkdir build
+cd build
 cmake ..
 make      # use -j to enable parallel build
 ```
