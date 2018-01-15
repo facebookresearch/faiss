@@ -302,7 +302,7 @@ inside the created container, or better, mount a directory from the host
   nvidia-docker run -ti --name faiss -v /my/host/data/folder/ann_dataset/sift/:/opt/faiss/sift1M faiss bash
 
 
-Hot to use Faiss in your own projects
+How to use Faiss in your own projects
 =====================================
 
 C++
