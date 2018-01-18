@@ -51,10 +51,10 @@ FAISSSHAREDFLAGS=-dynamiclib
 #
 # 2. Openblas
 #
-# The library contains both BLAS and Lapack. Install with port install OpenBLAS
+# The library contains both BLAS and Lapack. Install with brew install OpenBLAS
 #
 # BLASCFLAGS=-DFINTEGER=int
-# BLASLDFLAGS=/opt/local/lib/libopenblas.dylib
+# BLASLDFLAGS=/usr/local/opt/openblas/lib/libblas.dylib
 #
 
 #
