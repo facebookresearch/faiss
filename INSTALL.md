@@ -257,7 +257,7 @@ Python example with GPU support
 -------------------------------
 
 The auto-tuning example above also runs on the GPU. Edit
-`python/demo_auto_tune.py` around line 100 with the values
+`tests/demo_auto_tune.py` around line 100 with the values
 
 ```python
 keys_to_test = keys_gpu
@@ -268,7 +268,7 @@ and you can run
 
 ```
 export PYTHONPATH=.
-python/demo_auto_tune.py
+python tests/demo_auto_tune.py
 ```
 
 to test the GPU code.
