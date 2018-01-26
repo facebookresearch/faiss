@@ -21,8 +21,7 @@
 
 #define FAISS_TRY(C)                                       \
     {                                                      \
-        int __c = C;                                       \
-        if (__c) {                                         \
+        if (C) {                                           \
             fprintf(stderr, "%s", faiss_get_last_error()); \
             exit(-1);                                      \
         }                                                  \

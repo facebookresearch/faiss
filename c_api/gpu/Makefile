@@ -12,28 +12,31 @@ include ../../makefile.inc
 
 LIBNAME=libgpufaiss
 CLIBNAME=libgpufaiss_c
-LIBOBJ=GpuAutoTune_c.o GpuClonerOptions_c.o GpuIndex_c.o GpuResources_c.o \
+LIBGPUCOBJ=GpuAutoTune_c.o GpuClonerOptions_c.o GpuIndex_c.o GpuResources_c.o \
 	StandardGpuResources_c.o
+LIBCOBJ=../error_impl.o ../Index_c.o ../IndexFlat_c.o ../Clustering_c.o \
+	../AuxIndexStructures_c.o ../AutoTune_c.o ../IndexIVF_c.o
 
 # Build shared object file by default
-all: $(CLIBNAME).$(SHAREDEXT)
+all: $(CLIBNAME).$(SHAREDEXT) bin/example_gpu_c
 
 # Build static library (requires consumers to link with libstdc++)
-$(CLIBNAME).a: $(LIBCOBJ) ../../gpu/$(LIBNAME).a
+$(CLIBNAME).a: $(LIBGPUCOBJ) ../../gpu/$(LIBNAME).a
 	ar r $@ $^
 
 # Build dynamic library
-$(CLIBNAME).$(SHAREDEXT): $(LIBOBJ) ../../gpu/$(LIBNAME).a
-	$(CXX) $(LDFLAGS) -static-libstdc++ $(FAISSSHAREDFLAGS) -o $@ $^ \
-	$(BLASLDFLAGS) -L.. -lfaiss_c
+$(CLIBNAME).$(SHAREDEXT): $(LIBCOBJ) $(LIBGPUCOBJ) ../../libfaiss.a ../../gpu/$(LIBNAME).a
+	$(CXX) $(LDFLAGS) $(FAISSSHAREDFLAGS) $(CUDACFLAGS) -o $@ \
+	-Wl,--whole-archive $(LIBCOBJ) ../../libfaiss.a $(BLASLDFLAGS) \
+	-Wl,--no-whole-archive -static-libstdc++ $(LIBGPUCOBJ) ../../gpu/$(LIBNAME).a
 
 # Build GPU example
 bin/example_gpu_c: example_gpu_c.c $(CLIBNAME).$(SHAREDEXT)
-	$(CC) $(CFLAGS) $(CUDACFLAGS) -std=c99 -I. -I.. $(LDFLAGS) -o $@ example_gpu_c.c \
-	-L$(CUDAROOT)/lib64 -L. -L.. -lgpufaiss_c -lfaiss_c -lcublas -lcudart
+	$(CC) $(CFLAGS) $(CUDACFLAGS) -std=c99 -I. -I.. -o $@ example_gpu_c.c \
+	-L$(CUDAROOT)/lib64 -L. -lgpufaiss_c -lcublas -lcudart
 
 clean:
-	rm -f $(CLIBNAME).a $(CLIBNAME).$(SHAREDEXT)* *.o
+	rm -f $(CLIBNAME).a $(CLIBNAME).$(SHAREDEXT)* *.o bin/example_gpu_c
 
 # Dependencies
 

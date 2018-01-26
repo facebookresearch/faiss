@@ -32,7 +32,7 @@ bin/example_c: example_c.c $(CLIBNAME).$(SHAREDEXT)
 	$(LDFLAGS) -lm $(BLASLDFLAGS) -lfaiss_c
 
 clean:
-	rm -f $(CLIBNAME).a $(CLIBNAME).$(SHAREDEXT)* *.o
+	rm -f $(CLIBNAME).a $(CLIBNAME).$(SHAREDEXT)* *.o bin/example_c
 
 # Dependencies
 
