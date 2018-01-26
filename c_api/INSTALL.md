@@ -69,8 +69,8 @@ For GPU support, a separate dynamic library in the "c_api/gpu" directory needs t
   `make`
 
 The "gpufaiss_c" dynamic library contains the GPU and CPU implementations of Faiss, which means that
-it can be used in place of "faiss_c". Like in the C++ API, end programs still need to dynamically link
-with the CUDA runtime and cuBLAS libraries.
+it can be used in place of "faiss_c". The same library will dynamically link with the CUDA runtime
+and cuBLAS.
 
 Using the GPU with the C API
 ----------------------------

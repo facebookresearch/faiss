@@ -28,12 +28,13 @@ $(CLIBNAME).a: $(LIBGPUCOBJ) ../../gpu/$(LIBNAME).a
 $(CLIBNAME).$(SHAREDEXT): $(LIBCOBJ) $(LIBGPUCOBJ) ../../libfaiss.a ../../gpu/$(LIBNAME).a
 	$(CXX) $(LDFLAGS) $(FAISSSHAREDFLAGS) $(CUDACFLAGS) -o $@ \
 	-Wl,--whole-archive $(LIBCOBJ) ../../libfaiss.a $(BLASLDFLAGS) \
-	-Wl,--no-whole-archive -static-libstdc++ $(LIBGPUCOBJ) ../../gpu/$(LIBNAME).a
+	-Wl,--no-whole-archive -static-libstdc++ $(LIBGPUCOBJ) ../../gpu/$(LIBNAME).a \
+	-L$(CUDAROOT)/lib64 -lcublas -lcudart
 
 # Build GPU example
 bin/example_gpu_c: example_gpu_c.c $(CLIBNAME).$(SHAREDEXT)
 	$(CC) $(CFLAGS) $(CUDACFLAGS) -std=c99 -I. -I.. -o $@ example_gpu_c.c \
-	-L$(CUDAROOT)/lib64 -L. -lgpufaiss_c -lcublas -lcudart
+	-L. -lgpufaiss_c 
 
 clean:
 	rm -f $(CLIBNAME).a $(CLIBNAME).$(SHAREDEXT)* *.o bin/example_gpu_c
