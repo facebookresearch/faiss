@@ -23,6 +23,9 @@ section "Docker instructions" below).
 Alternatively, steps 1 and 3 can be built via the cmake scripts (see below).
 
 
+It is also possible to build a pure C interface. This optional process is
+described separately (please see the [C interface installation file](c_api/INSTALL.md))
+
 General compilation instructions
 ================================
 
