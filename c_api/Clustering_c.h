@@ -26,10 +26,10 @@ typedef struct FaissClusteringParameters {
     int niter;          ///< clustering iterations
     int nredo;          ///< redo clustering this many times and keep best
 
-    bool verbose;
-    bool spherical;     ///< do we want normalized centroids?
-    bool update_index;  ///< update index after each iteration?
-    bool frozen_centroids;  ///< use the centroids provided as input and do not change them during iterations
+    int verbose;       ///< (bool)
+    int spherical;     ///< (bool) do we want normalized centroids?
+    int update_index;  ///< (bool) update index after each iteration?
+    int frozen_centroids;  ///< (bool) use the centroids provided as input and do not change them during iterations
 
     int min_points_per_centroid; ///< otherwise you get a warning
     int max_points_per_centroid;  ///< to limit size of dataset
