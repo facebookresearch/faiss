@@ -49,14 +49,14 @@ int faiss_IndexFlat_compute_distance_subset(
     const idx_t *labels);
 
 /** Opaque type for IndexFlatIP */
-FAISS_DECLARE_CLASS_INHERITED(IndexFlatIP, IndexFlat)
+FAISS_DECLARE_CLASS_INHERITED(IndexFlatIP, Index)
 
 int faiss_IndexFlatIP_new(FaissIndexFlatIP** p_index);
 
 int faiss_IndexFlatIP_new_with(FaissIndexFlatIP** p_index, idx_t d);
 
 /** Opaque type for IndexFlatL2 */
-FAISS_DECLARE_CLASS_INHERITED(IndexFlatL2, IndexFlat)
+FAISS_DECLARE_CLASS_INHERITED(IndexFlatL2, Index)
 
 int faiss_IndexFlatL2_new(FaissIndexFlatL2** p_index);
 
@@ -66,7 +66,7 @@ int faiss_IndexFlatL2_new_with(FaissIndexFlatL2** p_index, idx_t d);
  *
  * same as an IndexFlatL2 but a value is subtracted from each distance
  */
-FAISS_DECLARE_CLASS_INHERITED(IndexFlatL2BaseShift, IndexFlatL2)
+FAISS_DECLARE_CLASS_INHERITED(IndexFlatL2BaseShift, Index)
 
 int faiss_IndexFlatL2BaseShift_new(FaissIndexFlatL2BaseShift** p_index, idx_t d, size_t nshift, const float *shift);
 
@@ -85,7 +85,7 @@ FAISS_DECLARE_DESTRUCTOR(IndexRefineFlat)
  * 
  * optimized version for 1D "vectors"
  */
-FAISS_DECLARE_CLASS_INHERITED(IndexFlat1D, IndexFlatL2)
+FAISS_DECLARE_CLASS_INHERITED(IndexFlat1D, Index)
 
 int faiss_IndexFlat1D_new(FaissIndexFlat1D** p_index);
 int faiss_IndexFlat1D_new_with(FaissIndexFlat1D** p_index, int continuous_update);
