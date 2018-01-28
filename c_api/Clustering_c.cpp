@@ -21,7 +21,6 @@ using faiss::Clustering;
 using faiss::ClusteringParameters;
 using faiss::Index;
 
-
 DEFINE_GETTER(Clustering, int, niter)
 DEFINE_GETTER(Clustering, int, nredo)
 DEFINE_GETTER(Clustering, int, verbose)
@@ -51,6 +50,21 @@ void faiss_ClusteringParameters_init(FaissClusteringParameters* params) {
     params->spherical = d.spherical;
     params->update_index = d.update_index;
     params->verbose = d.verbose;   
+}
+
+// This conversion is required because the two types are not memory-compatible
+inline ClusteringParameters from_faiss_c(const FaissClusteringParameters* params) {
+    ClusteringParameters o;
+    o.frozen_centroids = params->frozen_centroids;
+    o.max_points_per_centroid = params->max_points_per_centroid;
+    o.min_points_per_centroid = params->min_points_per_centroid;
+    o.niter = params->niter;
+    o.nredo = params->nredo;
+    o.seed = params->seed;
+    o.spherical = params->spherical;
+    o.update_index = params->update_index;
+    o.verbose = params->verbose;
+    return o;
 }
 
 /// getter for centroids (size = k * d)
@@ -90,7 +104,7 @@ int faiss_Clustering_new(FaissClustering** p_clustering, int d, int k) {
 int faiss_Clustering_new_with_params(
     FaissClustering** p_clustering, int d, int k, const FaissClusteringParameters* cp) {
     try {
-        Clustering* c = new Clustering(d, k, *reinterpret_cast<const ClusteringParameters*>(cp));
+        Clustering* c = new Clustering(d, k, from_faiss_c(cp));
         *p_clustering = reinterpret_cast<FaissClustering*>(c);
         return 0;
     } CATCH_AND_HANDLE
