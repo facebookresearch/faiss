@@ -9,6 +9,7 @@
 # C API
 
 include ../makefile.inc
+DEBUGFLAG=-DNDEBUG # no debugging
 
 LIBNAME=libfaiss
 CLIBNAME=libfaiss_c
@@ -36,23 +37,23 @@ clean:
 
 # Dependencies
 
-error_impl.o: CFLAGS += -I..
+error_impl.o: CFLAGS += -I.. $(DEBUGFLAG)
 error_impl.o: error_impl.cpp error_c.h error_impl.h macros_impl.h
 
-Index_c.o: CFLAGS += -I..
+Index_c.o: CFLAGS += -I.. $(DEBUGFLAG)
 Index_c.o: Index_c.cpp Index_c.h ../Index.h macros_impl.h
 
-IndexFlat_c.o: CFLAGS += -I..
+IndexFlat_c.o: CFLAGS += -I.. $(DEBUGFLAG)
 IndexFlat_c.o: IndexFlat_c.cpp IndexFlat_c.h ../IndexFlat.h macros_impl.h
 
-IndexIVF_c.o: CFLAGS += -I..
+IndexIVF_c.o: CFLAGS += -I.. $(DEBUGFLAG)
 IndexIVF_c.o: IndexIVF_c.cpp IndexIVF_c.h ../IndexIVF.h macros_impl.h
 
-Clustering_c.o: CFLAGS += -I..
+Clustering_c.o: CFLAGS += -I.. $(DEBUGFLAG)
 Clustering_c.o: Clustering_c.cpp Clustering_c.h ../Clustering.h macros_impl.h
 
-AutoTune_c.o: CFLAGS += -I..
+AutoTune_c.o: CFLAGS += -I.. $(DEBUGFLAG)
 AutoTune_c.o: AutoTune_c.cpp AutoTune_c.h ../AutoTune.h macros_impl.h
 
-AuxIndexStructures_c.o: CFLAGS += -I..
+AuxIndexStructures_c.o: CFLAGS += -I.. $(DEBUGFLAG)
 AuxIndexStructures_c.o: AuxIndexStructures_c.cpp AuxIndexStructures_c.h ../AuxIndexStructures.h macros_impl.h

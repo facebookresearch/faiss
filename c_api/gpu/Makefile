@@ -9,6 +9,7 @@
 # C API with GPU support
 
 include ../../makefile.inc
+DEBUGFLAG=-DNDEBUG # no debugging
 
 LIBNAME=libgpufaiss
 CLIBNAME=libgpufaiss_c
@@ -41,17 +42,17 @@ clean:
 
 # Dependencies
 
-GpuAutoTune_c.o: CFLAGS += -I.. -I../.. $(CUDACFLAGS)
+GpuAutoTune_c.o: CFLAGS += -I.. -I../.. $(CUDACFLAGS) $(DEBUGFLAG)
 GpuAutoTune_c.o: GpuAutoTune_c.cpp GpuAutoTune_c.h ../../gpu/GpuAutoTune.h ../Index_c.h ../macros_impl.h
 
-GpuClonerOptions_c.o: CFLAGS += -I.. -I../.. $(CUDACFLAGS)
+GpuClonerOptions_c.o: CFLAGS += -I.. -I../.. $(CUDACFLAGS) $(DEBUGFLAG)
 GpuClonerOptions_c.o: GpuClonerOptions_c.cpp GpuClonerOptions_c.h GpuIndicesOptions_c.h ../../gpu/GpuClonerOptions.h ../macros_impl.h
 
-GpuIndex_c.o: CFLAGS += -I.. -I../.. $(CUDACFLAGS)
+GpuIndex_c.o: CFLAGS += -I.. -I../.. $(CUDACFLAGS) $(DEBUGFLAG)
 GpuIndex_c.o: GpuIndex_c.cpp GpuIndex_c.h ../../gpu/GpuIndex.h ../macros_impl.h
 
-GpuResources_c.o: CFLAGS += -I.. -I../.. $(CUDACFLAGS)
+GpuResources_c.o: CFLAGS += -I.. -I../.. $(CUDACFLAGS) $(DEBUGFLAG)
 GpuResources_c.o: GpuResources_c.cpp GpuResources_c.h ../../gpu/GpuResources.h ../macros_impl.h
 
-StandardGpuResources_c.o: CFLAGS += -I.. -I../.. $(CUDACFLAGS)
+StandardGpuResources_c.o: CFLAGS += -I.. -I../.. $(CUDACFLAGS) $(DEBUGFLAG)
 StandardGpuResources_c.o: StandardGpuResources_c.cpp StandardGpuResources_c.h ../../gpu/StandardGpuResources.h ../macros_impl.h
