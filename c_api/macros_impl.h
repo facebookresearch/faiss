@@ -17,6 +17,7 @@
 #include "faiss_c.h"
 #include "FaissException.h"
 #include "error_impl.h"
+#include <stdexcept>
 #include <iostream>
 
 #ifdef NDEBUG
