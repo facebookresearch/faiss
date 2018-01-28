@@ -40,6 +40,19 @@ DEFINE_GETTER(Clustering, size_t, d)
 /// getter for k
 DEFINE_GETTER(Clustering, size_t, k)
 
+void faiss_ClusteringParameters_init(FaissClusteringParameters* params) {
+    ClusteringParameters d;
+    params->frozen_centroids = d.frozen_centroids;
+    params->max_points_per_centroid = d.max_points_per_centroid;
+    params->min_points_per_centroid = d.min_points_per_centroid;
+    params->niter = d.niter;
+    params->nredo = d.nredo;
+    params->seed = d.seed;
+    params->spherical = d.spherical;
+    params->update_index = d.update_index;
+    params->verbose = d.verbose;   
+}
+
 /// getter for centroids (size = k * d)
 void faiss_Clustering_centroids(
     FaissClustering* clustering, float** centroids, size_t* size) {
