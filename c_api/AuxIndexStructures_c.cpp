@@ -56,21 +56,23 @@ DEFINE_DESTRUCTOR(RangeSearchResult)
 DEFINE_GETTER(RangeSearchResult, size_t, buffer_size)
 
 /// getter for lims: size (nq + 1)
-void faiss_RangeSearchResult_lims(
-    FaissRangeSearchResult* rsr, size_t** lims);
+void faiss_RangeSearchResult_lims(FaissRangeSearchResult* rsr, size_t** lims) {
+    *lims = reinterpret_cast<RangeSearchResult*>(rsr)->lims;
+}
 
 /// getter for labels and respective distances (not sorted):
 /// result for query i is labels[lims[i]:lims[i+1]]
-void faiss_RangeSearchResult_labels(
-    FaissRangeSearchResult* rsr, idx_t** labels, float** distances);
-
+void faiss_RangeSearchResult_labels(FaissRangeSearchResult* rsr, idx_t** labels, float** distances) {
+    auto sr = reinterpret_cast<RangeSearchResult*>(rsr);
+    *labels = sr->labels;
+    *distances = sr->distances;
+}
 
 DEFINE_DESTRUCTOR(IDSelector)
 
 int faiss_IDSelector_is_member(const FaissIDSelector* sel, idx_t id)  {
     return reinterpret_cast<const IDSelector*>(sel)->is_member(id);
 }
-
 
 DEFINE_DESTRUCTOR(IDSelectorRange)
 
