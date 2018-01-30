@@ -29,6 +29,24 @@ int faiss_IndexFlat_create(FaissIndexFlat** p_index);
 
 int faiss_IndexFlat_create_with(FaissIndexFlat** p_index, idx_t d, FaissMetricType metric);
 
+/** get a pointer to the index's internal data (the `xb` field). The outputs
+ * become invalid after any data addition or removal operation.
+ * 
+ * @param index   opaque pointer to index object
+ * @param p_xb    output, the pointer to the beginning of `xb`.
+ * @param p_size  output, the current size of `sb` in number of float values.
+ */
+void faiss_IndexFlat_xb(FaissIndexFlat* index, float** p_xb, size_t* p_size);
+
+
+/** attempt a dynamic cast from. This function can be used to
+ * check whether the underlying index is a flat index.
+ * 
+ * @param index opaque pointer to index object
+ * @return the same pointer if the index is a flat index, NULL otherwise
+ */
+FaissIndexFlat* faiss_IndexFlat_cast(FaissIndex* index);
+
 FAISS_DECLARE_DESTRUCTOR(IndexFlat)
 
 /** compute distance with a subset of vectors

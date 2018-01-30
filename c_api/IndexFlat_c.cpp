@@ -11,10 +11,12 @@
 
 #include "IndexFlat_c.h"
 #include "IndexFlat.h"
+#include "Index.h"
 #include "macros_impl.h"
 
 extern "C" {
 
+using faiss::Index;
 using faiss::IndexFlat;
 using faiss::IndexFlatIP;
 using faiss::IndexFlatL2;
@@ -38,6 +40,19 @@ int faiss_IndexFlat_new_with(FaissIndexFlat** p_index, idx_t d, FaissMetricType 
 }
 
 DEFINE_DESTRUCTOR(IndexFlat)
+
+void faiss_IndexFlat_xb(FaissIndexFlat* index, float** p_xb, size_t* p_size) {
+    auto& xb = reinterpret_cast<IndexFlat*>(index)->xb;
+    *p_xb = xb.data();
+    if (p_size) {
+        *p_size = xb.size();
+    }
+}
+
+FaissIndexFlat* faiss_IndexFlat_cast(FaissIndex* index) {
+    return reinterpret_cast<FaissIndexFlat*>(
+        dynamic_cast<IndexFlat*>(reinterpret_cast<Index*>(index)));
+}
 
 int faiss_IndexFlat_compute_distance_subset(
     FaissIndex* index,
