@@ -47,7 +47,7 @@ __global__ void sumAlongColumns(Tensor<T, 1, true> input,
 
       if (endRow) {
         for (int row = rowStart; row < output.getSize(0); ++row) {
-          T out = output[row][col].ldg();
+          T out = output[row][col];
           out = Math<T>::add(out, val);
           output[row][col] = out;
         }
@@ -57,7 +57,7 @@ __global__ void sumAlongColumns(Tensor<T, 1, true> input,
         for (int row = rowStart; row < rowEnd; row += kRowUnroll) {
 #pragma unroll
           for (int i = 0; i < kRowUnroll; ++i) {
-            rows[i] = output[row + i][col].ldg();
+            rows[i] = output[row + i][col];
           }
 
 #pragma unroll
@@ -86,7 +86,7 @@ __global__ void sumAlongColumns(Tensor<T, 1, true> input,
       for (int row = rowStart; row < output.getSize(0); ++row) {
 #pragma unroll
         for (int i = 0; i < kColLoad; ++i) {
-          T out = output[row][col + i * blockDim.x].ldg();
+          T out = output[row][col + i * blockDim.x];
           out = Math<T>::add(out, val[i]);
           output[row][col + i * blockDim.x] = out;
         }
@@ -100,7 +100,7 @@ __global__ void sumAlongColumns(Tensor<T, 1, true> input,
 #pragma unroll
           for (int j = 0; j < kColLoad; ++j) {
             rows[i * kColLoad + j] =
-              output[row + i][col + j * blockDim.x].ldg();
+              output[row + i][col + j * blockDim.x];
           }
         }
 
