@@ -29,6 +29,7 @@ namespace faiss {
 
 
 Level1Quantizer::Level1Quantizer (Index * quantizer, size_t nlist):
+    Index(quantizer->d, quantizer->metric_type),
     quantizer (quantizer),
     nlist (nlist),
     quantizer_trains_alone (0),
@@ -39,6 +40,7 @@ Level1Quantizer::Level1Quantizer (Index * quantizer, size_t nlist):
 }
 
 Level1Quantizer::Level1Quantizer ():
+    Index(0),
     quantizer (nullptr),
     nlist (0),
     quantizer_trains_alone (0), own_fields (false),
@@ -105,10 +107,11 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
 
 IndexIVF::IndexIVF (Index * quantizer, size_t d, size_t nlist,
                     MetricType metric):
-    Index (d, metric),
     Level1Quantizer (quantizer, nlist),
     nprobe (1),
     max_codes (0),
+    ids(nlist),
+    codes(nlist),
     maintain_direct_map (false)
 {
     FAISS_THROW_IF_NOT (d == quantizer->d);
@@ -121,8 +124,6 @@ IndexIVF::IndexIVF (Index * quantizer, size_t d, size_t nlist,
     // for large clusterings (nb this is not used for the MultiIndex,
     // for which quantizer_trains_alone = true)
     code_size = 0; // let sub-classes set this
-    ids.resize (nlist);
-    codes.resize (nlist);
 }
 
 IndexIVF::IndexIVF ():
