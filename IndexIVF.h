@@ -29,7 +29,7 @@ namespace faiss {
  * The class isolates the fields that are independent of the storage
  * of the lists (especially training)
  */
-struct Level1Quantizer {
+struct Level1Quantizer : public Index {
     Index * quantizer;        ///< quantizer that maps vectors to inverted lists
     size_t nlist;             ///< number of possible key values
 
@@ -54,6 +54,17 @@ struct Level1Quantizer {
 
     ~Level1Quantizer ();
 
+    virtual void add (idx_t n, const float *x) {
+        return;
+    }
+    virtual void search (idx_t n, const float *x, idx_t k,
+                         float *distances, idx_t *labels) const  {
+        return;
+    }
+    virtual void reset() {
+        return;
+    }
+
 };
 
 
@@ -74,7 +85,7 @@ struct Level1Quantizer {
  * Sub-classes implement a post-filtering of the index that refines
  * the distance estimation from the query to databse vectors.
  */
-struct IndexIVF: Index, Level1Quantizer {
+struct IndexIVF : Level1Quantizer {
     size_t nprobe;            ///< number of probes at query time
     size_t max_codes;         ///< max nb of codes to visit to do a query
 
