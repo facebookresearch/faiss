@@ -97,7 +97,8 @@ dataset. To run it, please download the ANN_SIFT1M dataset from
 
 http://corpus-texmex.irisa.fr/
 
-and unzip it to the sudirectory sift1M.
+and unzip it to the subdirectory `sift1M` at the root of the source
+directory for this repository.
 
 Then compile and run
 
@@ -169,12 +170,12 @@ Real-life test
 --------------
 
 The following script extends the demo_sift1M test to several types of
-indexes:
+indexes.  This must be run from the root of the source directory for this
+repository:
 
 ```
-export PYTHONPATH=.   # needed because the script is in a subdirectory
-mkdir tmp             # some output will be written there
-python python/demo_auto_tune.py
+mkdir tmp             # graphs of the output will be written here
+PYTHONPATH=. python tests/demo_auto_tune.py
 ```
 
 It will cycle through a few types of indexes and find optimal
