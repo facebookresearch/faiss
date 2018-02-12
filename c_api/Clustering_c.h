@@ -106,7 +106,7 @@ void faiss_Clustering_free(FaissClustering* clustering);
  * @param q_error final quantization error
  * @return error code
  */
-int kmeans_clustering (size_t d, size_t n, size_t k,
+int faiss_kmeans_clustering (size_t d, size_t n, size_t k,
                        const float *x,
                        float *centroids,
                        float *q_error);

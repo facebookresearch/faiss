@@ -110,10 +110,10 @@ void faiss_Clustering_free(FaissClustering* clustering) {
     delete reinterpret_cast<Clustering*>(clustering);
 }
 
-int kmeans_clustering (size_t d, size_t n, size_t k,
-                       const float *x,
-                       float *centroids,
-                       float *q_error) {
+int faiss_kmeans_clustering (size_t d, size_t n, size_t k,
+                             const float *x,
+                             float *centroids,
+                             float *q_error) {
     try {
         float out = faiss::kmeans_clustering(d, n, k, x, centroids);
         if (q_error) {
