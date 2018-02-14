@@ -17,7 +17,11 @@ involved:
 
 Steps 2 and 3 depend on 1, but they are otherwise independent.
 
-Alternatively, all 3 steps above can be run by building a Docker image (see section "Docker instructions" below).
+Alternatively, all 3 steps above can be run by building a Docker image (see 
+section "Docker instructions" below).
+
+Alternatively, steps 1 and 3 can be built via the cmake scripts (see below).
+
 
 General compilation instructions
 ================================
@@ -47,8 +51,7 @@ dynamic libraries (useful for the Python wrapper).
 Step 1: Compiling the C++ Faiss
 ===============================
 
-The CPU version of Faiss is written in C++03, so it should compile
-even with relatively old C++ compilers.
+The CPU version of Faiss is written in C++11.
 
 BLAS/Lapack
 -----------
@@ -190,11 +193,7 @@ the same ../makefile.inc for system-specific variables. You need
 libfaiss.a from Step 1 for this to work.
 
 The GPU version is a superset of the CPU version. In addition it
-requires:
-
-- a C++11 compliant compiler (and flags)
-
-- the cuda compiler and related libraries (Cublas)
+requires the cuda compiler and related libraries (Cublas)
 
 See the example makefile on how to set the flags.
 
@@ -258,7 +257,7 @@ Python example with GPU support
 -------------------------------
 
 The auto-tuning example above also runs on the GPU. Edit
-`tests/demo_auto_tune.py` around line 100 with the values
+`tests/demo_auto_tune.py` at line 100 with the values
 
 ```python
 keys_to_test = keys_gpu
@@ -320,7 +319,7 @@ the executable should be linked to one of these. If you use
 the static version (.a), add the LDFLAGS used in the Makefile.
 
 For binary-only distributions, the include files should be under
-a faiss/ directory, so that they can be included as
+a `faiss/` directory, so that they can be included as
 
 ```c++
 #include <faiss/IndexIVFPQ.h>
