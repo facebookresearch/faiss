@@ -45,50 +45,26 @@ int main() {
         devs.push_back(i);
     }
 
-    faiss::Index *index =
-        faiss::gpu::index_cpu_to_gpu_multiple(  // call constructor
+    faiss::IndexFlatL2 cpu_index(d);
+
+    faiss::Index *gpu_index =
+        faiss::gpu::index_cpu_to_gpu_multiple(
             res,
             devs,
-            new faiss::IndexFlatL2(d)
+            &cpu_index
         );
 
-    printf("is_trained = %s\n", index->is_trained ? "true" : "false");
-    index->add(nb, xb);                     // add vectors to the index
-    printf("ntotal = %ld\n", index->ntotal);
+    printf("is_trained = %s\n", gpu_index->is_trained ? "true" : "false");
+    gpu_index->add(nb, xb);  // vectors to the index
+    printf("ntotal = %ld\n", gpu_index->ntotal);
 
     int k = 4;
-
-    {       // sanity check: search 5 first vectors of xb
-        long *I = new long[k * 5];
-        float *D = new float[k * 5];
-
-        index->search(5, xb, k, D, I);
-
-        // print results
-        printf("I=\n");
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < k; j++)
-                printf("%5ld ", I[i * k + j]);
-            printf("\n");
-        }
-
-        printf("D=\n");
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < k; j++)
-                printf("%7g ", D[i * k + j]);
-            printf("\n");
-        }
-
-        delete [] I;
-        delete [] D;
-    }
-
 
     {       // search xq
         long *I = new long[k * nq];
         float *D = new float[k * nq];
 
-        index->search(nq, xq, k, D, I);
+        gpu_index->search(nq, xq, k, D, I);
 
         // print results
         printf("I (5 first results)=\n");
@@ -109,7 +85,7 @@ int main() {
         delete [] D;
     }
 
-    delete index;
+    delete gpu_index;
 
     for(int i = 0; i < ngpus; i++) {
         delete res[i];
