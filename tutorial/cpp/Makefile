@@ -4,23 +4,23 @@ MAKEFILE_INC=../../makefile.inc
 
 all: cpu gpu
 
-cpu: tutorial1 tutorial2 tutorial3
+cpu: 1-Flat 2-IVFFlat 3-IVFPQ
 
-gpu: tutorial4 tutorial5
+gpu: 4-GPU 5-Multiple-GPUs
 
-tutorial1: 1-Flat.cpp ../../libfaiss.a
+1-Flat: 1-Flat.cpp ../../libfaiss.a
 	$(CC) -o $@ $(CFLAGS) $^ -I../../../ $(LDFLAGS) $(BLASLDFLAGS)
 
-tutorial2: 2-IVFFlat.cpp ../../libfaiss.a
+2-IVFFlat: 2-IVFFlat.cpp ../../libfaiss.a
 	$(CC) -o $@ $(CFLAGS) $^ -I../../../ $(LDFLAGS) $(BLASLDFLAGS)
 
-tutorial3: 3-IVFPQ.cpp ../../libfaiss.a
+3-IVFPQ: 3-IVFPQ.cpp ../../libfaiss.a
 	$(CC) -o $@ $(CFLAGS) $^ -I../../../ $(LDFLAGS) $(BLASLDFLAGS)
 
-tutorial4: 4-GPU.cpp ../../libfaiss.a ../../gpu/libgpufaiss.a
+4-GPU: 4-GPU.cpp ../../libfaiss.a ../../gpu/libgpufaiss.a
 	$(NVCC) $(NVCCFLAGS) -o $@ $^ -I../../../ -Xcompiler -fopenmp -lcublas \
 	$(BLASLDFLAGSNVCC)
 
-tutorial5: 5-Multiple-GPUs.cpp ../../libfaiss.a ../../gpu/libgpufaiss.a
+5-Multiple-GPUs: 5-Multiple-GPUs.cpp ../../libfaiss.a ../../gpu/libgpufaiss.a
 	$(NVCC) $(NVCCFLAGS) -o $@ $^ -I../../../ -Xcompiler -fopenmp -lcublas \
 	$(BLASLDFLAGSNVCC)
