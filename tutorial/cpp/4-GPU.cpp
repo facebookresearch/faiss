@@ -8,9 +8,11 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cassert>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/StandardGpuResources.h>
 
 
@@ -34,46 +36,23 @@ int main() {
         xq[d * i] += i / 1000.;
     }
 
-    faiss::gpu::StandardGpuResources res;
-    faiss::gpu::GpuIndexFlatL2 index(&res, d);   // call constructor
-
-    printf("is_trained = %s\n", index.is_trained ? "true" : "false");
-    index.add(nb, xb);                     // add vectors to the index
-    printf("ntotal = %ld\n", index.ntotal);
-
     int k = 4;
 
-    {       // sanity check: search 5 first vectors of xb
-        long *I = new long[k * 5];
-        float *D = new float[k * 5];
+    faiss::gpu::StandardGpuResources res;
 
-        index.search(5, xb, k, D, I);
+    // Using a flat index
 
-        // print results
-        printf("I=\n");
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < k; j++)
-                printf("%5ld ", I[i * k + j]);
-            printf("\n");
-        }
+    faiss::gpu::GpuIndexFlatL2 index_flat(&res, d);
 
-        printf("D=\n");
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < k; j++)
-                printf("%7g ", D[i * k + j]);
-            printf("\n");
-        }
-
-        delete [] I;
-        delete [] D;
-    }
-
+    printf("is_trained = %s\n", index_flat.is_trained ? "true" : "false");
+    index_flat.add(nb, xb);  // add vectors to the index
+    printf("ntotal = %ld\n", index_flat.ntotal);
 
     {       // search xq
         long *I = new long[k * nq];
         float *D = new float[k * nq];
 
-        index.search(nq, xq, k, D, I);
+        index_flat.search(nq, xq, k, D, I);
 
         // print results
         printf("I (5 first results)=\n");
@@ -94,6 +73,44 @@ int main() {
         delete [] D;
     }
 
+    // Using an IVF index
+
+    int nlist = 100;
+    faiss::gpu::GpuIndexIVFFlat index_ivf(&res, d, nlist, faiss::METRIC_L2);
+    // here we specify METRIC_L2, by default it performs inner-product search
+
+    assert(!index_ivf.is_trained);
+    index_ivf.train(nb, xb);
+    assert(index_ivf.is_trained);
+    index_ivf.add(nb, xb);  // add vectors to the index
+
+    printf("is_trained = %s\n", index_ivf.is_trained ? "true" : "false");
+    printf("ntotal = %ld\n", index_ivf.ntotal);
+
+    {       // search xq
+        long *I = new long[k * nq];
+        float *D = new float[k * nq];
+
+        index_ivf.search(nq, xq, k, D, I);
+
+        // print results
+        printf("I (5 first results)=\n");
+        for(int i = 0; i < 5; i++) {
+            for(int j = 0; j < k; j++)
+                printf("%5ld ", I[i * k + j]);
+            printf("\n");
+        }
+
+        printf("I (5 last results)=\n");
+        for(int i = nq - 5; i < nq; i++) {
+            for(int j = 0; j < k; j++)
+                printf("%5ld ", I[i * k + j]);
+            printf("\n");
+        }
+
+        delete [] I;
+        delete [] D;
+    }
 
 
     delete [] xb;
