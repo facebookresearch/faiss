@@ -10,6 +10,8 @@
 #include <cstdlib>
 
 #include <faiss/IndexFlat.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/StandardGpuResources.h>
 
 
 int main() {
@@ -32,9 +34,8 @@ int main() {
         xq[d * i] += i / 1000.;
     }
 
-    faiss::gpu::GpuResources *res = new faiss::gpu::StandardGpuResources;
-
-    faiss::GpuIndexFlatL2 index(res, d);   // call constructor
+    faiss::gpu::StandardGpuResources res;
+    faiss::gpu::GpuIndexFlatL2 index(&res, d);   // call constructor
 
     printf("is_trained = %s\n", index.is_trained ? "true" : "false");
     index.add(nb, xb);                     // add vectors to the index
