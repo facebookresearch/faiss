@@ -40,17 +40,21 @@ print(I[-5:])                  # neighbors of the 5 last queries
 ## Using an IVF index
 
 nlist = 100
-k = 4
 quantizer = faiss.IndexFlatL2(d)  # the other index
 index_ivf = faiss.IndexIVFFlat(quantizer, d, nlist, faiss.METRIC_L2)
 # here we specify METRIC_L2, by default it performs inner-product search
 
+# make it an IVF GPU index
 gpu_index_ivf = faiss.index_cpu_to_gpu(res, 0, index_ivf)
 
-gpu_index_flat.add(xb)         # add vectors to the index
-print(gpu_index_flat.ntotal)
+assert not gpu_index_ivf.is_trained
+gpu_index_ivf.train(xb)        # add vectors to the index
+assert gpu_index_ivf.is_trained
+
+gpu_index_ivf.add(xb)          # add vectors to the index
+print(gpu_index_ivf.ntotal)
 
 k = 4                          # we want to see 4 nearest neighbors
-D, I = gpu_index_flat.search(xq, k)  # actual search
+D, I = gpu_index_ivf.search(xq, k)  # actual search
 print(I[:5])                   # neighbors of the 5 first queries
 print(I[-5:])                  # neighbors of the 5 last queries
