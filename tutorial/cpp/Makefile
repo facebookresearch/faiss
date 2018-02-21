@@ -2,7 +2,7 @@ MAKEFILE_INC=../../makefile.inc
 
 -include $(MAKEFILE_INC)
 
-NVCCLDFLAGS =   -Xcompiler \"-Wl,-rpath=../../:../../gpu/\" \
+NVCCLDFLAGS =	-Xcompiler \"-Wl,-rpath=../../:../../gpu/\" \
 		-L../.. -L../../gpu -lfaiss -lgpufaiss
 
 
