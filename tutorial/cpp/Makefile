@@ -25,13 +25,11 @@ gpu: 4-GPU 5-Multiple-GPUs
 	$(BLASLDFLAGS)
 
 4-GPU: 4-GPU.cpp ../../libfaiss.$(SHAREDEXT) ../../gpu/libgpufaiss.$(SHAREDEXT)
-	$(NVCC) $(NVCCFLAGS) -o $@ $< $(NVCCLDFLAGS) \
-	-I../../../ -Xcompiler -fopenmp -lcublas $(BLASLDFLAGSNVCC) \
+	$(NVCC) $(NVCCFLAGS) -o $@ $< $(NVCCLDFLAGS) -I../../../
 
 5-Multiple-GPUs: 5-Multiple-GPUs.cpp ../../libfaiss.$(SHAREDEXT) \
 	../../gpu/libgpufaiss.$(SHAREDEXT)
-	$(NVCC) $(NVCCFLAGS) -o $@ $<  $(NVCCLDFLAGS) \
-	-I../../../ -Xcompiler -fopenmp -lcublas $(BLASLDFLAGSNVCC)
+	$(NVCC) $(NVCCFLAGS) -o $@ $< $(NVCCLDFLAGS) -I../../../
 
 ../../libfaiss.$(SHAREDEXT):
 	cd ../../ && make libfaiss.$(SHAREDEXT)
