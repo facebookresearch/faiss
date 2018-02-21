@@ -16,7 +16,7 @@ gpu: 4-GPU 5-Multiple-GPUs
 	$(CC) -o $@ $(CFLAGS) $< -L../../ -lfaiss -I../../../ $(LDFLAGS) \
 	$(BLASLDFLAGS)
 
-2-IVFFLAT: 2-IVFFlat.cpp ../../libfaiss.$(SHAREDEXT)
+2-IVFFlat: 2-IVFFlat.cpp ../../libfaiss.$(SHAREDEXT)
 	$(CC) -o $@ $(CFLAGS) $< -L../../ -lfaiss -I../../../ $(LDFLAGS) \
 	$(BLASLDFLAGS)
 
