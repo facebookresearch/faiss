@@ -36,8 +36,6 @@ int main() {
         xq[d * i] += i / 1000.;
     }
 
-    int k = 4;
-
     faiss::gpu::StandardGpuResources res;
 
     // Using a flat index
@@ -47,6 +45,8 @@ int main() {
     printf("is_trained = %s\n", index_flat.is_trained ? "true" : "false");
     index_flat.add(nb, xb);  // add vectors to the index
     printf("ntotal = %ld\n", index_flat.ntotal);
+
+    int k = 4;
 
     {       // search xq
         long *I = new long[k * nq];

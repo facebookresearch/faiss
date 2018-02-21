@@ -17,8 +17,6 @@ xq[:, 0] += np.arange(nq) / 1000.
 
 import faiss                     # make faiss available
 
-print("number of GPUs:", faiss.get_num_gpus())
-
 res = faiss.StandardGpuResources()  # use a single GPU
 
 ## Using a flat index
