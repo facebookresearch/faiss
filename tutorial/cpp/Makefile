@@ -38,3 +38,6 @@ gpu: 4-GPU 5-Multiple-GPUs
 
 ../../gpu/libgpufaiss.$(SHAREDEXT):
 	cd ../../gpu/ && make libgpufaiss.$(SHAREDEXT)
+
+clean:
+	rm -f 1-Flat 2-IVFFlat 3-IVFPQ 4-GPU 5-Multiple-GPUs
