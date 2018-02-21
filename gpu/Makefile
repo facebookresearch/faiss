@@ -85,6 +85,9 @@ CUOBJ=      impl/BroadcastSum.o \
 $(LIBNAME).a: $(CPPOBJ) $(CUOBJ)
 	ar r $@ $^
 
+$(LIBNAME).$(SHAREDEXT): $(CPPOBJ) $(CUOBJ)
+	$(CC) $(LDFLAGS) $(FAISSSHAREDFLAGS) -o $(LIBNAME).$(SHAREDEXT) $^ $(CUDAFLAGS)
+
 
 test/demo_ivfpq_indexing_gpu: test/demo_ivfpq_indexing_gpu.cpp \
 	$(LIBNAME).a ../libfaiss.a
