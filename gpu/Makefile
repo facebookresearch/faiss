@@ -86,7 +86,8 @@ $(LIBNAME).a: $(CPPOBJ) $(CUOBJ)
 	ar r $@ $^
 
 $(LIBNAME).$(SHAREDEXT): $(CPPOBJ) $(CUOBJ)
-	$(CC) $(LDFLAGS) $(FAISSSHAREDFLAGS) -o $(LIBNAME).$(SHAREDEXT) $^ $(CUDAFLAGS)
+	$(CC) -L$(CUDAROOT)/lib64 -lcublas -lcudart $(LDFLAGS) \
+	$(FAISSSHAREDFLAGS) -o $(LIBNAME).$(SHAREDEXT) $^
 
 
 test/demo_ivfpq_indexing_gpu: test/demo_ivfpq_indexing_gpu.cpp \
