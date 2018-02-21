@@ -38,6 +38,8 @@ int main() {
 
     int ngpus = faiss::gpu::getNumDevices();
 
+    printf("Number of GPUs: %d\n", ngpus);
+
     std::vector<faiss::gpu::GpuResources*> res;
     std::vector<int> devs;
     for(int i = 0; i < ngpus; i++) {
@@ -55,7 +57,7 @@ int main() {
         );
 
     printf("is_trained = %s\n", gpu_index->is_trained ? "true" : "false");
-    gpu_index->add(nb, xb);  // vectors to the index
+    gpu_index->add(nb, xb);  // add vectors to the index
     printf("ntotal = %ld\n", gpu_index->ntotal);
 
     int k = 4;

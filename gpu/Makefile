@@ -85,6 +85,10 @@ CUOBJ=      impl/BroadcastSum.o \
 $(LIBNAME).a: $(CPPOBJ) $(CUOBJ)
 	ar r $@ $^
 
+$(LIBNAME).$(SHAREDEXT): $(CPPOBJ) $(CUOBJ)
+	$(CC) -L$(CUDAROOT)/lib64 -lcublas -lcudart $(LDFLAGS) \
+	$(FAISSSHAREDFLAGS) -o $(LIBNAME).$(SHAREDEXT) $^
+
 
 test/demo_ivfpq_indexing_gpu: test/demo_ivfpq_indexing_gpu.cpp \
 	$(LIBNAME).a ../libfaiss.a
@@ -115,6 +119,7 @@ test/demo_ivfpq_indexing_gpu: test/demo_ivfpq_indexing_gpu.cpp \
 
 clean:
 	rm -rf *.o impl/*.o utils/*.o test/*.o $(LIBNAME).a \
+		 $(LIBNAME).$(SHAREDEXT) \
                  ../python/*swigfaiss_gpu* ../*swigfaiss_gpu*
 
 
