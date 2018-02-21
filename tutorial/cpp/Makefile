@@ -5,6 +5,7 @@ MAKEFILE_INC=../../makefile.inc
 NVCCLDFLAGS =	-Xcompiler \"-Wl,-rpath=../../:../../gpu/\" \
 		-L../.. -L../../gpu -lfaiss -lgpufaiss
 
+LDFLAGS = -L../.. -Wl,-rpath=../.. -lfaiss
 
 all: cpu gpu
 
@@ -13,16 +14,13 @@ cpu: 1-Flat 2-IVFFlat 3-IVFPQ
 gpu: 4-GPU 5-Multiple-GPUs
 
 1-Flat: 1-Flat.cpp ../../libfaiss.$(SHAREDEXT)
-	$(CC) -o $@ $(CFLAGS) $< -L../../ -lfaiss -I../../../ $(LDFLAGS) \
-	$(BLASLDFLAGS)
+	$(CC) -o $@ $(CFLAGS) $< -I../../../ $(LDFLAGS)
 
 2-IVFFlat: 2-IVFFlat.cpp ../../libfaiss.$(SHAREDEXT)
-	$(CC) -o $@ $(CFLAGS) $< -L../../ -lfaiss -I../../../ $(LDFLAGS) \
-	$(BLASLDFLAGS)
+	$(CC) -o $@ $(CFLAGS) $< -I../../../ $(LDFLAGS)
 
 3-IVFPQ: 3-IVFPQ.cpp ../../libfaiss.$(SHAREDEXT)
-	$(CC) -o $@ $(CFLAGS) $< -L../../ -lfaiss -I../../../ $(LDFLAGS) \
-	$(BLASLDFLAGS)
+	$(CC) -o $@ $(CFLAGS) $< -I../../../ $(LDFLAGS)
 
 4-GPU: 4-GPU.cpp ../../libfaiss.$(SHAREDEXT) ../../gpu/libgpufaiss.$(SHAREDEXT)
 	$(NVCC) $(NVCCFLAGS) -o $@ $< $(NVCCLDFLAGS) -I../../../
