@@ -11,6 +11,8 @@ MAKEFILE_INC=makefile.inc
 
 -include $(MAKEFILE_INC)
 
+PREFIX ?= /usr/local/
+
 all: .env_ok libfaiss.a tests/demo_ivfpq_indexing
 
 py: _swigfaiss.so
@@ -154,6 +156,16 @@ IndexIVFFlat.o: IndexIVFFlat.cpp IndexIVFFlat.h IndexIVF.h Index.h \
 OnDiskInvertedLists.o: OnDiskInvertedLists.cpp OnDiskInvertedLists.h \
  IndexIVF.h Index.h Clustering.h Heap.h FaissAssert.h FaissException.h
 
+installdirs:
+	mkdir -p $(DESTDIR)$(PREFIX)/lib $(DESTDIR)$(PREFIX)/include/faiss
+
+install: libfaiss.a libfaiss.$(SHAREDEXT) installdirs
+	cp libfaiss.a libfaiss.$(SHAREDEXT) $(DESTDIR)$(PREFIX)/lib/
+	cp ./*.h $(DESTDIR)$(PREFIX)/include/faiss/
+
+uninstall:
+	rm $(DESTDIR)$(PREFIX)/lib/libfaiss.*
+	rm -rf $(DESTDIR)$(PREFIX)/include/faiss
 
 clean:
 	rm -f libfaiss.a libfaiss.$(SHAREDEXT)* *.o \
