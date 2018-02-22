@@ -11,9 +11,7 @@ MAKEFILE_INC=makefile.inc
 
 -include $(MAKEFILE_INC)
 
-LIBNAME=libfaiss
-
-all: .env_ok $(LIBNAME).a demos/demo_ivfpq_indexing
+all: .env_ok libfaiss.a tests/demo_ivfpq_indexing
 
 py: _swigfaiss.so
 
@@ -33,11 +31,11 @@ LIBOBJ=hamming.o  utils.o \
        IndexIVFFlat.o OnDiskInvertedLists.o
 
 
-$(LIBNAME).a: $(LIBOBJ)
-	ar r $(LIBNAME).a $^
+libfaiss.a: $(LIBOBJ)
+	ar r libfaiss.a $^
 
-$(LIBNAME).$(SHAREDEXT): $(LIBOBJ)
-	$(CXX) $(LDFLAGS) $(FAISSSHAREDFLAGS) -o $(LIBNAME).$(SHAREDEXT) $^ $(BLASLDFLAGS)
+libfaiss.$(SHAREDEXT): $(LIBOBJ)
+	$(CXX) $(LDFLAGS) $(FAISSSHAREDFLAGS) -o libfaiss.$(SHAREDEXT) $^ $(BLASLDFLAGS)
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) -c $< -o $@ $(FLAGS) $(EXTRAFLAGS)
@@ -62,11 +60,11 @@ BLASLDFLAGSSO ?= $(BLASLDFLAGS)
 tests/test_blas: tests/test_blas.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS) $(BLASLDFLAGS) $(BLASCFLAGS)
 
-demos/demo_ivfpq_indexing: demos/demo_ivfpq_indexing.cpp $(LIBNAME).a
-	$(CXX) -o $@ $(CXXFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
+demos/demo_ivfpq_indexing: tests/demo_ivfpq_indexing.cpp libfaiss.a
+	$(CXX) -o $@ $(CXXFLAGS) $< libfaiss.a $(LDFLAGS) $(BLASLDFLAGS)
 
-demos/demo_sift1M: demos/demo_sift1M.cpp $(LIBNAME).a
-	$(CXX) -o $@ $(CXXFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
+demos/demo_sift1M: tests/demo_sift1M.cpp libfaiss.a
+	$(CXX) -o $@ $(CXXFLAGS) $< libfaiss.a $(LDFLAGS) $(BLASLDFLAGS)
 
 
 #############################
@@ -83,7 +81,7 @@ python/swigfaiss_wrap.cxx: swigfaiss.swig $(HFILES)
 
 
 # extension is .so even on the mac
-python/_swigfaiss.so: python/swigfaiss_wrap.cxx $(LIBNAME).a
+python/_swigfaiss.so: python/swigfaiss_wrap.cxx libfaiss.a
 	$(CXX) -I. $(CXXFLAGS) $(LDFLAGS) $(PYTHONCFLAGS) $(SHAREDFLAGS) \
 	-o $@ $^ $(BLASLDFLAGSSO)
 
@@ -158,7 +156,7 @@ OnDiskInvertedLists.o: OnDiskInvertedLists.cpp OnDiskInvertedLists.h \
 
 
 clean:
-	rm -f $(LIBNAME).a $(LIBNAME).$(SHAREDEXT)* *.o \
+	rm -f libfaiss.a libfaiss.$(SHAREDEXT)* *.o \
 	   	lua/swigfaiss.so lua/swigfaiss_wrap.cxx \
 		python/_swigfaiss.so python/swigfaiss_wrap.cxx \
 		python/swigfaiss.py _swigfaiss.so swigfaiss.py
