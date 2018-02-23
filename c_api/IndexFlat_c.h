@@ -25,9 +25,9 @@ typedef enum FaissMetricType FaissMetricType;
 /** Opaque type for IndexFlat */
 FAISS_DECLARE_CLASS_INHERITED(IndexFlat, Index)
 
-int faiss_IndexFlat_create(FaissIndexFlat** p_index);
+int faiss_IndexFlat_new(FaissIndexFlat** p_index);
 
-int faiss_IndexFlat_create_with(FaissIndexFlat** p_index, idx_t d, FaissMetricType metric);
+int faiss_IndexFlat_new_with(FaissIndexFlat** p_index, idx_t d, FaissMetricType metric);
 
 /** get a pointer to the index's internal data (the `xb` field). The outputs
  * become invalid after any data addition or removal operation.
@@ -38,9 +38,8 @@ int faiss_IndexFlat_create_with(FaissIndexFlat** p_index, idx_t d, FaissMetricTy
  */
 void faiss_IndexFlat_xb(FaissIndexFlat* index, float** p_xb, size_t* p_size);
 
-
-/** attempt a dynamic cast from. This function can be used to
- * check whether the underlying index is a flat index.
+/** attempt a dynamic cast to a flat index, thus checking
+ * check whether the underlying index type is `IndexFlat`.
  * 
  * @param index opaque pointer to index object
  * @return the same pointer if the index is a flat index, NULL otherwise
