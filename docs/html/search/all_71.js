@@ -9,5 +9,7 @@ var searchData=
   ['quantizer_5ftrains_5falone',['quantizer_trains_alone',['../structfaiss_1_1Level1Quantizer.html#a1dcea762fc322fdcffe64f78994edea0',1,'faiss::Level1Quantizer']]],
   ['quantizertype',['QuantizerType',['../structfaiss_1_1ScalarQuantizer.html#a1201dbd1611fa5c10782ade5d0e4952e',1,'faiss::ScalarQuantizer']]],
   ['query',['query',['../classfaiss_1_1gpu_1_1IVFFlat.html#a6652ca90a8a30512104fc909f0a0a6b8',1,'faiss::gpu::IVFFlat::query()'],['../classfaiss_1_1gpu_1_1IVFPQ.html#ab0c458aab9a3d903f31b0e63ce16e623',1,'faiss::gpu::IVFPQ::query()']]],
-  ['queryresult',['QueryResult',['../structfaiss_1_1RangeSearchPartialResult_1_1QueryResult.html',1,'faiss::RangeSearchPartialResult']]]
+  ['queryresult',['QueryResult',['../structfaiss_1_1RangeSearchPartialResult_1_1QueryResult.html',1,'faiss::RangeSearchPartialResult']]],
+  ['queue',['Queue',['../classQueue.html',1,'']]],
+  ['queuenode',['QueueNode',['../classQueueNode.html',1,'']]]
 ];

@@ -214,6 +214,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <a class="el" href="structfaiss_1_1ClusteringParameters.html">ClusteringParameters</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer.html#af265acf5aa1bcda60898002287e6a3d6">cp</a></td></tr>
 <tr class="memdesc:af265acf5aa1bcda60898002287e6a3d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">parameters used during clustering <br/></td></tr>
 <tr class="separator:af265acf5aa1bcda60898002287e6a3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62def246cfef670f2973fdf4af1414e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structfaiss_1_1Index.html">Index</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer.html#a62def246cfef670f2973fdf4af1414e1">assign_index</a></td></tr>
+<tr class="separator:a62def246cfef670f2973fdf4af1414e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab1109a29ba0544358e274d727b23cae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aab1109a29ba0544358e274d727b23cae"></a>
 std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer.html#aab1109a29ba0544358e274d727b23cae">centroids</a></td></tr>
 <tr class="memdesc:aab1109a29ba0544358e274d727b23cae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Centroid table, size M * ksub * dsub. <br/></td></tr>
@@ -284,7 +286,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 </div><div class="memdoc">
 <p>If we happen to have the distance tables precomputed, this is more efficient to compute the codes. </p>
 
-<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00363">363</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00364">364</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -323,7 +325,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00410">410</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00411">411</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -366,7 +368,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00439">439</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00440">440</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -430,7 +432,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00540">540</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00541">541</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -483,7 +485,23 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 </div><div class="memdoc">
 <p>same as search, but with inner product similarity </p>
 
-<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00565">565</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00566">566</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a62def246cfef670f2973fdf4af1414e1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structfaiss_1_1Index.html">Index</a>* faiss::ProductQuantizer::assign_index</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>if non-NULL, use this index for assignment (should be of size d / M) </p>
+
+<p>Definition at line <a class="el" href="ProductQuantizer_8h_source.html#l00053">53</a> of file <a class="el" href="ProductQuantizer_8h_source.html">ProductQuantizer.h</a>.</p>
 
 </div>
 </div>

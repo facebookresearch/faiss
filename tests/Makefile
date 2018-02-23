@@ -2,7 +2,7 @@ MAKEFILE_INC=../makefile.inc
 
 -include $(MAKEFILE_INC)
 
-CC_TESTS = test_ivfpq_indexing test_ivfpq_codec
+CC_TESTS = test_ivfpq_indexing test_ivfpq_codec test_merge test_ondisk_ivf test_pairs_decoding
 
 all: $(CC_TESTS) ../py
 

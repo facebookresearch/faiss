@@ -15,6 +15,7 @@
 #include "../index_io.h"
 #include "../IndexFlat.h"
 #include "../IndexIVF.h"
+#include "../IndexIVFFlat.h"
 #include "../IndexIVFPQ.h"
 #include "../VectorTransform.h"
 #include "../MetaIndexes.h"

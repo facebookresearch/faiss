@@ -48,6 +48,7 @@ todo = sys.argv[1:]
 if todo == []:
     todo = 'hnsw hnsw_sq ivf ivf_hnsw_quantizer kmeans kmeans_hnsw'.split()
 
+
 def evaluate(index):
     # for timing with a single core
     # faiss.omp_set_num_threads(1)

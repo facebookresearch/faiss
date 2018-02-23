@@ -467,7 +467,35 @@ void IndexPQ::hamming_distance_histogram (idx_t n, const float *x,
  * MultiIndexQuantizer
  ******************************************/
 
+namespace {
 
+template <typename T>
+struct PreSortedArray {
+
+    const T * x;
+    int N;
+
+    explicit PreSortedArray (int N): N(N) {
+    }
+    void init (const T*x) {
+        this->x = x;
+    }
+    // get smallest value
+    T get_0 () {
+        return x[0];
+    }
+
+    // get delta between n-smallest and n-1 -smallest
+    T get_diff (int n) {
+        return x[n] - x[n - 1];
+    }
+
+    // remap orders counted from smallest to indices in array
+    int get_ord (int n) {
+        return n;
+    }
+
+};
 
 template <typename T>
 struct ArgSort {
@@ -647,6 +675,7 @@ template <typename T, class SSA, bool use_seen>
 struct MinSumK {
     int K;  ///< nb of sums to return
     int M;  ///< nb of elements to sum up
+    int nbit; ///< nb of bits to encode one entry
     int N;  ///< nb of possible elements for each of the M terms
 
     /** the heap.
@@ -659,7 +688,6 @@ struct MinSumK {
     long *bh_ids;
 
     std::vector <SSA> ssx;
-    std::vector <long> weights;
 
     // all results get pushed several times. When there are ties, they
     // are popped interleaved with others, so it is not easy to
@@ -667,24 +695,27 @@ struct MinSumK {
     // that were seen before.
     std::vector <uint8_t> seen;
 
-    MinSumK (int K, int M, int N): K(K), M(M), N(N) {
+    MinSumK (int K, int M, int nbit, int N):
+        K(K), M(M), nbit(nbit), N(N) {
         heap_capacity = K * M;
+        assert (N <= (1 << nbit));
+
         // we'll do k steps, each step pushes at most M vals
         bh_val = new T[heap_capacity];
         bh_ids = new long[heap_capacity];
 
-        weights.push_back (1);
-        for (int m = 1; m < M; m++)
-            weights.push_back(weights[m - 1] * N);
-
         if (use_seen) {
-            long n_ids = weights.back() * N;
+            long n_ids = weight(M);
             seen.resize ((n_ids + 7) / 8);
         }
 
         for (int m = 0; m < M; m++)
             ssx.push_back (SSA(N));
 
+    }
+
+    long weight (int i) {
+        return 1 << (i * nbit);
     }
 
     bool is_seen (long i) {
@@ -696,11 +727,14 @@ struct MinSumK {
             seen [i >> 3] |= 1 << (i & 7);
     }
 
-    void run (const T *x, T * sums, long * terms) {
+    void run (const T *x, long ldx,
+              T * sums, long * terms) {
         heap_size = 0;
 
-        for (int m = 0; m < M; m++)
-            ssx[m].init(x + N * m);
+        for (int m = 0; m < M; m++) {
+            ssx[m].init(x);
+            x += ldx;
+        }
 
         { // intial result: take min for all elements
             T sum = 0;
@@ -712,8 +746,8 @@ struct MinSumK {
             sums[0] = sum;
             for (int m = 0; m < M; m++) {
                 heap_push<HC> (++heap_size, bh_val, bh_ids,
-                                      sum + ssx[m].get_diff(1),
-                                      weights[m]);
+                               sum + ssx[m].get_diff(1),
+                               weight(m));
             }
         }
 
@@ -742,8 +776,8 @@ struct MinSumK {
             // enqueue followers
             long ii = ti;
             for (int m = 0; m < M; m++) {
-                long n = ii % N;
-                ii /= N;
+                long n = ii & ((1 << nbit) - 1);
+                ii >>= nbit;
                 if (n + 1 >= N) continue;
 
                 enqueue_follower (ti, m, n, sum);
@@ -765,9 +799,9 @@ struct MinSumK {
             }
             long ti = 0;
             for (int m = 0; m < M; m++) {
-                long n = ii % N;
-                ti += weights[m] * ssx[m].get_ord(n);
-                ii /= N;
+                long n = ii & ((1 << nbit) - 1);
+                ti += ssx[m].get_ord(n) << (nbit * m);
+                ii >>= nbit;
             }
             terms[k] = ti;
         }
@@ -776,10 +810,9 @@ struct MinSumK {
 
     void enqueue_follower (long ti, int m, int n, T sum) {
         T next_sum = sum + ssx[m].get_diff(n + 1);
-        long next_ti   = ti + weights[m];
+        long next_ti = ti + weight(m);
         heap_push<HC> (++heap_size, bh_val, bh_ids, next_sum, next_ti);
     }
-
 
     ~MinSumK () {
         delete [] bh_ids;
@@ -787,7 +820,7 @@ struct MinSumK {
     }
 };
 
-
+} // anonymous namespace
 
 
 MultiIndexQuantizer::MultiIndexQuantizer (int d,
@@ -814,7 +847,7 @@ void MultiIndexQuantizer::train(idx_t n, const float *x)
 
 
 void MultiIndexQuantizer::search (idx_t n, const float *x, idx_t k,
-                                       float *distances, idx_t *labels) const {
+                                  float *distances, idx_t *labels) const {
     if (n == 0) return;
 
     float * dis_tables = new float [n * pq.ksub * pq.M];
@@ -856,10 +889,10 @@ void MultiIndexQuantizer::search (idx_t n, const float *x, idx_t k,
 #pragma omp parallel if(n > 1)
         {
             MinSumK <float, SemiSortedArray<float>, false>
-                msk(k, pq.M, pq.ksub);
+                msk(k, pq.M, pq.nbits, pq.ksub);
 #pragma omp for
             for (int i = 0; i < n; i++) {
-                msk.run (dis_tables + i * pq.ksub * pq.M,
+                msk.run (dis_tables + i * pq.ksub * pq.M, pq.ksub,
                          distances + i * k, labels + i * k);
 
             }
@@ -871,25 +904,14 @@ void MultiIndexQuantizer::search (idx_t n, const float *x, idx_t k,
 
 void MultiIndexQuantizer::reconstruct (idx_t key, float * recons) const
 {
-    if (pq.byte_per_idx == 1) {
-        uint8_t code[pq.M];
-        long jj = key;
-        for (int m = 0; m < pq.M; m++) {
-            long n = jj % pq.ksub;
-            jj /= pq.ksub;
-            code[m] = n;
-        }
-        pq.decode (code, recons);
-    } else if (pq.byte_per_idx == 2) {
-        uint16_t code[pq.M];
-        long jj = key;
-        for (int m = 0; m < pq.M; m++) {
-            long n = jj % pq.ksub;
-            jj /= pq.ksub;
-            code[m] = n;
-        }
-        pq.decode ((uint8_t*)code, recons);
-    } else FAISS_THROW_MSG( "only 1 or 2 bytes per index supported");
+
+    long jj = key;
+    for (int m = 0; m < pq.M; m++) {
+        long n = jj & ((1L << pq.nbits) - 1);
+        jj >>= pq.nbits;
+        memcpy(recons, pq.get_centroids(m, n), sizeof(recons[0]) * pq.dsub);
+        recons += pq.dsub;
+    }
 }
 
 void MultiIndexQuantizer::add(idx_t /*n*/, const float* /*x*/) {
@@ -904,6 +926,148 @@ void MultiIndexQuantizer::reset ()
                       "it does not support reset");
 }
 
+
+
+
+
+
+
+
+
+
+/*****************************************
+ * MultiIndexQuantizer2
+ ******************************************/
+
+
+
+MultiIndexQuantizer2::MultiIndexQuantizer2 (
+        int d, size_t M, size_t nbits,
+        Index **indexes):
+    MultiIndexQuantizer (d, M, nbits)
+{
+    assign_indexes.resize (M);
+    for (int i = 0; i < M; i++) {
+        FAISS_THROW_IF_NOT_MSG(
+            indexes[i]->d == pq.dsub,
+            "Provided sub-index has incorrect size");
+        assign_indexes[i] = indexes[i];
+    }
+    own_fields = false;
+}
+
+MultiIndexQuantizer2::MultiIndexQuantizer2 (
+        int d, size_t nbits,
+        Index *assign_index_0,
+        Index *assign_index_1):
+    MultiIndexQuantizer (d, 2, nbits)
+{
+    FAISS_THROW_IF_NOT_MSG(
+            assign_index_0->d == pq.dsub &&
+            assign_index_1->d == pq.dsub,
+            "Provided sub-index has incorrect size");
+    assign_indexes.resize (2);
+    assign_indexes [0] = assign_index_0;
+    assign_indexes [1] = assign_index_1;
+    own_fields = false;
+}
+
+void MultiIndexQuantizer2::train(idx_t n, const float* x)
+{
+    MultiIndexQuantizer::train(n, x);
+    // add centroids to sub-indexes
+    for (int i = 0; i < pq.M; i++) {
+        assign_indexes[i]->add(pq.ksub, pq.get_centroids(i, 0));
+    }
+}
+
+
+void MultiIndexQuantizer2::search(
+        idx_t n, const float* x, idx_t K,
+        float* distances, idx_t* labels) const
+{
+
+    if (n == 0) return;
+
+    int k2 = std::min(K, long(pq.ksub));
+
+    long M = pq.M;
+    long dsub = pq.dsub, ksub = pq.ksub;
+
+    // size (M, n, k2)
+    std::vector<idx_t> sub_ids(n * M * k2);
+    std::vector<float> sub_dis(n * M * k2);
+    std::vector<float> xsub(n * dsub);
+
+    for (int m = 0; m < M; m++) {
+        float *xdest = xsub.data();
+        const float *xsrc = x + m * dsub;
+        for (int j = 0; j < n; j++) {
+            memcpy(xdest, xsrc, dsub * sizeof(xdest[0]));
+            xsrc += d;
+            xdest += dsub;
+        }
+
+        assign_indexes[m]->search(
+              n, xsub.data(), k2,
+              &sub_dis[k2 * n * m],
+              &sub_ids[k2 * n * m]);
+    }
+
+    if (K == 1) {
+        // simple version that just finds the min in each table
+        assert (k2 == 1);
+
+        for (int i = 0; i < n; i++) {
+            float dis = 0;
+            idx_t label = 0;
+
+            for (int m = 0; m < M; m++) {
+                float vmin = sub_dis[i + m * n];
+                idx_t lmin = sub_ids[i + m * n];
+                dis += vmin;
+                label |= lmin << (m * pq.nbits);
+            }
+            distances [i] = dis;
+            labels [i] = label;
+        }
+
+    } else {
+
+#pragma omp parallel if(n > 1)
+        {
+            MinSumK <float, PreSortedArray<float>, false>
+                msk(K, pq.M, pq.nbits, k2);
+#pragma omp for
+            for (int i = 0; i < n; i++) {
+                idx_t *li = labels + i * K;
+                msk.run (&sub_dis[i * k2], k2 * n,
+                         distances + i * K, li);
+
+                // remap ids
+
+                const idx_t *idmap0 = sub_ids.data() + i * k2;
+                long ld_idmap = k2 * n;
+                long mask1 = ksub - 1L;
+
+                for (int k = 0; k < K; k++) {
+                    const idx_t *idmap = idmap0;
+                    long vin = li[k];
+                    long vout = 0;
+                    int bs = 0;
+                    for (int m = 0; m < M; m++) {
+                        long s = vin & mask1;
+                        vin >>= pq.nbits;
+                        vout |= idmap[s] << bs;
+                        bs += pq.nbits;
+                        idmap += ld_idmap;
+                    }
+                    li[k] = vout;
+                }
+            }
+        }
+    }
+}
 
 
 

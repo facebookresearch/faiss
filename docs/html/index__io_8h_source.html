@@ -109,13 +109,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keywordtype">void</span> write_index (<span class="keyword">const</span> Index *idx, FILE *f);</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keywordtype">void</span> write_index (<span class="keyword">const</span> Index *idx, <span class="keyword">const</span> <span class="keywordtype">char</span> *fname);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment"> * mmap&#39;ing currently works only for IndexIVFPQCompact, the</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment"> * IndexIVFPQCompact destructor will unmap the file.</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;Index *<a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (FILE * f, <span class="keywordtype">bool</span> try_mmap = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;Index *<a class="code" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (<span class="keyword">const</span> <span class="keywordtype">char</span> *fname, <span class="keywordtype">bool</span> try_mmap = <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> IO_FLAG_MMAP = 1;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> IO_FLAG_READ_ONLY = 2;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;Index *read_index (FILE * f, <span class="keywordtype">int</span> io_flags = 0);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;Index *read_index (<span class="keyword">const</span> <span class="keywordtype">char</span> *fname, <span class="keywordtype">int</span> io_flags = 0);</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
@@ -143,9 +143,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;}</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="structfaiss_1_1IndexIVF_html"><div class="ttname"><a href="structfaiss_1_1IndexIVF.html">faiss::IndexIVF</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00077">IndexIVF.h:77</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIVF_html"><div class="ttname"><a href="structfaiss_1_1IndexIVF.html">faiss::IndexIVF</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00166">IndexIVF.h:166</a></div></div>
 <div class="ttc" id="structfaiss_1_1Cloner_html"><div class="ttname"><a href="structfaiss_1_1Cloner.html">faiss::Cloner</a></div><div class="ttdef"><b>Definition:</b> <a href="index__io_8h_source.html#l00051">index_io.h:51</a></div></div>
-<div class="ttc" id="namespacefaiss_html_aa46fe38a858ecfde7e0fc0744939d5ad"><div class="ttname"><a href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">faiss::read_index</a></div><div class="ttdeci">Index * read_index(FILE *f, bool try_mmap)</div><div class="ttdef"><b>Definition:</b> <a href="index__io_8cpp_source.html#l00592">index_io.cpp:592</a></div></div>
 <div class="ttc" id="structfaiss_1_1VectorTransform_html"><div class="ttname"><a href="structfaiss_1_1VectorTransform.html">faiss::VectorTransform</a></div><div class="ttdef"><b>Definition:</b> <a href="VectorTransform_8h_source.html#l00028">VectorTransform.h:28</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html"><div class="ttname"><a href="structfaiss_1_1Index.html">faiss::Index</a></div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00060">Index.h:60</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

@@ -11,9 +11,76 @@
 import numpy as np
 import unittest
 import faiss
+import os
+
+def get_dataset_2(d, nb, nt, nq):
+    """A dataset that is not completely random but still challenging to
+    index
+    """
+    d1 = 10     # intrinsic dimension (more or less)
+    n = nb + nt + nq
+    rs = np.random.RandomState(1234)
+    x = rs.normal(size=(n, d1))
+    x = np.dot(x, rs.rand(d1, d))
+    # now we have a d1-dim ellipsoid in d-dimensional space
+    # higher factor (>4) -> higher frequency -> less linear
+    x = x * (rs.rand(d) * 4 + 0.1)
+    x = np.sin(x)
+    x = x.astype('float32')
+    return x[:nt], x[nt:-nq], x[-nq:]
+
 
 
 class TestRemove(unittest.TestCase):
+
+    def do_merge_then_remove(self, ondisk):
+        d = 10
+        nb = 1000
+        nq = 200
+        nt = 200
+
+        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+
+        quantizer = faiss.IndexFlatL2(d)
+
+        index1 = faiss.IndexIVFFlat(quantizer, d, 20)
+        index1.train(xt)
+
+        filename = None
+        if ondisk:
+            filename = os.tmpnam()
+            invlists = faiss.OnDiskInvertedLists(
+                index1.nlist, index1.code_size,
+                filename)
+            index1.replace_invlists(invlists)
+
+        index1.add(xb[:nb / 2])
+
+        index2 = faiss.IndexIVFFlat(quantizer, d, 20)
+        assert index2.is_trained
+        index2.add(xb[nb / 2:])
+
+        Dref, Iref = index1.search(xq, 10)
+        index1.merge_from(index2, nb / 2)
+
+        assert index1.ntotal == nb
+
+        index1.remove_ids(faiss.IDSelectorRange(nb / 2, nb))
+
+        assert index1.ntotal == nb / 2
+        Dnew, Inew = index1.search(xq, 10)
+
+        assert np.all(Dnew == Dref)
+        assert np.all(Inew == Iref)
+
+        if filename is not None:
+            os.unlink(filename)
+
+    def test_remove_regular(self):
+        self.do_merge_then_remove(False)
+
+    def test_remove_ondisk(self):
+        self.do_merge_then_remove(True)
 
     def test_remove(self):
         # only tests the python interface
@@ -221,6 +288,52 @@ class TestTransformChain(unittest.TestCase):
         D2, I2 = index2.search(manual_trans(xq), 5)
 
         assert np.all(I == I2)
+
+class TestRareIO(unittest.TestCase):
+
+    def compare_results(self, index1, index2, xq):
+
+        Dref, Iref = index1.search(xq, 5)
+        Dnew, Inew = index1.search(xq, 5)
+
+        assert np.all(Dref == Dnew)
+        assert np.all(Iref == Inew)
+
+
+    def do_mmappedIO(self, sparse):
+        d = 10
+        nb = 1000
+        nq = 200
+        nt = 200
+        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+        if sparse:
+            fname = "/tmp/faiss_test_rareio_sparse.faissindex"
+        else:
+            fname = "/tmp/faiss_test_rareio_full.faissindex"
+
+        quantizer = faiss.IndexFlatL2(d)
+        index1 = faiss.IndexIVFFlat(quantizer, d, 20)
+        if sparse:
+            # makes the inverted lists sparse because all elements get
+            # assigned to the same invlist
+            xt += (np.ones(10) * 1000).astype('float32')
+
+        index1.train(xt)
+        index1.add(xb)
+        faiss.write_index(index1, fname)
+
+        index2 = faiss.read_index(fname)
+        self.compare_results(index1, index2, xq)
+
+        index3 = faiss.read_index(fname, faiss.IO_FLAG_MMAP)
+        self.compare_results(index1, index3, xq)
+
+    def test_mmappedIO_sparse(self):
+        self.do_mmappedIO(True)
+
+    def test_mmappedIO_full(self):
+        self.do_mmappedIO(False)
+
 
 
 if __name__ == '__main__':

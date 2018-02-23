@@ -425,7 +425,7 @@ template&lt;typename NewIndexT &gt; </div>
 </div><div class="memdoc">
 <p>Returns true if we can use this indexing type to access all elements index type </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00356">356</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00361">361</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -469,7 +469,7 @@ template&lt;typename NewIndexT &gt; </div>
 </div><div class="memdoc">
 <p>Attempts to cast this tensor to a tensor of a different IndexT. Fails if size or stride entries are not representable in the new IndexT. </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00336">336</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00341">341</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -513,7 +513,7 @@ template&lt;int NewDim&gt; </div>
 </div><div class="memdoc">
 <p>Downcast a tensor of dimension <code>D</code> to some tensor of dimension D' &lt; D by collapsing the leading dimensions. asserts if there is padding on the leading dimensions. </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00586">586</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00591">591</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -535,7 +535,7 @@ template&lt;int NewDim&gt; </div>
 </div><div class="memdoc">
 <p>Downcast a tensor of dimension <code>D</code> to some tensor of dimension D' &lt; D by collapsing the leading dimensions. asserts if there is padding on the leading dimensions. </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00541">541</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00546">546</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -698,7 +698,7 @@ template&lt;typename T , int Dim, bool InnerContig, typename IndexT , template&l
 </div><div class="memdoc">
 <p>Returns whether a given dimension has only increasing stride from the previous dimension. A tensor that was permuted by exchanging size and stride only will fail this check. If <code>i == 0</code> just check <code>size &gt; 0</code>. Returns <code>false</code> if <code>stride</code> is <code>&lt;= 0</code>. </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00415">415</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00420">420</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -719,7 +719,7 @@ template&lt;typename T , int Dim, bool InnerContig, typename IndexT , template&l
 <p>Returns true if there is no padding within the tensor and no re-ordering of the dimensions. </p>
 <div class="fragment"><div class="line">(stride(i) == size(i + 1) * stride(i + 1)) &amp;&amp; stride(dim - 1) == 0</div>
 </div><!-- fragment --> 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00396">396</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00401">401</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -779,7 +779,7 @@ template&lt;typename T , int Dim, bool InnerContig, typename IndexT, template&lt
 </div><div class="memdoc">
 <p>Returns a tensor of the same dimension that is a view of the original tensor with the specified dimension restricted to the elements in the range [start, start + size). Can occur in an arbitrary dimension </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00664">664</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00669">669</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -810,7 +810,7 @@ template&lt;typename T , int Dim, bool InnerContig, typename IndexT, template&lt
 </div><div class="memdoc">
 <p>Returns a tensor of the same dimension that is a view of the original tensor with the specified dimension restricted to the elements in the range [start, start + size) </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00656">656</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00661">661</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -830,7 +830,7 @@ template&lt;typename T , int Dim, bool InnerContig, typename IndexT , template&l
 </div><div class="memdoc">
 <p>Returns the total number of elements contained within our data (product of <code>getSize(i)</code>) </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00383">383</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00388">388</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -861,7 +861,7 @@ template&lt;typename T , int Dim, bool InnerContig, typename IndexT , template&l
 </div><div class="memdoc">
 <p>Returns a tensor of the same dimension after transposing the two dimensions given. Does not actually move elements; transposition is made by permuting the size/stride arrays. If the dimensions are not valid, asserts. </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00451">451</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00456">456</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -883,7 +883,7 @@ template&lt;int NewDim&gt; </div>
 </div><div class="memdoc">
 <p>Upcast a tensor of dimension <code>D</code> to some tensor of dimension D' &gt; D by padding the lowest/most varying dimensions by 1 e.g., upcasting a 2-d tensor <code>[2][3]</code> to a 4-d tensor <code>[2][3][1][1]</code> </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00514">514</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00519">519</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -905,7 +905,7 @@ template&lt;int NewDim&gt; </div>
 </div><div class="memdoc">
 <p>Upcast a tensor of dimension <code>D</code> to some tensor of dimension D' &gt; D by padding the leading dimensions by 1 e.g., upcasting a 2-d tensor <code>[2][3]</code> to a 4-d tensor <code>[1][1][2][3]</code> </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00485">485</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00490">490</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -928,7 +928,7 @@ template&lt;int SubDim&gt; </div>
 </div><div class="memdoc">
 <p>Returns a tensor that is a view of the <code>SubDim</code>-dimensional slice of this tensor, starting at <code>at</code>. </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00629">629</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00634">634</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -950,7 +950,7 @@ template&lt;int SubDim&gt; </div>
 </div><div class="memdoc">
 <p>Returns a tensor that is a view of the <code>SubDim</code>-dimensional slice of this tensor, starting where our data begins </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00649">649</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00654">654</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>
@@ -973,7 +973,7 @@ template&lt;int NewDim&gt; </div>
 </div><div class="memdoc">
 <p>Returns a view of the given tensor expressed as a tensor of a different number of dimensions. Only works if we are contiguous. </p>
 
-<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00695">695</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
+<p>Definition at line <a class="el" href="Tensor-inl_8cuh_source.html#l00700">700</a> of file <a class="el" href="Tensor-inl_8cuh_source.html">Tensor-inl.cuh</a>.</p>
 
 </div>
 </div>

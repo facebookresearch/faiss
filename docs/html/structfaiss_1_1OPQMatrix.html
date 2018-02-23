@@ -167,6 +167,8 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 <tr class="memitem:abf181dd944511a81803abba538ecc4b5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf181dd944511a81803abba538ecc4b5"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>verbose</b></td></tr>
 <tr class="separator:abf181dd944511a81803abba538ecc4b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01d3736c8e725f596b99440324544a59"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structfaiss_1_1ProductQuantizer.html">ProductQuantizer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1OPQMatrix.html#a01d3736c8e725f596b99440324544a59">pq</a></td></tr>
+<tr class="separator:a01d3736c8e725f596b99440324544a59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_structfaiss_1_1LinearTransform"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structfaiss_1_1LinearTransform')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structfaiss_1_1LinearTransform.html">faiss::LinearTransform</a></td></tr>
 <tr class="memitem:a322401ba80cb96ac1e7846401f2bef24 inherit pub_attribs_structfaiss_1_1LinearTransform"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a322401ba80cb96ac1e7846401f2bef24"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>have_bias</b></td></tr>
@@ -207,7 +209,7 @@ typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eeb
 <div class="textblock"><p>Applies a rotation to align the dimensions with a PQ to minimize the reconstruction error. Can be used before an <a class="el" href="structfaiss_1_1IndexPQ.html">IndexPQ</a> or an <a class="el" href="structfaiss_1_1IndexIVFPQ.html">IndexIVFPQ</a>. The method is the non-parametric version described in:</p>
 <p>"Optimized Product Quantization for Approximate Nearest Neighbor Search" Tiezheng Ge, Kaiming He, Qifa Ke, Jian Sun, CVPR'13 </p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00186">186</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00187">187</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a1e314577db0c6cd4a709503f73eb71e2"></a>
 <div class="memitem">
@@ -251,7 +253,23 @@ typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eeb
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1VectorTransform.html#a7350d4dd28d60866d55ba4f75d2da84c">faiss::VectorTransform</a>.</p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00587">587</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8cpp_source.html#l00589">589</a> of file <a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a01d3736c8e725f596b99440324544a59"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structfaiss_1_1ProductQuantizer.html">ProductQuantizer</a>* faiss::OPQMatrix::pq</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>if non-NULL, use this product quantizer for training should be constructed with (d_out, M, _) </p>
+
+<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00200">200</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
 
 </div>
 </div>

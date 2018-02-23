@@ -13,7 +13,7 @@ MAKEFILE_INC=makefile.inc
 
 LIBNAME=libfaiss
 
-all: .env_ok $(LIBNAME).a tests/demo_ivfpq_indexing
+all: .env_ok $(LIBNAME).a demos/demo_ivfpq_indexing
 
 py: _swigfaiss.so
 
@@ -29,7 +29,8 @@ LIBOBJ=hamming.o  utils.o \
        Clustering.o Heap.o VectorTransform.o index_io.o \
        PolysemousTraining.o MetaIndexes.o Index.o \
        ProductQuantizer.o AutoTune.o AuxIndexStructures.o \
-       IndexScalarQuantizer.o FaissException.o IndexHNSW.o
+       IndexScalarQuantizer.o FaissException.o IndexHNSW.o \
+       IndexIVFFlat.o OnDiskInvertedLists.o
 
 
 $(LIBNAME).a: $(LIBOBJ)
@@ -58,8 +59,10 @@ BLASLDFLAGSSO ?= $(BLASLDFLAGS)
 tests/test_blas: tests/test_blas.cpp
 	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) $(BLASLDFLAGS) $(BLASCFLAGS)
 
+demos/demo_ivfpq_indexing: demos/demo_ivfpq_indexing.cpp $(LIBNAME).a
+	$(CC) -o $@ $(CFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
 
-tests/demo_sift1M: tests/demo_sift1M.cpp $(LIBNAME).a
+demos/demo_sift1M: demos/demo_sift1M.cpp $(LIBNAME).a
 	$(CC) -o $@ $(CFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
 
 
@@ -119,7 +122,8 @@ VectorTransform.o: VectorTransform.cpp VectorTransform.h Index.h utils.h \
 index_io.o: index_io.cpp index_io.h FaissAssert.h FaissException.h \
  IndexFlat.h Index.h VectorTransform.h IndexLSH.h IndexPQ.h \
  ProductQuantizer.h Clustering.h Heap.h PolysemousTraining.h IndexIVF.h \
- IndexIVFPQ.h MetaIndexes.h IndexScalarQuantizer.h IndexHNSW.h utils.h
+ IndexIVFPQ.h IndexIVFFlat.h MetaIndexes.h IndexScalarQuantizer.h \
+ IndexHNSW.h utils.h OnDiskInvertedLists.h
 PolysemousTraining.o: PolysemousTraining.cpp PolysemousTraining.h \
  ProductQuantizer.h Clustering.h Index.h Heap.h utils.h hamming.h \
  FaissAssert.h FaissException.h
@@ -132,7 +136,8 @@ ProductQuantizer.o: ProductQuantizer.cpp ProductQuantizer.h Clustering.h \
 AutoTune.o: AutoTune.cpp AutoTune.h Index.h FaissAssert.h \
  FaissException.h utils.h Heap.h IndexFlat.h VectorTransform.h IndexLSH.h \
  IndexPQ.h ProductQuantizer.h Clustering.h PolysemousTraining.h \
- IndexIVF.h IndexIVFPQ.h MetaIndexes.h IndexScalarQuantizer.h IndexHNSW.h
+ IndexIVF.h IndexIVFPQ.h IndexIVFFlat.h MetaIndexes.h \
+ IndexScalarQuantizer.h IndexHNSW.h
 AuxIndexStructures.o: AuxIndexStructures.cpp AuxIndexStructures.h Index.h
 IndexScalarQuantizer.o: IndexScalarQuantizer.cpp IndexScalarQuantizer.h \
  IndexIVF.h Index.h Clustering.h Heap.h utils.h FaissAssert.h \
@@ -142,6 +147,11 @@ IndexHNSW.o: IndexHNSW.cpp IndexHNSW.h IndexFlat.h Index.h IndexPQ.h \
  ProductQuantizer.h Clustering.h Heap.h PolysemousTraining.h \
  IndexScalarQuantizer.h IndexIVF.h utils.h FaissAssert.h FaissException.h \
  IndexIVFPQ.h
+IndexIVFFlat.o: IndexIVFFlat.cpp IndexIVFFlat.h IndexIVF.h Index.h \
+ Clustering.h Heap.h utils.h FaissAssert.h FaissException.h IndexFlat.h \
+ AuxIndexStructures.h
+OnDiskInvertedLists.o: OnDiskInvertedLists.cpp OnDiskInvertedLists.h \
+ IndexIVF.h Index.h Clustering.h Heap.h FaissAssert.h FaissException.h
 
 
 clean:

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['m',['M',['../structfaiss_1_1MinSumK.html#a816976ee9baa0378b01d2f0fdaf4907a',1,'faiss::MinSumK::M()'],['../structfaiss_1_1ProductQuantizer.html#a83600e328893ce5f41fe459f5a3acf41',1,'faiss::ProductQuantizer::M()'],['../structfaiss_1_1OPQMatrix.html#a07ad0c0c84f96a6880c1c8eaf09596e3',1,'faiss::OPQMatrix::M()']]],
+  ['m',['M',['../structfaiss_1_1ProductQuantizer.html#a83600e328893ce5f41fe459f5a3acf41',1,'faiss::ProductQuantizer::M()'],['../structfaiss_1_1OPQMatrix.html#a07ad0c0c84f96a6880c1c8eaf09596e3',1,'faiss::OPQMatrix::M()']]],
   ['maintain_5fdirect_5fmap',['maintain_direct_map',['../structfaiss_1_1IndexIVF.html#aedd0c14b5654295b291638ec7f9f9517',1,'faiss::IndexIVF']]],
   ['make_5fdirect_5fmap',['make_direct_map',['../structfaiss_1_1IndexIVF.html#a1c11ce77f459e2ab3e5d9a4c2263ad89',1,'faiss::IndexIVF']]],
   ['malloccurrent_5f',['mallocCurrent_',['../structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#a8cd6e71bd4d147dcc5a9db951bcbb075',1,'faiss::gpu::StackDeviceMemory::Stack']]],
@@ -24,12 +24,15 @@ var searchData=
   ['merge_5fresult_5ftable_5fwith',['merge_result_table_with',['../namespacefaiss.html#afb7b33f6892678ba79aaf5e71777837c',1,'faiss']]],
   ['merge_5fwith',['merge_with',['../structfaiss_1_1OperatingPoints.html#a84baddccd8b803dee460739f8bcbc0c9',1,'faiss::OperatingPoints']]],
   ['mergewarpq',['mergeWarpQ',['../structfaiss_1_1gpu_1_1BlockSelect.html#a08aa08d16ec29c7b7dccc65edd5115cd',1,'faiss::gpu::BlockSelect::mergeWarpQ()'],['../structfaiss_1_1gpu_1_1WarpSelect.html#a408cbf9a09094078cb62018400f30076',1,'faiss::gpu::WarpSelect::mergeWarpQ()']]],
+  ['message',['Message',['../classtesting_1_1Message.html',1,'testing']]],
   ['metric_5ftype',['metric_type',['../structfaiss_1_1Index.html#a8e18f641854b2bde83ecff0a2f9a6f4e',1,'faiss::Index']]],
   ['metrictype',['MetricType',['../namespacefaiss.html#afd12191c638da74760ff397cf319752c',1,'faiss']]],
   ['min',['Min',['../structfaiss_1_1gpu_1_1Min.html',1,'faiss::gpu']]],
   ['min_5fpoints_5fper_5fcentroid',['min_points_per_centroid',['../structfaiss_1_1ClusteringParameters.html#a5af907901147a9b1e748b13305839924',1,'faiss::ClusteringParameters']]],
   ['minpagedsize_5f',['minPagedSize_',['../classfaiss_1_1gpu_1_1GpuIndexFlat.html#aad665a7b5888b4aafd47ae0f8d0e6c40',1,'faiss::gpu::GpuIndexFlat']]],
-  ['minsumk',['MinSumK',['../structfaiss_1_1MinSumK.html',1,'faiss']]],
+  ['multiindexquantizer',['MultiIndexQuantizer',['../structfaiss_1_1MultiIndexQuantizer.html#a01a568055ebc1e841f7e4218722efa01',1,'faiss::MultiIndexQuantizer']]],
   ['multiindexquantizer',['MultiIndexQuantizer',['../structfaiss_1_1MultiIndexQuantizer.html',1,'faiss']]],
-  ['multiindexquantizer',['MultiIndexQuantizer',['../structfaiss_1_1MultiIndexQuantizer.html#a01a568055ebc1e841f7e4218722efa01',1,'faiss::MultiIndexQuantizer']]]
+  ['multiindexquantizer2',['MultiIndexQuantizer2',['../structfaiss_1_1MultiIndexQuantizer2.html',1,'faiss']]],
+  ['mutex',['Mutex',['../classtesting_1_1internal_1_1Mutex.html',1,'testing::internal']]],
+  ['mystring',['MyString',['../classMyString.html',1,'']]]
 ];

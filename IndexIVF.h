@@ -57,12 +57,101 @@ struct Level1Quantizer {
 };
 
 
+/** Table of inverted lists
+ * multithreading rules:
+ * - concurrent read accesses are allowed
+ * - concurrent update accesses are allowed
+ * - for resize and add_entries, only concurrent access to different lists
+ *   are allowed
+ */
+struct InvertedLists {
+    typedef Index::idx_t idx_t;
+
+    size_t nlist;             ///< number of possible key values
+    size_t code_size;         ///< code size per vector in bytes
+
+    InvertedLists (size_t nlist, size_t code_size);
+
+    /*************************
+     *  Read only functions */
+
+    /// get the size of a list
+    virtual size_t list_size(size_t list_no) const = 0;
+
+    /// @return codes    size list_size * code_size
+    virtual const uint8_t * get_codes (size_t list_no) const = 0;
+
+    /// @return ids      size list_size
+    virtual const idx_t * get_ids (size_t list_no) const = 0;
+
+    /// @return a single id in an inverted list
+    virtual idx_t get_single_id (size_t list_no, size_t offset) const;
+
+    /// @return a single code in an inverted list
+    virtual const uint8_t * get_single_code (
+                size_t list_no, size_t offset) const;
+
+    /// prepare the following lists (default does nothing)
+    /// a list can be -1 hence the signed long
+    virtual void prefetch_lists (const long *list_nos, int nlist) const;
+
+    /*************************
+     * writing functions */
+
+    /// add one entry to an inverted list
+    virtual size_t add_entry (size_t list_no, idx_t theid,
+                              const uint8_t *code);
+
+    virtual size_t add_entries (
+           size_t list_no, size_t n_entry,
+           const idx_t* ids, const uint8_t *code) = 0;
+
+    virtual void update_entry (size_t list_no, size_t offset,
+                               idx_t id, const uint8_t *code);
+
+    virtual void update_entries (size_t list_no, size_t offset, size_t n_entry,
+                                 const idx_t *ids, const uint8_t *code) = 0;
+
+    virtual void resize (size_t list_no, size_t new_size) = 0;
+
+    virtual void reset ();
+
+    virtual ~InvertedLists ();
+};
+
+
+struct ArrayInvertedLists: InvertedLists {
+    std::vector < std::vector<uint8_t> > codes; // binary codes, size nlist
+    std::vector < std::vector<idx_t> > ids;  ///< Inverted lists for indexes
+
+    ArrayInvertedLists (size_t nlist, size_t code_size);
+
+    size_t list_size(size_t list_no) const override;
+    const uint8_t * get_codes (size_t list_no) const override;
+    const idx_t * get_ids (size_t list_no) const override;
+
+    size_t add_entries (
+           size_t list_no, size_t n_entry,
+           const idx_t* ids, const uint8_t *code) override;
+
+    void update_entries (size_t list_no, size_t offset, size_t n_entry,
+                         const idx_t *ids, const uint8_t *code) override;
+
+    void resize (size_t list_no, size_t new_size) override;
+
+    virtual ~ArrayInvertedLists ();
+};
+
+
 /** Index based on a inverted file (IVF)
  *
  * In the inverted file, the quantizer (an Index instance) provides a
  * quantization index for each vector to be added. The quantization
  * index maps to a list (aka inverted list or posting list), where the
- * id of the vector is then stored.
+ * id of the vector is stored.
+ *
+ * The inverted list object is required only after trainng. If none is
+ * set externally, an ArrayInvertedLists is used automatically.
  *
  * At search time, the vector to be searched is also quantized, and
  * only the list corresponding to the quantization index is
@@ -75,13 +164,14 @@ struct Level1Quantizer {
  * the distance estimation from the query to databse vectors.
  */
 struct IndexIVF: Index, Level1Quantizer {
-    size_t nprobe;            ///< number of probes at query time
-    size_t max_codes;         ///< max nb of codes to visit to do a query
-
-    std::vector < std::vector<long> > ids;  ///< Inverted lists for indexes
+    /// Acess to the actual data
+    InvertedLists *invlists;
+    bool own_invlists;
 
     size_t code_size;              ///< code size per vector in bytes
-    std::vector < std::vector<uint8_t> > codes; // binary codes, size nlist
+
+    size_t nprobe;            ///< number of probes at query time
+    size_t max_codes;         ///< max nb of codes to visit to do a query
 
     /// map for direct access to the elements. Enables reconstruct().
     bool maintain_direct_map;
@@ -92,7 +182,8 @@ struct IndexIVF: Index, Level1Quantizer {
      * identifier. The pointer is borrowed: the quantizer should not
      * be deleted while the IndexIVF is in use.
      */
-    IndexIVF (Index * quantizer, size_t d, size_t nlist,
+    IndexIVF (Index * quantizer, size_t d,
+              size_t nlist, size_t code_size,
               MetricType metric = METRIC_L2);
 
     void reset() override;
@@ -106,7 +197,6 @@ struct IndexIVF: Index, Level1Quantizer {
     /// Sub-classes that encode the residuals can train their encoders here
     /// does nothing by default
     virtual void train_residual (idx_t n, const float *x);
-
 
     /** search a set of vectors, that are pre-quantized by the IVF
      *  quantizer. Fill in the corresponding heaps with the query
@@ -193,7 +283,7 @@ struct IndexIVF: Index, Level1Quantizer {
     ~IndexIVF() override;
 
     size_t get_list_size (size_t list_no) const
-    { return ids[list_no].size(); }
+    { return invlists->list_size(list_no); }
 
     /** intialize a direct map
      *
@@ -207,6 +297,8 @@ struct IndexIVF: Index, Level1Quantizer {
 
     /// display some stats about the inverted lists
     void print_stats () const;
+
+    void replace_invlists (InvertedLists *il, bool own=false);
 
     IndexIVF ();
 };
@@ -223,55 +315,6 @@ struct IndexIVFStats {
 
 // global var that collects them all
 extern IndexIVFStats indexIVF_stats;
-
-
-
-
-
-/** Inverted file with stored vectors. Here the inverted file
- * pre-selects the vectors to be searched, but they are not otherwise
- * encoded, the code array just contains the raw float entries.
- */
-struct IndexIVFFlat: IndexIVF {
-
-    IndexIVFFlat (
-            Index * quantizer, size_t d, size_t nlist_,
-            MetricType = METRIC_L2);
-
-    /// same as add_with_ids, with precomputed coarse quantizer
-    virtual void add_core (idx_t n, const float * x, const long *xids,
-                   const long *precomputed_idx);
-
-    /// implemented for all IndexIVF* classes
-    void add_with_ids(idx_t n, const float* x, const long* xids) override;
-
-    void search_preassigned (idx_t n, const float *x, idx_t k,
-                             const idx_t *assign,
-                             const float *centroid_dis,
-                             float *distances, idx_t *labels,
-                             bool store_pairs) const override;
-
-    void range_search(
-        idx_t n,
-        const float* x,
-        float radius,
-        RangeSearchResult* result) const override;
-
-    /** Update a subset of vectors.
-     *
-     * The index must have a direct_map
-     *
-     * @param nv     nb of vectors to update
-     * @param idx    vector indices to update, size nv
-     * @param v      vectors of new values, size nv*d
-     */
-    void update_vectors (int nv, idx_t *idx, const float *v);
-
-    void reconstruct_from_offset (long list_no, long offset,
-                                  float* recons) const override;
-
-    IndexIVFFlat () {}
-};
 
 
 
