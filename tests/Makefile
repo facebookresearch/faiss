@@ -19,8 +19,13 @@ run: all
 ../py:
 	cd ../ && make py
 
-gtest/make/gtest_main.a:
+gtest/make/gtest_main.a: gtest
 	cd gtest/make && make CXX=$(CC) gtest_main.a
 
+gtest:
+	curl -L https://github.com/google/googletest/archive/release-1.8.0.tar.gz | tar xz && \
+	mv googletest-release-1.8.0/googletest gtest && \
+	rm -rf googletest-release-1.8.0
+
 clean:
-	rm -f $(CC_TESTS)
+	rm -rf $(CC_TESTS) gtest
