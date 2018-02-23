@@ -9,5 +9,7 @@ for t in test_*.py; do
 done
 
 for t in test_*.cpp; do
-    ./${t%.*} || exit 1
+    if [ "$t" != "test_blas.cpp" ]; then
+        ./${t%.*} || exit 1
+    fi
 done
