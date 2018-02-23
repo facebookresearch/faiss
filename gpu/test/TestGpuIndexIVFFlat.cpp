@@ -9,7 +9,7 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "../../IndexFlat.h"
-#include "../../IndexIVF.h"
+#include "../../IndexIVFFlat.h"
 #include "../GpuIndexIVFFlat.h"
 #include "../StandardGpuResources.h"
 #include "../utils/DeviceUtils.h"

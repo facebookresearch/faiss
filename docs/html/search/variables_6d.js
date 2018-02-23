@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['m',['M',['../structfaiss_1_1MinSumK.html#a816976ee9baa0378b01d2f0fdaf4907a',1,'faiss::MinSumK::M()'],['../structfaiss_1_1ProductQuantizer.html#a83600e328893ce5f41fe459f5a3acf41',1,'faiss::ProductQuantizer::M()'],['../structfaiss_1_1OPQMatrix.html#a07ad0c0c84f96a6880c1c8eaf09596e3',1,'faiss::OPQMatrix::M()']]],
+  ['m',['M',['../structfaiss_1_1ProductQuantizer.html#a83600e328893ce5f41fe459f5a3acf41',1,'faiss::ProductQuantizer::M()'],['../structfaiss_1_1OPQMatrix.html#a07ad0c0c84f96a6880c1c8eaf09596e3',1,'faiss::OPQMatrix::M()']]],
   ['maintain_5fdirect_5fmap',['maintain_direct_map',['../structfaiss_1_1IndexIVF.html#aedd0c14b5654295b291638ec7f9f9517',1,'faiss::IndexIVF']]],
   ['malloccurrent_5f',['mallocCurrent_',['../structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#a8cd6e71bd4d147dcc5a9db951bcbb075',1,'faiss::gpu::StackDeviceMemory::Stack']]],
   ['map',['map',['../structfaiss_1_1RemapDimensionsTransform.html#a09202a195ff5f75f83e68792751a637f',1,'faiss::RemapDimensionsTransform']]],

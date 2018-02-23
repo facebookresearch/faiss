@@ -174,6 +174,7 @@ struct PCAMatrix: LinearTransform {
 };
 
 
+struct ProductQuantizer;
 
 /** Applies a rotation to align the dimensions with a PQ to minimize
  *  the reconstruction error. Can be used before an IndexPQ or an
@@ -193,6 +194,10 @@ struct OPQMatrix: LinearTransform {
     /// if there are too many training points, resample
     size_t max_train_points;
     bool verbose;
+
+    /// if non-NULL, use this product quantizer for training
+    /// should be constructed with (d_out, M, _)
+    ProductQuantizer * pq;
 
     /// if d2 != -1, output vectors of this dimension
     explicit OPQMatrix (int d = 0, int M = 1, int d2 = -1);

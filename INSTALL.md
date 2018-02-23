@@ -17,7 +17,7 @@ involved:
 
 Steps 2 and 3 depend on 1, but they are otherwise independent.
 
-Alternatively, all 3 steps above can be run by building a Docker image (see 
+Alternatively, all 3 steps above can be run by building a Docker image (see
 section "Docker instructions" below).
 
 Alternatively, steps 1 and 3 can be built via the cmake scripts (see below).
@@ -86,7 +86,7 @@ smoothly by running
 
 A basic usage example is in
 
-  `tests/demo_ivfpq_indexing`
+  `demos/demo_ivfpq_indexing`
 
 it makes a small index, stores it and performs some searches. A normal
 runtime is around 20s. With a fast machine and Intel MKL's BLAS it
@@ -106,8 +106,8 @@ directory for this repository.
 Then compile and run
 
 ```
-make tests/demo_sift1M
-tests/demo_sift1M
+make demos/demo_sift1M
+demos/demo_sift1M
 ```
 
 This is a demonstration of the high-level auto-tuning API. You can try
@@ -178,7 +178,7 @@ repository:
 
 ```
 mkdir tmp             # graphs of the output will be written here
-PYTHONPATH=. python tests/demo_auto_tune.py
+PYTHONPATH=. python demos/demo_auto_tune.py
 ```
 
 It will cycle through a few types of indexes and find optimal
@@ -257,7 +257,7 @@ Python example with GPU support
 -------------------------------
 
 The auto-tuning example above also runs on the GPU. Edit
-`tests/demo_auto_tune.py` at line 100 with the values
+`demos/demo_auto_tune.py` at line 100 with the values
 
 ```python
 keys_to_test = keys_gpu
@@ -268,7 +268,7 @@ and you can run
 
 ```
 export PYTHONPATH=.
-python tests/demo_auto_tune.py
+python demos/demo_auto_tune.py
 ```
 
 to test the GPU code.

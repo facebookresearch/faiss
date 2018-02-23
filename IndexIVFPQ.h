@@ -187,49 +187,6 @@ struct IndexIVFPQR: IndexIVFPQ {
 };
 
 
-/** Index with 32-bit ids and flat tables. Must be constructed from an
- *  exisiting IndexIVFPQ. Cannot be copy-constructed/assigned. The
- *  actual data is stored in the compact_* tables, the ids and codes
- *  tables are not used.  */
-struct IndexIVFPQCompact: IndexIVFPQ {
-
-    explicit IndexIVFPQCompact (const IndexIVFPQ &other);
-
-    /// how were the compact tables allocated?
-    enum Alloc_type_t {
-        Alloc_type_none,     ///< alloc from outside
-        Alloc_type_new,      ///< was allocated with new
-        Alloc_type_mmap      ///< was mmapped
-    };
-
-    Alloc_type_t alloc_type;
-
-    uint32_t *limits;        ///< size nlist + 1
-    uint32_t *compact_ids;   ///< size ntotal
-    uint8_t *compact_codes;  ///< size ntotal * code_size
-
-    // file and buffer this was mmapped (will be unmapped when object
-    // is deleted)
-    char * mmap_buffer;
-    long mmap_length;
-
-    void search_preassigned (idx_t n, const float *x, idx_t k,
-                             const idx_t *assign,
-                             const float *centroid_dis,
-                             float *distances, idx_t *labels,
-                             bool store_pairs) const override;
-
-    /// the three following functions will fail at runtime
-    void add(idx_t, const float*) override;
-    void reset() override;
-    void train(idx_t, const float*) override;
-
-    ~IndexIVFPQCompact() override;
-
-    IndexIVFPQCompact ();
-
-};
-
 
 /** Same as an IndexIVFPQ without the inverted lists: codes are stored sequentially
  *

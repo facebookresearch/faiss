@@ -136,7 +136,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keywordflow">if</span> (endRow) {</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> row = rowStart; row &lt; output.getSize(0); ++row) {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;          T out = output[row][col].ldg();</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;          T out = output[row][col];</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;          out = Math&lt;T&gt;::add(out, val);</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;          output[row][col] = out;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        }</div>
@@ -146,7 +146,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> row = rowStart; row &lt; rowEnd; row += kRowUnroll) {</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#pragma unroll</span></div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor"></span>          <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; kRowUnroll; ++i) {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            rows[i] = output[row + i][col].ldg();</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            rows[i] = output[row + i][col];</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;          }</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#pragma unroll</span></div>
@@ -175,7 +175,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> row = rowStart; row &lt; output.getSize(0); ++row) {</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">#pragma unroll</span></div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor"></span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; kColLoad; ++i) {</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;          T out = output[row][col + i * blockDim.x].ldg();</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;          T out = output[row][col + i * blockDim.x];</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;          out = Math&lt;T&gt;::add(out, val[i]);</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;          output[row][col + i * blockDim.x] = out;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        }</div>
@@ -189,7 +189,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="preprocessor">#pragma unroll</span></div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor"></span>          <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; kColLoad; ++j) {</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;            rows[i * kColLoad + j] =</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;              output[row + i][col + j * blockDim.x].ldg();</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;              output[row + i][col + j * blockDim.x];</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;          }</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        }</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>

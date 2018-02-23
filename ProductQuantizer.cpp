@@ -150,13 +150,13 @@ static inline void pq_estimators_from_tables (const ProductQuantizer * pq,
 
 
 ProductQuantizer::ProductQuantizer (size_t d, size_t M, size_t nbits):
-    d(d), M(M),  nbits(nbits)
+    d(d), M(M), nbits(nbits), assign_index(nullptr)
 {
     set_derived_values ();
 }
 
 ProductQuantizer::ProductQuantizer ():
-    d(0), M(1),  nbits(0)
+    d(0), M(1), nbits(0), assign_index(nullptr)
 {
     set_derived_values ();
 }
@@ -284,7 +284,7 @@ void ProductQuantizer::train (int n, const float * x)
                 printf ("Training PQ slice %d/%zd\n", m, M);
             }
             IndexFlatL2 index (dsub);
-            clus.train (n, xslice, index);
+            clus.train (n, xslice, assign_index ? *assign_index : index);
             set_params (clus.centroids.data(), m);
         }
 
@@ -299,7 +299,8 @@ void ProductQuantizer::train (int n, const float * x)
         }
 
         IndexFlatL2 index (dsub);
-        clus.train (n * M, x, index);
+
+        clus.train (n * M, x, assign_index ? *assign_index : index);
         for (int m = 0; m < M; m++) {
             set_params (clus.centroids.data(), m);
         }

@@ -77,6 +77,7 @@ extern "C" {
 #include "IndexPQ.h"
 #include "IndexIVF.h"
 #include "IndexIVFPQ.h"
+#include "IndexIVFFlat.h"
 #include "IndexScalarQuantizer.h"
 #include "IndexHNSW.h"
 #include "MetaIndexes.h"
@@ -87,6 +88,7 @@ extern "C" {
 #include "utils.h"
 #include "Heap.h"
 #include "AuxIndexStructures.h"
+#include "OnDiskInvertedLists.h"
 
 #include "Clustering.h"
 
@@ -128,6 +130,7 @@ namespace std {
 %template(IntVector) std::vector<int>;
 %template(VectorTransformVector) std::vector<faiss::VectorTransform*>;
 %template(OperatingPointVector) std::vector<faiss::OperatingPoint>;
+%template(InvertedListsPtrVector) std::vector<faiss::InvertedLists*>;
 %template(FloatVectorVector) std::vector<std::vector<float> >;
 %template(ByteVectorVector) std::vector<std::vector<unsigned char> >;
 %template(LongVectorVector) std::vector<std::vector<long> >;
@@ -250,6 +253,8 @@ int get_num_gpus()
 %include "IndexIVF.h"
 %include "IndexScalarQuantizer.h"
 %include "IndexHNSW.h"
+%include "IndexIVFFlat.h"
+%include "OnDiskInvertedLists.h"
 
 %ignore faiss::IndexIVFPQ::alloc_type;
 %include "IndexIVFPQ.h"
@@ -422,7 +427,6 @@ struct AsyncIndexSearchC {
 %typemap(out) faiss::Index * {
     DOWNCAST ( IndexIDMap )
     DOWNCAST ( IndexShards )
-    DOWNCAST ( IndexIVFPQCompact )
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
     DOWNCAST ( IndexIVFScalarQuantizer )

@@ -111,6 +111,17 @@ struct IndexShards : Index {
     /// supported only for sub-indices that implement add_with_ids
     void add(idx_t n, const float* x) override;
 
+    /**
+     * Cases (successive_ids, xids):
+     * - true, non-NULL       ERROR: it makes no sense to pass in ids and
+     *                        request them to be shifted
+     * - true, NULL           OK, but should be called only once (calls add()
+     *                        on sub-indexes).
+     * - false, non-NULL      OK: will call add_with_ids with passed in xids
+     *                        distributed evenly over shards
+     * - false, NULL          OK: will call add_with_ids on each sub-index,
+     *                        starting at ntotal
+     */
     void add_with_ids(idx_t n, const float* x, const long* xids) override;
 
     void search(
