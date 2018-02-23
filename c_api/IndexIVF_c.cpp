@@ -16,7 +16,6 @@
 #include "macros_impl.h"
 
 using faiss::IndexIVF;
-using faiss::IndexIVFFlat;
 using faiss::IndexIVFStats;
 
 DEFINE_DESTRUCTOR(IndexIVF)
@@ -91,32 +90,3 @@ void faiss_IndexIVF_print_stats (const FaissIndexIVF* index) {
 void faiss_IndexIVFStats_reset(FaissIndexIVFStats* stats) {
     reinterpret_cast<IndexIVFStats*>(stats)->reset();    
 }
-
-DEFINE_DESTRUCTOR(IndexIVFFlat)
-
-int faiss_IndexIVFFlat_new(FaissIndexIVFFlat** p_index) {
-    try {
-        *p_index = reinterpret_cast<FaissIndexIVFFlat*>(new IndexIVFFlat());
-    } CATCH_AND_HANDLE
-}
-
-int faiss_IndexIVFFlat_new_with(FaissIndexIVFFlat** p_index,
-    FaissIndex* quantizer, size_t d, size_t nlist);
-
-int faiss_IndexIVFFlat_new_with_metric(
-    FaissIndexIVFFlat** p_index, FaissIndex* quantizer, size_t d, size_t nlist,
-    FaissMetricType metric);
-
-int faiss_IndexIVFFlat_add_core(FaissIndexIVFFlat* index, idx_t n, 
-    const float * x, const long *xids, const long *precomputed_idx);
-
-/** Update a subset of vectors.
- *
- * The index must have a direct_map
- *
- * @param nv     nb of vectors to update
- * @param idx    vector indices to update, size nv
- * @param v      vectors of new values, size nv*d
- */
-int faiss_IndexIVFFlat_update_vectors(FaissIndexIVFFlat* index, int nv,
-    idx_t *idx, const float *v);
