@@ -59,9 +59,6 @@ tests/test_blas: tests/test_blas.cpp
 	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) $(BLASLDFLAGS) $(BLASCFLAGS)
 
 
-tests/demo_ivfpq_indexing: tests/demo_ivfpq_indexing.cpp $(LIBNAME).a
-	$(CC) -o $@ $(CFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
-
 tests/demo_sift1M: tests/demo_sift1M.cpp $(LIBNAME).a
 	$(CC) -o $@ $(CFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
 
