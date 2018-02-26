@@ -4,7 +4,7 @@ Faiss is a library for efficient similarity search and clustering of dense vecto
 
 ## NEWS
 
-*NEW: latest commit (2018-02-25) supports on-disk storage of inverted indexes, see demos/demo_ondisk_ivf.py*
+*NEW: latest commit (2018-02-22) supports on-disk storage of inverted indexes, see demos/demo_ondisk_ivf.py*
 
 *NEW: latest commit (2018-01-09) includes an implementation of the HNSW indexing method, see benchs/bench_hnsw.py*
 
