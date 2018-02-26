@@ -74,7 +74,7 @@ CUOBJ=      impl/BroadcastSum.o \
 
 
 .cpp.o:
-	$(CC11) -std=c++11 -fPIC -m64 -Wall -g -Wno-sign-compare -O3 -fopenmp \
+	$(CXX11) $(CXXFLAGS) -fPIC -m64 -Wall -g -Wno-sign-compare -O3 -fopenmp \
          -c $< -o $@ $(EXTRAFLAGS) $(CUDACFLAGS)
 
 .cu.o:
