@@ -16,14 +16,15 @@ RUN mv example_makefiles/makefile.inc.Linux ./makefile.inc
 
 RUN make tests/test_blas -j $(nproc) && \
     make -j $(nproc) && \
-    make tests/demo_sift1M -j $(nproc)
-
-RUN make py
+    make demos/demo_sift1M -j $(nproc) && \
+    make py
 
 RUN cd gpu && \
     make -j $(nproc) && \
     make test/demo_ivfpq_indexing_gpu && \
     make py
+
+ENV PYTHONPATH $PYTHONPATH:/opt/faiss
 
 # RUN ./tests/test_blas && \
 #     tests/demo_ivfpq_indexing
