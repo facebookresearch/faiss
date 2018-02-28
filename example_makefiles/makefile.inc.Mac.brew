@@ -3,7 +3,7 @@
 
 # Tested on macOS Sierra (10.12.2) with llvm installed using Homebrew (https://brew.sh)
 # brew install llvm
-CC=/usr/local/opt/llvm/bin/clang++
+CXX=/usr/local/opt/llvm/bin/clang++
 CFLAGS=-fPIC -m64 -Wall -g -O3 -msse4 -mpopcnt -fopenmp -Wno-sign-compare -I/usr/local/opt/llvm/include
 CXXFLAGS=$(CFLAGS) -std=c++11
 LLVM_VERSION_PATH=$(shell ls -rt /usr/local/Cellar/llvm/ | tail -n1)

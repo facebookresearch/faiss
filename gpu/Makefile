@@ -74,7 +74,7 @@ CUOBJ=      impl/BroadcastSum.o \
 
 
 .cpp.o:
-	$(CXX11) $(CXXFLAGS) -fPIC -m64 -Wall -g -Wno-sign-compare -O3 -fopenmp \
+	$(CXX) $(CXXFLAGS) -fPIC -m64 -Wall -g -Wno-sign-compare -O3 -fopenmp \
          -c $< -o $@ $(EXTRAFLAGS) $(CUDACFLAGS)
 
 .cu.o:
@@ -86,7 +86,7 @@ $(LIBNAME).a: $(CPPOBJ) $(CUOBJ)
 	ar r $@ $^
 
 $(LIBNAME).$(SHAREDEXT): $(CPPOBJ) $(CUOBJ)
-	$(CC) -L$(CUDAROOT)/lib64 -lcublas -lcudart $(LDFLAGS) \
+	$(CXX) -L$(CUDAROOT)/lib64 -lcublas -lcudart $(LDFLAGS) \
 	$(FAISSSHAREDFLAGS) -o $(LIBNAME).$(SHAREDEXT) $^
 
 

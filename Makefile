@@ -63,10 +63,10 @@ tests/test_blas: tests/test_blas.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS) $(BLASLDFLAGS) $(BLASCFLAGS)
 
 demos/demo_ivfpq_indexing: demos/demo_ivfpq_indexing.cpp $(LIBNAME).a
-	$(CXX) -o $@ $(CFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
+	$(CXX) -o $@ $(CXXFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
 
 demos/demo_sift1M: demos/demo_sift1M.cpp $(LIBNAME).a
-	$(CXX) -o $@ $(CFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
+	$(CXX) -o $@ $(CXXFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
 
 
 #############################

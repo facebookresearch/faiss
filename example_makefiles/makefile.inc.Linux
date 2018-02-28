@@ -125,8 +125,6 @@ PYTHONCFLAGS=-I/usr/include/python2.7/ -I/usr/lib64/python2.7/site-packages/nump
 ###########################################################################
 
 
-# a C++ compiler that supports c++11
-CXX11=g++
 
 # root of the cuda 8 installation
 CUDAROOT=/usr/local/cuda-8.0/
@@ -143,7 +141,7 @@ NVCCFLAGS= $(CUDAFLAGS) \
    -gencode arch=compute_52,code="compute_52" \
    -gencode arch=compute_60,code="compute_60" \
    --std c++11 -lineinfo \
-   -ccbin $(CXX11) -DFAISS_USE_FLOAT16
+   -ccbin $(CXX) -DFAISS_USE_FLOAT16
 
 # BLAS LD flags for nvcc (used to generate an executable)
 # if BLASLDFLAGS contains several flags, each one may
