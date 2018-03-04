@@ -1,10 +1,42 @@
 ###################################################################################################################################
 from __future__ import print_function
 from setuptools import setup, find_packages
+from distutils.spawn import find_executable
+from distutils.sysconfig import get_python_inc
+from numpy import get_include
+
 import os
 import shutil
 
+## Setup files.
 here = os.path.abspath(os.path.dirname(__file__))
+makefile = os.path.join(here,"makefile.inc")
+gcc_compiler= os.path.abspath(find_executable("g++"))
+python_path = os.path.abspath(find_executable("python"))
+python_bin_folder = os.path.dirname(python_path)
+python_env = os.path.dirname(python_bin_folder)
+python_inc = get_python_inc()
+numpy_inc = get_include()
+
+
+
+with open(makefile, 'w') as outfile:
+    outfile.write("### Automatically created make include file.")
+    outfile.write("CC={}".format(gcc_compiler))
+    outfile.write("CFLAGS=-fPIC -m64 -Wall -g -O3 -mavx -msse4 -mpopcnt -fopenmp -Wno-sign-compare -std=c++11 -fopenmp")
+    outfile.write("LDFLAGS=-g -fPIC  -fopenmp")
+    outfile.write("SHAREDEXT=so")
+    outfile.write("SHAREDFLAGS=-shared")
+    outfile.write("FAISSSHAREDFLAGS=-shared\n\n\n")
+    outfile.write("MKLROOT={}".format(python_env))
+    outfile.write("BLASLDFLAGS=-Wl,--no-as-needed -L$(MKLROOT)/lib   -lmkl_intel_ilp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread")
+    outfile.write("BLASCFLAGS=-DFINTEGER=long\n\n\n")
+    outfile.write("PYTHONCFLAGS=-I{} -I{}".format(python_inc,numpy_inc))
+    outfile.close()
+
+exit()
+## Creating include file.
+
 
 check_fpath = os.path.join("python", "_swigfaiss.so")
 if not os.path.exists(check_fpath):
