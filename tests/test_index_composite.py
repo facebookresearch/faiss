@@ -12,6 +12,7 @@ import numpy as np
 import unittest
 import faiss
 import os
+import tempfile
 
 def get_dataset_2(d, nb, nt, nq):
     """A dataset that is not completely random but still challenging to
@@ -48,26 +49,26 @@ class TestRemove(unittest.TestCase):
 
         filename = None
         if ondisk:
-            filename = os.tmpnam()
+            filename = tempfile.mkstemp()[1]
             invlists = faiss.OnDiskInvertedLists(
                 index1.nlist, index1.code_size,
                 filename)
             index1.replace_invlists(invlists)
 
-        index1.add(xb[:nb / 2])
+        index1.add(xb[:int(nb / 2)])
 
         index2 = faiss.IndexIVFFlat(quantizer, d, 20)
         assert index2.is_trained
-        index2.add(xb[nb / 2:])
+        index2.add(xb[int(nb / 2):])
 
         Dref, Iref = index1.search(xq, 10)
-        index1.merge_from(index2, nb / 2)
+        index1.merge_from(index2, int(nb / 2))
 
         assert index1.ntotal == nb
 
-        index1.remove_ids(faiss.IDSelectorRange(nb / 2, nb))
+        index1.remove_ids(faiss.IDSelectorRange(int(nb / 2), nb))
 
-        assert index1.ntotal == nb / 2
+        assert index1.ntotal == int(nb / 2)
         Dnew, Inew = index1.search(xq, 10)
 
         assert np.all(Dnew == Dref)
