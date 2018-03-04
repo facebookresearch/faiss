@@ -17,7 +17,7 @@ import platform
 
 platform_type = platform.system()
 if platform_type == "Darwin":
-    lib_extension="dylib"
+    lib_extension="so"
 elif platform_type == "Linux":
     lib_extension="so"
 else:
