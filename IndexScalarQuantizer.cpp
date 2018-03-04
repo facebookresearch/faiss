@@ -11,7 +11,11 @@
 #include <cstdio>
 #include <algorithm>
 
-#include <malloc.h>
+#ifdef __APPLE__
+    #include <malloc.h>
+#else
+    #include <sys/malloc.h>
+#endif
 
 #include <omp.h>
 
