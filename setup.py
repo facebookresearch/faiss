@@ -111,7 +111,7 @@ class FaissInstall(install):
         shutil.copyfile("python/__init__.py", "faiss/__init__.py")
         shutil.copyfile("faiss.py", "faiss/faiss.py")
         shutil.copyfile("python/swigfaiss.py", "faiss/swigfaiss.py")
-        shutil.copyfile("python/_swigfaiss.{}".format(lib_extension), "faiss/_swigfaiss.{}".format(lib_extension))
+        shutil.copyfile(os.path.join("python","_swigfaiss.{}".format(lib_extension)), os.path.join("faiss","_swigfaiss.{}".format(lib_extension)))
         try:
             shutil.copyfile("python/_swigfaiss_gpu.so", "faiss/_swigfaiss_gpu.so")
             shutil.copyfile("python/swigfaiss_gpu.py", "faiss/swigfaiss_gpu.py")
