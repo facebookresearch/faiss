@@ -7,6 +7,7 @@ from numpy import get_include
 
 import os
 import shutil
+import platform
 
 ## Setup files.
 here = os.path.abspath(os.path.dirname(__file__))
@@ -17,6 +18,15 @@ python_bin_folder = os.path.dirname(python_path)
 python_env = os.path.dirname(python_bin_folder)
 python_inc = get_python_inc()
 numpy_inc = get_include()
+platform_type = platform.system()
+
+if platform_type == "Darwin":
+    lib_extension="dylib"
+elif platform_type == "Linux":
+    lib_extension="so"
+else:
+    print("Unknown platform type: {}".format(platform_type))
+    exit(1)
 
 
 ## Creating include file.
@@ -25,7 +35,7 @@ with open(makefile, 'w') as outfile:
     outfile.write("CC={}\n".format(gcc_compiler))
     outfile.write("CFLAGS=-fPIC -m64 -Wall -g -O3 -mavx -msse4 -mpopcnt -fopenmp -Wno-sign-compare -std=c++11 -fopenmp\n")
     outfile.write("LDFLAGS=-g -fPIC  -fopenmp\n")
-    outfile.write("SHAREDEXT=so\n")
+    outfile.write("SHAREDEXT={}\n".format(lib_extension))
     outfile.write("SHAREDFLAGS=-shared\n")
     outfile.write("FAISSSHAREDFLAGS=-shared\n\n\n")
     outfile.write("MKLROOT={}\n".format(python_env))
