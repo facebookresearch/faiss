@@ -28,8 +28,6 @@ class FaissInstall(install):
     def run(self):
         ## Setup files.
         python_path = os.path.abspath(find_executable("python"))
-        clang_path = os.path.abspath(find_executable("clang-cpp"))
-        swig_path = os.path.abspath(find_executable("swig"))
         python_bin_folder = os.path.dirname(python_path)
         python_env = os.path.dirname(python_bin_folder)
         python_inc = get_python_inc()
