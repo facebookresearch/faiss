@@ -14,18 +14,17 @@ import sys
 import inspect
 import pdb
 
-
 # we import * so that the symbol X can be accessed as faiss.X
 
 try:
-    from swigfaiss_gpu import *
+    from .swigfaiss_gpu import *
 except ImportError as e:
 
     if e.args[0] != 'ImportError: No module named swigfaiss_gpu':
         # swigfaiss_gpu is there but failed to load: Warn user about it.
         sys.stderr.write("Failed to load GPU Faiss: %s\n" % e.args[0])
         sys.stderr.write("Faiss falling back to CPU-only.\n")
-    from swigfaiss import *
+    from .swigfaiss import *
 
 
 ##################################################################
@@ -96,6 +95,9 @@ def handle_Index(the_class):
     def replacement_add(self, x):
         assert x.flags.contiguous
         n, d = x.shape
+        print(self.d)
+        print(d)
+        
         assert d == self.d
         self.add_c(n, swig_ptr(x))
 
@@ -244,7 +246,9 @@ this_module = sys.modules[__name__]
 
 for symbol in dir(this_module):
     obj = getattr(this_module, symbol)
-    # print symbol, isinstance(obj, (type, types.ClassType))
+    if symbol == "cvar":
+        continue
+
     if inspect.isclass(obj):
         the_class = obj
         if issubclass(the_class, Index):

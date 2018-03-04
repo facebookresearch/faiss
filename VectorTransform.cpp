@@ -575,13 +575,11 @@ OPQMatrix::OPQMatrix (int d, int M, int d2):
     LinearTransform (d, d2 == -1 ? d : d2, false), M(M),
     niter (50),
     niter_pq (4), niter_pq_0 (40),
-    verbose(false),
-    pq(nullptr)
+    verbose(false)
 {
     is_trained = false;
     // OPQ is quite expensive to train, so set this right.
     max_train_points = 256 * 256;
-    pq = nullptr;
 }
 
 
@@ -658,15 +656,13 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
         rotation = A.data();
     }
 
+
     std::vector<float>
         xproj (d2 * n), pq_recons (d2 * n), xxr (d * n),
         tmp(d * d * 4);
 
     std::vector<uint8_t> codes (M * n);
-
-    ProductQuantizer pq_default (d2, M, 8);
-    ProductQuantizer &pq_regular =
-        pq ? *pq : pq_default;
+    ProductQuantizer pq_regular (d2, M, 8);
     double t0 = getmillisecs();
     for (int iter = 0; iter < niter; iter++) {
 

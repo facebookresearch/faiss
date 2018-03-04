@@ -21,17 +21,17 @@ numpy_inc = get_include()
 
 ## Creating include file.
 with open(makefile, 'w') as outfile:
-    outfile.write("### Automatically created make include file.")
-    outfile.write("CC={}".format(gcc_compiler))
-    outfile.write("CFLAGS=-fPIC -m64 -Wall -g -O3 -mavx -msse4 -mpopcnt -fopenmp -Wno-sign-compare -std=c++11 -fopenmp")
-    outfile.write("LDFLAGS=-g -fPIC  -fopenmp")
-    outfile.write("SHAREDEXT=so")
-    outfile.write("SHAREDFLAGS=-shared")
+    outfile.write("### Automatically created make include file.\n")
+    outfile.write("CC={}\n".format(gcc_compiler))
+    outfile.write("CFLAGS=-fPIC -m64 -Wall -g -O3 -mavx -msse4 -mpopcnt -fopenmp -Wno-sign-compare -std=c++11 -fopenmp\n")
+    outfile.write("LDFLAGS=-g -fPIC  -fopenmp\n")
+    outfile.write("SHAREDEXT=so\n")
+    outfile.write("SHAREDFLAGS=-shared\n")
     outfile.write("FAISSSHAREDFLAGS=-shared\n\n\n")
-    outfile.write("MKLROOT={}".format(python_env))
-    outfile.write("BLASLDFLAGS=-Wl,--no-as-needed -L$(MKLROOT)/lib   -lmkl_intel_ilp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread")
+    outfile.write("MKLROOT={}\n".format(python_env))
+    outfile.write("BLASLDFLAGS=-Wl,--no-as-needed -L$(MKLROOT)/lib   -lmkl_intel_ilp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread\n")
     outfile.write("BLASCFLAGS=-DFINTEGER=long\n\n\n")
-    outfile.write("PYTHONCFLAGS=-I{} -I{}".format(python_inc,numpy_inc))
+    outfile.write("PYTHONCFLAGS=-I{} -I{}\n".format(python_inc,numpy_inc))
     outfile.close()
 
 
