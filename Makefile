@@ -15,7 +15,7 @@ LIBNAME=libfaiss
 
 all: .env_ok $(LIBNAME).a
 
-py: _swigfaiss.so
+py: _swigfaiss.$(SHAREDEXT)
 
 
 
@@ -80,12 +80,12 @@ python/swigfaiss_wrap.cxx: swigfaiss.swig $(HFILES)
 
 
 # extension is .so even on the mac
-python/_swigfaiss.so: python/swigfaiss_wrap.cxx $(LIBNAME).a
+python/_swigfaiss.$(SHAREDEXT): python/swigfaiss_wrap.cxx $(LIBNAME).a
 	$(CC) -I. $(CFLAGS) $(LDFLAGS) $(PYTHONCFLAGS) $(SHAREDFLAGS) \
 	-o $@ $^ $(BLASLDFLAGSSO)
 
-_swigfaiss.so: python/_swigfaiss.so
-	cp python/_swigfaiss.so python/swigfaiss.py .
+_swigfaiss.$(SHAREDEXT): python/_swigfaiss.$(SHAREDEXT)
+	cp python/_swigfaiss.$(SHAREDEXT) python/swigfaiss.py .
 
 #############################
 # Dependencies.
@@ -149,9 +149,9 @@ IndexHNSW.o: IndexHNSW.cpp IndexHNSW.h IndexFlat.h Index.h IndexPQ.h \
 
 clean:
 	rm -f $(LIBNAME).a $(LIBNAME).$(SHAREDEXT)* *.o \
-	   	lua/swigfaiss.so lua/swigfaiss_wrap.cxx \
-		python/_swigfaiss.so python/swigfaiss_wrap.cxx \
-		python/swigfaiss.py _swigfaiss.so swigfaiss.py
+	   	lua/swigfaiss.$(SHAREDEXT) lua/swigfaiss_wrap.cxx \
+		python/_swigfaiss.$(SHAREDEXT) python/swigfaiss_wrap.cxx \
+		python/swigfaiss.py _swigfaiss.$(SHAREDEXT) swigfaiss.py
 
 .env_ok:
 ifeq ($(wildcard $(MAKEFILE_INC)),)
