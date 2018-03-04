@@ -19,7 +19,7 @@ python_inc = get_python_inc()
 numpy_inc = get_include()
 
 
-
+## Creating include file.
 with open(makefile, 'w') as outfile:
     outfile.write("### Automatically created make include file.")
     outfile.write("CC={}".format(gcc_compiler))
@@ -34,10 +34,13 @@ with open(makefile, 'w') as outfile:
     outfile.write("PYTHONCFLAGS=-I{} -I{}".format(python_inc,numpy_inc))
     outfile.close()
 
-exit()
-## Creating include file.
+
+## Run make
+os.system("make")
+os.system("make py")
 
 
+## Checking compilation.
 check_fpath = os.path.join("python", "_swigfaiss.so")
 if not os.path.exists(check_fpath):
     print("Could not find {}".format(check_fpath))
@@ -47,7 +50,8 @@ if not os.path.exists(check_fpath):
 # make the faiss python package dir
 shutil.rmtree("faiss", ignore_errors=True)
 os.mkdir("faiss")
-shutil.copyfile("faiss.py", "faiss/__init__.py")
+shutil.copyfile("python/__init__.py", "faiss/__init__.py")
+shutil.copyfile("faiss.py", "faiss/faiss.py")
 shutil.copyfile("python/swigfaiss.py", "faiss/swigfaiss.py")
 shutil.copyfile("python/_swigfaiss.so", "faiss/_swigfaiss.so")
 try:
