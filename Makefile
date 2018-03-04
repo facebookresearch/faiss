@@ -13,7 +13,7 @@ MAKEFILE_INC=makefile.inc
 
 LIBNAME=libfaiss
 
-all: .env_ok $(LIBNAME).a tests/demo_ivfpq_indexing
+all: .env_ok $(LIBNAME).a
 
 py: _swigfaiss.so
 
