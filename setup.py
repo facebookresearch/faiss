@@ -1,4 +1,6 @@
-###################################################################################################################################
+########################################################################################################################
+## Setup file for faiss by Amro Tork
+########################################################################################################################
 from __future__ import print_function
 from setuptools import setup, find_packages
 from distutils.spawn import find_executable
@@ -34,7 +36,7 @@ class FaissInstall(install):
         numpy_inc = get_include()
 
         if platform_type == "Darwin":
-            lib_extension = "dylib"
+            lib_extension = "so"
             path_makefile_inc = os.path.join(here,"example_makefiles","makefile.inc.Mac.brew")
             shutil.copy(path_makefile_inc,makefile)
 
