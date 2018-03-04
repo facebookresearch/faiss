@@ -8,3 +8,17 @@
 *.so
 *.pyc
 *~
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+.idea/
+build/
+dist/
+faiss.egg-info/
+faiss/
+makefile_example.inc
