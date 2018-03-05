@@ -11,8 +11,6 @@
 #include <cstdio>
 #include <algorithm>
 
-#include <malloc.h>
-
 #include <omp.h>
 
 #include <immintrin.h>
