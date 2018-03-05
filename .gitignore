@@ -1,3 +1,6 @@
+/bin/
+/c_api/bin/
+/c_api/gpu/bin/
 /makefile.inc
 /tests/demo_ivfpq_indexing
 *.swp
@@ -8,17 +11,3 @@
 *.so
 *.pyc
 *~
-### Example user template template
-### Example user template
-
-# IntelliJ project files
-.idea
-*.iml
-out
-gen
-.idea/
-build/
-dist/
-faiss.egg-info/
-faiss/
-makefile_example.inc

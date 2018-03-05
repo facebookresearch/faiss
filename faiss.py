@@ -95,8 +95,7 @@ def handle_Index(the_class):
     def replacement_add(self, x):
         assert x.flags.contiguous
         n, d = x.shape
-        print(self.d)
-        print(d)
+        
         
         assert d == self.d
         self.add_c(n, swig_ptr(x))

@@ -11,12 +11,6 @@
 #include <cstdio>
 #include <algorithm>
 
-#ifdef __APPLE__
-    #include <sys/malloc.h>
-#else
-    #include <malloc.h>
-#endif
-
 #include <omp.h>
 
 #include <immintrin.h>
@@ -915,10 +909,12 @@ void IndexScalarQuantizer::reconstruct(idx_t key, float* recons) const
 IndexIVFScalarQuantizer::IndexIVFScalarQuantizer
           (Index *quantizer, size_t d, size_t nlist,
            QuantizerType qtype, MetricType metric):
-              IndexIVF (quantizer, d, nlist, metric),
+              IndexIVF (quantizer, d, nlist, 0, metric),
               sq (d, qtype)
 {
     code_size = sq.code_size;
+    // was not known at construction time
+    invlists->code_size = code_size;
     is_trained = false;
 }
 
@@ -958,28 +954,25 @@ void IndexIVFScalarQuantizer::add_with_ids
 #pragma omp parallel reduction(+: nadd)
     {
         std::vector<float> residual (d);
+        std::vector<uint8_t> one_code (code_size);
         int nt = omp_get_num_threads();
         int rank = omp_get_thread_num();
 
         // each thread takes care of a subset of lists
         for (size_t i = 0; i < n; i++) {
-
             long list_no = idx [i];
             if (list_no >= 0 && list_no % nt == rank) {
                 long id = xids ? xids[i] : ntotal + i;
 
-                assert (list_no < nlist);
-
-                ids[list_no].push_back (id);
-                nadd++;
                 quantizer->compute_residual (
                       x + i * d, residual.data(), list_no);
 
-                size_t cur_size = codes[list_no].size();
-                codes[list_no].resize (cur_size + code_size);
+                squant->encode_vector (residual.data(), one_code.data());
 
-                squant->encode_vector (residual.data(),
-                                       codes[list_no].data() + cur_size);
+                invlists->add_entry (list_no, id, one_code.data());
+
+                nadd++;
+
             }
         }
     }
@@ -1007,12 +1000,14 @@ void search_with_probes_ip (const IndexIVFScalarQuantizer & index,
         if (list_no < 0) break;
         float accu0 = cent_dis[i];
 
-        const std::vector<idx_t> & ids = index.ids[list_no];
-        const uint8_t* codes = index.codes[list_no].data();
+        const size_t list_size = index.invlists->list_size (list_no);
+        const uint8_t * codes = index.invlists->get_codes (list_no);
+        const idx_t * ids =
+            store_pairs ? nullptr : index.invlists->get_ids (list_no);
 
         SimilarityIP sim(x);
 
-        for (size_t j = 0; j < ids.size(); j++) {
+        for (size_t j = 0; j < list_size; j++) {
 
             float accu = accu0 + dc.compute_distance(x, codes);
 
@@ -1023,7 +1018,7 @@ void search_with_probes_ip (const IndexIVFScalarQuantizer & index,
             }
             codes += code_size;
         }
-        nscan += ids.size();
+        nscan += list_size;
         if (index.max_codes && nscan > index.max_codes)
             break;
     }
@@ -1048,13 +1043,15 @@ void search_with_probes_L2 (const IndexIVFScalarQuantizer & index,
         idx_t list_no = cent_ids[i];
         if (list_no < 0) break;
 
-        const std::vector<idx_t> & ids = index.ids[list_no];
-        const uint8_t* codes = index.codes[list_no].data();
+        const size_t list_size = index.invlists->list_size (list_no);
+        const uint8_t * codes = index.invlists->get_codes (list_no);
+        const idx_t * ids =
+            store_pairs ? nullptr : index.invlists->get_ids (list_no);
 
         // shift of x_in wrt centroid
         quantizer->compute_residual (x_in, x.data(), list_no);
 
-        for (size_t j = 0; j < ids.size(); j++) {
+        for (size_t j = 0; j < list_size; j++) {
 
             float dis = dc.compute_distance (x.data(), codes);
 
@@ -1065,7 +1062,7 @@ void search_with_probes_L2 (const IndexIVFScalarQuantizer & index,
             }
             codes += code_size;
         }
-        nscan += ids.size();
+        nscan += list_size;
         if (index.max_codes && nscan > index.max_codes)
             break;
     }
@@ -1121,11 +1118,11 @@ void IndexIVFScalarQuantizer::reconstruct_from_offset (long list_no,
     std::vector<float> centroid(d);
     quantizer->reconstruct (list_no, centroid.data());
 
-    const uint8_t* code = &(codes[list_no][offset * code_size]);
+    const uint8_t* code = invlists->get_single_code (list_no, offset);
     sq.decode (code, recons, 1);
     for (int i = 0; i < d; ++i) {
       recons[i] += centroid[i];
     }
 }
 
-}
+} // namespace faiss

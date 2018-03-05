@@ -2111,8 +2111,10 @@ void IndexHNSW2Level::search (idx_t n, const float *x, idx_t k,
                 for (int j = 0; j < nprobe; j++) {
                     idx_t key = coarse_assign[j + i * nprobe];
                     if (key < 0) break;
-                    const std::vector<idx_t> & ids = index_ivfpq->ids[key];
-                    for (int jj = 0; jj < ids.size(); jj++) {
+                    size_t list_length = index_ivfpq->get_list_size (key);
+                    const idx_t * ids = index_ivfpq->invlists->get_ids (key);
+
+                    for (int jj = 0; jj < list_length; jj++) {
                         vt.set (ids[jj]);
                     }
                 }

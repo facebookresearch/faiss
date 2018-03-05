@@ -9,9 +9,11 @@
 # tested on CentOS 7, Ubuntu 16 and Ubuntu 14, see below to adjust flags to distribution.
 
 
-CC=g++
+CC=gcc
+CXX=g++
 
-CFLAGS=-fPIC -m64 -Wall -g -O3 -mavx -msse4 -mpopcnt -fopenmp -Wno-sign-compare -std=c++11 -fopenmp
+CFLAGS=-fPIC -m64 -Wall -g -O3 -mavx -msse4 -mpopcnt -fopenmp -Wno-sign-compare -fopenmp
+CXXFLAGS=$(CFLAGS) -std=c++11
 LDFLAGS=-g -fPIC  -fopenmp
 
 # common linux flags
@@ -123,8 +125,6 @@ PYTHONCFLAGS=-I/usr/include/python2.7/ -I/usr/lib64/python2.7/site-packages/nump
 ###########################################################################
 
 
-# a C++ compiler that supports c++11
-CC11=g++
 
 # root of the cuda 8 installation
 CUDAROOT=/usr/local/cuda-8.0/
@@ -141,7 +141,7 @@ NVCCFLAGS= $(CUDAFLAGS) \
    -gencode arch=compute_52,code="compute_52" \
    -gencode arch=compute_60,code="compute_60" \
    --std c++11 -lineinfo \
-   -ccbin $(CC11) -DFAISS_USE_FLOAT16
+   -ccbin $(CXX) -DFAISS_USE_FLOAT16
 
 # BLAS LD flags for nvcc (used to generate an executable)
 # if BLASLDFLAGS contains several flags, each one may

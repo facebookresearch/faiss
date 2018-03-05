@@ -39,52 +39,29 @@ class FaissInstall(install):
             lib_extension = "so"
             path_makefile_inc = os.path.join(here,"example_makefiles","makefile.inc.Mac.brew")
             shutil.copy(path_makefile_inc,makefile)
-
-            ## LLVM_VERSION_PATH=$(shell ls -rt /usr/local/Cellar/llvm/ | tail -n1)
-            ## LDFLAGS=-g -fPIC -fopenmp -L/usr/local/opt/llvm/lib -L/usr/local/Cellar/llvm/${LLVM_VERSION_PATH}/lib
-
-            # makefile_str = """
-            # CXX={}
-            # CC={}
-            # CFLAGS=-fPIC -m64 -Wall -g -O3 -msse4 -mpopcnt -fopenmp -Wno-sign-compare -I{}/include -I/usr/include/malloc
-            # CXXFLAGS=$(CFLAGS) -std=c++11
-            # LDFLAGS=-g -fPIC -fopenmp -L{}/lib -L/usr/lib/
-            #
-            #
-            # # common mac flags
-            # SHAREDEXT=dylib
-            # SHAREDFLAGS=-Wl,-F. -bundle -undefined dynamic_lookup
-            # FAISSSHAREDFLAGS=-dynamiclib
-            #
-            # ## MKL
-            # MKLROOT={}
-            # BLASLDFLAGS=-Wl,--no-as-needed -L$(MKLROOT)/lib -lmkl_intel_ilp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread
-            # BLASCFLAGS=-DFINTEGER=long
-            #
-            # ## Python and SWIG
-            # SWIGEXEC={}
-            # PYTHONCFLAGS=-I{} -I{}
-            #
-            #
-            # """.format(clang_path,clang_path,python_env,python_env,python_env,swig_path,python_inc,numpy_inc)
-
-            # with open(makefile, 'w') as outfile:
-            #     outfile.write(makefile_str)
-            #     outfile.close()
-
         elif platform_type == "Linux":
-            gcc_compiler= os.path.abspath(find_executable("g++"))
+            gpp_compiler = os.path.abspath(find_executable("g++"))
+            gcc_compiler = os.path.abspath(find_executable("gcc"))
             lib_extension = "so"
 
             ## Creating include file.
             with open(makefile, 'w') as outfile:
-                outfile.write("### Automatically created make include file.\n")
-                outfile.write("CC={}\n".format(gcc_compiler))
-                outfile.write("CFLAGS=-fPIC -m64 -Wall -g -O3 -mavx -msse4 -mpopcnt -fopenmp -Wno-sign-compare -std=c++11 -fopenmp\n")
-                outfile.write("LDFLAGS=-g -fPIC  -fopenmp\n")
-                outfile.write("SHAREDEXT=so\n")
-                outfile.write("SHAREDFLAGS=-shared\n")
-                outfile.write("FAISSSHAREDFLAGS=-shared\n\n\n")
+                makefile_str = """
+                ### Automatically created make include file.
+                CC={}
+                CXX={}
+                
+                CFLAGS=-fPIC -m64 -Wall -g -O3 -mavx -msse4 -mpopcnt -fopenmp -Wno-sign-compare -fopenmp
+                CXXFLAGS=$(CFLAGS) -std=c++11
+                LDFLAGS=-g -fPIC  -fopenmp
+                
+                # common linux flags
+                SHAREDEXT=so
+                SHAREDFLAGS=-shared
+                FAISSSHAREDFLAGS=-shared
+
+                """.format(gcc_compiler,gpp_compiler)
+                outfile.write(makefile_str)
                 outfile.write("MKLROOT={}\n".format(python_env))
                 outfile.write("BLASLDFLAGS=-Wl,--no-as-needed -L$(MKLROOT)/lib   -lmkl_intel_ilp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread\n")
                 outfile.write("BLASCFLAGS=-DFINTEGER=long\n\n\n")
