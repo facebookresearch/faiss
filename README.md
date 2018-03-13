@@ -24,6 +24,15 @@ The GPU implementation can accept input from either CPU or GPU memory. On a serv
 
 The library is mostly implemented in C++, with optional GPU support provided via CUDA, and an optional Python interface. The CPU version requires a BLAS library. It compiles with a Makefile and can be packaged in a docker image. See [INSTALL.md](INSTALL.md) for details.
 
+We also regularly push stable releases to conda channel. FAISS conda package depends on mkl package shipped in conda. You can easily install it by 
+
+```
+# CPU version only
+conda install faiss-cpu -c pytorch
+# GPU version requires CUDA to be installed, otherwise it falls back to CPU version
+conda install faiss-gpu -c pytorch
+```
+
 ## How Faiss works
 
 Faiss is built around an index type that stores a set of vectors, and provides a function to search in them with L2 and/or dot product vector comparison. Some index types are simple baselines, such as exact search. Most of the available indexing structures correspond to various trade-offs with respect to
