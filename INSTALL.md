@@ -6,7 +6,23 @@
 INSTALL file for Faiss (Fair AI Similarity Search)
 ==================================================
 
-The Faiss installation works in 3 steps, from easiest to most
+Install via Conda
+-----------------
+
+The easiest way to install FAISS is from anaconda. We regularly push stable releases to conda channel. FAISS conda package depends on mkl package shipped in conda.
+You can easily install it by
+
+```
+# CPU version only
+conda install faiss-cpu -c pytorch
+# GPU version requires CUDA to be installed, otherwise it falls back to CPU version
+conda install faiss-gpu -c pytorch
+```
+
+Compile from source
+-------------------
+
+The Faiss compilation works in 3 steps, from easiest to most
 involved:
 
 1. compile the C++ core and examples
