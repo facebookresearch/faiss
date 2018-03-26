@@ -101,4 +101,11 @@
         delete reinterpret_cast<faiss::clazz *>(obj);      \
     }
 
+#define DEFINE_INDEX_DOWNCAST(clazz)                                \
+    Faiss ## clazz * faiss_ ## clazz ## _cast (FaissIndex* index) { \
+        return reinterpret_cast<Faiss ## clazz *>(                  \
+            dynamic_cast< faiss::clazz *>(                          \
+                reinterpret_cast<faiss::Index*>(index)));           \
+    }
+
 #endif

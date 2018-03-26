@@ -44,7 +44,7 @@ void faiss_IndexFlat_xb(FaissIndexFlat* index, float** p_xb, size_t* p_size);
  * @param index opaque pointer to index object
  * @return the same pointer if the index is a flat index, NULL otherwise
  */
-FaissIndexFlat* faiss_IndexFlat_cast(FaissIndex* index);
+FAISS_DECLARE_INDEX_DOWNCAST(IndexFlat)
 
 FAISS_DECLARE_DESTRUCTOR(IndexFlat)
 

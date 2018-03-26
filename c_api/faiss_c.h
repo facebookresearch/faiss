@@ -25,6 +25,12 @@ typedef long idx_t;    ///< all indices are this type
 #define FAISS_DECLARE_CLASS_INHERITED(clazz, parent) \
     typedef struct Faiss ## parent ## _H Faiss ## clazz;
 
+/// Declare a dynamic downcast operation from a base `FaissIndex*` pointer
+/// type to a more specific index type. The function returns the same pointer
+/// if the downcast is valid, and `NULL` otherwise.
+#define FAISS_DECLARE_INDEX_DOWNCAST(clazz) \
+    Faiss ## clazz * faiss_ ## clazz ## _cast (FaissIndex*);
+
 /// Declare a getter for the field `name` in class `clazz`,
 /// of return type `ty`
 #define FAISS_DECLARE_GETTER(clazz, ty, name) \
@@ -33,7 +39,7 @@ typedef long idx_t;    ///< all indices are this type
 /// Declare a setter for the field `name` in class `clazz`,
 /// in which the user provides a value of type `ty`
 #define FAISS_DECLARE_SETTER(clazz, ty, name) \
-    void faiss_ ## clazz ## _set_ ## name (Faiss ## clazz *, ty); \
+    void faiss_ ## clazz ## _set_ ## name (Faiss ## clazz *, ty);
 
 /// Declare a getter and setter for the field `name` in class `clazz`.
 #define FAISS_DECLARE_GETTER_SETTER(clazz, ty, name) \

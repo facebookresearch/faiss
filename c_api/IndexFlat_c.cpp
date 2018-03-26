@@ -24,6 +24,9 @@ using faiss::IndexFlatL2BaseShift;
 using faiss::IndexRefineFlat;
 using faiss::IndexFlat1D;
 
+DEFINE_DESTRUCTOR(IndexFlat)
+DEFINE_INDEX_DOWNCAST(IndexFlat)
+
 int faiss_IndexFlat_new(FaissIndexFlat** p_index) {
     try {
         *p_index = reinterpret_cast<FaissIndexFlat*>(new IndexFlat());
@@ -39,19 +42,12 @@ int faiss_IndexFlat_new_with(FaissIndexFlat** p_index, idx_t d, FaissMetricType 
     } CATCH_AND_HANDLE
 }
 
-DEFINE_DESTRUCTOR(IndexFlat)
-
 void faiss_IndexFlat_xb(FaissIndexFlat* index, float** p_xb, size_t* p_size) {
     auto& xb = reinterpret_cast<IndexFlat*>(index)->xb;
     *p_xb = xb.data();
     if (p_size) {
         *p_size = xb.size();
     }
-}
-
-FaissIndexFlat* faiss_IndexFlat_cast(FaissIndex* index) {
-    return reinterpret_cast<FaissIndexFlat*>(
-        dynamic_cast<IndexFlat*>(reinterpret_cast<Index*>(index)));
 }
 
 int faiss_IndexFlat_compute_distance_subset(
