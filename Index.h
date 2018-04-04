@@ -17,7 +17,7 @@
 #include <typeinfo>
 #include <string>
 #include <sstream>
-
+#include "MetricType.h"
 
 /**
  * @namespace faiss
@@ -37,13 +37,6 @@
 
 
 namespace faiss {
-
-
-/// Some algorithms support both an inner product version and a L2 search version.
-enum MetricType {
-    METRIC_INNER_PRODUCT = 0,
-    METRIC_L2 = 1,
-};
 
 
 /// Forward declarations see AuxIndexStructures.h
