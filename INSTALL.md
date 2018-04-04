@@ -15,7 +15,7 @@ You can easily install it by
 ```
 # CPU version only
 conda install faiss-cpu -c pytorch
-# GPU version requires CUDA to be installed, otherwise it falls back to CPU version
+# GPU version requires CUDA 9.0 to be installed, otherwise it falls back to CPU version
 conda install faiss-gpu -c pytorch
 ```
 
