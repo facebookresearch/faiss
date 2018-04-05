@@ -10,7 +10,8 @@ LLVM_VERSION_PATH=$(shell ls -rt /usr/local/Cellar/llvm/ | tail -n1)
 LDFLAGS=-g -fPIC -fopenmp -L/usr/local/opt/llvm/lib -L/usr/local/Cellar/llvm/${LLVM_VERSION_PATH}/lib
 
 # common mac flags
-SHAREDEXT=dylib
+#SHAREDEXT=dylib
+SHAREDEXT=so
 SHAREDFLAGS=-Wl,-F. -bundle -undefined dynamic_lookup
 FAISSSHAREDFLAGS=-dynamiclib
 
