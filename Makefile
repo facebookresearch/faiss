@@ -13,7 +13,7 @@ MAKEFILE_INC=makefile.inc
 
 PREFIX ?= /usr/local/
 
-all: .env_ok libfaiss.a tests/demo_ivfpq_indexing
+all: .env_ok libfaiss.a demos/demo_ivfpq_indexing
 
 py: _swigfaiss.so
 
@@ -62,10 +62,10 @@ BLASLDFLAGSSO ?= $(BLASLDFLAGS)
 tests/test_blas: tests/test_blas.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS) $(BLASLDFLAGS) $(BLASCFLAGS)
 
-demos/demo_ivfpq_indexing: tests/demo_ivfpq_indexing.cpp libfaiss.a
+demos/demo_ivfpq_indexing: demos/demo_ivfpq_indexing.cpp libfaiss.a
 	$(CXX) -o $@ $(CXXFLAGS) $< libfaiss.a $(LDFLAGS) $(BLASLDFLAGS)
 
-demos/demo_sift1M: tests/demo_sift1M.cpp libfaiss.a
+demos/demo_sift1M: demos/demo_sift1M.cpp libfaiss.a
 	$(CXX) -o $@ $(CXXFLAGS) $< libfaiss.a $(LDFLAGS) $(BLASLDFLAGS)
 
 
