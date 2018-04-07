@@ -300,6 +300,8 @@ struct IndexIVF: Index, Level1Quantizer {
 
     void replace_invlists (InvertedLists *il, bool own=false);
 
+    const float* access (idx_t key) const;
+
     IndexIVF ();
 };
 
