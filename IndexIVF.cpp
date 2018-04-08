@@ -603,7 +603,8 @@ const float* IndexIVF::access (idx_t key) const
                       "direct map is not initialized");
     int list_no = direct_map[key] >> 32;
     int ofs = direct_map[key] & 0xffffffff;
-    return reinterpret_cast<const float*>(&codes[list_no][ofs * code_size]);
+    return reinterpret_cast<const float*>(
+            invlists->get_single_code(list_no, ofs));
 }
 
 
