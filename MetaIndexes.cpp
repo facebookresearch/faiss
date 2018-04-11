@@ -53,6 +53,7 @@ void IndexIDMap::train (idx_t n, const float *x)
 void IndexIDMap::reset ()
 {
     index->reset ();
+    id_map.clear();
     ntotal = 0;
 }
 
