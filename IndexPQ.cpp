@@ -101,7 +101,7 @@ long IndexPQ::remove_ids (const IDSelector & sel)
     long nremove = ntotal - j;
     if (nremove > 0) {
         ntotal = j;
-        codes.resize (ntotal * d);
+        codes.resize (ntotal * pq.code_size);
     }
     return nremove;
 }
