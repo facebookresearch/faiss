@@ -21,6 +21,7 @@
 #include <algorithm>
 
 #include "FaissAssert.h"
+#include "AuxIndexStructures.h"
 #include "hamming.h"
 
 namespace faiss {
@@ -83,6 +84,27 @@ void IndexPQ::add (idx_t n, const float *x)
     ntotal += n;
 }
 
+
+long IndexPQ::remove_ids (const IDSelector & sel)
+{
+    idx_t j = 0;
+    for (idx_t i = 0; i < ntotal; i++) {
+        if (sel.is_member (i)) {
+            // should be removed
+        } else {
+            if (i > j) {
+                memmove (&codes[pq.code_size * j], &codes[pq.code_size * i], pq.code_size);
+            }
+            j++;
+        }
+    }
+    long nremove = ntotal - j;
+    if (nremove > 0) {
+        ntotal = j;
+        codes.resize (ntotal * pq.code_size);
+    }
+    return nremove;
+}
 
 
 void IndexPQ::reset()
