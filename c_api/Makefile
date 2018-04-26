@@ -14,7 +14,7 @@ DEBUGFLAG=-DNDEBUG # no debugging
 LIBNAME=libfaiss
 CLIBNAME=libfaiss_c
 LIBCOBJ=error_impl.o Index_c.o IndexFlat_c.o Clustering_c.o AuxIndexStructures_c.o \
-	AutoTune_c.o IndexIVF_c.o IndexIVFFlat_c.o IndexLSH_c.o
+	AutoTune_c.o IndexIVF_c.o IndexIVFFlat_c.o IndexLSH_c.o index_io_c.o
 
 # Build shared object file by default
 all: $(CLIBNAME).$(SHAREDEXT)
@@ -39,6 +39,9 @@ clean:
 
 error_impl.o: CFLAGS += -I.. $(DEBUGFLAG)
 error_impl.o: error_impl.cpp error_c.h error_impl.h macros_impl.h
+
+index_io_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+index_io_c.o: index_io_c.cpp error_impl.cpp ../index_io.h macros_impl.h
 
 Index_c.o: CFLAGS += -I.. $(DEBUGFLAG)
 Index_c.o: Index_c.cpp Index_c.h ../Index.h macros_impl.h
