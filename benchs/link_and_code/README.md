@@ -135,7 +135,7 @@ python bench_link_and_code.py \
    --beta_nsq 1 --beta_k 1  \
    --beta_centroids $bdir/deep1M_PQ40_M6_nsq0.npy \
    --neigh_recons_codes $bdir/deep1M_PQ36_M6_nsq0_codes.npy \
-   --k_reorder 0 --efSearch 16,64,256,1024
+   --k_reorder 0,5 --efSearch 16,64,256,1024
 ```
 
 The arguments are similar to the previous table. Note that nsq = 0 is
