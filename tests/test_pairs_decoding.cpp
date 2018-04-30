@@ -45,7 +45,10 @@ void Search_centroid(faiss::Index *index,
     }
     faiss::IndexIVF* index_ivf = dynamic_cast<faiss::IndexIVF*>(index);
     assert(index_ivf);
-    index_ivf->quantizer->assign(num_objects, x, centroid_ids);
+    assert(sizeof(int64_t) == sizeof(faiss::Index::idx_t));
+    index_ivf->quantizer->assign(
+            num_objects, x, 
+            reinterpret_cast<faiss::Index::idx_t*>(centroid_ids));
 }
 
 
@@ -90,9 +93,11 @@ void search_and_retrun_centroids(faiss::Index *index,
             query_centroid_ids[i] = cent_nos[i * nprobe];
     }
 
+    assert(sizeof(int64_t) == sizeof(faiss::Index::idx_t));
     index_ivf->search_preassigned (n, x, k,
                                    cent_nos.data(), cent_dis.data(),
-                                   distances, labels, true);
+                                   distances, 
+                                   reinterpret_cast<faiss::Index::idx_t*>(labels), true);
 
     for (size_t i = 0; i < n * k; i++) {
         int64_t label = labels[i];
@@ -216,9 +221,11 @@ int test_search_and_return_centroids(const char *index_key) {
     std::vector<int64_t> query_centroid_ids (nq);
     std::vector<int64_t> result_centroid_ids (nq * k);
 
+    assert(sizeof(long) == sizeof(int64_t));
     search_and_retrun_centroids(index.get(),
                                 nq, xq.data(), k,
-                                newD.data(), newI.data(),
+                                newD.data(), 
+                                reinterpret_cast<int64_t*>(newI.data()),
                                 query_centroid_ids.data(),
                                 result_centroid_ids.data());
 

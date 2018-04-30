@@ -27,7 +27,7 @@ void write_index (const Index *idx, FILE *f);
 void write_index (const Index *idx, const char *fname);
 
 void write_index (const Index *idx, 
-                  std::function<size_t(const void *, size_t, size_t)> &pfn_write);
+                  std::function<size_t(const void *, size_t, size_t)> pfn_write);
 
 
 const int IO_FLAG_MMAP = 1;
@@ -36,7 +36,7 @@ const int IO_FLAG_READ_ONLY = 2;
 Index *read_index (FILE * f, int io_flags = 0);
 Index *read_index (const char *fname, int io_flags = 0);
 Index *read_index (
-        std::function<size_t(void *, size_t, size_t)> &pfn_read, int io_flags=0);
+        std::function<size_t(void *, size_t, size_t)> pfn_read, int io_flags=0);
 
 
 
