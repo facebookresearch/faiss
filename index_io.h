@@ -22,12 +22,13 @@ struct Index;
 struct VectorTransform;
 struct IndexIVF;
 struct ProductQuantizer;
+struct IOReader;
+struct IOWriter;
 
 void write_index (const Index *idx, FILE *f);
 void write_index (const Index *idx, const char *fname);
 
-void write_index (const Index *idx, 
-                  std::function<size_t(const void *, size_t, size_t)> pfn_write);
+void write_index (const Index *idx, IOWriter *writer);
 
 
 const int IO_FLAG_MMAP = 1;
@@ -35,9 +36,7 @@ const int IO_FLAG_READ_ONLY = 2;
 
 Index *read_index (FILE * f, int io_flags = 0);
 Index *read_index (const char *fname, int io_flags = 0);
-Index *read_index (
-        std::function<size_t(void *, size_t, size_t)> pfn_read, int io_flags=0);
-
+Index *read_index (IOReader *reader, int io_flags = 0);
 
 
 void write_VectorTransform (const VectorTransform *vt, const char *fname);
@@ -59,6 +58,19 @@ struct Cloner {
     virtual Index *clone_Index (const Index *);
     virtual IndexIVF *clone_IndexIVF (const IndexIVF *);
     virtual ~Cloner() {}
+};
+
+struct IOReader {
+    virtual size_t operator()(
+        void *ptr, size_t size, size_t nitems) = 0;
+    virtual ~IOReader() {}
+};
+
+struct IOWriter {
+    virtual size_t operator()(
+        const void *ptr, size_t size, size_t nitems) = 0;   
+
+    virtual ~IOWriter() {}
 };
 
 }

@@ -80,7 +80,7 @@ static uint32_t fourcc (const char sx[4]) {
 
 #define PFN_WRITEANDCHECK(ptr, n)                          \
     {                                                      \
-        size_t ret = pfn_write(ptr, sizeof(*(ptr)), n);    \
+        size_t ret = (*pfn_write)(ptr, sizeof(*(ptr)), n);    \
         FAISS_THROW_IF_NOT_MSG(ret == (n), "write error"); \
     }
 
@@ -91,7 +91,7 @@ static uint32_t fourcc (const char sx[4]) {
 
 #define PFN_READANDCHECK(ptr, n)                          \
     {                                                     \
-        size_t ret = pfn_read(ptr, sizeof(*(ptr)), n);    \
+        size_t ret = (*pfn_read)(ptr, sizeof(*(ptr)), n);    \
         FAISS_THROW_IF_NOT_MSG(ret == (n), "read error"); \
     }
 
@@ -139,18 +139,31 @@ struct ScopeFileCloser {
 
 namespace {
 
-inline std::function<
-    size_t(const void *, size_t, size_t)> get_fwrite(FILE *f) {
-    return [=](const void *ptr, size_t size, size_t nitems) -> size_t {
-        return fwrite(ptr, size, nitems, f);
-    };
-}
+struct FileIOReader: IOReader {
+    FILE *f = nullptr;
 
-inline std::function<size_t(void *, size_t, size_t)> get_fread(FILE *f) {
-    return [=](void *ptr, size_t size, size_t nitems) -> size_t {
+    FileIOReader(FILE *rf): f(rf) {}
+
+    ~FileIOReader() = default;
+
+    virtual size_t operator()(
+            void *ptr, size_t size, size_t nitems) override {
         return fread(ptr, size, nitems, f);
-    };
-}
+    }
+};
+
+struct FileIOWriter: IOWriter {
+    FILE *f = nullptr;
+
+    FileIOWriter(FILE *wf): f(wf) {}
+    ~FileIOWriter() = default;
+
+    virtual size_t operator()(
+            const void *ptr, size_t size, size_t nitems) override {
+        return fwrite(ptr, size, nitems, f);
+    }
+};
+
 
 } // namespace 
 
@@ -158,8 +171,7 @@ inline std::function<size_t(void *, size_t, size_t)> get_fread(FILE *f) {
 /*************************************************************
  * Write
  **************************************************************/
-static void write_index_header (const Index *idx, 
-        std::function<size_t(const void *, size_t, size_t)> pfn_write) {
+static void write_index_header (const Index *idx, IOWriter *pfn_write) {
     PFN_WRITE1 (idx->d);
     PFN_WRITE1 (idx->ntotal);
     Index::idx_t dummy = 1 << 20;
@@ -170,7 +182,8 @@ static void write_index_header (const Index *idx,
 }
 
 static void write_index_header (const Index *idx, FILE *f) {
-    write_index_header(idx, get_fwrite(f));
+    FileIOWriter writer(f);
+    write_index_header(idx, &writer);
 }
 
 void write_VectorTransform (const VectorTransform *vt, FILE *f) {
@@ -233,8 +246,7 @@ static void write_ScalarQuantizer (const ScalarQuantizer *ivsc, FILE *f) {
 }
 
 static void write_InvertedLists (
-        const InvertedLists *ils, 
-        std::function<size_t(const void *, size_t, size_t)> pfn_write) {
+        const InvertedLists *ils, IOWriter *pfn_write) {
     if (ils == nullptr) {
         uint32_t h = fourcc ("il00");
         PFN_WRITE1 (h);
@@ -306,7 +318,8 @@ static void write_InvertedLists (
 
 
 static void write_InvertedLists (const InvertedLists *ils, FILE *f) {
-    write_InvertedLists(ils, get_fwrite(f));
+    FileIOWriter writer(f);
+    write_InvertedLists(ils, &writer);
 }
 
 void write_ProductQuantizer (const ProductQuantizer*pq, const char *fname) {
@@ -333,8 +346,7 @@ static void write_HNSW (const HNSW *hnsw, FILE *f) {
 }
 
 static void write_ivf_header (
-        const IndexIVF *ivf, 
-        std::function<size_t(const void *, size_t, size_t)> pfn_write) {
+        const IndexIVF *ivf, IOWriter *pfn_write) {
     write_index_header (ivf, pfn_write);
     PFN_WRITE1 (ivf->nlist);
     PFN_WRITE1 (ivf->nprobe);
@@ -344,12 +356,11 @@ static void write_ivf_header (
 }
 
 static void write_ivf_header (const IndexIVF * ivf, FILE *f) {
-    write_ivf_header(ivf, get_fwrite(f));
+    FileIOWriter writer(f);
+    write_ivf_header(ivf, &writer);
 }
 
-void write_index (
-        const Index* idx, 
-        std::function<size_t(const void *, size_t, size_t)> pfn_write) {
+void write_index (const Index* idx, IOWriter *pfn_write) {
 
     // TODO: write_index FILE * f;
     if (const IndexFlat * idxf = dynamic_cast<const IndexFlat *> (idx)) {
@@ -521,9 +532,7 @@ void write_VectorTransform (const VectorTransform *vt, const char *fname) {
  * Read
  **************************************************************/
 
-static void read_index_header (
-        Index *idx, 
-        std::function<size_t(void *, size_t, size_t)> pfn_read) {
+static void read_index_header (Index *idx, IOReader *pfn_read) {
     PFN_READ1 (idx->d);
     PFN_READ1 (idx->ntotal);
     Index::idx_t dummy;
@@ -535,7 +544,8 @@ static void read_index_header (
 }
 
 static void read_index_header (Index *idx, FILE *f) {
-    read_index_header(idx, get_fread(f));
+    FileIOReader reader(f);
+    read_index_header(idx, &reader);
 }
 
 VectorTransform* read_VectorTransform (FILE *f) {
@@ -745,8 +755,7 @@ ProductQuantizer * read_ProductQuantizer (const char*fname) {
 }
 
 static void read_ivf_header (
-        IndexIVF *ivf, 
-        std::function<size_t(void *, size_t, size_t)> pfn_read, 
+        IndexIVF *ivf, IOReader *pfn_read, 
         std::vector<std::vector<Index::idx_t> > *ids = nullptr) {
     read_index_header (ivf, pfn_read);
     PFN_READ1 (ivf->nlist);
@@ -766,7 +775,8 @@ static void read_ivf_header (
     IndexIVF * ivf, FILE *f,
     std::vector<std::vector<Index::idx_t> > *ids = nullptr)
 {
-    read_ivf_header(ivf, get_fread(f), ids);
+    FileIOReader reader(f);
+    read_ivf_header(ivf, &reader, ids);
 }
 
 // used for legacy formats
@@ -818,9 +828,7 @@ static IndexIVFPQ *read_ivfpq (FILE *f, uint32_t h, int io_flags)
 
 int read_old_fmt_hack = 0;
 
-Index *read_index (
-        std::function<size_t(void *, size_t, size_t)> pfn_read, 
-        int io_flags) {
+Index *read_index (IOReader *pfn_read, int io_flags) {
 
     Index * idx = nullptr;
     uint32_t h;
