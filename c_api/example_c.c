@@ -14,6 +14,7 @@
 #include <time.h>
 
 #include "error_c.h"
+#include "index_io_c.h"
 #include "Index_c.h"
 #include "IndexFlat_c.h"
 #include "AutoTune_c.h"
@@ -84,6 +85,9 @@ int main() {
         free(I);
         free(D);
     }
+
+    printf("Saving index to disk...\n");
+    FAISS_TRY(faiss_write_index_fname(index, "example.index"));
 
     printf("Freeing index...\n");
     faiss_Index_free(index);

@@ -13,8 +13,8 @@ DEBUGFLAG=-DNDEBUG # no debugging
 
 LIBNAME=libfaiss
 CLIBNAME=libfaiss_c
-LIBCOBJ=error_impl.o Index_c.o IndexFlat_c.o Clustering_c.o \
-	AuxIndexStructures_c.o AutoTune_c.o IndexIVF_c.o IndexIVFFlat_c.o
+LIBCOBJ=error_impl.o Index_c.o IndexFlat_c.o Clustering_c.o AuxIndexStructures_c.o \
+	AutoTune_c.o IndexIVF_c.o IndexIVFFlat_c.o IndexLSH_c.o index_io_c.o MetaIndexes_c.o
 
 # Build shared object file by default
 all: $(CLIBNAME).$(SHAREDEXT)
@@ -40,6 +40,9 @@ clean:
 error_impl.o: CFLAGS += -I.. $(DEBUGFLAG)
 error_impl.o: error_impl.cpp error_c.h error_impl.h macros_impl.h
 
+index_io_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+index_io_c.o: index_io_c.cpp error_impl.cpp ../index_io.h macros_impl.h
+
 Index_c.o: CFLAGS += -I.. $(DEBUGFLAG)
 Index_c.o: Index_c.cpp Index_c.h ../Index.h macros_impl.h
 
@@ -52,6 +55,9 @@ IndexIVF_c.o: IndexIVF_c.cpp IndexIVF_c.h ../IndexIVF.h macros_impl.h
 IndexIVFFlat_c.o: CFLAGS += -I.. $(DEBUGFLAG)
 IndexIVFFlat_c.o: IndexIVFFlat_c.cpp IndexIVFFlat_c.h ../IndexIVFFlat.h macros_impl.h
 
+IndexLSH_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+IndexLSH_c.o: IndexLSH_c.cpp IndexLSH_c.h ../IndexLSH.h macros_impl.h
+
 Clustering_c.o: CFLAGS += -I.. $(DEBUGFLAG)
 Clustering_c.o: Clustering_c.cpp Clustering_c.h ../Clustering.h macros_impl.h
 
@@ -60,3 +66,6 @@ AutoTune_c.o: AutoTune_c.cpp AutoTune_c.h ../AutoTune.h macros_impl.h
 
 AuxIndexStructures_c.o: CFLAGS += -I.. $(DEBUGFLAG)
 AuxIndexStructures_c.o: AuxIndexStructures_c.cpp AuxIndexStructures_c.h ../AuxIndexStructures.h macros_impl.h
+
+MetaIndexes_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+MetaIndexes_c.o: MetaIndexes_c.cpp MetaIndexes_c.h ../MetaIndexes.h macros_impl.h

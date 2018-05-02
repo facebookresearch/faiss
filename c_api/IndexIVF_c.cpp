@@ -19,6 +19,7 @@ using faiss::IndexIVF;
 using faiss::IndexIVFStats;
 
 DEFINE_DESTRUCTOR(IndexIVF)
+DEFINE_INDEX_DOWNCAST(IndexIVF)
 
 /// number of possible key values
 DEFINE_GETTER(IndexIVF, size_t, nlist)

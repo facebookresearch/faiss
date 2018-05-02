@@ -26,6 +26,7 @@ extern "C" {
  */
 FAISS_DECLARE_CLASS(IndexIVFFlat)
 FAISS_DECLARE_DESTRUCTOR(IndexIVFFlat)
+FAISS_DECLARE_INDEX_DOWNCAST(IndexIVFFlat)
 
 int faiss_IndexIVFFlat_new(FaissIndexIVFFlat** p_index);
 

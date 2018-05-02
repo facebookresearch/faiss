@@ -39,6 +39,7 @@ extern "C" {
  */
 FAISS_DECLARE_CLASS_INHERITED(IndexIVF, Index)
 FAISS_DECLARE_DESTRUCTOR(IndexIVF)
+FAISS_DECLARE_INDEX_DOWNCAST(IndexIVF)
 
 /// number of possible key values
 FAISS_DECLARE_GETTER(IndexIVF, size_t, nlist)

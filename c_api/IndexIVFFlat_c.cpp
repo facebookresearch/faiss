@@ -20,6 +20,7 @@ using faiss::IndexIVFFlat;
 using faiss::MetricType;
 
 DEFINE_DESTRUCTOR(IndexIVFFlat)
+DEFINE_INDEX_DOWNCAST(IndexIVFFlat)
 
 int faiss_IndexIVFFlat_new(FaissIndexIVFFlat** p_index) {
     try {
