@@ -61,12 +61,14 @@ struct Cloner {
 };
 
 struct IOReader {
+    // fread
     virtual size_t operator()(
         void *ptr, size_t size, size_t nitems) = 0;
     virtual ~IOReader() {}
 };
 
 struct IOWriter {
+    // fwrite
     virtual size_t operator()(
         const void *ptr, size_t size, size_t nitems) = 0;   
 

@@ -589,25 +589,6 @@ void IndexIVF::copy_subset_to (IndexIVF & other, int subset_type,
 
 }
 
-const float* IndexIVF::access (idx_t key) const 
-{
-    if (false == maintain_direct_map) {
-        return nullptr;
-    }
-
-    if (key >= direct_map.size()) {
-        return nullptr;
-    }
-
-    FAISS_THROW_IF_NOT_MSG (direct_map.size() == ntotal,
-                      "direct map is not initialized");
-    int list_no = direct_map[key] >> 32;
-    int ofs = direct_map[key] & 0xffffffff;
-    return reinterpret_cast<const float*>(
-            invlists->get_single_code(list_no, ofs));
-}
-
-
 
 IndexIVF::~IndexIVF()
 {
