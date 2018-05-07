@@ -73,44 +73,25 @@ static uint32_t fourcc (const char sx[4]) {
  **************************************************************/
 
 
-#define WRITEANDCHECK(ptr, n) {                                 \
-        size_t ret = fwrite (ptr, sizeof (* (ptr)), n, f);      \
-        FAISS_THROW_IF_NOT_MSG (ret == (n), "write error");     \
+#define WRITEANDCHECK(ptr, n)                                \
+    {                                                        \
+        size_t ret = (*pfn_write)(ptr, sizeof(*(ptr)), n);   \
+        FAISS_THROW_IF_NOT_MSG(ret == (n), "write error");   \
     }
 
-#define PFN_WRITEANDCHECK(ptr, n)                          \
-    {                                                      \
-        size_t ret = (*pfn_write)(ptr, sizeof(*(ptr)), n);    \
-        FAISS_THROW_IF_NOT_MSG(ret == (n), "write error"); \
-    }
-
-#define READANDCHECK(ptr, n) {                                  \
-        size_t ret = fread (ptr, sizeof (* (ptr)), n, f);       \
-        FAISS_THROW_IF_NOT_MSG (ret == (n), "read error");      \
-    }
-
-#define PFN_READANDCHECK(ptr, n)                          \
-    {                                                     \
+#define READANDCHECK(ptr, n)                                 \
+    {                                                        \
         size_t ret = (*pfn_read)(ptr, sizeof(*(ptr)), n);    \
-        FAISS_THROW_IF_NOT_MSG(ret == (n), "read error"); \
+        FAISS_THROW_IF_NOT_MSG(ret == (n), "read error");    \
     }
 
 #define WRITE1(x) WRITEANDCHECK(&(x), 1)
-#define PFN_WRITE1(x) PFN_WRITEANDCHECK(&(x), 1)
 #define READ1(x)  READANDCHECK(&(x), 1)
-#define PFN_READ1(x) PFN_READANDCHECK(&(x), 1)
 
 #define WRITEVECTOR(vec) {                      \
         size_t size = (vec).size ();            \
         WRITEANDCHECK (&size, 1);               \
         WRITEANDCHECK ((vec).data (), size);    \
-    }
-
-#define PFN_WRITEVECTOR(vec)                   \
-    {                                          \
-        size_t size = (vec).size();            \
-        PFN_WRITEANDCHECK(&size, 1);           \
-        PFN_WRITEANDCHECK((vec).data(), size); \
     }
 
 #define READVECTOR(vec) {                       \
@@ -120,16 +101,6 @@ static uint32_t fourcc (const char sx[4]) {
         (vec).resize (size);                    \
         READANDCHECK ((vec).data (), size);     \
     }
-
-#define PFN_READVECTOR(vec)                                 \
-    {                                                       \
-        long size;                                          \
-        PFN_READANDCHECK(&size, 1);                         \
-        FAISS_THROW_IF_NOT(size >= 0 && size < (1L << 40)); \
-        (vec).resize(size);                                 \
-        PFN_READANDCHECK((vec).data(), size);               \
-    }
-
 
 struct ScopeFileCloser {
     FILE *f;
@@ -172,21 +143,16 @@ struct FileIOWriter: IOWriter {
  * Write
  **************************************************************/
 static void write_index_header (const Index *idx, IOWriter *pfn_write) {
-    PFN_WRITE1 (idx->d);
-    PFN_WRITE1 (idx->ntotal);
+    WRITE1 (idx->d);
+    WRITE1 (idx->ntotal);
     Index::idx_t dummy = 1 << 20;
-    PFN_WRITE1 (dummy);
-    PFN_WRITE1 (dummy);
-    PFN_WRITE1 (idx->is_trained);
-    PFN_WRITE1 (idx->metric_type);
+    WRITE1 (dummy);
+    WRITE1 (dummy);
+    WRITE1 (idx->is_trained);
+    WRITE1 (idx->metric_type);
 }
 
-static void write_index_header (const Index *idx, FILE *f) {
-    FileIOWriter writer(f);
-    write_index_header(idx, &writer);
-}
-
-void write_VectorTransform (const VectorTransform *vt, FILE *f) {
+void write_VectorTransform (const VectorTransform *vt, IOWriter *pfn_write) {
     if (const LinearTransform * lt =
            dynamic_cast < const LinearTransform *> (vt)) {
         if (dynamic_cast<const RandomRotationMatrix *>(lt)) {
@@ -229,14 +195,26 @@ void write_VectorTransform (const VectorTransform *vt, FILE *f) {
     WRITE1 (vt->is_trained);
 }
 
-static void write_ProductQuantizer (const ProductQuantizer *pq, FILE *f) {
+void write_VectorTransform (const VectorTransform *vt, FILE *f) {
+    FileIOWriter writer(f);
+    write_VectorTransform(vt, &writer);
+}
+
+static void write_ProductQuantizer (
+        const ProductQuantizer *pq, IOWriter *pfn_write) {
     WRITE1 (pq->d);
     WRITE1 (pq->M);
     WRITE1 (pq->nbits);
     WRITEVECTOR (pq->centroids);
 }
 
-static void write_ScalarQuantizer (const ScalarQuantizer *ivsc, FILE *f) {
+static void write_ProductQuantizer (const ProductQuantizer *pq, FILE *f) {
+    FileIOWriter writer(f);
+    write_ProductQuantizer(pq, &writer);
+}
+ 
+static void write_ScalarQuantizer (
+        const ScalarQuantizer *ivsc, IOWriter *pfn_write) {
     WRITE1 (ivsc->qtype);
     WRITE1 (ivsc->rangestat);
     WRITE1 (ivsc->rangestat_arg);
@@ -249,13 +227,13 @@ static void write_InvertedLists (
         const InvertedLists *ils, IOWriter *pfn_write) {
     if (ils == nullptr) {
         uint32_t h = fourcc ("il00");
-        PFN_WRITE1 (h);
+        WRITE1 (h);
     } else if (const auto & ails =
                dynamic_cast<const ArrayInvertedLists *>(ils)) {
         uint32_t h = fourcc ("ilar");
-        PFN_WRITE1 (h);
-        PFN_WRITE1 (ails->nlist);
-        PFN_WRITE1 (ails->code_size);
+        WRITE1 (h);
+        WRITE1 (ails->nlist);
+        WRITE1 (ails->code_size);
         // here we store either as a full or a sparse data buffer
         size_t n_non0 = 0;
         for (size_t i = 0; i < ails->nlist; i++) {
@@ -264,15 +242,15 @@ static void write_InvertedLists (
         }
         if (n_non0 > ails->nlist / 2) {
             uint32_t list_type = fourcc("full");
-            PFN_WRITE1 (list_type);
+            WRITE1 (list_type);
             std::vector<size_t> sizes;
             for (size_t i = 0; i < ails->nlist; i++) {
                 sizes.push_back (ails->ids[i].size());
             }
-            PFN_WRITEVECTOR (sizes);
+            WRITEVECTOR (sizes);
         } else {
             int list_type = fourcc("sprs"); // sparse
-            PFN_WRITE1 (list_type);
+            WRITE1 (list_type);
             std::vector<size_t> sizes;
             for (size_t i = 0; i < ails->nlist; i++) {
                 size_t n = ails->ids[i].size();
@@ -281,46 +259,41 @@ static void write_InvertedLists (
                     sizes.push_back (n);
                 }
             }
-            PFN_WRITEVECTOR (sizes);
+            WRITEVECTOR (sizes);
         }
         // make a single contiguous data buffer (useful for mmapping)
         for (size_t i = 0; i < ails->nlist; i++) {
             size_t n = ails->ids[i].size();
             if (n > 0) {
-                PFN_WRITEANDCHECK (ails->codes[i].data(), n * ails->code_size);
-                PFN_WRITEANDCHECK (ails->ids[i].data(), n);
+                WRITEANDCHECK (ails->codes[i].data(), n * ails->code_size);
+                WRITEANDCHECK (ails->ids[i].data(), n);
             }
         }
     } else if (const auto & od =
                dynamic_cast<const OnDiskInvertedLists *>(ils)) {
         uint32_t h = fourcc ("ilod");
-        PFN_WRITE1 (h);
-        PFN_WRITE1 (ils->nlist);
-        PFN_WRITE1 (ils->code_size);
+        WRITE1 (h);
+        WRITE1 (ils->nlist);
+        WRITE1 (ils->code_size);
         // this is a POD object
-        PFN_WRITEVECTOR (od->lists);
+        WRITEVECTOR (od->lists);
 
         {
             std::vector<OnDiskInvertedLists::Slot> v(
                       od->slots.begin(), od->slots.end());
-            PFN_WRITEVECTOR(v);
+            WRITEVECTOR(v);
         }
         {
             std::vector<char> x(od->filename.begin(), od->filename.end());
-            PFN_WRITEVECTOR(x);
+            WRITEVECTOR(x);
         }
-        PFN_WRITE1(od->totsize);
+        WRITE1(od->totsize);
 
     } else {
         FAISS_THROW_MSG ("write_InvertedLists: unsupported invlist type");
     }
 }
 
-
-static void write_InvertedLists (const InvertedLists *ils, FILE *f) {
-    FileIOWriter writer(f);
-    write_InvertedLists(ils, &writer);
-}
 
 void write_ProductQuantizer (const ProductQuantizer*pq, const char *fname) {
     FILE *f = fopen (fname, "w");
@@ -329,7 +302,7 @@ void write_ProductQuantizer (const ProductQuantizer*pq, const char *fname) {
     write_ProductQuantizer (pq, f);
 }
 
-static void write_HNSW (const HNSW *hnsw, FILE *f) {
+static void write_HNSW (const HNSW *hnsw, IOWriter *pfn_write) {
 
     WRITEVECTOR (hnsw->assign_probas);
     WRITEVECTOR (hnsw->cum_nneighbor_per_level);
@@ -342,70 +315,42 @@ static void write_HNSW (const HNSW *hnsw, FILE *f) {
     WRITE1 (hnsw->efConstruction);
     WRITE1 (hnsw->efSearch);
     WRITE1 (hnsw->upper_beam);
-
 }
 
 static void write_ivf_header (
         const IndexIVF *ivf, IOWriter *pfn_write) {
     write_index_header (ivf, pfn_write);
-    PFN_WRITE1 (ivf->nlist);
-    PFN_WRITE1 (ivf->nprobe);
+    WRITE1 (ivf->nlist);
+    WRITE1 (ivf->nprobe);
     write_index (ivf->quantizer, pfn_write);
-    PFN_WRITE1 (ivf->maintain_direct_map);
-    PFN_WRITEVECTOR (ivf->direct_map);
+    WRITE1 (ivf->maintain_direct_map);
+    WRITEVECTOR (ivf->direct_map);
 }
 
-static void write_ivf_header (const IndexIVF * ivf, FILE *f) {
-    FileIOWriter writer(f);
-    write_ivf_header(ivf, &writer);
-}
-
-void write_index (const Index* idx, IOWriter *pfn_write) {
-
-    // TODO: write_index FILE * f;
-    if (const IndexFlat * idxf = dynamic_cast<const IndexFlat *> (idx)) {
-        uint32_t h = fourcc (
-              idxf->metric_type == METRIC_INNER_PRODUCT ? "IxFI" :
-              idxf->metric_type == METRIC_L2 ? "IxF2" : nullptr);
-        PFN_WRITE1 (h);
-        write_index_header (idx, pfn_write);
-        PFN_WRITEVECTOR (idxf->xb);
-    } else if(const IndexIVFFlat * ivfl =
-              dynamic_cast<const IndexIVFFlat *> (idx)) {
-        uint32_t h = fourcc ("IwFl");
-        PFN_WRITE1 (h);
-        write_ivf_header (ivfl, pfn_write);
-        write_InvertedLists (ivfl->invlists, pfn_write);
-    } else {
-      FAISS_THROW_MSG ("don't know how to serialize this type of index");
-    }
-}
-
-
-void write_index (const Index *idx, FILE *f) {
+void write_index (const Index *idx, IOWriter *pfn_write) {
     if (const IndexFlat * idxf = dynamic_cast<const IndexFlat *> (idx)) {
         uint32_t h = fourcc (
               idxf->metric_type == METRIC_INNER_PRODUCT ? "IxFI" :
               idxf->metric_type == METRIC_L2 ? "IxF2" : nullptr);
         WRITE1 (h);
-        write_index_header (idx, f);
+        write_index_header (idx, pfn_write);
         WRITEVECTOR (idxf->xb);
     } else if(const IndexLSH * idxl = dynamic_cast<const IndexLSH *> (idx)) {
         uint32_t h = fourcc ("IxHe");
         WRITE1 (h);
-        write_index_header (idx, f);
+        write_index_header (idx, pfn_write);
         WRITE1 (idxl->nbits);
         WRITE1 (idxl->rotate_data);
         WRITE1 (idxl->train_thresholds);
         WRITEVECTOR (idxl->thresholds);
         WRITE1 (idxl->bytes_per_vec);
-        write_VectorTransform (&idxl->rrot, f);
+        write_VectorTransform (&idxl->rrot, pfn_write);
         WRITEVECTOR (idxl->codes);
     } else if(const IndexPQ * idxp = dynamic_cast<const IndexPQ *> (idx)) {
         uint32_t h = fourcc ("IxPq");
         WRITE1 (h);
-        write_index_header (idx, f);
-        write_ProductQuantizer (&idxp->pq, f);
+        write_index_header (idx, pfn_write);
+        write_ProductQuantizer (&idxp->pq, pfn_write);
         WRITEVECTOR (idxp->codes);
         // search params -- maybe not useful to store?
         WRITE1 (idxp->search_type);
@@ -415,11 +360,11 @@ void write_index (const Index *idx, FILE *f) {
               dynamic_cast<const Index2Layer *> (idx)) {
         uint32_t h = fourcc ("Ix2L");
         WRITE1 (h);
-        write_index_header (idx, f);
-        write_index (idxp->q1.quantizer, f);
+        write_index_header (idx, pfn_write);
+        write_index (idxp->q1.quantizer, pfn_write);
         WRITE1 (idxp->q1.nlist);
         WRITE1 (idxp->q1.quantizer_trains_alone);
-        write_ProductQuantizer (&idxp->pq, f);
+        write_ProductQuantizer (&idxp->pq, pfn_write);
         WRITE1 (idxp->code_size_1);
         WRITE1 (idxp->code_size_2);
         WRITE1 (idxp->code_size);
@@ -428,36 +373,36 @@ void write_index (const Index *idx, FILE *f) {
               dynamic_cast<const IndexScalarQuantizer *> (idx)) {
         uint32_t h = fourcc ("IxSQ");
         WRITE1 (h);
-        write_index_header (idx, f);
-        write_ScalarQuantizer (&idxs->sq, f);
+        write_index_header (idx, pfn_write);
+        write_ScalarQuantizer (&idxs->sq, pfn_write);
         WRITEVECTOR (idxs->codes);
     } else if(const IndexIVFFlat * ivfl =
               dynamic_cast<const IndexIVFFlat *> (idx)) {
         uint32_t h = fourcc ("IwFl");
         WRITE1 (h);
-        write_ivf_header (ivfl, f);
-        write_InvertedLists (ivfl->invlists, f);
+        write_ivf_header (ivfl, pfn_write);
+        write_InvertedLists (ivfl->invlists, pfn_write);
     } else if(const IndexIVFScalarQuantizer * ivsc =
               dynamic_cast<const IndexIVFScalarQuantizer *> (idx)) {
         uint32_t h = fourcc ("IwSQ");
         WRITE1 (h);
-        write_ivf_header (ivsc, f);
-        write_ScalarQuantizer (&ivsc->sq, f);
+        write_ivf_header (ivsc, pfn_write);
+        write_ScalarQuantizer (&ivsc->sq, pfn_write);
         WRITE1 (ivsc->code_size);
-        write_InvertedLists (ivsc->invlists, f);
+        write_InvertedLists (ivsc->invlists, pfn_write);
     } else if(const IndexIVFPQ * ivpq =
               dynamic_cast<const IndexIVFPQ *> (idx)) {
         const IndexIVFPQR * ivfpqr = dynamic_cast<const IndexIVFPQR *> (idx);
 
         uint32_t h = fourcc (ivfpqr ? "IwQR" : "IwPQ");
         WRITE1 (h);
-        write_ivf_header (ivpq, f);
+        write_ivf_header (ivpq, pfn_write);
         WRITE1 (ivpq->by_residual);
         WRITE1 (ivpq->code_size);
-        write_ProductQuantizer (&ivpq->pq, f);
-        write_InvertedLists (ivpq->invlists, f);
+        write_ProductQuantizer (&ivpq->pq, pfn_write);
+        write_InvertedLists (ivpq->invlists, pfn_write);
         if (ivfpqr) {
-            write_ProductQuantizer (&ivfpqr->refine_pq, f);
+            write_ProductQuantizer (&ivfpqr->refine_pq, pfn_write);
             WRITEVECTOR (ivfpqr->refine_codes);
             WRITE1 (ivfpqr->k_factor);
         }
@@ -466,25 +411,25 @@ void write_index (const Index *idx, FILE *f) {
               dynamic_cast<const IndexPreTransform *> (idx)) {
         uint32_t h = fourcc ("IxPT");
         WRITE1 (h);
-        write_index_header (ixpt, f);
+        write_index_header (ixpt, pfn_write);
         int nt = ixpt->chain.size();
         WRITE1 (nt);
         for (int i = 0; i < nt; i++)
-            write_VectorTransform (ixpt->chain[i], f);
-        write_index (ixpt->index, f);
+            write_VectorTransform (ixpt->chain[i], pfn_write);
+        write_index (ixpt->index, pfn_write);
     } else if(const MultiIndexQuantizer * imiq =
               dynamic_cast<const MultiIndexQuantizer *> (idx)) {
         uint32_t h = fourcc ("Imiq");
         WRITE1 (h);
-        write_index_header (imiq, f);
-        write_ProductQuantizer (&imiq->pq, f);
+        write_index_header (imiq, pfn_write);
+        write_ProductQuantizer (&imiq->pq, pfn_write);
     } else if(const IndexRefineFlat * idxrf =
               dynamic_cast<const IndexRefineFlat *> (idx)) {
         uint32_t h = fourcc ("IxRF");
         WRITE1 (h);
-        write_index_header (idxrf, f);
-        write_index (idxrf->base_index, f);
-        write_index (&idxrf->refine_index, f);
+        write_index_header (idxrf, pfn_write);
+        write_index (idxrf->base_index, pfn_write);
+        write_index (&idxrf->refine_index, pfn_write);
         WRITE1 (idxrf->k_factor);
     } else if(const IndexIDMap * idxmap =
               dynamic_cast<const IndexIDMap *> (idx)) {
@@ -493,8 +438,8 @@ void write_index (const Index *idx, FILE *f) {
             fourcc ("IxMp");
         // no need to store additional info for IndexIDMap2
         WRITE1 (h);
-        write_index_header (idxmap, f);
-        write_index (idxmap->index, f);
+        write_index_header (idxmap, pfn_write);
+        write_index (idxmap->index, pfn_write);
         WRITEVECTOR (idxmap->id_map);
     } else if(const IndexHNSW * idxhnsw =
               dynamic_cast<const IndexHNSW *> (idx)) {
@@ -506,12 +451,17 @@ void write_index (const Index *idx, FILE *f) {
             0;
         FAISS_THROW_IF_NOT (h != 0);
         WRITE1 (h);
-        write_index_header (idxhnsw, f);
-        write_HNSW (&idxhnsw->hnsw, f);
-        write_index (idxhnsw->storage, f);
+        write_index_header (idxhnsw, pfn_write);
+        write_HNSW (&idxhnsw->hnsw, pfn_write);
+        write_index (idxhnsw->storage, pfn_write);
     } else {
       FAISS_THROW_MSG ("don't know how to serialize this type of index");
     }
+}
+
+void write_index (const Index *idx, FILE *f) {
+    FileIOWriter writer(f);
+    write_index(idx, &writer);
 }
 
 void write_index (const Index *idx, const char *fname) {
@@ -533,22 +483,17 @@ void write_VectorTransform (const VectorTransform *vt, const char *fname) {
  **************************************************************/
 
 static void read_index_header (Index *idx, IOReader *pfn_read) {
-    PFN_READ1 (idx->d);
-    PFN_READ1 (idx->ntotal);
+    READ1 (idx->d);
+    READ1 (idx->ntotal);
     Index::idx_t dummy;
-    PFN_READ1 (dummy);
-    PFN_READ1 (dummy);
-    PFN_READ1 (idx->is_trained);
-    PFN_READ1 (idx->metric_type);
+    READ1 (dummy);
+    READ1 (dummy);
+    READ1 (idx->is_trained);
+    READ1 (idx->metric_type);
     idx->verbose = false;
 }
 
-static void read_index_header (Index *idx, FILE *f) {
-    FileIOReader reader(f);
-    read_index_header(idx, &reader);
-}
-
-VectorTransform* read_VectorTransform (FILE *f) {
+VectorTransform* read_VectorTransform (IOReader *pfn_read) {
     uint32_t h;
     READ1 (h);
     VectorTransform *vt = nullptr;
@@ -596,9 +541,14 @@ VectorTransform* read_VectorTransform (FILE *f) {
     return vt;
 }
 
+VectorTransform* read_VectorTransform (FILE *f) {
+    FileIOReader reader(f);
+    return read_VectorTransform(&reader);
+}
+
 
 static void read_ArrayInvertedLists_sizes (
-         FILE *f, std::vector<size_t> & sizes)
+         IOReader *pfn_read, std::vector<size_t> & sizes)
 {
     size_t nlist = sizes.size();
     uint32_t list_type;
@@ -619,8 +569,13 @@ static void read_ArrayInvertedLists_sizes (
     }
 }
 
+static void read_ArrayInvertedLists_sizes (
+         FILE *f, std::vector<size_t> & sizes) {
+    FileIOReader reader(f);
+    read_ArrayInvertedLists_sizes(&reader, sizes);
+}
 
-InvertedLists *read_InvertedLists (FILE *f, int io_flags) {
+InvertedLists *read_InvertedLists (IOReader *pfn_read, int io_flags) {
     uint32_t h;
     READ1 (h);
     if (h == fourcc ("il00")) {
@@ -632,7 +587,7 @@ InvertedLists *read_InvertedLists (FILE *f, int io_flags) {
         ails->ids.resize (ails->nlist);
         ails->codes.resize (ails->nlist);
         std::vector<size_t> sizes (ails->nlist);
-        read_ArrayInvertedLists_sizes (f, sizes);
+        read_ArrayInvertedLists_sizes (pfn_read, sizes);
         for (size_t i = 0; i < ails->nlist; i++) {
             ails->ids[i].resize (sizes[i]);
             ails->codes[i].resize (sizes[i] * ails->code_size);
@@ -646,6 +601,10 @@ InvertedLists *read_InvertedLists (FILE *f, int io_flags) {
         }
         return ails;
     } else if (h == fourcc ("ilar") && (io_flags & IO_FLAG_MMAP)) {
+        auto impl = dynamic_cast<FileIOReader*>(pfn_read);
+        FAISS_THROW_IF_NOT(NULL != impl);
+        FILE *f = impl->f;
+
         auto ails = new OnDiskInvertedLists ();
         READ1 (ails->nlist);
         READ1 (ails->code_size);
@@ -702,24 +661,33 @@ InvertedLists *read_InvertedLists (FILE *f, int io_flags) {
     }
 }
 
-static void read_InvertedLists (IndexIVF *ivf, FILE *f, int io_flags) {
-    InvertedLists *ils = read_InvertedLists (f, io_flags);
+InvertedLists *read_InvertedLists (FILE *f, int io_flags) {
+    FileIOReader reader(f);
+    return read_InvertedLists(&reader, io_flags);
+}
+
+static void read_InvertedLists (
+        IndexIVF *ivf, IOReader *pfn_read, int io_flags) {
+    InvertedLists *ils = read_InvertedLists (pfn_read, io_flags);
     FAISS_THROW_IF_NOT (ils->nlist == ivf->nlist &&
                         ils->code_size == ivf->code_size);
     ivf->invlists = ils;
     ivf->own_invlists = true;
 }
-
-
-static void read_ProductQuantizer (ProductQuantizer *pq, FILE *f) {
+ 
+static void read_ProductQuantizer (ProductQuantizer *pq, IOReader *pfn_read) {
     READ1 (pq->d);
     READ1 (pq->M);
     READ1 (pq->nbits);
     pq->set_derived_values ();
     READVECTOR (pq->centroids);
 }
-
-static void read_ScalarQuantizer (ScalarQuantizer *ivsc, FILE *f) {
+static void read_ProductQuantizer (ProductQuantizer *pq, FILE *f) {
+    FileIOReader reader(f);
+    read_ProductQuantizer(pq, &reader);
+}
+ 
+static void read_ScalarQuantizer (ScalarQuantizer *ivsc, IOReader *pfn_read) {
     READ1 (ivsc->qtype);
     READ1 (ivsc->rangestat);
     READ1 (ivsc->rangestat_arg);
@@ -729,7 +697,7 @@ static void read_ScalarQuantizer (ScalarQuantizer *ivsc, FILE *f) {
 }
 
 
-static void read_HNSW (HNSW *hnsw, FILE *f) {
+static void read_HNSW (HNSW *hnsw, IOReader *pfn_read) {
     READVECTOR (hnsw->assign_probas);
     READVECTOR (hnsw->cum_nneighbor_per_level);
     READVECTOR (hnsw->levels);
@@ -758,25 +726,17 @@ static void read_ivf_header (
         IndexIVF *ivf, IOReader *pfn_read, 
         std::vector<std::vector<Index::idx_t> > *ids = nullptr) {
     read_index_header (ivf, pfn_read);
-    PFN_READ1 (ivf->nlist);
-    PFN_READ1 (ivf->nprobe);
+    READ1 (ivf->nlist);
+    READ1 (ivf->nprobe);
     ivf->quantizer = read_index (pfn_read);
     ivf->own_fields = true;
     if (ids) { // used in legacy "Iv" formats
         ids->resize (ivf->nlist);
         for (size_t i = 0; i < ivf->nlist; i++)
-            PFN_READVECTOR ((*ids)[i]);
+            READVECTOR ((*ids)[i]);
     }
-    PFN_READ1 (ivf->maintain_direct_map);
-    PFN_READVECTOR (ivf->direct_map);
-}
-
-static void read_ivf_header (
-    IndexIVF * ivf, FILE *f,
-    std::vector<std::vector<Index::idx_t> > *ids = nullptr)
-{
-    FileIOReader reader(f);
-    read_ivf_header(ivf, &reader, ids);
+    READ1 (ivf->maintain_direct_map);
+    READVECTOR (ivf->direct_map);
 }
 
 // used for legacy formats
@@ -791,7 +751,7 @@ static ArrayInvertedLists *set_array_invlist(
     return ail;
 }
 
-static IndexIVFPQ *read_ivfpq (FILE *f, uint32_t h, int io_flags)
+static IndexIVFPQ *read_ivfpq (IOReader *pfn_read, uint32_t h, int io_flags)
 {
     bool legacy = h == fourcc ("IvQR") || h == fourcc ("IvPQ");
 
@@ -801,17 +761,17 @@ static IndexIVFPQ *read_ivfpq (FILE *f, uint32_t h, int io_flags)
     IndexIVFPQ * ivpq = ivfpqr ? ivfpqr : new IndexIVFPQ ();
 
     std::vector<std::vector<Index::idx_t> > ids;
-    read_ivf_header (ivpq, f, legacy ? &ids : nullptr);
+    read_ivf_header (ivpq, pfn_read, legacy ? &ids : nullptr);
     READ1 (ivpq->by_residual);
     READ1 (ivpq->code_size);
-    read_ProductQuantizer (&ivpq->pq, f);
+    read_ProductQuantizer (&ivpq->pq, pfn_read);
 
     if (legacy) {
         ArrayInvertedLists *ail = set_array_invlist (ivpq, ids);
         for (size_t i = 0; i < ail->nlist; i++)
             READVECTOR (ail->codes[i]);
     } else {
-        read_InvertedLists (ivpq, f, io_flags);
+        read_InvertedLists (ivpq, pfn_read, io_flags);
     }
 
     // precomputed table not stored. It is cheaper to recompute it
@@ -819,7 +779,7 @@ static IndexIVFPQ *read_ivfpq (FILE *f, uint32_t h, int io_flags)
     if (ivpq->by_residual)
         ivpq->precompute_table ();
     if (ivfpqr) {
-        read_ProductQuantizer (&ivfpqr->refine_pq, f);
+        read_ProductQuantizer (&ivfpqr->refine_pq, pfn_read);
         READVECTOR (ivfpqr->refine_codes);
         READ1 (ivfpqr->k_factor);
     }
@@ -829,49 +789,6 @@ static IndexIVFPQ *read_ivfpq (FILE *f, uint32_t h, int io_flags)
 int read_old_fmt_hack = 0;
 
 Index *read_index (IOReader *pfn_read, int io_flags) {
-
-    Index * idx = nullptr;
-    uint32_t h;
-    PFN_READ1 (h);
-    if (h == fourcc ("IxFI") || h == fourcc ("IxF2")) {
-        IndexFlat *idxf;
-        if (h == fourcc ("IxFI")) idxf = new IndexFlatIP ();
-        else                      idxf = new IndexFlatL2 ();
-        read_index_header (idxf, pfn_read);
-        PFN_READVECTOR (idxf->xb);
-        FAISS_THROW_IF_NOT (idxf->xb.size() == idxf->ntotal * idxf->d);
-        // leak!
-        idx = idxf;
-    } else if (h == fourcc ("IvFl") || h == fourcc("IvFL")) { // legacy
-        IndexIVFFlat * ivfl = new IndexIVFFlat ();
-        std::vector<std::vector<Index::idx_t> > ids;
-        read_ivf_header (ivfl, pfn_read, &ids);
-        ivfl->code_size = ivfl->d * sizeof(float);
-        ArrayInvertedLists *ail = set_array_invlist (ivfl, ids);
-
-        if (h == fourcc ("IvFL")) {
-            for (size_t i = 0; i < ivfl->nlist; i++) {
-                PFN_READVECTOR (ail->codes[i]);
-            }
-        } else { // old format
-            for (size_t i = 0; i < ivfl->nlist; i++) {
-                std::vector<float> vec;
-                PFN_READVECTOR (vec);
-                ail->codes[i].resize(vec.size() * sizeof(float));
-                memcpy(ail->codes[i].data(), vec.data(),
-                       ail->codes[i].size());
-            }
-        }
-        idx = ivfl;
-    } else {
-        FAISS_THROW_FMT("Index type 0x%08x not supported\n", h);
-        idx = nullptr;
-    }
-    return idx;
-
-}
-
-Index *read_index (FILE * f, int io_flags) {
     Index * idx = nullptr;
     uint32_t h;
     READ1 (h);
@@ -879,14 +796,14 @@ Index *read_index (FILE * f, int io_flags) {
         IndexFlat *idxf;
         if (h == fourcc ("IxFI")) idxf = new IndexFlatIP ();
         else                      idxf = new IndexFlatL2 ();
-        read_index_header (idxf, f);
+        read_index_header (idxf, pfn_read);
         READVECTOR (idxf->xb);
         FAISS_THROW_IF_NOT (idxf->xb.size() == idxf->ntotal * idxf->d);
         // leak!
         idx = idxf;
     } else if (h == fourcc("IxHE") || h == fourcc("IxHe")) {
         IndexLSH * idxl = new IndexLSH ();
-        read_index_header (idxl, f);
+        read_index_header (idxl, pfn_read);
         READ1 (idxl->nbits);
         READ1 (idxl->rotate_data);
         READ1 (idxl->train_thresholds);
@@ -902,7 +819,7 @@ Index *read_index (FILE * f, int io_flags) {
         }
         {
             RandomRotationMatrix *rrot = dynamic_cast<RandomRotationMatrix *>
-                (read_VectorTransform (f));
+                (read_VectorTransform (pfn_read));
             FAISS_THROW_IF_NOT_MSG(rrot, "expected a random rotation");
             idxl->rrot = *rrot;
             delete rrot;
@@ -917,8 +834,8 @@ Index *read_index (FILE * f, int io_flags) {
                h == fourcc ("IxPq")) {
         // IxPQ and IxPo were merged into the same IndexPQ object
         IndexPQ * idxp =new IndexPQ ();
-        read_index_header (idxp, f);
-        read_ProductQuantizer (&idxp->pq, f);
+        read_index_header (idxp, pfn_read);
+        read_ProductQuantizer (&idxp->pq, pfn_read);
         READVECTOR (idxp->codes);
         if (h == fourcc ("IxPo") || h == fourcc ("IxPq")) {
             READ1 (idxp->search_type);
@@ -935,7 +852,7 @@ Index *read_index (FILE * f, int io_flags) {
     } else if (h == fourcc ("IvFl") || h == fourcc("IvFL")) { // legacy
         IndexIVFFlat * ivfl = new IndexIVFFlat ();
         std::vector<std::vector<Index::idx_t> > ids;
-        read_ivf_header (ivfl, f, &ids);
+        read_ivf_header (ivfl, pfn_read, &ids);
         ivfl->code_size = ivfl->d * sizeof(float);
         ArrayInvertedLists *ail = set_array_invlist (ivfl, ids);
 
@@ -955,22 +872,22 @@ Index *read_index (FILE * f, int io_flags) {
         idx = ivfl;
     } else if (h == fourcc ("IwFl")) {
         IndexIVFFlat * ivfl = new IndexIVFFlat ();
-        read_ivf_header (ivfl, f);
+        read_ivf_header (ivfl, pfn_read);
         ivfl->code_size = ivfl->d * sizeof(float);
-        read_InvertedLists (ivfl, f, io_flags);
+        read_InvertedLists (ivfl, pfn_read, io_flags);
         idx = ivfl;
     } else if (h == fourcc ("IxSQ")) {
         IndexScalarQuantizer * idxs = new IndexScalarQuantizer ();
-        read_index_header (idxs, f);
-        read_ScalarQuantizer (&idxs->sq, f);
+        read_index_header (idxs, pfn_read);
+        read_ScalarQuantizer (&idxs->sq, pfn_read);
         READVECTOR (idxs->codes);
         idxs->code_size = idxs->sq.code_size;
         idx = idxs;
     } else if(h == fourcc ("IvSQ")) { // legacy
         IndexIVFScalarQuantizer * ivsc = new IndexIVFScalarQuantizer();
         std::vector<std::vector<Index::idx_t> > ids;
-        read_ivf_header (ivsc, f, &ids);
-        read_ScalarQuantizer (&ivsc->sq, f);
+        read_ivf_header (ivsc, pfn_read, &ids);
+        read_ScalarQuantizer (&ivsc->sq, pfn_read);
         READ1 (ivsc->code_size);
         ArrayInvertedLists *ail = set_array_invlist (ivsc, ids);
         for(int i = 0; i < ivsc->nlist; i++)
@@ -978,20 +895,20 @@ Index *read_index (FILE * f, int io_flags) {
         idx = ivsc;
     } else if(h == fourcc ("IwSQ")) {
         IndexIVFScalarQuantizer * ivsc = new IndexIVFScalarQuantizer();
-        read_ivf_header (ivsc, f);
-        read_ScalarQuantizer (&ivsc->sq, f);
+        read_ivf_header (ivsc, pfn_read);
+        read_ScalarQuantizer (&ivsc->sq, pfn_read);
         READ1 (ivsc->code_size);
-        read_InvertedLists (ivsc, f, io_flags);
+        read_InvertedLists (ivsc, pfn_read, io_flags);
         idx = ivsc;
     } else if(h == fourcc ("IvPQ") || h == fourcc ("IvQR") ||
               h == fourcc ("IwPQ") || h == fourcc ("IwQR")) {
 
-        idx = read_ivfpq (f, h, io_flags);
+        idx = read_ivfpq (pfn_read, h, io_flags);
 
     } else if(h == fourcc ("IxPT")) {
         IndexPreTransform * ixpt = new IndexPreTransform();
         ixpt->own_fields = true;
-        read_index_header (ixpt, f);
+        read_index_header (ixpt, pfn_read);
         int nt;
         if (read_old_fmt_hack == 2) {
             nt = 1;
@@ -999,21 +916,21 @@ Index *read_index (FILE * f, int io_flags) {
             READ1 (nt);
         }
         for (int i = 0; i < nt; i++) {
-            ixpt->chain.push_back (read_VectorTransform (f));
+            ixpt->chain.push_back (read_VectorTransform (pfn_read));
         }
-        ixpt->index = read_index (f);
+        ixpt->index = read_index (pfn_read);
         idx = ixpt;
     } else if(h == fourcc ("Imiq")) {
         MultiIndexQuantizer * imiq = new MultiIndexQuantizer ();
-        read_index_header (imiq, f);
-        read_ProductQuantizer (&imiq->pq, f);
+        read_index_header (imiq, pfn_read);
+        read_ProductQuantizer (&imiq->pq, pfn_read);
         idx = imiq;
     } else if(h == fourcc ("IxRF")) {
         IndexRefineFlat *idxrf = new IndexRefineFlat ();
-        read_index_header (idxrf, f);
-        idxrf->base_index = read_index(f);
+        read_index_header (idxrf, pfn_read);
+        idxrf->base_index = read_index(pfn_read);
         idxrf->own_fields = true;
-        IndexFlat *rf = dynamic_cast<IndexFlat*> (read_index (f));
+        IndexFlat *rf = dynamic_cast<IndexFlat*> (read_index (pfn_read));
         std::swap (*rf, idxrf->refine_index);
         delete rf;
         READ1 (idxrf->k_factor);
@@ -1021,8 +938,8 @@ Index *read_index (FILE * f, int io_flags) {
     } else if(h == fourcc ("IxMp") || h == fourcc ("IxM2")) {
         bool is_map2 = h == fourcc ("IxM2");
         IndexIDMap * idxmap = is_map2 ? new IndexIDMap2 () : new IndexIDMap ();
-        read_index_header (idxmap, f);
-        idxmap->index = read_index (f);
+        read_index_header (idxmap, pfn_read);
+        idxmap->index = read_index (pfn_read);
         idxmap->own_fields = true;
         READVECTOR (idxmap->id_map);
         if (is_map2) {
@@ -1031,11 +948,11 @@ Index *read_index (FILE * f, int io_flags) {
         idx = idxmap;
     } else if (h == fourcc ("Ix2L")) {
         Index2Layer * idxp = new Index2Layer ();
-        read_index_header (idxp, f);
-        idxp->q1.quantizer = read_index (f);
+        read_index_header (idxp, pfn_read);
+        idxp->q1.quantizer = read_index (pfn_read);
         READ1 (idxp->q1.nlist);
         READ1 (idxp->q1.quantizer_trains_alone);
-        read_ProductQuantizer (&idxp->pq, f);
+        read_ProductQuantizer (&idxp->pq, pfn_read);
         READ1 (idxp->code_size_1);
         READ1 (idxp->code_size_2);
         READ1 (idxp->code_size);
@@ -1048,9 +965,9 @@ Index *read_index (FILE * f, int io_flags) {
         if (h == fourcc("IHNp")) idxhnsw = new IndexHNSWPQ ();
         if (h == fourcc("IHNs")) idxhnsw = new IndexHNSWSQ ();
         if (h == fourcc("IHN2")) idxhnsw = new IndexHNSW2Level ();
-        read_index_header (idxhnsw, f);
-        read_HNSW (&idxhnsw->hnsw, f);
-        idxhnsw->storage = read_index (f);
+        read_index_header (idxhnsw, pfn_read);
+        read_HNSW (&idxhnsw->hnsw, pfn_read);
+        idxhnsw->storage = read_index (pfn_read);
         idxhnsw->own_fields = true;
         if (h == fourcc("IHNp")) {
             dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table ();
@@ -1064,6 +981,10 @@ Index *read_index (FILE * f, int io_flags) {
 }
 
 
+Index *read_index (FILE * f, int io_flags) {
+    FileIOReader reader(f); 
+    return read_index(&reader, io_flags);
+}
 
 Index *read_index (const char *fname, int io_flags) {
     FILE *f = fopen (fname, "r");
