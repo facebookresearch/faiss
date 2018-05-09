@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 2.8.7)
 # faiss project
 project(faiss C CXX)
 
-option(BUILD_TUTORIAL "Build tutorials" ON)
-option(BUILD_TEST "Build tests" ON)
-option(BUILD_WITH_GPU "Build faiss with gpu (cuda) support" ON)
+option(BUILD_TUTORIAL "Build tutorials" OFF)
+option(BUILD_TEST "Build tests" OFF)
+option(BUILD_WITH_GPU "Build faiss with gpu (cuda) support" OFF)
 option(WITH_MKL "Build with MKL if ON (OpenBLAS if OFF)" OFF)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)

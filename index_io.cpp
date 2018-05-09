@@ -569,12 +569,6 @@ static void read_ArrayInvertedLists_sizes (
     }
 }
 
-static void read_ArrayInvertedLists_sizes (
-         FILE *f, std::vector<size_t> & sizes) {
-    FileIOReader reader(f);
-    read_ArrayInvertedLists_sizes(&reader, sizes);
-}
-
 InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
     uint32_t h;
     READ1 (h);
@@ -603,7 +597,7 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
     } else if (h == fourcc ("ilar") && (io_flags & IO_FLAG_MMAP)) {
         auto impl = dynamic_cast<FileIOReader*>(f);
         FAISS_THROW_IF_NOT(NULL != impl);
-        FILE *f = impl->f;
+        FILE *raw_f = impl->f;
 
         auto ails = new OnDiskInvertedLists ();
         READ1 (ails->nlist);
@@ -612,16 +606,16 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
         ails->lists.resize (ails->nlist);
         std::vector<size_t> sizes (ails->nlist);
         read_ArrayInvertedLists_sizes (f, sizes);
-        size_t o0 = ftell (f), o = o0;
+        size_t o0 = ftell (raw_f), o = o0;
         { // do the mmap
             struct stat buf;
-            int ret = fstat (fileno(f), &buf);
+            int ret = fstat (fileno(raw_f), &buf);
             FAISS_THROW_IF_NOT_FMT (ret == 0,
                                     "fstat failed: %s", strerror(errno));
             ails->totsize = buf.st_size;
             ails->ptr = (uint8_t*)mmap (nullptr, ails->totsize,
                                         PROT_READ, MAP_SHARED,
-                                        fileno (f), 0);
+                                        fileno (raw_f), 0);
             FAISS_THROW_IF_NOT_FMT (ails->ptr != MAP_FAILED,
                             "could not mmap: %s",
                             strerror(errno));
@@ -634,7 +628,7 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
                            ails->code_size);
         }
         // resume normal reading of file
-        fseek (f, o, SEEK_SET);
+        fseek (raw_f, o, SEEK_SET);
         return ails;
     } else if (h == fourcc ("ilod")) {
         OnDiskInvertedLists *od = new OnDiskInvertedLists();
