@@ -14,7 +14,6 @@
 #define FAISS_INDEX_IO_H
 
 #include <cstdio>
-#include <functional>
 
 namespace faiss {
 

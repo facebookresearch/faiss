@@ -73,16 +73,14 @@ static uint32_t fourcc (const char sx[4]) {
  **************************************************************/
 
 
-#define WRITEANDCHECK(ptr, n)                                \
-    {                                                        \
-        size_t ret = (*f)(ptr, sizeof(*(ptr)), n);   \
-        FAISS_THROW_IF_NOT_MSG(ret == (n), "write error");   \
+#define WRITEANDCHECK(ptr, n) {                             \
+        size_t ret = (*f)(ptr, sizeof(*(ptr)), n);          \
+        FAISS_THROW_IF_NOT_MSG(ret == (n), "write error");  \
     }
 
-#define READANDCHECK(ptr, n)                                 \
-    {                                                        \
-        size_t ret = (*f)(ptr, sizeof(*(ptr)), n);    \
-        FAISS_THROW_IF_NOT_MSG(ret == (n), "read error");    \
+#define READANDCHECK(ptr, n) {                              \
+        size_t ret = (*f)(ptr, sizeof(*(ptr)), n);          \
+        FAISS_THROW_IF_NOT_MSG(ret == (n), "read error");   \
     }
 
 #define WRITE1(x) WRITEANDCHECK(&(x), 1)
@@ -195,22 +193,12 @@ void write_VectorTransform (const VectorTransform *vt, IOWriter *f) {
     WRITE1 (vt->is_trained);
 }
 
-void write_VectorTransform (const VectorTransform *vt, FILE *f) {
-    FileIOWriter writer(f);
-    write_VectorTransform(vt, &writer);
-}
-
 static void write_ProductQuantizer (
         const ProductQuantizer *pq, IOWriter *f) {
     WRITE1 (pq->d);
     WRITE1 (pq->M);
     WRITE1 (pq->nbits);
     WRITEVECTOR (pq->centroids);
-}
-
-static void write_ProductQuantizer (const ProductQuantizer *pq, FILE *f) {
-    FileIOWriter writer(f);
-    write_ProductQuantizer(pq, &writer);
 }
  
 static void write_ScalarQuantizer (
@@ -223,8 +211,7 @@ static void write_ScalarQuantizer (
     WRITEVECTOR (ivsc->trained);
 }
 
-static void write_InvertedLists (
-        const InvertedLists *ils, IOWriter *f) {
+static void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
     if (ils == nullptr) {
         uint32_t h = fourcc ("il00");
         WRITE1 (h);
@@ -299,7 +286,9 @@ void write_ProductQuantizer (const ProductQuantizer*pq, const char *fname) {
     FILE *f = fopen (fname, "w");
     FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for writing", fname);
     ScopeFileCloser closer(f);
-    write_ProductQuantizer (pq, f);
+
+    FileIOWriter writer(f);
+    write_ProductQuantizer (pq, &writer);
 }
 
 static void write_HNSW (const HNSW *hnsw, IOWriter *f) {
@@ -317,8 +306,7 @@ static void write_HNSW (const HNSW *hnsw, IOWriter *f) {
     WRITE1 (hnsw->upper_beam);
 }
 
-static void write_ivf_header (
-        const IndexIVF *ivf, IOWriter *f) {
+static void write_ivf_header (const IndexIVF *ivf, IOWriter *f) {
     write_index_header (ivf, f);
     WRITE1 (ivf->nlist);
     WRITE1 (ivf->nprobe);
@@ -475,7 +463,9 @@ void write_VectorTransform (const VectorTransform *vt, const char *fname) {
     FILE *f = fopen (fname, "w");
     FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for writing", fname);
     ScopeFileCloser closer(f);
-    write_VectorTransform (vt, f);
+
+    FileIOWriter writer(f);
+    write_VectorTransform (vt, &writer);
 }
 
 /*************************************************************
@@ -539,11 +529,6 @@ VectorTransform* read_VectorTransform (IOReader *f) {
     READ1 (vt->d_out);
     READ1 (vt->is_trained);
     return vt;
-}
-
-VectorTransform* read_VectorTransform (FILE *f) {
-    FileIOReader reader(f);
-    return read_VectorTransform(&reader);
 }
 
 
@@ -655,11 +640,6 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
     }
 }
 
-InvertedLists *read_InvertedLists (FILE *f, int io_flags) {
-    FileIOReader reader(f);
-    return read_InvertedLists(&reader, io_flags);
-}
-
 static void read_InvertedLists (
         IndexIVF *ivf, IOReader *f, int io_flags) {
     InvertedLists *ils = read_InvertedLists (f, io_flags);
@@ -675,10 +655,6 @@ static void read_ProductQuantizer (ProductQuantizer *pq, IOReader *f) {
     READ1 (pq->nbits);
     pq->set_derived_values ();
     READVECTOR (pq->centroids);
-}
-static void read_ProductQuantizer (ProductQuantizer *pq, FILE *f) {
-    FileIOReader reader(f);
-    read_ProductQuantizer(pq, &reader);
 }
  
 static void read_ScalarQuantizer (ScalarQuantizer *ivsc, IOReader *f) {
@@ -711,14 +687,17 @@ ProductQuantizer * read_ProductQuantizer (const char*fname) {
     ScopeFileCloser closer(f);
     ProductQuantizer *pq = new ProductQuantizer();
     ScopeDeleter1<ProductQuantizer> del (pq);
-    read_ProductQuantizer(pq, f);
+
+    FileIOReader reader(f);
+    read_ProductQuantizer(pq, &reader);
     del.release ();
     return pq;
 }
 
 static void read_ivf_header (
-        IndexIVF *ivf, IOReader *f, 
-        std::vector<std::vector<Index::idx_t> > *ids = nullptr) {
+    IndexIVF *ivf, IOReader *f, 
+    std::vector<std::vector<Index::idx_t> > *ids = nullptr) 
+{
     read_index_header (ivf, f);
     READ1 (ivf->nlist);
     READ1 (ivf->nprobe);
@@ -995,7 +974,9 @@ VectorTransform *read_VectorTransform (const char *fname) {
         perror ("");
         abort ();
     }
-    VectorTransform *vt = read_VectorTransform (f);
+
+    FileIOReader reader(f);
+    VectorTransform *vt = read_VectorTransform (&reader);
     fclose (f);
     return vt;
 }
