@@ -16,14 +16,15 @@ CLIBNAME=libfaiss_c
 LIBCOBJ=error_impl.o Index_c.o IndexFlat_c.o Clustering_c.o AuxIndexStructures_c.o \
 	AutoTune_c.o IndexIVF_c.o IndexIVFFlat_c.o IndexLSH_c.o index_io_c.o MetaIndexes_c.o
 
-# Build shared object file by default
-all: $(CLIBNAME).$(SHAREDEXT)
+# Build static and shared object files by default
+all: $(CLIBNAME).a $(CLIBNAME).$(SHAREDEXT)
 
-# Build static library (requires consumers to link with libstdc++)
-$(CLIBNAME).a: $(LIBCOBJ) ../$(LIBNAME).a
+# Build static object file containing the wrapper implementation only.
+# Consumers are required to link with libfaiss.a and libstdc++.
+$(CLIBNAME).a: $(LIBCOBJ)
 	ar r $@ $^
 
-# Build dynamic library
+# Build dynamic library (independent object)
 $(CLIBNAME).$(SHAREDEXT): $(LIBCOBJ) ../$(LIBNAME).a
 	$(CXX) $(LDFLAGS) $(FAISSSHAREDFLAGS) -o $@ \
 	-Wl,--whole-archive $^ $(BLASLDFLAGS) -Wl,--no-whole-archive -static-libstdc++
