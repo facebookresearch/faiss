@@ -20,8 +20,7 @@ You can easily install it by
 conda install faiss-cpu -c pytorch
 # Make sure you have CUDA installed before installing faiss-gpu, otherwise it falls back to CPU version
 conda install faiss-gpu -c pytorch # [DEFAULT]For CUDA8.0, comes with cudatoolkit8.0
-conda install faiss-gpu cuda90 -c pytorch # For CUDA9.0
-conda install faiss-gpu cuda91 -c pytorch # For CUDA9.1
+conda install -c pytorch faiss-gpu 
 # cuda90/cuda91 shown above is a feature, it doesn't install CUDA for you.
 ```
 
