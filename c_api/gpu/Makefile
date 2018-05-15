@@ -15,13 +15,14 @@ LIBNAME=libgpufaiss
 CLIBNAME=libgpufaiss_c
 LIBGPUCOBJ=GpuAutoTune_c.o GpuClonerOptions_c.o GpuIndex_c.o GpuResources_c.o \
 	StandardGpuResources_c.o
-LIBCOBJ=../error_impl.o ../Index_c.o ../IndexFlat_c.o ../Clustering_c.o \
-	../AuxIndexStructures_c.o ../AutoTune_c.o ../IndexIVF_c.o
+LIBCOBJ=../libfaiss_c.a
 
 # Build shared object file by default
-all: $(CLIBNAME).$(SHAREDEXT) bin/example_gpu_c
+all: $(CLIBNAME).$(SHAREDEXT)
 
-# Build static library (requires consumers to link with libstdc++)
+# Build static object file containing the wrapper implementation only.
+# Consumers are required to link with the C++ standard library and remaining
+# portions of this library: libfaiss_c.a, libfaiss.a, libgpufaiss.a, and libstdc++.
 $(CLIBNAME).a: $(LIBGPUCOBJ) ../../gpu/$(LIBNAME).a
 	ar r $@ $^
 
