@@ -105,6 +105,13 @@ def handle_Index(the_class):
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
+    def replacement_assign(self, x, k):
+        n, d = x.shape
+        assert d == self.d
+        labels = np.empty((n, k), dtype=np.int64)
+        self.assign_c(n, swig_ptr(x), swig_ptr(labels), k)
+        return labels
+
     def replacement_train(self, x):
         assert x.flags.contiguous
         n, d = x.shape
@@ -171,6 +178,7 @@ def handle_Index(the_class):
 
     replace_method(the_class, 'add', replacement_add)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
+    replace_method(the_class, 'assign', replacement_assign)
     replace_method(the_class, 'train', replacement_train)
     replace_method(the_class, 'search', replacement_search)
     replace_method(the_class, 'remove_ids', replacement_remove_ids)
