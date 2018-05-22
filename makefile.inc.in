@@ -1,0 +1,50 @@
+# Copyright (c) 2015-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD+Patents license found in the
+# LICENSE file in the root directory of this source tree.
+
+CXX          = @CXX@
+# NOTE: Change to `-DFINTEGER=long` if using MKL.
+# TODO: Investigate the LAPACKE wrapper for LAPACK, which defines the correct
+#   type for FORTRAN integers.
+CPPFLAGS     = @CPPFLAGS@ -DFINTEGER=int
+CXXFLAGS     = @CXXFLAGS@ -fPIC @OPENMP_CXXFLAGS@ -m64 -Wno-sign-compare
+CPUFLAGS     = -msse4 -mpopcnt
+LDFLAGS      = @LDFLAGS@ @OPENMP_CXXFLAGS@
+LIBS         = @LIBS@ @BLAS_LIBS@ @LAPACK_LIBS@
+PYTHONCFLAGS = -I@PYTHON_INCLUDE@ -I@NUMPY_INCLUDE@
+
+CUDAROOT     = /usr/local/cuda-8.0/
+CUDACFLAGS   = -I$(CUDAROOT)/include
+NVCC         = $(CUDAROOT)/bin/nvcc
+NVCCFLAGS    = $(CUDAFLAGS) \
+-I $(CUDAROOT)/targets/x86_64-linux/include/ \
+-Xcompiler -fPIC \
+-Xcudafe --diag_suppress=unrecognized_attribute \
+-gencode arch=compute_35,code="compute_35" \
+-gencode arch=compute_52,code="compute_52" \
+-gencode arch=compute_60,code="compute_60" \
+-lineinfo \
+-ccbin $(CXX) -DFAISS_USE_FLOAT16
+NVCCLDFLAGS  = -Xcompiler "@OPENMP_CXXFLAGS@"
+NVCCLIBS     = -Xlinker "@BLAS_LIBS@" -Xlinker "@LAPACK_LIBS@" -lcublas
+
+OS = $(shell uname -s)
+
+SHAREDEXT   = so
+SHAREDFLAGS = -shared
+
+ifeq ($(OS),Darwin)
+	SHAREDEXT   = dylib
+	SHAREDFLAGS = -dynamiclib
+endif
+
+SWIG        ?= swig
+MKDIR_P     ?= @MKDIR_P@
+PYTHON      ?= @PYTHON@
+
+prefix      ?= @prefix@
+exec_prefix ?= @exec_prefix@
+libdir       = @libdir@
+includedir   = @includedir@

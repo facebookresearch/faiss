@@ -1,4 +1,3 @@
-
 [//]: # "**********************************************************"
 [//]: # "** INSTALL file for Faiss (Fair AI Similarity Search    **"
 [//]: # "**********************************************************"
@@ -76,6 +75,9 @@ dynamic libraries (useful for the Python wrapper).
 Step 1: Compiling the C++ Faiss
 ===============================
 
+TL;DR: `./configure && make && make install`
+
+
 The CPU version of Faiss is written in C++11.
 
 BLAS/Lapack
@@ -90,24 +92,33 @@ thus does not need an include path.
 There are several BLAS implementations, depending on the OS and
 machine. To have reasonable performance, the BLAS library should be
 multithreaded. See the example makefile.inc's for hints and examples
-on how to set the flags.
+on how to set the flags, or simply run the configure script:
+
+   `./configure`
 
 To check that the link flags are correct, and verify whether the
 implementation uses 32 or 64 bit integers, you can
 
-  `make tests/test_blas`
+  `make misc/test_blas`
 
 and run
 
-  `./tests/test_blas`
+  `./misc/test_blas`
 
-Testing Faiss
+Building faiss
 -------------
 
 Once the proper BLAS flags are set, the library should compile
 smoothly by running
 
   `make`
+
+Then, in order to install the library and the headers, run
+
+   `make install`
+
+Testing Faiss
+-------------
 
 A basic usage example is in
 
@@ -116,6 +127,11 @@ A basic usage example is in
 it makes a small index, stores it and performs some searches. A normal
 runtime is around 20s. With a fast machine and Intel MKL's BLAS it
 runs in 2.5s.
+
+To run the whole test suite:
+
+   `make test`
+
 
 A real-life benchmark
 ---------------------
@@ -128,11 +144,11 @@ http://corpus-texmex.irisa.fr/
 and unzip it to the subdirectory `sift1M` at the root of the source
 directory for this repository.
 
-Then compile and run
+Then compile and run the following (after ensuring you have installed faiss):
 
 ```
-make demos/demo_sift1M
-demos/demo_sift1M
+make demos
+./demos/demo_sift1M
 ```
 
 This is a demonstration of the high-level auto-tuning API. You can try
@@ -155,10 +171,10 @@ How it works
 ------------
 
 The Python interface is provided via SWIG (Simple Wrapper and
-Interface Generator) and an additional level of manual wrappers (in faiss.py).
+Interface Generator) and an additional level of manual wrappers (in python/faiss.py).
 
-SWIG generates two wrapper files: a Python file (`swigfaiss.py`) and a
-C++ file that must be compiled to a dynamic library (`_swigfaiss.so`). These
+SWIG generates two wrapper files: a Python file (`python/swigfaiss.py`) and a
+C++ file that must be compiled to a dynamic library (`python/_swigfaiss.so`). These
 files are included in the repository, so running swig is only required when
 the C++ headers of Faiss are changed.
 
@@ -253,7 +269,7 @@ Testing the GPU implementation
 
 Compile the example with
 
-  `cd gpu; make test/demo_ivfpq_indexing_gpu`
+  `cd gpu; make tests/demo_ivfpq_indexing_gpu`
 
 This produce the GPU code equivalent to the CPU
 demo_ivfpq_indexing. It also shows how to translate indexed from/to
@@ -265,7 +281,7 @@ Compiling the Python interface with GPU support
 Given step 2, adding support of the GPU from Python is quite
 straightforward. Run
 
-`cd gpu; make py`
+`cd python; make _swigfaiss_gpu.so`
 
 The import is the same for the GPU version and the CPU-only
 version.

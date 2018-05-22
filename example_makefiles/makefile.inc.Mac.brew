@@ -1,23 +1,28 @@
-
 # -*- makefile -*-
+# Copyright (c) 2015-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD+Patents license found in the
+# LICENSE file in the root directory of this source tree.
+
 
 # Tested on macOS Sierra (10.12.2) with llvm installed using Homebrew (https://brew.sh)
 # brew install llvm
-CXX=/usr/local/opt/llvm/bin/clang++
-CFLAGS=-fPIC -m64 -Wall -g -O3 -msse4 -mpopcnt -fopenmp -Wno-sign-compare -I/usr/local/opt/llvm/include
-CXXFLAGS=$(CFLAGS) -std=c++11
+CXX      = /usr/local/opt/llvm/bin/clang++
+CXXFLAGS = -std=c++11 -fPIC -m64 -Wall -g -O3 -fopenmp -Wno-sign-compare -I/usr/local/opt/llvm/include
+CPUFLAGS = -msse4 -mpopcnt
 LLVM_VERSION_PATH=$(shell ls -rt /usr/local/Cellar/llvm/ | tail -n1)
-LDFLAGS=-g -fPIC -fopenmp -L/usr/local/opt/llvm/lib -L/usr/local/Cellar/llvm/${LLVM_VERSION_PATH}/lib
+LDFLAGS  = -fPIC -fopenmp -L/usr/local/opt/llvm/lib -L/usr/local/Cellar/llvm/${LLVM_VERSION_PATH}/lib
 
 # common mac flags
-SHAREDEXT=dylib
-SHAREDFLAGS=-Wl,-F. -bundle -undefined dynamic_lookup
-FAISSSHAREDFLAGS=-dynamiclib
-
-#  wrapldflags=""
-#  sharedext=dylib
-#  sharedflags="-dynamiclib"
-#  yaelsharedflags="$sharedflags -install_name $yaelprefix/yael/libyael.dylib"
+SHAREDEXT   = dylib
+SHAREDFLAGS = -dynamiclib
+MKDIR_P = mkdir -p
+OS = $(shell uname -s)
+prefix      ?= /usr/local
+exec_prefix ?= ${prefix}
+libdir       = ${exec_prefix}/lib
+includedir   = ${prefix}/include
 
 ##########################################################################
 # Uncomment one of the 4 BLAS/Lapack implementation options
@@ -39,12 +44,12 @@ FAISSSHAREDFLAGS=-dynamiclib
 #
 # MKLROOT=$(HOME)/fbsource/fbcode/third-party2//IntelComposerXE/2015.0.090/gcc-4.8.1-glibc-2.17/c3f970a/mkl
 #
-# BLASLDFLAGS=-Wl,--no-as-needed -L$(MKLROOT)/lib/intel64   -lmkl_intel_ilp64 \
+# LIBS += -Wl,--no-as-needed -L$(MKLROOT)/lib/intel64   -lmkl_intel_ilp64 \
 # -lmkl_core -lmkl_gnu_thread -ldl -lpthread
 #
 # the ilp64 means that the integers are 64-bit.
 #
-# BLASLDFLAGS=-DFINTEGER=long
+# CPPFLAGS += -DFINTEGER=long
 #
 # you may have to set the LD_LIBRARY_PATH=$MKLROOT/lib/intel64 at runtime
 #
@@ -54,8 +59,8 @@ FAISSSHAREDFLAGS=-dynamiclib
 #
 # The library contains both BLAS and Lapack. Install with brew install OpenBLAS
 #
-# BLASCFLAGS=-DFINTEGER=int
-# BLASLDFLAGS=/usr/local/opt/openblas/lib/libblas.dylib
+# CPPFLAGS += -DFINTEGER=int
+# LIBS     += /usr/local/opt/openblas/lib/libblas.dylib
 #
 
 #
@@ -65,8 +70,8 @@ FAISSSHAREDFLAGS=-dynamiclib
 # as it is provided by default on the mac. It is not very fast, though.
 #
 
-BLASCFLAGS=-DFINTEGER=int
-BLASLDFLAGS=-framework Accelerate
+CPPFLAGS += -DFINTEGER=int
+LIBS     += -framework Accelerate
 
 
 
@@ -77,7 +82,7 @@ BLASLDFLAGS=-framework Accelerate
 # SWIG executable. This should be at least version 3.x
 # brew install swig
 
-SWIGEXEC=/usr/local/bin/swig
+SWIG = /usr/local/bin/swig
 
 # The Python include directories for the current python executable
 
