@@ -590,7 +590,6 @@ void IndexIVF::copy_subset_to (IndexIVF & other, int subset_type,
 }
 
 
-
 IndexIVF::~IndexIVF()
 {
     if (own_invlists) {
