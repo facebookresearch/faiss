@@ -20,3 +20,6 @@ Running on :
 
 <!-- Please provide specific and comprehensive instructions to reproduce the
 described behavior. -->
+
+<!-- Please *do not* post screenshots of logs. They are not searchable. Copy/paste 
+the text or make a gist if the text is too bulky. --> 
