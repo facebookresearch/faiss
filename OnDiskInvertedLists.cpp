@@ -164,6 +164,7 @@ struct OnDiskInvertedLists::OngoingPrefetch {
     static void* prefetch_list (void * arg) {
         Thread *th = static_cast<Thread*>(arg);
 
+        th->od->locks->lock_1(th->list_no);
         size_t n = th->od->list_size(th->list_no);
         const Index::idx_t *idx = th->od->get_ids(th->list_no);
         const uint8_t *codes = th->od->get_codes(th->list_no);
@@ -177,6 +178,7 @@ struct OnDiskInvertedLists::OngoingPrefetch {
         for (size_t i = 0; i < n8;i++) {
             cs += codes8[i];
         }
+        th->od->locks->unlock_1(th->list_no);
         global_cs += cs & 1;
         return nullptr;
     }
@@ -241,7 +243,7 @@ void OnDiskInvertedLists::do_mmap ()
 
     uint8_t * ptro = (uint8_t*)mmap (nullptr, totsize,
                           prot, MAP_SHARED, fileno (f), 0);
-    
+
     FAISS_THROW_IF_NOT_FMT (ptro != MAP_FAILED,
                             "could not mmap %s: %s",
                             filename.c_str(),
@@ -335,8 +337,8 @@ OnDiskInvertedLists::OnDiskInvertedLists (
 
 OnDiskInvertedLists::OnDiskInvertedLists ():
     InvertedLists (0, 0),
-    totsize (0), 
-    ptr (nullptr), 
+    totsize (0),
+    ptr (nullptr),
     read_only (false),
     locks (new LockLevels ()),
     pf (new OngoingPrefetch (this))
