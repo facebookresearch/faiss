@@ -3,7 +3,7 @@ MAKEFILE_INC=../../makefile.inc
 -include $(MAKEFILE_INC)
 
 NVCCLDFLAGS =	-Xcompiler \"-Wl,-rpath=../../:../../gpu/\" \
-		-L../.. -L../../gpu -lfaiss -lgpufaiss
+		-L../.. -L../../gpu -lfaiss -lgpufaiss -L/usr/local/cuda-8.0/lib64 -lcuda -lcudart -lcublas -lcurand,-rpath=../.. -lfaiss
 
 LDFLAGS = -L../.. -Wl,-rpath=../.. -lfaiss
 
