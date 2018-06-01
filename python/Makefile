@@ -18,12 +18,11 @@ swigfaiss_wrap.cpp: swigfaiss.swig $(HEADERS)
 	$(SWIG) -python -c++ -Doverride= -I../ -o $@ $<
 
 swigfaiss_wrap.o: swigfaiss_wrap.cpp
-	$(CXX) -I../ $(CXXFLAGS) $(CPUFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(CPUFLAGS) $(PYTHONCFLAGS) -I../ -c $< -o $@
 
 # Extension is .so even on OSX.
-_swigfaiss.so: swigfaiss_wrap.cpp ../libfaiss.a
-	$(CXX) -I../ $(CXXFLAGS) $(CPUFLAGS) $(LDFLAGS) $(SHAREDFLAGS) \
-	$(PYTHONCFLAGS) -o $@ $^ $(LIBS) -lpython
+_swigfaiss.so: swigfaiss_wrap.o ../libfaiss.a
+	$(CXX) $(SHAREDFLAGS) $(LDFLAGS) $(LIBS) -o $@ $^
 
 
 #############################
@@ -33,9 +32,11 @@ _swigfaiss.so: swigfaiss_wrap.cpp ../libfaiss.a
 swigfaiss_gpu_wrap.cpp: swigfaiss.swig
 	$(SWIG) -python -c++ -Doverride= -I../ -DGPU_WRAPPER -o $@ $<
 
+swigfaiss_gpu_wrap.o: swigfaiss_gpu_wrap.cpp
+	$(NVCC) $(NVCCFLAGS) $(PYTHONCFLAGS) -I../ -c $< -o $@
+
 _swigfaiss_gpu.so: swigfaiss_gpu_wrap.o ../gpu/libgpufaiss.a ../libfaiss.a
-	$(NVCC) -I../ $(NVCCFLAGS) $(NVCCLIBS) $(PYTHONCFLAGS) -o $@ $^ \
-	$(SHAREDFLAGS) -Xlinker -lpython
+	$(NVCC) $(SHAREDFLAGS) $(NVCCFLAGS) $(NVCCLDFLAGS) $(NVCCLIBS) -o $@ $^
 
 
 clean:

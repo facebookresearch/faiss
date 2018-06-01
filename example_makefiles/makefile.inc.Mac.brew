@@ -90,6 +90,7 @@ SWIG = /usr/local/bin/swig
 PYTHON_INC=$(shell python -c "import distutils.sysconfig; print(distutils.sysconfig.get_python_inc())")
 NUMPY_INC=$(shell python -c "import numpy ; print(numpy.get_include())")
 PYTHONCFLAGS=-I${PYTHON_INC} -I${NUMPY_INC}
+PYTHONLIB=-lpython
 
 ##########################################################################
 # Faiss GPU

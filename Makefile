@@ -21,7 +21,7 @@ libfaiss.a: $(OBJ)
 	ar r $@ $^
 
 libfaiss.$(SHAREDEXT): $(OBJ)
-	$(CXX) $(LDFLAGS) $(SHAREDFLAGS) -o $@ $^ $(LIBS)
+	$(CXX) $(SHAREDFLAGS) $(LDFLAGS) $(LIBS) -o $@ $^
 
 %.o: %.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -c $< -o $@
@@ -77,7 +77,7 @@ demos: libfaiss.a
 # Misc
 
 misc/test_blas: misc/test_blas.cpp
-	$(CXX) $(CXXFLAG) $(LDFLAGS) -o $@ $^ $(LIBS)
+	$(CXX) $(CXXFLAG) $(LDFLAGS) $(LIBS) -o $@ $^
 
 #############################
 # Python

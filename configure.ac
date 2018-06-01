@@ -23,8 +23,9 @@ AC_PROG_MKDIR_P
 
 FA_PYTHON
 
-FA_NUMPY
-
+if test x$PYTHON != x; then
+   FA_NUMPY
+fi
 
 # Checks for header files.
 AC_CHECK_HEADERS([float.h limits.h stddef.h stdint.h stdlib.h string.h sys/time.h unistd.h])
@@ -52,12 +53,14 @@ AC_CHECK_FUNCS([clock_gettime floor gettimeofday memmove memset munmap pow sqrt 
 AC_OPENMP
 
 AX_BLAS
-test "x$ax_blas_ok" == "xno" && \
-AC_MSG_ERROR([An implementation of BLAS is required but none was found.])
+if test "x$ax_blas_ok" == "xno"; then
+  AC_MSG_ERROR([An implementation of BLAS is required but none was found.])
+fi
 
 AX_LAPACK
-test "x$ax_lapack_ok" == "xno" && \
-AC_MSG_ERROR([An implementation of LAPACK is required but none was found.])
+if test "x$ax_lapack_ok" == "xno"; then
+  AC_MSG_ERROR([An implementation of LAPACK is required but none was found.])
+fi
 
 
 AC_CONFIG_FILES([makefile.inc])
