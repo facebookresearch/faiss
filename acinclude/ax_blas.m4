@@ -110,33 +110,6 @@ if test $ax_blas_ok = no; then
 	LIBS="$save_LIBS"
 fi
 
-# BLAS in OpenBLAS library? (http://xianyi.github.com/OpenBLAS/)
-if test $ax_blas_ok = no; then
-	AC_CHECK_LIB(openblas, $sgemm, [ax_blas_ok=yes
-			                BLAS_LIBS="-lopenblas"])
-fi
-
-# BLAS in ATLAS library? (http://math-atlas.sourceforge.net/)
-if test $ax_blas_ok = no; then
-	AC_CHECK_LIB(atlas, ATL_xerbla,
-		[AC_CHECK_LIB(f77blas, $sgemm,
-		[AC_CHECK_LIB(cblas, cblas_dgemm,
-			[ax_blas_ok=yes
-			 BLAS_LIBS="-lcblas -lf77blas -latlas"],
-			[], [-lf77blas -latlas])],
-			[], [-latlas])])
-fi
-
-# BLAS in PhiPACK libraries? (requires generic BLAS lib, too)
-if test $ax_blas_ok = no; then
-	AC_CHECK_LIB(blas, $sgemm,
-		[AC_CHECK_LIB(dgemm, $dgemm,
-		[AC_CHECK_LIB(sgemm, $sgemm,
-			[ax_blas_ok=yes; BLAS_LIBS="-lsgemm -ldgemm -lblas"],
-			[], [-lblas])],
-			[], [-lblas])])
-fi
-
 # BLAS in Intel MKL library?
 if test $ax_blas_ok = no; then
 	# MKL for gfortran
@@ -170,6 +143,33 @@ fi
 # Old versions of MKL
 if test $ax_blas_ok = no; then
 	AC_CHECK_LIB(mkl, $sgemm, [ax_blas_ok=yes;BLAS_LIBS="-lmkl -lguide -lpthread"],,[-lguide -lpthread])
+fi
+
+# BLAS in OpenBLAS library? (http://xianyi.github.com/OpenBLAS/)
+if test $ax_blas_ok = no; then
+	AC_CHECK_LIB(openblas, $sgemm, [ax_blas_ok=yes
+			                BLAS_LIBS="-lopenblas"])
+fi
+
+# BLAS in ATLAS library? (http://math-atlas.sourceforge.net/)
+if test $ax_blas_ok = no; then
+	AC_CHECK_LIB(atlas, ATL_xerbla,
+		[AC_CHECK_LIB(f77blas, $sgemm,
+		[AC_CHECK_LIB(cblas, cblas_dgemm,
+			[ax_blas_ok=yes
+			 BLAS_LIBS="-lcblas -lf77blas -latlas"],
+			[], [-lf77blas -latlas])],
+			[], [-latlas])])
+fi
+
+# BLAS in PhiPACK libraries? (requires generic BLAS lib, too)
+if test $ax_blas_ok = no; then
+	AC_CHECK_LIB(blas, $sgemm,
+		[AC_CHECK_LIB(dgemm, $dgemm,
+		[AC_CHECK_LIB(sgemm, $sgemm,
+			[ax_blas_ok=yes; BLAS_LIBS="-lsgemm -ldgemm -lblas"],
+			[], [-lblas])],
+			[], [-lblas])])
 fi
 
 # BLAS in Apple vecLib library?
