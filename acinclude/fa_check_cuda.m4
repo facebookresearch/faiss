@@ -16,7 +16,7 @@ if test x$fa_nvcc_bin != x; then
   fa_save_LIBS="$LIBS"
 
   NVCC_CPPFLAGS="-I$cuda_prefix/include"
-  NVCC_LDFLAGS="-L$cuda_prefix/lib"
+  NVCC_LDFLAGS="-L$cuda_prefix/lib64"
 
   CPPFLAGS="$NVCC_CPPFLAGS $CPPFLAGS"
   LDFLAGS="$NVCC_LDFLAGS $LDFLAGS"
@@ -24,11 +24,12 @@ if test x$fa_nvcc_bin != x; then
   AC_CHECK_HEADER([cuda.h], [], AC_MSG_FAILURE([Couldn't find cuda.h]))
   AC_CHECK_LIB([cuda], [cuInit], [], AC_MSG_FAILURE([Couldn't find libcuda]))
 
+  NVCC_LIBS="$LIBS"
+  NVCC_CPPFLAGS="$CPPFLAGS"
+  NVCC_LDFLAGS="$LDFLAGS"
   CPPFLAGS="$fa_save_CPPFLAGS"
   LDFLAGS="$fa_save_LDFLAGS"
   LIBS="$fa_save_LIBS"
-  NVCC_LIBS="-Xlinker \"${LIBS}\" -lcuda"
-  NVCC_LDFLAGS="-Xlinker \"${LDFLAGS}\""
 else
   cuda_prefix=""
 fi
