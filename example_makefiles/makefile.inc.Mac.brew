@@ -8,8 +8,8 @@
 
 # Tested on macOS Sierra (10.12.2) with llvm installed using Homebrew (https://brew.sh)
 # brew install llvm
-CXX      = /usr/local/opt/llvm/bin/clang++
-CXXFLAGS = -std=c++11 -fPIC -m64 -Wall -g -O3 -fopenmp -Wno-sign-compare -I/usr/local/opt/llvm/include
+CXX      = /usr/local/opt/llvm/bin/clang++ -std=c++11
+CXXFLAGS = -fPIC -m64 -Wall -g -O3 -fopenmp -Wno-sign-compare -I/usr/local/opt/llvm/include
 CPUFLAGS = -msse4 -mpopcnt
 LLVM_VERSION_PATH=$(shell ls -rt /usr/local/Cellar/llvm/ | tail -n1)
 LDFLAGS  = -fPIC -fopenmp -L/usr/local/opt/llvm/lib -L/usr/local/Cellar/llvm/${LLVM_VERSION_PATH}/lib
@@ -39,20 +39,21 @@ includedir   = ${prefix}/include
 #
 #   https://software.intel.com/en-us/articles/intel-mkl-link-line-advisor
 #
-# for a start on setting the link flags. On version IntelComposerXE
-# 2015.0.090, the following flags work
+# The latest tested version is MKL 2017.0.098 (2017 Initial Release) and can
+# be downloaded here:
 #
-# MKLROOT=$(HOME)/fbsource/fbcode/third-party2//IntelComposerXE/2015.0.090/gcc-4.8.1-glibc-2.17/c3f970a/mkl
+#   https://registrationcenter.intel.com/en/forms/?productid=2558&licensetype=2
 #
-# LIBS += -Wl,--no-as-needed -L$(MKLROOT)/lib/intel64   -lmkl_intel_ilp64 \
-# -lmkl_core -lmkl_gnu_thread -ldl -lpthread
+# The following settings are working if MKL is installed on its default folder:
 #
-# the ilp64 means that the integers are 64-bit.
+# MKLROOT   = /opt/intel/compilers_and_libraries/linux/mkl/
+#
+# LDFLAGS  += -Wl,--no-as-needed -L$(MKLROOT)/lib/intel64
+# LIBS     += -lmkl_intel_ilp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread
 #
 # CPPFLAGS += -DFINTEGER=long
 #
-# you may have to set the LD_LIBRARY_PATH=$MKLROOT/lib/intel64 at runtime
-#
+# You may have to set the LD_LIBRARY_PATH=$MKLROOT/lib/intel64 at runtime.
 
 #
 # 2. Openblas

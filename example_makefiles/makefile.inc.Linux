@@ -8,8 +8,8 @@
 # tested on CentOS 7, Ubuntu 16 and Ubuntu 14, see below to adjust flags to distribution.
 
 
-CXX      = g++
-CXXFLAGS = -std=c++11 -fPIC -m64 -Wall -g -O3 -fopenmp -Wno-sign-compare
+CXX      = g++ -std=c++11
+CXXFLAGS = -fPIC -m64 -Wall -g -O3 -fopenmp -Wno-sign-compare
 CPUFLAGS = -mavx -msse4 -mpopcnt
 LDFLAGS  = -fPIC -fopenmp
 
@@ -52,10 +52,11 @@ includedir   = ${prefix}/include
 #
 # CPPFLAGS += -DFINTEGER=long
 #
-# you may have to set the LD_LIBRARY_PATH=$MKLROOT/lib/intel64 at runtime.
+# You may have to set the LD_LIBRARY_PATH=$MKLROOT/lib/intel64 at runtime.
+#
 # If at runtime you get the error:
-#   Intel MKL FATAL ERROR: Cannot load libmkl_avx2.so or libmkl_def.so.
-# You may add set
+#   Intel MKL FATAL ERROR: Cannot load libmkl_avx2.so or libmkl_def.so
+# you may set
 #   LD_PRELOAD=$MKLROOT/lib/intel64/libmkl_core.so:$MKLROOT/lib/intel64/libmkl_sequential.so
 # at runtime as well.
 
