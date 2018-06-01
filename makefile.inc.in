@@ -15,9 +15,11 @@ LDFLAGS      = @OPENMP_CXXFLAGS@ @LDFLAGS@
 LIBS         = @BLAS_LIBS@ @LAPACK_LIBS@ @LIBS@
 PYTHONCFLAGS = @PYTHON_CFLAGS@ -I@NUMPY_INCLUDE@
 
+NVCC         = @NVCC@
+NVCCLDFLAGS  = -Xcompiler "@OPENMP_CXXFLAGS@" @NVCC_LDFLAGS@
+NVCCLIBS     = -Xlinker "$(LIBS)" @NVCC_LIBS@ -lcublas
 CUDAROOT     = /usr/local/cuda-8.0/
-CUDACFLAGS   = -I$(CUDAROOT)/include
-NVCC         = $(CUDAROOT)/bin/nvcc
+CUDACFLAGS   = @NVCC_CPPFLAGS@
 NVCCFLAGS    = -I $(CUDAROOT)/targets/x86_64-linux/include/ \
 -Xcompiler -fPIC \
 -Xcudafe --diag_suppress=unrecognized_attribute \
@@ -26,8 +28,6 @@ NVCCFLAGS    = -I $(CUDAROOT)/targets/x86_64-linux/include/ \
 -gencode arch=compute_60,code="compute_60" \
 -lineinfo \
 -ccbin $(CXX) -DFAISS_USE_FLOAT16
-NVCCLDFLAGS  = -Xcompiler "@OPENMP_CXXFLAGS@"
-NVCCLIBS     = -Xlinker "@BLAS_LIBS@" -Xlinker "@LAPACK_LIBS@" -lcublas
 
 OS = $(shell uname -s)
 

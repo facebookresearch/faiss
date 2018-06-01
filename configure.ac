@@ -29,6 +29,8 @@ fi
 
 FA_PROG_SWIG
 
+FA_CHECK_CUDA
+
 
 # Checks for header files.
 AC_CHECK_HEADERS([float.h limits.h stddef.h stdint.h stdlib.h string.h sys/time.h unistd.h])
@@ -44,9 +46,6 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINT8_T
-
-# FA_CHECK_FCALLSCSUB
-# FA_CHECK_CTYPE_FORTRAN(integer, int long)
 
 # Checks for library functions.
 AC_FUNC_MALLOC

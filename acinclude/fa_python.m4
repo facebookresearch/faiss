@@ -42,4 +42,4 @@ if test x$fa_python_cfg_bin != x; then
 else
   AC_MSG_WARN([You won't be able to build the python interface.])
 fi
-])dnl
+])

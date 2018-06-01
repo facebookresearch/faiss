@@ -638,9 +638,13 @@ build_cpu
 build
 OPENMP_CXXFLAGS
 LIBOBJS
+NVCC_LIBS
+NVCC_LDFLAGS
+NVCC_CPPFLAGS
 EGREP
 GREP
 CXXCPP
+NVCC
 SWIG
 NUMPY_INCLUDE
 PYTHON_LDFLAGS
@@ -705,6 +709,7 @@ enable_option_checking
 with_python
 with_python_config
 with_swig
+with_cuda
 enable_openmp
 with_blas
 with_lapack
@@ -1344,6 +1349,7 @@ Optional Packages:
   --with-python-config=<bin>
                           use Python config binary <bin>
   --with-swig=<bin>       use SWIG binary <bin>
+  --with-cuda=<prefix>    prefix of the CUDA installation
   --with-blas=<lib>       use BLAS library <lib>
   --with-lapack=<lib>     use LAPACK library <lib>
 
@@ -1755,6 +1761,52 @@ $as_echo "$ac_res" >&6; }
 
 } # ac_fn_cxx_check_header_compile
 
+# ac_fn_cxx_try_link LINENO
+# -------------------------
+# Try to link conftest.$ac_ext, and return whether this succeeded.
+ac_fn_cxx_try_link ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  rm -f conftest.$ac_objext conftest$ac_exeext
+  if { { ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+$as_echo "$ac_try_echo"; } >&5
+  (eval "$ac_link") 2>conftest.err
+  ac_status=$?
+  if test -s conftest.err; then
+    grep -v '^ *+' conftest.err >conftest.er1
+    cat conftest.er1 >&5
+    mv -f conftest.er1 conftest.err
+  fi
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext && {
+	 test "$cross_compiling" = yes ||
+	 test -x conftest$ac_exeext
+       }; then :
+  ac_retval=0
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_retval=1
+fi
+  # Delete the IPA/IPO (Inter Procedural Analysis/Optimization) information
+  # created by the PGI compiler (conftest_ipa8_conftest.oo), as it would
+  # interfere with the next link command; also delete a directory that is
+  # left behind by Apple's compiler.  We do this before executing the actions.
+  rm -rf conftest.dSYM conftest_ipa8_conftest.oo
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+  as_fn_set_status $ac_retval
+
+} # ac_fn_cxx_try_link
+
 # ac_fn_cxx_check_type LINENO TYPE VAR INCLUDES
 # ---------------------------------------------
 # Tests whether TYPE exists after having included INCLUDES, setting cache
@@ -1938,52 +1990,6 @@ $as_echo "$ac_res" >&6; }
   eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
 
 } # ac_fn_c_find_uintX_t
-
-# ac_fn_cxx_try_link LINENO
-# -------------------------
-# Try to link conftest.$ac_ext, and return whether this succeeded.
-ac_fn_cxx_try_link ()
-{
-  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-  rm -f conftest.$ac_objext conftest$ac_exeext
-  if { { ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
-$as_echo "$ac_try_echo"; } >&5
-  (eval "$ac_link") 2>conftest.err
-  ac_status=$?
-  if test -s conftest.err; then
-    grep -v '^ *+' conftest.err >conftest.er1
-    cat conftest.er1 >&5
-    mv -f conftest.er1 conftest.err
-  fi
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; } && {
-	 test -z "$ac_cxx_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 test -x conftest$ac_exeext
-       }; then :
-  ac_retval=0
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_retval=1
-fi
-  # Delete the IPA/IPO (Inter Procedural Analysis/Optimization) information
-  # created by the PGI compiler (conftest_ipa8_conftest.oo), as it would
-  # interfere with the next link command; also delete a directory that is
-  # left behind by Apple's compiler.  We do this before executing the actions.
-  rm -rf conftest.dSYM conftest_ipa8_conftest.oo
-  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
-  as_fn_set_status $ac_retval
-
-} # ac_fn_cxx_try_link
 
 # ac_fn_cxx_check_func LINENO FUNC VAR
 # ------------------------------------
@@ -4283,8 +4289,6 @@ fi
 
 
 
-
-# Checks for header files.
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -4678,6 +4682,146 @@ fi
 done
 
 
+
+
+
+# Check whether --with-cuda was given.
+if test "${with_cuda+set}" = set; then :
+  withval=$with_cuda;
+fi
+
+case $with_cuda in
+"") cuda_prefix=/usr/local/cuda ;;
+*) cuda_prefix="$with_cuda"
+esac
+
+# Extract the first word of ""nvcc"", so it can be a program name with args.
+set dummy "nvcc"; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_NVCC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$NVCC"; then
+  ac_cv_prog_NVCC="$NVCC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in "$cuda_prefix/bin"
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_NVCC=""$cuda_prefix/bin/nvcc""
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_NVCC" && ac_cv_prog_NVCC=""""
+fi
+fi
+NVCC=$ac_cv_prog_NVCC
+if test -n "$NVCC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $NVCC" >&5
+$as_echo "$NVCC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fa_nvcc_bin=$NVCC
+
+if test x$fa_nvcc_bin != x; then
+  fa_save_CPPFLAGS="$CPPFLAGS"
+  fa_save_LDFLAGS="$LDFLAGS"
+  fa_save_LIBS="$LIBS"
+
+  NVCC_CPPFLAGS="-I$cuda_prefix/include"
+  NVCC_LDFLAGS="-L$cuda_prefix/lib"
+
+  CPPFLAGS="$NVCC_CPPFLAGS $CPPFLAGS"
+  LDFLAGS="$NVCC_LDFLAGS $LDFLAGS"
+
+  ac_fn_cxx_check_header_mongrel "$LINENO" "cuda.h" "ac_cv_header_cuda_h" "$ac_includes_default"
+if test "x$ac_cv_header_cuda_h" = xyes; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Couldn't find cuda.h
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for cuInit in -lcuda" >&5
+$as_echo_n "checking for cuInit in -lcuda... " >&6; }
+if ${ac_cv_lib_cuda_cuInit+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lcuda  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char cuInit ();
+int
+main ()
+{
+return cuInit ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_lib_cuda_cuInit=yes
+else
+  ac_cv_lib_cuda_cuInit=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_cuda_cuInit" >&5
+$as_echo "$ac_cv_lib_cuda_cuInit" >&6; }
+if test "x$ac_cv_lib_cuda_cuInit" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBCUDA 1
+_ACEOF
+
+  LIBS="-lcuda $LIBS"
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Couldn't find libcuda
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+
+  NVCC_LIBS="-lcuda"
+  CPPFLAGS="$fa_save_CPPFLAGS"
+  LDFLAGS="$fa_save_LDFLAGS"
+  LIBS="$fa_save_LIBS"
+fi
+
+
+
+
+
+
+
+
+# Checks for header files.
 for ac_header in float.h limits.h stddef.h stdint.h stdlib.h string.h sys/time.h unistd.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -4955,9 +5099,6 @@ _ACEOF
 ;;
   esac
 
-
-# FA_CHECK_FCALLSCSUB
-# FA_CHECK_CTYPE_FORTRAN(integer, int long)
 
 # Checks for library functions.
 for ac_header in stdlib.h
