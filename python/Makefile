@@ -43,7 +43,8 @@ _swigfaiss_gpu.so: swigfaiss_gpu_wrap.o ../gpu/libgpufaiss.a ../libfaiss.a
 
 
 clean:
-	rm -f swigfaiss_wrap.cxx swigfaiss_gpu_wrap.cxx swigfaiss.py
+	rm -f swigfaiss_wrap.cpp swigfaiss_gpu_wrap.cpp
+	rm -f swigfaiss.py swigfaiss_gpu.py
 	rm -f _swigfaiss.so _swigfaiss_gpu.so
 
 test: _swigfaiss.so
