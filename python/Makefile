@@ -22,7 +22,7 @@ swigfaiss_wrap.o: swigfaiss_wrap.cpp
 
 # Extension is .so even on OSX.
 _swigfaiss.so: swigfaiss_wrap.o ../libfaiss.a
-	$(CXX) $(SHAREDFLAGS) $(LDFLAGS) $(LIBS) -o $@ $^
+	$(CXX) $(SHAREDFLAGS) $(LDFLAGS) -o $@ $^  $(LIBS)
 
 
 #############################
@@ -36,7 +36,7 @@ swigfaiss_gpu_wrap.o: swigfaiss_gpu_wrap.cpp
 	$(NVCC) $(NVCCFLAGS) $(PYTHONCFLAGS) -I../ -c $< -o $@
 
 _swigfaiss_gpu.so: swigfaiss_gpu_wrap.o ../gpu/libgpufaiss.a ../libfaiss.a
-	$(NVCC) $(SHAREDFLAGS) $(NVCCFLAGS) $(NVCCLDFLAGS) $(NVCCLIBS) -o $@ $^
+	$(NVCC) $(SHAREDFLAGS) $(NVCCFLAGS) $(NVCCLDFLAGS) -o $@ $^ $(NVCCLIBS)
 
 
 clean:

@@ -21,7 +21,7 @@ libfaiss.a: $(OBJ)
 	ar r $@ $^
 
 libfaiss.$(SHAREDEXT): $(OBJ)
-	$(CXX) $(SHAREDFLAGS) $(LDFLAGS) $(LIBS) -o $@ $^
+	$(CXX) $(SHAREDFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -c $< -o $@

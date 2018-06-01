@@ -70,8 +70,8 @@ libgpufaiss.a: $(CPPOBJ) $(CUOBJ)
 	ar r $@ $^
 
 libgpufaiss.$(SHAREDEXT): $(CPPOBJ) $(CUOBJ)
-	$(CXX) -L$(CUDAROOT)/lib64 -lcublas -lcudart $(LDFLAGS) $(LIBS) \
-	$(SHAREDFLAGS) -o libgpufaiss.$(SHAREDEXT) $^
+	$(CXX) -L$(CUDAROOT)/lib64 $(LDFLAGS) $(SHAREDFLAGS) \
+		-o libgpufaiss.$(SHAREDEXT) $^ -lcublas -lcudart $(LIBS)
 
 clean:
 	rm -rf *.o impl/*.o utils/*.o test/*.o libgpufaiss.a \
