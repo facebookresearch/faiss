@@ -2425,6 +2425,9 @@ class IndexPQ(Index):
     __swig_getmethods__["search_type"] = _swigfaiss.IndexPQ_search_type_get
     if _newclass:
         search_type = _swig_property(_swigfaiss.IndexPQ_search_type_get, _swigfaiss.IndexPQ_search_type_set)
+
+    def remove_ids(self, sel):
+        return _swigfaiss.IndexPQ_remove_ids(self, sel)
     __swig_setmethods__["encode_signs"] = _swigfaiss.IndexPQ_encode_signs_set
     __swig_getmethods__["encode_signs"] = _swigfaiss.IndexPQ_encode_signs_get
     if _newclass:
@@ -4087,6 +4090,40 @@ Cloner_swigregister = _swigfaiss.Cloner_swigregister
 Cloner_swigregister(Cloner)
 IO_FLAG_MMAP = cvar.IO_FLAG_MMAP
 IO_FLAG_READ_ONLY = cvar.IO_FLAG_READ_ONLY
+
+class IOReader(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, IOReader, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, IOReader, name)
+
+    def __init__(self, *args, **kwargs):
+        raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+
+    def __call__(self, ptr, size, nitems):
+        return _swigfaiss.IOReader___call__(self, ptr, size, nitems)
+    __swig_destroy__ = _swigfaiss.delete_IOReader
+    __del__ = lambda self: None
+IOReader_swigregister = _swigfaiss.IOReader_swigregister
+IOReader_swigregister(IOReader)
+
+class IOWriter(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, IOWriter, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, IOWriter, name)
+
+    def __init__(self, *args, **kwargs):
+        raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+
+    def __call__(self, ptr, size, nitems):
+        return _swigfaiss.IOWriter___call__(self, ptr, size, nitems)
+    __swig_destroy__ = _swigfaiss.delete_IOWriter
+    __del__ = lambda self: None
+IOWriter_swigregister = _swigfaiss.IOWriter_swigregister
+IOWriter_swigregister(IOWriter)
 
 class AutoTuneCriterion(_object):
     __swig_setmethods__ = {}
