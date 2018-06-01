@@ -38,17 +38,17 @@ includedir   = ${prefix}/include
 #
 #   https://software.intel.com/en-us/articles/intel-mkl-link-line-advisor
 #
-# The latest tested version is MLK 2017.0.098 (2017 Initial Release) and can
+# The latest tested version is MKL 2017.0.098 (2017 Initial Release) and can
 # be downloaded here:
 #
 #   https://registrationcenter.intel.com/en/forms/?productid=2558&licensetype=2
 #
-# The following settings are working if MLK is installed on its default folder:
+# The following settings are working if MKL is installed on its default folder:
 #
-# MKLROOT=/opt/intel/compilers_and_libraries/linux/mkl/
+# MKLROOT   = /opt/intel/compilers_and_libraries/linux/mkl/
 #
-# LIBS     += -Wl,--no-as-needed -L$(MKLROOT)/lib/intel64   -lmkl_intel_ilp64 \
-# -lmkl_core -lmkl_gnu_thread -ldl -lpthread
+# LDFLAGS  += -Wl,--no-as-needed -L$(MKLROOT)/lib/intel64
+# LIBS     += -lmkl_intel_ilp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread
 #
 # CPPFLAGS += -DFINTEGER=long
 #
