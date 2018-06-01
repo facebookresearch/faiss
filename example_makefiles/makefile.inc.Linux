@@ -131,7 +131,7 @@ CUDACFLAGS = -I$(CUDAROOT)/include
 
 NVCC       = $(CUDAROOT)/bin/nvcc
 
-NVCCFLAGS  = $(CUDAFLAGS) \
+NVCCFLAGS  = \
    -I $(CUDAROOT)/targets/x86_64-linux/include/ \
    -Xcompiler -fPIC \
    -Xcudafe --diag_suppress=unrecognized_attribute \

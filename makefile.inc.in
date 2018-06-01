@@ -18,8 +18,7 @@ PYTHONCFLAGS = -I@PYTHON_INCLUDE@ -I@NUMPY_INCLUDE@
 CUDAROOT     = /usr/local/cuda-8.0/
 CUDACFLAGS   = -I$(CUDAROOT)/include
 NVCC         = $(CUDAROOT)/bin/nvcc
-NVCCFLAGS    = $(CUDAFLAGS) \
--I $(CUDAROOT)/targets/x86_64-linux/include/ \
+NVCCFLAGS    = -I $(CUDAROOT)/targets/x86_64-linux/include/ \
 -Xcompiler -fPIC \
 -Xcudafe --diag_suppress=unrecognized_attribute \
 -gencode arch=compute_35,code="compute_35" \
