@@ -24,14 +24,18 @@ if test x$fa_nvcc_bin != x; then
   AC_CHECK_HEADER([cuda.h], [], AC_MSG_FAILURE([Couldn't find cuda.h]))
   AC_CHECK_LIB([cuda], [cuInit], [], AC_MSG_FAILURE([Couldn't find libcuda]))
 
-  NVCC_LIBS="-lcuda"
   CPPFLAGS="$fa_save_CPPFLAGS"
   LDFLAGS="$fa_save_LDFLAGS"
   LIBS="$fa_save_LIBS"
+  NVCC_LIBS="-Xlinker \"${LIBS}\" -lcuda"
+  NVCC_LDFLAGS="-Xlinker \"${LDFLAGS}\""
+else
+  cuda_prefix=""
 fi
 
 AC_SUBST(NVCC)
 AC_SUBST(NVCC_CPPFLAGS)
 AC_SUBST(NVCC_LDFLAGS)
 AC_SUBST(NVCC_LIBS)
+AC_SUBST(CUDA_PREFIX, $cuda_prefix)
 ])

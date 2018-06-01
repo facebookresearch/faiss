@@ -638,6 +638,7 @@ build_cpu
 build
 OPENMP_CXXFLAGS
 LIBOBJS
+CUDA_PREFIX
 NVCC_LIBS
 NVCC_LDFLAGS
 NVCC_CPPFLAGS
@@ -4808,15 +4809,20 @@ See \`config.log' for more details" "$LINENO" 5; }
 fi
 
 
-  NVCC_LIBS="-lcuda"
   CPPFLAGS="$fa_save_CPPFLAGS"
   LDFLAGS="$fa_save_LDFLAGS"
   LIBS="$fa_save_LIBS"
+  NVCC_LIBS="-Xlinker \"${LIBS}\" -lcuda"
+  NVCC_LDFLAGS="-Xlinker \"${LDFLAGS}\""
+else
+  cuda_prefix=""
 fi
 
 
 
 
+
+CUDA_PREFIX=$cuda_prefix
 
 
 

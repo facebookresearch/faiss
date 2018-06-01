@@ -17,9 +17,9 @@ LIBS         = @BLAS_LIBS@ @LAPACK_LIBS@ @LIBS@
 PYTHONCFLAGS = @PYTHON_CFLAGS@ -I@NUMPY_INCLUDE@
 
 NVCC         = @NVCC@
-NVCCLDFLAGS  = -Xcompiler "@OPENMP_CXXFLAGS@" @NVCC_LDFLAGS@
-NVCCLIBS     = -Xlinker "$(LIBS)" @NVCC_LIBS@ -lcublas
-CUDAROOT     = /usr/local/cuda-8.0/
+NVCCLDFLAGS  = @NVCC_LDFLAGS@
+NVCCLIBS     = -lcublas @NVCC_LIBS@
+CUDAROOT     = @CUDA_PREFIX@
 CUDACFLAGS   = @NVCC_CPPFLAGS@
 NVCCFLAGS    = -I $(CUDAROOT)/targets/x86_64-linux/include/ \
 -Xcompiler -fPIC \
