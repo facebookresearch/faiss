@@ -6,11 +6,7 @@
 
 -include ../makefile.inc
 
-HEADERS=$(wildcard ../*.h)
-
-ifeq ($(OS),Darwin)
-	SHAREDFLAGS += -Wl,-F. -undefined dynamic_lookup
-endif
+HEADERS = $(wildcard ../*.h)
 
 all: _swigfaiss.so
 
@@ -27,7 +23,7 @@ swigfaiss_wrap.o: swigfaiss_wrap.cpp
 # Extension is .so even on OSX.
 _swigfaiss.so: swigfaiss_wrap.cpp ../libfaiss.a
 	$(CXX) -I../ $(CXXFLAGS) $(CPUFLAGS) $(LDFLAGS) $(SHAREDFLAGS) \
-	$(PYTHONCFLAGS) -o $@ $^ $(LIBS)
+	$(PYTHONCFLAGS) -o $@ $^ $(LIBS) -lpython
 
 
 #############################
@@ -39,7 +35,7 @@ swigfaiss_gpu_wrap.cpp: swigfaiss.swig
 
 _swigfaiss_gpu.so: swigfaiss_gpu_wrap.o ../gpu/libgpufaiss.a ../libfaiss.a
 	$(NVCC) -I../ $(NVCCFLAGS) $(NVCCLIBS) $(PYTHONCFLAGS) -o $@ $^ \
-	$(SHAREDFLAGS)
+	$(SHAREDFLAGS) -Xlinker -lpython
 
 
 clean:
