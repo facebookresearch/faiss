@@ -39,9 +39,9 @@ ifeq ($(OS),Darwin)
 	SHAREDFLAGS = -dynamiclib -undefined dynamic_lookup
 endif
 
-SWIG        ?= swig
-MKDIR_P     ?= @MKDIR_P@
-PYTHON      ?= @PYTHON@
+MKDIR_P      = @MKDIR_P@
+PYTHON       = @PYTHON@
+SWIG         = @SWIG@
 
 prefix      ?= @prefix@
 exec_prefix ?= @exec_prefix@

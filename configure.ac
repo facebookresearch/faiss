@@ -27,6 +27,9 @@ if test x$PYTHON != x; then
    FA_NUMPY
 fi
 
+FA_PROG_SWIG
+
+
 # Checks for header files.
 AC_CHECK_HEADERS([float.h limits.h stddef.h stdint.h stdlib.h string.h sys/time.h unistd.h])
 
