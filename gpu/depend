@@ -1,44 +1,44 @@
-./GpuResources.o: GpuResources.cpp GpuResources.h utils/DeviceMemory.h \
+GpuResources.o: GpuResources.cpp GpuResources.h utils/DeviceMemory.h \
  utils/DeviceUtils.h utils/../../FaissAssert.h \
  utils/../../FaissException.h
-./IndexProxy.o: IndexProxy.cpp IndexProxy.h ../Index.h utils/WorkerThread.h \
+IndexProxy.o: IndexProxy.cpp IndexProxy.h ../Index.h utils/WorkerThread.h \
  ../FaissAssert.h ../FaissException.h ../Clustering.h ../Index.h \
  GpuIndexFlat.h GpuIndex.h utils/MemorySpace.h utils/../../FaissAssert.h \
  StandardGpuResources.h GpuResources.h utils/DeviceMemory.h \
  utils/StackDeviceMemory.h utils/DeviceUtils.h
-./StandardGpuResources.o: StandardGpuResources.cpp StandardGpuResources.h \
+StandardGpuResources.o: StandardGpuResources.cpp StandardGpuResources.h \
  GpuResources.h utils/DeviceMemory.h utils/StackDeviceMemory.h \
  utils/DeviceUtils.h utils/../../FaissAssert.h \
  utils/../../FaissException.h ../FaissAssert.h
-./GpuAutoTune.o: GpuAutoTune.cpp GpuAutoTune.h ../Index.h ../AutoTune.h \
+GpuAutoTune.o: GpuAutoTune.cpp GpuAutoTune.h ../Index.h ../AutoTune.h \
  ../Index.h GpuClonerOptions.h GpuIndicesOptions.h GpuIndex.h \
  utils/MemorySpace.h utils/../../FaissAssert.h \
  utils/../../FaissException.h ../FaissAssert.h ../index_io.h \
- ../IndexFlat.h ../IndexIVF.h ../Clustering.h ../Heap.h ../IndexIVFPQ.h \
- ../IndexIVF.h ../IndexPQ.h ../ProductQuantizer.h ../PolysemousTraining.h \
- ../VectorTransform.h ../MetaIndexes.h GpuIndexFlat.h GpuIndexIVFFlat.h \
- GpuIndexIVF.h ../Clustering.h GpuIndexIVFPQ.h IndexProxy.h \
- utils/WorkerThread.h
-./GpuClonerOptions.o: GpuClonerOptions.cpp GpuClonerOptions.h \
+ ../IndexFlat.h ../IndexIVF.h ../Clustering.h ../Heap.h ../IndexIVFFlat.h \
+ ../IndexIVF.h ../IndexIVFPQ.h ../IndexPQ.h ../ProductQuantizer.h \
+ ../PolysemousTraining.h ../VectorTransform.h ../MetaIndexes.h \
+ GpuIndexFlat.h GpuIndexIVFFlat.h GpuIndexIVF.h ../Clustering.h \
+ GpuIndexIVFPQ.h IndexProxy.h utils/WorkerThread.h
+GpuClonerOptions.o: GpuClonerOptions.cpp GpuClonerOptions.h \
  GpuIndicesOptions.h
-impl/RemapIndices.o: impl/RemapIndices.cpp impl/RemapIndices.h \
+RemapIndices.o: impl/RemapIndices.cpp impl/RemapIndices.h \
  impl/../../FaissAssert.h impl/../../FaissException.h
-utils/DeviceMemory.o: utils/DeviceMemory.cpp utils/DeviceMemory.h \
+DeviceMemory.o: utils/DeviceMemory.cpp utils/DeviceMemory.h \
  utils/DeviceUtils.h utils/../../FaissAssert.h \
  utils/../../FaissException.h
-utils/StackDeviceMemory.o: utils/StackDeviceMemory.cpp \
+StackDeviceMemory.o: utils/StackDeviceMemory.cpp \
  utils/StackDeviceMemory.h utils/DeviceMemory.h utils/DeviceUtils.h \
  utils/../../FaissAssert.h utils/../../FaissException.h \
  utils/StaticUtils.h
-utils/DeviceUtils.o: utils/DeviceUtils.cpp utils/DeviceUtils.h \
+DeviceUtils.o: utils/DeviceUtils.cpp utils/DeviceUtils.h \
  utils/../../FaissAssert.h utils/../../FaissException.h
-utils/Timer.o: utils/Timer.cpp utils/Timer.h utils/DeviceUtils.h \
+Timer.o: utils/Timer.cpp utils/Timer.h utils/DeviceUtils.h \
  utils/../../FaissAssert.h utils/../../FaissException.h
-utils/MemorySpace.o: utils/MemorySpace.cpp utils/MemorySpace.h \
+MemorySpace.o: utils/MemorySpace.cpp utils/MemorySpace.h \
  utils/../../FaissAssert.h utils/../../FaissException.h
-utils/WorkerThread.o: utils/WorkerThread.cpp utils/WorkerThread.h \
+WorkerThread.o: utils/WorkerThread.cpp utils/WorkerThread.h \
  utils/../../FaissAssert.h utils/../../FaissException.h
-impl/BroadcastSum.o: impl/BroadcastSum.cu impl/../../FaissAssert.h \
+BroadcastSum.o: impl/BroadcastSum.cu impl/../../FaissAssert.h \
  impl/../../FaissException.h impl/../utils/DeviceUtils.h \
  impl/../utils/../../FaissAssert.h impl/../utils/MathOperators.cuh \
  impl/../utils/Float16.cuh impl/../utils/../GpuResources.h \
@@ -47,7 +47,7 @@ impl/BroadcastSum.o: impl/BroadcastSum.cu impl/../../FaissAssert.h \
  impl/../utils/../GpuFaissAssert.h impl/../utils/../../FaissAssert.h \
  impl/../utils/MemorySpace.h impl/../utils/DeviceTensor-inl.cuh \
  impl/../utils/StaticUtils.h
-impl/Distance.o: impl/Distance.cu impl/Distance.cuh \
+Distance.o: impl/Distance.cu impl/Distance.cuh \
  impl/../utils/DeviceTensor.cuh impl/../utils/Tensor.cuh \
  impl/../utils/Tensor-inl.cuh impl/../utils/../GpuFaissAssert.h \
  impl/../utils/../../FaissAssert.h impl/../utils/../../FaissException.h \
@@ -64,7 +64,7 @@ impl/Distance.o: impl/Distance.cu impl/Distance.cuh \
  impl/../utils/PtxUtils.cuh impl/../utils/StaticUtils.h \
  impl/../utils/MergeNetworkWarp.cuh impl/../utils/Reductions.cuh \
  impl/../utils/ReductionOperators.cuh
-impl/FlatIndex.o: impl/FlatIndex.cu impl/FlatIndex.cuh \
+FlatIndex.o: impl/FlatIndex.cu impl/FlatIndex.cuh \
  impl/../utils/DeviceTensor.cuh impl/../utils/Tensor.cuh \
  impl/../utils/Tensor-inl.cuh impl/../utils/../GpuFaissAssert.h \
  impl/../utils/../../FaissAssert.h impl/../utils/../../FaissException.h \
@@ -75,7 +75,7 @@ impl/FlatIndex.o: impl/FlatIndex.cu impl/FlatIndex.cuh \
  impl/../utils/../GpuResources.h impl/Distance.cuh impl/L2Norm.cuh \
  impl/../utils/CopyUtils.cuh impl/../utils/HostTensor.cuh \
  impl/../utils/HostTensor-inl.cuh impl/../utils/Transpose.cuh
-impl/InvertedListAppend.o: impl/InvertedListAppend.cu \
+InvertedListAppend.o: impl/InvertedListAppend.cu \
  impl/InvertedListAppend.cuh impl/../GpuIndicesOptions.h \
  impl/../utils/Tensor.cuh impl/../utils/Tensor-inl.cuh \
  impl/../utils/../GpuFaissAssert.h impl/../utils/../../FaissAssert.h \
@@ -85,7 +85,7 @@ impl/InvertedListAppend.o: impl/InvertedListAppend.cu \
  impl/../utils/../utils/DeviceMemory.h impl/../utils/DeviceTensor.cuh \
  impl/../utils/MemorySpace.h impl/../utils/DeviceTensor-inl.cuh \
  impl/../utils/StaticUtils.h
-impl/IVFBase.o: impl/IVFBase.cu impl/IVFBase.cuh impl/../GpuIndicesOptions.h \
+IVFBase.o: impl/IVFBase.cu impl/IVFBase.cuh impl/../GpuIndicesOptions.h \
  impl/../utils/DeviceVector.cuh impl/../utils/../../FaissAssert.h \
  impl/../utils/../../FaissException.h impl/../utils/DeviceUtils.h \
  impl/../utils/MemorySpace.h impl/../utils/StaticUtils.h \
@@ -96,7 +96,7 @@ impl/IVFBase.o: impl/IVFBase.cu impl/IVFBase.cuh impl/../GpuIndicesOptions.h \
  impl/FlatIndex.cuh impl/../utils/Float16.cuh impl/InvertedListAppend.cuh \
  impl/RemapIndices.h impl/../utils/DeviceDefs.cuh \
  impl/../utils/HostTensor.cuh impl/../utils/HostTensor-inl.cuh
-impl/IVFFlat.o: impl/IVFFlat.cu impl/IVFFlat.cuh impl/IVFBase.cuh \
+IVFFlat.o: impl/IVFFlat.cu impl/IVFFlat.cuh impl/IVFBase.cuh \
  impl/../GpuIndicesOptions.h impl/../utils/DeviceVector.cuh \
  impl/../utils/../../FaissAssert.h impl/../utils/../../FaissException.h \
  impl/../utils/DeviceUtils.h impl/../utils/MemorySpace.h \
@@ -109,7 +109,7 @@ impl/IVFFlat.o: impl/IVFFlat.cu impl/IVFFlat.cuh impl/IVFBase.cuh \
  impl/../utils/CopyUtils.cuh impl/../utils/HostTensor.cuh \
  impl/../utils/HostTensor-inl.cuh impl/../utils/DeviceDefs.cuh \
  impl/../utils/Transpose.cuh
-impl/IVFFlatScan.o: impl/IVFFlatScan.cu impl/IVFFlatScan.cuh \
+IVFFlatScan.o: impl/IVFFlatScan.cu impl/IVFFlatScan.cuh \
  impl/../GpuIndicesOptions.h impl/../utils/Tensor.cuh \
  impl/../utils/Tensor-inl.cuh impl/../utils/../GpuFaissAssert.h \
  impl/../utils/../../FaissAssert.h impl/../utils/../../FaissException.h \
@@ -123,7 +123,7 @@ impl/IVFFlatScan.o: impl/IVFFlatScan.cu impl/IVFFlatScan.cuh \
  impl/../utils/ReductionOperators.cuh impl/../utils/Limits.cuh \
  impl/../utils/Pair.cuh impl/../utils/WarpShuffles.cuh \
  impl/../utils/StaticUtils.h
-impl/IVFPQ.o: impl/IVFPQ.cu impl/IVFPQ.cuh impl/IVFBase.cuh \
+IVFPQ.o: impl/IVFPQ.cu impl/IVFPQ.cuh impl/IVFBase.cuh \
  impl/../GpuIndicesOptions.h impl/../utils/DeviceVector.cuh \
  impl/../utils/../../FaissAssert.h impl/../utils/../../FaissException.h \
  impl/../utils/DeviceUtils.h impl/../utils/MemorySpace.h \
@@ -139,13 +139,13 @@ impl/IVFPQ.o: impl/IVFPQ.cu impl/IVFPQ.cuh impl/IVFBase.cuh \
  impl/VectorResidual.cuh impl/../utils/DeviceDefs.cuh \
  impl/../utils/HostTensor.cuh impl/../utils/HostTensor-inl.cuh \
  impl/../utils/MatrixMult.cuh impl/../utils/Transpose.cuh
-impl/IVFUtils.o: impl/IVFUtils.cu impl/IVFUtils.cuh \
+IVFUtils.o: impl/IVFUtils.cu impl/IVFUtils.cuh \
  impl/../GpuIndicesOptions.h impl/../utils/Tensor.cuh \
  impl/../utils/Tensor-inl.cuh impl/../utils/../GpuFaissAssert.h \
  impl/../utils/../../FaissAssert.h impl/../utils/../../FaissException.h \
  impl/../utils/DeviceUtils.h impl/../utils/../../FaissAssert.h \
  impl/../utils/StaticUtils.h impl/../utils/ThrustAllocator.cuh
-impl/IVFUtilsSelect1.o: impl/IVFUtilsSelect1.cu impl/IVFUtils.cuh \
+IVFUtilsSelect1.o: impl/IVFUtilsSelect1.cu impl/IVFUtils.cuh \
  impl/../GpuIndicesOptions.h impl/../utils/Tensor.cuh \
  impl/../utils/Tensor-inl.cuh impl/../utils/../GpuFaissAssert.h \
  impl/../utils/../../FaissAssert.h impl/../utils/../../FaissException.h \
@@ -160,7 +160,7 @@ impl/IVFUtilsSelect1.o: impl/IVFUtilsSelect1.cu impl/IVFUtils.cuh \
  impl/../utils/MergeNetworkUtils.cuh impl/../utils/PtxUtils.cuh \
  impl/../utils/StaticUtils.h impl/../utils/MergeNetworkWarp.cuh \
  impl/../utils/Reductions.cuh impl/../utils/ReductionOperators.cuh
-impl/IVFUtilsSelect2.o: impl/IVFUtilsSelect2.cu impl/IVFUtils.cuh \
+IVFUtilsSelect2.o: impl/IVFUtilsSelect2.cu impl/IVFUtils.cuh \
  impl/../GpuIndicesOptions.h impl/../utils/Tensor.cuh \
  impl/../utils/Tensor-inl.cuh impl/../utils/../GpuFaissAssert.h \
  impl/../utils/../../FaissAssert.h impl/../utils/../../FaissException.h \
@@ -175,7 +175,7 @@ impl/IVFUtilsSelect2.o: impl/IVFUtilsSelect2.cu impl/IVFUtils.cuh \
  impl/../utils/MergeNetworkUtils.cuh impl/../utils/PtxUtils.cuh \
  impl/../utils/StaticUtils.h impl/../utils/MergeNetworkWarp.cuh \
  impl/../utils/Reductions.cuh impl/../utils/ReductionOperators.cuh
-impl/L2Norm.o: impl/L2Norm.cu impl/L2Norm.cuh impl/../utils/Float16.cuh \
+L2Norm.o: impl/L2Norm.cu impl/L2Norm.cuh impl/../utils/Float16.cuh \
  impl/../utils/../GpuResources.h impl/../utils/../utils/DeviceMemory.h \
  impl/../utils/DeviceTensor.cuh impl/../utils/Tensor.cuh \
  impl/../utils/Tensor-inl.cuh impl/../utils/../GpuFaissAssert.h \
@@ -188,7 +188,7 @@ impl/L2Norm.o: impl/L2Norm.cu impl/L2Norm.cuh impl/../utils/Float16.cuh \
  impl/../utils/Reductions.cuh impl/../utils/ReductionOperators.cuh \
  impl/../utils/Limits.cuh impl/../utils/Pair.cuh \
  impl/../utils/WarpShuffles.cuh
-impl/L2Select.o: impl/L2Select.cu impl/L2Select.cuh impl/../utils/Float16.cuh \
+L2Select.o: impl/L2Select.cu impl/L2Select.cuh impl/../utils/Float16.cuh \
  impl/../utils/../GpuResources.h impl/../utils/../utils/DeviceMemory.h \
  impl/../utils/DeviceTensor.cuh impl/../utils/Tensor.cuh \
  impl/../utils/Tensor-inl.cuh impl/../utils/../GpuFaissAssert.h \
@@ -203,7 +203,7 @@ impl/L2Select.o: impl/L2Select.cu impl/L2Select.cuh impl/../utils/Float16.cuh \
  impl/../utils/Select.cuh impl/../utils/Comparators.cuh \
  impl/../utils/MergeNetworkBlock.cuh impl/../utils/MergeNetworkUtils.cuh \
  impl/../utils/MergeNetworkWarp.cuh
-impl/PQCodeDistances.o: impl/PQCodeDistances.cu impl/PQCodeDistances.cuh \
+PQCodeDistances.o: impl/PQCodeDistances.cu impl/PQCodeDistances.cuh \
  impl/../utils/Tensor.cuh impl/../utils/Tensor-inl.cuh \
  impl/../utils/../GpuFaissAssert.h impl/../utils/../../FaissAssert.h \
  impl/../utils/../../FaissException.h impl/../utils/DeviceUtils.h \
@@ -215,7 +215,7 @@ impl/PQCodeDistances.o: impl/PQCodeDistances.cu impl/PQCodeDistances.cuh \
  impl/../utils/DeviceDefs.cuh impl/../utils/MatrixMult.cuh \
  impl/../utils/PtxUtils.cuh impl/../utils/StaticUtils.h \
  impl/../utils/Transpose.cuh
-impl/PQScanMultiPassNoPrecomputed.o: impl/PQScanMultiPassNoPrecomputed.cu \
+PQScanMultiPassNoPrecomputed.o: impl/PQScanMultiPassNoPrecomputed.cu \
  impl/PQScanMultiPassNoPrecomputed.cuh impl/../GpuIndicesOptions.h \
  impl/../utils/Tensor.cuh impl/../utils/Tensor-inl.cuh \
  impl/../utils/../GpuFaissAssert.h impl/../utils/../../FaissAssert.h \
@@ -229,7 +229,7 @@ impl/PQScanMultiPassNoPrecomputed.o: impl/PQScanMultiPassNoPrecomputed.cu \
  impl/../utils/DeviceTensor-inl.cuh impl/../utils/LoadStoreOperators.cuh \
  impl/../utils/StaticUtils.h impl/../utils/HostTensor.cuh \
  impl/../utils/HostTensor-inl.cuh
-impl/PQScanMultiPassPrecomputed.o: impl/PQScanMultiPassPrecomputed.cu \
+PQScanMultiPassPrecomputed.o: impl/PQScanMultiPassPrecomputed.cu \
  impl/PQScanMultiPassPrecomputed.cuh impl/../GpuIndicesOptions.h \
  impl/../utils/Tensor.cuh impl/../utils/Tensor-inl.cuh \
  impl/../utils/../GpuFaissAssert.h impl/../utils/../../FaissAssert.h \
@@ -241,7 +241,7 @@ impl/PQScanMultiPassPrecomputed.o: impl/PQScanMultiPassPrecomputed.cu \
  impl/../utils/DeviceTensor.cuh impl/../utils/MemorySpace.h \
  impl/../utils/DeviceTensor-inl.cuh impl/../utils/LoadStoreOperators.cuh \
  impl/../utils/MathOperators.cuh impl/../utils/StaticUtils.h
-impl/VectorResidual.o: impl/VectorResidual.cu impl/VectorResidual.cuh \
+VectorResidual.o: impl/VectorResidual.cu impl/VectorResidual.cuh \
  impl/../utils/Tensor.cuh impl/../utils/Tensor-inl.cuh \
  impl/../utils/../GpuFaissAssert.h impl/../utils/../../FaissAssert.h \
  impl/../utils/../../FaissException.h impl/../utils/DeviceUtils.h \
@@ -250,10 +250,10 @@ impl/VectorResidual.o: impl/VectorResidual.cu impl/VectorResidual.cuh \
  impl/../utils/DeviceTensor.cuh impl/../utils/MemorySpace.h \
  impl/../utils/DeviceTensor-inl.cuh impl/../../FaissAssert.h \
  impl/../utils/ConversionOperators.cuh impl/../utils/StaticUtils.h
-./GpuIndex.o: GpuIndex.cu GpuIndex.h ../Index.h utils/MemorySpace.h \
+GpuIndex.o: GpuIndex.cu GpuIndex.h ../Index.h utils/MemorySpace.h \
  utils/../../FaissAssert.h utils/../../FaissException.h ../FaissAssert.h \
  GpuResources.h utils/DeviceMemory.h utils/DeviceUtils.h
-./GpuIndexFlat.o: GpuIndexFlat.cu GpuIndexFlat.h GpuIndex.h ../Index.h \
+GpuIndexFlat.o: GpuIndexFlat.cu GpuIndexFlat.h GpuIndex.h ../Index.h \
  utils/MemorySpace.h utils/../../FaissAssert.h \
  utils/../../FaissException.h ../IndexFlat.h ../Index.h GpuResources.h \
  utils/DeviceMemory.h impl/FlatIndex.cuh impl/../utils/DeviceTensor.cuh \
@@ -263,7 +263,7 @@ impl/VectorResidual.o: impl/VectorResidual.cu impl/VectorResidual.cuh \
  impl/../utils/DeviceTensor-inl.cuh impl/../utils/DeviceVector.cuh \
  impl/../utils/StaticUtils.h impl/../utils/Float16.cuh \
  utils/CopyUtils.cuh utils/HostTensor.cuh utils/HostTensor-inl.cuh
-./GpuIndexIVF.o: GpuIndexIVF.cu GpuIndexIVF.h GpuIndex.h ../Index.h \
+GpuIndexIVF.o: GpuIndexIVF.cu GpuIndexIVF.h GpuIndex.h ../Index.h \
  utils/MemorySpace.h utils/../../FaissAssert.h \
  utils/../../FaissException.h GpuIndexFlat.h GpuIndicesOptions.h \
  ../Clustering.h ../Index.h ../FaissAssert.h ../IndexFlat.h ../IndexIVF.h \
@@ -272,19 +272,20 @@ impl/VectorResidual.o: impl/VectorResidual.cu impl/VectorResidual.cuh \
  utils/DeviceTensor.cuh utils/Tensor.cuh utils/Tensor-inl.cuh \
  utils/../GpuFaissAssert.h utils/../../FaissAssert.h \
  utils/DeviceTensor-inl.cuh
-./GpuIndexIVFFlat.o: GpuIndexIVFFlat.cu GpuIndexIVFFlat.h GpuIndexIVF.h \
+GpuIndexIVFFlat.o: GpuIndexIVFFlat.cu GpuIndexIVFFlat.h GpuIndexIVF.h \
  GpuIndex.h ../Index.h utils/MemorySpace.h utils/../../FaissAssert.h \
  utils/../../FaissException.h GpuIndexFlat.h GpuIndicesOptions.h \
- ../Clustering.h ../Index.h ../IndexFlat.h ../IndexIVF.h ../Clustering.h \
- ../Heap.h GpuResources.h utils/DeviceMemory.h impl/IVFFlat.cuh \
- impl/IVFBase.cuh impl/../utils/DeviceVector.cuh \
- impl/../utils/../../FaissAssert.h impl/../utils/DeviceUtils.h \
- impl/../utils/StaticUtils.h impl/../utils/DeviceTensor.cuh \
- impl/../utils/Tensor.cuh impl/../utils/Tensor-inl.cuh \
- impl/../utils/../GpuFaissAssert.h impl/../utils/../../FaissAssert.h \
- impl/../utils/DeviceTensor-inl.cuh utils/CopyUtils.cuh \
- utils/HostTensor.cuh utils/HostTensor-inl.cuh utils/Float16.cuh
-./GpuIndexIVFPQ.o: GpuIndexIVFPQ.cu GpuIndexIVFPQ.h GpuIndexIVF.h \
+ ../Clustering.h ../Index.h ../IndexFlat.h ../IndexIVFFlat.h \
+ ../IndexIVF.h ../Clustering.h ../Heap.h GpuResources.h \
+ utils/DeviceMemory.h impl/IVFFlat.cuh impl/IVFBase.cuh \
+ impl/../utils/DeviceVector.cuh impl/../utils/../../FaissAssert.h \
+ impl/../utils/DeviceUtils.h impl/../utils/StaticUtils.h \
+ impl/../utils/DeviceTensor.cuh impl/../utils/Tensor.cuh \
+ impl/../utils/Tensor-inl.cuh impl/../utils/../GpuFaissAssert.h \
+ impl/../utils/../../FaissAssert.h impl/../utils/DeviceTensor-inl.cuh \
+ utils/CopyUtils.cuh utils/HostTensor.cuh utils/HostTensor-inl.cuh \
+ utils/Float16.cuh
+GpuIndexIVFPQ.o: GpuIndexIVFPQ.cu GpuIndexIVFPQ.h GpuIndexIVF.h \
  GpuIndex.h ../Index.h utils/MemorySpace.h utils/../../FaissAssert.h \
  utils/../../FaissException.h GpuIndexFlat.h GpuIndicesOptions.h \
  ../Clustering.h ../Index.h ../IndexFlat.h ../IndexIVFPQ.h ../IndexIVF.h \
@@ -298,20 +299,20 @@ impl/VectorResidual.o: impl/VectorResidual.cu impl/VectorResidual.cuh \
  impl/../utils/../../FaissAssert.h impl/../utils/DeviceTensor-inl.cuh \
  impl/../utils/Float16.cuh utils/CopyUtils.cuh utils/HostTensor.cuh \
  utils/HostTensor-inl.cuh
-utils/Float16.o: utils/Float16.cu utils/Float16.cuh utils/../GpuResources.h \
+Float16.o: utils/Float16.cu utils/Float16.cuh utils/../GpuResources.h \
  utils/../utils/DeviceMemory.h utils/DeviceTensor.cuh utils/Tensor.cuh \
  utils/Tensor-inl.cuh utils/../GpuFaissAssert.h utils/../../FaissAssert.h \
  utils/../../FaissException.h utils/DeviceUtils.h \
  utils/../../FaissAssert.h utils/MemorySpace.h utils/DeviceTensor-inl.cuh \
  utils/nvidia/fp16_emu.cuh
-utils/MatrixMult.o: utils/MatrixMult.cu utils/MatrixMult.cuh utils/Float16.cuh \
+MatrixMult.o: utils/MatrixMult.cu utils/MatrixMult.cuh utils/Float16.cuh \
  utils/../GpuResources.h utils/../utils/DeviceMemory.h \
  utils/DeviceTensor.cuh utils/Tensor.cuh utils/Tensor-inl.cuh \
  utils/../GpuFaissAssert.h utils/../../FaissAssert.h \
  utils/../../FaissException.h utils/DeviceUtils.h \
  utils/../../FaissAssert.h utils/MemorySpace.h utils/DeviceTensor-inl.cuh \
  utils/HostTensor.cuh utils/HostTensor-inl.cuh
-utils/BlockSelectFloat.o: utils/BlockSelectFloat.cu \
+BlockSelectFloat.o: utils/BlockSelectFloat.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -336,7 +337,7 @@ utils/BlockSelectFloat.o: utils/BlockSelectFloat.cu \
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/BlockSelectHalf.o: utils/BlockSelectHalf.cu \
+BlockSelectHalf.o: utils/BlockSelectHalf.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -361,7 +362,7 @@ utils/BlockSelectHalf.o: utils/BlockSelectHalf.cu \
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/WarpSelectFloat.o: utils/WarpSelectFloat.cu \
+WarpSelectFloat.o: utils/WarpSelectFloat.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -385,7 +386,7 @@ utils/WarpSelectFloat.o: utils/WarpSelectFloat.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/WarpSelectHalf.o: utils/WarpSelectHalf.cu \
+WarpSelectHalf.o: utils/WarpSelectHalf.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -409,8 +410,8 @@ utils/WarpSelectHalf.o: utils/WarpSelectHalf.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/nvidia/fp16_emu.o: utils/nvidia/fp16_emu.cu utils/nvidia/fp16_emu.cuh
-utils/blockselect/BlockSelectHalf1.o: utils/blockselect/BlockSelectHalf1.cu \
+fp16_emu.o: utils/nvidia/fp16_emu.cu utils/nvidia/fp16_emu.cuh
+BlockSelectHalf1.o: utils/blockselect/BlockSelectHalf1.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -435,7 +436,7 @@ utils/blockselect/BlockSelectHalf1.o: utils/blockselect/BlockSelectHalf1.cu \
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectFloat1.o: utils/blockselect/BlockSelectFloat1.cu \
+BlockSelectFloat1.o: utils/blockselect/BlockSelectFloat1.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -460,7 +461,7 @@ utils/blockselect/BlockSelectFloat1.o: utils/blockselect/BlockSelectFloat1.cu \
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalf1.o: utils/warpselect/WarpSelectHalf1.cu \
+WarpSelectHalf1.o: utils/warpselect/WarpSelectHalf1.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -484,7 +485,7 @@ utils/warpselect/WarpSelectHalf1.o: utils/warpselect/WarpSelectHalf1.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloat1.o: utils/warpselect/WarpSelectFloat1.cu \
+WarpSelectFloat1.o: utils/warpselect/WarpSelectFloat1.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -508,7 +509,7 @@ utils/warpselect/WarpSelectFloat1.o: utils/warpselect/WarpSelectFloat1.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalf32.o: utils/blockselect/BlockSelectHalf32.cu \
+BlockSelectHalf32.o: utils/blockselect/BlockSelectHalf32.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -533,7 +534,7 @@ utils/blockselect/BlockSelectHalf32.o: utils/blockselect/BlockSelectHalf32.cu \
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectFloat32.o: utils/blockselect/BlockSelectFloat32.cu \
+BlockSelectFloat32.o: utils/blockselect/BlockSelectFloat32.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -558,7 +559,7 @@ utils/blockselect/BlockSelectFloat32.o: utils/blockselect/BlockSelectFloat32.cu 
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalf32.o: utils/warpselect/WarpSelectHalf32.cu \
+WarpSelectHalf32.o: utils/warpselect/WarpSelectHalf32.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -582,7 +583,7 @@ utils/warpselect/WarpSelectHalf32.o: utils/warpselect/WarpSelectHalf32.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloat32.o: utils/warpselect/WarpSelectFloat32.cu \
+WarpSelectFloat32.o: utils/warpselect/WarpSelectFloat32.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -606,7 +607,7 @@ utils/warpselect/WarpSelectFloat32.o: utils/warpselect/WarpSelectFloat32.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalf64.o: utils/blockselect/BlockSelectHalf64.cu \
+BlockSelectHalf64.o: utils/blockselect/BlockSelectHalf64.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -631,7 +632,7 @@ utils/blockselect/BlockSelectHalf64.o: utils/blockselect/BlockSelectHalf64.cu \
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectFloat64.o: utils/blockselect/BlockSelectFloat64.cu \
+BlockSelectFloat64.o: utils/blockselect/BlockSelectFloat64.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -656,7 +657,7 @@ utils/blockselect/BlockSelectFloat64.o: utils/blockselect/BlockSelectFloat64.cu 
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalf64.o: utils/warpselect/WarpSelectHalf64.cu \
+WarpSelectHalf64.o: utils/warpselect/WarpSelectHalf64.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -680,7 +681,7 @@ utils/warpselect/WarpSelectHalf64.o: utils/warpselect/WarpSelectHalf64.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloat64.o: utils/warpselect/WarpSelectFloat64.cu \
+WarpSelectFloat64.o: utils/warpselect/WarpSelectFloat64.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -704,7 +705,7 @@ utils/warpselect/WarpSelectFloat64.o: utils/warpselect/WarpSelectFloat64.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalf128.o: utils/blockselect/BlockSelectHalf128.cu \
+BlockSelectHalf128.o: utils/blockselect/BlockSelectHalf128.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -729,7 +730,7 @@ utils/blockselect/BlockSelectHalf128.o: utils/blockselect/BlockSelectHalf128.cu 
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectFloat128.o: utils/blockselect/BlockSelectFloat128.cu \
+BlockSelectFloat128.o: utils/blockselect/BlockSelectFloat128.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -754,7 +755,7 @@ utils/blockselect/BlockSelectFloat128.o: utils/blockselect/BlockSelectFloat128.c
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalf128.o: utils/warpselect/WarpSelectHalf128.cu \
+WarpSelectHalf128.o: utils/warpselect/WarpSelectHalf128.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -778,7 +779,7 @@ utils/warpselect/WarpSelectHalf128.o: utils/warpselect/WarpSelectHalf128.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloat128.o: utils/warpselect/WarpSelectFloat128.cu \
+WarpSelectFloat128.o: utils/warpselect/WarpSelectFloat128.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -802,7 +803,7 @@ utils/warpselect/WarpSelectFloat128.o: utils/warpselect/WarpSelectFloat128.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalf256.o: utils/blockselect/BlockSelectHalf256.cu \
+BlockSelectHalf256.o: utils/blockselect/BlockSelectHalf256.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -827,7 +828,7 @@ utils/blockselect/BlockSelectHalf256.o: utils/blockselect/BlockSelectHalf256.cu 
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectFloat256.o: utils/blockselect/BlockSelectFloat256.cu \
+BlockSelectFloat256.o: utils/blockselect/BlockSelectFloat256.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -852,7 +853,7 @@ utils/blockselect/BlockSelectFloat256.o: utils/blockselect/BlockSelectFloat256.c
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalf256.o: utils/warpselect/WarpSelectHalf256.cu \
+WarpSelectHalf256.o: utils/warpselect/WarpSelectHalf256.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -876,7 +877,7 @@ utils/warpselect/WarpSelectHalf256.o: utils/warpselect/WarpSelectHalf256.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloat256.o: utils/warpselect/WarpSelectFloat256.cu \
+WarpSelectFloat256.o: utils/warpselect/WarpSelectFloat256.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -900,7 +901,7 @@ utils/warpselect/WarpSelectFloat256.o: utils/warpselect/WarpSelectFloat256.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalfF512.o: utils/blockselect/BlockSelectHalfF512.cu \
+BlockSelectHalfF512.o: utils/blockselect/BlockSelectHalfF512.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -925,7 +926,7 @@ utils/blockselect/BlockSelectHalfF512.o: utils/blockselect/BlockSelectHalfF512.c
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectFloatF512.o: utils/blockselect/BlockSelectFloatF512.cu \
+BlockSelectFloatF512.o: utils/blockselect/BlockSelectFloatF512.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -950,7 +951,7 @@ utils/blockselect/BlockSelectFloatF512.o: utils/blockselect/BlockSelectFloatF512
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalfF512.o: utils/warpselect/WarpSelectHalfF512.cu \
+WarpSelectHalfF512.o: utils/warpselect/WarpSelectHalfF512.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -974,7 +975,7 @@ utils/warpselect/WarpSelectHalfF512.o: utils/warpselect/WarpSelectHalfF512.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloatF512.o: utils/warpselect/WarpSelectFloatF512.cu \
+WarpSelectFloatF512.o: utils/warpselect/WarpSelectFloatF512.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -998,7 +999,7 @@ utils/warpselect/WarpSelectFloatF512.o: utils/warpselect/WarpSelectFloatF512.cu 
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalfT512.o: utils/blockselect/BlockSelectHalfT512.cu \
+BlockSelectHalfT512.o: utils/blockselect/BlockSelectHalfT512.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -1023,7 +1024,7 @@ utils/blockselect/BlockSelectHalfT512.o: utils/blockselect/BlockSelectHalfT512.c
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectFloatT512.o: utils/blockselect/BlockSelectFloatT512.cu \
+BlockSelectFloatT512.o: utils/blockselect/BlockSelectFloatT512.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -1048,7 +1049,7 @@ utils/blockselect/BlockSelectFloatT512.o: utils/blockselect/BlockSelectFloatT512
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalfT512.o: utils/warpselect/WarpSelectHalfT512.cu \
+WarpSelectHalfT512.o: utils/warpselect/WarpSelectHalfT512.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -1072,7 +1073,7 @@ utils/warpselect/WarpSelectHalfT512.o: utils/warpselect/WarpSelectHalfT512.cu \
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloatT512.o: utils/warpselect/WarpSelectFloatT512.cu \
+WarpSelectFloatT512.o: utils/warpselect/WarpSelectFloatT512.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -1096,7 +1097,7 @@ utils/warpselect/WarpSelectFloatT512.o: utils/warpselect/WarpSelectFloatT512.cu 
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalfF1024.o: utils/blockselect/BlockSelectHalfF1024.cu \
+BlockSelectHalfF1024.o: utils/blockselect/BlockSelectHalfF1024.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -1121,7 +1122,7 @@ utils/blockselect/BlockSelectHalfF1024.o: utils/blockselect/BlockSelectHalfF1024
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectFloatF1024.o: utils/blockselect/BlockSelectFloatF1024.cu \
+BlockSelectFloatF1024.o: utils/blockselect/BlockSelectFloatF1024.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -1146,7 +1147,7 @@ utils/blockselect/BlockSelectFloatF1024.o: utils/blockselect/BlockSelectFloatF10
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalfF1024.o: utils/warpselect/WarpSelectHalfF1024.cu \
+WarpSelectHalfF1024.o: utils/warpselect/WarpSelectHalfF1024.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -1170,7 +1171,7 @@ utils/warpselect/WarpSelectHalfF1024.o: utils/warpselect/WarpSelectHalfF1024.cu 
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloatF1024.o: utils/warpselect/WarpSelectFloatF1024.cu \
+WarpSelectFloatF1024.o: utils/warpselect/WarpSelectFloatF1024.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -1194,7 +1195,7 @@ utils/warpselect/WarpSelectFloatF1024.o: utils/warpselect/WarpSelectFloatF1024.c
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/blockselect/BlockSelectHalfT1024.o: utils/blockselect/BlockSelectHalfT1024.cu \
+BlockSelectHalfT1024.o: utils/blockselect/BlockSelectHalfT1024.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -1219,7 +1220,7 @@ utils/blockselect/BlockSelectHalfT1024.o: utils/blockselect/BlockSelectHalfT1024
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/blockselect/BlockSelectFloatT1024.o: utils/blockselect/BlockSelectFloatT1024.cu \
+BlockSelectFloatT1024.o: utils/blockselect/BlockSelectFloatT1024.cu \
  utils/blockselect/BlockSelectImpl.cuh \
  utils/blockselect/../BlockSelectKernel.cuh \
  utils/blockselect/../Float16.cuh utils/blockselect/../../GpuResources.h \
@@ -1244,7 +1245,7 @@ utils/blockselect/BlockSelectFloatT1024.o: utils/blockselect/BlockSelectFloatT10
  utils/blockselect/../ReductionOperators.cuh \
  utils/blockselect/../Limits.cuh utils/blockselect/../Pair.cuh \
  utils/blockselect/../MathOperators.cuh
-utils/warpselect/WarpSelectHalfT1024.o: utils/warpselect/WarpSelectHalfT1024.cu \
+WarpSelectHalfT1024.o: utils/warpselect/WarpSelectHalfT1024.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \
@@ -1268,7 +1269,7 @@ utils/warpselect/WarpSelectHalfT1024.o: utils/warpselect/WarpSelectHalfT1024.cu 
  utils/warpselect/../ReductionOperators.cuh \
  utils/warpselect/../Limits.cuh utils/warpselect/../Pair.cuh \
  utils/warpselect/../MathOperators.cuh
-utils/warpselect/WarpSelectFloatT1024.o: utils/warpselect/WarpSelectFloatT1024.cu \
+WarpSelectFloatT1024.o: utils/warpselect/WarpSelectFloatT1024.cu \
  utils/warpselect/WarpSelectImpl.cuh \
  utils/warpselect/../WarpSelectKernel.cuh utils/warpselect/../Float16.cuh \
  utils/warpselect/../../GpuResources.h \

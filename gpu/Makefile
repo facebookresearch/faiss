@@ -81,9 +81,8 @@ clean:
 
 depend:
 	for i in $(patsubst %.o,%.cpp,$(CPPOBJ)) \
-                 $(patsubst %.o,%.cu,$(CUOBJ)); do \
-	     echo -n $$( dirname $$i )/ ; \
-             cpp -MM -std=gnu++0x $$i; \
+		 $(patsubst %.o,%.cu,$(CUOBJ)); do \
+	    $(CXXCPP) $(CPPFLAGS) -x c++ -MM $$i; \
 	done > depend
 
 .PHONY: all clean

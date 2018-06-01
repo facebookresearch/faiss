@@ -5,6 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 CXX          = @CXX@
+CXXCPP       = @CXXCPP@
 # NOTE: Change to `-DFINTEGER=long` if using MKL.
 # TODO: Investigate the LAPACKE wrapper for LAPACK, which defines the correct
 #   type for FORTRAN integers.

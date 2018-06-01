@@ -28,7 +28,8 @@ IndexIVFPQ.o: IndexIVFPQ.cpp IndexIVFPQ.h IndexIVF.h Index.h Clustering.h \
 IndexLSH.o: IndexLSH.cpp IndexLSH.h Index.h VectorTransform.h utils.h \
  Heap.h hamming.h FaissAssert.h FaissException.h
 IndexPQ.o: IndexPQ.cpp IndexPQ.h Index.h ProductQuantizer.h Clustering.h \
- Heap.h PolysemousTraining.h FaissAssert.h FaissException.h hamming.h
+ Heap.h PolysemousTraining.h FaissAssert.h FaissException.h \
+ AuxIndexStructures.h hamming.h
 IndexScalarQuantizer.o: IndexScalarQuantizer.cpp IndexScalarQuantizer.h \
  IndexIVF.h Index.h Clustering.h Heap.h utils.h FaissAssert.h \
  FaissException.h
