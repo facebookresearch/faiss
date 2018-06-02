@@ -8,10 +8,12 @@
 
 HEADERS = $(wildcard ../*.h)
 
-all: _swigfaiss.so
+all: cpu
 
 #############################
 # CPU
+
+cpu: _swigfaiss.so
 
 # Also silently generates swigfaiss.py.
 swigfaiss_wrap.cpp: swigfaiss.swig $(HEADERS)
@@ -27,6 +29,8 @@ _swigfaiss.so: swigfaiss_wrap.o ../libfaiss.a
 
 #############################
 # GPU
+
+gpu: _swigfaiss_gpu.so
 
 # Also silently generates swigfaiss.py.
 swigfaiss_gpu_wrap.cpp: swigfaiss.swig
@@ -47,4 +51,4 @@ clean:
 test: _swigfaiss.so
 	PYTHONPATH=./ $(PYTHON) -m unittest discover tests/ -v
 
-.PHONY: all clean test
+.PHONY: all clean cpu gpu test
