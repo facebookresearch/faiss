@@ -169,7 +169,6 @@ class EvalIVFPQAccuracy(unittest.TestCase):
 
 
 
-
 class TestMultiIndexQuantizer(unittest.TestCase):
 
     def test_search_k1(self):
