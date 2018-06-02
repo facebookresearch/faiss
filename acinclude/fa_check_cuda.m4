@@ -23,6 +23,8 @@ if test x$fa_nvcc_bin != x; then
 
   AC_CHECK_HEADER([cuda.h], [], AC_MSG_FAILURE([Couldn't find cuda.h]))
   AC_CHECK_LIB([cuda], [cuInit], [], AC_MSG_FAILURE([Couldn't find libcuda]))
+  AC_CHECK_LIB([cublas], [cublasAlloc], [], AC_MSG_FAILURE([Couldn't find libcublas]))
+  AC_CHECK_LIB([cudart], [cudaSetDevice], [], AC_MSG_FAILURE([Couldn't find libcudart]))
 
   NVCC_LIBS="$LIBS"
   NVCC_CPPFLAGS="$CPPFLAGS"
