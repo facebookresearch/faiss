@@ -43,6 +43,9 @@ _swigfaiss_gpu.so: swigfaiss_gpu_wrap.o ../gpu/libgpufaiss.a ../libfaiss.a
 	$(CXX) $(SHAREDFLAGS) $(NVCCLDFLAGS) -o $@ $^ $(NVCCLIBS)
 
 
+install: cpu
+	$(PYTHON) setup.py install
+
 clean:
 	rm -f swigfaiss_wrap.cpp swigfaiss_gpu_wrap.cpp
 	rm -f swigfaiss.py swigfaiss_gpu.py
