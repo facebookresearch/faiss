@@ -18,7 +18,7 @@ LDFLAGS  = -fPIC -fopenmp -L/usr/local/opt/llvm/lib -L/usr/local/Cellar/llvm/${L
 SHAREDEXT   = dylib
 SHAREDFLAGS = -dynamiclib
 MKDIR_P = mkdir -p
-OS = $(shell uname -s)
+
 prefix      ?= /usr/local
 exec_prefix ?= ${prefix}
 libdir       = ${exec_prefix}/lib

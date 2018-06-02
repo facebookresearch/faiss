@@ -20,7 +20,7 @@ LDFLAGS  = -g -fPIC -fopenmp
 SHAREDEXT   = dylib
 SHAREDFLAGS = -dynamiclib
 MKDIR_P = mkdir -p
-OS = $(shell uname -s)
+
 prefix      ?= /usr/local
 exec_prefix ?= ${prefix}
 libdir       = ${exec_prefix}/lib

@@ -17,7 +17,7 @@ LDFLAGS  = -fPIC -fopenmp
 SHAREDEXT   = so
 SHAREDFLAGS = -shared
 MKDIR_P = mkdir -p
-OS = $(shell uname -s)
+
 prefix      ?= /usr/local
 exec_prefix ?= ${prefix}
 libdir       = ${exec_prefix}/lib
