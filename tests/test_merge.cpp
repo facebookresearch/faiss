@@ -20,21 +20,21 @@
 #include <faiss/OnDiskInvertedLists.h>
 
 
-namespace faiss {
+namespace {
 
 // Main function to test
 
 // Merge index1 into index0. Works on IndexIVF's and IndexIVF's
 // embedded in a IndexPreTransform
 
-void merge_into(Index *index0, Index *index1, bool shift_ids) {
+void merge_into(faiss::Index *index0, faiss::Index *index1, bool shift_ids) {
     FAISS_THROW_IF_NOT (index0->d == index1->d);
-    IndexIVF *ivf0 = dynamic_cast<IndexIVF *>(index0);
-    IndexIVF *ivf1 = dynamic_cast<IndexIVF *>(index1);
+    faiss::IndexIVF *ivf0 = dynamic_cast<faiss::IndexIVF *>(index0);
+    faiss::IndexIVF *ivf1 = dynamic_cast<faiss::IndexIVF *>(index1);
 
     if (!ivf0) {
-        IndexPreTransform *pt0 = dynamic_cast<IndexPreTransform *>(index0);
-        IndexPreTransform *pt1 = dynamic_cast<IndexPreTransform *>(index1);
+        faiss::IndexPreTransform *pt0 = dynamic_cast<faiss::IndexPreTransform *>(index0);
+        faiss::IndexPreTransform *pt1 = dynamic_cast<faiss::IndexPreTransform *>(index1);
 
         // minimal sanity check
         FAISS_THROW_IF_NOT (pt0 && pt1);
@@ -43,8 +43,8 @@ void merge_into(Index *index0, Index *index1, bool shift_ids) {
             FAISS_THROW_IF_NOT (typeid(pt0->chain[i]) == typeid(pt1->chain[i]));
         }
 
-        ivf0 = dynamic_cast<IndexIVF *>(pt0->index);
-        ivf1 = dynamic_cast<IndexIVF *>(pt1->index);
+        ivf0 = dynamic_cast<faiss::IndexIVF *>(pt0->index);
+        ivf1 = dynamic_cast<faiss::IndexIVF *>(pt1->index);
     }
 
     FAISS_THROW_IF_NOT (ivf0);
@@ -56,8 +56,6 @@ void merge_into(Index *index0, Index *index1, bool shift_ids) {
     index0->ntotal = ivf0->ntotal;
     index1->ntotal = ivf1->ntotal;
 }
-
-};
 
 
 struct Tempfilename {
@@ -183,6 +181,8 @@ int compare_merged (faiss::IndexShards *index_shards, bool shift_ids,
     }
     return ndiff;
 }
+
+}  // namespace
 
 
 // test on IVFFlat with implicit numbering

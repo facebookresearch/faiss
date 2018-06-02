@@ -19,6 +19,10 @@
 #include <faiss/VectorTransform.h>
 
 
+namespace {
+
+typedef faiss::Index::idx_t idx_t;
+
 /*************************************************************
  * The functions to test, that can be useful in FANN
  *************************************************************/
@@ -34,7 +38,7 @@
  */
 void Search_centroid(faiss::Index *index,
                      const float* embeddings, int num_objects,
-                     int64_t* centroid_ids)
+                     idx_t* centroid_ids)
 {
     const float *x = embeddings;
     std::unique_ptr<float[]> del;
@@ -65,9 +69,9 @@ void search_and_retrun_centroids(faiss::Index *index,
                                  const float* xin,
                                  long k,
                                  float *distances,
-                                 int64_t* labels,
-                                 int64_t* query_centroid_ids,
-                                 int64_t* result_centroid_ids)
+                                 idx_t* labels,
+                                 idx_t* query_centroid_ids,
+                                 idx_t* result_centroid_ids)
 {
     const float *x = xin;
     std::unique_ptr<float []> del;
@@ -80,7 +84,7 @@ void search_and_retrun_centroids(faiss::Index *index,
     assert(index_ivf);
 
     size_t nprobe = index_ivf->nprobe;
-    std::vector<long> cent_nos (n * nprobe);
+    std::vector<idx_t> cent_nos (n * nprobe);
     std::vector<float> cent_dis (n * nprobe);
     index_ivf->quantizer->search(
         n, x, nprobe, cent_dis.data(), cent_nos.data());
@@ -95,7 +99,7 @@ void search_and_retrun_centroids(faiss::Index *index,
                                    distances, labels, true);
 
     for (size_t i = 0; i < n * k; i++) {
-        int64_t label = labels[i];
+        idx_t label = labels[i];
         if (label < 0) {
             if (result_centroid_ids)
                 result_centroid_ids[i] = -1;
@@ -166,7 +170,7 @@ bool test_Search_centroid(const char *index_key) {
        vectors and make sure that each vector does indeed appear in
        the inverted list corresponding to its centroid */
 
-    std::vector<int64_t> centroid_ids (nb);
+    std::vector<idx_t> centroid_ids (nb);
     Search_centroid(index.get(), xb.data(), nb, centroid_ids.data());
 
     const faiss::IndexIVF * ivf = get_IndexIVF(index.get());
@@ -192,7 +196,7 @@ int test_search_and_return_centroids(const char *index_key) {
     std::vector<float> xb = make_data(nb); // database vectors
     auto index = make_index(index_key, xb);
 
-    std::vector<int64_t> centroid_ids (nb);
+    std::vector<idx_t> centroid_ids (nb);
     Search_centroid(index.get(), xb.data(), nb, centroid_ids.data());
 
     faiss::IndexIVF * ivf = get_IndexIVF(index.get());
@@ -204,17 +208,17 @@ int test_search_and_return_centroids(const char *index_key) {
 
     // compute a reference search result
 
-    std::vector<long> refI (nq * k);
+    std::vector<idx_t> refI (nq * k);
     std::vector<float> refD (nq * k);
     index->search (nq, xq.data(), k, refD.data(), refI.data());
 
     // compute search result
 
-    std::vector<long> newI (nq * k);
+    std::vector<idx_t> newI (nq * k);
     std::vector<float> newD (nq * k);
 
-    std::vector<int64_t> query_centroid_ids (nq);
-    std::vector<int64_t> result_centroid_ids (nq * k);
+    std::vector<idx_t> query_centroid_ids (nq);
+    std::vector<idx_t> result_centroid_ids (nq * k);
 
     search_and_retrun_centroids(index.get(),
                                 nq, xq.data(), k,
@@ -252,6 +256,9 @@ int test_search_and_return_centroids(const char *index_key) {
     }
     return 0;
 }
+
+}  // namespace
+
 
 /*************************************************************
  * Test entry points

@@ -56,7 +56,7 @@
 
 #define FAISS_THROW_MSG(MSG)                                            \
   do {                                                                  \
-    throw FaissException(MSG, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
+    throw faiss::FaissException(MSG, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
   } while (false)
 
 #define FAISS_THROW_FMT(FMT, ...)                                       \
@@ -65,7 +65,7 @@
     int __size = snprintf(nullptr, 0, FMT, __VA_ARGS__);                \
     __s.resize(__size + 1);                                             \
     snprintf(&__s[0], __s.size(), FMT, __VA_ARGS__);                    \
-    throw FaissException(__s, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
+    throw faiss::FaissException(__s, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
   } while (false)
 
 ///

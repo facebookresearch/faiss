@@ -1,28 +1,30 @@
-
 # -*- makefile -*-
+# Copyright (c) 2015-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD+Patents license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # tested on Mac OS X 10.12.2 Sierra with additional software installed via macports
-
 
 
 # The system default clang does not support openmp
 # You can install an openmp compatible g++ with macports:
 # port install g++-mp-6
-CXX=/opt/local/bin/g++-mp-6
-
-CFLAGS=-fPIC -m64 -Wall -g -O3  -msse4 -mpopcnt -fopenmp -Wno-sign-compare
-CXXFLAGS=$(CFLAGS) -std=c++11
-LDFLAGS=-g -fPIC  -fopenmp
-
+CXX      = /opt/local/bin/g++-mp-6 -std=c++11
+CXXFLAGS = -fPIC -m64 -Wall -g -O3 -fopenmp -Wno-sign-compare
+CPUFLAGS = -msse4 -mpopcnt
+LDFLAGS  = -g -fPIC -fopenmp
 
 # common linux flags
-SHAREDEXT=dylib
-SHAREDFLAGS=-Wl,-F. -bundle -undefined dynamic_lookup
-FAISSSHAREDFLAGS=-dynamiclib
+SHAREDEXT   = dylib
+SHAREDFLAGS = -dynamiclib
+MKDIR_P = mkdir -p
 
-#  wrapldflags=""
-#  sharedext=dylib
-#  sharedflags="-dynamiclib"
-#  yaelsharedflags="$sharedflags -install_name $yaelprefix/yael/libyael.dylib"
+prefix      ?= /usr/local
+exec_prefix ?= ${prefix}
+libdir       = ${exec_prefix}/lib
+includedir   = ${prefix}/include
 
 ##########################################################################
 # Uncomment one of the 4 BLAS/Lapack implementation options
@@ -39,28 +41,29 @@ FAISSSHAREDFLAGS=-dynamiclib
 #
 #   https://software.intel.com/en-us/articles/intel-mkl-link-line-advisor
 #
-# for a start on setting the link flags. On version IntelComposerXE
-# 2015.0.090, the following flags work
+# The latest tested version is MKL 2017.0.098 (2017 Initial Release) and can
+# be downloaded here:
 #
-# MKLROOT=$(HOME)/fbsource/fbcode/third-party2//IntelComposerXE/2015.0.090/gcc-4.8.1-glibc-2.17/c3f970a/mkl
+#   https://registrationcenter.intel.com/en/forms/?productid=2558&licensetype=2
 #
-# BLASLDFLAGS=-Wl,--no-as-needed -L$(MKLROOT)/lib/intel64   -lmkl_intel_ilp64 \
-# -lmkl_core -lmkl_gnu_thread -ldl -lpthread
+# The following settings are working if MKL is installed on its default folder:
 #
-# the ilp64 means that the integers are 64-bit.
+# MKLROOT   = /opt/intel/compilers_and_libraries/linux/mkl/
 #
-# BLASLDFLAGS=-DFINTEGER=long
+# LDFLAGS  += -Wl,--no-as-needed -L$(MKLROOT)/lib/intel64
+# LIBS     += -lmkl_intel_ilp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread
 #
-# you may have to set the LD_LIBRARY_PATH=$MKLROOT/lib/intel64 at runtime
+# CPPFLAGS += -DFINTEGER=long
 #
+# You may have to set the LD_LIBRARY_PATH=$MKLROOT/lib/intel64 at runtime.
 
 #
 # 2. Openblas
 #
 # The library contains both BLAS and Lapack. Install with port install OpenBLAS
 #
-# BLASCFLAGS=-DFINTEGER=int
-# BLASLDFLAGS=/opt/local/lib/libopenblas.dylib
+# CPPFLAGS += -DFINTEGER=int
+# LIBS     += /opt/local/lib/libopenblas.dylib
 #
 
 #
@@ -70,8 +73,8 @@ FAISSSHAREDFLAGS=-dynamiclib
 # as it is provided by default on the mac. It is not very fast, though.
 #
 
-BLASCFLAGS=-DFINTEGER=int
-BLASLDFLAGS=-framework Accelerate
+CPPFLAGS += -DFINTEGER=int
+LIBS     += -framework Accelerate
 
 
 
@@ -82,7 +85,7 @@ BLASLDFLAGS=-framework Accelerate
 # SWIG executable. This should be at least version 3.x
 # port install swig swig-python
 
-SWIGEXEC=/opt/local/bin/swig
+SWIG = /opt/local/bin/swig
 
 # The Python include directories for the current python executable can
 # typically be found with
@@ -94,7 +97,7 @@ SWIGEXEC=/opt/local/bin/swig
 
 PYTHONCFLAGS=-I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 \
 -I/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/numpy/core/include
-
+PYTHONLIB=-lpython
 
 ##########################################################################
 # Faiss GPU

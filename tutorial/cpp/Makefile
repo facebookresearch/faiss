@@ -1,39 +1,29 @@
-MAKEFILE_INC=../../makefile.inc
+# Copyright (c) 2015-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD+Patents license found in the
+# LICENSE file in the root directory of this source tree.
 
--include $(MAKEFILE_INC)
+-include ../../makefile.inc
 
-NVCCLDFLAGS =	-Xcompiler \"-Wl,-rpath=../../:../../gpu/\" \
-		-L../.. -L../../gpu -lfaiss -lgpufaiss
+CPU_TARGETS = 1-Flat 2-IVFFlat 3-IVFPQ
+GPU_TARGETS = 4-GPU 5-Multiple-GPUs
 
-LDFLAGS = -L../.. -Wl,-rpath=../.. -lfaiss
+default: cpu
 
 all: cpu gpu
 
-cpu: 1-Flat 2-IVFFlat 3-IVFPQ
+cpu: $(CPU_TARGETS)
 
-gpu: 4-GPU 5-Multiple-GPUs
+gpu: $(GPU_TARGETS)
 
-1-Flat: 1-Flat.cpp ../../libfaiss.$(SHAREDEXT)
-	$(CXX) -o $@ $(CXXFLAGS) $< -I../../../ $(LDFLAGS)
+$(CPU_TARGETS): %: %.cpp ../../libfaiss.a
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) -I../../.. $(LIBS)
 
-2-IVFFlat: 2-IVFFlat.cpp ../../libfaiss.$(SHAREDEXT)
-	$(CXX) -o $@ $(CXXFLAGS) $< -I../../../ $(LDFLAGS)
-
-3-IVFPQ: 3-IVFPQ.cpp ../../libfaiss.$(SHAREDEXT)
-	$(CXX) -o $@ $(CXXFLAGS) $< -I../../../ $(LDFLAGS)
-
-4-GPU: 4-GPU.cpp ../../libfaiss.$(SHAREDEXT) ../../gpu/libgpufaiss.$(SHAREDEXT)
-	$(NVCC) $(NVCCFLAGS) -o $@ $< $(NVCCLDFLAGS) -I../../../
-
-5-Multiple-GPUs: 5-Multiple-GPUs.cpp ../../libfaiss.$(SHAREDEXT) \
-	../../gpu/libgpufaiss.$(SHAREDEXT)
-	$(NVCC) $(NVCCFLAGS) -o $@ $< $(NVCCLDFLAGS) -I../../../
-
-../../libfaiss.$(SHAREDEXT):
-	cd ../../ && make libfaiss.$(SHAREDEXT)
-
-../../gpu/libgpufaiss.$(SHAREDEXT):
-	cd ../../gpu/ && make libgpufaiss.$(SHAREDEXT)
+$(GPU_TARGETS): %: %.cpp ../../libfaiss.a ../../gpu/libgpufaiss.a
+	$(NVCC) $(NVCCFLAGS) -o $@ $^ $(NVCCLDFLAGS) -I../../.. $(NVCCLIBS)
 
 clean:
-	rm -f 1-Flat 2-IVFFlat 3-IVFPQ 4-GPU 5-Multiple-GPUs
+	rm -f $(CPU_TARGETS) $(GPU_TARGETS)
+
+.PHONY: all cpu default gpu clean
