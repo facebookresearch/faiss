@@ -36,7 +36,7 @@ swigfaiss_gpu_wrap.o: swigfaiss_gpu_wrap.cpp
 	$(NVCC) $(NVCCFLAGS) $(PYTHONCFLAGS) -I../ -c $< -o $@
 
 _swigfaiss_gpu.so: swigfaiss_gpu_wrap.o ../gpu/libgpufaiss.a ../libfaiss.a
-	$(CXX) $(SHAREDFLAGS) $(CPPFLAGS) $(NVCCLDFLAGS) -o $@ $^ $(NVCCLIBS)
+	$(CXX) $(SHAREDFLAGS) $(NVCCLDFLAGS) -o $@ $^ $(NVCCLIBS)
 
 
 clean:
