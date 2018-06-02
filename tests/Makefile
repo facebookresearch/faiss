@@ -15,10 +15,10 @@ run: tests
 	./tests
 
 tests: $(TESTS) ../libfaiss.a gtest/make/gtest_main.a
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
+	$(CXX) -o $@ $^ $(LDFLAGS) $(LIBS)
 
-%.o: %.cpp gtest ../libfaiss.a
-	$(CXX) $(CXXFLAGS) -c -o $@ $< $(LDFLAGS) -Igtest/include -I../..
+%.o: %.cpp gtest
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -c -o $@ $< -Igtest/include -I../..
 
 gtest/make/gtest_main.a: gtest
 	make -C gtest/make CXX="$(CXX)" CXXFLAGS="$(CXXFLAGS)" gtest_main.a
