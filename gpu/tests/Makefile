@@ -7,7 +7,7 @@
 -include ../../makefile.inc
 
 demo_ivfpq_indexing_gpu: demo_ivfpq_indexing_gpu.cpp ../../libfaiss.a ../libgpufaiss.a
-	$(NVCC) $(NVCCFLAGS) -o $@ $^ $(NVCCLDFLAGS) $(NVCCLIBS)
+	$(NVCC) $(NVCCFLAGS) -o $@ $^ $(NVCCLDFLAGS) $(LIBS) $(NVCCLIBS)
 
 clean:
 	rm -f demo_ivfpq_indexing_gpu
