@@ -6,10 +6,13 @@
 
 -include ../../makefile.inc
 
-demo_ivfpq_indexing_gpu: demo_ivfpq_indexing_gpu.cpp ../../libfaiss.a ../libgpufaiss.a
-	$(NVCC) $(NVCCFLAGS) -o $@ $^ $(NVCCLDFLAGS) $(LIBS) $(NVCCLIBS)
+%.o: %.cpp
+	$(CXX) $(CUDACFLAGS) -o $@ -c $^
+
+demo_ivfpq_indexing_gpu: demo_ivfpq_indexing_gpu.o ../libgpufaiss.a ../../libfaiss.a
+	$(CXX) $(LDFLAGS) $(NVCCLDFLAGS) -o $@ $^ $(LIBS) $(NVCCLIBS)
 
 clean:
-	rm -f demo_ivfpq_indexing_gpu
+	rm -f *.o demo_ivfpq_indexing_gpu
 
 .PHONY: clean
