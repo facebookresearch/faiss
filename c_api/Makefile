@@ -26,47 +26,47 @@ $(CLIBNAME).a: $(LIBCOBJ)
 
 # Build dynamic library (independent object)
 $(CLIBNAME).$(SHAREDEXT): $(LIBCOBJ) ../$(LIBNAME).a
-	$(CXX) $(LDFLAGS) $(FAISSSHAREDFLAGS) -o $@ \
-	-Wl,--whole-archive $^ $(BLASLDFLAGS) -Wl,--no-whole-archive -static-libstdc++
+	$(CXX) $(LDFLAGS) $(LIBS) $(SHAREDFLAGS) -o $@ \
+	-Wl,--whole-archive $^ -Wl,--no-whole-archive -static-libstdc++
 
 bin/example_c: example_c.c $(CLIBNAME).$(SHAREDEXT)
 	$(CC) $(CFLAGS) -std=c99 -I. -I.. -L. -o $@ example_c.c \
-	$(LDFLAGS) -lm $(BLASLDFLAGS) -lfaiss_c
+	$(LDFLAGS) -lm -lfaiss_c
 
 clean:
 	rm -f $(CLIBNAME).a $(CLIBNAME).$(SHAREDEXT)* *.o bin/example_c
 
 # Dependencies
 
-error_impl.o: CFLAGS += -I.. $(DEBUGFLAG)
+error_impl.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 error_impl.o: error_impl.cpp error_c.h error_impl.h macros_impl.h
 
-index_io_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+index_io_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 index_io_c.o: index_io_c.cpp error_impl.cpp ../index_io.h macros_impl.h
 
-Index_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+Index_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 Index_c.o: Index_c.cpp Index_c.h ../Index.h macros_impl.h
 
-IndexFlat_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+IndexFlat_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 IndexFlat_c.o: IndexFlat_c.cpp IndexFlat_c.h ../IndexFlat.h macros_impl.h
 
-IndexIVF_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+IndexIVF_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 IndexIVF_c.o: IndexIVF_c.cpp IndexIVF_c.h ../IndexIVF.h macros_impl.h
 
-IndexIVFFlat_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+IndexIVFFlat_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 IndexIVFFlat_c.o: IndexIVFFlat_c.cpp IndexIVFFlat_c.h ../IndexIVFFlat.h macros_impl.h
 
-IndexLSH_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+IndexLSH_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 IndexLSH_c.o: IndexLSH_c.cpp IndexLSH_c.h ../IndexLSH.h macros_impl.h
 
-Clustering_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+Clustering_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 Clustering_c.o: Clustering_c.cpp Clustering_c.h ../Clustering.h macros_impl.h
 
-AutoTune_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+AutoTune_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 AutoTune_c.o: AutoTune_c.cpp AutoTune_c.h ../AutoTune.h macros_impl.h
 
-AuxIndexStructures_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+AuxIndexStructures_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 AuxIndexStructures_c.o: AuxIndexStructures_c.cpp AuxIndexStructures_c.h ../AuxIndexStructures.h macros_impl.h
 
-MetaIndexes_c.o: CFLAGS += -I.. $(DEBUGFLAG)
+MetaIndexes_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 MetaIndexes_c.o: MetaIndexes_c.cpp MetaIndexes_c.h ../MetaIndexes.h macros_impl.h
