@@ -62,8 +62,9 @@ depend:
 #############################
 # Tests
 
-test: libfaiss.a
+test: libfaiss.a py
 	make -C tests run
+	PYTHONPATH=./python $(PYTHON) -m unittest discover tests/ -v
 
 
 #############################
@@ -79,13 +80,12 @@ demos: libfaiss.a
 misc/test_blas: misc/test_blas.cpp
 	$(CXX) $(CXXFLAG) $(LDFLAGS) $(LIBS) -o $@ $^
 
+
 #############################
 # Python
 
-py: python/_swigfaiss.so
-
-python/_swigfaiss.so: libfaiss.a
-	$(MAKE) -C python _swigfaiss.so
+py:
+	$(MAKE) -C python
 
 
 .PHONY: all clean default demos install installdirs py test uninstall
