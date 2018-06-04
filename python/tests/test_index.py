@@ -243,7 +243,7 @@ class TestScalarQuantizer(unittest.TestCase):
         # jitter
         self.assertGreaterEqual(nok['flat'], nok['QT_8bit'])
         self.assertGreaterEqual(nok['QT_8bit'], nok['QT_4bit'])
-        self.assertGreaterEqual(nok['QT_8bit'], nok['QT_8bit_uniform'])
+        self.assertGreaterEqual(nok['QT_8bit_uniform'], nok['QT_8bit'])
         self.assertGreaterEqual(nok['QT_4bit'], nok['QT_4bit_uniform'])
 
     def test_4variants(self):
