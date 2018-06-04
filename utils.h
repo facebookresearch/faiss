@@ -18,10 +18,8 @@
 #ifndef FAISS_utils_h
 #define FAISS_utils_h
 
+#include <random>
 #include <stdint.h>
-// for the random data struct
-#include <cstdlib>
-
 #include "Heap.h"
 
 
@@ -46,13 +44,11 @@ size_t get_mem_usage_kb ();
 
 /// random generator that can be used in multithreaded contexts
 struct RandomGenerator {
-
-#ifdef __linux__
-    char rand_state [8];
-    struct random_data rand_data;
-#elif __APPLE__
-    unsigned rand_state;
-#endif
+    std::mt19937 mt;
+    std::uniform_int_distribution<int> int_distrib;
+    std::uniform_int_distribution<long> long_distrib;
+    std::uniform_real_distribution<float> float_distrib;
+    std::uniform_real_distribution<double> double_distrib;
 
     /// random 31-bit positive integer
     int rand_int ();
@@ -70,11 +66,8 @@ struct RandomGenerator {
     double rand_double ();
 
     /// initialize
-    explicit RandomGenerator (long seed = 1234);
-
-    /// default copy constructor messes up pointer in rand_data
-    RandomGenerator (const RandomGenerator & other);
-
+    explicit RandomGenerator (long seed = 1234)
+        : mt({ (unsigned int)seed }) {}
 };
 
 /* Generate an array of uniform random floats / multi-threaded implementation */

@@ -1002,6 +1002,26 @@ class RandomGenerator(_object):
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, RandomGenerator, name)
     __repr__ = _swig_repr
+    __swig_setmethods__["mt"] = _swigfaiss.RandomGenerator_mt_set
+    __swig_getmethods__["mt"] = _swigfaiss.RandomGenerator_mt_get
+    if _newclass:
+        mt = _swig_property(_swigfaiss.RandomGenerator_mt_get, _swigfaiss.RandomGenerator_mt_set)
+    __swig_setmethods__["int_distrib"] = _swigfaiss.RandomGenerator_int_distrib_set
+    __swig_getmethods__["int_distrib"] = _swigfaiss.RandomGenerator_int_distrib_get
+    if _newclass:
+        int_distrib = _swig_property(_swigfaiss.RandomGenerator_int_distrib_get, _swigfaiss.RandomGenerator_int_distrib_set)
+    __swig_setmethods__["long_distrib"] = _swigfaiss.RandomGenerator_long_distrib_set
+    __swig_getmethods__["long_distrib"] = _swigfaiss.RandomGenerator_long_distrib_get
+    if _newclass:
+        long_distrib = _swig_property(_swigfaiss.RandomGenerator_long_distrib_get, _swigfaiss.RandomGenerator_long_distrib_set)
+    __swig_setmethods__["float_distrib"] = _swigfaiss.RandomGenerator_float_distrib_set
+    __swig_getmethods__["float_distrib"] = _swigfaiss.RandomGenerator_float_distrib_get
+    if _newclass:
+        float_distrib = _swig_property(_swigfaiss.RandomGenerator_float_distrib_get, _swigfaiss.RandomGenerator_float_distrib_set)
+    __swig_setmethods__["double_distrib"] = _swigfaiss.RandomGenerator_double_distrib_set
+    __swig_getmethods__["double_distrib"] = _swigfaiss.RandomGenerator_double_distrib_get
+    if _newclass:
+        double_distrib = _swig_property(_swigfaiss.RandomGenerator_double_distrib_get, _swigfaiss.RandomGenerator_double_distrib_set)
 
     def rand_long(self):
         return _swigfaiss.RandomGenerator_rand_long(self)
@@ -1015,8 +1035,8 @@ class RandomGenerator(_object):
     def rand_double(self):
         return _swigfaiss.RandomGenerator_rand_double(self)
 
-    def __init__(self, *args):
-        this = _swigfaiss.new_RandomGenerator(*args)
+    def __init__(self, seed=1234):
+        this = _swigfaiss.new_RandomGenerator(seed)
         try:
             self.this.append(this)
         except __builtin__.Exception:

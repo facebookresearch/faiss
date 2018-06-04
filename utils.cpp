@@ -113,109 +113,32 @@ size_t get_mem_usage_kb ()
  * Random data generation functions
  **************************************************/
 
-/**
- * The definition of random functions depends on the architecture:
- *
- * - for Linux, we rely on re-entrant functions (random_r). This
- *   provides good quality reproducible random sequences.
- *
- * - for Apple, we use rand_r. Apple is trying so hard to deprecate
- *   this function that it removed its definition form stdlib.h, so we
- *   re-declare it below. Fortunately, since it is deprecated, its
- *   prototype should not change much in the forerseeable future.
- *
- * Unfortunately, system designers are more concerned with making the
- * most unpredictable random sequences for cryptographic use, when in
- * scientific contexts what acutally matters is having reproducible
- * squences in multi-threaded contexts.
- */
-
-
-#ifdef __linux__
-
-
-
-
 int RandomGenerator::rand_int ()
 {
-    int32_t a;
-    random_r (&rand_data, &a);
-    return a;
+    return int_distrib(mt);
 }
 
 long RandomGenerator::rand_long ()
 {
-    int32_t a, b;
-    random_r (&rand_data, &a);
-    random_r (&rand_data, &b);
-    return long(a) | long(b) << 31;
+    return long_distrib(mt);
 }
-
-
-RandomGenerator::RandomGenerator (long seed)
-{
-    memset (&rand_data, 0, sizeof (rand_data));
-    initstate_r (seed, rand_state, sizeof (rand_state), &rand_data);
-}
-
-
-RandomGenerator::RandomGenerator (const RandomGenerator & other)
-{
-    memcpy (rand_state, other.rand_state, sizeof(rand_state));
-    rand_data = other.rand_data;
-    setstate_r (rand_state, &rand_data);
-}
-
-
-#elif __APPLE__
-
-extern "C" {
-int rand_r(unsigned *seed);
-}
-
-RandomGenerator::RandomGenerator (long seed)
-{
-    rand_state = seed;
-}
-
-
-RandomGenerator::RandomGenerator (const RandomGenerator & other)
-{
-    rand_state = other.rand_state;
-}
-
-
-int RandomGenerator::rand_int ()
-{
-    // RAND_MAX is 31 bits
-    // try to add more randomness in the lower bits
-    int lowbits = rand_r(&rand_state) >> 15;
-    return rand_r(&rand_state) ^ lowbits;
-}
-
-long RandomGenerator::rand_long ()
-{
-    return long(random()) | long(random()) << 31;
-}
-
-
-
-#endif
 
 int RandomGenerator::rand_int (int max)
-{   // this suffers form non-uniform probabilities when max is not a
-    // power of 2, but if RAND_MAX >> max the bias is limited.
-    return rand_int () % max;
+{
+    std::uniform_int_distribution<int> distrib =
+      std::uniform_int_distribution<int>(0, max - 1);
+
+    return distrib(mt);
 }
 
 float RandomGenerator::rand_float ()
 {
-    return rand_int() / float(1L << 31);
+    return float_distrib(mt);
 }
 
 double RandomGenerator::rand_double ()
 {
-    return rand_long() / double(1L << 62);
+    return double_distrib(mt);
 }
 
 
