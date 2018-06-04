@@ -48,7 +48,4 @@ clean:
 	rm -f swigfaiss.py swigfaiss_gpu.py
 	rm -f _swigfaiss.so _swigfaiss_gpu.so
 
-test: _swigfaiss.so
-	PYTHONPATH=./ $(PYTHON) -m unittest discover tests/ -v
-
-.PHONY: all clean cpu gpu test
+.PHONY: all clean cpu gpu

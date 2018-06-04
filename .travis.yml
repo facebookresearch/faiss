@@ -73,4 +73,3 @@ install:
 
 script:
   - make test
-  - make -C python test
