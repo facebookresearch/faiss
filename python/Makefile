@@ -8,7 +8,7 @@
 
 HEADERS = $(wildcard ../*.h)
 
-all: cpu
+all: cpu build
 
 #############################
 # CPU
@@ -43,9 +43,15 @@ _swigfaiss_gpu.so: swigfaiss_gpu_wrap.o ../gpu/libgpufaiss.a ../libfaiss.a
 	$(CXX) $(SHAREDFLAGS) $(NVCCLDFLAGS) -o $@ $^ $(NVCCLIBS)
 
 
+build: cpu
+	$(PYTHON) setup.py build
+
+install: build
+	$(PYTHON) setup.py install
+
 clean:
 	rm -f swigfaiss_wrap.cpp swigfaiss_gpu_wrap.cpp
 	rm -f swigfaiss.py swigfaiss_gpu.py
 	rm -f _swigfaiss.so _swigfaiss_gpu.so
 
-.PHONY: all clean cpu gpu
+.PHONY: all build clean cpu gpu install
