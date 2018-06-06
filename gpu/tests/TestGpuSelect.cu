@@ -13,7 +13,7 @@
 #include "../utils/WarpSelectKernel.cuh"
 #include "../utils/HostTensor.cuh"
 #include "../utils/DeviceTensor.cuh"
-#include "../test/TestUtils.h"
+#include "../tests/TestUtils.h"
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <sstream>

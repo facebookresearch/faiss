@@ -25,4 +25,4 @@ list(REMOVE_ITEM faiss_gpu_cpp ${CMAKE_CURRENT_SOURCE_DIR}/perf/PerfIVFPQAdd.cpp
 list(REMOVE_ITEM faiss_gpu_cpp ${CMAKE_CURRENT_SOURCE_DIR}/perf/WriteIndex.cpp)
 
 cuda_add_library(${faiss_lib_gpu} STATIC ${faiss_gpu_headers} ${faiss_gpu_cpp} ${faiss_gpu_cuh} ${faiss_gpu_cu})
-add_subdirectory(test)
+add_subdirectory(tests)

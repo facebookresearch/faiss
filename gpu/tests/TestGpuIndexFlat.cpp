@@ -12,7 +12,7 @@
 #include "../GpuIndexFlat.h"
 #include "../StandardGpuResources.h"
 #include "../utils/DeviceUtils.h"
-#include "../test/TestUtils.h"
+#include "../tests/TestUtils.h"
 #include <gtest/gtest.h>
 #include <sstream>
 #include <vector>
