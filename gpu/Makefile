@@ -74,7 +74,7 @@ libgpufaiss.$(SHAREDEXT): $(CPPOBJ) $(CUOBJ)
 		-o libgpufaiss.$(SHAREDEXT) $^ $(LIBS) $(NVCCLIBS)
 
 clean:
-	rm -rf *.o impl/*.o utils/*.o test/*.o libgpufaiss.a \
+	rm -rf *.o impl/*.o utils/*.o libgpufaiss.a \
 		libgpufaiss.$(SHAREDEXT) \
 
 -include depend
