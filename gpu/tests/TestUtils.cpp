@@ -8,7 +8,7 @@
 
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include "../test/TestUtils.h"
+#include "../tests/TestUtils.h"
 #include "../../utils.h"
 #include <cmath>
 #include <gtest/gtest.h>

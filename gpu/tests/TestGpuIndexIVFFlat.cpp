@@ -13,7 +13,7 @@
 #include "../GpuIndexIVFFlat.h"
 #include "../StandardGpuResources.h"
 #include "../utils/DeviceUtils.h"
-#include "../test/TestUtils.h"
+#include "../tests/TestUtils.h"
 #include <cmath>
 #include <gtest/gtest.h>
 #include <glog/logging.h>
