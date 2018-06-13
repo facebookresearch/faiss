@@ -28,9 +28,9 @@ $(CLIBNAME).a: $(LIBGPUCOBJ) ../../gpu/$(LIBNAME).a
 
 # Build dynamic library
 $(CLIBNAME).$(SHAREDEXT): $(LIBCOBJ) $(LIBGPUCOBJ) ../../libfaiss.a ../../gpu/$(LIBNAME).a
-	$(CXX) $(LDFLAGS) $(SHAREDFLAGS) $(CUDACFLAGS) $(LIBS) -o $@ \
+	$(CXX) $(LDFLAGS) $(SHAREDFLAGS) $(CUDACFLAGS) -o $@ \
 	-Wl,--whole-archive $(LIBCOBJ) ../../libfaiss.a \
-	-Wl,--no-whole-archive -static-libstdc++ $(LIBGPUCOBJ) ../../gpu/$(LIBNAME).a \
+	-Wl,--no-whole-archive -static-libstdc++ $(LIBGPUCOBJ) $(LIBS) ../../gpu/$(LIBNAME).a \
 	$(NVCCLDFLAGS) $(NVCCLIBS)
 
 # Build GPU example
