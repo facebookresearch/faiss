@@ -65,8 +65,9 @@ static double imbalance_factor (int n, int k, long *assign) {
 
 
 void Clustering::train (idx_t nx, const float *x_in, Index & index) {
-    FAISS_THROW_IF_NOT_MSG (nx >= k,
-                    "need at least as many training points as clusters");
+    FAISS_THROW_IF_NOT_FMT (nx >= k,
+             "Number of training points (%ld) should be at least "
+             "as large as number of clusters (%ld)", nx, k);
 
     double t0 = getmillisecs();
 
@@ -100,10 +101,26 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
     }
 
 
+    if (nx == k) {
+        if (verbose) {
+            printf("Number of training points (%ld) same as number of "
+                   "clusters, just copying\n", nx);
+        }
+        // this is a corner case, just copy training set to clusters
+        centroids.resize (d * k);
+        memcpy (centroids.data(), x_in, sizeof (*x_in) * d * k);
+        index.reset();
+        index.add(k, x_in);
+        return;
+    }
+
+
     if (verbose)
         printf("Clustering %d points in %ldD to %ld clusters, "
                "redo %d times, %d iterations\n",
                int(nx), d, k, nredo, niter);
+
+
 
 
     idx_t * assign = new idx_t[nx];
@@ -112,7 +129,7 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
     ScopeDeleter<float> del2(dis);
 
     // for redo
-    float best_err = 1e50;
+    float best_err = HUGE_VALF;
     std::vector<float> best_obj;
     std::vector<float> best_centroids;
 
@@ -152,13 +169,18 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
             memcpy (&centroids[i * d], x + perm[i] * d,
                     d * sizeof (float));
 
-        if (spherical)
+        if (spherical) {
             fvec_renorm_L2 (d, k, centroids.data());
+        }
 
-        if (!index.is_trained)
+        if (index.ntotal != 0) {
+            index.reset();
+        }
+
+        if (!index.is_trained) {
             index.train (k, centroids.data());
+        }
 
-        FAISS_THROW_IF_NOT (index.ntotal == 0);
         index.add (k, centroids.data());
         float err = 0;
         for (int i = 0; i < niter; i++) {
@@ -210,6 +232,8 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
     if (nredo > 1) {
         centroids = best_centroids;
         obj = best_obj;
+        index.reset();
+        index.add(k, best_centroids.data());
     }
 
 }

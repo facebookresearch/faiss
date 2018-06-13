@@ -6,7 +6,6 @@
 
 #! /usr/bin/env python2
 
-import numpy as np
 import unittest
 import faiss
 

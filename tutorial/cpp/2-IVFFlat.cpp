@@ -11,7 +11,7 @@
 #include <cassert>
 
 #include <faiss/IndexFlat.h>
-#include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFFlat.h>
 
 
 int main() {

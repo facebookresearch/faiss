@@ -11,7 +11,18 @@
 #include "IndexFlat.h"
 #include "FaissAssert.h"
 
+#include <cstring>
+
 namespace faiss {
+
+Index::~Index ()
+{
+}
+
+
+void Index::train(idx_t /*n*/, const float* /*x*/) {
+    // does nothing by default
+}
 
 
 void Index::range_search (idx_t , const float *, float,
@@ -51,6 +62,25 @@ void Index::reconstruct_n (idx_t i0, idx_t ni, float *recons) const {
   }
 }
 
+
+void Index::search_and_reconstruct (idx_t n, const float *x, idx_t k,
+                                    float *distances, idx_t *labels,
+                                    float *recons) const {
+  search (n, x, k, distances, labels);
+  for (idx_t i = 0; i < n; ++i) {
+    for (idx_t j = 0; j < k; ++j) {
+      idx_t ij = i * k + j;
+      idx_t key = labels[ij];
+      float* reconstructed = recons + ij * d;
+      if (key < 0) {
+        // Fill with NaNs
+        memset(reconstructed, -1, sizeof(*reconstructed) * d);
+      } else {
+        reconstruct (key, reconstructed);
+      }
+    }
+  }
+}
 
 
 void Index::compute_residual (const float * x,

@@ -48,6 +48,10 @@ struct ProductQuantizer {
 
     ClusteringParameters cp; ///< parameters used during clustering
 
+    /// if non-NULL, use this index for assignment (should be of size
+    /// d / M)
+    Index *assign_index;
+
     /// Centroid table, size M * ksub * dsub
     std::vector<float> centroids;
 

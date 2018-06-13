@@ -55,3 +55,8 @@ endif(BUILD_TUTORIAL)
 if(BUILD_TEST)
     add_subdirectory(tests)
 endif(BUILD_TEST)
+# Install libraries
+install(TARGETS ${faiss_lib}
+        ARCHIVE DESTINATION lib
+        )
+install(FILES ${faiss_cpu_headers} DESTINATION include/faiss)

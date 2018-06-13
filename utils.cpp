@@ -943,12 +943,14 @@ static void knn_L2sqr_blas (const float * x,
  * KNN driver functions
  *******************************************************/
 
+int distance_compute_blas_threshold = 20;
+
 void knn_inner_product (const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
         float_minheap_array_t * res)
 {
-    if (d % 4 == 0 && nx < 20) {
+    if (d % 4 == 0 && nx < distance_compute_blas_threshold) {
         knn_inner_product_sse (x, y, d, nx, ny, res);
     } else {
         knn_inner_product_blas (x, y, d, nx, ny, res);
@@ -968,7 +970,7 @@ void knn_L2sqr (const float * x,
                 size_t d, size_t nx, size_t ny,
                 float_maxheap_array_t * res)
 {
-    if (d % 4 == 0 && nx < 20) {
+    if (d % 4 == 0 && nx < distance_compute_blas_threshold) {
         knn_L2sqr_sse (x, y, d, nx, ny, res);
     } else {
         NopDistanceCorrection nop;
@@ -1270,7 +1272,7 @@ void range_search_L2sqr (
         RangeSearchResult *res)
 {
 
-    if (d % 4 == 0 && nx < 20) {
+    if (d % 4 == 0 && nx < distance_compute_blas_threshold) {
         range_search_sse<true> (x, y, d, nx, ny, radius, res);
     } else {
         range_search_blas<true> (x, y, d, nx, ny, radius, res);
@@ -1285,7 +1287,7 @@ void range_search_inner_product (
         RangeSearchResult *res)
 {
 
-    if (d % 4 == 0 && nx < 20) {
+    if (d % 4 == 0 && nx < distance_compute_blas_threshold) {
         range_search_sse<false> (x, y, d, nx, ny, radius, res);
     } else {
         range_search_blas<false> (x, y, d, nx, ny, radius, res);

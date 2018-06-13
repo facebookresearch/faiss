@@ -10,6 +10,9 @@ var searchData=
   ['hammingcomputerdefault',['HammingComputerDefault',['../structfaiss_1_1HammingComputerDefault.html',1,'faiss']]],
   ['hammingcomputerm4',['HammingComputerM4',['../structfaiss_1_1HammingComputerM4.html',1,'faiss']]],
   ['hammingcomputerm8',['HammingComputerM8',['../structfaiss_1_1HammingComputerM8.html',1,'faiss']]],
+  ['hasnewfatalfailurehelper',['HasNewFatalFailureHelper',['../classtesting_1_1internal_1_1HasNewFatalFailureHelper.html',1,'testing::internal']]],
   ['heaparray',['HeapArray',['../structfaiss_1_1HeapArray.html',1,'faiss']]],
+  ['hnsw',['HNSW',['../structfaiss_1_1HNSW.html',1,'faiss']]],
+  ['hnswstats',['HNSWStats',['../structfaiss_1_1HNSWStats.html',1,'faiss']]],
   ['hosttensor',['HostTensor',['../classfaiss_1_1gpu_1_1HostTensor.html',1,'faiss::gpu']]]
 ];

@@ -179,7 +179,7 @@ void maxheap_push (size_t k, T * bh_val, long * bh_ids, T val, long ids)
  * Heap initialization
  *******************************************************************/
 
-/* Initialization phase for the heap (with inconditionnal pushes).
+/* Initialization phase for the heap (with unconditionnal pushes).
  * Store k0 elements in a heap containing up to k values. Note that
  * (bh_val, bh_ids) can be the same as (x, ids) */
 template <class C> inline

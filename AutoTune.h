@@ -162,7 +162,7 @@ struct ParameterSpace {
     /// print a description on stdout
     void display () const;
 
-    /// add a new parameter
+    /// add a new parameter (or return it if it exists)
     ParameterRange &add_range(const char * name);
 
     /// initialize with reasonable parameters for the index

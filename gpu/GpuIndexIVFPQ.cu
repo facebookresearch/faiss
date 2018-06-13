@@ -122,21 +122,21 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
   index_->setPrecomputedCodes(ivfpqConfig_.usePrecomputedTables);
 
   // Copy database vectors, if any
-  for (size_t i = 0; i < index->codes.size(); ++i) {
-    auto& codes = index->codes[i];
-    auto& ids = index->ids[i];
-
-    FAISS_ASSERT(ids.size() * subQuantizers_ == codes.size());
+  const InvertedLists *ivf = index->invlists;
+  size_t nlist = ivf ? ivf->nlist : 0;
+  for (size_t i = 0; i < nlist; ++i) {
+    size_t list_size = ivf->list_size(i);
 
     // GPU index can only support max int entries per list
-    FAISS_THROW_IF_NOT_FMT(ids.size() <=
+    FAISS_THROW_IF_NOT_FMT(list_size <=
                        (size_t) std::numeric_limits<int>::max(),
                        "GPU inverted list can only support "
                        "%zu entries; %zu found",
                        (size_t) std::numeric_limits<int>::max(),
-                       ids.size());
+                       list_size);
 
-    index_->addCodeVectorsFromCpu(i, codes.data(), ids.data(), ids.size());
+    index_->addCodeVectorsFromCpu(
+                       i, ivf->get_codes(i), ivf->get_ids(i), list_size);
   }
 }
 
@@ -165,15 +165,19 @@ GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
   index->scan_table_threshold = 0;
   index->max_codes = 0;
   index->polysemous_ht = 0;
-  index->codes.clear();
-  index->codes.resize(nlist_);
   index->precomputed_table.clear();
+
+  InvertedLists *ivf = new ArrayInvertedLists(
+      nlist_, index->code_size);
+
+  index->replace_invlists(ivf, true);
 
   if (index_) {
     // Copy the inverted lists
     for (int i = 0; i < nlist_; ++i) {
-      index->ids[i] = getListIndices(i);
-      index->codes[i] = getListCodes(i);
+      auto ids = getListIndices(i);
+      auto codes = getListCodes(i);
+      index->invlists->add_entries (i, ids.size(), ids.data(), codes.data());
     }
 
     // Copy PQ centroids

@@ -310,6 +310,11 @@ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::canCastResize() const {
   static_assert(sizeof(U) >= sizeof(T), "only handles greater sizes");
   constexpr int kMultiple = sizeof(U) / sizeof(T);
 
+  // Ensure that the base pointer is sizeof(U) aligned
+  if (((uintptr_t) data_) % sizeof(U) != 0) {
+    return false;
+  }
+
   // Check all outer strides
   for (int i = 0; i < Dim - 1; ++i) {
     if (stride_[i] % kMultiple != 0) {

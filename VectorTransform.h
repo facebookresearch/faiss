@@ -37,7 +37,7 @@ struct VectorTransform {
     {}
 
 
-    /// set if the LinearTransform does not require training, or if
+    /// set if the VectorTransform does not require training, or if
     /// training is done already
     bool is_trained;
 
@@ -78,6 +78,9 @@ struct LinearTransform: VectorTransform {
 
     bool have_bias; ///! whether to use the bias term
 
+    /// check if matrix A is orthonormal (enables reverse_transform)
+    bool is_orthonormal;
+
     /// Transformation matrix, size d_out * d_in
     std::vector<float> A;
 
@@ -96,6 +99,13 @@ struct LinearTransform: VectorTransform {
     void transform_transpose (idx_t n, const float * y,
                               float *x) const;
 
+    /// works only if is_orthonormal
+    void reverse_transform (idx_t n, const float * xt,
+                            float *x) const override;
+
+    /// compute A^T * A to set the is_orthonormal flag
+    void set_is_orthonormal ();
+
     bool verbose;
 
     ~LinearTransform() override {}
@@ -112,8 +122,6 @@ struct RandomRotationMatrix: LinearTransform {
 
      /// must be called before the transform is used
      void init(int seed);
-
-     void reverse_transform(idx_t n, const float* xt, float* x) const override;
 
      RandomRotationMatrix () {}
 };
@@ -157,8 +165,6 @@ struct PCAMatrix: LinearTransform {
     /// will be completed with 0s
     void train(Index::idx_t n, const float* x) override;
 
-    void reverse_transform(idx_t n, const float* xt, float* x) const override;
-
     /// copy pre-trained PCA matrix
     void copy_from (const PCAMatrix & other);
 
@@ -168,6 +174,7 @@ struct PCAMatrix: LinearTransform {
 };
 
 
+struct ProductQuantizer;
 
 /** Applies a rotation to align the dimensions with a PQ to minimize
  *  the reconstruction error. Can be used before an IndexPQ or an
@@ -188,12 +195,14 @@ struct OPQMatrix: LinearTransform {
     size_t max_train_points;
     bool verbose;
 
+    /// if non-NULL, use this product quantizer for training
+    /// should be constructed with (d_out, M, _)
+    ProductQuantizer * pq;
+
     /// if d2 != -1, output vectors of this dimension
     explicit OPQMatrix (int d = 0, int M = 1, int d2 = -1);
 
     void train(Index::idx_t n, const float* x) override;
-
-    void reverse_transform(idx_t n, const float* xt, float* x) const override;
 };
 
 
@@ -230,6 +239,9 @@ struct NormalizationTransform: VectorTransform {
     NormalizationTransform ();
 
     void apply_noalloc(idx_t n, const float* x, float* xt) const override;
+
+    /// Identity transform since norm is not revertible
+    void reverse_transform(idx_t n, const float* xt, float* x) const override;
 };
 
 
@@ -271,12 +283,22 @@ struct IndexPreTransform: Index {
         float* distances,
         idx_t* labels) const override;
 
+    void reconstruct (idx_t key, float * recons) const override;
+
     void reconstruct_n (idx_t i0, idx_t ni, float *recons)
         const override;
+
+    void search_and_reconstruct (idx_t n, const float *x, idx_t k,
+                                 float *distances, idx_t *labels,
+                                 float *recons) const override;
 
     /// apply the transforms in the chain. The returned float * may be
     /// equal to x, otherwise it should be deallocated.
     const float * apply_chain (idx_t n, const float *x) const;
+
+    /// Reverse the transforms in the chain. May not be implemented for
+    /// all transforms in the chain or may return approximate results.
+    void reverse_chain (idx_t n, const float* xt, float* x) const;
 
     ~IndexPreTransform() override;
 };

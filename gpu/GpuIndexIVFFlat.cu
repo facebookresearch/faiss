@@ -10,7 +10,7 @@
 
 #include "GpuIndexIVFFlat.h"
 #include "../IndexFlat.h"
-#include "../IndexIVF.h"
+#include "../IndexIVFFlat.h"
 #include "GpuIndexFlat.h"
 #include "GpuResources.h"
 #include "impl/IVFFlat.cuh"
@@ -100,14 +100,10 @@ GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
                        ivfFlatConfig_.useFloat16IVFStorage,
                        ivfFlatConfig_.indicesOptions,
                        memorySpace_);
+  InvertedLists *ivf = index->invlists;
 
-  FAISS_ASSERT(index->codes.size() == index->ids.size());
-  for (size_t i = 0; i < index->ids.size(); ++i) {
-    auto& cvecs = index->codes[i];
-    auto& ids = index->ids[i];
-
-    FAISS_ASSERT(cvecs.size() == (this->d * sizeof(float) * ids.size()));
-    auto numVecs = ids.size();
+  for (size_t i = 0; i < ivf->nlist; ++i) {
+    auto numVecs = ivf->list_size(i);
 
     // GPU index can only support max int entries per list
     FAISS_THROW_IF_NOT_FMT(numVecs <=
@@ -115,11 +111,11 @@ GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
                        "GPU inverted list can only support "
                        "%zu entries; %zu found",
                        (size_t) std::numeric_limits<int>::max(),
-                       ids.size());
+                       numVecs);
 
     index_->addCodeVectorsFromCpu(
-             i, (const float*)(cvecs.data()),
-             ids.data(), numVecs);
+             i, (const float*)(ivf->get_codes(i)),
+             ivf->get_ids(i), numVecs);
   }
 }
 
@@ -133,19 +129,20 @@ GpuIndexIVFFlat::copyTo(faiss::IndexIVFFlat* index) const {
                      "indices (INDICES_IVF)");
 
   GpuIndexIVF::copyTo(index);
+  index->code_size = this->d * sizeof(float);
 
-  // Clear out the old inverted lists
-  index->codes.clear();
-  index->codes.resize(nlist_);
+  InvertedLists *ivf = new ArrayInvertedLists(
+      nlist_, index->code_size);
+
+  index->replace_invlists(ivf, true);
 
   // Copy the inverted lists
   if (index_) {
     for (int i = 0; i < nlist_; ++i) {
-      std::vector<float> vec = index_->getListVectors(i);
-      size_t nbyte = sizeof(float) * vec.size();
-      index->codes[i].resize(nbyte);
-      memcpy(index->codes[i].data(), vec.data(), nbyte);
-      index->ids[i] = index_->getListIndices(i);
+      ivf->add_entries (
+              i, index_->getListIndices(i).size(),
+              index_->getListIndices(i).data(),
+              (const uint8_t*)index_->getListVectors(i).data());
     }
   }
 }

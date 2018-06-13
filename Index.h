@@ -71,14 +71,14 @@ struct Index {
     /// type of metric this index uses for search
     MetricType metric_type;
 
-    explicit Index (idx_t d = 0, MetricType metric = METRIC_INNER_PRODUCT):
+    explicit Index (idx_t d = 0, MetricType metric = METRIC_L2):
                     d(d),
                     ntotal(0),
                     verbose(false),
                     is_trained(true),
                     metric_type (metric) {}
 
-    virtual ~Index () {  }
+    virtual ~Index ();
 
 
     /** Perform training on a representative set of vectors
@@ -86,9 +86,7 @@ struct Index {
      * @param n      nb of training vectors
      * @param x      training vecors, size n * d
      */
-    virtual void train(idx_t /*n*/, const float* /*x*/) {
-      // does nothing by default
-    }
+    virtual void train(idx_t n, const float* x);
 
     /** Add n vectors of dimension d to the index.
      *
@@ -164,6 +162,17 @@ struct Index {
      */
     virtual void reconstruct_n (idx_t i0, idx_t ni, float *recons) const;
 
+    /** Similar to search, but also reconstructs the stored vectors (or an
+     * approximation in the case of lossy coding) for the search results.
+     *
+     * If there are not enough results for a query, the resulting arrays
+     * is padded with -1s.
+     *
+     * @param recons      reconstructed vectors size (n, k, d)
+     **/
+    virtual void search_and_reconstruct (idx_t n, const float *x, idx_t k,
+                                         float *distances, idx_t *labels,
+                                         float *recons) const;
 
     /** Computes a residual vector after indexing encoding.
      *

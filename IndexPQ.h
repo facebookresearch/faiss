@@ -83,6 +83,11 @@ struct IndexPQ: Index {
 
     Search_type_t search_type;
 
+    /** remove some ids. NB that Because of the structure of the
+     * indexing structre, the semantics of this operation are
+     * different from the usual ones: the new ids are shifted */
+    long remove_ids(const IDSelector& sel) override;
+
     // just encode the sign of the components, instead of using the PQ encoder
     // used only for the queries
     bool encode_signs;
@@ -142,11 +147,8 @@ struct MultiIndexQuantizer: Index  {
     void train(idx_t n, const float* x) override;
 
     void search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const override;
+        idx_t n, const float* x, idx_t k,
+        float* distances, idx_t* labels) const override;
 
     /// add and reset will crash at runtime
     void add(idx_t n, const float* x) override;
@@ -155,6 +157,32 @@ struct MultiIndexQuantizer: Index  {
     MultiIndexQuantizer () {}
 
     void reconstruct(idx_t key, float* recons) const override;
+};
+
+
+/** MultiIndexQuantizer where the PQ assignmnet is performed by sub-indexes
+ */
+struct MultiIndexQuantizer2: MultiIndexQuantizer {
+
+    /// M Indexes on d / M dimensions
+    std::vector<Index*> assign_indexes;
+    bool own_fields;
+
+    MultiIndexQuantizer2 (
+        int d, size_t M, size_t nbits,
+        Index **indexes);
+
+    MultiIndexQuantizer2 (
+        int d, size_t nbits,
+        Index *assign_index_0,
+        Index *assign_index_1);
+
+    void train(idx_t n, const float* x) override;
+
+    void search(
+        idx_t n, const float* x, idx_t k,
+        float* distances, idx_t* labels) const override;
+
 };
 
 

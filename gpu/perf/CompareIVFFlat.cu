@@ -8,7 +8,7 @@
 
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include "../../IndexIVF.h"
+#include "../../IndexIVFFlat.h"
 #include "../../index_io.h"
 #include "../../utils.h"
 
