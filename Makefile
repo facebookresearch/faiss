@@ -79,7 +79,7 @@ demos: libfaiss.a
 # Misc
 
 misc/test_blas: misc/test_blas.cpp
-	$(CXX) $(CXXFLAG) $(LDFLAGS) $(LIBS) -o $@ $^
+	$(CXX) $(CXXFLAG) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 
 #############################
