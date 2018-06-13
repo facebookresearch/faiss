@@ -26,8 +26,8 @@ $(CLIBNAME).a: $(LIBCOBJ)
 
 # Build dynamic library (independent object)
 $(CLIBNAME).$(SHAREDEXT): $(LIBCOBJ) ../$(LIBNAME).a
-	$(CXX) $(LDFLAGS) $(LIBS) $(SHAREDFLAGS) -o $@ \
-	-Wl,--whole-archive $^ -Wl,--no-whole-archive -static-libstdc++
+	$(CXX) $(LDFLAGS) $(SHAREDFLAGS) -o $@ \
+	-Wl,--whole-archive $^ -Wl,--no-whole-archive $(LIBS) -static-libstdc++
 
 bin/example_c: example_c.c $(CLIBNAME).$(SHAREDEXT)
 	$(CC) $(CFLAGS) -std=c99 -I. -I.. -L. -o $@ example_c.c \
