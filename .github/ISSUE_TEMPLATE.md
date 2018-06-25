@@ -6,6 +6,8 @@ file a public issue. -->
 
 # Platform
 
+<!-- if the question/problem is not platform-specific, please ignore this -->
+
 OS: <!-- e.g. macOS 10.13.3 -->
 
 Faiss version: <!-- git commit, e.g. 56383610bcb982d6591e2e2bea3516cb7723e04a -->
