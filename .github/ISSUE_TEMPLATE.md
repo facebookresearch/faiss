@@ -12,11 +12,11 @@ Faiss version: <!-- git commit, e.g. 56383610bcb982d6591e2e2bea3516cb7723e04a --
 
 Faiss compilation options: <!-- e.g. using MKL with compile flags ... -->
 
-Running on :
+Running on:
 - [ ] CPU
 - [ ] GPU
 
-Interface : 
+Interface: 
 - [ ] C++
 - [ ] Python
 
