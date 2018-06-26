@@ -223,7 +223,17 @@ int OnDiskInvertedLists::OngoingPrefetch::global_cs = 0;
 
 void OnDiskInvertedLists::prefetch_lists (const long *list_nos, int n) const
 {
-    pf->prefetch_lists (list_nos, n);
+    if (use_madvise) {
+        for (int i = 0; i < n; ++i) {
+            const auto list_no = list_nos[i];
+            const auto size = list_size(list_no);
+
+            madvise((void *) get_ids(list_no), size * sizeof(Index::idx_t), MADV_WILLNEED);
+            madvise((void *) get_codes(list_no), size * code_size, MADV_WILLNEED);
+        }
+    } else {
+        pf->prefetch_lists (list_nos, n);
+    }
 }
 
 
@@ -327,6 +337,7 @@ OnDiskInvertedLists::OnDiskInvertedLists (
     totsize (0),
     ptr (nullptr),
     read_only (false),
+    use_madvise (false),
     locks (new LockLevels ()),
     pf (new OngoingPrefetch (this))
 {
@@ -340,6 +351,7 @@ OnDiskInvertedLists::OnDiskInvertedLists ():
     totsize (0),
     ptr (nullptr),
     read_only (false),
+    use_madvise (false),
     locks (new LockLevels ()),
     pf (new OngoingPrefetch (this))
 {
