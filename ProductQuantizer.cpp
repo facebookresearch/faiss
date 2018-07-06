@@ -6,9 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-/* Copyright 2004-present Facebook. All Rights Reserved.
-   Index based on product quantiztion.
-*/
+// -*- c++ -*-
 
 #include "ProductQuantizer.h"
 
@@ -38,8 +36,6 @@ int sgemm_ (const char *transa, const char *transb, FINTEGER *m, FINTEGER *
 
 
 namespace faiss {
-
-
 
 
 /* compute an estimator using look-up tables for typical values of M */
@@ -659,10 +655,6 @@ void ProductQuantizer::search_sdc (const uint8_t * qcodes,
     }
 
 }
-
-
-
-
 
 
 } // namespace faiss

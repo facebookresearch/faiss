@@ -6,13 +6,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved
 // -*- c++ -*-
+
 // Auxiliary index structures, that are used in indexes but that can
 // be forward-declared
 
 #ifndef FAISS_AUX_INDEX_STRUCTURES_H
 #define FAISS_AUX_INDEX_STRUCTURES_H
+
+#include <stdint.h>
 
 #include <vector>
 #include <unordered_set>
@@ -157,9 +159,7 @@ struct RangeSearchPartialResult: BufferList {
     /// begin a new result
     QueryResult & new_result (idx_t qno);
 
-
     void finalize ();
-
 
     /// called by range_search before do_allocation
     void set_lims ();
@@ -168,6 +168,46 @@ struct RangeSearchPartialResult: BufferList {
     void set_result (bool incremental = false);
 
 };
+
+/***********************************************************
+ * Abstract I/O objects
+ ***********************************************************/
+
+
+struct IOReader {
+    // fread
+    virtual size_t operator()(
+         void *ptr, size_t size, size_t nitems) = 0;
+
+    // return a file number that can be memory-mapped
+    virtual int fileno ();
+
+    virtual ~IOReader() {}
+};
+
+struct IOWriter {
+    // fwrite
+    virtual size_t operator()(
+         const void *ptr, size_t size, size_t nitems) = 0;
+
+    // return a file number that can be memory-mapped
+    virtual int fileno ();
+
+    virtual ~IOWriter() {}
+};
+
+
+struct VectorIOReader:IOReader {
+    const std::vector<uint8_t> data;
+    size_t rp = 0;
+    size_t operator()(void *ptr, size_t size, size_t nitems) override;
+};
+
+struct VectorIOWriter:IOWriter {
+    std::vector<uint8_t> data;
+    size_t operator()(const void *ptr, size_t size, size_t nitems) override;
+};
+
 
 
 }; // namespace faiss

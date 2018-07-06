@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #ifndef GPU_FAISS_ASSERT_INCLUDED
 #define GPU_FAISS_ASSERT_INCLUDED

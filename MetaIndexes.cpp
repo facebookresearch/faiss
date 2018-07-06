@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved
 // -*- c++ -*-
 
 #include "MetaIndexes.h"
@@ -729,8 +728,4 @@ IndexSplitVectors::~IndexSplitVectors ()
 }
 
 
-
-
-
-
-}; // namespace faiss
+} // namespace faiss

@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
 #ifndef FAISS_VECTOR_TRANSFORM_H
@@ -304,9 +303,7 @@ struct IndexPreTransform: Index {
 };
 
 
-
 } // namespace faiss
-
 
 
 #endif

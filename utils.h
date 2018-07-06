@@ -6,9 +6,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-/** Copyright 2004-present Facebook. All Rights Reserved
- * -*- c++ -*-
- *
+// -*- c++ -*-
+
+/*
  *  A few utilitary functions for similarity search:
  * - random generators
  * - optimized exhaustive distance and knn search functions

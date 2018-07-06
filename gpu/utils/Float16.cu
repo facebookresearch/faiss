@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "Float16.cuh"
 #include "nvidia/fp16_emu.cuh"

@@ -112,9 +112,3 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         res = faiss.StandardGpuResources()
         gpu_index = faiss.index_cpu_to_gpu(res, 0, index)
         faiss.GpuParameterSpace().set_index_parameter(gpu_index, "nprobe", 3)
-
-
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -6,6 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// -*- c++ -*-
+
 #pragma once
 
 #include <vector>
@@ -320,5 +322,4 @@ struct IndexHNSW2Level: IndexHNSW {
 };
 
 
-
-};
+}

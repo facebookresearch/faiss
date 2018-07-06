@@ -190,6 +190,41 @@ def handle_Index(the_class):
     replace_method(the_class, 'search_and_reconstruct',
                    replacement_search_and_reconstruct, ignore_missing=True)
 
+def handle_IndexBinary(the_class):
+
+    def replacement_add(self, x):
+        assert x.flags.contiguous
+        n, d = x.shape
+        assert d * 8 == self.d
+        self.add_c(n, swig_ptr(x))
+
+    def replacement_add_with_ids(self, x, ids):
+        n, d = x.shape
+        assert d * 8 == self.d
+        assert ids.shape == (n, ), 'not same nb of vectors as ids'
+        self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
+
+    def replacement_train(self, x):
+        assert x.flags.contiguous
+        n, d = x.shape
+        assert d * 8 == self.d
+        self.train_c(n, swig_ptr(x))
+
+    def replacement_search(self, x, k):
+        n, d = x.shape
+        assert d * 8 == self.d
+        distances = np.empty((n, k), dtype=np.int32)
+        labels = np.empty((n, k), dtype=np.int64)
+        self.search_c(n, swig_ptr(x),
+                      k, swig_ptr(distances),
+                      swig_ptr(labels))
+        return distances, labels
+
+    replace_method(the_class, 'add', replacement_add)
+    replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
+    replace_method(the_class, 'train', replacement_train)
+    replace_method(the_class, 'search', replacement_search)
+
 def handle_VectorTransform(the_class):
 
     def apply_method(self, x):
@@ -258,6 +293,9 @@ for symbol in dir(this_module):
         if issubclass(the_class, Index):
             handle_Index(the_class)
 
+        if issubclass(the_class, IndexBinary):
+            handle_IndexBinary(the_class)
+
         if issubclass(the_class, VectorTransform):
             handle_VectorTransform(the_class)
 
@@ -293,6 +331,7 @@ def index_cpu_to_all_gpus(index, co=None, ngpu=-1):
 vector_name_map = {
     'Float': 'float32',
     'Byte': 'uint8',
+    'Char': 'int8',
     'Uint64': 'uint64',
     'Long': 'int64',
     'Int': 'int32',

@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
+// -*- c++ -*-
 
 #ifndef FAISS_ON_DISK_INVERTED_LISTS_H
 #define FAISS_ON_DISK_INVERTED_LISTS_H
@@ -73,8 +73,7 @@ struct OnDiskInvertedLists: InvertedLists {
     size_t totsize;
     uint8_t *ptr; // mmap base pointer
     bool read_only;  /// are inverted lists mapped read-only
-    bool use_madvise; // use madvice for prefetching
-    
+
     OnDiskInvertedLists (size_t nlist, size_t code_size,
                          const char *filename);
 
@@ -116,8 +115,6 @@ struct OnDiskInvertedLists: InvertedLists {
     // empty constructor for the I/O functions
     OnDiskInvertedLists ();
 };
-
-
 
 
 } // namespace faiss

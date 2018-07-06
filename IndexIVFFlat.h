@@ -11,9 +11,9 @@
 #ifndef FAISS_INDEX_IVF_FLAT_H
 #define FAISS_INDEX_IVF_FLAT_H
 
+#include <unordered_map>
+
 #include "IndexIVF.h"
-
-
 
 
 namespace faiss {
@@ -39,7 +39,9 @@ struct IndexIVFFlat: IndexIVF {
                              const idx_t *assign,
                              const float *centroid_dis,
                              float *distances, idx_t *labels,
-                             bool store_pairs) const override;
+                             bool store_pairs,
+                             const IVFSearchParameters *params=nullptr
+                             ) const override;
 
     void range_search(
         idx_t n,
@@ -55,13 +57,62 @@ struct IndexIVFFlat: IndexIVF {
      * @param idx    vector indices to update, size nv
      * @param v      vectors of new values, size nv*d
      */
-    void update_vectors (int nv, idx_t *idx, const float *v);
+    virtual void update_vectors (int nv, idx_t *idx, const float *v);
 
     void reconstruct_from_offset (long list_no, long offset,
                                   float* recons) const override;
 
     IndexIVFFlat () {}
 };
+
+
+struct IndexIVFFlatDedup: IndexIVFFlat {
+
+    /** Maps ids stored in the index to the ids of vectors that are
+     *  the same. When a vector is unique, it does not appear in the
+     *  instances map */
+    std::unordered_multimap <idx_t, idx_t> instances;
+
+    IndexIVFFlatDedup (
+            Index * quantizer, size_t d, size_t nlist_,
+            MetricType = METRIC_L2);
+
+    /// also dedups the training set
+    void train(idx_t n, const float* x) override;
+
+    /// implemented for all IndexIVF* classes
+    void add_with_ids(idx_t n, const float* x, const long* xids) override;
+
+    void search_preassigned (idx_t n, const float *x, idx_t k,
+                             const idx_t *assign,
+                             const float *centroid_dis,
+                             float *distances, idx_t *labels,
+                             bool store_pairs,
+                             const IVFSearchParameters *params=nullptr
+                             ) const override;
+
+    long remove_ids(const IDSelector& sel) override;
+
+    /// not implemented
+    void range_search(
+        idx_t n,
+        const float* x,
+        float radius,
+        RangeSearchResult* result) const override;
+
+    /// not implemented
+    void update_vectors (int nv, idx_t *idx, const float *v) override;
+
+
+    /// not implemented
+    void reconstruct_from_offset (long list_no, long offset,
+                                  float* recons) const override;
+
+    IndexIVFFlatDedup () {}
+
+
+};
+
 
 
 } // namespace faiss

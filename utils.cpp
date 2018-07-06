@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved
 // -*- c++ -*-
 
 #include "utils.h"
@@ -428,12 +427,12 @@ float fvec_L2sqr_ref (const float * x,
                      size_t d)
 {
     size_t i;
-    float res_ = 0;
+    float res = 0;
     for (i = 0; i < d; i++) {
         const float tmp = x[i] - y[i];
-       res_ += tmp * tmp;
+       res += tmp * tmp;
     }
-    return res_;
+    return res;
 }
 
 float fvec_inner_product_ref (const float * x,
@@ -441,20 +440,20 @@ float fvec_inner_product_ref (const float * x,
                              size_t d)
 {
     size_t i;
-    float res_ = 0;
+    float res = 0;
     for (i = 0; i < d; i++)
-       res_ += x[i] * y[i];
-    return res_;
+       res += x[i] * y[i];
+    return res;
 }
 
 float fvec_norm_L2sqr_ref (const float * __restrict x,
                           size_t d)
 {
     size_t i;
-    double res_ = 0;
+    double res = 0;
     for (i = 0; i < d; i++)
-       res_ += x[i] * x[i];
-    return res_;
+       res += x[i] * x[i];
+    return res;
 }
 
 
@@ -763,8 +762,8 @@ static void knn_inner_product_sse (const float * x,
 
 #pragma omp parallel for
     for (size_t i = 0; i < nx; i++) {
-        const float * x_ = x + i * d;
-        const float * y_ = y;
+        const float * x_i = x + i * d;
+        const float * y_j = y;
 
         float * __restrict simi = res->get_val(i);
         long * __restrict idxi = res->get_ids (i);
@@ -772,13 +771,13 @@ static void knn_inner_product_sse (const float * x,
         minheap_heapify (k, simi, idxi);
 
         for (size_t j = 0; j < ny; j++) {
-            float ip = fvec_inner_product (x_, y_, d);
+            float ip = fvec_inner_product (x_i, y_j, d);
 
             if (ip > simi[0]) {
                 minheap_pop (k, simi, idxi);
                 minheap_push (k, simi, idxi, ip, j);
             }
-            y_ += d;
+            y_j += d;
         }
         minheap_reorder (k, simi, idxi);
     }
@@ -795,21 +794,21 @@ static void knn_L2sqr_sse (
 
 #pragma omp parallel for
     for (size_t i = 0; i < nx; i++) {
-        const float * x_ = x + i * d;
-        const float * y_ = y;
+        const float * x_i = x + i * d;
+        const float * y_j = y;
         size_t j;
         float * __restrict simi = res->get_val(i);
         long * __restrict idxi = res->get_ids (i);
 
         maxheap_heapify (k, simi, idxi);
         for (j = 0; j < ny; j++) {
-            float disij = fvec_L2sqr (x_, y_, d);
+            float disij = fvec_L2sqr (x_i, y_j, d);
 
             if (disij < simi[0]) {
                 maxheap_pop (k, simi, idxi);
                 maxheap_push (k, simi, idxi, disij, j);
             }
-            y_ += d;
+            y_j += d;
         }
         maxheap_reorder (k, simi, idxi);
     }

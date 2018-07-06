@@ -6,8 +6,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-/* Copyright 2004-present Facebook. All Rights Reserved.
- *
+// -*- c++ -*-
+
+/*
  * Implementation of Hamming related functions (distances, smallest distance
  * selection with regular heap|radix and probabilistic heap|radix.
  *
@@ -26,6 +27,8 @@
 
 #include "hamming.h"
 
+#include <vector>
+#include <memory>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -39,6 +42,8 @@ static const size_t BLOCKSIZE_QUERY = 8192;
 
 
 namespace faiss {
+
+size_t hamming_batch_size = 65536;
 
 static const uint8_t hamdis_tab_ham_bytes[256] = {
     0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
@@ -258,7 +263,7 @@ size_t match_hamming_thres (
 }
 
 
-/* Return closest neighbors w.r.t Hamming distance */
+/* Return closest neighbors w.r.t Hamming distance, using a heap. */
 template <class HammingComputer>
 static
 void hammings_knn_hc (
@@ -271,37 +276,90 @@ void hammings_knn_hc (
         bool init_heap = true)
 {
     size_t k = ha->k;
-
-
     if (init_heap) ha->heapify ();
 
-    /* The computation here does not involved any blockization, which
-       is suboptimal for many queries in parallel. */
+    const size_t block_size = hamming_batch_size;
+    for (size_t j0 = 0; j0 < n2; j0 += block_size) {
+      const size_t j1 = std::min(j0 + block_size, n2);
 #pragma omp parallel for
-    for (size_t i = 0; i < ha->nh; i++) {
+      for (size_t i = 0; i < ha->nh; i++) {
         HammingComputer hc (bs1 + i * bytes_per_code, bytes_per_code);
 
-        const uint8_t * bs2_ = bs2;
+        const uint8_t * bs2_ = bs2 + j0 * bytes_per_code;
         hamdis_t dis;
         hamdis_t * __restrict bh_val_ = ha->val + i * k;
         long * __restrict bh_ids_ = ha->ids + i * k;
         size_t j;
-        for (j = 0; j < n2; j++, bs2_+= bytes_per_code) {
-            dis = hc.hamming (bs2_);
-            if (dis < bh_val_[0]) {
-                faiss::maxheap_pop<hamdis_t> (k, bh_val_, bh_ids_);
-                faiss::maxheap_push<hamdis_t> (k, bh_val_, bh_ids_, dis, j);
-            }
+        for (j = j0; j < j1; j++, bs2_+= bytes_per_code) {
+          dis = hc.hamming (bs2_);
+          if (dis < bh_val_[0]) {
+            faiss::maxheap_pop<hamdis_t> (k, bh_val_, bh_ids_);
+            faiss::maxheap_push<hamdis_t> (k, bh_val_, bh_ids_, dis, j);
+          }
         }
+      }
     }
     if (order) ha->reorder ();
  }
+
+/* Return closest neighbors w.r.t Hamming distance, using max count. */
+template <class HammingComputer>
+static
+void hammings_knn_mc (
+        int bytes_per_code,
+        const uint8_t *a,
+        const uint8_t *b,
+        size_t na,
+        size_t nb,
+        size_t k,
+        int32_t *distances,
+        long *labels)
+{
+  const int nBuckets = bytes_per_code * 8 + 1;
+  std::vector<int> all_counters(na * nBuckets, 0);
+  std::unique_ptr<long[]> all_ids_per_dis(new long[na * nBuckets * k]);
+
+  std::vector<HCounterState<HammingComputer>> cs;
+  for (size_t i = 0; i < na; ++i) {
+    cs.push_back(HCounterState<HammingComputer>(
+                   all_counters.data() + i * nBuckets,
+                   all_ids_per_dis.get() + i * nBuckets * k,
+                   a + i * bytes_per_code,
+                   8 * bytes_per_code,
+                   k
+                 ));
+  }
+
+  const size_t block_size = hamming_batch_size;
+  for (size_t j0 = 0; j0 < nb; j0 += block_size) {
+    const size_t j1 = std::min(j0 + block_size, nb);
+#pragma omp parallel for
+    for (size_t i = 0; i < na; ++i) {
+      for (size_t j = j0; j < j1; ++j) {
+        cs[i].update_counter(b + j * bytes_per_code, j);
+      }
+    }
+  }
+
+  for (size_t i = 0; i < na; ++i) {
+    HCounterState<HammingComputer>& csi = cs[i];
+
+    int nres = 0;
+    for (int b = 0; b < nBuckets && nres < k; b++) {
+      for (int l = 0; l < csi.counters[b] && nres < k; l++) {
+        labels[i * k + nres] = csi.ids_per_dis[b * k + l];
+        distances[i * k + nres] = b;
+        nres++;
+      }
+    }
+  }
+}
 
 
 
 // works faster than the template version
 static
-void hammings_knn_1 (
+void hammings_knn_hc_1 (
         int_maxheap_array_t * ha,
         const uint64_t * bs1,
         const uint64_t * bs2,
@@ -442,36 +500,17 @@ void hammings (
     }
 }
 
-
-void hammings_knn_core (
-        int_maxheap_array_t * ha,
-        const uint8_t * a,
-        const uint8_t * b,
-        size_t nb,
-        size_t ncodes)
+void hammings_knn(
+    int_maxheap_array_t *ha,
+    const uint8_t *a,
+    const uint8_t *b,
+    size_t nb,
+    size_t ncodes,
+    int order)
 {
-    FAISS_THROW_IF_NOT (ncodes % 8 == 0);
-
-    switch (ncodes) {
-        hammings_knn_1 (ha, C64(a), C64(b), nb, false, true);
-        // hammings_knn_hc<faiss::HammingComputer8>
-        //  (8, ha, a, b, nb, false, true);
-        break;
-    case 16:
-        hammings_knn_hc<faiss::HammingComputer16>
-            (16, ha, a, b, nb, false, true);
-        break;
-    case 32:
-        hammings_knn_hc<faiss::HammingComputer32>
-            (32, ha, a, b, nb, false, true);
-        break;
-    default:
-        hammings_knn_hc<faiss::HammingComputerM8>
-            (ncodes, ha, a, b, nb, false, true);
-    }
+    hammings_knn_hc(ha, a, b, nb, ncodes, order);
 }
-
-void hammings_knn (
+void hammings_knn_hc (
         int_maxheap_array_t * ha,
         const uint8_t * a,
         const uint8_t * b,
@@ -485,7 +524,7 @@ void hammings_knn (
             (4, ha, a, b, nb, order, true);
         break;
     case 8:
-        hammings_knn_1 (ha, C64(a), C64(b), nb, order, true);
+        hammings_knn_hc_1 (ha, C64(a), C64(b), nb, order, true);
         // hammings_knn_hc<faiss::HammingComputer8>
         //      (8, ha, a, b, nb, order, true);
         break;
@@ -505,6 +544,52 @@ void hammings_knn (
             hammings_knn_hc<faiss::HammingComputerDefault>
                 (ncodes, ha, a, b, nb, order, true);
 
+        }
+    }
+}
+
+void hammings_knn_mc(
+    const uint8_t * a,
+    const uint8_t * b,
+    size_t na,
+    size_t nb,
+    size_t k,
+    size_t ncodes,
+    int32_t *distances,
+    long *labels)
+{
+    switch (ncodes) {
+    case 4:
+        hammings_knn_mc<faiss::HammingComputer4>(
+          4, a, b, na, nb, k, distances, labels
+        );
+        break;
+    case 8:
+        // TODO(hoss): Write analog to hammings_knn_hc_1
+        // hammings_knn_hc_1 (ha, C64(a), C64(b), nb, order, true);
+        hammings_knn_mc<faiss::HammingComputer8>(
+          8, a, b, na, nb, k, distances, labels
+        );
+        break;
+    case 16:
+        hammings_knn_mc<faiss::HammingComputer16>(
+          16, a, b, na, nb, k, distances, labels
+        );
+        break;
+    case 32:
+        hammings_knn_mc<faiss::HammingComputer32>(
+          32, a, b, na, nb, k, distances, labels
+        );
+        break;
+    default:
+        if(ncodes % 8 == 0) {
+            hammings_knn_mc<faiss::HammingComputerM8>(
+              ncodes, a, b, na, nb, k, distances, labels
+            );
+        } else {
+            hammings_knn_mc<faiss::HammingComputerDefault>(
+              ncodes, a, b, na, nb, k, distances, labels
+            );
         }
     }
 }
@@ -636,7 +721,7 @@ static void hamming_dis_inner_loop (
     }
 }
 
-void generalized_hammings_knn (
+void generalized_hammings_knn_hc (
         int_maxheap_array_t * ha,
         const uint8_t * a,
         const uint8_t * b,
@@ -682,9 +767,6 @@ void generalized_hammings_knn (
         ha->reorder ();
 
 }
-
-
-
 
 
 } // namespace faiss

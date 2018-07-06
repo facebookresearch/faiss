@@ -6,10 +6,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved
 // -*- c++ -*-
 
 #include "AuxIndexStructures.h"
+
+#include "FaissAssert.h"
 
 #include <cstring>
 
@@ -208,9 +209,44 @@ bool IDSelectorBatch::is_member (idx_t i) const
 }
 
 
+/***********************************************************************
+ * IO functions
+ ***********************************************************************/
 
 
-
-
-
+int IOReader::fileno ()
+{
+    FAISS_THROW_MSG ("IOReader does not support memory mapping");
 }
+
+int IOWriter::fileno ()
+{
+    FAISS_THROW_MSG ("IOWriter does not support memory mapping");
+}
+
+
+size_t VectorIOWriter::operator()(
+                const void *ptr, size_t size, size_t nitems)
+{
+    size_t o = data.size();
+    data.resize(o + size * nitems);
+    memcpy (&data[o], ptr, size * nitems);
+    return nitems;
+}
+
+size_t VectorIOReader::operator()(
+                  void *ptr, size_t size, size_t nitems)
+{
+    if (rp >= data.size()) return 0;
+    size_t nremain = (data.size() - rp) / size;
+    if (nremain < nitems) nitems = nremain;
+    memcpy (ptr, &data[rp], size * nitems);
+    rp += size * nitems;
+    return nitems;
+}
+
+
+
+
+
+} // namespace faiss

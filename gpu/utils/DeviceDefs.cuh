@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #pragma once
 
@@ -28,7 +27,7 @@ constexpr int kWarpSize = 32;
 // This is a memory barrier for intra-warp writes to shared memory.
 __forceinline__ __device__ void warpFence() {
 
-#if __CUDA_ARCH__ >= 700
+#if CUDA_VERSION >= 9000
   __syncwarp();
 #else
   // For the time being, assume synchronicity.

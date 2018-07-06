@@ -6,9 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-/* Copyright 2004-present Facebook. All Rights Reserved.
-   Index based on product quantiztion.
-*/
+// -*- c++ -*-
 
 #include "IndexPQ.h"
 
@@ -203,13 +201,13 @@ void IndexPQ::search (idx_t n, const float *x, idx_t k,
 
             if (search_type == ST_HE) {
 
-                hammings_knn (&res, q_codes, codes.data(),
-                              ntotal, pq.code_size, true);
+                hammings_knn_hc (&res, q_codes, codes.data(),
+                                 ntotal, pq.code_size, true);
 
             } else if (search_type == ST_generalized_HE) {
 
-                generalized_hammings_knn (&res, q_codes, codes.data(),
-                                          ntotal, pq.code_size, true);
+                generalized_hammings_knn_hc (&res, q_codes, codes.data(),
+                                             ntotal, pq.code_size, true);
             }
 
             // convert distances to floats
@@ -1092,5 +1090,4 @@ void MultiIndexQuantizer2::search(
 }
 
 
-
-} // END namespace faiss
+} // namespace faiss

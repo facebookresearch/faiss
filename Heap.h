@@ -6,8 +6,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-/* Copyright 2004-present Facebook. All Rights Reserved.
- *
+// -*- c++ -*-
+
+/*
  * C++ support for heaps. The set of functions is tailored for
  * efficient similarity search.
  *
@@ -29,7 +30,6 @@
 #include <cstdio>
 
 #include <limits>
-
 
 
 namespace faiss {
@@ -488,8 +488,6 @@ void indirect_heap_push (size_t k,
     }
     bh_ids[i] = id;
 }
-
-
 
 
 } // namespace faiss

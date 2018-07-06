@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
 #ifndef FAISS_INDEX_IVFPQ_H
@@ -21,6 +20,11 @@
 
 namespace faiss {
 
+struct IVFPQSearchParameters: IVFSearchParameters {
+    size_t scan_table_threshold;   ///< use table computation or on-the-fly?
+    int polysemous_ht;             ///< Hamming thresh for polysemous filtering
+    ~IVFPQSearchParameters () {}
+};
 
 
 /** Inverted file with Product Quantizer encoding. Each residual
@@ -103,7 +107,9 @@ struct IndexIVFPQ: IndexIVF {
                              const idx_t *assign,
                              const float *centroid_dis,
                              float *distances, idx_t *labels,
-                             bool store_pairs) const override;
+                             bool store_pairs,
+                             const IVFSearchParameters *params=nullptr
+                             ) const override;
 
     /// build precomputed table
     void precompute_table ();
@@ -181,7 +187,9 @@ struct IndexIVFPQR: IndexIVFPQ {
                              const idx_t *assign,
                              const float *centroid_dis,
                              float *distances, idx_t *labels,
-                             bool store_pairs) const override;
+                             bool store_pairs,
+                             const IVFSearchParameters *params=nullptr
+                             ) const override;
 
     IndexIVFPQR();
 };
@@ -242,11 +250,7 @@ struct Index2Layer: Index {
 };
 
 
-
 } // namespace faiss
-
-
-
 
 
 #endif

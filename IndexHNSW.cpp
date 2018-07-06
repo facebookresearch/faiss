@@ -6,6 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// -*- c++ -*-
+
 #include "IndexHNSW.h"
 
 
@@ -1694,19 +1696,17 @@ struct PQDis: HNSW::DistanceComputer {
         return accu;
     }
 
-
-    PQDis(const IndexPQ & storage, const float *q = nullptr):
-        pq(storage.pq)
-    {
-        precomputed_table.resize(pq.M * pq.ksub);
-        nb = storage.ntotal;
-        d = storage.d;
-        codes = storage.codes.data();
-        code_size = pq.code_size;
-        FAISS_ASSERT(pq.ksub == 256);
-        FAISS_ASSERT(pq.sdc_table.size() == pq.ksub * pq.ksub * pq.M);
-        sdc = pq.sdc_table.data();
-        ndis = 0;
+    PQDis(const IndexPQ& storage, const float* /*q*/ = nullptr)
+        : pq(storage.pq) {
+      precomputed_table.resize(pq.M * pq.ksub);
+      nb = storage.ntotal;
+      d = storage.d;
+      codes = storage.codes.data();
+      code_size = pq.code_size;
+      FAISS_ASSERT(pq.ksub == 256);
+      FAISS_ASSERT(pq.sdc_table.size() == pq.ksub * pq.ksub * pq.M);
+      sdc = pq.sdc_table.data();
+      ndis = 0;
     }
 
     void set_query(const float *x) override {
@@ -1771,15 +1771,13 @@ struct SQDis: HNSW::DistanceComputer {
         return dc->compute_code_distance (codei, codej);
     }
 
-
-    SQDis(const IndexScalarQuantizer & storage, const float *q = nullptr):
-        sq(storage.sq)
-    {
-        nb = storage.ntotal;
-        d = storage.d;
-        codes = storage.codes.data();
-        code_size = sq.code_size;
-        dc = sq.get_distance_computer();
+    SQDis(const IndexScalarQuantizer& storage, const float* /*q*/ = nullptr)
+        : sq(storage.sq) {
+      nb = storage.ntotal;
+      d = storage.d;
+      codes = storage.codes.data();
+      code_size = sq.code_size;
+      dc = sq.get_distance_computer();
     }
 
     void set_query(const float *x) override {

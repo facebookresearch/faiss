@@ -6,36 +6,46 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-//  Copyright 2004-present Facebook. All Rights Reserved
 // -*- c++ -*-
+
 // I/O code for indexes
 
 #ifndef FAISS_INDEX_IO_H
 #define FAISS_INDEX_IO_H
 
+
 #include <cstdio>
 
 namespace faiss {
 
+
 struct Index;
+struct IndexBinary;
 struct VectorTransform;
 struct IndexIVF;
 struct ProductQuantizer;
 struct IOReader;
 struct IOWriter;
 
-void write_index (const Index *idx, FILE *f);
 void write_index (const Index *idx, const char *fname);
-
+void write_index (const Index *idx, FILE *f);
 void write_index (const Index *idx, IOWriter *writer);
+
+void write_index_binary (const IndexBinary *idx, const char *fname);
+void write_index_binary (const IndexBinary *idx, FILE *f);
+void write_index_binary (const IndexBinary *idx, IOWriter *writer);
 
 
 const int IO_FLAG_MMAP = 1;
 const int IO_FLAG_READ_ONLY = 2;
 
-Index *read_index (FILE * f, int io_flags = 0);
 Index *read_index (const char *fname, int io_flags = 0);
+Index *read_index (FILE * f, int io_flags = 0);
 Index *read_index (IOReader *reader, int io_flags = 0);
+
+IndexBinary *read_index_binary (const char *fname, int io_flags = 0);
+IndexBinary *read_index_binary (FILE * f, int io_flags = 0);
+IndexBinary *read_index_binary (IOReader *reader, int io_flags = 0);
 
 
 void write_VectorTransform (const VectorTransform *vt, const char *fname);
@@ -59,21 +69,9 @@ struct Cloner {
     virtual ~Cloner() {}
 };
 
-struct IOReader {
-    // fread
-    virtual size_t operator()(
-        void *ptr, size_t size, size_t nitems) = 0;
-    virtual ~IOReader() {}
-};
 
-struct IOWriter {
-    // fwrite
-    virtual size_t operator()(
-        const void *ptr, size_t size, size_t nitems) = 0;   
 
-    virtual ~IOWriter() {}
-};
+} // namespace faiss
 
-}
 
 #endif

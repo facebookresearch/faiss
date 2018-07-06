@@ -1,5 +1,6 @@
 
 
+
 README for the link & code implementation
 =========================================
 
@@ -10,14 +11,12 @@ Link & code is an indexing method that combines HNSW indexing with
 compression and exploits the neighborhood structure of the similarity
 graph to improve the reconstruction. It is described in
 
-```
 @inproceedings{link_and_code,
    author = {Matthijs Douze and Alexandre Sablayrolles and Herv\'e J\'egou},
    title = {Link and code: Fast indexing with graphs and compact regression codes},
    booktitle = {CVPR},
    year = {2018}
 }
-```
 
 ArXiV [here](https://arxiv.org/abs/1804.09996)
 
@@ -30,7 +29,7 @@ The test runs with 3 files:
 
 - `datasets.py`: code to load the datasets. The example code runs on the
   deep1b and bigann datasets. See the [toplevel README](../README.md)
-  on how to download them. They should be put in a directory, edit
+  on how to downlod them. They should be put in a directory, edit
   datasets.py to set the path.
 
 - `neighbor_codec.py`: this is where the representation is trained.
@@ -62,7 +61,7 @@ Set `bdir` to a scratch directory.
 
 Explanation of the flags:
 
-- `--db deep100M`: dataset to process
+- `--db deep1M`: dataset to process
 
 - `--M0 6`: number of links on the base level (L6)
 
@@ -135,7 +134,7 @@ python bench_link_and_code.py \
    --beta_nsq 1 --beta_k 1  \
    --beta_centroids $bdir/deep1M_PQ40_M6_nsq0.npy \
    --neigh_recons_codes $bdir/deep1M_PQ36_M6_nsq0_codes.npy \
-   --k_reorder 0,5 --efSearch 16,64,256,1024
+   --k_reorder 0 --efSearch 16,64,256,1024
 ```
 
 The arguments are similar to the previous table. Note that nsq = 0 is
