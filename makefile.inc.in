@@ -6,7 +6,6 @@
 
 CXX          = @CXX@
 CXXCPP       = @CXXCPP@
-# NOTE: Change to `-DFINTEGER=long` if using MKL.
 # TODO: Investigate the LAPACKE wrapper for LAPACK, which defines the correct
 #   type for FORTRAN integers.
 CPPFLAGS     = -DFINTEGER=int @CPPFLAGS@
