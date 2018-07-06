@@ -7,7 +7,7 @@ function installswig() {
     cd /tmp/ &&
         wget https://github.com/swig/swig/archive/rel-3.0.12.tar.gz &&
         tar zxf rel-3.0.12.tar.gz && cd swig-rel-3.0.12 &&
-        ./autogen.sh && ./configure --prefix "${HOME}"/swig/ 1>/dev/null &&
+        ./autogen.sh && ./configure --prefix "${HOME}" 1>/dev/null &&
         make >/dev/null &&
         make install >/dev/null
 }

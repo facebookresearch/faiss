@@ -6,27 +6,20 @@
 
 CXX          = @CXX@
 CXXCPP       = @CXXCPP@
-# TODO: Investigate the LAPACKE wrapper for LAPACK, which defines the correct
-#   type for FORTRAN integers.
-CPPFLAGS     = -DFINTEGER=int @CPPFLAGS@
-CXXFLAGS     = -fPIC @OPENMP_CXXFLAGS@ @ARCH_CXXFLAGS@ -Wno-sign-compare @CXXFLAGS@
+CPPFLAGS     = -DFINTEGER=int @CPPFLAGS@ @OPENMP_CXXFLAGS@ @NVCC_CPPFLAGS@
+CXXFLAGS     = -fPIC @ARCH_CXXFLAGS@ -Wno-sign-compare @CXXFLAGS@
 CPUFLAGS     = @ARCH_CPUFLAGS@
-LDFLAGS      = @OPENMP_LDFLAGS@ @LDFLAGS@
-LIBS         = @BLAS_LIBS@ @LAPACK_LIBS@ @LIBS@
+LDFLAGS      = @OPENMP_CXXFLAGS@ @LDFLAGS@ @NVCC_LDFLAGS@
+LIBS         = @BLAS_LIBS@ @LAPACK_LIBS@ @LIBS@ @NVCC_LIBS@
 PYTHONCFLAGS = @PYTHON_CFLAGS@ -I@NUMPY_INCLUDE@
 
 NVCC         = @NVCC@
-NVCCLDFLAGS  = @NVCC_LDFLAGS@
-NVCCLIBS     = @NVCC_LIBS@
-CUDAROOT     = @CUDA_PREFIX@
-CUDACFLAGS   = @NVCC_CPPFLAGS@
-NVCCFLAGS    = -I $(CUDAROOT)/targets/x86_64-linux/include/ \
+CUDA_ROOT    = @CUDA_PREFIX@
+CUDA_ARCH    = @CUDA_ARCH@
+NVCCFLAGS    = -I $(CUDA_ROOT)/targets/x86_64-linux/include/ \
 -Xcompiler -fPIC \
 -Xcudafe --diag_suppress=unrecognized_attribute \
--gencode arch=compute_35,code="compute_35" \
--gencode arch=compute_52,code="compute_52" \
--gencode arch=compute_60,code="compute_60" \
--gencode arch=compute_61,code="compute_61" \
+$(CUDA_ARCH) \
 -lineinfo \
 -ccbin $(CXX) -DFAISS_USE_FLOAT16
 
@@ -43,6 +36,7 @@ endif
 MKDIR_P      = @MKDIR_P@
 PYTHON       = @PYTHON@
 SWIG         = @SWIG@
+AR          ?= ar 
 
 prefix      ?= @prefix@
 exec_prefix ?= @exec_prefix@

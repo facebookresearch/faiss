@@ -15,7 +15,9 @@ matrix:
             - liblapack-dev
             - python-numpy
             - python-dev
-#            - swig
+#            - swig3.0
+      env:
+        - PYTHON_CFLAGS="-I/usr/include/python2.7"
     - os: linux
       compiler: gcc
       addons:
@@ -25,7 +27,9 @@ matrix:
             - liblapack-dev
             - python-numpy
             - python-dev
-#            - swig
+#            - swig3.0
+      env:
+        - PYTHON_CFLAGS="-I/usr/include/python2.7"
     - os: linux
       compiler: gcc
       addons:
@@ -35,7 +39,9 @@ matrix:
             - liblapack-dev
             - python-numpy
             - python-dev
-#            - swig
+#            - swig3.0
+      env:
+        - PYTHON_CFLAGS="-I/usr/include/python2.7"
     - os: linux
       compiler: clang
       addons:
@@ -45,8 +51,9 @@ matrix:
             - liblapack-dev
             - python-numpy
             - python-dev
-#            - swig
+#            - swig3.0
       env:
+        - PYTHON_CFLAGS="-I/usr/include/python2.7"
         # NOTE: Hack, c.f. https://github.com/travis-ci/travis-ci/issues/8613
         - LD_LIBRARY_PATH="/usr/local/clang/lib"
     - os: osx
@@ -69,8 +76,9 @@ install:
   - ./.travis/install.sh
   - aclocal
   - autoconf
-  - ./configure
+  - ./configure --without-cuda
   - make
+  - make -C python
 
 script:
   - make test
