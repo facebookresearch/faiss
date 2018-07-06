@@ -81,6 +81,8 @@ case $with_blas in
 	*) BLAS_LIBS="-l$with_blas" ;;
 esac
 
+OPENMP_LDFLAGS="$OPENMP_CXXFLAGS"
+
 # Get fortran linker names of BLAS functions to check for.
 # AC_F77_FUNC(sgemm)
 # AC_F77_FUNC(dgemm)
@@ -112,33 +114,24 @@ fi
 
 # BLAS in Intel MKL library?
 if test $ax_blas_ok = no; then
-	# MKL for gfortran
-	if test x"$ac_cv_fc_compiler_gnu" = xyes; then
-		# 64 bit
-		if test $host_cpu = x86_64; then
-			AC_CHECK_LIB(mkl_gf_lp64, $sgemm,
-			[ax_blas_ok=yes;BLAS_LIBS="-lmkl_gf_lp64 -lmkl_sequential -lmkl_core -lpthread"],,
-			[-lmkl_gf_lp64 -lmkl_sequential -lmkl_core -lpthread])
-		# 32 bit
-		elif test $host_cpu = i686; then
-			AC_CHECK_LIB(mkl_gf, $sgemm,
-				[ax_blas_ok=yes;BLAS_LIBS="-lmkl_gf -lmkl_sequential -lmkl_core -lpthread"],,
-				[-lmkl_gf -lmkl_sequential -lmkl_core -lpthread])
-		fi
-	# MKL for other compilers (Intel, PGI, ...?)
-	else
-		# 64-bit
-		if test $host_cpu = x86_64; then
-			AC_CHECK_LIB(mkl_intel_lp64, $sgemm,
-				[ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread"],,
-				[-lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread])
-		# 32-bit
-		elif test $host_cpu = i686; then
-			AC_CHECK_LIB(mkl_intel, $sgemm,
-				[ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel -lmkl_sequential -lmkl_core -lpthread"],,
-				[-lmkl_intel -lmkl_sequential -lmkl_core -lpthread])
-		fi
-	fi
+  case $host_os in
+    darwin*)
+      AC_CHECK_LIB(mkl_intel_lp64, $sgemm,
+                   [ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread"; OPENMP_LDFLAGS=""],,
+                   [-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread])
+      ;;
+    *)
+      if test $host_cpu = x86_64; then
+        AC_CHECK_LIB(mkl_intel_lp64, $sgemm,
+                     [ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl"],,
+                     [-lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl])
+      elif test $host_cpu = i686; then
+        AC_CHECK_LIB(mkl_intel, $sgemm,
+                     [ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl"],,
+                     [-lmkl_intel -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl])
+      fi
+    ;;
+  esac
 fi
 # Old versions of MKL
 if test $ax_blas_ok = no; then
@@ -226,6 +219,7 @@ if test $ax_blas_ok = no; then
 fi
 
 AC_SUBST(BLAS_LIBS)
+AC_SUBST(OPENMP_LDFLAGS)
 
 LIBS="$ax_blas_save_LIBS"
 

@@ -627,6 +627,7 @@ ac_includes_default="\
 ac_header_list=
 ac_subst_vars='LTLIBOBJS
 LAPACK_LIBS
+OPENMP_LDFLAGS
 BLAS_LIBS
 host_os
 host_vendor
@@ -5646,6 +5647,8 @@ case $with_blas in
 	*) BLAS_LIBS="-l$with_blas" ;;
 esac
 
+OPENMP_LDFLAGS="$OPENMP_CXXFLAGS"
+
 # Get fortran linker names of BLAS functions to check for.
 # AC_F77_FUNC(sgemm)
 # AC_F77_FUNC(dgemm)
@@ -5727,109 +5730,16 @@ fi
 
 # BLAS in Intel MKL library?
 if test $ax_blas_ok = no; then
-	# MKL for gfortran
-	if test x"$ac_cv_fc_compiler_gnu" = xyes; then
-		# 64 bit
-		if test $host_cpu = x86_64; then
-			as_ac_Lib=`$as_echo "ac_cv_lib_mkl_gf_lp64_$sgemm" | $as_tr_sh`
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $sgemm in -lmkl_gf_lp64" >&5
-$as_echo_n "checking for $sgemm in -lmkl_gf_lp64... " >&6; }
-if eval \${$as_ac_Lib+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lmkl_gf_lp64 -lmkl_gf_lp64 -lmkl_sequential -lmkl_core -lpthread $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char $sgemm ();
-int
-main ()
-{
-return $sgemm ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  eval "$as_ac_Lib=yes"
-else
-  eval "$as_ac_Lib=no"
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-eval ac_res=\$$as_ac_Lib
-	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-$as_echo "$ac_res" >&6; }
-if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
-  ax_blas_ok=yes;BLAS_LIBS="-lmkl_gf_lp64 -lmkl_sequential -lmkl_core -lpthread"
-fi
-
-		# 32 bit
-		elif test $host_cpu = i686; then
-			as_ac_Lib=`$as_echo "ac_cv_lib_mkl_gf_$sgemm" | $as_tr_sh`
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $sgemm in -lmkl_gf" >&5
-$as_echo_n "checking for $sgemm in -lmkl_gf... " >&6; }
-if eval \${$as_ac_Lib+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lmkl_gf -lmkl_gf -lmkl_sequential -lmkl_core -lpthread $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char $sgemm ();
-int
-main ()
-{
-return $sgemm ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  eval "$as_ac_Lib=yes"
-else
-  eval "$as_ac_Lib=no"
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-eval ac_res=\$$as_ac_Lib
-	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-$as_echo "$ac_res" >&6; }
-if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
-  ax_blas_ok=yes;BLAS_LIBS="-lmkl_gf -lmkl_sequential -lmkl_core -lpthread"
-fi
-
-		fi
-	# MKL for other compilers (Intel, PGI, ...?)
-	else
-		# 64-bit
-		if test $host_cpu = x86_64; then
-			as_ac_Lib=`$as_echo "ac_cv_lib_mkl_intel_lp64_$sgemm" | $as_tr_sh`
+  case $host_os in
+    darwin*)
+      as_ac_Lib=`$as_echo "ac_cv_lib_mkl_intel_lp64_$sgemm" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $sgemm in -lmkl_intel_lp64" >&5
 $as_echo_n "checking for $sgemm in -lmkl_intel_lp64... " >&6; }
 if eval \${$as_ac_Lib+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lmkl_intel_lp64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread $LIBS"
+LIBS="-lmkl_intel_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -5861,19 +5771,63 @@ eval ac_res=\$$as_ac_Lib
 	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
 $as_echo "$ac_res" >&6; }
 if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
-  ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread"
+  ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread"; OPENMP_LDFLAGS=""
 fi
 
-		# 32-bit
-		elif test $host_cpu = i686; then
-			as_ac_Lib=`$as_echo "ac_cv_lib_mkl_intel_$sgemm" | $as_tr_sh`
+      ;;
+    *)
+      if test $host_cpu = x86_64; then
+        as_ac_Lib=`$as_echo "ac_cv_lib_mkl_intel_lp64_$sgemm" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $sgemm in -lmkl_intel_lp64" >&5
+$as_echo_n "checking for $sgemm in -lmkl_intel_lp64... " >&6; }
+if eval \${$as_ac_Lib+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lmkl_intel_lp64 -lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char $sgemm ();
+int
+main ()
+{
+return $sgemm ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  eval "$as_ac_Lib=yes"
+else
+  eval "$as_ac_Lib=no"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+eval ac_res=\$$as_ac_Lib
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
+  ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl"
+fi
+
+      elif test $host_cpu = i686; then
+        as_ac_Lib=`$as_echo "ac_cv_lib_mkl_intel_$sgemm" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $sgemm in -lmkl_intel" >&5
 $as_echo_n "checking for $sgemm in -lmkl_intel... " >&6; }
 if eval \${$as_ac_Lib+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lmkl_intel -lmkl_intel -lmkl_sequential -lmkl_core -lpthread $LIBS"
+LIBS="-lmkl_intel -lmkl_intel -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -5905,11 +5859,12 @@ eval ac_res=\$$as_ac_Lib
 	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
 $as_echo "$ac_res" >&6; }
 if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
-  ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel -lmkl_sequential -lmkl_core -lpthread"
+  ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl"
 fi
 
-		fi
-	fi
+      fi
+    ;;
+  esac
 fi
 # Old versions of MKL
 if test $ax_blas_ok = no; then
@@ -6694,6 +6649,7 @@ if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
 fi
 
 fi
+
 
 
 
