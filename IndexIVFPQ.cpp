@@ -6,9 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-/* Copyright 2004-present Facebook. All Rights Reserved.
-   Inverted list structure.
-*/
+// -*- c++ -*-
 
 #include "IndexIVFPQ.h"
 
@@ -31,9 +29,6 @@
 #include "AuxIndexStructures.h"
 
 namespace faiss {
-
-
-
 
 
 /*****************************************
@@ -452,6 +447,7 @@ struct QueryTables {
      *****************************************************/
 
     const IndexIVFPQ & ivfpq;
+    const IVFSearchParameters *params;
 
     // copied from IndexIVFPQ for easier access
     int d;
@@ -459,6 +455,7 @@ struct QueryTables {
     MetricType metric_type;
     bool by_residual;
     int use_precomputed_table;
+    int polysemous_ht;
 
     // pre-allocated data buffers
     float * sim_table, * sim_table_2;
@@ -470,7 +467,8 @@ struct QueryTables {
     // for table pointers
     std::vector<const float *> sim_table_ptrs;
 
-    explicit QueryTables (const IndexIVFPQ & ivfpq):
+    explicit QueryTables (const IndexIVFPQ & ivfpq,
+                          const IVFSearchParameters *params):
         ivfpq(ivfpq),
         d(ivfpq.d),
         pq (ivfpq.pq),
@@ -485,7 +483,12 @@ struct QueryTables {
         decoded_vec = residual_vec + d;
 
         // for polysemous
-        if (ivfpq.polysemous_ht != 0)  {
+        polysemous_ht = ivfpq.polysemous_ht;
+        if (auto ivfpq_params =
+            dynamic_cast<const IVFPQSearchParameters *>(params)) {
+            polysemous_ht = ivfpq_params->polysemous_ht;
+        }
+        if (polysemous_ht != 0)  {
             q_code.resize (pq.code_size);
         }
         init_list_cycles = 0;
@@ -506,7 +509,7 @@ struct QueryTables {
             init_query_IP ();
         else
             init_query_L2 ();
-        if (!by_residual && ivfpq.polysemous_ht != 0)
+        if (!by_residual && polysemous_ht != 0)
             pq.compute_code (qi, q_code.data());
     }
 
@@ -579,7 +582,7 @@ struct QueryTables {
         // decoded_vec = centroid
         float dis0 = -fvec_inner_product (qi, decoded_vec, d);
 
-        if (ivfpq.polysemous_ht) {
+        if (polysemous_ht) {
             for (int i = 0; i < d; i++) {
                 residual_vec [i] = qi[i] - decoded_vec[i];
             }
@@ -629,7 +632,7 @@ struct QueryTables {
                 const float *pc = &ivfpq.precomputed_table
                     [(ki * pq.M + cm * Mf) * pq.ksub];
 
-                if (ivfpq.polysemous_ht == 0) {
+                if (polysemous_ht == 0) {
 
                     // sum up with query-specific table
                     fvec_madd (Mf * pq.ksub,
@@ -694,7 +697,7 @@ struct QueryTables {
           FAISS_THROW_MSG ("need precomputed tables");
         }
 
-        if (ivfpq.polysemous_ht) {
+        if (polysemous_ht) {
             FAISS_THROW_MSG ("not implemented");
             // Not clear that it makes sense to implemente this,
             // because it costs M * ksub, which is what we wanted to
@@ -720,8 +723,9 @@ struct InvertedListScanner: QueryTables {
     const IDType * list_ids;
     size_t list_size;
 
-    explicit InvertedListScanner (const IndexIVFPQ & ivfpq):
-        QueryTables (ivfpq)
+    explicit InvertedListScanner (const IndexIVFPQ & ivfpq,
+                                  const IVFSearchParameters *params):
+        QueryTables (ivfpq, params)
     {
         FAISS_THROW_IF_NOT (pq.byte_per_idx == 1);
         n_hamming_pass = 0;
@@ -931,27 +935,30 @@ void IndexIVFPQ::search_preassigned (idx_t nx, const float *qx, idx_t k,
                                      const idx_t *keys,
                                      const float *coarse_dis,
                                      float *distances, idx_t *labels,
-                                     bool store_pairs) const
+                                     bool store_pairs,
+                                     const IVFSearchParameters *params
+                                     ) const
 {
     float_maxheap_array_t res = {
         size_t(nx), size_t(k),
         labels, distances
     };
 
+    long local_nprobe = params ? params->nprobe : nprobe;
+    long local_max_codes = params ? params->max_codes : max_codes;
+
 #pragma omp parallel
     {
-        InvertedListScanner<long> qt (*this);
-        size_t stats_nlist = 0;
-        size_t stats_ncode = 0;
+        InvertedListScanner<long> qt (*this, params);
+        size_t stats_nlist = 0, stats_ncode = 0;
         uint64_t init_query_cycles = 0;
-        uint64_t scan_cycles = 0;
-        uint64_t heap_cycles = 0;
+        uint64_t scan_cycles = 0, heap_cycles = 0;
 
 #pragma omp  for
         for (size_t i = 0; i < nx; i++) {
             const float *qi = qx + i * d;
-            const long * keysi = keys + i * nprobe;
-            const float *coarse_dis_i = coarse_dis + i * nprobe;
+            const long * keysi = keys + i * local_nprobe;
+            const float *coarse_dis_i = coarse_dis + i * local_nprobe;
             float * heap_sim = res.get_val (i);
             long * heap_ids = res.get_ids (i);
 
@@ -966,7 +973,7 @@ void IndexIVFPQ::search_preassigned (idx_t nx, const float *qx, idx_t k,
 
             size_t nscan = 0;
 
-            for (size_t ik = 0; ik < nprobe; ik++) {
+            for (size_t ik = 0; ik < local_nprobe; ik++) {
                 long key = keysi[ik];  /* select the list  */
                 if (key < 0) {
                     // not enough centroids for multiprobe
@@ -994,7 +1001,7 @@ void IndexIVFPQ::search_preassigned (idx_t nx, const float *qx, idx_t k,
                 }
                 scan_cycles += TOC;
 
-                if (max_codes && nscan >= max_codes) break;
+                if (local_max_codes && nscan >= local_max_codes) break;
             }
             stats_ncode += nscan;
             TIC;
@@ -1160,7 +1167,9 @@ void IndexIVFPQR::search_preassigned (idx_t n, const float *x, idx_t k,
                                       const idx_t *idx,
                                       const float *L1_dis,
                                       float *distances, idx_t *labels,
-                                      bool store_pairs) const
+                                      bool store_pairs,
+                                      const IVFSearchParameters *params
+                                      ) const
 {
     uint64_t t0;
     TIC;
@@ -1171,9 +1180,10 @@ void IndexIVFPQR::search_preassigned (idx_t n, const float *x, idx_t k,
         float *coarse_distances = new float [k_coarse * n];
         ScopeDeleter<float> del(coarse_distances);
 
-        IndexIVFPQ::search_preassigned (n, x, k_coarse,
-                            idx, L1_dis, coarse_distances, coarse_labels,
-                            true);
+        IndexIVFPQ::search_preassigned (
+                   n, x, k_coarse,
+                   idx, L1_dis, coarse_distances, coarse_labels,
+                   true, params);
     }
 
 
@@ -1392,13 +1402,12 @@ void Index2Layer::add(idx_t n, const float* x)
 }
 
 void Index2Layer::search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const
-{
-    FAISS_THROW_MSG ("not implemented");
+    idx_t /*n*/,
+    const float* /*x*/,
+    idx_t /*k*/,
+    float* /*distances*/,
+    idx_t* /*labels*/) const {
+  FAISS_THROW_MSG("not implemented");
 }
 
 
@@ -1454,12 +1463,6 @@ void Index2Layer::reset()
     ntotal = 0;
     codes.clear ();
 }
-
-
-
-
-
-
 
 
 } // namespace faiss

@@ -83,6 +83,9 @@ extern "C" {
 #include "MetaIndexes.h"
 #include "FaissAssert.h"
 
+#include "IndexBinaryFlat.h"
+#include "IndexBinaryIVF.h"
+
 #include "index_io.h"
 
 #include "utils.h"
@@ -118,14 +121,19 @@ namespace std {
         size_t size();
         T at (size_t n) const;
         void resize (size_t n);
+        void swap (vector<T> & other);
     };
 };
+
 
 
 %template(FloatVector) std::vector<float>;
 %template(DoubleVector) std::vector<double>;
 %template(ByteVector) std::vector<uint8_t>;
-%template(Uint64Vector) std::vector<uint64_t>;
+%template(CharVector) std::vector<char>;
+// NOTE(hoss): Using unsigned long instead of uint64_t because OSX defines
+//   uint64_t as unsigned long long, which SWIG is not aware of.
+%template(Uint64Vector) std::vector<unsigned long>;
 %template(LongVector) std::vector<long>;
 %template(IntVector) std::vector<int>;
 %template(VectorTransformVector) std::vector<faiss::VectorTransform*>;
@@ -259,6 +267,9 @@ int get_num_gpus()
 %ignore faiss::IndexIVFPQ::alloc_type;
 %include "IndexIVFPQ.h"
 
+%include "IndexBinary.h"
+%include "IndexBinaryFlat.h"
+%include "IndexBinaryIVF.h"
 
 
 
@@ -418,6 +429,7 @@ struct AsyncIndexSearchC {
 #endif
 
 %newobject read_index;
+%newobject read_binary_index;
 %newobject read_VectorTransform;
 %newobject read_ProductQuantizer;
 %newobject clone_index;
@@ -430,6 +442,7 @@ struct AsyncIndexSearchC {
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
     DOWNCAST ( IndexIVFScalarQuantizer )
+    DOWNCAST ( IndexIVFFlatDedup )
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
     DOWNCAST ( IndexFlat )
@@ -450,7 +463,26 @@ struct AsyncIndexSearchC {
     DOWNCAST_GPU ( GpuIndexFlat )
 #endif
     // default for non-recognized classes
-    DOWNCAST( Index )
+    DOWNCAST ( Index )
+    if ($1 == NULL)
+    {
+#ifdef SWIGPYTHON
+        $result = SWIG_Py_Void();
+#endif
+        // Lua does not need a push for nil
+    } else {
+        assert(false);
+    }
+#ifdef SWIGLUA
+    SWIG_arg++;
+#endif
+}
+
+%typemap(out) faiss::IndexBinary * {
+    DOWNCAST ( IndexBinaryIVF )
+    DOWNCAST ( IndexBinaryFlat )
+      // default for non-recognized classes
+    DOWNCAST ( IndexBinary )
     if ($1 == NULL)
     {
 #ifdef SWIGPYTHON
@@ -502,6 +534,7 @@ faiss::VectorTransform * downcast_VectorTransform (faiss::VectorTransform *vt);
 %include "index_io.h"
 
 %newobject index_factory;
+%newobject index_binary_factory;
 
 %include "AutoTune.h"
 
@@ -557,6 +590,9 @@ PyObject *swig_ptr (PyObject *a)
     }
     if(PyArray_TYPE(ao) == NPY_UINT8) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_char, 0);
+    }
+    if(PyArray_TYPE(ao) == NPY_INT8) {
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_char, 0);
     }
     if(PyArray_TYPE(ao) == NPY_UINT64) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long, 0);

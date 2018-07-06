@@ -552,10 +552,7 @@ def compute_populated_index(preproc):
     t0 = time.time()
 
     for i in range(ngpu):
-        if ngpu == 1:
-            index_src = faiss.index_gpu_to_cpu(gpu_index)
-        else:
-            index_src = faiss.index_gpu_to_cpu(gpu_index.at(i))
+        index_src = faiss.index_gpu_to_cpu(gpu_index.at(i))
         print "  index %d size %d" % (i, index_src.ntotal)
         index_src.copy_subset_to(indexall, 0, 0, nb)
 

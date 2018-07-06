@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved
 // -*- c++ -*-
 
 #ifndef INDEX_FLAT_H
@@ -24,7 +23,7 @@ struct IndexFlat: Index {
     /// database vectors, size ntotal * d
     std::vector<float> xb;
 
-    explicit IndexFlat (idx_t d, MetricType metric = METRIC_INNER_PRODUCT);
+    explicit IndexFlat (idx_t d, MetricType metric = METRIC_L2);
 
     void add(idx_t n, const float* x) override;
 

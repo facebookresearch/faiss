@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "../test/TestUtils.h"
 #include "../../utils.h"
@@ -64,14 +63,17 @@ std::vector<float> randVecs(size_t num, size_t dim) {
   return v;
 }
 
-void compareIndices(const std::vector<float>& queryVecs,
-                    faiss::Index& refIndex,
-                    faiss::Index& testIndex,
-                    int numQuery, int dim, int k,
-                    const std::string& configMsg,
-                    float maxRelativeError,
-                    float pctMaxDiff1,
-                    float pctMaxDiffN) {
+void compareIndices(
+    const std::vector<float>& queryVecs,
+    faiss::Index& refIndex,
+    faiss::Index& testIndex,
+    int numQuery,
+    int /*dim*/,
+    int k,
+    const std::string& configMsg,
+    float maxRelativeError,
+    float pctMaxDiff1,
+    float pctMaxDiffN) {
   // Compare
   std::vector<float> refDistance(numQuery * k, 0);
   std::vector<faiss::Index::idx_t> refIndices(numQuery * k, -1);

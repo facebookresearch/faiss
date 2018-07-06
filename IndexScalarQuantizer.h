@@ -6,6 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// -*- c++ -*-
+
 #ifndef FAISS_INDEX_SCALAR_QUANTIZER_H
 #define FAISS_INDEX_SCALAR_QUANTIZER_H
 
@@ -34,6 +36,7 @@ struct ScalarQuantizer {
         QT_4bit,             ///< 4 bits per component
         QT_8bit_uniform,     ///< same, shared range for all dimensions
         QT_4bit_uniform,
+        QT_fp16,
     };
 
     QuantizerType qtype;
@@ -160,7 +163,9 @@ struct IndexIVFScalarQuantizer: IndexIVF {
                              const idx_t *assign,
                              const float *centroid_dis,
                              float *distances, idx_t *labels,
-                             bool store_pairs) const override;
+                             bool store_pairs,
+                             const IVFSearchParameters *params=nullptr
+                             ) const override;
 
     void reconstruct_from_offset (long list_no, long offset,
                                   float* recons) const override;

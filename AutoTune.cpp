@@ -6,9 +6,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-/* Copyright 2004-present Facebook. All Rights Reserved.
-   implementation of Hyper-parameter auto-tuning
-*/
+// -*- c++ -*-
+
+/*
+ * implementation of Hyper-parameter auto-tuning
+ */
 
 #include "AutoTune.h"
 
@@ -25,7 +27,8 @@
 #include "MetaIndexes.h"
 #include "IndexScalarQuantizer.h"
 #include "IndexHNSW.h"
-
+#include "IndexBinaryFlat.h"
+#include "IndexBinaryIVF.h"
 
 namespace faiss {
 
@@ -734,11 +737,8 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             vt_1 = new OPQMatrix (d, opq_M);
         } else if (stok == "L2norm") {
             vt_1 = new NormalizationTransform (d, 2.0);
-        // coarse quantizers
-        } else if (!coarse_quantizer &&
-                   sscanf (tok, "IVF%d_HNSW%d", &ncentroids, &M) == 2) {
-            FAISS_THROW_IF_NOT (metric == METRIC_L2);
-            coarse_quantizer_1 = new IndexHNSWFlat (d, M);
+
+
         } else if (!coarse_quantizer &&
                    sscanf (tok, "IVF%d", &ncentroids) == 1) {
             if (metric == METRIC_L2) {
@@ -755,11 +755,14 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             add_idmap = true;
 
             // IVFs
-        } else if (!index && stok == "Flat") {
+        } else if (!index && (stok == "Flat" || stok == "FlatDedup")) {
             if (coarse_quantizer) {
                 // if there was an IVF in front, then it is an IVFFlat
-                IndexIVF *index_ivf = new IndexIVFFlat (
-                    coarse_quantizer, d, ncentroids, metric);
+                IndexIVF *index_ivf = stok == "Flat" ?
+                    new IndexIVFFlat (
+                          coarse_quantizer, d, ncentroids, metric) :
+                    new IndexIVFFlatDedup (
+                          coarse_quantizer, d, ncentroids, metric);
                 index_ivf->quantizer_trains_alone =
                     get_trains_alone (coarse_quantizer);
                 index_ivf->cp.spherical = metric == METRIC_INNER_PRODUCT;
@@ -767,12 +770,16 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                 index_ivf->own_fields = true;
                 index_1 = index_ivf;
             } else {
+                FAISS_THROW_IF_NOT_MSG (stok != "FlatDedup",
+                                        "dedup supported only for IVFFlat");
                 index_1 = new IndexFlat (d, metric);
             }
-        } else if (!index && (stok == "SQ8" || stok == "SQ4")) {
+        } else if (!index && (stok == "SQ8" || stok == "SQ4" ||
+                              stok == "SQfp16")) {
             ScalarQuantizer::QuantizerType qt =
                 stok == "SQ8" ? ScalarQuantizer::QT_8bit :
                 stok == "SQ4" ? ScalarQuantizer::QT_4bit :
+                stok == "SQfp16" ? ScalarQuantizer::QT_fp16 :
                 ScalarQuantizer::QT_4bit;
             if (coarse_quantizer) {
                 IndexIVFScalarQuantizer *index_ivf =
@@ -905,7 +912,27 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
     return index;
 }
 
+IndexBinary *index_binary_factory(int d, const char *description)
+{
+    IndexBinary *index = nullptr;
+
+    int ncentroids = -1;
+
+    if (sscanf(description, "BIVF%d", &ncentroids) == 1) {
+        IndexBinaryIVF *index_ivf = new IndexBinaryIVF(
+            new IndexBinaryFlat(d), d, ncentroids
+        );
+        index_ivf->own_fields = true;
+        index = index_ivf;
+    } else if (std::string(description) == "BFlat") {
+        index = new IndexBinaryFlat(d);
+    } else {
+        FAISS_THROW_IF_NOT_FMT(index, "descrption %s did not generate an index",
+                               description);
+    }
+
+    return index;
+}
 
 
-
-}; // namespace faiss
+} // namespace faiss

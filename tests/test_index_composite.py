@@ -295,22 +295,17 @@ class TestRareIO(unittest.TestCase):
     def compare_results(self, index1, index2, xq):
 
         Dref, Iref = index1.search(xq, 5)
-        Dnew, Inew = index1.search(xq, 5)
+        Dnew, Inew = index2.search(xq, 5)
 
         assert np.all(Dref == Dnew)
         assert np.all(Iref == Inew)
 
-
-    def do_mmappedIO(self, sparse):
+    def do_mmappedIO(self, sparse, in_pretransform=False):
         d = 10
         nb = 1000
         nq = 200
         nt = 200
         xt, xb, xq = get_dataset_2(d, nb, nt, nq)
-        if sparse:
-            fname = "/tmp/faiss_test_rareio_sparse.faissindex"
-        else:
-            fname = "/tmp/faiss_test_rareio_full.faissindex"
 
         quantizer = faiss.IndexFlatL2(d)
         index1 = faiss.IndexIVFFlat(quantizer, d, 20)
@@ -319,21 +314,152 @@ class TestRareIO(unittest.TestCase):
             # assigned to the same invlist
             xt += (np.ones(10) * 1000).astype('float32')
 
+        if in_pretransform:
+            # make sure it still works when wrapped in an IndexPreTransform
+            tmp = index1
+            index1 = faiss.IndexPreTransform(index1)
+            index1.dont_dealloc_me = tmp
+
         index1.train(xt)
         index1.add(xb)
-        faiss.write_index(index1, fname)
 
-        index2 = faiss.read_index(fname)
-        self.compare_results(index1, index2, xq)
+        _, fname = tempfile.mkstemp()
+        try:
 
-        index3 = faiss.read_index(fname, faiss.IO_FLAG_MMAP)
-        self.compare_results(index1, index3, xq)
+            faiss.write_index(index1, fname)
+
+            index2 = faiss.read_index(fname)
+            self.compare_results(index1, index2, xq)
+
+            index3 = faiss.read_index(fname, faiss.IO_FLAG_MMAP)
+            self.compare_results(index1, index3, xq)
+        finally:
+            if os.path.exists(fname):
+                os.unlink(fname)
 
     def test_mmappedIO_sparse(self):
         self.do_mmappedIO(True)
 
     def test_mmappedIO_full(self):
         self.do_mmappedIO(False)
+
+    def test_mmappedIO_pretrans(self):
+        self.do_mmappedIO(False, True)
+
+
+class TestIVFFlatDedup(unittest.TestCase):
+
+    def normalize_res(self, D, I):
+        dmax = D[-1]
+        res = [(d, i) for d, i in zip(D, I) if d < dmax]
+        res.sort()
+        return res
+
+    def test_dedup(self):
+        d = 10
+        nb = 1000
+        nq = 200
+        nt = 500
+        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+
+        # introduce duplicates
+        xb[500:900:2] = xb[501:901:2]
+        xb[901::4] = xb[900::4]
+        xb[902::4] = xb[900::4]
+        xb[903::4] = xb[900::4]
+
+        # also in the train set
+        xt[201::2] = xt[200::2]
+
+        quantizer = faiss.IndexFlatL2(d)
+        index_new = faiss.IndexIVFFlatDedup(quantizer, d, 20)
+
+        index_new.verbose = True
+        # should display
+        # IndexIVFFlatDedup::train: train on 350 points after dedup (was 500 points)
+        index_new.train(xt)
+
+        index_ref = faiss.IndexIVFFlat(quantizer, d, 20)
+        assert index_ref.is_trained
+
+        index_ref.nprobe = 5
+        index_ref.add(xb)
+        index_new.nprobe = 5
+        index_new.add(xb)
+
+        Dref, Iref = index_ref.search(xq, 20)
+        Dnew, Inew = index_new.search(xq, 20)
+
+        for i in range(nq):
+            ref = self.normalize_res(Dref[i], Iref[i])
+            new = self.normalize_res(Dnew[i], Inew[i])
+            assert ref == new
+
+        # test I/O
+        _, tmpfile = tempfile.mkstemp()
+        try:
+            faiss.write_index(index_new, tmpfile)
+            index_st = faiss.read_index(tmpfile)
+        finally:
+            if os.path.exists(tmpfile):
+                os.unlink(tmpfile)
+        Dst, Ist = index_st.search(xq, 20)
+
+        for i in range(nq):
+            new = self.normalize_res(Dnew[i], Inew[i])
+            st = self.normalize_res(Dst[i], Ist[i])
+            assert st == new
+
+        # test remove
+        toremove = np.hstack((np.arange(3, 1000, 5), np.arange(850, 950)))
+        index_ref.remove_ids(toremove)
+        index_new.remove_ids(toremove)
+
+        Dref, Iref = index_ref.search(xq, 20)
+        Dnew, Inew = index_new.search(xq, 20)
+
+        for i in range(nq):
+            ref = self.normalize_res(Dref[i], Iref[i])
+            new = self.normalize_res(Dnew[i], Inew[i])
+            assert ref == new
+
+
+class TestSerialize(unittest.TestCase):
+
+    def test_serialize_to_vector(self):
+        d = 10
+        nb = 1000
+        nq = 200
+        nt = 500
+        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+
+        index = faiss.IndexFlatL2(d)
+        index.add(xb)
+
+        Dref, Iref = index.search(xq, 5)
+
+        writer = faiss.VectorIOWriter()
+        faiss.write_index(index, writer)
+
+        ar_data = faiss.vector_to_array(writer.data)
+
+        # direct transfer of vector
+        reader = faiss.VectorIOReader()
+        reader.data.swap(writer.data)
+
+        index2 = faiss.read_index(reader)
+
+        Dnew, Inew = index2.search(xq, 5)
+        assert np.all(Dnew == Dref) and np.all(Inew == Iref)
+
+        # from intermediate numpy array
+        reader = faiss.VectorIOReader()
+        faiss.copy_array_to_vector(ar_data, reader.data)
+
+        index3 = faiss.read_index(reader)
+
+        Dnew, Inew = index3.search(xq, 5)
+        assert np.all(Dnew == Dref) and np.all(Inew == Iref)
 
 
 

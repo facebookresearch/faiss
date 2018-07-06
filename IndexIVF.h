@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
 #ifndef FAISS_INDEX_IVF_H
@@ -143,6 +142,12 @@ struct ArrayInvertedLists: InvertedLists {
 };
 
 
+struct IVFSearchParameters {
+    size_t nprobe;            ///< number of probes at query time
+    size_t max_codes;         ///< max nb of codes to visit to do a query
+    virtual ~IVFSearchParameters () {}
+};
+
 /** Index based on a inverted file (IVF)
  *
  * In the inverted file, the quantizer (an Index instance) provides a
@@ -213,12 +218,15 @@ struct IndexIVF: Index, Level1Quantizer {
      * @param store_pairs store inv list index + inv list offset
      *                     instead in upper/lower 32 bit of result,
      *                     instead of ids (used for reranking).
+     * @param params used to override the object's search parameters
      */
     virtual void search_preassigned (idx_t n, const float *x, idx_t k,
                                      const idx_t *assign,
                                      const float *centroid_dis,
                                      float *distances, idx_t *labels,
-                                     bool store_pairs) const = 0;
+                                     bool store_pairs,
+                                     const IVFSearchParameters *params=nullptr
+                                     ) const = 0;
 
     /** assign the vectors, then call search_preassign */
     virtual void search (idx_t n, const float *x, idx_t k,
@@ -317,11 +325,7 @@ struct IndexIVFStats {
 extern IndexIVFStats indexIVF_stats;
 
 
-
 } // namespace faiss
-
-
-
 
 
 #endif

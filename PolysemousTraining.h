@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
 #ifndef FAISS_POLYSEMOUS_TRAINING_INCLUDED
@@ -17,8 +16,6 @@
 
 
 namespace faiss {
-
-
 
 
 /// parameters used for the simulated annealing method
@@ -154,7 +151,6 @@ struct PolysemousTraining: SimulatedAnnealingParameters {
     void optimize_reproduce_distances (ProductQuantizer &pq) const;
 
 };
-
 
 
 } // namespace faiss

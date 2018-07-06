@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// -*- c++ -*-
 
 #include "OnDiskInvertedLists.h"
 
@@ -223,17 +224,7 @@ int OnDiskInvertedLists::OngoingPrefetch::global_cs = 0;
 
 void OnDiskInvertedLists::prefetch_lists (const long *list_nos, int n) const
 {
-    if (use_madvise) {
-        for (int i = 0; i < n; ++i) {
-            const auto list_no = list_nos[i];
-            const auto size = list_size(list_no);
-
-            madvise((void *) get_ids(list_no), size * sizeof(Index::idx_t), MADV_WILLNEED);
-            madvise((void *) get_codes(list_no), size * code_size, MADV_WILLNEED);
-        }
-    } else {
-        pf->prefetch_lists (list_nos, n);
-    }
+    pf->prefetch_lists (list_nos, n);
 }
 
 
@@ -337,7 +328,6 @@ OnDiskInvertedLists::OnDiskInvertedLists (
     totsize (0),
     ptr (nullptr),
     read_only (false),
-    use_madvise (false),
     locks (new LockLevels ()),
     pf (new OngoingPrefetch (this))
 {
@@ -351,7 +341,6 @@ OnDiskInvertedLists::OnDiskInvertedLists ():
     totsize (0),
     ptr (nullptr),
     read_only (false),
-    use_madvise (false),
     locks (new LockLevels ()),
     pf (new OngoingPrefetch (this))
 {
@@ -382,11 +371,19 @@ size_t OnDiskInvertedLists::list_size(size_t list_no) const
 
 const uint8_t * OnDiskInvertedLists::get_codes (size_t list_no) const
 {
+    if (lists[list_no].offset == INVALID_OFFSET) {
+        return nullptr;
+    }
+
     return ptr + lists[list_no].offset;
 }
 
 const Index::idx_t * OnDiskInvertedLists::get_ids (size_t list_no) const
 {
+    if (lists[list_no].offset == INVALID_OFFSET) {
+        return nullptr;
+    }
+
     return (const idx_t*)(ptr + lists[list_no].offset +
                           code_size * lists[list_no].capacity);
 }
@@ -604,10 +601,6 @@ size_t OnDiskInvertedLists::merge_from (const InvertedLists **ils, int n_il)
 
     return ntotal;
 }
-
-
-
-
 
 
 } // namespace faiss

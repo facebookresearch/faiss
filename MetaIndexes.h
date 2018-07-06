@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
 #ifndef META_INDEXES_H
@@ -170,8 +169,7 @@ struct IndexSplitVectors: Index {
 };
 
 
-
-}
+} // namespace faiss
 
 
 #endif

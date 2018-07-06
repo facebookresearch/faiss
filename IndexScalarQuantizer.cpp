@@ -6,6 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// -*- c++ -*-
+
 #include "IndexScalarQuantizer.h"
 
 #include <cstdio>
@@ -116,6 +118,119 @@ struct Codec4bit {
     }
 #endif
 };
+
+
+#ifdef USE_AVX
+
+
+uint16_t encode_fp16 (float x) {
+    __m128 xf = _mm_set1_ps (x);
+    __m128i xi = _mm_cvtps_ph (
+         xf, _MM_FROUND_TO_NEAREST_INT |_MM_FROUND_NO_EXC);
+    return _mm_cvtsi128_si32 (xi) & 0xffff;
+}
+
+
+float decode_fp16 (uint16_t x) {
+    __m128i xi = _mm_set1_epi16 (x);
+    __m128 xf = _mm_cvtph_ps (xi);
+    return _mm_cvtss_f32 (xf);
+}
+
+#else
+
+// non-intrinsic FP16 <-> FP32 code adapted from
+// https://github.com/ispc/ispc/blob/master/stdlib.ispc
+
+float floatbits (uint32_t x) {
+    return *(float*)&x;
+}
+
+uint32_t intbits (float f) {
+    return *(uint32_t*)&f;
+}
+
+
+uint16_t encode_fp16 (float f) {
+
+    // via Fabian "ryg" Giesen.
+    // https://gist.github.com/2156668
+    uint32_t sign_mask = 0x80000000u;
+    int32_t o;
+
+    uint32_t fint = intbits(f);
+    uint32_t sign = fint & sign_mask;
+    fint ^= sign;
+
+    // NOTE all the integer compares in this function can be safely
+    // compiled into signed compares since all operands are below
+    // 0x80000000. Important if you want fast straight SSE2 code (since
+    // there's no unsigned PCMPGTD).
+
+    // Inf or NaN (all exponent bits set)
+    // NaN->qNaN and Inf->Inf
+    // unconditional assignment here, will override with right value for
+    // the regular case below.
+    uint32_t f32infty = 255u << 23;
+    o = (fint > f32infty) ? 0x7e00u : 0x7c00u;
+
+    // (De)normalized number or zero
+    // update fint unconditionally to save the blending; we don't need it
+    // anymore for the Inf/NaN case anyway.
+
+    const uint32_t round_mask = ~0xfffu;
+    const uint32_t magic = 15u << 23;
+    const uint32_t f16infty = 31u << 23;
+
+    // Shift exponent down, denormalize if necessary.
+    // NOTE This represents half-float denormals using single
+    // precision denormals.  The main reason to do this is that
+    // there's no shift with per-lane variable shifts in SSE*, which
+    // we'd otherwise need. It has some funky side effects though:
+    // - This conversion will actually respect the FTZ (Flush To Zero)
+    //   flag in MXCSR - if it's set, no half-float denormals will be
+    //   generated. I'm honestly not sure whether this is good or
+    //   bad. It's definitely interesting.
+    // - If the underlying HW doesn't support denormals (not an issue
+    //   with Intel CPUs, but might be a problem on GPUs or PS3 SPUs),
+    //   you will always get flush-to-zero behavior. This is bad,
+    //   unless you're on a CPU where you don't care.
+    // - Denormals tend to be slow. FP32 denormals are rare in
+    //   practice outside of things like recursive filters in DSP -
+    //   not a typical half-float application. Whether FP16 denormals
+    //   are rare in practice, I don't know. Whatever slow path your
+    //   HW may or may not have for denormals, this may well hit it.
+    float fscale = floatbits(fint & round_mask) * floatbits(magic);
+    fscale = std::min(fscale, floatbits((31u << 23) - 0x1000u));
+    int32_t fint2 = intbits(fscale) - round_mask;
+
+    if (fint < f32infty)
+        o = fint2 >> 13; // Take the bits!
+
+    return (o | (sign >> 16));
+}
+
+float decode_fp16 (uint16_t h) {
+
+    // https://gist.github.com/2144712
+    // Fabian "ryg" Giesen.
+
+    const uint32_t shifted_exp = 0x7c00u << 13; // exponent mask after shift
+
+    int32_t o = ((int32_t)(h & 0x7fffu)) << 13;     // exponent/mantissa bits
+    int32_t exp = shifted_exp & o;   // just the exponent
+    o += (int32_t)(127 - 15) << 23;        // exponent adjust
+
+    int32_t infnan_val = o + ((int32_t)(128 - 16) << 23);
+    int32_t zerodenorm_val = intbits(
+                 floatbits(o + (1u<<23)) - floatbits(113u << 23));
+    int32_t reg_val = (exp == 0) ? zerodenorm_val : o;
+
+    int32_t sign_bit = ((int32_t)(h & 0x8000u)) << 16;
+    return floatbits(((exp == shifted_exp) ? infnan_val : reg_val) | sign_bit);
+}
+
+#endif
 
 
 
@@ -250,6 +365,52 @@ struct QuantizerNonUniform8: QuantizerNonUniform<Codec> {
 
 #endif
 
+struct QuantizerFP16: Quantizer {
+    const size_t d;
+
+    QuantizerFP16(size_t d, const std::vector<float> & /* unused */):
+        d(d) {}
+
+    void encode_vector(const float* x, uint8_t* code) const override {
+        for (size_t i = 0; i < d; i++) {
+            ((uint16_t*)code)[i] = encode_fp16(x[i]);
+        }
+    }
+
+    void decode_vector(const uint8_t* code, float* x) const override {
+        for (size_t i = 0; i < d; i++) {
+            x[i] = decode_fp16(((uint16_t*)code)[i]);
+        }
+
+    }
+
+    float reconstruct_component (const uint8_t * code, int i) const
+    {
+        return decode_fp16(((uint16_t*)code)[i]);
+    }
+
+};
+
+#ifdef USE_AVX
+
+struct QuantizerFP16_8: QuantizerFP16 {
+
+    QuantizerFP16_8 (size_t d, const std::vector<float> &trained):
+        QuantizerFP16 (d, trained) {}
+
+    __m256 reconstruct_8_components (const uint8_t * code, int i) const
+    {
+        __m128i codei = _mm_loadu_si128 ((const __m128i*)(code + 2 * i));
+        return _mm256_cvtph_ps (codei);
+    }
+
+};
+
+#endif
+
+
+
+
 Quantizer *select_quantizer (
           QuantizerType qtype,
           size_t d, const std::vector<float> & trained)
@@ -265,6 +426,8 @@ Quantizer *select_quantizer (
             return new QuantizerUniform8<Codec8bit>(d, trained);
         case ScalarQuantizer::QT_4bit_uniform:
             return new QuantizerUniform8<Codec4bit>(d, trained);
+        case ScalarQuantizer::QT_fp16:
+            return new QuantizerFP16_8 (d, trained);
         }
     } else
 #endif
@@ -278,6 +441,8 @@ Quantizer *select_quantizer (
             return new QuantizerUniform<Codec8bit>(d, trained);
         case ScalarQuantizer::QT_4bit_uniform:
             return new QuantizerUniform<Codec4bit>(d, trained);
+        case ScalarQuantizer::QT_fp16:
+            return new QuantizerFP16 (d, trained);
         }
     }
     FAISS_THROW_MSG ("unknown qtype");
@@ -677,6 +842,8 @@ DistanceComputer *select_distance_computer (
         case ScalarQuantizer::QT_4bit_uniform:
             return new DCTemplate_8<QuantizerUniform8
                                     <Codec4bit>, Sim>(d, trained);
+        case ScalarQuantizer::QT_fp16:
+            return new DCTemplate_8<QuantizerFP16_8, Sim>(d, trained);
         }
     } else
 #endif
@@ -694,6 +861,8 @@ DistanceComputer *select_distance_computer (
         case ScalarQuantizer::QT_4bit_uniform:
             return new DCTemplate<QuantizerUniform
                                   <Codec4bit>, Sim>(d, trained);
+        case ScalarQuantizer::QT_fp16:
+            return new DCTemplate<QuantizerFP16, Sim>(d, trained);
         }
     }
     FAISS_THROW_MSG ("unknown qtype");
@@ -723,6 +892,9 @@ ScalarQuantizer::ScalarQuantizer
     case QT_4bit: case QT_4bit_uniform:
         code_size = (d + 1) / 2;
         break;
+    case QT_fp16:
+        code_size = d * 2;
+        break;
     }
 
 }
@@ -748,6 +920,9 @@ void ScalarQuantizer::train (size_t n, const float *x)
     case QT_4bit: case QT_8bit:
         train_NonUniform (rangestat, rangestat_arg,
                           n, d, 1 << bit_per_dim, x, trained);
+        break;
+    case QT_fp16:
+        // no training necessary
         break;
     }
 }
@@ -983,13 +1158,16 @@ namespace {
 
 
 void search_with_probes_ip (const IndexIVFScalarQuantizer & index,
-                         const float *x,
-                         const idx_t *cent_ids, const float *cent_dis,
-                         DistanceComputer & dc,
-                         int k, float *simi, idx_t *idxi,
-                         bool store_pairs)
+                            const float *x,
+                            const idx_t *cent_ids, const float *cent_dis,
+                            DistanceComputer & dc,
+                            int k, float *simi, idx_t *idxi,
+                            bool store_pairs,
+                            const IVFSearchParameters *params)
 {
-    int nprobe = index.nprobe;
+    long nprobe = params ? params->nprobe : index.nprobe;
+    long max_codes = params ? params->max_codes : index.max_codes;
+
     size_t code_size = index.code_size;
     size_t d = index.d;
     std::vector<float> decoded(d);
@@ -1019,7 +1197,7 @@ void search_with_probes_ip (const IndexIVFScalarQuantizer & index,
             codes += code_size;
         }
         nscan += list_size;
-        if (index.max_codes && nscan > index.max_codes)
+        if (max_codes && nscan > max_codes)
             break;
     }
     minheap_reorder (k, simi, idxi);
@@ -1031,9 +1209,12 @@ void search_with_probes_L2 (const IndexIVFScalarQuantizer & index,
                             const Index *quantizer,
                             DistanceComputer & dc,
                             int k, float *simi, idx_t *idxi,
-                            bool store_pairs)
+                            bool store_pairs,
+                            const IVFSearchParameters *params)
 {
-    int nprobe = index.nprobe;
+    long nprobe = params ? params->nprobe : index.nprobe;
+    long max_codes = params ? params->max_codes : index.max_codes;
+
     size_t code_size = index.code_size;
     size_t d = index.d;
     std::vector<float> x(d);
@@ -1063,7 +1244,7 @@ void search_with_probes_L2 (const IndexIVFScalarQuantizer & index,
             codes += code_size;
         }
         nscan += list_size;
-        if (index.max_codes && nscan > index.max_codes)
+        if (max_codes && nscan > max_codes)
             break;
     }
     maxheap_reorder (k, simi, idxi);
@@ -1076,35 +1257,30 @@ void IndexIVFScalarQuantizer::search_preassigned (
                              const idx_t *idx,
                              const float *dis,
                              float *distances, idx_t *labels,
-                             bool store_pairs) const
+                             bool store_pairs,
+                             const IVFSearchParameters *params
+                             ) const
 {
     FAISS_THROW_IF_NOT (is_trained);
+    long local_nprobe = params ? params->nprobe : nprobe;
 
-
-    if (metric_type == METRIC_INNER_PRODUCT) {
 #pragma omp parallel
-        {
-            DistanceComputer *dc = sq.get_distance_computer (metric_type);
-            ScopeDeleter1<DistanceComputer> del(dc);
+    {
+        DistanceComputer *dc = sq.get_distance_computer (metric_type);
+        ScopeDeleter1<DistanceComputer> del(dc);
 #pragma omp for
-            for (size_t i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
+            if (metric_type == METRIC_INNER_PRODUCT) {
                 search_with_probes_ip (*this, x + i * d,
-                                       idx + i * nprobe, dis + i * nprobe, *dc,
+                                       idx + i * local_nprobe,
+                                       dis + i * local_nprobe, *dc,
                                        k, distances + i * k, labels + i * k,
-                                       store_pairs);
-            }
-        }
-    } else {
-#pragma omp parallel
-        {
-            DistanceComputer *dc = sq.get_distance_computer (metric_type);
-            ScopeDeleter1<DistanceComputer> del(dc);
-#pragma omp for
-            for (size_t i = 0; i < n; i++) {
+                                       store_pairs, params);
+            } else {
                 search_with_probes_L2 (*this, x + i * d,
-                                       idx + i * nprobe, quantizer, *dc,
+                                       idx + i * local_nprobe, quantizer, *dc,
                                        k, distances + i * k, labels + i * k,
-                                       store_pairs);
+                                       store_pairs, params);
             }
         }
     }

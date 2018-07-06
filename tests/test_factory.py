@@ -47,3 +47,7 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(12, "PCAR8,IVF10,PQ4")
         faiss.ParameterSpace().set_index_parameter(index, "nprobe", 3)
         assert faiss.downcast_index(index.index).nprobe == 3
+
+    def test_factory_4(self):
+        index = faiss.index_factory(12, "IVF10,FlatDedup")
+        assert index.instances is not None

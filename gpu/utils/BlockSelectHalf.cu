@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 #include "blockselect/BlockSelectImpl.cuh"
 
 namespace faiss { namespace gpu {

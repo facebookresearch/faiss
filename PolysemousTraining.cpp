@@ -6,6 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// -*- c++ -*-
+
 #include "PolysemousTraining.h"
 
 #include <cstdlib>
@@ -944,7 +946,6 @@ void PolysemousTraining::optimize_pq_for_hamming (ProductQuantizer &pq,
     pq.compute_sdc_table ();
 
 }
-
 
 
 } // namespace faiss

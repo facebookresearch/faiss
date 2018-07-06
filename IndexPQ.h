@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
 #ifndef FAISS_INDEX_PQ_H
@@ -63,6 +62,8 @@ struct IndexPQ: Index {
 
     void reconstruct(idx_t key, float* recons) const override;
 
+    long remove_ids(const IDSelector& sel) override;
+
     /******************************************************
      * Polysemous codes implementation
      ******************************************************/
@@ -82,11 +83,6 @@ struct IndexPQ: Index {
     };
 
     Search_type_t search_type;
-
-    /** remove some ids. NB that Because of the structure of the
-     * indexing structre, the semantics of this operation are
-     * different from the usual ones: the new ids are shifted */
-    long remove_ids(const IDSelector& sel) override;
 
     // just encode the sign of the components, instead of using the PQ encoder
     // used only for the queries
@@ -187,7 +183,6 @@ struct MultiIndexQuantizer2: MultiIndexQuantizer {
 
 
 } // namespace faiss
-
 
 
 #endif

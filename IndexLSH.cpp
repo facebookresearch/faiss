@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
+// -*- c++ -*-
 
 #include "IndexLSH.h"
 
@@ -18,6 +18,7 @@
 #include "utils.h"
 #include "hamming.h"
 #include "FaissAssert.h"
+
 
 namespace faiss {
 
@@ -146,8 +147,8 @@ void IndexLSH::search (
 
     int_maxheap_array_t res = { size_t(n), size_t(k), labels, idistances};
 
-    hammings_knn (&res, qcodes, codes.data(),
-                  ntotal, bytes_per_vec, true);
+    hammings_knn_hc (&res, qcodes, codes.data(),
+                     ntotal, bytes_per_vec, true);
 
 
     // convert distances to floats
@@ -174,7 +175,6 @@ void IndexLSH::reset() {
     codes.clear();
     ntotal = 0;
 }
-
 
 
 } // namespace faiss
