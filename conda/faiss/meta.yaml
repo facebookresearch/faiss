@@ -1,0 +1,28 @@
+package:
+  name: faiss
+  version: "1.3.0"
+
+source:
+  git_rev: v1.3.0
+  git_url: https://github.com/facebookresearch/faiss.git
+
+requirements:
+  host:
+    - python
+    - intel-openmp # [osx]
+    - gcc
+    - mkl
+    - numpy
+    - setuptools
+
+  run:
+    - python
+    - intel-openmp
+    - gcc
+    - mkl
+    - numpy
+
+about:
+  home: https://github.com/facebookresearch/faiss
+  license: BSD
+  license_file: LICENSE
