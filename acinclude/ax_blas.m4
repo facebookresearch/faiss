@@ -81,6 +81,8 @@ case $with_blas in
 	*) BLAS_LIBS="-l$with_blas" ;;
 esac
 
+OPENMP_LDFLAGS="$OPENMP_CXXFLAGS"
+
 # Get fortran linker names of BLAS functions to check for.
 # AC_F77_FUNC(sgemm)
 # AC_F77_FUNC(dgemm)
@@ -115,7 +117,7 @@ if test $ax_blas_ok = no; then
   case $host_os in
     darwin*)
       AC_CHECK_LIB(mkl_intel_lp64, $sgemm,
-                   [ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread"],,
+                   [ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread"; OPENMP_LDFLAGS=""],,
                    [-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread])
       ;;
     *)
@@ -217,6 +219,7 @@ if test $ax_blas_ok = no; then
 fi
 
 AC_SUBST(BLAS_LIBS)
+AC_SUBST(OPENMP_LDFLAGS)
 
 LIBS="$ax_blas_save_LIBS"
 

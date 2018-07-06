@@ -627,6 +627,7 @@ ac_includes_default="\
 ac_header_list=
 ac_subst_vars='LTLIBOBJS
 LAPACK_LIBS
+OPENMP_LDFLAGS
 BLAS_LIBS
 host_os
 host_vendor
@@ -5646,6 +5647,8 @@ case $with_blas in
 	*) BLAS_LIBS="-l$with_blas" ;;
 esac
 
+OPENMP_LDFLAGS="$OPENMP_CXXFLAGS"
+
 # Get fortran linker names of BLAS functions to check for.
 # AC_F77_FUNC(sgemm)
 # AC_F77_FUNC(dgemm)
@@ -5768,7 +5771,7 @@ eval ac_res=\$$as_ac_Lib
 	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
 $as_echo "$ac_res" >&6; }
 if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
-  ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread"
+  ax_blas_ok=yes;BLAS_LIBS="-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread"; OPENMP_LDFLAGS=""
 fi
 
       ;;
@@ -6646,6 +6649,7 @@ if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
 fi
 
 fi
+
 
 
 
