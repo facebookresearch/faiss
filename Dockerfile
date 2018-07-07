@@ -1,37 +1,34 @@
 FROM nvidia/cuda:8.0-devel-ubuntu16.04
-MAINTAINER Pierre Letessier <pletessier@ina.fr>
+MAINTAINER Alues <alues@icloud.com>
 
-RUN apt-get update -y
-RUN apt-get install -y libopenblas-dev python-numpy python-dev swig git python-pip wget
+# PIP source
+ARG pip_srouce=https://pypi.tuna.tsinghua.edu.cn/simple
 
-RUN pip install matplotlib
+# Install Env
+RUN apt-get update && \
+    apt-get install -y wget curl git swig gcc && \
+    apt-get install -y libopenblas-dev python-dev python-pip python-numpy
+
+RUN pip install -i ${pip_srouce} --no-cache-dir --upgrade --ignore-installed pip
+RUN pip install -i ${pip_srouce} cython matplotlib pandas jupyter sklearn scipy
+
+# Clone FAISS
+# WORKDIR /opt
+# RUN git clone https://github.com/facebookresearch/faiss.git
 
 COPY . /opt/faiss
-
 WORKDIR /opt/faiss
 
-ENV BLASLDFLAGS /usr/lib/libopenblas.so.0
-
-RUN mv example_makefiles/makefile.inc.Linux ./makefile.inc
-
-RUN make tests/test_blas -j $(nproc) && \
+# Compiling FAISS
+RUN ./configure && \
     make -j $(nproc) && \
-    make demos/demo_sift1M -j $(nproc) && \
-    make py
+    make -j $(nproc) -C gpu && \
+    make -j $(nproc) -C python gpu && \
+    make -j $(nproc) -C python build && \
+    make -j $(nproc) -C python install
 
-RUN cd gpu && \
-    make -j $(nproc) && \
-    make test/demo_ivfpq_indexing_gpu && \
-    make py
+# Jupyter
+RUN mkdir -p /root/jupyter
+WORKDIR /root/jupyter
 
-ENV PYTHONPATH $PYTHONPATH:/opt/faiss
-
-# RUN ./tests/test_blas && \
-#     tests/demo_ivfpq_indexing
-
-
-# RUN wget ftp://ftp.irisa.fr/local/texmex/corpus/sift.tar.gz && \
-#     tar xf sift.tar.gz && \
-#     mv sift sift1M
-
-# RUN tests/demo_sift1M
+CMD ["jupyter-notebook",  "--no-browser", "--ip='*'", "--notebook-dir=/root/jupyter", "--allow-root", "--port=8000"]
