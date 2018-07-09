@@ -15,8 +15,6 @@ Currently we support faiss-cpu on both Linux and OSX platforms. We also provide 
 You can easily install it by
 
 ```
-# Install conda dependencies
-conda install numpy mkl libgcc
 # CPU version only
 conda install faiss-cpu -c pytorch
 # Make sure you have CUDA installed before installing faiss-gpu, otherwise it falls back to CPU version
