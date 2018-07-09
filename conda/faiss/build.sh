@@ -1,6 +1,6 @@
 ./configure
-make
-make -C gpu
+make -j $CPU_COUNT
+make -C gpu -j $CPU_COUNT
 cd python
 make gpu
 make

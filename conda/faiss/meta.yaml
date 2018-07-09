@@ -21,8 +21,18 @@ requirements:
     - gcc
     - mkl
     - numpy
+    - cudatoolkit
+
+test:
+  imports:
+    - faiss
+  source_files: tests
+  commands:
+    - python -m unittest discover tests/ -v
 
 about:
   home: https://github.com/facebookresearch/faiss
-  license: BSD
+  license: BSD 3-Clause
+  license_family: BSD
   license_file: LICENSE
+  summary: A library for efficient similarity search and clustering of dense vectors.
