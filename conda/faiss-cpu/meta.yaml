@@ -9,7 +9,6 @@ source:
 requirements:
   build:
     - python {{ python }}
-    - system # [linux]
     - intel-openmp # [osx]
     - gcc
     - mkl
@@ -18,7 +17,6 @@ requirements:
 
   run:
     - python {{ python }}
-    - system # [linux]
     - intel-openmp # [osx]
     - gcc
     - mkl
