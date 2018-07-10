@@ -26,6 +26,7 @@ NVCCFLAGS    = -I $(CUDAROOT)/targets/x86_64-linux/include/ \
 -gencode arch=compute_35,code="compute_35" \
 -gencode arch=compute_52,code="compute_52" \
 -gencode arch=compute_60,code="compute_60" \
+-gencode arch=compute_61,code="compute_61" \
 -lineinfo \
 -ccbin $(CXX) -DFAISS_USE_FLOAT16
 
