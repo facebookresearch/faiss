@@ -20,13 +20,20 @@ NVCCLDFLAGS  = @NVCC_LDFLAGS@
 NVCCLIBS     = @NVCC_LIBS@
 CUDAROOT     = @CUDA_PREFIX@
 CUDACFLAGS   = @NVCC_CPPFLAGS@
+
+CUDA_ARCHES  = -gencode arch=compute_35,code="compute_35" \
+-gencode arch=compute_52,code="compute_52" \
+-gencode arch=compute_60,code="compute_60" \
+-gencode arch=compute_61,code="compute_61"
+
+ifeq ($(CUDA_MAJOR), 9)
+     CUDA_ARCHES += -gencode arch=compute_70,code="compute_70"
+endif
+
 NVCCFLAGS    = -I $(CUDAROOT)/targets/x86_64-linux/include/ \
 -Xcompiler -fPIC \
 -Xcudafe --diag_suppress=unrecognized_attribute \
--gencode arch=compute_35,code="compute_35" \
--gencode arch=compute_52,code="compute_52" \
--gencode arch=compute_60,code="compute_60" \
--gencode arch=compute_61,code="compute_61" \
+$(CUDA_ARCHES) \
 -lineinfo \
 -ccbin $(CXX) -DFAISS_USE_FLOAT16
 
