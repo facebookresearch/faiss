@@ -16,7 +16,15 @@
 /c_api/gpu/bin/
 /tests/test
 /tests/gtest/
+
+python/swigfaiss.py
+python/swigfaiss_gpu.py
+python/swigfaiss_wrap.cpp
+python/swigfaiss_wrap_gpu.cpp
+
+# OSX
 .DS_Store
+._*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
