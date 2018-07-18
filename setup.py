@@ -73,16 +73,16 @@ def get_config():
     config = {
         'extra_compile_args': [
             '-fPIC', '-fopenmp', '-m64', '-g', '-O3', '-Wno-sign-compare',
-            '-msse4', '-mpopcnt'
+            '-msse4', '-mpopcnt', '-std=c++11'
         ],
         'include_dirs': ['.', np.get_include()],
     }
     platform = get_platform()
     if platform.startswith('linux'):
         config = pkgconfig('blas', 'lapack', config=config)
-        config['extra_compile_args'] += ['-std=c++11']
     elif platform.startswith('macosx'):
         config = pkgconfig('openblas', config=config)
+        config['extra_compile_args'] += ['-stdlib=libc++']
     return config
 
 
