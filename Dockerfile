@@ -12,8 +12,6 @@ WORKDIR /opt/faiss
 
 ENV BLASLDFLAGS=/usr/lib/libopenblas.so.0
 
-RUN mv example_makefiles/makefile.inc.Linux ./makefile.inc
-
 RUN ./configure && \
     make -j $(nproc) && \
     make test && \
