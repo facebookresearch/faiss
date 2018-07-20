@@ -330,19 +330,22 @@ def get_config():
                 config.get('libraries', []) + ['blas', 'lapack'])
     elif platform.startswith('macosx'):
         # Only Homebrew environment is supported.
-        llvm_home = subprocess.check_output([
-            'brew', '--prefix', 'llvm'
-        ]).decode('utf8').strip()
-        clang = os.path.join(llvm_home, 'bin', 'clang++')
-        if str == bytes:
-            os.environ['CC'] = clang.encode('ascii')
-            os.environ['CXX'] = clang.encode('ascii')
-        else:
-            os.environ['CC'] = clang
-            os.environ['CXX'] = clang
-        config['extra_compile_args'] = ['-stdlib=libc++']
-        config['extra_link_args'] = ['-stdlib=libc++', '-fopenmp']
-        config['runtime_library_dirs'] = [os.path.join(llvm_home, 'lib')]
+        if 'CC' not in os.environ and 'CXX' not in os.environ:
+            llvm_home = subprocess.check_output([
+                'brew', '--prefix', 'llvm'
+            ]).decode('utf8').strip()
+            clang = os.path.join(llvm_home, 'bin', 'clang++')
+            if str == bytes:
+                os.environ['CC'] = clang.encode('ascii')
+                os.environ['CXX'] = clang.encode('ascii')
+            else:
+                os.environ['CC'] = clang
+                os.environ['CXX'] = clang
+            config['runtime_library_dirs'] = [os.path.join(llvm_home, 'lib')]
+            config['extra_compile_args'] = ['-stdlib=libc++']
+            config['extra_link_args'] = ['-stdlib=libc++']
+        config['extra_link_args'] = (
+            config.get('extra_link_args', []) + ['-fopenmp'])
         try:
             config = pkgconfig('openblas', config=config)
         except subprocess.CalledProcessError:
