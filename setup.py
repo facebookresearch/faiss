@@ -326,7 +326,7 @@ def get_config():
         try:
             config = pkgconfig('blas', 'lapack', config=config)
         except subprocess.CalledProcessError:
-            config['libraries'] += (
+            config['libraries'] = (
                 config.get('libraries', []) + ['blas', 'lapack'])
     elif platform.startswith('macosx'):
         # Only Homebrew environment is supported.
@@ -346,7 +346,7 @@ def get_config():
         try:
             config = pkgconfig('openblas', config=config)
         except subprocess.CalledProcessError:
-            config['libraries'] += (
+            config['libraries'] = (
                 config.get('libraries', []) + ['blas', 'lapack'])
 
     config['extra_compile_args'] = {
