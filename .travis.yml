@@ -15,7 +15,9 @@ matrix:
             - liblapack-dev
             - python-numpy
             - python-dev
-            - swig
+            - swig3.0
+      env:
+        - MATRIX_EVAL="echo 'deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe multiverse' | sudo tee -a /etc/apt/sources.list; sudo apt-get update -qq"
     - os: linux
       compiler: gcc
       addons:
@@ -25,7 +27,9 @@ matrix:
             - liblapack-dev
             - python-numpy
             - python-dev
-            - swig
+            - swig3.0
+      env:
+        - MATRIX_EVAL="echo 'deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe multiverse' | sudo tee -a /etc/apt/sources.list; sudo apt-get update -qq"
     - os: linux
       compiler: gcc
       addons:
@@ -35,7 +39,9 @@ matrix:
             - liblapack-dev
             - python-numpy
             - python-dev
-            - swig
+            - swig3.0
+      env:
+        - MATRIX_EVAL="echo 'deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe multiverse' | sudo tee -a /etc/apt/sources.list; sudo apt-get update -qq"
     - os: linux
       compiler: clang
       addons:
@@ -45,9 +51,10 @@ matrix:
             - liblapack-dev
             - python-numpy
             - python-dev
-            - swig
+            - swig3.0
       env:
         # NOTE: Hack, c.f. https://github.com/travis-ci/travis-ci/issues/8613
+        - MATRIX_EVAL="echo 'deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe multiverse' | sudo tee -a /etc/apt/sources.list; sudo apt-get update -qq"
         - LD_LIBRARY_PATH="/usr/local/clang/lib"
     - os: osx
       osx_image: xcode9.3
