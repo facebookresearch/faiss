@@ -64,7 +64,7 @@ depend:
 
 test: libfaiss.a py
 	make -C tests run
-	PYTHONPATH=./python/build/`ls python/build | grep lib` \
+	PYTHONPATH=./build/`ls build | grep lib` \
 	$(PYTHON) -m unittest discover tests/ -v
 
 
@@ -86,7 +86,7 @@ misc/test_blas: misc/test_blas.cpp
 # Python
 
 py:
-	$(MAKE) -C python build
+	$(PYTHON) setup.py build
 
 
 .PHONY: all clean default demos install installdirs py test uninstall
