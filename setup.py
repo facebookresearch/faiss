@@ -1,3 +1,25 @@
+# -*- coding: utf-8 -*-
+"""faiss build for python.
+
+Build
+-----
+
+On Linux:
+
+GPU support is automatically built when nvcc compiler is available. Set
+`CUDA_HOME` environment variable to specify where CUDA is installed.
+
+    apt-get install swig libblas-dev liblapack-dev
+    pip install numpy setuptools
+    python setup.py bdist_wheel
+
+On macOS:
+
+    brew install llvm swig openblas
+    pip install numpy setuptools
+    python setup.py bdist_wheel
+
+"""
 from setuptools import setup
 from setuptools.extension import Extension
 from distutils.command.build import build
@@ -201,13 +223,13 @@ GPU_HEADERS = [
 
 
 def locate_cuda():
-    """Locate the CUDA environment on the system. Returns a dict with keys 'home',
-    'nvcc', 'include', and 'lib' and values giving the absolute path to each
-    directory. Starts by looking for the CUDAHOME env variable. If not found,
-    everything is based on finding 'nvcc' in the PATH.
+    """Locate the CUDA environment on the system. Returns a dict with keys
+    'home', 'nvcc', 'include', and 'lib' and values giving the absolute path
+    to each directory. Starts by looking for the CUDAHOME env variable. If not
+    found, everything is based on finding 'nvcc' in the PATH.
     """
     # adapted from
-    # https://stackoverflow.com/questions/10034325/can-python-distutils-compile-cuda-code
+    # https://stackoverflow.com/questions/10034325/
     nvcc = None
     envs = ['CUDA_HOME', 'CUDA_ROOT', 'CUDAHOME', 'CUDAROOT']
     for env in envs:
@@ -227,7 +249,13 @@ def locate_cuda():
     }
 
 
-CUDA = locate_cuda()
+def find_in_path(filename):
+    """Find file on system path."""
+    # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/52224
+    paths = os.getenv('PATH').split(os.pathsep)
+    for path in paths:
+        if os.path.exists(os.path.join(path, filename)):
+            return os.path.abspath(os.path.join(path, filename))
 
 
 class CustomBuild(build):
@@ -297,8 +325,21 @@ def get_config():
     if platform.startswith('linux'):
         config = pkgconfig('blas', 'lapack', config=config)
     elif platform.startswith('macosx'):
-        config = pkgconfig('openblas', config=config)  # Homebrew
-        config['extra_compile_args'] += ['-stdlib=libc++']
+        # Only Homebrew environment is supported.
+        llvm_home = subprocess.check_output([
+            'brew', '--prefix', 'llvm'
+        ]).decode('utf8').strip()
+        clang = os.path.join(llvm_home, 'bin', 'clang++')
+        if str == bytes:
+            os.environ['CC'] = clang.encode('ascii')
+            os.environ['CXX'] = clang.encode('ascii')
+        else:
+            os.environ['CC'] = clang
+            os.environ['CXX'] = clang
+        config['extra_compile_args'] = ['-stdlib=libc++']
+        config['extra_link_args'] = ['-stdlib=libc++', '-fopenmp']
+        config['runtime_library_dirs'] = [os.path.join(llvm_home, 'lib')]
+        config = pkgconfig('openblas', config=config)
 
     config['extra_compile_args'] = {
         'gcc': config.get('extra_compile_args', []) + [
@@ -315,15 +356,6 @@ def get_config():
         ],
     }
     return config
-
-
-def find_in_path(filename):
-    """Find file on system path."""
-    # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/52224
-    paths = os.getenv('PATH').split(os.pathsep)
-    for path in paths:
-        if os.path.exists(os.path.join(path, filename)):
-            return os.path.abspath(os.path.join(path, filename))
 
 
 def pkgconfig(*packages, **kw):
@@ -379,6 +411,8 @@ def pkgconfig(*packages, **kw):
                 [i[n:] for i in items])
     return config
 
+
+CUDA = locate_cuda()
 
 _swigfaiss = Extension(
     '_swigfaiss',
