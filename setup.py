@@ -323,7 +323,10 @@ def get_config():
 
     platform = get_platform()
     if platform.startswith('linux'):
-        config = pkgconfig('blas', 'lapack', config=config)
+        try:
+            config = pkgconfig('blas', 'lapack', config=config)
+        except subprocess.CalledProcessError:
+            config['libraries'] += ['blas', 'lapack']
     elif platform.startswith('macosx'):
         # Only Homebrew environment is supported.
         llvm_home = subprocess.check_output([
@@ -339,7 +342,10 @@ def get_config():
         config['extra_compile_args'] = ['-stdlib=libc++']
         config['extra_link_args'] = ['-stdlib=libc++', '-fopenmp']
         config['runtime_library_dirs'] = [os.path.join(llvm_home, 'lib')]
-        config = pkgconfig('openblas', config=config)
+        try:
+            config = pkgconfig('openblas', config=config)
+        except subprocess.CalledProcessError:
+            config['libraries'] += ['blas', 'lapack']
 
     config['extra_compile_args'] = {
         'gcc': config.get('extra_compile_args', []) + [
