@@ -281,6 +281,7 @@ class CustomBuildExt(build_ext):
             pass
 
         customize_compiler_for_nvcc(self.compiler)
+        self.swig = self.swig or os.getenv('SWIG')
         build_ext.build_extensions(self)
 
 

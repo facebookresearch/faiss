@@ -18,6 +18,8 @@ matrix:
             - python-numpy
             - python-dev
             - swig3.0
+      env:
+        - SWIG=swig3.0
     - os: linux
       compiler: gcc
       addons:
@@ -30,6 +32,8 @@ matrix:
             - python-numpy
             - python-dev
             - swig3.0
+      env:
+        - SWIG=swig3.0
     - os: linux
       compiler: gcc
       addons:
@@ -42,6 +46,8 @@ matrix:
             - python-numpy
             - python-dev
             - swig3.0
+      env:
+        - SWIG=swig3.0
     - os: linux
       compiler: clang
       addons:
@@ -57,6 +63,7 @@ matrix:
       env:
         # NOTE: Hack, c.f. https://github.com/travis-ci/travis-ci/issues/8613
         - LD_LIBRARY_PATH="/usr/local/clang/lib"
+        - SWIG=swig3.0
     - os: osx
       osx_image: xcode9.3
       env:
