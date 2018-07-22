@@ -68,11 +68,13 @@ matrix:
       osx_image: xcode9.3
       env:
         - HOMEBREW_NO_AUTO_UPDATE=1
+        - ARCHFLAGS="-arch x86_64"
         - MATRIX_EVAL="brew install gcc@6 numpy swig; brew link --overwrite gcc@6; export CC=gcc-6 CXX=g++-6"
     - os: osx
       osx_image: xcode9.3
       env:
         - HOMEBREW_NO_AUTO_UPDATE=1
+        - ARCHFLAGS="-arch x86_64"
         - MATRIX_EVAL="brew install llvm numpy swig; brew link --overwrite llvm; export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++"
         - LDFLAGS="-L/usr/local/opt/llvm/lib"
         - CPPFLAGS="-I/usr/local/opt/llvm/include"
