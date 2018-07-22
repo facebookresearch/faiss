@@ -345,13 +345,14 @@ def get_config():
             config['runtime_library_dirs'] = [os.path.join(llvm_home, 'lib')]
             config['extra_compile_args'] = ['-stdlib=libc++']
             config['extra_link_args'] = ['-stdlib=libc++']
-        config['extra_link_args'] = (
-            config.get('extra_link_args', []) + ['-fopenmp'])
         try:
             config = pkgconfig('openblas', config=config)
         except subprocess.CalledProcessError:
             config['libraries'] = (
                 config.get('libraries', []) + ['blas', 'lapack'])
+
+    config['extra_link_args'] = (
+        config.get('extra_link_args', []) + ['-fopenmp'])
 
     config['extra_compile_args'] = {
         'gcc': config.get('extra_compile_args', []) + [
