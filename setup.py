@@ -288,6 +288,8 @@ class CustomBuildExt(build_ext):
         build_ext.build_extensions(self)
 
     def _remove_flag(self, flag):
+        if flag in self.compiler.compiler:
+            self.compiler.compiler.remove(flag)
         if flag in self.compiler.compiler_so:
             self.compiler.compiler_so.remove(flag)
 
