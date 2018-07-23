@@ -275,14 +275,21 @@ class CustomBuildExt(build_ext):
     def build_extensions(self):
         # Suppress -Wstrict-prototypes bug in python.
         # https://stackoverflow.com/questions/8106258/
-        try:
-            self.compiler.compiler_so.remove("-Wstrict-prototypes")
-        except (AttributeError, ValueError):
-            pass
+        self._remove_flag('-Wstrict-prototypes')
+        # GCC with -fwrapv will result in segfault.
+        self._remove_flag('-fwrapv')
+        # Clang-specific flag.
+        compiler_name = self.compiler.compiler[0]
+        if 'gcc' in compiler_name or 'g++' in compiler_name:
+            self._remove_flag('-Wshorten-64-to-32')
 
         customize_compiler_for_nvcc(self.compiler)
         self.swig = self.swig or os.getenv('SWIG')
         build_ext.build_extensions(self)
+
+    def _remove_flag(self, flag):
+        if flag in self.compiler.compiler_so:
+            self.compiler.compiler_so.remove(flag)
 
 
 def customize_compiler_for_nvcc(self):
@@ -345,6 +352,8 @@ def get_config():
             config['runtime_library_dirs'] = [os.path.join(llvm_home, 'lib')]
             config['extra_compile_args'] = ['-stdlib=libc++']
             config['extra_link_args'] = ['-stdlib=libc++']
+
+        os.environ['ARCHFLAGS'] = '-arch x86_64'
         try:
             config = pkgconfig('openblas', config=config)
         except subprocess.CalledProcessError:
