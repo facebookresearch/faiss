@@ -288,10 +288,12 @@ class CustomBuildExt(build_ext):
         build_ext.build_extensions(self)
 
     def _remove_flag(self, flag):
-        if flag in self.compiler.compiler:
-            self.compiler.compiler.remove(flag)
-        if flag in self.compiler.compiler_so:
-            self.compiler.compiler_so.remove(flag)
+        compiler = self.compiler.compiler
+        compiler_cxx = self.compiler.compiler_cxx
+        compiler_so = self.compiler.compiler_so
+        for args in (compiler, compiler_cxx, compiler_so):
+            while flag in args:
+                args.remove(flag)
 
 
 def customize_compiler_for_nvcc(self):
@@ -355,7 +357,7 @@ def get_config():
             config['extra_compile_args'] = ['-stdlib=libc++']
             config['extra_link_args'] = ['-stdlib=libc++']
 
-        os.environ['ARCHFLAGS'] = '-arch x86_64'
+        os.environ['ARCHFLAGS'] = os.getenv('ARCHFLAGS', '')
         try:
             config = pkgconfig('openblas', config=config)
         except subprocess.CalledProcessError:
