@@ -710,6 +710,10 @@ class HammingComputer4(_object):
 HammingComputer4_swigregister = _swigfaiss_gpu.HammingComputer4_swigregister
 HammingComputer4_swigregister(HammingComputer4)
 cvar = _swigfaiss_gpu.cvar
+FAISS_VERSION_MAJOR = cvar.FAISS_VERSION_MAJOR
+FAISS_VERSION_MINOR = cvar.FAISS_VERSION_MINOR
+FAISS_VERSION_PATCH = cvar.FAISS_VERSION_PATCH
+FAISS_VERSION = cvar.FAISS_VERSION
 
 class HammingComputer8(_object):
     __swig_setmethods__ = {}

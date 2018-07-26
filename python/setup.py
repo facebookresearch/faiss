@@ -1,15 +1,24 @@
 from __future__ import print_function
 from setuptools import setup, find_packages
 import os
+import re
 import shutil
 
 here = os.path.abspath(os.path.dirname(__file__))
 
+
+# Extract version number from C++.
+version = [
+    match
+    for line in open(os.path.join(here, '../version.h'))
+    for match in re.findall(r'FAISS_VERSION_STRING "(.*?)"', line)
+][0]
+
 check_fpath = os.path.join("_swigfaiss.so")
 if not os.path.exists(check_fpath):
     print("Could not find {}".format(check_fpath))
-    print("Have you run `make` and `make py` "
-          "(and optionally `cd gpu && make && make py && cd ..`)?")
+    print("Have you ran `make` and `make -C python` "
+          "(and optionally `make -C gpu && make -C python gpu`)?")
 
 # make the faiss python package dir
 shutil.rmtree("faiss", ignore_errors=True)
@@ -23,29 +32,29 @@ try:
 except:
     pass
 
-long_description="""
-Faiss is a library for efficient similarity search and clustering of dense 
+
+long_description = """
+Faiss is a library for efficient similarity search and clustering of dense
 vectors. It contains algorithms that search in sets of vectors of any size,
- up to ones that possibly do not fit in RAM. It also contains supporting 
-code for evaluation and parameter tuning. Faiss is written in C++ with 
-complete wrappers for Python/numpy. Some of the most useful algorithms 
+ up to ones that possibly do not fit in RAM. It also contains supporting
+code for evaluation and parameter tuning. Faiss is written in C++ with
+complete wrappers for Python/numpy. Some of the most useful algorithms
 are implemented on the GPU. It is developed by Facebook AI Research.
 """
 setup(
-    name='faiss',
-    version='0.1',
-    description='A library for efficient similarity search and clustering of dense vectors',
-    long_description=long_description,
-    url='https://github.com/facebookresearch/faiss',
-    author='Matthijs Douze, Jeff Johnson, Herve Jegou',
-    author_email='matthijs@fb.com',
-    license='BSD',
-    keywords='search nearest neighbors',
+    name = 'faiss',
+    version = version,
+    description = 'A library for efficient similarity search and clustering of dense vectors',
+    long_description = long_description,
+    url = 'https://github.com/facebookresearch/faiss',
+    author = 'Matthijs Douze, Jeff Johnson, Herve Jegou',
+    author_email = 'matthijs@fb.com',
+    license = 'BSD',
+    keywords = 'search nearest neighbors',
 
-    install_requires=['numpy'],
-    packages=['faiss'],
-    package_data={
+    install_requires = ['numpy'],
+    packages = ['faiss'],
+    package_data = {
         'faiss': ['*.so'],
     },
-
 )
