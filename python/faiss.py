@@ -27,6 +27,7 @@ except ImportError as e:
         sys.stderr.write("Faiss falling back to CPU-only.\n")
     from .swigfaiss import *
 
+__version__ = cvar.FAISS_VERSION
 
 ##################################################################
 # The functions below add or replace some methods for classes

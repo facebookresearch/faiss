@@ -70,6 +70,7 @@ extern "C" {
 
 #endif
 
+#include "version.h"
 
 #include "IndexFlat.h"
 #include "VectorTransform.h"
@@ -193,6 +194,7 @@ namespace std {
 #endif
 
 
+%include "version.h"
 
 %ignore *::cmp;
 
