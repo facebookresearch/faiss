@@ -518,6 +518,21 @@ void ParameterSpace::set_index_parameter (
             return;
         }
     }
+
+    if (name == "efSearch") {
+        if (DC (IndexHNSW)) {
+            ix->hnsw.efSearch = int(val);
+            return;
+        }
+        if (DC (IndexIVF)) {
+            if (IndexHNSW *cq =
+                dynamic_cast<IndexHNSW *>(ix->quantizer)) {
+                cq->hnsw.efSearch = int(val);
+                return;
+            }
+        }
+    }
+
     FAISS_THROW_FMT ("ParameterSpace::set_index_parameter:"
                      "could not set parameter %s",
                      name.c_str());
@@ -682,6 +697,7 @@ struct VTChain {
 char get_trains_alone(const Index *coarse_quantizer) {
     return
         dynamic_cast<const MultiIndexQuantizer*>(coarse_quantizer) ? 1 :
+        dynamic_cast<const IndexHNSWFlat*>(coarse_quantizer) ? 2 :
         0;
 }
 
@@ -738,6 +754,11 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
         } else if (stok == "L2norm") {
             vt_1 = new NormalizationTransform (d, 2.0);
 
+        // coarse quantizers
+        } else if (!coarse_quantizer &&
+                   sscanf (tok, "IVF%d_HNSW%d", &ncentroids, &M) == 2) {
+            FAISS_THROW_IF_NOT (metric == METRIC_L2);
+            coarse_quantizer_1 = new IndexHNSWFlat (d, M);
 
         } else if (!coarse_quantizer &&
                    sscanf (tok, "IVF%d", &ncentroids) == 1) {
@@ -933,6 +954,7 @@ IndexBinary *index_binary_factory(int d, const char *description)
 
     return index;
 }
+
 
 
 } // namespace faiss

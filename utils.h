@@ -18,9 +18,9 @@
 #ifndef FAISS_utils_h
 #define FAISS_utils_h
 
+#include <random>
+
 #include <stdint.h>
-// for the random data struct
-#include <cstdlib>
 
 #include "Heap.h"
 
@@ -47,34 +47,27 @@ size_t get_mem_usage_kb ();
 /// random generator that can be used in multithreaded contexts
 struct RandomGenerator {
 
-#ifdef __linux__
-    char rand_state [8];
-    struct random_data rand_data;
-#elif __APPLE__
-    unsigned rand_state;
-#endif
+    std::mt19937 mt;
+    std::uniform_int_distribution<int> int_distrib;
+    std::uniform_int_distribution<long> long_distrib;
+    std::uniform_real_distribution<float> float_distrib;
+    std::uniform_real_distribution<double> double_distrib;
 
-    /// random 31-bit positive integer
+    /// random positive integer
     int rand_int ();
 
-    /// random long < 2 ^ 62
+    /// random long
     long rand_long ();
 
-    /// generate random number between 0 and max-1
+    /// generate random integer between 0 and max-1
     int rand_int (int max);
 
     /// between 0 and 1
     float rand_float ();
 
-
     double rand_double ();
 
-    /// initialize
     explicit RandomGenerator (long seed = 1234);
-
-    /// default copy constructor messes up pointer in rand_data
-    RandomGenerator (const RandomGenerator & other);
-
 };
 
 /* Generate an array of uniform random floats / multi-threaded implementation */
@@ -388,6 +381,24 @@ size_t ivec_checksum (size_t n, const int *a);
 const float *fvecs_maybe_subsample (
        size_t d, size_t *n, size_t nmax, const float *x,
        bool verbose = false, long seed = 1234);
+
+/** Convert binary vector to +1/-1 valued float vector.
+ *
+ * @param d      dimension of the vector
+ * @param x_in   input binary vector (uint8_t table of size d / 8)
+ * @param x_out  output float vector (float table of size d)
+ */
+void binary_to_real(int d, const uint8_t *x_in, float *x_out);
+
+/** Convert float vector to binary vector. Components > 0 are converted to 1,
+ * others to 0.
+ *
+ * @param d      dimension of the vector
+ * @param x_in   input float vector (float table of size d)
+ * @param x_out  output binary vector (uint8_t table of size d / 8)
+ */
+void real_to_binary(int d, const float *x_in, uint8_t *x_out);
+
 
 } // namspace faiss
 

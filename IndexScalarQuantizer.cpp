@@ -15,7 +15,9 @@
 
 #include <omp.h>
 
+#ifdef __SSE__
 #include <immintrin.h>
+#endif
 
 #include "utils.h"
 
@@ -143,11 +145,13 @@ float decode_fp16 (uint16_t x) {
 // https://github.com/ispc/ispc/blob/master/stdlib.ispc
 
 float floatbits (uint32_t x) {
-    return *(float*)&x;
+    void *xptr = &x;
+    return *(float*)xptr;
 }
 
 uint32_t intbits (float f) {
-    return *(uint32_t*)&f;
+    void *fptr = &f;
+    return *(uint32_t*)fptr;
 }
 
 
@@ -1179,7 +1183,8 @@ void search_with_probes_ip (const IndexIVFScalarQuantizer & index,
         float accu0 = cent_dis[i];
 
         const size_t list_size = index.invlists->list_size (list_no);
-        const uint8_t * codes = index.invlists->get_codes (list_no);
+        InvertedLists::ScopedCodes scodes (index.invlists, list_no);
+        const uint8_t *codes = scodes.get();
         const idx_t * ids =
             store_pairs ? nullptr : index.invlists->get_ids (list_no);
 
@@ -1195,6 +1200,9 @@ void search_with_probes_ip (const IndexIVFScalarQuantizer & index,
                 minheap_push (k, simi, idxi, accu, id);
             }
             codes += code_size;
+        }
+        if (ids) {
+            index.invlists->release_ids (ids);
         }
         nscan += list_size;
         if (max_codes && nscan > max_codes)
@@ -1225,7 +1233,8 @@ void search_with_probes_L2 (const IndexIVFScalarQuantizer & index,
         if (list_no < 0) break;
 
         const size_t list_size = index.invlists->list_size (list_no);
-        const uint8_t * codes = index.invlists->get_codes (list_no);
+        InvertedLists::ScopedCodes scodes (index.invlists, list_no);
+        const uint8_t *codes = scodes.get();
         const idx_t * ids =
             store_pairs ? nullptr : index.invlists->get_ids (list_no);
 
@@ -1242,6 +1251,9 @@ void search_with_probes_L2 (const IndexIVFScalarQuantizer & index,
                 maxheap_push (k, simi, idxi, dis, id);
             }
             codes += code_size;
+        }
+        if (ids) {
+            index.invlists->release_ids (ids);
         }
         nscan += list_size;
         if (max_codes && nscan > max_codes)

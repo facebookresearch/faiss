@@ -16,6 +16,7 @@
 
 
 #include "Index.h"
+#include "InvertedLists.h"
 #include "Clustering.h"
 #include "Heap.h"
 
@@ -55,91 +56,6 @@ struct Level1Quantizer {
 
 };
 
-
-/** Table of inverted lists
- * multithreading rules:
- * - concurrent read accesses are allowed
- * - concurrent update accesses are allowed
- * - for resize and add_entries, only concurrent access to different lists
- *   are allowed
- */
-struct InvertedLists {
-    typedef Index::idx_t idx_t;
-
-    size_t nlist;             ///< number of possible key values
-    size_t code_size;         ///< code size per vector in bytes
-
-    InvertedLists (size_t nlist, size_t code_size);
-
-    /*************************
-     *  Read only functions */
-
-    /// get the size of a list
-    virtual size_t list_size(size_t list_no) const = 0;
-
-    /// @return codes    size list_size * code_size
-    virtual const uint8_t * get_codes (size_t list_no) const = 0;
-
-    /// @return ids      size list_size
-    virtual const idx_t * get_ids (size_t list_no) const = 0;
-
-    /// @return a single id in an inverted list
-    virtual idx_t get_single_id (size_t list_no, size_t offset) const;
-
-    /// @return a single code in an inverted list
-    virtual const uint8_t * get_single_code (
-                size_t list_no, size_t offset) const;
-
-    /// prepare the following lists (default does nothing)
-    /// a list can be -1 hence the signed long
-    virtual void prefetch_lists (const long *list_nos, int nlist) const;
-
-    /*************************
-     * writing functions */
-
-    /// add one entry to an inverted list
-    virtual size_t add_entry (size_t list_no, idx_t theid,
-                              const uint8_t *code);
-
-    virtual size_t add_entries (
-           size_t list_no, size_t n_entry,
-           const idx_t* ids, const uint8_t *code) = 0;
-
-    virtual void update_entry (size_t list_no, size_t offset,
-                               idx_t id, const uint8_t *code);
-
-    virtual void update_entries (size_t list_no, size_t offset, size_t n_entry,
-                                 const idx_t *ids, const uint8_t *code) = 0;
-
-    virtual void resize (size_t list_no, size_t new_size) = 0;
-
-    virtual void reset ();
-
-    virtual ~InvertedLists ();
-};
-
-
-struct ArrayInvertedLists: InvertedLists {
-    std::vector < std::vector<uint8_t> > codes; // binary codes, size nlist
-    std::vector < std::vector<idx_t> > ids;  ///< Inverted lists for indexes
-
-    ArrayInvertedLists (size_t nlist, size_t code_size);
-
-    size_t list_size(size_t list_no) const override;
-    const uint8_t * get_codes (size_t list_no) const override;
-    const idx_t * get_ids (size_t list_no) const override;
-
-    size_t add_entries (
-           size_t list_no, size_t n_entry,
-           const idx_t* ids, const uint8_t *code) override;
-
-    void update_entries (size_t list_no, size_t offset, size_t n_entry,
-                         const idx_t *ids, const uint8_t *code) override;
-
-    void resize (size_t list_no, size_t new_size) override;
-
-    virtual ~ArrayInvertedLists ();
-};
 
 
 struct IVFSearchParameters {
@@ -272,6 +188,11 @@ struct IndexIVF: Index, Level1Quantizer {
     /// Dataset manipulation functions
 
     long remove_ids(const IDSelector& sel) override;
+
+    /** check that the two indexes are compatible (ie, they are
+     * trained in the same way and have the same
+     * parameters). Otherwise throw. */
+    void check_compatible_for_merge (const IndexIVF &other) const;
 
     /** moves the entries from another dataset to self. On output,
      * other is empty. add_id is added to all moved ids (for

@@ -124,10 +124,23 @@ class TestBinaryIVF(unittest.TestCase):
         (self.xt, self.xb, self.xq) = make_binary_dataset(d, nb, nt, nq)
         index = faiss.IndexBinaryFlat(d)
         index.add(self.xb)
-        Dref, Iref = index.search(self.xq, 1)
+        Dref, Iref = index.search(self.xq, 10)
         self.Dref = Dref
 
-    def test_ivf_flat(self):
+    def test_ivf_flat_exhaustive(self):
+        d = self.xq.shape[1] * 8
+
+        quantizer = faiss.IndexBinaryFlat(d)
+        index = faiss.IndexBinaryIVF(quantizer, d, 8)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.nprobe = 8
+        index.train(self.xt)
+        index.add(self.xb)
+        Divfflat, _ = index.search(self.xq, 10)
+
+        np.testing.assert_array_equal(self.Dref, Divfflat)
+
+    def test_ivf_flat2(self):
         d = self.xq.shape[1] * 8
 
         quantizer = faiss.IndexBinaryFlat(d)
@@ -136,9 +149,9 @@ class TestBinaryIVF(unittest.TestCase):
         index.nprobe = 4
         index.train(self.xt)
         index.add(self.xb)
-        Divfflat, _ = index.search(self.xq, 1)
+        Divfflat, _ = index.search(self.xq, 10)
 
-        self.assertGreaterEqual((self.Dref == Divfflat).sum(), 448)
+        self.assertEqual((self.Dref == Divfflat).sum(), 4110)
 
 
 

@@ -30,7 +30,7 @@ def get_dataset_2(d, nb, nt, nq):
     """
     d1 = 10     # intrinsic dimension (more or less)
     n = nb + nt + nq
-    rs = np.random.RandomState(1234)
+    rs = np.random.RandomState(1338)
     x = rs.normal(size=(n, d1))
     x = np.dot(x, rs.rand(d1, d))
     # now we have a d1-dim ellipsoid in d-dimensional space

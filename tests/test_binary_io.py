@@ -38,7 +38,7 @@ class TestBinaryFlat(unittest.TestCase):
         index.add(self.xb)
         D, I = index.search(self.xq, 3)
 
-        tmpnam = tempfile.NamedTemporaryFile().name
+        _, tmpnam = tempfile.mkstemp()
         try:
             faiss.write_index_binary(index, tmpnam)
 
@@ -75,7 +75,7 @@ class TestBinaryIVF(unittest.TestCase):
         index.add(self.xb)
         D, I = index.search(self.xq, 3)
 
-        tmpnam = tempfile.NamedTemporaryFile().name
+        _, tmpnam = tempfile.mkstemp()
 
         try:
             faiss.write_index_binary(index, tmpnam)

@@ -29,6 +29,10 @@ class StackDeviceMemory : public DeviceMemory {
 
   ~StackDeviceMemory() override;
 
+  /// Enable or disable the warning about not having enough temporary memory
+  /// when cudaMalloc gets called
+  void setCudaMallocWarning(bool b);
+
   int getDevice() const override;
 
   DeviceMemoryReservation getMemory(cudaStream_t stream,
@@ -111,6 +115,9 @@ class StackDeviceMemory : public DeviceMemory {
     /// What's the high water mark in terms of memory allocated via
     /// cudaMalloc?
     size_t highWaterMalloc_;
+
+    /// Whether or not a warning upon cudaMalloc is generated
+    bool cudaMallocWarning_;
   };
 
   /// Our device

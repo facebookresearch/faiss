@@ -30,7 +30,8 @@ StandardGpuResources::StandardGpuResources() :
     tempMemFraction_(kDefaultTempMemFraction),
     tempMemSize_(0),
     useFraction_(true),
-    pinnedMemSize_(kDefaultPinnedMemoryAllocation) {
+    pinnedMemSize_(kDefaultPinnedMemoryAllocation),
+    cudaMallocWarning_(true) {
 }
 
 StandardGpuResources::~StandardGpuResources() {
@@ -74,6 +75,7 @@ StandardGpuResources::~StandardGpuResources() {
 void
 StandardGpuResources::noTempMemory() {
   setTempMemory(0);
+  setCudaMallocWarning(false);
 }
 
 void
@@ -114,6 +116,15 @@ void
 StandardGpuResources::setDefaultNullStreamAllDevices() {
   for (int dev = 0; dev < getNumDevices(); ++dev) {
     setDefaultStream(dev, nullptr);
+  }
+}
+
+void
+StandardGpuResources::setCudaMallocWarning(bool b) {
+  cudaMallocWarning_ = b;
+
+  for (auto& v : memory_) {
+    v.second->setCudaMallocWarning(b);
   }
 }
 
@@ -195,9 +206,12 @@ StandardGpuResources::initializeForDevice(int device) {
   }
 
   FAISS_ASSERT(memory_.count(device) == 0);
-  memory_.emplace(device,
-                  std::unique_ptr<StackDeviceMemory>(
-                    new StackDeviceMemory(device, toAlloc)));
+
+  auto mem = std::unique_ptr<StackDeviceMemory>(
+    new StackDeviceMemory(device, toAlloc));
+  mem->setCudaMallocWarning(cudaMallocWarning_);
+
+  memory_.emplace(device, std::move(mem));
 }
 
 cublasHandle_t

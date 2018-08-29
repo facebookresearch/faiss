@@ -207,11 +207,31 @@ class TestOrthognalReconstruct(unittest.TestCase):
         x = rs.rand(30, 20).astype('float32')
         xt = lt.apply_py(x)
         try:
-            xtt = lt.reverse_transform(xt)
+            lt.reverse_transform(xt)
         except Exception:
             pass
         else:
             self.assertFalse('should do an exception')
+
+
+class TestMAdd(unittest.TestCase):
+
+    def test_1(self):
+        # try with dimensions that are multiples of 16 or not
+        rs = np.random.RandomState(123)
+        swig_ptr = faiss.swig_ptr
+        for dim in 16, 32, 20, 25:
+            for repeat in 1, 2, 3, 4, 5:
+                a = rs.rand(dim).astype('float32')
+                b = rs.rand(dim).astype('float32')
+                c = np.zeros(dim, dtype='float32')
+                bf = rs.uniform(5.0) - 2.5
+                idx = faiss.fvec_madd_and_argmin(
+                    dim, swig_ptr(a), bf, swig_ptr(b),
+                    swig_ptr(c))
+                ref_c = a + b * bf
+                assert np.abs(c - ref_c).max() < 1e-5
+                assert idx == ref_c.argmin()
 
 if __name__ == '__main__':
     unittest.main()

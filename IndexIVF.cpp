@@ -21,6 +21,9 @@
 
 namespace faiss {
 
+using ScopedIds = InvertedLists::ScopedIds;
+using ScopedCodes = InvertedLists::ScopedCodes;
+
 /*****************************************
  * Level1Quantizer implementation
  ******************************************/
@@ -98,120 +101,6 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
     }
 }
 
-/*****************************************
- * InvertedLists implementation
- ******************************************/
-
-
-InvertedLists::InvertedLists (size_t nlist, size_t code_size):
-    nlist (nlist), code_size (code_size)
-{
-}
-
-
-InvertedLists::~InvertedLists ()
-{}
-
-
-InvertedLists::idx_t InvertedLists::get_single_id (
-     size_t list_no, size_t offset) const
-{
-    assert (offset < list_size (list_no));
-    return get_ids(list_no)[offset];
-}
-
-
-void InvertedLists::prefetch_lists (const long *, int) const
-{}
-
-const uint8_t * InvertedLists::get_single_code (
-                   size_t list_no, size_t offset) const
-{
-    assert (offset < list_size (list_no));
-    return get_codes(list_no) + offset * code_size;
-}
-
-size_t InvertedLists::add_entry (size_t list_no, idx_t theid,
-                                 const uint8_t *code)
-{
-    return add_entries (list_no, 1, &theid, code);
-}
-
-void InvertedLists::update_entry (size_t list_no, size_t offset,
-                                        idx_t id, const uint8_t *code)
-{
-    update_entries (list_no, offset, 1, &id, code);
-}
-
-void InvertedLists::reset () {
-    for (size_t i = 0; i < nlist; i++) {
-        resize (i, 0);
-    }
-}
-
-/*****************************************
- * ArrayInvertedLists implementation
- ******************************************/
-
-ArrayInvertedLists::ArrayInvertedLists (size_t nlist, size_t code_size):
-    InvertedLists (nlist, code_size)
-{
-    ids.resize (nlist);
-    codes.resize (nlist);
-}
-
-size_t ArrayInvertedLists::add_entries (
-           size_t list_no, size_t n_entry,
-           const idx_t* ids_in, const uint8_t *code)
-{
-    if (n_entry == 0) return 0;
-    assert (list_no < nlist);
-    size_t o = ids [list_no].size();
-    ids [list_no].resize (o + n_entry);
-    memcpy (&ids[list_no][o], ids_in, sizeof (ids_in[0]) * n_entry);
-    codes [list_no].resize ((o + n_entry) * code_size);
-    memcpy (&codes[list_no][o * code_size], code, code_size * n_entry);
-    return o;
-}
-
-size_t ArrayInvertedLists::list_size(size_t list_no) const
-{
-    assert (list_no < nlist);
-    return ids[list_no].size();
-}
-
-const uint8_t * ArrayInvertedLists::get_codes (size_t list_no) const
-{
-    assert (list_no < nlist);
-    return codes[list_no].data();
-}
-
-const InvertedLists::idx_t * ArrayInvertedLists::get_ids (size_t list_no) const
-{
-    assert (list_no < nlist);
-    return ids[list_no].data();
-}
-
-void ArrayInvertedLists::resize (size_t list_no, size_t new_size)
-{
-    ids[list_no].resize (new_size);
-    codes[list_no].resize (new_size * code_size);
-}
-
-void ArrayInvertedLists::update_entries (
-      size_t list_no, size_t offset, size_t n_entry,
-      const idx_t *ids_in, const uint8_t *codes_in)
-{
-    assert (list_no < nlist);
-    assert (n_entry + offset <= ids[list_no].size());
-    memcpy (&ids[list_no][offset], ids_in, sizeof(ids_in[0]) * n_entry);
-    memcpy (&codes[list_no][offset * code_size], codes_in, code_size * n_entry);
-}
-
-
-ArrayInvertedLists::~ArrayInvertedLists ()
-{}
-
 
 
 /*****************************************
@@ -262,7 +151,7 @@ void IndexIVF::make_direct_map (bool new_maintain_direct_map)
         direct_map.resize (ntotal, -1);
         for (size_t key = 0; key < nlist; key++) {
             size_t list_size = invlists->list_size (key);
-            const idx_t *idlist = invlists->get_ids (key);
+            ScopedIds idlist (invlists, key);
 
             for (long ofs = 0; ofs < list_size; ofs++) {
                 FAISS_THROW_IF_NOT_MSG (
@@ -312,12 +201,12 @@ void IndexIVF::reconstruct_n (idx_t i0, idx_t ni, float* recons) const
 
     for (long list_no = 0; list_no < nlist; list_no++) {
         size_t list_size = invlists->list_size (list_no);
-        const Index::idx_t * idlist = invlists->get_ids (list_no);
+        ScopedIds idlist (invlists, list_no);
 
         for (long offset = 0; offset < list_size; offset++) {
             long id = idlist[offset];
             if (!(id >= i0 && id < i0 + ni)) {
-              continue;
+                continue;
             }
 
             float* reconstructed = recons + (id - i0) * d;
@@ -390,14 +279,14 @@ long IndexIVF::remove_ids (const IDSelector & sel)
 #pragma omp parallel for
     for (long i = 0; i < nlist; i++) {
         long l0 = invlists->list_size (i), l = l0, j = 0;
-        const idx_t *idsi = invlists->get_ids (i);
+        ScopedIds idsi (invlists, i);
         while (j < l) {
             if (sel.is_member (idsi[j])) {
                 l--;
                 invlists->update_entry (
                      i, j,
                      invlists->get_single_id (i, l),
-                     invlists->get_single_code (i, l));
+                     ScopedCodes (invlists, i, l).get());
             } else {
                 j++;
             }
@@ -472,38 +361,26 @@ void IndexIVF::print_stats () const
 
 }
 
-void IndexIVF::merge_from (IndexIVF &other, idx_t add_id)
+
+void IndexIVF::check_compatible_for_merge (const IndexIVF &other) const
 {
     // minimal sanity checks
     FAISS_THROW_IF_NOT (other.d == d);
     FAISS_THROW_IF_NOT (other.nlist == nlist);
     FAISS_THROW_IF_NOT (other.code_size == code_size);
+    FAISS_THROW_IF_NOT_MSG (typeid (*this) == typeid (other),
+                  "can only merge indexes of the same type");
+}
+
+
+void IndexIVF::merge_from (IndexIVF &other, idx_t add_id)
+{
+    check_compatible_for_merge (other);
     FAISS_THROW_IF_NOT_MSG ((!maintain_direct_map &&
                              !other.maintain_direct_map),
                   "direct map copy not implemented");
-    FAISS_THROW_IF_NOT_MSG (typeid (*this) == typeid (other),
-                  "can only merge indexes of the same type");
 
-    InvertedLists *oivf = other.invlists;
-#pragma omp parallel for
-    for (long i = 0; i < nlist; i++) {
-        size_t list_size = oivf->list_size (i);
-        const idx_t * ids = oivf->get_ids (i);
-        if (add_id == 0) {
-            invlists->add_entries (i, list_size, ids,
-                                   oivf->get_codes (i));
-        } else {
-            std::vector <idx_t> new_ids (list_size);
-
-            for (size_t j = 0; j < list_size; j++) {
-                new_ids [j] = ids[j] + add_id;
-            }
-
-            invlists->add_entries (i, list_size, new_ids.data(),
-                                   oivf->get_codes (i));
-        }
-        oivf->resize (i, 0);
-    }
+    invlists->merge_from (other.invlists, add_id);
 
     ntotal += other.ntotal;
     other.ntotal = 0;
@@ -542,7 +419,7 @@ void IndexIVF::copy_subset_to (IndexIVF & other, int subset_type,
 
     for (long list_no = 0; list_no < nlist; list_no++) {
         size_t n = invlists->list_size (list_no);
-        const idx_t *ids_in = invlists->get_ids (list_no);
+        ScopedIds ids_in (invlists, list_no);
 
         if (subset_type == 0) {
             for (long i = 0; i < n; i++) {
@@ -550,7 +427,7 @@ void IndexIVF::copy_subset_to (IndexIVF & other, int subset_type,
                 if (a1 <= id && id < a2) {
                     oivf->add_entry (list_no,
                                      invlists->get_single_id (list_no, i),
-                                     invlists->get_single_code (list_no, i));
+                                     ScopedCodes (invlists, list_no, i).get());
                     other.ntotal++;
                 }
             }
@@ -560,7 +437,7 @@ void IndexIVF::copy_subset_to (IndexIVF & other, int subset_type,
                 if (id % a1 == a2) {
                     oivf->add_entry (list_no,
                                      invlists->get_single_id (list_no, i),
-                                     invlists->get_single_code (list_no, i));
+                                     ScopedCodes (invlists, list_no, i).get());
                     other.ntotal++;
                 }
             }
@@ -575,7 +452,7 @@ void IndexIVF::copy_subset_to (IndexIVF & other, int subset_type,
             for (long i = i1; i < i2; i++) {
                 oivf->add_entry (list_no,
                                  invlists->get_single_id (list_no, i),
-                                 invlists->get_single_code (list_no, i));
+                                 ScopedCodes (invlists, list_no, i).get());
             }
 
             other.ntotal += i2 - i1;

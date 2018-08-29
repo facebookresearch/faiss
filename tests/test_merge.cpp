@@ -18,45 +18,12 @@
 #include <faiss/FaissAssert.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/OnDiskInvertedLists.h>
+#include <faiss/IVFlib.h>
 
 
 namespace {
 
 // Main function to test
-
-// Merge index1 into index0. Works on IndexIVF's and IndexIVF's
-// embedded in a IndexPreTransform
-
-void merge_into(faiss::Index *index0, faiss::Index *index1, bool shift_ids) {
-    FAISS_THROW_IF_NOT (index0->d == index1->d);
-    faiss::IndexIVF *ivf0 = dynamic_cast<faiss::IndexIVF *>(index0);
-    faiss::IndexIVF *ivf1 = dynamic_cast<faiss::IndexIVF *>(index1);
-
-    if (!ivf0) {
-        faiss::IndexPreTransform *pt0 = dynamic_cast<faiss::IndexPreTransform *>(index0);
-        faiss::IndexPreTransform *pt1 = dynamic_cast<faiss::IndexPreTransform *>(index1);
-
-        // minimal sanity check
-        FAISS_THROW_IF_NOT (pt0 && pt1);
-        FAISS_THROW_IF_NOT (pt0->chain.size() == pt1->chain.size());
-        for (int i = 0; i < pt0->chain.size(); i++) {
-            FAISS_THROW_IF_NOT (typeid(pt0->chain[i]) == typeid(pt1->chain[i]));
-        }
-
-        ivf0 = dynamic_cast<faiss::IndexIVF *>(pt0->index);
-        ivf1 = dynamic_cast<faiss::IndexIVF *>(pt1->index);
-    }
-
-    FAISS_THROW_IF_NOT (ivf0);
-    FAISS_THROW_IF_NOT (ivf1);
-
-    ivf0->merge_from (*ivf1, shift_ids ? ivf0->ntotal : 0);
-
-    // useful for IndexPreTransform
-    index0->ntotal = ivf0->ntotal;
-    index1->ntotal = ivf1->ntotal;
-}
-
 
 struct Tempfilename {
 
@@ -122,8 +89,6 @@ struct CommonData {
 
 CommonData cd;
 
-
-
 /// perform a search on shards, then merge and search again and
 /// compare results.
 int compare_merged (faiss::IndexShards *index_shards, bool shift_ids,
@@ -142,7 +107,9 @@ int compare_merged (faiss::IndexShards *index_shards, bool shift_ids,
     if (standard_merge) {
 
         for (int i = 1; i < nindex; i++) {
-            merge_into(index_shards->at(0), index_shards->at(i), shift_ids);
+            faiss::ivflib::merge_into(
+                   index_shards->at(0), index_shards->at(i),
+                   shift_ids);
         }
 
         index_shards->sync_with_shard_indexes();
@@ -275,7 +242,7 @@ TEST(MERGE, merge_flat_ondisk) {
     EXPECT_EQ(ndiff, 0);
 }
 
-// non use ondisk specific merge
+// now use ondisk specific merge
 TEST(MERGE, merge_flat_ondisk_2) {
     faiss::IndexShards index_shards(d, false, false);
     index_shards.own_fields = true;

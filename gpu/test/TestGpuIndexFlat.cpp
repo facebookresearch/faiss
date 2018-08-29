@@ -107,8 +107,6 @@ void testFlat(const TestFlatOptions& opt) {
 
 TEST(TestGpuIndexFlat, IP_Float32) {
   for (int tries = 0; tries < 5; ++tries) {
-    faiss::gpu::newTestSeed();
-
     TestFlatOptions opt;
     opt.useL2 = false;
     opt.useFloat16 = false;
@@ -123,8 +121,6 @@ TEST(TestGpuIndexFlat, IP_Float32) {
 
 TEST(TestGpuIndexFlat, L2_Float32) {
   for (int tries = 0; tries < 5; ++tries) {
-    faiss::gpu::newTestSeed();
-
     TestFlatOptions opt;
     opt.useL2 = true;
     opt.useFloat16 = false;
@@ -140,8 +136,6 @@ TEST(TestGpuIndexFlat, L2_Float32) {
 // test specialized k == 1 codepath
 TEST(TestGpuIndexFlat, L2_Float32_K1) {
   for (int tries = 0; tries < 5; ++tries) {
-    faiss::gpu::newTestSeed();
-
     TestFlatOptions opt;
     opt.useL2 = true;
     opt.useFloat16 = false;
@@ -154,8 +148,6 @@ TEST(TestGpuIndexFlat, L2_Float32_K1) {
 
 TEST(TestGpuIndexFlat, IP_Float16) {
   for (int tries = 0; tries < 5; ++tries) {
-    faiss::gpu::newTestSeed();
-
     TestFlatOptions opt;
     opt.useL2 = false;
     opt.useFloat16 = true;
@@ -170,8 +162,6 @@ TEST(TestGpuIndexFlat, IP_Float16) {
 
 TEST(TestGpuIndexFlat, L2_Float16) {
   for (int tries = 0; tries < 5; ++tries) {
-    faiss::gpu::newTestSeed();
-
     TestFlatOptions opt;
     opt.useL2 = true;
     opt.useFloat16 = true;
@@ -187,8 +177,6 @@ TEST(TestGpuIndexFlat, L2_Float16) {
 // test specialized k == 1 codepath
 TEST(TestGpuIndexFlat, L2_Float16_K1) {
   for (int tries = 0; tries < 5; ++tries) {
-    faiss::gpu::newTestSeed();
-
     TestFlatOptions opt;
     opt.useL2 = true;
     opt.useFloat16 = true;
@@ -201,15 +189,13 @@ TEST(TestGpuIndexFlat, L2_Float16_K1) {
 
 // test tiling along a huge vector set
 TEST(TestGpuIndexFlat, L2_Tiling) {
-  for (int tries = 0; tries < 3; ++tries) {
-    faiss::gpu::newTestSeed();
-
+  for (int tries = 0; tries < 2; ++tries) {
     TestFlatOptions opt;
     opt.useL2 = true;
     opt.useFloat16 = false;
     opt.useTransposed = false;
     opt.numVecsOverride = 1000000;
-    opt.numQueriesOverride = 8;
+    opt.numQueriesOverride = 4;
 
     testFlat(opt);
 
@@ -251,8 +237,6 @@ TEST(TestGpuIndexFlat, QueryEmpty) {
 }
 
 TEST(TestGpuIndexFlat, CopyFrom) {
-  faiss::gpu::newTestSeed();
-
   int numVecs = faiss::gpu::randVal(100, 200);
   int dim = faiss::gpu::randVal(1, 1000);
 
@@ -293,8 +277,6 @@ TEST(TestGpuIndexFlat, CopyFrom) {
 }
 
 TEST(TestGpuIndexFlat, CopyTo) {
-  faiss::gpu::newTestSeed();
-
   faiss::gpu::StandardGpuResources res;
   res.noTempMemory();
 
@@ -374,4 +356,13 @@ TEST(TestGpuIndexFlat, UnifiedMemory) {
                              kF32MaxRelErr,
                              0.1f,
                              0.015f);
+}
+
+int main(int argc, char** argv) {
+  testing::InitGoogleTest(&argc, argv);
+
+  // just run with a fixed test seed
+  faiss::gpu::setTestSeed(100);
+
+  return RUN_ALL_TESTS();
 }

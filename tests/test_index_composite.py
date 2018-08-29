@@ -316,9 +316,7 @@ class TestRareIO(unittest.TestCase):
 
         if in_pretransform:
             # make sure it still works when wrapped in an IndexPreTransform
-            tmp = index1
             index1 = faiss.IndexPreTransform(index1)
-            index1.dont_dealloc_me = tmp
 
         index1.train(xt)
         index1.add(xb)

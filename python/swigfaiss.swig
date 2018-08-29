@@ -21,9 +21,11 @@
 %module swigfaiss;
 #endif
 
+// fbode SWIG fails on warnings, so make them non fatal
 #pragma SWIG nowarn=321
 #pragma SWIG nowarn=403
 #pragma SWIG nowarn=325
+#pragma SWIG nowarn=389
 
 typedef unsigned long uint64_t;
 typedef uint64_t size_t;
@@ -85,6 +87,7 @@ extern "C" {
 
 #include "IndexBinaryFlat.h"
 #include "IndexBinaryIVF.h"
+#include "IndexBinaryFromFloat.h"
 
 #include "index_io.h"
 
@@ -153,7 +156,6 @@ namespace std {
 
  // produces an error on the Mac
 %ignore faiss::hamming;
-
 
 
 /*******************************************************************
@@ -258,6 +260,7 @@ int get_num_gpus()
 %include "IndexLSH.h"
 %include "PolysemousTraining.h"
 %include "IndexPQ.h"
+%include "InvertedLists.h"
 %include "IndexIVF.h"
 %include "IndexScalarQuantizer.h"
 %include "IndexHNSW.h"
@@ -270,6 +273,7 @@ int get_num_gpus()
 %include "IndexBinary.h"
 %include "IndexBinaryFlat.h"
 %include "IndexBinaryIVF.h"
+%include "IndexBinaryFromFloat.h"
 
 
 
@@ -481,6 +485,7 @@ struct AsyncIndexSearchC {
 %typemap(out) faiss::IndexBinary * {
     DOWNCAST ( IndexBinaryIVF )
     DOWNCAST ( IndexBinaryFlat )
+    DOWNCAST ( IndexBinaryFromFloat )
       // default for non-recognized classes
     DOWNCAST ( IndexBinary )
     if ($1 == NULL)

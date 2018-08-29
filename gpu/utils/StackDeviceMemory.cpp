@@ -25,7 +25,8 @@ StackDeviceMemory::Stack::Stack(int d, size_t sz)
       head_(nullptr),
       mallocCurrent_(0),
       highWaterMemoryUsed_(0),
-      highWaterMalloc_(0) {
+      highWaterMalloc_(0),
+      cudaMallocWarning_(true) {
   DeviceScope s(device_);
 
   cudaError_t err = cudaMalloc(&start_, size_);
@@ -41,7 +42,11 @@ StackDeviceMemory::Stack::Stack(int d, void* p, size_t sz, bool isOwner)
       start_((char*) p),
       end_(((char*) p) + sz),
       size_(sz),
-      head_((char*) p) {
+      head_((char*) p),
+      mallocCurrent_(0),
+      highWaterMemoryUsed_(0),
+      highWaterMalloc_(0),
+      cudaMallocWarning_(true) {
 }
 
 StackDeviceMemory::Stack::~Stack() {
@@ -59,15 +64,18 @@ StackDeviceMemory::Stack::getSizeAvailable() const {
 }
 
 char*
-StackDeviceMemory::Stack::getAlloc(size_t size, cudaStream_t stream) {
+StackDeviceMemory::Stack::getAlloc(size_t size,
+                                   cudaStream_t stream) {
   if (size > (end_ - head_)) {
     // Too large for our stack
     DeviceScope s(device_);
 
-    // Print our requested size before we attempt the allocation
-    fprintf(stderr, "WARN: increase temp memory to avoid cudaMalloc, "
-            "or decrease query/add size (alloc %zu B, highwater %zu B)\n",
-            size, highWaterMalloc_);
+    if (cudaMallocWarning_) {
+      // Print our requested size before we attempt the allocation
+      fprintf(stderr, "WARN: increase temp memory to avoid cudaMalloc, "
+              "or decrease query/add size (alloc %zu B, highwater %zu B)\n",
+              size, highWaterMalloc_);
+    }
 
     char* p = nullptr;
     auto err = cudaMalloc(&p, size);
@@ -188,6 +196,11 @@ StackDeviceMemory::StackDeviceMemory(int device,
 }
 
 StackDeviceMemory::~StackDeviceMemory() {
+}
+
+void
+StackDeviceMemory::setCudaMallocWarning(bool b) {
+  stack_.cudaMallocWarning_ = b;
 }
 
 int

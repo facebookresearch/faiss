@@ -24,7 +24,6 @@
 
 namespace faiss {
 
-
 IndexBinaryIVF::IndexBinaryIVF(IndexBinary *quantizer, size_t d, size_t nlist)
     : IndexBinary(d),
       invlists(new ArrayInvertedLists(nlist, code_size)),
@@ -291,26 +290,7 @@ void IndexBinaryIVF::merge_from(IndexBinaryIVF &other, idx_t add_id) {
   FAISS_THROW_IF_NOT_MSG(typeid (*this) == typeid (other),
                          "can only merge indexes of the same type");
 
-  InvertedLists *oivf = other.invlists;
-#pragma omp parallel for
-  for (long i = 0; i < nlist; i++) {
-    size_t list_size = oivf->list_size(i);
-    const idx_t * ids = oivf->get_ids(i);
-    if (add_id == 0) {
-      invlists->add_entries(i, list_size, ids,
-                            oivf->get_codes(i));
-    } else {
-      std::vector <idx_t> new_ids(list_size);
-
-      for (size_t j = 0; j < list_size; j++) {
-        new_ids [j] = ids[j] + add_id;
-      }
-
-      invlists->add_entries(i, list_size, new_ids.data(),
-                            oivf->get_codes(i));
-    }
-    oivf->resize(i, 0);
-  }
+  invlists->merge_from (other.invlists, add_id);
 
   ntotal += other.ntotal;
   other.ntotal = 0;
@@ -327,33 +307,6 @@ void IndexBinaryIVF::replace_invlists(InvertedLists *il, bool own) {
 }
 
 
-namespace {
-
-
-void binary_to_real(int d, const uint8_t *x_in, float *x_out) {
-  for (int j = 0; j < d; ++j) {
-    if ((x_in[j / 8] & (1 << (j % 8))) == 0) {
-      x_out[j] = -1.0;
-    } else {
-      x_out[j] = 1.0;
-    }
-  }
-}
-
-void real_to_binary(int d, const float *x_in, uint8_t *x_out) {
-  for (int j = 0; j < d; ++j) {
-    if (x_in[j] > 0) {
-      x_out[j / 8] |= (1 << (j % 8));
-    } else {
-      x_out[j / 8] &= ~(1 << (j % 8));
-    }
-  }
-}
-
-
-} // namespace
-
-
 void IndexBinaryIVF::train_q1(size_t n, const uint8_t *x, bool verbose) {
   if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
     if (verbose)
@@ -366,22 +319,15 @@ void IndexBinaryIVF::train_q1(size_t n, const uint8_t *x, bool verbose) {
     quantizer->reset();
 
     std::unique_ptr<float[]> x_f(new float[n * d]);
-    for (int i = 0; i < n; ++i) {
-      binary_to_real(d,
-                     x + i * code_size,
-                     x_f.get() + i * d);
-    }
+    binary_to_real(n * d, x, x_f.get());
 
     IndexFlatL2 index_tmp(d);
 
     clus.train(n, x_f.get(), index_tmp);
 
     std::unique_ptr<uint8_t[]> x_b(new uint8_t[clus.k * code_size]);
-    for (int i = 0; i < clus.k; ++i) {
-      real_to_binary(d,
-                     clus.centroids.data() + i * d,
-                     x_b.get() + i * code_size);
-    }
+    real_to_binary(d * clus.k, clus.centroids.data(), x_b.get());
+
     quantizer->add(clus.k, x_b.get());
     quantizer->is_trained = true;
   }
@@ -426,7 +372,9 @@ void search_knn_hamming_heap(const IndexBinaryIVF& ivf,
 
       nlistv++;
       size_t list_size = ivf.invlists->list_size(key);
-      const uint8_t *list_vecs = (const uint8_t*)ivf.invlists->get_codes(key);
+
+      InvertedLists::ScopedCodes scodes (ivf.invlists, key);
+      const uint8_t *list_vecs = scodes.get();
       const Index::idx_t *ids = store_pairs
         ? nullptr
         : ivf.invlists->get_ids(key);
@@ -443,6 +391,9 @@ void search_knn_hamming_heap(const IndexBinaryIVF& ivf,
           maxheap_push(k, disi, idxi, disij, id);
         }
       }
+      if (ids)
+        ivf.invlists->release_ids (ids);
+
       nscan += list_size;
       if (max_codes && nscan >= max_codes)
         break;
@@ -504,7 +455,8 @@ void search_knn_hamming_count(const IndexBinaryIVF& ivf,
 
       nlistv++;
       size_t list_size = ivf.invlists->list_size(key);
-      const uint8_t *list_vecs = (const uint8_t*)ivf.invlists->get_codes(key);
+      InvertedLists::ScopedCodes scodes (ivf.invlists, key);
+      const uint8_t *list_vecs = scodes.get();
       const Index::idx_t *ids = store_pairs
         ? nullptr
         : ivf.invlists->get_ids(key);
@@ -515,6 +467,9 @@ void search_knn_hamming_count(const IndexBinaryIVF& ivf,
         long id = store_pairs ? (key << 32 | j) : ids[j];
         csi.update_counter(yj, id);
       }
+      if (ids)
+        ivf.invlists->release_ids (ids);
+
       nscan += list_size;
       if (max_codes && nscan >= max_codes)
         break;
