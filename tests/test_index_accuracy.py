@@ -98,7 +98,7 @@ class IndexAccuracy(unittest.TestCase):
             res = ev.launch('LSH half size', q)
             e = ev.evalres(res)
             # should give 0.002  0.025  0.117
-            assert e[10] > 0.024
+            assert e[10] > 0.024, "e[10] = %d" % e[10]
 
     def test_IndexPQ(self):
         q = faiss.IndexPQ(d, M, nbits_per_index)
