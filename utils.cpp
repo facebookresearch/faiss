@@ -110,12 +110,12 @@ RandomGenerator::RandomGenerator (long seed)
 
 int RandomGenerator::rand_int ()
 {
-    return mt();
+    return mt() & 0x7fffffff;
 }
 
 long RandomGenerator::rand_long ()
 {
-    return mt() | mt() << 31;
+    return long(rand_int()) | long(rand_int()) << 31;
 }
 
 int RandomGenerator::rand_int (int max)
