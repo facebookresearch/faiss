@@ -48,10 +48,6 @@ size_t get_mem_usage_kb ();
 struct RandomGenerator {
 
     std::mt19937 mt;
-    std::uniform_int_distribution<int> int_distrib;
-    std::uniform_int_distribution<long> long_distrib;
-    std::uniform_real_distribution<float> float_distrib;
-    std::uniform_real_distribution<double> double_distrib;
 
     /// random positive integer
     int rand_int ();

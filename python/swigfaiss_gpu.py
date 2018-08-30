@@ -1236,22 +1236,6 @@ class RandomGenerator(_object):
     __swig_getmethods__["mt"] = _swigfaiss_gpu.RandomGenerator_mt_get
     if _newclass:
         mt = _swig_property(_swigfaiss_gpu.RandomGenerator_mt_get, _swigfaiss_gpu.RandomGenerator_mt_set)
-    __swig_setmethods__["int_distrib"] = _swigfaiss_gpu.RandomGenerator_int_distrib_set
-    __swig_getmethods__["int_distrib"] = _swigfaiss_gpu.RandomGenerator_int_distrib_get
-    if _newclass:
-        int_distrib = _swig_property(_swigfaiss_gpu.RandomGenerator_int_distrib_get, _swigfaiss_gpu.RandomGenerator_int_distrib_set)
-    __swig_setmethods__["long_distrib"] = _swigfaiss_gpu.RandomGenerator_long_distrib_set
-    __swig_getmethods__["long_distrib"] = _swigfaiss_gpu.RandomGenerator_long_distrib_get
-    if _newclass:
-        long_distrib = _swig_property(_swigfaiss_gpu.RandomGenerator_long_distrib_get, _swigfaiss_gpu.RandomGenerator_long_distrib_set)
-    __swig_setmethods__["float_distrib"] = _swigfaiss_gpu.RandomGenerator_float_distrib_set
-    __swig_getmethods__["float_distrib"] = _swigfaiss_gpu.RandomGenerator_float_distrib_get
-    if _newclass:
-        float_distrib = _swig_property(_swigfaiss_gpu.RandomGenerator_float_distrib_get, _swigfaiss_gpu.RandomGenerator_float_distrib_set)
-    __swig_setmethods__["double_distrib"] = _swigfaiss_gpu.RandomGenerator_double_distrib_set
-    __swig_getmethods__["double_distrib"] = _swigfaiss_gpu.RandomGenerator_double_distrib_get
-    if _newclass:
-        double_distrib = _swig_property(_swigfaiss_gpu.RandomGenerator_double_distrib_get, _swigfaiss_gpu.RandomGenerator_double_distrib_set)
 
     def rand_long(self):
         return _swigfaiss_gpu.RandomGenerator_rand_long(self)

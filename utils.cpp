@@ -110,29 +110,27 @@ RandomGenerator::RandomGenerator (long seed)
 
 int RandomGenerator::rand_int ()
 {
-    return int_distrib(mt);
+    return mt();
 }
 
 long RandomGenerator::rand_long ()
 {
-    return long_distrib(mt);
+    return mt() | mt() << 31;
 }
 
 int RandomGenerator::rand_int (int max)
 {
-    auto distrib = std::uniform_int_distribution<int>(0, max - 1);
-
-    return distrib(mt);
+    return mt() % max;
 }
 
 float RandomGenerator::rand_float ()
 {
-    return float_distrib(mt);
+    return mt() / float(mt.max());
 }
 
 double RandomGenerator::rand_double ()
 {
-    return double_distrib(mt);
+    return mt() / double(mt.max());
 }
 
 

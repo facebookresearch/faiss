@@ -105,7 +105,7 @@ class TestIndexBinaryFromFloat(unittest.TestCase):
         recall = sum(gti[0] in Di[:10] for gti, Di in zip(D_ref, D)) \
                  / float(D_ref.shape[0])
 
-        assert recall > 0.83, "recall = %g" % recall
+        assert recall > 0.82, "recall = %g" % recall
 
     def test_wrapped_quantizer_HNSW(self):
         faiss.omp_set_num_threads(1)

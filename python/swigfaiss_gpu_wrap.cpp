@@ -3194,41 +3194,37 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_std__listT_faiss__OnDiskInvertedLists__Slot_t swig_types[188]
 #define SWIGTYPE_p_std__mt19937 swig_types[189]
 #define SWIGTYPE_p_std__pairT_void_p_unsigned_long_t swig_types[190]
-#define SWIGTYPE_p_std__uniform_int_distributionT_int_t swig_types[191]
-#define SWIGTYPE_p_std__uniform_int_distributionT_long_t swig_types[192]
-#define SWIGTYPE_p_std__uniform_real_distributionT_double_t swig_types[193]
-#define SWIGTYPE_p_std__uniform_real_distributionT_float_t swig_types[194]
-#define SWIGTYPE_p_std__unordered_mapT_long_long_t swig_types[195]
-#define SWIGTYPE_p_std__unordered_multimapT_long_long_t swig_types[196]
-#define SWIGTYPE_p_std__vectorT_char_t swig_types[197]
-#define SWIGTYPE_p_std__vectorT_cudaStream_t_t swig_types[198]
-#define SWIGTYPE_p_std__vectorT_double_t swig_types[199]
-#define SWIGTYPE_p_std__vectorT_faiss__BufferList__Buffer_t swig_types[200]
-#define SWIGTYPE_p_std__vectorT_faiss__Index_p_t swig_types[201]
-#define SWIGTYPE_p_std__vectorT_faiss__InvertedLists_const_p_t swig_types[202]
-#define SWIGTYPE_p_std__vectorT_faiss__InvertedLists_p_t swig_types[203]
-#define SWIGTYPE_p_std__vectorT_faiss__OnDiskInvertedLists__List_t swig_types[204]
-#define SWIGTYPE_p_std__vectorT_faiss__OperatingPoint_t swig_types[205]
-#define SWIGTYPE_p_std__vectorT_faiss__ParameterRange_t swig_types[206]
-#define SWIGTYPE_p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t swig_types[207]
-#define SWIGTYPE_p_std__vectorT_faiss__VectorTransform_p_t swig_types[208]
-#define SWIGTYPE_p_std__vectorT_faiss__gpu__GpuResources_p_t swig_types[209]
-#define SWIGTYPE_p_std__vectorT_float_t swig_types[210]
-#define SWIGTYPE_p_std__vectorT_int_t swig_types[211]
-#define SWIGTYPE_p_std__vectorT_long_t swig_types[212]
-#define SWIGTYPE_p_std__vectorT_omp_lock_t_t swig_types[213]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_float_t_t swig_types[214]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_long_t_t swig_types[215]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_uint8_t_t_t swig_types[216]
-#define SWIGTYPE_p_std__vectorT_unsigned_char_t swig_types[217]
-#define SWIGTYPE_p_std__vectorT_unsigned_long_t swig_types[218]
-#define SWIGTYPE_p_storage_idx_t swig_types[219]
-#define SWIGTYPE_p_uint32_t swig_types[220]
-#define SWIGTYPE_p_unsigned_char swig_types[221]
-#define SWIGTYPE_p_unsigned_long swig_types[222]
-#define SWIGTYPE_p_void swig_types[223]
-static swig_type_info *swig_types[225];
-static swig_module_info swig_module = {swig_types, 224, 0, 0, 0, 0};
+#define SWIGTYPE_p_std__unordered_mapT_long_long_t swig_types[191]
+#define SWIGTYPE_p_std__unordered_multimapT_long_long_t swig_types[192]
+#define SWIGTYPE_p_std__vectorT_char_t swig_types[193]
+#define SWIGTYPE_p_std__vectorT_cudaStream_t_t swig_types[194]
+#define SWIGTYPE_p_std__vectorT_double_t swig_types[195]
+#define SWIGTYPE_p_std__vectorT_faiss__BufferList__Buffer_t swig_types[196]
+#define SWIGTYPE_p_std__vectorT_faiss__Index_p_t swig_types[197]
+#define SWIGTYPE_p_std__vectorT_faiss__InvertedLists_const_p_t swig_types[198]
+#define SWIGTYPE_p_std__vectorT_faiss__InvertedLists_p_t swig_types[199]
+#define SWIGTYPE_p_std__vectorT_faiss__OnDiskInvertedLists__List_t swig_types[200]
+#define SWIGTYPE_p_std__vectorT_faiss__OperatingPoint_t swig_types[201]
+#define SWIGTYPE_p_std__vectorT_faiss__ParameterRange_t swig_types[202]
+#define SWIGTYPE_p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t swig_types[203]
+#define SWIGTYPE_p_std__vectorT_faiss__VectorTransform_p_t swig_types[204]
+#define SWIGTYPE_p_std__vectorT_faiss__gpu__GpuResources_p_t swig_types[205]
+#define SWIGTYPE_p_std__vectorT_float_t swig_types[206]
+#define SWIGTYPE_p_std__vectorT_int_t swig_types[207]
+#define SWIGTYPE_p_std__vectorT_long_t swig_types[208]
+#define SWIGTYPE_p_std__vectorT_omp_lock_t_t swig_types[209]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_float_t_t swig_types[210]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_long_t_t swig_types[211]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_uint8_t_t_t swig_types[212]
+#define SWIGTYPE_p_std__vectorT_unsigned_char_t swig_types[213]
+#define SWIGTYPE_p_std__vectorT_unsigned_long_t swig_types[214]
+#define SWIGTYPE_p_storage_idx_t swig_types[215]
+#define SWIGTYPE_p_uint32_t swig_types[216]
+#define SWIGTYPE_p_unsigned_char swig_types[217]
+#define SWIGTYPE_p_unsigned_long swig_types[218]
+#define SWIGTYPE_p_void swig_types[219]
+static swig_type_info *swig_types[221];
+static swig_module_info swig_module = {swig_types, 220, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -12898,246 +12894,6 @@ SWIGINTERN PyObject *_wrap_RandomGenerator_mt_get(PyObject *SWIGUNUSEDPARM(self)
   arg1 = reinterpret_cast< faiss::RandomGenerator * >(argp1);
   result =  ((arg1)->mt);
   resultobj = SWIG_NewPointerObj((new std::mt19937(static_cast< const std::mt19937& >(result))), SWIGTYPE_p_std__mt19937, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_RandomGenerator_int_distrib_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::RandomGenerator *arg1 = (faiss::RandomGenerator *) 0 ;
-  std::uniform_int_distribution< int > arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:RandomGenerator_int_distrib_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RandomGenerator, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RandomGenerator_int_distrib_set" "', argument " "1"" of type '" "faiss::RandomGenerator *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::RandomGenerator * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__uniform_int_distributionT_int_t,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "RandomGenerator_int_distrib_set" "', argument " "2"" of type '" "std::uniform_int_distribution< int >""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "RandomGenerator_int_distrib_set" "', argument " "2"" of type '" "std::uniform_int_distribution< int >""'");
-    } else {
-      std::uniform_int_distribution< int > * temp = reinterpret_cast< std::uniform_int_distribution< int > * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
-  }
-  if (arg1) (arg1)->int_distrib = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_RandomGenerator_int_distrib_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::RandomGenerator *arg1 = (faiss::RandomGenerator *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  std::uniform_int_distribution< int > result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:RandomGenerator_int_distrib_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RandomGenerator, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RandomGenerator_int_distrib_get" "', argument " "1"" of type '" "faiss::RandomGenerator *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::RandomGenerator * >(argp1);
-  result =  ((arg1)->int_distrib);
-  resultobj = SWIG_NewPointerObj((new std::uniform_int_distribution< int >(static_cast< const std::uniform_int_distribution< int >& >(result))), SWIGTYPE_p_std__uniform_int_distributionT_int_t, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_RandomGenerator_long_distrib_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::RandomGenerator *arg1 = (faiss::RandomGenerator *) 0 ;
-  std::uniform_int_distribution< long > arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:RandomGenerator_long_distrib_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RandomGenerator, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RandomGenerator_long_distrib_set" "', argument " "1"" of type '" "faiss::RandomGenerator *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::RandomGenerator * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__uniform_int_distributionT_long_t,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "RandomGenerator_long_distrib_set" "', argument " "2"" of type '" "std::uniform_int_distribution< long >""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "RandomGenerator_long_distrib_set" "', argument " "2"" of type '" "std::uniform_int_distribution< long >""'");
-    } else {
-      std::uniform_int_distribution< long > * temp = reinterpret_cast< std::uniform_int_distribution< long > * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
-  }
-  if (arg1) (arg1)->long_distrib = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_RandomGenerator_long_distrib_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::RandomGenerator *arg1 = (faiss::RandomGenerator *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  std::uniform_int_distribution< long > result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:RandomGenerator_long_distrib_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RandomGenerator, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RandomGenerator_long_distrib_get" "', argument " "1"" of type '" "faiss::RandomGenerator *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::RandomGenerator * >(argp1);
-  result =  ((arg1)->long_distrib);
-  resultobj = SWIG_NewPointerObj((new std::uniform_int_distribution< long >(static_cast< const std::uniform_int_distribution< long >& >(result))), SWIGTYPE_p_std__uniform_int_distributionT_long_t, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_RandomGenerator_float_distrib_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::RandomGenerator *arg1 = (faiss::RandomGenerator *) 0 ;
-  std::uniform_real_distribution< float > arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:RandomGenerator_float_distrib_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RandomGenerator, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RandomGenerator_float_distrib_set" "', argument " "1"" of type '" "faiss::RandomGenerator *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::RandomGenerator * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__uniform_real_distributionT_float_t,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "RandomGenerator_float_distrib_set" "', argument " "2"" of type '" "std::uniform_real_distribution< float >""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "RandomGenerator_float_distrib_set" "', argument " "2"" of type '" "std::uniform_real_distribution< float >""'");
-    } else {
-      std::uniform_real_distribution< float > * temp = reinterpret_cast< std::uniform_real_distribution< float > * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
-  }
-  if (arg1) (arg1)->float_distrib = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_RandomGenerator_float_distrib_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::RandomGenerator *arg1 = (faiss::RandomGenerator *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  std::uniform_real_distribution< float > result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:RandomGenerator_float_distrib_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RandomGenerator, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RandomGenerator_float_distrib_get" "', argument " "1"" of type '" "faiss::RandomGenerator *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::RandomGenerator * >(argp1);
-  result =  ((arg1)->float_distrib);
-  resultobj = SWIG_NewPointerObj((new std::uniform_real_distribution< float >(static_cast< const std::uniform_real_distribution< float >& >(result))), SWIGTYPE_p_std__uniform_real_distributionT_float_t, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_RandomGenerator_double_distrib_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::RandomGenerator *arg1 = (faiss::RandomGenerator *) 0 ;
-  std::uniform_real_distribution< double > arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:RandomGenerator_double_distrib_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RandomGenerator, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RandomGenerator_double_distrib_set" "', argument " "1"" of type '" "faiss::RandomGenerator *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::RandomGenerator * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__uniform_real_distributionT_double_t,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "RandomGenerator_double_distrib_set" "', argument " "2"" of type '" "std::uniform_real_distribution< double >""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "RandomGenerator_double_distrib_set" "', argument " "2"" of type '" "std::uniform_real_distribution< double >""'");
-    } else {
-      std::uniform_real_distribution< double > * temp = reinterpret_cast< std::uniform_real_distribution< double > * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
-  }
-  if (arg1) (arg1)->double_distrib = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_RandomGenerator_double_distrib_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::RandomGenerator *arg1 = (faiss::RandomGenerator *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  std::uniform_real_distribution< double > result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:RandomGenerator_double_distrib_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RandomGenerator, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RandomGenerator_double_distrib_get" "', argument " "1"" of type '" "faiss::RandomGenerator *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::RandomGenerator * >(argp1);
-  result =  ((arg1)->double_distrib);
-  resultobj = SWIG_NewPointerObj((new std::uniform_real_distribution< double >(static_cast< const std::uniform_real_distribution< double >& >(result))), SWIGTYPE_p_std__uniform_real_distributionT_double_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -82113,14 +81869,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"get_mem_usage_kb", _wrap_get_mem_usage_kb, METH_VARARGS, NULL},
 	 { (char *)"RandomGenerator_mt_set", _wrap_RandomGenerator_mt_set, METH_VARARGS, NULL},
 	 { (char *)"RandomGenerator_mt_get", _wrap_RandomGenerator_mt_get, METH_VARARGS, NULL},
-	 { (char *)"RandomGenerator_int_distrib_set", _wrap_RandomGenerator_int_distrib_set, METH_VARARGS, NULL},
-	 { (char *)"RandomGenerator_int_distrib_get", _wrap_RandomGenerator_int_distrib_get, METH_VARARGS, NULL},
-	 { (char *)"RandomGenerator_long_distrib_set", _wrap_RandomGenerator_long_distrib_set, METH_VARARGS, NULL},
-	 { (char *)"RandomGenerator_long_distrib_get", _wrap_RandomGenerator_long_distrib_get, METH_VARARGS, NULL},
-	 { (char *)"RandomGenerator_float_distrib_set", _wrap_RandomGenerator_float_distrib_set, METH_VARARGS, NULL},
-	 { (char *)"RandomGenerator_float_distrib_get", _wrap_RandomGenerator_float_distrib_get, METH_VARARGS, NULL},
-	 { (char *)"RandomGenerator_double_distrib_set", _wrap_RandomGenerator_double_distrib_set, METH_VARARGS, NULL},
-	 { (char *)"RandomGenerator_double_distrib_get", _wrap_RandomGenerator_double_distrib_get, METH_VARARGS, NULL},
 	 { (char *)"RandomGenerator_rand_long", _wrap_RandomGenerator_rand_long, METH_VARARGS, NULL},
 	 { (char *)"RandomGenerator_rand_int", _wrap_RandomGenerator_rand_int, METH_VARARGS, NULL},
 	 { (char *)"RandomGenerator_rand_float", _wrap_RandomGenerator_rand_float, METH_VARARGS, NULL},
@@ -84257,10 +84005,6 @@ static swig_type_info _swigt__p_std__functionT_void_ffaiss__Index_pF_t = {"_p_st
 static swig_type_info _swigt__p_std__listT_faiss__OnDiskInvertedLists__Slot_t = {"_p_std__listT_faiss__OnDiskInvertedLists__Slot_t", "std::list< faiss::OnDiskInvertedLists::Slot > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__mt19937 = {"_p_std__mt19937", "std::mt19937 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__pairT_void_p_unsigned_long_t = {"_p_std__pairT_void_p_unsigned_long_t", "std::pair< void *,unsigned long > *|std::pair< void *,size_t > *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_std__uniform_int_distributionT_int_t = {"_p_std__uniform_int_distributionT_int_t", "std::uniform_int_distribution< int > *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_std__uniform_int_distributionT_long_t = {"_p_std__uniform_int_distributionT_long_t", "std::uniform_int_distribution< long > *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_std__uniform_real_distributionT_double_t = {"_p_std__uniform_real_distributionT_double_t", "std::uniform_real_distribution< double > *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_std__uniform_real_distributionT_float_t = {"_p_std__uniform_real_distributionT_float_t", "std::uniform_real_distribution< float > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__unordered_mapT_long_long_t = {"_p_std__unordered_mapT_long_long_t", "std::unordered_map< long,long > *|std::unordered_map< faiss::Index::idx_t,faiss::Index::idx_t > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__unordered_multimapT_long_long_t = {"_p_std__unordered_multimapT_long_long_t", "std::unordered_multimap< long,long > *|std::unordered_multimap< faiss::Index::idx_t,faiss::Index::idx_t > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_char_t = {"_p_std__vectorT_char_t", "std::vector< char > *", 0, 0, (void*)0, 0};
@@ -84483,10 +84227,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_std__listT_faiss__OnDiskInvertedLists__Slot_t,
   &_swigt__p_std__mt19937,
   &_swigt__p_std__pairT_void_p_unsigned_long_t,
-  &_swigt__p_std__uniform_int_distributionT_int_t,
-  &_swigt__p_std__uniform_int_distributionT_long_t,
-  &_swigt__p_std__uniform_real_distributionT_double_t,
-  &_swigt__p_std__uniform_real_distributionT_float_t,
   &_swigt__p_std__unordered_mapT_long_long_t,
   &_swigt__p_std__unordered_multimapT_long_long_t,
   &_swigt__p_std__vectorT_char_t,
@@ -84709,10 +84449,6 @@ static swig_cast_info _swigc__p_std__functionT_void_ffaiss__Index_pF_t[] = {  {&
 static swig_cast_info _swigc__p_std__listT_faiss__OnDiskInvertedLists__Slot_t[] = {  {&_swigt__p_std__listT_faiss__OnDiskInvertedLists__Slot_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__mt19937[] = {  {&_swigt__p_std__mt19937, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__pairT_void_p_unsigned_long_t[] = {  {&_swigt__p_std__pairT_void_p_unsigned_long_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_std__uniform_int_distributionT_int_t[] = {  {&_swigt__p_std__uniform_int_distributionT_int_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_std__uniform_int_distributionT_long_t[] = {  {&_swigt__p_std__uniform_int_distributionT_long_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_std__uniform_real_distributionT_double_t[] = {  {&_swigt__p_std__uniform_real_distributionT_double_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_std__uniform_real_distributionT_float_t[] = {  {&_swigt__p_std__uniform_real_distributionT_float_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__unordered_mapT_long_long_t[] = {  {&_swigt__p_std__unordered_mapT_long_long_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__unordered_multimapT_long_long_t[] = {  {&_swigt__p_std__unordered_multimapT_long_long_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_char_t[] = {  {&_swigt__p_std__vectorT_char_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -84935,10 +84671,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_std__listT_faiss__OnDiskInvertedLists__Slot_t,
   _swigc__p_std__mt19937,
   _swigc__p_std__pairT_void_p_unsigned_long_t,
-  _swigc__p_std__uniform_int_distributionT_int_t,
-  _swigc__p_std__uniform_int_distributionT_long_t,
-  _swigc__p_std__uniform_real_distributionT_double_t,
-  _swigc__p_std__uniform_real_distributionT_float_t,
   _swigc__p_std__unordered_mapT_long_long_t,
   _swigc__p_std__unordered_multimapT_long_long_t,
   _swigc__p_std__vectorT_char_t,

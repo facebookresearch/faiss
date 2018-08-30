@@ -151,7 +151,7 @@ class TestBinaryIVF(unittest.TestCase):
         index.add(self.xb)
         Divfflat, _ = index.search(self.xq, 10)
 
-        self.assertEqual((self.Dref == Divfflat).sum(), 4110)
+        self.assertEqual((self.Dref == Divfflat).sum(), 4122)
 
 
 
