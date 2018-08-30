@@ -226,7 +226,7 @@ static void write_ScalarQuantizer (
     WRITEVECTOR (ivsc->trained);
 }
 
-static void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
+void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
     if (ils == nullptr) {
         uint32_t h = fourcc ("il00");
         WRITE1 (h);

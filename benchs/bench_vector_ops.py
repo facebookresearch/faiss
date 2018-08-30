@@ -10,6 +10,16 @@ import numpy as np
 import faiss
 import time
 
+swig_ptr = faiss.swig_ptr
+
+if False:
+    a = np.arange(10, 14).astype('float32')
+    b = np.arange(20, 24).astype('float32')
+
+    faiss.fvec_inner_product (swig_ptr(a), swig_ptr(b), 4)
+
+    1/0
+
 xd = 100
 yd = 1000000
 
@@ -29,9 +39,9 @@ for d in 3, 4, 12, 36, 64:
 
     t0 = time.time()
     for i in xrange(xd):
-        faiss.fvec_inner_products_ny(faiss.swig_ptr(distances[i]),
-                                     faiss.swig_ptr(x[i]),
-                                     faiss.swig_ptr(y),
+        faiss.fvec_inner_products_ny(swig_ptr(distances[i]),
+                                     swig_ptr(x[i]),
+                                     swig_ptr(y),
                                      d, yd)
     t1 = time.time()
 
@@ -57,9 +67,9 @@ for d in 3, 4, 12, 36, 64:
 
     t0 = time.time()
     for i in xrange(xd):
-        faiss.fvec_L2sqr_ny(faiss.swig_ptr(distances[i]),
-                            faiss.swig_ptr(x[i]),
-                            faiss.swig_ptr(y),
+        faiss.fvec_L2sqr_ny(swig_ptr(distances[i]),
+                            swig_ptr(x[i]),
+                            swig_ptr(y),
                             d, yd)
     t1 = time.time()
 

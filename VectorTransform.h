@@ -134,7 +134,7 @@ struct PCAMatrix: LinearTransform {
      * eigenvalues^eigen_power
      *
      * =0: no whitening
-     * =-2: full whitening
+     * =-0.5: full whitening
      */
     float eigen_power;
 

@@ -112,3 +112,94 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         res = faiss.StandardGpuResources()
         gpu_index = faiss.index_cpu_to_gpu(res, 0, index)
         faiss.GpuParameterSpace().set_index_parameter(gpu_index, "nprobe", 3)
+
+
+class ReferencedObject(unittest.TestCase):
+
+    d = 16
+    xb = np.random.rand(256, d).astype('float32')
+    nlist = 128
+
+    def test_proxy(self):
+        index = faiss.IndexProxy()
+        for i in range(3):
+            sub_index = faiss.IndexFlatL2(self.d)
+            sub_index.add(self.xb)
+            index.addIndex(sub_index)
+        assert index.d == self.d
+        index.search(self.xb, 10)
+
+    def test_resources(self):
+        # this used to crash!
+        index = faiss.index_cpu_to_gpu(faiss.StandardGpuResources(), 0,
+                                       faiss.IndexFlatL2(self.d))
+        index.add(self.xb)
+
+    def test_flat(self):
+        index = faiss.GpuIndexFlat(faiss.StandardGpuResources(),
+                                   self.d, faiss.METRIC_L2)
+        index.add(self.xb)
+
+    def test_ivfflat(self):
+        index = faiss.GpuIndexIVFFlat(
+            faiss.StandardGpuResources(),
+            self.d, self.nlist, faiss.METRIC_L2)
+        index.train(self.xb)
+
+    def test_ivfpq(self):
+        index_cpu = faiss.IndexIVFPQ(
+            faiss.IndexFlatL2(self.d),
+            self.d, self.nlist, 2, 8)
+        # speed up test
+        index_cpu.pq.cp.niter = 2
+        index_cpu.do_polysemous_training = False
+        index_cpu.train(self.xb)
+
+        index = faiss.GpuIndexIVFPQ(
+            faiss.StandardGpuResources(), index_cpu)
+        index.add(self.xb)
+
+
+class TestShardedFlat(unittest.TestCase):
+
+    def test_sharded(self):
+        d = 32
+        nb = 1000
+        nq = 200
+        k = 10
+        rs = np.random.RandomState(123)
+        xb = rs.rand(nb, d).astype('float32')
+        xq = rs.rand(nq, d).astype('float32')
+
+        index_cpu = faiss.IndexFlatL2(d)
+
+        assert faiss.get_num_gpus() > 1
+
+        co = faiss.GpuMultipleClonerOptions()
+        co.shard = True
+        index = faiss.index_cpu_to_all_gpus(index_cpu, co, ngpu=2)
+
+        index.add(xb)
+        D, I = index.search(xq, k)
+
+        index_cpu.add(xb)
+        D_ref, I_ref = index_cpu.search(xq, k)
+
+        assert np.all(I == I_ref)
+
+        del index
+        index2 = faiss.index_cpu_to_all_gpus(index_cpu, co, ngpu=2)
+        D2, I2 = index2.search(xq, k)
+
+        assert np.all(I2 == I_ref)
+
+        try:
+            index2.add(xb)
+        except RuntimeError:
+            pass
+        else:
+            assert False, "this call should fail!"
+
+
+if __name__ == '__main__':
+    unittest.main()

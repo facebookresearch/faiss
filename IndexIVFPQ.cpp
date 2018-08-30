@@ -421,11 +421,15 @@ void IndexIVFPQ::precompute_table ()
 namespace {
 
 static uint64_t get_cycles () {
+#ifdef  __x86_64__
     uint32_t high, low;
     asm volatile("rdtsc \n\t"
                  : "=a" (low),
                    "=d" (high));
     return ((uint64_t)high << 32) | (low);
+#else
+    return 0;
+#endif
 }
 
 #define TIC t0 = get_cycles()
@@ -987,8 +991,9 @@ void IndexIVFPQ::search_preassigned (idx_t nx, const float *qx, idx_t k,
                 if (list_size == 0) continue;
 
                 qt.init_list (key, coarse_dis_i[ik],
-                              list_size, invlists->get_ids (key),
-                              invlists->get_codes (key));
+                              list_size,
+                              InvertedLists::ScopedIds (invlists, key).get(),
+                              InvertedLists::ScopedCodes (invlists, key).get());
 
                 TIC;
                 if (polysemous_ht > 0) {
@@ -1063,10 +1068,11 @@ size_t IndexIVFPQ::find_duplicates (idx_t *dup_ids, size_t *lims) const
         size_t n = invlists->list_size (list_no);
         std::vector<int> ord (n);
         for (int i = 0; i < n; i++) ord[i] = i;
-        CodeCmp cs = { invlists->get_codes (list_no), code_size };
+        InvertedLists::ScopedCodes codes (invlists, list_no);
+        CodeCmp cs = { codes.get(), code_size };
         std::sort (ord.begin(), ord.end(), cs);
 
-        const idx_t *list_ids = invlists->get_ids (list_no);
+        InvertedLists::ScopedIds list_ids (invlists, list_no);
         int prev = -1;  // all elements from prev to i-1 are equal
         for (int i = 0; i < n; i++) {
             if (prev >= 0 && cs.cmp (ord [prev], ord [i]) == 0) {

@@ -205,8 +205,6 @@ Index *index_factory (int d, const char *description,
 
 IndexBinary *index_binary_factory (int d, const char *description);
 
-
-
 } // namespace faiss
 
 

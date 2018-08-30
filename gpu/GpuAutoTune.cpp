@@ -220,6 +220,74 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
 
     }
 
+    Index * clone_Index_to_shards (const Index *index) {
+        long n = sub_cloners.size();
+
+        auto index_ivfpq =
+            dynamic_cast<const faiss::IndexIVFPQ *>(index);
+        auto index_ivfflat =
+            dynamic_cast<const faiss::IndexIVFFlat *>(index);
+        auto index_flat =
+            dynamic_cast<const faiss::IndexFlat *>(index);
+        FAISS_THROW_IF_NOT_MSG (
+              index_ivfpq || index_ivfflat || index_flat,
+              "IndexShards implemented only for "
+              "IndexIVFFlat, IndexFlat and IndexIVFPQ");
+
+        std::vector<faiss::Index*> shards(n);
+
+        for(long i = 0; i < n; i++) {
+            // make a shallow copy
+            if(reserveVecs)
+                sub_cloners[i].reserveVecs =
+                    (reserveVecs + n - 1) / n;
+
+            if (index_ivfpq) {
+                faiss::IndexIVFPQ idx2(
+                    index_ivfpq->quantizer, index_ivfpq->d,
+                    index_ivfpq->nlist, index_ivfpq->code_size,
+                    index_ivfpq->pq.nbits);
+                idx2.metric_type = index_ivfpq->metric_type;
+                idx2.pq = index_ivfpq->pq;
+                idx2.nprobe = index_ivfpq->nprobe;
+                idx2.use_precomputed_table = 0;
+                idx2.is_trained = index->is_trained;
+                copy_ivf_shard (index_ivfpq, &idx2, n, i);
+                shards[i] = sub_cloners[i].clone_Index(&idx2);
+            } else if (index_ivfflat) {
+                faiss::IndexIVFFlat idx2(
+                    index_ivfflat->quantizer, index->d,
+                    index_ivfflat->nlist, index_ivfflat->metric_type);
+                idx2.nprobe = index_ivfflat->nprobe;
+                copy_ivf_shard (index_ivfflat, &idx2, n, i);
+                shards[i] = sub_cloners[i].clone_Index(&idx2);
+            } else if (index_flat) {
+                faiss::IndexFlat idx2 (
+                    index->d, index->metric_type);
+                shards[i] = sub_cloners[i].clone_Index(&idx2);
+                if (index->ntotal > 0) {
+                    long i0 = index->ntotal * i / n;
+                    long i1 = index->ntotal * (i + 1) / n;
+                    shards[i]->add (
+                         i1 - i0,
+                         index_flat->xb.data() + i0 * index->d);
+                }
+            }
+        }
+
+        bool successive_ids = index_flat != nullptr;
+        faiss::IndexShards *res =
+            new faiss::IndexShards(index->d, true,
+                                   successive_ids);
+
+        for (int i = 0; i < n; i++) {
+            res->add_shard(shards[i]);
+        }
+        res->own_fields = true;
+        FAISS_ASSERT(index->ntotal == res->ntotal);
+        return res;
+    }
+
     Index *clone_Index(const Index *index) override {
         long n = sub_cloners.size();
         if (n == 1)
@@ -236,54 +304,7 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
                 res->own_fields = true;
                 return res;
             } else {
-                auto index_ivfpq =
-                    dynamic_cast<const faiss::IndexIVFPQ *>(index);
-                auto index_ivfflat =
-                    dynamic_cast<const faiss::IndexIVFFlat *>(index);
-                FAISS_THROW_IF_NOT_MSG (index_ivfpq || index_ivfflat,
-                              "IndexShards implemented only for "
-                              "IndexIVFFlat or IndexIVFPQ");
-                std::vector<faiss::Index*> shards(n);
-
-                for(long i = 0; i < n; i++) {
-                    // make a shallow copy
-                    if(reserveVecs)
-                        sub_cloners[i].reserveVecs =
-                            (reserveVecs + n - 1) / n;
-
-                    if (index_ivfpq) {
-                        faiss::IndexIVFPQ idx2(
-                              index_ivfpq->quantizer, index_ivfpq->d,
-                              index_ivfpq->nlist, index_ivfpq->code_size,
-                              index_ivfpq->pq.nbits);
-                        idx2.metric_type = index_ivfpq->metric_type;
-                        idx2.pq = index_ivfpq->pq;
-                        idx2.nprobe = index_ivfpq->nprobe;
-                        idx2.use_precomputed_table = 0;
-                        idx2.is_trained = index->is_trained;
-                        copy_ivf_shard (index_ivfpq, &idx2, n, i);
-                        shards[i] = sub_cloners[i].clone_Index(&idx2);
-                    } else if (index_ivfflat) {
-                        faiss::IndexIVFFlat idx2(
-                              index_ivfflat->quantizer, index->d,
-                              index_ivfflat->nlist, index_ivfflat->metric_type);
-                        idx2.nprobe = index_ivfflat->nprobe;
-                        idx2.nprobe = index_ivfflat->nprobe;
-                        copy_ivf_shard (index_ivfflat, &idx2, n, i);
-                        shards[i] = sub_cloners[i].clone_Index(&idx2);
-                    }
-
-
-                }
-                faiss::IndexShards *res =
-                    new faiss::IndexShards(index->d, true, false);
-
-                for (int i = 0; i < n; i++) {
-                    res->add_shard(shards[i]);
-                }
-                res->own_fields = true;
-                FAISS_ASSERT(index->ntotal == res->ntotal);
-                return res;
+                return clone_Index_to_shards (index);
             }
         } else if(auto miq = dynamic_cast<const MultiIndexQuantizer *>(index)) {
             if (verbose) {

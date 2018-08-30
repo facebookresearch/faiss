@@ -19,11 +19,6 @@
 #include <unordered_map>
 #include <vector>
 
-int main(int argc, char** argv) {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
-
 void testForSize(int rows, int cols, int k, bool dir, bool warp) {
   std::vector<float> v = faiss::gpu::randVecs(rows, cols);
   faiss::gpu::HostTensor<float, 2, true> hostVal({rows, cols});
@@ -183,4 +178,13 @@ TEST(TestGpuSelect, testExactWarp) {
 
     testForSize(rows, cols, cols, dir, true);
   }
+}
+
+int main(int argc, char** argv) {
+  testing::InitGoogleTest(&argc, argv);
+
+  // just run with a fixed test seed
+  faiss::gpu::setTestSeed(100);
+
+  return RUN_ALL_TESTS();
 }

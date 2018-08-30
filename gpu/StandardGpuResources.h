@@ -48,6 +48,10 @@ class StandardGpuResources : public GpuResources {
   /// for all devices
   void setDefaultNullStreamAllDevices();
 
+  /// Enable or disable the warning about not having enough temporary memory
+  /// when cudaMalloc gets called
+  void setCudaMallocWarning(bool b);
+
  public:
   /// Internal system calls
   void initializeForDevice(int device) override;
@@ -100,6 +104,9 @@ class StandardGpuResources : public GpuResources {
 
   /// Amount of pinned memory we should allocate
   size_t pinnedMemSize_;
+
+  /// Whether or not a warning upon cudaMalloc is generated
+  bool cudaMallocWarning_;
 };
 
 } } // namespace

@@ -26,7 +26,9 @@
 #include <unistd.h>
 #include <stdint.h>
 
+#ifdef __SSE__
 #include <immintrin.h>
+#endif
 
 #include "utils.h"
 #include "Heap.h"
@@ -1869,6 +1871,7 @@ struct DistanceXPQ4: Distance2Level {
 
     float operator () (storage_idx_t i) override
     {
+#ifdef __SSE__
         const uint8_t *code = storage.codes.data() + i * storage.code_size;
         long key = 0;
         memcpy (&key, code, storage.code_size_1);
@@ -1892,6 +1895,9 @@ struct DistanceXPQ4: Distance2Level {
         accu = _mm_hadd_ps (accu, accu);
         accu = _mm_hadd_ps (accu, accu);
         return  _mm_cvtss_f32 (accu);
+#else
+        FAISS_THROW_MSG("not implemented for non-x64 platforms");
+#endif
     }
 
 };
@@ -1920,6 +1926,7 @@ struct Distance2xXPQ4: Distance2Level {
         long key01 = 0;
         memcpy (&key01, code, storage.code_size_1);
         code += storage.code_size_1;
+#ifdef __SSE__
 
         // walking pointers
         const float *qa = q;
@@ -1945,6 +1952,9 @@ struct Distance2xXPQ4: Distance2Level {
         accu = _mm_hadd_ps (accu, accu);
         accu = _mm_hadd_ps (accu, accu);
         return  _mm_cvtss_f32 (accu);
+#else
+        FAISS_THROW_MSG("not implemented for non-x64 platforms");
+#endif
     }
 
 };
@@ -1957,6 +1967,7 @@ HNSW::DistanceComputer * IndexHNSW2Level::get_distance_computer () const
         dynamic_cast<Index2Layer*>(storage);
 
     if (storage2l) {
+#ifdef __SSE__
 
         const MultiIndexQuantizer *mi =
             dynamic_cast<MultiIndexQuantizer*> (storage2l->q1.quantizer);
@@ -1971,6 +1982,7 @@ HNSW::DistanceComputer * IndexHNSW2Level::get_distance_computer () const
         if (fl && storage2l->pq.dsub == 4) {
             return new DistanceXPQ4(*storage2l);
         }
+#endif
     }
 
     // IVFPQ and cases not handled above

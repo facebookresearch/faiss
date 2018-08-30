@@ -198,7 +198,7 @@ struct IOWriter {
 
 
 struct VectorIOReader:IOReader {
-    const std::vector<uint8_t> data;
+    std::vector<uint8_t> data;
     size_t rp = 0;
     size_t operator()(void *ptr, size_t size, size_t nitems) override;
 };

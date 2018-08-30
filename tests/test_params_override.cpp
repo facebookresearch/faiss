@@ -17,6 +17,7 @@
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/AutoTune.h>
+#include <faiss/IVFlib.h>
 
 using namespace faiss;
 
@@ -45,19 +46,17 @@ std::vector<float> make_data(size_t n)
     return database;
 }
 
-std::unique_ptr<IndexIVF> make_index(const char *index_type,
+std::unique_ptr<Index> make_index(const char *index_type,
                                      MetricType metric,
                                      const std::vector<float> & x)
 {
-
-    auto index = std::unique_ptr<IndexIVF>
-        (dynamic_cast<IndexIVF*>(index_factory(d, index_type, metric)));
+    std::unique_ptr<Index> index(index_factory(d, index_type, metric));
     index->train(nb, x.data());
     index->add(nb, x.data());
     return index;
 }
 
-std::vector<idx_t> search_index(IndexIVF *index, const float *xq) {
+std::vector<idx_t> search_index(Index *index, const float *xq) {
     int k = 10;
     std::vector<idx_t> I(k * nq);
     std::vector<float> D(k * nq);
@@ -66,19 +65,12 @@ std::vector<idx_t> search_index(IndexIVF *index, const float *xq) {
 }
 
 std::vector<idx_t> search_index_with_params(
-        IndexIVF *index, const float *xq, IVFSearchParameters *params) {
+        Index *index, const float *xq, IVFSearchParameters *params) {
     int k = 10;
     std::vector<idx_t> I(k * nq);
     std::vector<float> D(k * nq);
-
-    std::vector<idx_t> Iq(params->nprobe * nq);
-    std::vector<float> Dq(params->nprobe * nq);
-
-    index->quantizer->search(nq, xq, params->nprobe,
-                             Dq.data(), Iq.data());
-    index->search_preassigned(nq, xq, k, Iq.data(), Dq.data(),
-                              D.data(), I.data(),
-                              false, params);
+    ivflib::search_with_parameters (index, nq, xq, k,
+                                    D.data(), I.data(), params);
     return I;
 }
 
@@ -92,14 +84,15 @@ std::vector<idx_t> search_index_with_params(
 int test_params_override (const char *index_key, MetricType metric) {
     std::vector<float> xb = make_data(nb); // database vectors
     auto index = make_index(index_key, metric, xb);
-    index->train(nb, xb.data());
-    index->add(nb, xb.data());
+    //index->train(nb, xb.data());
+    // index->add(nb, xb.data());
     std::vector<float> xq = make_data(nq);
-    index->nprobe = 2;
+    ParameterSpace ps;
+    ps.set_index_parameter(index.get(), "nprobe", 2);
     auto res2ref = search_index(index.get(), xq.data());
-    index->nprobe = 9;
+    ps.set_index_parameter(index.get(), "nprobe", 9);
     auto res9ref = search_index(index.get(), xq.data());
-    index->nprobe = 1;
+    ps.set_index_parameter(index.get(), "nprobe", 1);
 
     IVFSearchParameters params;
     params.max_codes = 0;
@@ -143,6 +136,13 @@ TEST(TPO, IVFSQ) {
     int err1 = test_params_override ("IVF32,SQ8", METRIC_L2);
     EXPECT_EQ(err1, 0);
     int err2 = test_params_override ("IVF32,SQ8", METRIC_INNER_PRODUCT);
+    EXPECT_EQ(err2, 0);
+}
+
+TEST(TPO, IVFFlatPP) {
+    int err1 = test_params_override ("PCA16,IVF32,SQ8", METRIC_L2);
+    EXPECT_EQ(err1, 0);
+    int err2 = test_params_override ("PCA16,IVF32,SQ8", METRIC_INNER_PRODUCT);
     EXPECT_EQ(err2, 0);
 }
 

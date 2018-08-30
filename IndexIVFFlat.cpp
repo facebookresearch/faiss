@@ -18,6 +18,7 @@
 #include "IndexFlat.h"
 #include "AuxIndexStructures.h"
 
+
 namespace faiss {
 
 
@@ -31,8 +32,6 @@ IndexIVFFlat::IndexIVFFlat (Index * quantizer,
 {
     code_size = sizeof(float) * d;
 }
-
-
 
 
 void IndexIVFFlat::add_with_ids (idx_t n, const float * x, const long *xids)
@@ -122,8 +121,8 @@ void search_knn_for_ivf (const IndexIVFFlat & ivf,
 
             nlistv++;
             size_t list_size = ivf.invlists->list_size(key);
-            const float * list_vecs =
-                (const float*)ivf.invlists->get_codes (key);
+            InvertedLists::ScopedCodes scodes (ivf.invlists, key);
+            const float * list_vecs = (const float*)scodes.get();
             const Index::idx_t * ids = store_pairs ? nullptr :
                 ivf.invlists->get_ids (key);
 
@@ -137,6 +136,10 @@ void search_knn_for_ivf (const IndexIVFFlat & ivf,
                     heap_push<C> (k, simi, idxi, dis, id);
                 }
             }
+            if (ids) {
+                ivf.invlists->release_ids (ids);
+            }
+
             nscan += list_size;
             if (max_codes && nscan >= max_codes)
                 break;
@@ -213,9 +216,9 @@ void IndexIVFFlat::range_search (idx_t nx, const float *x, float radius,
                 }
 
                 const size_t list_size = invlists->list_size(key);
-                const float * list_vecs =
-                    (const float*)invlists->get_codes (key);
-                const Index::idx_t * ids = invlists->get_ids (key);
+                InvertedLists::ScopedCodes scodes (invlists, key);
+                const float * list_vecs = (const float*)scodes.get();
+                InvertedLists::ScopedIds ids (invlists, key);
 
                 for (size_t j = 0; j < list_size; j++) {
                     const float * yj = list_vecs + d * j;
@@ -355,11 +358,12 @@ void IndexIVFFlatDedup::add_with_ids(
         const float *xi = x + i * d;
 
         // search if there is already an entry with that id
-        const uint8_t * codes = invlists->get_codes (list_no);
+        InvertedLists::ScopedCodes codes (invlists, list_no);
+
         long n = invlists->list_size (list_no);
         long offset = -1;
         for (long o = 0; o < n; o++) {
-            if (!memcmp (codes + o * code_size,
+            if (!memcmp (codes.get() + o * code_size,
                          xi, code_size)) {
                 offset = o;
                 break;
@@ -479,7 +483,7 @@ long IndexIVFFlatDedup::remove_ids(const IDSelector& sel)
 #pragma omp parallel for
     for (long i = 0; i < nlist; i++) {
         long l0 = invlists->list_size (i), l = l0, j = 0;
-        const idx_t *idsi = invlists->get_ids (i);
+        InvertedLists::ScopedIds idsi (invlists, i);
         while (j < l) {
             if (sel.is_member (idsi[j])) {
                 if (replace.count(idsi[j]) == 0) {
@@ -487,12 +491,12 @@ long IndexIVFFlatDedup::remove_ids(const IDSelector& sel)
                     invlists->update_entry (
                         i, j,
                         invlists->get_single_id (i, l),
-                        invlists->get_single_code (i, l));
+                        InvertedLists::ScopedCodes (invlists, i, l).get());
                 } else {
                     invlists->update_entry (
                         i, j,
                         replace[idsi[j]],
-                        invlists->get_single_code (i, j));
+                        InvertedLists::ScopedCodes (invlists, i, j).get());
                     j++;
                 }
             } else {
