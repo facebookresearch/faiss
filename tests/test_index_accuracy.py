@@ -40,7 +40,8 @@ class Randu10k:
         index.add(self.xb)
         return index.search(self.xq, self.k)
 
-    def evalres(self, (D, I)):
+    def evalres(self, res):
+        D, I = res
         e = {}
         for rank in 1, 10, 100:
             e[rank] = (I[:, :rank] == self.gt.reshape(-1, 1)).sum() / float(self.nq)
@@ -161,8 +162,8 @@ class IndexAccuracy(unittest.TestCase):
         res = ev.launch('Polysemous ht=%d' % index.polysemous_ht,
                         index)
         e_polysemous = ev.evalres(res)
-        print e_baseline, e_polysemous,  index.polysemous_ht
-        print stats.n_hamming_pass, stats.ncode
+        print(e_baseline, e_polysemous,  index.polysemous_ht)
+        print(stats.n_hamming_pass, stats.ncode)
         # The randu dataset is difficult, so we are not too picky on
         # the results. Here we assert that we have < 10 % loss when
         # computing full PQ on fewer than 20% of the data.
