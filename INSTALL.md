@@ -10,7 +10,7 @@ Install via Conda
 
 The easiest way to install FAISS is from anaconda. We regularly push stable releases to conda channel. FAISS conda package is built with conda gcc, depends on libgcc, mkl and numpy package shipped in conda in runtime.
 
-Currently we support faiss-cpu on both Linux and OSX platforms. We also provide faiss-gpu compiled with CUDA8.0/CUDA9.0/CUDA9.1 on Linux systems.
+Currently we support faiss-cpu on both Linux and OSX platforms. We also provide faiss-gpu compiled with CUDA8.0/CUDA9.0/CUDA9.2 on Linux systems.
 
 You can easily install it by
 
@@ -20,7 +20,7 @@ conda install faiss-cpu -c pytorch
 # Make sure you have CUDA installed before installing faiss-gpu, otherwise it falls back to CPU version
 conda install faiss-gpu -c pytorch # [DEFAULT]For CUDA8.0
 conda install faiss-gpu cuda90 -c pytorch # For CUDA9.0
-conda install faiss-gpu cuda91 -c pytorch # For CUDA9.1
+conda install faiss-gpu cuda92 -c pytorch # For CUDA9.2
 # cuda90/cuda91 shown above is a feature, it doesn't install CUDA for you.
 ```
 
