@@ -59,7 +59,7 @@ kprobe = int(np.sqrt(ncentroids))
 nbits = d
 
 # Parameters for indexes involving PQ
-M = d / 8                # for PQ: #subquantizers
+M = int(d / 8)           # for PQ: #subquantizers
 nbits_per_index = 8      # for PQ
 
 
