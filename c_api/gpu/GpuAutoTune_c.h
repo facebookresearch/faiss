@@ -36,6 +36,17 @@ int faiss_index_cpu_to_gpu_with_options(
     const FaissIndex *index, const FaissGpuClonerOptions* options,
     FaissGpuIndex** p_out);
 
+int faiss_index_cpu_to_gpu_multiple(
+    FaissGpuResources** resources_vec, size_t resources_vec_size,
+    int* devices, size_t devices_size,
+    const FaissIndex* index, FaissGpuIndex** p_out);
+
+int faiss_index_cpu_to_gpu_multiple_with_options(
+    FaissGpuResources** resources_vec, size_t resources_vec_size,
+    int* devices, size_t devices_size,
+    const FaissIndex* index, const FaissGpuMultipleClonerOptions* options,
+    FaissGpuIndex** p_out);
+
 /// parameter space and setters for GPU indexes
 FAISS_DECLARE_CLASS_INHERITED(GpuParameterSpace, ParameterSpace)
 
