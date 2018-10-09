@@ -57,13 +57,13 @@ int faiss_index_cpu_to_gpu_with_options(
 }
 
 int faiss_index_cpu_to_gpu_multiple(
-    FaissGpuResources** resources_vec, size_t resources_vec_size,
-    int* devices, size_t devices_size,
+    FaissGpuResources* const* resources_vec,
+    const int* devices, size_t devices_size,
     const FaissIndex* index, FaissGpuIndex** p_out)
 {
     try {
-        std::vector<GpuResources*> res(resources_vec_size);
-        for (auto i = 0u; i < resources_vec_size; ++i) {
+        std::vector<GpuResources*> res(devices_size);
+        for (auto i = 0u; i < devices_size; ++i) {
             res[i] = reinterpret_cast<GpuResources*>(resources_vec[i]);
         }
 
