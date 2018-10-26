@@ -69,7 +69,7 @@ struct Codec8bit {
         return (code[i] + 0.5f) / 255.0f;
     }
 
-#ifdef USE_AVX
+/*#ifdef USE_AVX
     static __m256 decode_8_components (const uint8_t *code, int i) {
         uint64_t c8 = *(uint64_t*)(code + i);
         __m128i c4lo = _mm_cvtepu8_epi32 (_mm_set1_epi32(c8));
@@ -83,7 +83,7 @@ struct Codec8bit {
         __m256 one_255 = _mm256_set1_ps (1.f / 255.f);
         return f8 * one_255;
     }
-#endif
+#endif*/
 };
 
 
@@ -98,7 +98,7 @@ struct Codec4bit {
     }
 
 
-#ifdef USE_AVX
+/*#ifdef USE_AVX
     static __m256 decode_8_components (const uint8_t *code, int i) {
         uint32_t c4 = *(uint32_t*)(code + (i >> 1));
         uint32_t mask = 0x0f0f0f0f;
@@ -118,12 +118,12 @@ struct Codec4bit {
         __m256 one_255 = _mm256_set1_ps (1.f / 15.f);
         return f8 * one_255;
     }
-#endif
+#endif*/
 };
 
 
 #ifdef USE_AVX
-
+/*
 
 uint16_t encode_fp16 (float x) {
     __m128 xf = _mm_set1_ps (x);
@@ -138,7 +138,7 @@ float decode_fp16 (uint16_t x) {
     __m128 xf = _mm_cvtph_ps (xi);
     return _mm_cvtss_f32 (xf);
 }
-
+*/
 #else
 
 // non-intrinsic FP16 <-> FP32 code adapted from
