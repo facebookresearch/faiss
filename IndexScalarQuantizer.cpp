@@ -69,8 +69,7 @@ struct Codec8bit {
         return (code[i] + 0.5f) / 255.0f;
     }
 
-#ifdef USE_AVX
-    /*
+/*#ifdef USE_AVX
     static __m256 decode_8_components (const uint8_t *code, int i) {
         uint64_t c8 = *(uint64_t*)(code + i);
         __m128i c4lo = _mm_cvtepu8_epi32 (_mm_set1_epi32(c8));
@@ -84,8 +83,7 @@ struct Codec8bit {
         __m256 one_255 = _mm256_set1_ps (1.f / 255.f);
         return f8 * one_255;
     }
-    */
-#endif
+#endif*/
 };
 
 
@@ -100,8 +98,7 @@ struct Codec4bit {
     }
 
 
-#ifdef USE_AVX
-    /*
+/*#ifdef USE_AVX
     static __m256 decode_8_components (const uint8_t *code, int i) {
         uint32_t c4 = *(uint32_t*)(code + (i >> 1));
         uint32_t mask = 0x0f0f0f0f;
@@ -121,13 +118,11 @@ struct Codec4bit {
         __m256 one_255 = _mm256_set1_ps (1.f / 15.f);
         return f8 * one_255;
     }
-    */
-#endif
+#endif*/
 };
 
 
-#ifdef USE_AVX
-/*
+/*#ifdef USE_AVX
 
 uint16_t encode_fp16 (float x) {
     __m128 xf = _mm_set1_ps (x);
@@ -142,8 +137,8 @@ float decode_fp16 (uint16_t x) {
     __m128 xf = _mm_cvtph_ps (xi);
     return _mm_cvtss_f32 (xf);
 }
-*/
-#else
+
+#else*/
 
 // non-intrinsic FP16 <-> FP32 code adapted from
 // https://github.com/ispc/ispc/blob/master/stdlib.ispc
@@ -238,7 +233,7 @@ float decode_fp16 (uint16_t h) {
     return floatbits(((exp == shifted_exp) ? infnan_val : reg_val) | sign_bit);
 }
 
-#endif
+//#endif
 
 
 
@@ -299,8 +294,7 @@ struct QuantizerUniform: Quantizer {
 
 
 
-#ifdef USE_AVX
-/*
+/*#ifdef USE_AVX
 template<class Codec>
 struct QuantizerUniform8: QuantizerUniform<Codec> {
 
@@ -314,8 +308,7 @@ struct QuantizerUniform8: QuantizerUniform<Codec> {
     }
 
 };
-*/
-#endif
+#endif*/
 
 
 
@@ -354,8 +347,7 @@ struct QuantizerNonUniform: Quantizer {
 };
 
 
-#ifdef USE_AVX
-/*
+/*#ifdef USE_AVX
 template<class Codec>
 struct QuantizerNonUniform8: QuantizerNonUniform<Codec> {
 
@@ -370,8 +362,8 @@ struct QuantizerNonUniform8: QuantizerNonUniform<Codec> {
 
 
 };
-*/
-#endif
+
+#endif*/
 
 struct QuantizerFP16: Quantizer {
     const size_t d;
@@ -399,8 +391,7 @@ struct QuantizerFP16: Quantizer {
 
 };
 
-#ifdef USE_AVX
-/*
+/*#ifdef USE_AVX
 struct QuantizerFP16_8: QuantizerFP16 {
 
     QuantizerFP16_8 (size_t d, const std::vector<float> &trained):
@@ -413,8 +404,7 @@ struct QuantizerFP16_8: QuantizerFP16 {
     }
 
 };
-*/
-#endif
+#endif*/
 
 
 
@@ -423,8 +413,7 @@ Quantizer *select_quantizer (
           QuantizerType qtype,
           size_t d, const std::vector<float> & trained)
 {
-#ifdef USE_AVX
-    /*
+/*#ifdef USE_AVX
     if (d % 8 == 0) {
         switch(qtype) {
         case ScalarQuantizer::QT_8bit:
@@ -439,8 +428,7 @@ Quantizer *select_quantizer (
             return new QuantizerFP16_8 (d, trained);
         }
     } else
-    */
-#endif
+#endif*/
     {
         switch(qtype) {
         case ScalarQuantizer::QT_8bit:
@@ -657,8 +645,7 @@ struct SimilarityL2 {
         return accu;
     }
 
-#ifdef USE_AVX
-    /*
+/*#ifdef USE_AVX
     __m256 accu8;
 
     void begin_8 () {
@@ -686,8 +673,7 @@ struct SimilarityL2 {
             _mm_cvtss_f32 (_mm256_castps256_ps128(sum2)) +
             _mm_cvtss_f32 (_mm256_extractf128_ps(sum2, 1));
     }
-    */
-#endif
+#endif*/
 
 };
 
@@ -718,8 +704,7 @@ struct SimilarityIP {
         return accu;
     }
 
-#ifdef USE_AVX
-/*
+/*#ifdef USE_AVX
     __m256 accu8;
 
     void begin_8 () {
@@ -745,8 +730,7 @@ struct SimilarityIP {
             _mm_cvtss_f32 (_mm256_castps256_ps128(sum2)) +
             _mm_cvtss_f32 (_mm256_extractf128_ps(sum2, 1));
     }
-    */
-#endif
+#endif*/
 };
 
 
@@ -792,8 +776,7 @@ struct DCTemplate : ScalarQuantizer::DistanceComputer {
 
 };
 
-#ifdef USE_AVX
-/*
+/*#ifdef USE_AVX
 template<class Quantizer, class Similarity>
 struct DCTemplate_8 : ScalarQuantizer::DistanceComputer {
 
@@ -829,9 +812,8 @@ struct DCTemplate_8 : ScalarQuantizer::DistanceComputer {
     }
 
 };
-*/
 
-#endif
+#endif*/
 
 
 
@@ -840,8 +822,7 @@ DistanceComputer *select_distance_computer (
           QuantizerType qtype,
           size_t d, const std::vector<float> & trained)
 {
-#ifdef USE_AVX
-    /*
+/*#ifdef USE_AVX
     if (d % 8 == 0) {
         switch(qtype) {
         case ScalarQuantizer::QT_8bit:
@@ -860,8 +841,7 @@ DistanceComputer *select_distance_computer (
             return new DCTemplate_8<QuantizerFP16_8, Sim>(d, trained);
         }
     } else
-    */
-#endif
+#endif*/
     {
         switch(qtype) {
         case ScalarQuantizer::QT_8bit:
