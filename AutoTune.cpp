@@ -387,7 +387,7 @@ void ParameterSpace::initialize (const Index * index)
             for (int i = 8; i < 20; i++) {
                 pr_max_codes.values.push_back (1 << i);
             }
-            pr_max_codes.values.push_back (1.0 / 0.0);
+            pr_max_codes.values.push_back (std::numeric_limits<double>::infinity());
         }
     }
     if (DC (IndexIVFPQR)) {

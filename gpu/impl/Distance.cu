@@ -19,6 +19,7 @@
 #include "../utils/BlockSelectKernel.cuh"
 
 #include <memory>
+#include <algorithm>
 #include <thrust/fill.h>
 #include <thrust/for_each.h>
 #include <thrust/device_ptr.h>
