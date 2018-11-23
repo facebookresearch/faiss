@@ -114,10 +114,10 @@ void HeapArray<C>::per_line_extrema (
 
 // explicit instanciations
 
-template class HeapArray<CMin <float, long> >;
-template class HeapArray<CMax <float, long> >;
-template class HeapArray<CMin <int, long> >;
-template class HeapArray<CMax <int, long> >;
+template struct HeapArray<CMin <float, long> >;
+template struct HeapArray<CMax <float, long> >;
+template struct HeapArray<CMin <int, long> >;
+template struct HeapArray<CMax <int, long> >;
 
 
 }  // END namespace fasis

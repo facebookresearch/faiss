@@ -168,7 +168,7 @@ struct HNSWStats {
 // global var that collects them all
 extern HNSWStats hnsw_stats;
 
-class IndexHNSW;
+struct IndexHNSW;
 
 struct ReconstructFromNeighbors {
     typedef Index::idx_t idx_t;

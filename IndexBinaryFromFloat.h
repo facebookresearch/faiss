@@ -17,7 +17,7 @@
 namespace faiss {
 
 
-class Index;
+struct Index;
 
 /** IndexBinary backed by a float Index.
  *
