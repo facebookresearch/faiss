@@ -10,8 +10,6 @@ COPY . /opt/faiss
 
 WORKDIR /opt/faiss
 
-ENV BLASLDFLAGS=/usr/lib/libopenblas.so.0
-
 RUN ./configure && \
     make -j $(nproc) && \
     make test && \
