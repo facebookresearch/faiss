@@ -30,6 +30,8 @@
 #include "IndexBinaryFlat.h"
 #include "IndexBinaryIVF.h"
 
+#include <cmath>
+
 namespace faiss {
 
 
@@ -514,7 +516,7 @@ void ParameterSpace::set_index_parameter (
     }
     if (name == "max_codes") {
         if (DC (IndexIVF)) {
-            ix->max_codes = finite(val) ? size_t(val) : 0;
+            ix->max_codes = std::isfinite(val) ? size_t(val) : 0;
             return;
         }
     }

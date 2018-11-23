@@ -71,7 +71,7 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
     // yes it is the user's responsibility, but it may spare us some
     // hard-to-debug reports.
     for (size_t i = 0; i < nx * d; i++) {
-      FAISS_THROW_IF_NOT_MSG (finite (x_in[i]),
+      FAISS_THROW_IF_NOT_MSG (std::isfinite(x_in[i]),
                         "input contains NaN's or Inf's");
     }
 
