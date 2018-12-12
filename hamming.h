@@ -181,7 +181,13 @@ hamdis_t hamming (
 struct HammingComputer4 {
     uint32_t a0;
 
+    HammingComputer4 () {}
+
     HammingComputer4 (const uint8_t *a, int code_size) {
+        set (a, code_size);
+    }
+
+    void set (const uint8_t *a, int code_size) {
         assert (code_size == 4);
         a0 = *(uint32_t *)a;
     }
@@ -195,7 +201,13 @@ struct HammingComputer4 {
 struct HammingComputer8 {
     uint64_t a0;
 
+    HammingComputer8 () {}
+
     HammingComputer8 (const uint8_t *a, int code_size) {
+        set (a, code_size);
+    }
+
+    void set (const uint8_t *a, int code_size) {
         assert (code_size == 8);
         a0 = *(uint64_t *)a;
     }
@@ -209,7 +221,14 @@ struct HammingComputer8 {
 
 struct HammingComputer16 {
     uint64_t a0, a1;
+
+    HammingComputer16 () {}
+
     HammingComputer16 (const uint8_t *a8, int code_size) {
+        set (a8, code_size);
+    }
+
+    void set (const uint8_t *a8, int code_size) {
         assert (code_size == 16);
         const uint64_t *a = (uint64_t *)a8;
         a0 = a[0]; a1 = a[1];
@@ -228,7 +247,13 @@ struct HammingComputer20 {
     uint64_t a0, a1;
     uint32_t a2;
 
+    HammingComputer20 () {}
+
     HammingComputer20 (const uint8_t *a8, int code_size) {
+        set (a8, code_size);
+    }
+
+    void set (const uint8_t *a8, int code_size) {
         assert (code_size == 20);
         const uint64_t *a = (uint64_t *)a8;
         a0 = a[0]; a1 = a[1]; a2 = a[2];
@@ -244,7 +269,13 @@ struct HammingComputer20 {
 struct HammingComputer32 {
     uint64_t a0, a1, a2, a3;
 
+    HammingComputer32 () {}
+
     HammingComputer32 (const uint8_t *a8, int code_size) {
+        set (a8, code_size);
+    }
+
+    void set (const uint8_t *a8, int code_size) {
         assert (code_size == 32);
         const uint64_t *a = (uint64_t *)a8;
         a0 = a[0]; a1 = a[1]; a2 = a[2]; a3 = a[3];
@@ -261,7 +292,13 @@ struct HammingComputer32 {
 struct HammingComputer64 {
     uint64_t a0, a1, a2, a3, a4, a5, a6, a7;
 
+    HammingComputer64 () {}
+
     HammingComputer64 (const uint8_t *a8, int code_size) {
+        set (a8, code_size);
+    }
+
+    void set (const uint8_t *a8, int code_size) {
         assert (code_size == 64);
         const uint64_t *a = (uint64_t *)a8;
         a0 = a[0]; a1 = a[1]; a2 = a[2]; a3 = a[3];
@@ -278,11 +315,18 @@ struct HammingComputer64 {
 
 };
 
+// very inefficient...
 struct HammingComputerDefault {
     const uint8_t *a;
     int n;
 
+    HammingComputerDefault () {}
+
     HammingComputerDefault (const uint8_t *a8, int code_size) {
+        set (a8, code_size);
+    }
+
+    void set (const uint8_t *a8, int code_size) {
         a =  a8;
         n = code_size;
     }
@@ -301,7 +345,13 @@ struct HammingComputerM8 {
     const uint64_t *a;
     int n;
 
+    HammingComputerM8 () {}
+
     HammingComputerM8 (const uint8_t *a8, int code_size) {
+        set (a8, code_size);
+    }
+
+    void set (const uint8_t *a8, int code_size) {
         assert (code_size % 8 == 0);
         a =  (uint64_t *)a8;
         n = code_size / 8;
@@ -317,16 +367,23 @@ struct HammingComputerM8 {
 
 };
 
-// very inefficient...
+// even more inefficient!
 struct HammingComputerM4 {
     const uint32_t *a;
     int n;
 
+    HammingComputerM4 () {}
+
     HammingComputerM4 (const uint8_t *a4, int code_size) {
+        set (a4, code_size);
+    }
+
+    void set (const uint8_t *a4, int code_size) {
         assert (code_size % 4 == 0);
         a =  (uint32_t *)a4;
         n = code_size / 4;
     }
+
     int hamming (const uint8_t *b8) const {
         const uint32_t *b = (uint32_t *)b8;
         int accu = 0;

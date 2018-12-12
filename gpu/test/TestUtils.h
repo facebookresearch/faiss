@@ -55,6 +55,9 @@ T randSelect(std::initializer_list<T> vals) {
 /// Generates a collection of random vectors in the range [0, 1]
 std::vector<float> randVecs(size_t num, size_t dim);
 
+/// Generates a collection of random bit vectors
+std::vector<unsigned char> randBinaryVecs(size_t num, size_t dim);
+
 /// Compare two indices via query for similarity, with a user-specified set of
 /// query vectors
 void compareIndices(const std::vector<float>& queryVecs,

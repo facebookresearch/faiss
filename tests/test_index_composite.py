@@ -14,23 +14,7 @@ import faiss
 import os
 import tempfile
 
-def get_dataset_2(d, nb, nt, nq):
-    """A dataset that is not completely random but still challenging to
-    index
-    """
-    d1 = 10     # intrinsic dimension (more or less)
-    n = nb + nt + nq
-    rs = np.random.RandomState(1234)
-    x = rs.normal(size=(n, d1))
-    x = np.dot(x, rs.rand(d1, d))
-    # now we have a d1-dim ellipsoid in d-dimensional space
-    # higher factor (>4) -> higher frequency -> less linear
-    x = x * (rs.rand(d) * 4 + 0.1)
-    x = np.sin(x)
-    x = x.astype('float32')
-    return x[:nt], x[nt:-nq], x[-nq:]
-
-
+from common import get_dataset_2
 
 class TestRemove(unittest.TestCase):
 

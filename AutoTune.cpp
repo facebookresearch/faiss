@@ -14,6 +14,8 @@
 
 #include "AutoTune.h"
 
+#include <cmath>
+
 #include "FaissAssert.h"
 #include "utils.h"
 
@@ -28,6 +30,7 @@
 #include "IndexScalarQuantizer.h"
 #include "IndexHNSW.h"
 #include "IndexBinaryFlat.h"
+#include "IndexBinaryHNSW.h"
 #include "IndexBinaryIVF.h"
 
 namespace faiss {
@@ -253,7 +256,8 @@ void OperatingPoints::display (bool only_optimal) const
 
 ParameterSpace::ParameterSpace ():
     verbose (1), n_experiments (500),
-    batchsize (1<<30), thread_over_batches (false)
+    batchsize (1<<30), thread_over_batches (false),
+    min_test_duration (0)
 {
 }
 
@@ -265,6 +269,7 @@ ParameterSpace::ParameterSpace ():
 ParameterSpace::ParameterSpace (Index *index):
     verbose (1), n_experiments (500),
     batchsize (1<<30), thread_over_batches (false)
+
 {
     initialize(index);
 }
@@ -514,7 +519,7 @@ void ParameterSpace::set_index_parameter (
     }
     if (name == "max_codes") {
         if (DC (IndexIVF)) {
-            ix->max_codes = finite(val) ? size_t(val) : 0;
+            ix->max_codes = std::isfinite(val) ? size_t(val) : 0;
             return;
         }
     }
@@ -644,35 +649,45 @@ void ParameterSpace::explore (Index *index,
 
         double t0 = getmillisecs ();
 
-        if (thread_over_batches) {
-#pragma omp parallel for
-            for (size_t q0 = 0; q0 < nq; q0 += batchsize) {
-                size_t q1 = q0 + batchsize;
-                if (q1 > nq) q1 = nq;
-                index->search (q1 - q0, xq + q0 * index->d,
-                               crit.nnn,
-                               D.data() + q0 * crit.nnn,
-                               I.data() + q0 * crit.nnn);
-            }
-        } else {
-            for (size_t q0 = 0; q0 < nq; q0 += batchsize) {
-                size_t q1 = q0 + batchsize;
-                if (q1 > nq) q1 = nq;
-                index->search (q1 - q0, xq + q0 * index->d,
-                               crit.nnn,
-                               D.data() + q0 * crit.nnn,
-                               I.data() + q0 * crit.nnn);
-            }
-        }
+        int nrun = 0;
+        double t_search;
 
-        double t_search = (getmillisecs() - t0) / 1e3;
+        do {
+
+            if (thread_over_batches) {
+#pragma omp parallel for
+                for (size_t q0 = 0; q0 < nq; q0 += batchsize) {
+                    size_t q1 = q0 + batchsize;
+                    if (q1 > nq) q1 = nq;
+                    index->search (q1 - q0, xq + q0 * index->d,
+                                   crit.nnn,
+                                   D.data() + q0 * crit.nnn,
+                                   I.data() + q0 * crit.nnn);
+                }
+            } else {
+                for (size_t q0 = 0; q0 < nq; q0 += batchsize) {
+                    size_t q1 = q0 + batchsize;
+                    if (q1 > nq) q1 = nq;
+                    index->search (q1 - q0, xq + q0 * index->d,
+                                   crit.nnn,
+                                   D.data() + q0 * crit.nnn,
+                                   I.data() + q0 * crit.nnn);
+                }
+            }
+            nrun ++;
+            t_search = (getmillisecs() - t0) / 1e3;
+
+        } while (t_search < min_test_duration);
+
+        t_search /= nrun;
 
         double perf = crit.evaluate (D.data(), I.data());
 
         bool keep = ops->add (perf, t_search, combination_name (cno), cno);
 
         if (verbose)
-            printf(" perf %.3f t %.3f %s\n", perf, t_search,
+            printf(" perf %.3f t %.3f (%d runs) %s\n",
+                   perf, t_search, nrun,
                    keep ? "*" : "");
     }
 }
@@ -739,6 +754,9 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             d = d_out;
         } else if (sscanf (tok, "PCAR%d", &d_out) == 1) {
             vt_1 = new PCAMatrix (d, d_out, 0, true);
+            d = d_out;
+        } else if (sscanf (tok, "RR%d", &d_out) == 1) {
+            vt_1 = new RandomRotationMatrix (d, d_out);
             d = d_out;
         } else if (sscanf (tok, "PCAW%d", &d_out) == 1) {
             vt_1 = new PCAMatrix (d, d_out, -0.5, false);
@@ -938,15 +956,29 @@ IndexBinary *index_binary_factory(int d, const char *description)
     IndexBinary *index = nullptr;
 
     int ncentroids = -1;
+    int M;
 
-    if (sscanf(description, "BIVF%d", &ncentroids) == 1) {
+    if (sscanf(description, "BIVF%d_HNSW%d", &ncentroids, &M) == 2) {
+        IndexBinaryIVF *index_ivf = new IndexBinaryIVF(
+            new IndexBinaryHNSW(d, M), d, ncentroids
+        );
+        index_ivf->own_fields = true;
+        index = index_ivf;
+
+    } else if (sscanf(description, "BIVF%d", &ncentroids) == 1) {
         IndexBinaryIVF *index_ivf = new IndexBinaryIVF(
             new IndexBinaryFlat(d), d, ncentroids
         );
         index_ivf->own_fields = true;
         index = index_ivf;
+
+    } else if (sscanf(description, "BHNSW%d", &M) == 1) {
+        IndexBinaryHNSW *index_hnsw = new IndexBinaryHNSW(d, M);
+        index = index_hnsw;
+
     } else if (std::string(description) == "BFlat") {
         index = new IndexBinaryFlat(d);
+
     } else {
         FAISS_THROW_IF_NOT_FMT(index, "descrption %s did not generate an index",
                                description);
@@ -954,7 +986,6 @@ IndexBinary *index_binary_factory(int d, const char *description)
 
     return index;
 }
-
 
 
 } // namespace faiss

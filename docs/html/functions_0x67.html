@@ -133,23 +133,33 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>get_codes()
 : <a class="el" href="structfaiss_1_1ArrayInvertedLists.html#abf4ab66d09d8a1b707dddc77d0c2e8fc">faiss::ArrayInvertedLists</a>
-, <a class="el" href="structfaiss_1_1OnDiskInvertedLists.html#a1695e1d8d64a00e8e5f57ebf2210cb87">faiss::OnDiskInvertedLists</a>
+, <a class="el" href="structfaiss_1_1ConcatenatedInvertedLists.html#a58b6ba927b61665915b4b9a35c5277ae">faiss::ConcatenatedInvertedLists</a>
 , <a class="el" href="structfaiss_1_1InvertedLists.html#a60b12f9efe940b617a8380adceef4032">faiss::InvertedLists</a>
+, <a class="el" href="structfaiss_1_1OnDiskInvertedLists.html#a1695e1d8d64a00e8e5f57ebf2210cb87">faiss::OnDiskInvertedLists</a>
 </li>
 <li>get_ids()
-: <a class="el" href="structfaiss_1_1ArrayInvertedLists.html#abd59f7cf340d9c17eb6b402579e4010b">faiss::ArrayInvertedLists</a>
+: <a class="el" href="structfaiss_1_1InvertedLists.html#a3ab6b389d8d85c5fbf23889064df7e95">faiss::InvertedLists</a>
+, <a class="el" href="structfaiss_1_1ArrayInvertedLists.html#abd59f7cf340d9c17eb6b402579e4010b">faiss::ArrayInvertedLists</a>
+, <a class="el" href="structfaiss_1_1ConcatenatedInvertedLists.html#a886e88bc6bf2ebd996b3f62adb9d0cc6">faiss::ConcatenatedInvertedLists</a>
 , <a class="el" href="structfaiss_1_1OnDiskInvertedLists.html#ae54e7c6abc10c3d59ea3cd1113466957">faiss::OnDiskInvertedLists</a>
 , <a class="el" href="structfaiss_1_1HeapArray.html#af6aa57addaa1bc754d09a2a08be4df49">faiss::HeapArray&lt; C &gt;</a>
-, <a class="el" href="structfaiss_1_1InvertedLists.html#a3ab6b389d8d85c5fbf23889064df7e95">faiss::InvertedLists</a>
+</li>
+<li>get_InvertedListScanner()
+: <a class="el" href="structfaiss_1_1IndexIVF.html#a3fc6ef4f20616dd86323ec1f89e51217">faiss::IndexIVF</a>
+, <a class="el" href="structfaiss_1_1IndexIVFFlat.html#a05cbcc239916559b29b1eb1943b00440">faiss::IndexIVFFlat</a>
+, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#a694b699dd3512d83743d717e489bd48c">faiss::IndexIVFPQ</a>
+, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#ace901d49514b5b1384b6a07ec8a49363">faiss::IndexIVFScalarQuantizer</a>
 </li>
 <li>get_neighbor_table()
 : <a class="el" href="structfaiss_1_1ReconstructFromNeighbors.html#aed256bdd9f48dc93cb9e33cfdfd5bde7">faiss::ReconstructFromNeighbors</a>
 </li>
 <li>get_single_code()
 : <a class="el" href="structfaiss_1_1InvertedLists.html#afc2760bed7c210f2fad9b03109f561ee">faiss::InvertedLists</a>
+, <a class="el" href="structfaiss_1_1ConcatenatedInvertedLists.html#a159368893fd1c80999600214af416719">faiss::ConcatenatedInvertedLists</a>
 </li>
 <li>get_single_id()
 : <a class="el" href="structfaiss_1_1InvertedLists.html#a21b52cdb0601cd225bd7924932310876">faiss::InvertedLists</a>
+, <a class="el" href="structfaiss_1_1ConcatenatedInvertedLists.html#a60bcb32205363041a75bc509ce36d933">faiss::ConcatenatedInvertedLists</a>
 </li>
 <li>get_val()
 : <a class="el" href="structfaiss_1_1HeapArray.html#ae97911f6f85d152a5b45e459063b6858">faiss::HeapArray&lt; C &gt;</a>
@@ -158,8 +168,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#ab45d128f288728df5baf03defd50cec7">faiss::gpu::StackDeviceMemory::Stack</a>
 </li>
 <li>getAlternateStreams()
-: <a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#a9ebf68604864cb890a4c2e3d0a6f9952">faiss::gpu::StandardGpuResources</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#afb469bf3b107f43ef0d6abe4a014bb5b">faiss::gpu::GpuResources</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#afb469bf3b107f43ef0d6abe4a014bb5b">faiss::gpu::GpuResources</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#a9ebf68604864cb890a4c2e3d0a6f9952">faiss::gpu::StandardGpuResources</a>
 </li>
 <li>getAlternateStreamsCurrentDevice()
 : <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#a622f95597cc2ed2f10f3ae9400dc685b">faiss::gpu::GpuResources</a>
@@ -249,8 +259,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#a51b5aa0d68670ec7ccb32b0353c7387f">faiss::gpu::GpuIndexFlat</a>
 </li>
 <li>getPinnedMemory()
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#ad1b018745239e03d0044b659335c17a8">faiss::gpu::GpuResources</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#ae7418f127cac2ac663ac0ae2e6f88e8d">faiss::gpu::StandardGpuResources</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#ae7418f127cac2ac663ac0ae2e6f88e8d">faiss::gpu::StandardGpuResources</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#ad1b018745239e03d0044b659335c17a8">faiss::gpu::GpuResources</a>
 </li>
 <li>getPQCentroids()
 : <a class="el" href="classfaiss_1_1gpu_1_1IVFPQ.html#a3e8bff50f894c243c62e832f923e88e7">faiss::gpu::IVFPQ</a>
@@ -262,12 +272,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#afe6eb789377072b309d7a385aa0d1c5e">faiss::gpu::GpuIndexIVF</a>
 </li>
 <li>getSize()
-: <a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html#a6988df17792dae30f24cc859728777e6">faiss::gpu::FlatIndex</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1BinaryFlatIndex.html#aa3440ccb9bc693cbc89386b8cc981565">faiss::gpu::BinaryFlatIndex</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6699c311648457f257afa340c61f417c">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html#a6988df17792dae30f24cc859728777e6">faiss::gpu::FlatIndex</a>
 </li>
 <li>getSizeAvailable()
-: <a class="el" href="classfaiss_1_1gpu_1_1StackDeviceMemory.html#a66e82485ab7a89be137f85a82ea94fd0">faiss::gpu::StackDeviceMemory</a>
-, <a class="el" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#ac9fe1174255fedfee546bb5e37c12834">faiss::gpu::StackDeviceMemory::Stack</a>
+: <a class="el" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#ac9fe1174255fedfee546bb5e37c12834">faiss::gpu::StackDeviceMemory::Stack</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1StackDeviceMemory.html#a66e82485ab7a89be137f85a82ea94fd0">faiss::gpu::StackDeviceMemory</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1DeviceMemory.html#a5840a1e8578b28647a8649a4500a197d">faiss::gpu::DeviceMemory</a>
 </li>
 <li>getSizeInBytes()
@@ -282,6 +293,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>getVectorsFloat32Ref()
 : <a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html#a12058744ffb3fbcbb047872449269c06">faiss::gpu::FlatIndex</a>
 </li>
+<li>getVectorsRef()
+: <a class="el" href="classfaiss_1_1gpu_1_1BinaryFlatIndex.html#a0cc143e913b7a06e3ed31e5a6b546a6b">faiss::gpu::BinaryFlatIndex</a>
+</li>
+<li>GpuIndexBinaryFlat()
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#afb7ce7aeea2824e99144c6c145dd1aec">faiss::gpu::GpuIndexBinaryFlat</a>
+</li>
 <li>GpuIndexFlat()
 : <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#af8a1626e4c54a451d0b9f82df3a6687e">faiss::gpu::GpuIndexFlat</a>
 </li>
@@ -289,13 +306,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#ad7ef0af6369d33f136579340f5bc8e0a">faiss::gpu::GpuIndexFlatIP</a>
 </li>
 <li>GpuIndexFlatL2()
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#a514832ff1173021362b583a6b2941b87">faiss::gpu::GpuIndexFlatL2</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#aed22de4a439fa0b2f560e3c716a7c626">faiss::gpu::GpuIndexFlatL2</a>
 </li>
 <li>GpuIndexIVFFlat()
 : <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a94ca17bf69483ae7b9067f01da50d642">faiss::gpu::GpuIndexIVFFlat</a>
 </li>
 <li>GpuIndexIVFPQ()
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a56a552e8c2e29f33c39883145bd7629c">faiss::gpu::GpuIndexIVFPQ</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a245ae251f48cb435c7db18258c627b0a">faiss::gpu::GpuIndexIVFPQ</a>
 </li>
 <li>gt_D
 : <a class="el" href="structfaiss_1_1AutoTuneCriterion.html#a40e91caa9232a597c16fc946d0befd9b">faiss::AutoTuneCriterion</a>

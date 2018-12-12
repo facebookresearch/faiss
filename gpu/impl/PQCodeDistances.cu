@@ -336,7 +336,7 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
         topQueryToCentroid.getSize(1),
         pqCentroids.getSize(2)});
 
-  runSumAlongRows(residualNorms, residualDistanceView2, stream);
+  runSumAlongRows(residualNorms, residualDistanceView2, false, stream);
 
   Tensor<float, 4, true> outCodeDistancesF;
   DeviceTensor<float, 4, true> outCodeDistancesFloatMem;

@@ -163,3 +163,38 @@ class TestIndexBinaryFromFloat(unittest.TestCase):
                  / float(D_ref.shape[0])
 
         assert recall > 0.77, "recall = %g" % recall
+
+
+class TestOverrideKmeansQuantizer(unittest.TestCase):
+
+    def test_override(self):
+        d = 256
+        nt = 3500
+        nb = 10000
+        nq = 500
+        (xt, xb, xq) = make_binary_dataset(d, nb, nt, nq)
+
+        def train_and_get_centroids(override_kmeans_index):
+            index = faiss.index_binary_factory(d, b"BIVF10")
+            index.verbose = True
+
+            if override_kmeans_index is not None:
+                index.clustering_index = override_kmeans_index
+
+            index.train(xt)
+
+            centroids = faiss.downcast_IndexBinary(index.quantizer).xb
+            return faiss.vector_to_array(centroids).reshape(-1, d // 8)
+
+        centroids_ref = train_and_get_centroids(None)
+
+        # should do the exact same thing
+        centroids_new = train_and_get_centroids(faiss.IndexFlatL2(d))
+
+        assert np.all(centroids_ref == centroids_new)
+
+        # will do less accurate assignment... Sanity check that the
+        # index is indeed used by kmeans
+        centroids_new = train_and_get_centroids(faiss.IndexLSH(d, 16))
+
+        assert not np.all(centroids_ref == centroids_new)

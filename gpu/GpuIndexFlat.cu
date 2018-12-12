@@ -11,6 +11,7 @@
 #include "../IndexFlat.h"
 #include "GpuResources.h"
 #include "impl/FlatIndex.cuh"
+#include "utils/ConversionOperators.cuh"
 #include "utils/CopyUtils.cuh"
 #include "utils/DeviceUtils.h"
 #include "utils/Float16.cuh"
@@ -34,7 +35,7 @@ GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
                            GpuIndexFlatConfig config) :
     GpuIndex(resources, index->d, index->metric_type, config),
     minPagedSize_(kMinPageSize),
-    config_(config),
+    config_(std::move(config)),
     data_(nullptr) {
   verifySettings_();
 
@@ -50,7 +51,7 @@ GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
                            GpuIndexFlatConfig config) :
     GpuIndex(resources, dims, metric, config),
     minPagedSize_(kMinPageSize),
-    config_(config),
+    config_(std::move(config)),
     data_(nullptr) {
   verifySettings_();
 
@@ -91,11 +92,11 @@ GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
 
   // GPU code has 32 bit indices
   FAISS_THROW_IF_NOT_FMT(index->ntotal <=
-                     (faiss::Index::idx_t) std::numeric_limits<int>::max(),
-                     "GPU index only supports up to %zu indices; "
-                     "attempting to copy CPU index with %zu parameters",
-                     (size_t) std::numeric_limits<int>::max(),
-                     (size_t) index->ntotal);
+                         (faiss::Index::idx_t) std::numeric_limits<int>::max(),
+                         "GPU index only supports up to %zu indices; "
+                         "attempting to copy CPU index with %zu parameters",
+                         (size_t) std::numeric_limits<int>::max(),
+                         (size_t) index->ntotal);
   this->ntotal = index->ntotal;
 
   delete data_;
@@ -123,6 +124,7 @@ GpuIndexFlat::copyTo(faiss::IndexFlat* index) const {
   index->ntotal = this->ntotal;
   index->metric_type = this->metric_type;
 
+  FAISS_ASSERT(data_);
   FAISS_ASSERT(data_->getSize() == this->ntotal);
   index->xb.resize(this->ntotal * this->d);
 
@@ -196,10 +198,6 @@ GpuIndexFlat::addImpl_(Index::idx_t n,
   this->ntotal += n;
 }
 
-struct IntToLong {
-  __device__ long operator()(int v) const { return (long) v; }
-};
-
 void
 GpuIndexFlat::search(faiss::Index::idx_t n,
                      const float* x,
@@ -271,12 +269,12 @@ GpuIndexFlat::search(faiss::Index::idx_t n,
                                                      stream,
                                                      {(int) n, (int) k});
 
-  // Convert int to long
+  // Convert int to idx_t
   thrust::transform(thrust::cuda::par.on(stream),
                     outIntIndices.data(),
                     outIntIndices.end(),
                     outIndices.data(),
-                    IntToLong());
+                    IntToIdxType());
 
   // Copy back if necessary
   fromDevice<float, 2>(outDistances, distances, stream);

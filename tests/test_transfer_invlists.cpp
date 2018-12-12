@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <memory>
 #include <cstdio>
 #include <cstdlib>
 
@@ -20,11 +19,6 @@
 #include <faiss/utils.h>
 #include <faiss/IVFlib.h>
 
-using namespace faiss;
-
-
-namespace {
-
 
 // parameters to use for the test
 int d = 64;
@@ -34,6 +28,7 @@ size_t nt = 500;
 int k = 10;
 int nlist = 40;
 
+using namespace faiss;
 
 typedef faiss::Index::idx_t idx_t;
 
@@ -150,9 +145,6 @@ void test_index_type(const char *factory_string) {
     EXPECT_TRUE (Dref == Dnew);
 
 }
-
-
-}  // namespace
 
 
 TEST(TRANS, IVFFlat) {

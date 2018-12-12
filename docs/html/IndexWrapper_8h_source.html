@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: /data/users/matthijs/github_faiss/faiss/gpu/perf/IndexWrapper.h Source File</title>
+<title>Faiss: /tmp/faiss/gpu/perf/IndexWrapper.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_6b3ae6988449b0834e9596fad5d75199.html">gpu</a></li><li class="navelem"><a class="el" href="dir_02dc1cf4df13911cc8cfd20f07047b71.html">perf</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_af0e5773a0d3761542ab6067d117c294.html">gpu</a></li><li class="navelem"><a class="el" href="dir_22ce118cf589ce24f4cc723d5eba89a1.html">perf</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -95,43 +95,42 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * LICENSE file in the root directory of this source tree.</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// Copyright 2004-present Facebook. All Rights Reserved.</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../IndexProxy.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../StandardGpuResources.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>faiss { <span class="keyword">namespace </span>gpu {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">// If we want to run multi-GPU, create a proxy to wrap the indices.</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">// If we don&#39;t want multi-GPU, don&#39;t involve the proxy, so it doesn&#39;t</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">// affect the timings.</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> GpuIndex&gt;</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1IndexWrapper.html">   25</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1gpu_1_1IndexWrapper.html">IndexWrapper</a> {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  std::vector&lt;std::unique_ptr&lt;faiss::gpu::StandardGpuResources&gt;&gt; resources;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  std::vector&lt;std::unique_ptr&lt;GpuIndex&gt;&gt; subIndex;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  std::unique_ptr&lt;faiss::gpu::IndexProxy&gt; proxyIndex;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <a class="code" href="structfaiss_1_1gpu_1_1IndexWrapper.html">IndexWrapper</a>(</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">int</span> numGpus,</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    std::function&lt;std::unique_ptr&lt;GpuIndex&gt;(<a class="code" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a>*, <span class="keywordtype">int</span>)&gt; init);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a>* getIndex();</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordtype">void</span> runOnIndices(std::function&lt;<span class="keywordtype">void</span>(<a class="code" href="classfaiss_1_1gpu_1_1GpuIndex.html">GpuIndex</a>*)&gt; f);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordtype">void</span> setNumProbes(<span class="keywordtype">int</span> nprobe);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;};</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;} }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#include &quot;IndexWrapper-inl.h&quot;</span></div>
-<div class="ttc" id="classfaiss_1_1gpu_1_1GpuResources_html"><div class="ttname"><a href="classfaiss_1_1gpu_1_1GpuResources.html">faiss::gpu::GpuResources</a></div><div class="ttdef"><b>Definition:</b> <a href="GpuResources_8h_source.html#l00023">GpuResources.h:23</a></div></div>
-<div class="ttc" id="classfaiss_1_1gpu_1_1GpuIndex_html"><div class="ttname"><a href="classfaiss_1_1gpu_1_1GpuIndex.html">faiss::gpu::GpuIndex</a></div><div class="ttdef"><b>Definition:</b> <a href="GpuIndex_8h_source.html#l00035">GpuIndex.h:35</a></div></div>
-<div class="ttc" id="structfaiss_1_1Index_html"><div class="ttname"><a href="structfaiss_1_1Index.html">faiss::Index</a></div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00060">Index.h:60</a></div></div>
-<div class="ttc" id="structfaiss_1_1gpu_1_1IndexWrapper_html"><div class="ttname"><a href="structfaiss_1_1gpu_1_1IndexWrapper.html">faiss::gpu::IndexWrapper</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexWrapper_8h_source.html#l00025">IndexWrapper.h:25</a></div></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;../IndexProxy.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../StandardGpuResources.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>faiss { <span class="keyword">namespace </span>gpu {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">// If we want to run multi-GPU, create a proxy to wrap the indices.</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">// If we don&#39;t want multi-GPU, don&#39;t involve the proxy, so it doesn&#39;t</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">// affect the timings.</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> GpuIndex&gt;</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="structfaiss_1_1gpu_1_1IndexWrapper.html">   24</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structfaiss_1_1gpu_1_1IndexWrapper.html">IndexWrapper</a> {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  std::vector&lt;std::unique_ptr&lt;faiss::gpu::StandardGpuResources&gt;&gt; resources;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  std::vector&lt;std::unique_ptr&lt;GpuIndex&gt;&gt; subIndex;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  std::unique_ptr&lt;faiss::gpu::IndexProxy&gt; proxyIndex;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <a class="code" href="structfaiss_1_1gpu_1_1IndexWrapper.html">IndexWrapper</a>(</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">int</span> numGpus,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    std::function&lt;std::unique_ptr&lt;GpuIndex&gt;(<a class="code" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a>*, <span class="keywordtype">int</span>)&gt; init);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a>* getIndex();</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordtype">void</span> runOnIndices(std::function&lt;<span class="keywordtype">void</span>(<a class="code" href="classfaiss_1_1gpu_1_1GpuIndex.html">GpuIndex</a>*)&gt; f);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordtype">void</span> setNumProbes(<span class="keywordtype">int</span> nprobe);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;};</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;} }</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#include &quot;IndexWrapper-inl.h&quot;</span></div>
+<div class="ttc" id="classfaiss_1_1gpu_1_1GpuResources_html"><div class="ttname"><a href="classfaiss_1_1gpu_1_1GpuResources.html">faiss::gpu::GpuResources</a></div><div class="ttdef"><b>Definition:</b> <a href="GpuResources_8h_source.html#l00022">GpuResources.h:22</a></div></div>
+<div class="ttc" id="classfaiss_1_1gpu_1_1GpuIndex_html"><div class="ttname"><a href="classfaiss_1_1gpu_1_1GpuIndex.html">faiss::gpu::GpuIndex</a></div><div class="ttdef"><b>Definition:</b> <a href="GpuIndex_8h_source.html#l00034">GpuIndex.h:34</a></div></div>
+<div class="ttc" id="structfaiss_1_1Index_html"><div class="ttname"><a href="structfaiss_1_1Index.html">faiss::Index</a></div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00062">Index.h:62</a></div></div>
+<div class="ttc" id="structfaiss_1_1gpu_1_1IndexWrapper_html"><div class="ttname"><a href="structfaiss_1_1gpu_1_1IndexWrapper.html">faiss::gpu::IndexWrapper</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexWrapper_8h_source.html#l00024">IndexWrapper.h:24</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

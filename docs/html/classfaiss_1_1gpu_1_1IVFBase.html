@@ -204,7 +204,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base inverted list functionality for <a class="el" href="classfaiss_1_1gpu_1_1IVFFlat.html">IVFFlat</a> and <a class="el" href="classfaiss_1_1gpu_1_1IVFPQ.html" title="Implementing class for IVFPQ on the GPU. ">IVFPQ</a>. </p>
 
-<p>Definition at line <a class="el" href="IVFBase_8cuh_source.html#l00027">27</a> of file <a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a>.</p>
+<p>Definition at line <a class="el" href="IVFBase_8cuh_source.html#l00026">26</a> of file <a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a80130acfe0a2a4d387a5c9ee4c386b9c"></a>
 <div class="memitem">
@@ -254,7 +254,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="IVFBase_8cu_source.html#l00025">25</a> of file <a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a>.</p>
+<p>Definition at line <a class="el" href="IVFBase_8cu_source.html#l00024">24</a> of file <a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a>.</p>
 
 </div>
 </div>
@@ -274,7 +274,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>For debugging purposes, return the list length of a particular list </p>
 
-<p>Definition at line <a class="el" href="IVFBase_8cu_source.html#l00200">200</a> of file <a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a>.</p>
+<p>Definition at line <a class="el" href="IVFBase_8cu_source.html#l00199">199</a> of file <a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a>.</p>
 
 </div>
 </div>
@@ -292,7 +292,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>After adding vectors, one can call this to reclaim device memory to exactly the amount needed. Returns space reclaimed in bytes </p>
 
-<p>Definition at line <a class="el" href="IVFBase_8cu_source.html#l00105">105</a> of file <a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a>.</p>
+<p>Definition at line <a class="el" href="IVFBase_8cu_source.html#l00104">104</a> of file <a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a>.</p>
 
 </div>
 </div>
@@ -319,7 +319,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Reclaim memory consumed on the device for our inverted lists <code>exact</code> means we trim exactly to the memory needed </p>
 
-<p>Definition at line <a class="el" href="IVFBase_8cu_source.html#l00111">111</a> of file <a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a>.</p>
+<p>Definition at line <a class="el" href="IVFBase_8cu_source.html#l00110">110</a> of file <a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a>.</p>
 
 </div>
 </div>
@@ -337,7 +337,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Clear out all inverted lists, but retain the coarse quantizer and the product quantizer info </p>
 
-<p>Definition at line <a class="el" href="IVFBase_8cu_source.html#l00075">75</a> of file <a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a>.</p>
+<p>Definition at line <a class="el" href="IVFBase_8cu_source.html#l00074">74</a> of file <a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a>.</p>
 
 </div>
 </div>
@@ -374,7 +374,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>For a set of list IDs, update device-side list pointer and size information </p>
 
-<p>Definition at line <a class="el" href="IVFBase_8cu_source.html#l00148">148</a> of file <a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a>.</p>
+<p>Definition at line <a class="el" href="IVFBase_8cu_source.html#l00147">147</a> of file <a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a>.</p>
 
 </div>
 </div>
@@ -398,7 +398,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Device memory for each separate list, as managed by the host. Device memory as stored in <a class="el" href="classfaiss_1_1gpu_1_1DeviceVector.html">DeviceVector</a> is stored as unique_ptr since deviceListSummary_ pointers must remain valid despite resizing of deviceLists_ </p>
 
-<p>Definition at line <a class="el" href="IVFBase_8cuh_source.html#l00121">121</a> of file <a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a>.</p>
+<p>Definition at line <a class="el" href="IVFBase_8cuh_source.html#l00120">120</a> of file <a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a>.</p>
 
 </div>
 </div>
@@ -421,7 +421,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Device representation of all inverted list data id -&gt; data </p>
 
-<p>Definition at line <a class="el" href="IVFBase_8cuh_source.html#l00104">104</a> of file <a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a>.</p>
+<p>Definition at line <a class="el" href="IVFBase_8cuh_source.html#l00103">103</a> of file <a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a>.</p>
 
 </div>
 </div>
@@ -444,7 +444,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Device representation of all inverted list index pointers id -&gt; data </p>
 
-<p>Definition at line <a class="el" href="IVFBase_8cuh_source.html#l00108">108</a> of file <a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a>.</p>
+<p>Definition at line <a class="el" href="IVFBase_8cuh_source.html#l00107">107</a> of file <a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a>.</p>
 
 </div>
 </div>
@@ -467,7 +467,7 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Device representation of all inverted list lengths id -&gt; length </p>
 
-<p>Definition at line <a class="el" href="IVFBase_8cuh_source.html#l00112">112</a> of file <a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a>.</p>
+<p>Definition at line <a class="el" href="IVFBase_8cuh_source.html#l00111">111</a> of file <a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a>.</p>
 
 </div>
 </div>
@@ -490,13 +490,13 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>If we are storing indices on the CPU (indicesOptions_ is INDICES_CPU), then this maintains a CPU-side map of what (inverted list id, offset) maps to which user index </p>
 
-<p>Definition at line <a class="el" href="IVFBase_8cuh_source.html#l00127">127</a> of file <a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a>.</p>
+<p>Definition at line <a class="el" href="IVFBase_8cuh_source.html#l00126">126</a> of file <a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/impl/<a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a></li>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/impl/<a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a></li>
+<li>/tmp/faiss/gpu/impl/<a class="el" href="IVFBase_8cuh_source.html">IVFBase.cuh</a></li>
+<li>/tmp/faiss/gpu/impl/<a class="el" href="IVFBase_8cu_source.html">IVFBase.cu</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

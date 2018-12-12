@@ -21,10 +21,8 @@
 
 using namespace faiss;
 
-namespace {
-
-
 typedef Index::idx_t idx_t;
+
 
 // dimension of the vectors to index
 int d = 32;
@@ -38,8 +36,12 @@ size_t nb = 1000;
 // nb of queries
 size_t nq = 200;
 
+
 int total_size = 40;
 int window_size = 10;
+
+
+
 
 
 std::vector<float> make_data(size_t n)
@@ -67,6 +69,9 @@ std::vector<idx_t> search_index(Index *index, const float *xq) {
     index->search (nq, xq, k, D.data(), I.data());
     return I;
 }
+
+
+
 
 
 /*************************************************************
@@ -211,7 +216,7 @@ int test_sliding_invlists (const char *index_key) {
 }
 
 
-}  // namespace
+
 
 
 /*************************************************************

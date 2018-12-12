@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['imbalance_5ffactor',['imbalance_factor',['../structfaiss_1_1IndexIVF.html#aeab84d4edf2cf9747c923e1a8395d9f3',1,'faiss::IndexIVF::imbalance_factor()'],['../namespacefaiss.html#a94c1d99ac39d22e362aa27ce7c7ff714',1,'faiss::imbalance_factor(int k, const int *hist)'],['../namespacefaiss.html#af762526714e6138009c72aee98657538',1,'faiss::imbalance_factor(int n, int k, const long *assign)']]],
+  ['imbalance_5ffactor',['imbalance_factor',['../structfaiss_1_1IndexBinaryIVF.html#afab4c569899de0943ad4b9dd4d4f22f3',1,'faiss::IndexBinaryIVF::imbalance_factor()'],['../structfaiss_1_1IndexIVF.html#aeab84d4edf2cf9747c923e1a8395d9f3',1,'faiss::IndexIVF::imbalance_factor()'],['../namespacefaiss.html#a94c1d99ac39d22e362aa27ce7c7ff714',1,'faiss::imbalance_factor(int k, const int *hist)'],['../namespacefaiss.html#af762526714e6138009c72aee98657538',1,'faiss::imbalance_factor(int n, int k, const long *assign)']]],
   ['index_5ffactory',['index_factory',['../namespacefaiss.html#a0c95ec47726f2ce3fb668dcb1f9a3317',1,'faiss']]],
+  ['indexbinaryivf',['IndexBinaryIVF',['../structfaiss_1_1IndexBinaryIVF.html#a569058430e4b1b81204df1c2cbd3084a',1,'faiss::IndexBinaryIVF']]],
   ['indexivf',['IndexIVF',['../structfaiss_1_1IndexIVF.html#a7077b7e60e250b9a84c49ff38205bbbf',1,'faiss::IndexIVF']]],
   ['indexpq',['IndexPQ',['../structfaiss_1_1IndexPQ.html#ab8d0bbf8a0dab39b236e0d1633923746',1,'faiss::IndexPQ']]],
   ['indexpretransform',['IndexPreTransform',['../structfaiss_1_1IndexPreTransform.html#a2b16a03c38aa892292ba7a33da2ff7c4',1,'faiss::IndexPreTransform::IndexPreTransform(Index *index)'],['../structfaiss_1_1IndexPreTransform.html#a7697b1e693b0f099c3c3ec732329c533',1,'faiss::IndexPreTransform::IndexPreTransform(VectorTransform *ltrans, Index *index)']]],

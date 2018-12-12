@@ -292,7 +292,11 @@ void runDistance(bool computeL2,
           if (!ignoreOutDistances) {
             // expand (query id) to (query id, k) by duplicating along rows
             // top-k ||c||^2 - 2qc + ||q||^2 in the form (query id, k)
-            runSumAlongRows(queryNormNiew, outDistanceView, streams[curStream]);
+            runSumAlongRows(queryNormNiew,
+                            outDistanceView,
+                            true, // L2 distances should not go below zero due
+                                  // to roundoff error
+                            streams[curStream]);
           }
         } else {
           auto centroidNormsView =
@@ -311,6 +315,8 @@ void runDistance(bool computeL2,
             // top-k ||c||^2 - 2qc + ||q||^2 in the form (query id, k)
             runSumAlongRows(queryNormNiew,
                             outDistanceBufColView,
+                            true, // L2 distances should not go below zero due
+                                  // to roundoff error
                             streams[curStream]);
           }
         }

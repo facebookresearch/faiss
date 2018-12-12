@@ -183,6 +183,7 @@ class TestOrthognalReconstruct(unittest.TestCase):
         faiss.copy_array_to_vector(rs.randn(10).astype('float32'), lt.b)
 
         lt.set_is_orthonormal()
+        lt.is_trained = True
         assert lt.is_orthonormal
 
         x = rs.rand(30, 20).astype('float32')
@@ -200,6 +201,7 @@ class TestOrthognalReconstruct(unittest.TestCase):
         A = rs.randn(10 * 20).astype('float32')
         faiss.copy_array_to_vector(A.ravel(), lt.A)
         faiss.copy_array_to_vector(rs.randn(10).astype('float32'), lt.b)
+        lt.is_trained = True
 
         lt.set_is_orthonormal()
         assert not lt.is_orthonormal
@@ -232,6 +234,40 @@ class TestMAdd(unittest.TestCase):
                 ref_c = a + b * bf
                 assert np.abs(c - ref_c).max() < 1e-5
                 assert idx == ref_c.argmin()
+
+
+class TestNyFuncs(unittest.TestCase):
+
+    def test_l2(self):
+        rs = np.random.RandomState(123)
+        swig_ptr = faiss.swig_ptr
+        for d in 1, 2, 4, 8, 12, 16:
+            x = rs.rand(d).astype('float32')
+            for ny in 128, 129, 130:
+                print("d=%d ny=%d" % (d, ny))
+                y = rs.rand(ny, d).astype('float32')
+                ref = ((x - y) ** 2).sum(1)
+                new = np.zeros(ny, dtype='float32')
+                faiss.fvec_L2sqr_ny(swig_ptr(new), swig_ptr(x),
+                                    swig_ptr(y), d, ny)
+                assert np.abs(ref - new).max() < 1e-4
+
+    def test_IP(self):
+        # this one is not optimized with SIMD but just in case
+        rs = np.random.RandomState(123)
+        swig_ptr = faiss.swig_ptr
+        for d in 1, 2, 4, 8, 12, 16:
+            x = rs.rand(d).astype('float32')
+            for ny in 128, 129, 130:
+                print("d=%d ny=%d" % (d, ny))
+                y = rs.rand(ny, d).astype('float32')
+                ref = (x * y).sum(1)
+                new = np.zeros(ny, dtype='float32')
+                faiss.fvec_inner_products_ny(
+                    swig_ptr(new), swig_ptr(x), swig_ptr(y), d, ny)
+                assert np.abs(ref - new).max() < 1e-4
+
+
 
 if __name__ == '__main__':
     unittest.main()

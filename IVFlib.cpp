@@ -8,10 +8,6 @@
 
 // -*- c++ -*-
 
-/*
- * implementation of Hyper-parameter auto-tuning
- */
-
 #include "IVFlib.h"
 
 #include <memory>

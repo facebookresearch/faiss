@@ -123,7 +123,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="GpuIndexFlat_8h_source.html#l00027">27</a> of file <a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a>.</p>
+<p>Definition at line <a class="el" href="GpuIndexFlat_8h_source.html#l00026">26</a> of file <a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a class="anchor" id="a0342a26f5e59563bfe04f3f80e3b27f0"></a>
 <div class="memitem">
@@ -136,7 +136,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 </div><div class="memdoc">
 <p>Whether or not data is stored (transparently) in a transposed layout, enabling use of the NN GEMM call, which is ~10% faster. This will improve the speed of the flat index, but will substantially slow down any add() calls made, as all data must be transposed, and will increase storage requirements (we store data in both transposed and non-transposed layouts). </p>
 
-<p>Definition at line <a class="el" href="GpuIndexFlat_8h_source.html#l00048">48</a> of file <a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a>.</p>
+<p>Definition at line <a class="el" href="GpuIndexFlat_8h_source.html#l00047">47</a> of file <a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a>.</p>
 
 </div>
 </div>
@@ -151,12 +151,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 </div><div class="memdoc">
 <p>Whether or not all math is performed in float16, if useFloat16 is specified. If true, we use cublasHgemm, supported only on CC 5.3+. Otherwise, we use cublasSgemmEx. </p>
 
-<p>Definition at line <a class="el" href="GpuIndexFlat_8h_source.html#l00040">40</a> of file <a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a>.</p>
+<p>Definition at line <a class="el" href="GpuIndexFlat_8h_source.html#l00039">39</a> of file <a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/<a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a></li>
+<li>/tmp/faiss/gpu/<a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

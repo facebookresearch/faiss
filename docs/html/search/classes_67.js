@@ -1,23 +1,13 @@
 var searchData=
 [
-  ['genericdistancecomputer',['GenericDistanceComputer',['../structfaiss_1_1GenericDistanceComputer.html',1,'faiss']]],
   ['genhammingcomputer16',['GenHammingComputer16',['../structfaiss_1_1GenHammingComputer16.html',1,'faiss']]],
   ['genhammingcomputer32',['GenHammingComputer32',['../structfaiss_1_1GenHammingComputer32.html',1,'faiss']]],
   ['genhammingcomputer8',['GenHammingComputer8',['../structfaiss_1_1GenHammingComputer8.html',1,'faiss']]],
   ['genhammingcomputerm8',['GenHammingComputerM8',['../structfaiss_1_1GenHammingComputerM8.html',1,'faiss']]],
-  ['get',['Get',['../classstd_1_1tr1_1_1gtest__internal_1_1Get.html',1,'std::tr1::gtest_internal']]],
-  ['get_3c_200_20_3e',['Get&lt; 0 &gt;',['../classstd_1_1tr1_1_1gtest__internal_1_1Get_3_010_01_4.html',1,'std::tr1::gtest_internal']]],
-  ['get_3c_201_20_3e',['Get&lt; 1 &gt;',['../classstd_1_1tr1_1_1gtest__internal_1_1Get_3_011_01_4.html',1,'std::tr1::gtest_internal']]],
-  ['get_3c_202_20_3e',['Get&lt; 2 &gt;',['../classstd_1_1tr1_1_1gtest__internal_1_1Get_3_012_01_4.html',1,'std::tr1::gtest_internal']]],
-  ['get_3c_203_20_3e',['Get&lt; 3 &gt;',['../classstd_1_1tr1_1_1gtest__internal_1_1Get_3_013_01_4.html',1,'std::tr1::gtest_internal']]],
-  ['get_3c_204_20_3e',['Get&lt; 4 &gt;',['../classstd_1_1tr1_1_1gtest__internal_1_1Get_3_014_01_4.html',1,'std::tr1::gtest_internal']]],
-  ['get_3c_205_20_3e',['Get&lt; 5 &gt;',['../classstd_1_1tr1_1_1gtest__internal_1_1Get_3_015_01_4.html',1,'std::tr1::gtest_internal']]],
-  ['get_3c_206_20_3e',['Get&lt; 6 &gt;',['../classstd_1_1tr1_1_1gtest__internal_1_1Get_3_016_01_4.html',1,'std::tr1::gtest_internal']]],
-  ['get_3c_207_20_3e',['Get&lt; 7 &gt;',['../classstd_1_1tr1_1_1gtest__internal_1_1Get_3_017_01_4.html',1,'std::tr1::gtest_internal']]],
-  ['get_3c_208_20_3e',['Get&lt; 8 &gt;',['../classstd_1_1tr1_1_1gtest__internal_1_1Get_3_018_01_4.html',1,'std::tr1::gtest_internal']]],
-  ['get_3c_209_20_3e',['Get&lt; 9 &gt;',['../classstd_1_1tr1_1_1gtest__internal_1_1Get_3_019_01_4.html',1,'std::tr1::gtest_internal']]],
   ['gpucloneroptions',['GpuClonerOptions',['../structfaiss_1_1gpu_1_1GpuClonerOptions.html',1,'faiss::gpu']]],
   ['gpuindex',['GpuIndex',['../classfaiss_1_1gpu_1_1GpuIndex.html',1,'faiss::gpu']]],
+  ['gpuindexbinaryflat',['GpuIndexBinaryFlat',['../classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html',1,'faiss::gpu']]],
+  ['gpuindexbinaryflatconfig',['GpuIndexBinaryFlatConfig',['../structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig.html',1,'faiss::gpu']]],
   ['gpuindexconfig',['GpuIndexConfig',['../structfaiss_1_1gpu_1_1GpuIndexConfig.html',1,'faiss::gpu']]],
   ['gpuindexflat',['GpuIndexFlat',['../classfaiss_1_1gpu_1_1GpuIndexFlat.html',1,'faiss::gpu']]],
   ['gpuindexflatconfig',['GpuIndexFlatConfig',['../structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html',1,'faiss::gpu']]],
@@ -32,8 +22,5 @@ var searchData=
   ['gpumultiplecloneroptions',['GpuMultipleClonerOptions',['../structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html',1,'faiss::gpu']]],
   ['gpuparameterspace',['GpuParameterSpace',['../structfaiss_1_1gpu_1_1GpuParameterSpace.html',1,'faiss::gpu']]],
   ['gpuresources',['GpuResources',['../classfaiss_1_1gpu_1_1GpuResources.html',1,'faiss::gpu']]],
-  ['gpuresourcesthrustallocator',['GpuResourcesThrustAllocator',['../classfaiss_1_1gpu_1_1GpuResourcesThrustAllocator.html',1,'faiss::gpu']]],
-  ['gtestflagsaver',['GTestFlagSaver',['../classtesting_1_1internal_1_1GTestFlagSaver.html',1,'testing::internal']]],
-  ['gtestlog',['GTestLog',['../classtesting_1_1internal_1_1GTestLog.html',1,'testing::internal']]],
-  ['gtestmutexlock',['GTestMutexLock',['../classtesting_1_1internal_1_1GTestMutexLock.html',1,'testing::internal']]]
+  ['gpuresourcesthrustallocator',['GpuResourcesThrustAllocator',['../classfaiss_1_1gpu_1_1GpuResourcesThrustAllocator.html',1,'faiss::gpu']]]
 ];

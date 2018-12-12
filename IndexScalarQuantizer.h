@@ -85,11 +85,11 @@ struct ScalarQuantizer {
 
         /// vector-to-code distance computation
         virtual float compute_distance (const float *x,
-                                        const uint8_t *code) = 0;
+                                        const uint8_t *code) const = 0;
 
         /// code-to-code distance computation
         virtual float compute_code_distance (const uint8_t *code1,
-                                             const uint8_t *code2) = 0;
+                                             const uint8_t *code2) const = 0;
         virtual ~DistanceComputer () {}
     };
 
@@ -157,15 +157,15 @@ struct IndexIVFScalarQuantizer: IndexIVF {
 
     void train_residual(idx_t n, const float* x) override;
 
+    void encode_vectors(idx_t n, const float* x,
+                        const idx_t *list_nos,
+                        uint8_t * codes) const override;
+
     void add_with_ids(idx_t n, const float* x, const long* xids) override;
 
-    void search_preassigned (idx_t n, const float *x, idx_t k,
-                             const idx_t *assign,
-                             const float *centroid_dis,
-                             float *distances, idx_t *labels,
-                             bool store_pairs,
-                             const IVFSearchParameters *params=nullptr
-                             ) const override;
+    InvertedListScanner *get_InvertedListScanner (bool store_pairs)
+        const override;
+
 
     void reconstruct_from_offset (long list_no, long offset,
                                   float* recons) const override;

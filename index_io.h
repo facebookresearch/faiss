@@ -51,7 +51,10 @@ void write_VectorTransform (const VectorTransform *vt, const char *fname);
 VectorTransform *read_VectorTransform (const char *fname);
 
 ProductQuantizer * read_ProductQuantizer (const char*fname);
+ProductQuantizer * read_ProductQuantizer (IOReader *reader);
+
 void write_ProductQuantizer (const ProductQuantizer*pq, const char *fname);
+void write_ProductQuantizer (const ProductQuantizer*pq, IOWriter *f);
 
 void write_InvertedLists (const InvertedLists *ils, IOWriter *f);
 InvertedLists *read_InvertedLists (IOReader *reader, int io_flags = 0);

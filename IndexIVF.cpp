@@ -185,6 +185,102 @@ void IndexIVF::search (idx_t n, const float *x, idx_t k,
 }
 
 
+
+void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
+                                   const idx_t *keys,
+                                   const float *coarse_dis ,
+                                   float *distances, idx_t *labels,
+                                   bool store_pairs,
+                                   const IVFSearchParameters *params) const
+{
+    long nprobe = params ? params->nprobe : this->nprobe;
+    long max_codes = params ? params->max_codes : this->max_codes;
+
+    size_t nlistv = 0, ndis = 0, nheap = 0;
+
+    using HeapForIP = CMin<float, idx_t>;
+    using HeapForL2 = CMax<float, idx_t>;
+
+#pragma omp parallel reduction(+: nlistv, ndis, nheap)
+    {
+        InvertedListScanner *scanner = get_InvertedListScanner(store_pairs);
+        ScopeDeleter1<InvertedListScanner> del(scanner);
+#pragma omp for
+        for (size_t i = 0; i < n; i++) {
+            // loop over queries
+            const float * xi = x + i * d;
+            scanner->set_query (xi);
+            const long * keysi = keys + i * nprobe;
+            float * simi = distances + i * k;
+            long * idxi = labels + i * k;
+
+            if (metric_type == METRIC_INNER_PRODUCT) {
+                heap_heapify<HeapForIP> (k, simi, idxi);
+            } else {
+                heap_heapify<HeapForL2> (k, simi, idxi);
+            }
+
+            long nscan = 0;
+
+            // loop over probes
+            for (size_t ik = 0; ik < nprobe; ik++) {
+                long key = keysi[ik];  /* select the list  */
+                if (key < 0) {
+                    // not enough centroids for multiprobe
+                    continue;
+                }
+                FAISS_THROW_IF_NOT_FMT (key < (long) nlist,
+                      "Invalid key=%ld  at ik=%ld nlist=%ld\n",
+                      key, ik, nlist);
+
+
+                size_t list_size = invlists->list_size(key);
+
+                // don't waste time on empty lists
+                if (list_size == 0) {
+                    continue;
+                }
+
+                scanner->set_list (key, coarse_dis[i * nprobe + ik]);
+
+                nlistv++;
+
+
+                InvertedLists::ScopedCodes scodes (invlists, key);
+                const Index::idx_t * ids = store_pairs ? nullptr :
+                    invlists->get_ids (key);
+
+                nheap += scanner->scan_codes (list_size, scodes.get(),
+                                     ids, simi, idxi, k);
+
+                if (ids) {
+                    invlists->release_ids (ids);
+                }
+
+                nscan += list_size;
+                if (max_codes && nscan >= max_codes)
+                    break;
+            }
+
+            ndis += nscan;
+            if (metric_type == METRIC_INNER_PRODUCT) {
+                heap_reorder<HeapForIP> (k, simi, idxi);
+            } else {
+                heap_reorder<HeapForL2> (k, simi, idxi);
+            }
+
+        } // parallel for
+    } // parallel
+
+    indexIVF_stats.nq += n;
+    indexIVF_stats.nlist += nlistv;
+    indexIVF_stats.ndis += ndis;
+    indexIVF_stats.nheap_updates += nheap;
+
+}
+
+
+
 void IndexIVF::reconstruct (idx_t key, float* recons) const
 {
     FAISS_THROW_IF_NOT_MSG (direct_map.size() == ntotal,

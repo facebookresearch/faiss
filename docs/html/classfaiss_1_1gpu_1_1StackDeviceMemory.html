@@ -123,6 +123,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a130f900c32ba91ae1f872c7ee506a93e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd7a84b8cd1f747d873cdd1ab07e8a4b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StackDeviceMemory.html#afd7a84b8cd1f747d873cdd1ab07e8a4b">StackDeviceMemory</a> (int device, void *p, size_t size, bool isOwner)</td></tr>
 <tr class="separator:afd7a84b8cd1f747d873cdd1ab07e8a4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadabeef74940ef0cb6a965752bbf6156"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StackDeviceMemory.html#aadabeef74940ef0cb6a965752bbf6156">setCudaMallocWarning</a> (bool b)</td></tr>
+<tr class="separator:aadabeef74940ef0cb6a965752bbf6156"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9dac6d8953630121f60fb804599f648"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab9dac6d8953630121f60fb804599f648"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StackDeviceMemory.html#ab9dac6d8953630121f60fb804599f648">getDevice</a> () const override</td></tr>
 <tr class="memdesc:ab9dac6d8953630121f60fb804599f648"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the device we are managing memory for. <br/></td></tr>
@@ -160,7 +162,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Device memory manager that provides temporary memory allocations out of a region of memory </p>
 
-<p>Definition at line <a class="el" href="StackDeviceMemory_8h_source.html#l00022">22</a> of file <a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a>.</p>
+<p>Definition at line <a class="el" href="StackDeviceMemory_8h_source.html#l00021">21</a> of file <a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="afd7a84b8cd1f747d873cdd1ab07e8a4b"></a>
 <div class="memitem">
@@ -199,7 +201,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </div><div class="memdoc">
 <p>Manage a region of memory for a particular device, with or without ownership </p>
 
-<p>Definition at line <a class="el" href="StackDeviceMemory_8cpp_source.html#l00185">185</a> of file <a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StackDeviceMemory_8cpp_source.html#l00192">192</a> of file <a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a>.</p>
 
 </div>
 </div>
@@ -228,7 +230,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 
 <p>Implements <a class="el" href="classfaiss_1_1gpu_1_1DeviceMemory.html#a908f5dad096de49eed81af60258c4655">faiss::gpu::DeviceMemory</a>.</p>
 
-<p>Definition at line <a class="el" href="StackDeviceMemory_8cpp_source.html#l00223">223</a> of file <a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StackDeviceMemory_8cpp_source.html#l00235">235</a> of file <a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a>.</p>
 
 </div>
 </div>
@@ -267,13 +269,32 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 
 <p>Implements <a class="el" href="classfaiss_1_1gpu_1_1DeviceMemory.html#a4adf60b9a0561e6319aa5cb7f42558d7">faiss::gpu::DeviceMemory</a>.</p>
 
-<p>Definition at line <a class="el" href="StackDeviceMemory_8cpp_source.html#l00200">200</a> of file <a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StackDeviceMemory_8cpp_source.html#l00212">212</a> of file <a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aadabeef74940ef0cb6a965752bbf6156"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::gpu::StackDeviceMemory::setCudaMallocWarning </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>b</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Enable or disable the warning about not having enough temporary memory when cudaMalloc gets called </p>
+
+<p>Definition at line <a class="el" href="StackDeviceMemory_8cpp_source.html#l00202">202</a> of file <a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/utils/<a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a></li>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/utils/<a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a></li>
+<li>/tmp/faiss/gpu/utils/<a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a></li>
+<li>/tmp/faiss/gpu/utils/<a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

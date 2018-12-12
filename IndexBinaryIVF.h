@@ -22,6 +22,7 @@
 
 namespace faiss {
 
+struct BinaryInvertedListScanner;
 
 /** Index based on a inverted file (IVF)
  *
@@ -30,15 +31,7 @@ namespace faiss {
  * index maps to a list (aka inverted list or posting list), where the
  * id of the vector is stored.
  *
- * The inverted list object is required only after trainng. If none is
- * set externally, an ArrayInvertedLists is used automatically.
- *
- * At search time, the vector to be searched is also quantized, and
- * only the list corresponding to the quantization index is
- * searched. This speeds up the search by making it
- * non-exhaustive. This can be relaxed using multi-probe search: a few
- * (nprobe) quantization indices are selected and several inverted
- * lists are visited.
+ * Otherwise the object is similar to the IndexIVF
  */
 struct IndexBinaryIVF : IndexBinary {
     /// Acess to the actual data
@@ -60,14 +53,10 @@ struct IndexBinaryIVF : IndexBinary {
     IndexBinary *quantizer;   ///< quantizer that maps vectors to inverted lists
     size_t nlist;             ///< number of possible key values
 
-    /**
-     * = 0: use the quantizer as index in a kmeans training
-     * = 1: just pass on the training set to the train() of the quantizer
-     * = 2: kmeans training on a flat index + add the centroids to the quantizer
-     */
     bool own_fields;          ///< whether object owns the quantizer
 
     ClusteringParameters cp; ///< to override default clustering params
+    Index *clustering_index; ///< to override index used during clustering
 
     /// Trains the quantizer and calls train_residual to train sub-quantizers
     void train_q1(size_t n, const uint8_t *x, bool verbose);
@@ -121,6 +110,9 @@ struct IndexBinaryIVF : IndexBinary {
                             bool store_pairs,
                             const IVFSearchParameters *params=nullptr
                             ) const;
+
+    virtual BinaryInvertedListScanner *get_InvertedListScanner (
+                                         bool store_pairs=false) const;
 
     /** assign the vectors, then call search_preassign */
     virtual void search(idx_t n, const uint8_t *x, idx_t k,
@@ -189,6 +181,40 @@ struct IndexBinaryIVF : IndexBinary {
     void print_stats() const;
 
     void replace_invlists(InvertedLists *il, bool own=false);
+};
+
+
+struct BinaryInvertedListScanner {
+
+    using idx_t = Index::idx_t;
+
+    /// from now on we handle this query.
+    virtual void set_query (const uint8_t *query_vector) = 0;
+
+    /// following codes come from this inverted list
+    virtual void set_list (idx_t list_no, uint8_t coarse_dis) = 0;
+
+    /// compute a single query-to-code distance
+    virtual uint32_t distance_to_code (const uint8_t *code) const = 0;
+
+    /** compute the distances to codes. (distances, labels) should be
+     * organized as a min- or max-heap
+     *
+     * @param n      number of codes to scan
+     * @param codes  codes to scan (n * code_size)
+     * @param ids        corresponding ids (ignored if store_pairs)
+     * @param distances  heap distances (size k)
+     * @param labels     heap labels (size k)
+     * @param k          heap size
+     */
+    virtual size_t scan_codes (size_t n,
+                               const uint8_t *codes,
+                               const idx_t *ids,
+                               int32_t *distances, idx_t *labels,
+                               size_t k) const = 0;
+
+    virtual ~BinaryInvertedListScanner () {}
+
 };
 
 

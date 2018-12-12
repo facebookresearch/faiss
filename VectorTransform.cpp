@@ -100,7 +100,9 @@ LinearTransform::LinearTransform (int d_in, int d_out,
                                   bool have_bias):
     VectorTransform (d_in, d_out), have_bias (have_bias),
     is_orthonormal (false), verbose (false)
-{}
+{
+    is_trained = false; // will be trained when A and b are initialized
+}
 
 void LinearTransform::apply_noalloc (Index::idx_t n, const float * x,
                                float * xt) const
@@ -234,7 +236,15 @@ void RandomRotationMatrix::init (int seed)
         A.resize(d_in * d_out);
     }
     is_orthonormal = true;
+    is_trained = true;
 }
+
+void RandomRotationMatrix::train (Index::idx_t n, const float *x)
+{
+    // initialize with some arbitrary seed
+    init (12345);
+}
+
 
 /*********************************************
  * PCAMatrix

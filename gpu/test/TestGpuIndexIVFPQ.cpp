@@ -86,7 +86,7 @@ struct Options {
   }
 
   float getCompareEpsilon() const {
-    return 0.015f;
+    return 0.03f;
   }
 
   float getPctMaxDiff1() const {

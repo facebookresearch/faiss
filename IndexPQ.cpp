@@ -870,6 +870,22 @@ void MultiIndexQuantizer::search (idx_t n, const float *x, idx_t k,
                                   float *distances, idx_t *labels) const {
     if (n == 0) return;
 
+    // the allocation just below can be severe...
+    idx_t bs = 32768;
+    if (n > bs) {
+        for (idx_t i0 = 0; i0 < n; i0 += bs) {
+            idx_t i1 = std::min(i0 + bs, n);
+            if (verbose) {
+                printf("MultiIndexQuantizer::search: %ld:%ld / %ld\n",
+                       i0, i1, n);
+            }
+            search (i1 - i0, x + i0 * d, k,
+                    distances + i0 * k,
+                    labels + i0 * k);
+        }
+        return;
+    }
+
     float * dis_tables = new float [n * pq.ksub * pq.M];
     ScopeDeleter<float> del (dis_tables);
 
