@@ -744,6 +744,11 @@ struct InvertedListScanner: QueryTables {
         list_size = list_size_in;
         list_codes = list_codes_in;
         list_ids = list_ids_in;
+        
+        if (by_residual && polysemous_ht != 0) {
+            ivfpq.quantizer->compute_residual (qi, residual_vec, key);
+            pq.compute_code (residual_vec, q_code.data());
+        }
     }
 
     /*****************************************************
