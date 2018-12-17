@@ -249,7 +249,7 @@ class TestSQFlavors(unittest.TestCase):
             D, I = index.search(xq, 10)
             ninter = faiss.eval_intersection(I, gt_I)
             print('(%d, %s): %d, ' % (mt, repr(qname), ninter))
-            assert abs(ninter - self.ref_results[(mt, qname)]) <= 4
+            assert ninter >= self.ref_results[(mt, qname)] - 4
 
             D2, I2 = self.subtest_add2col(xb, xq, index, qname)
 
@@ -312,7 +312,7 @@ class TestPQFlavors(unittest.TestCase):
             ninter = faiss.eval_intersection(I, gt_I)
             print('(%d, %s): %d, ' % (mt, by_residual, ninter))
 
-            assert abs(ninter - self.ref_results[mt, by_residual]) <= 2
+            assert ninter >= self.ref_results[mt, by_residual] - 2
 
             index.use_precomputed_table = 0
             D2, I2 = index.search(xq, 10)
