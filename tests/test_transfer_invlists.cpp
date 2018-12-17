@@ -8,6 +8,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <memory>
 
 #include <gtest/gtest.h>
 
