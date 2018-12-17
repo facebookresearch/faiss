@@ -21,6 +21,11 @@
 #include <faiss/IVFlib.h>
 
 
+using namespace faiss;
+
+namespace {
+
+
 // parameters to use for the test
 int d = 64;
 size_t nb = 1000;
@@ -28,8 +33,6 @@ size_t nq = 100;
 size_t nt = 500;
 int k = 10;
 int nlist = 40;
-
-using namespace faiss;
 
 typedef faiss::Index::idx_t idx_t;
 
@@ -39,10 +42,6 @@ std::vector<float> get_data (size_t nb, int seed) {
     float_randn (x.data(), nb * d, seed);
     return x;
 }
-
-
-
-
 
 void test_index_type(const char *factory_string) {
 
@@ -146,6 +145,9 @@ void test_index_type(const char *factory_string) {
     EXPECT_TRUE (Dref == Dnew);
 
 }
+
+
+}  // namespace
 
 
 TEST(TRANS, IVFFlat) {
