@@ -24,7 +24,9 @@ CPPOBJ =    GpuResources.o \
 
 INS = 1 32 64 128 256 F512 T512 F1024 T1024
 
-CUOBJ =     impl/BroadcastSum.o \
+CUOBJ =     impl/BinaryDistance.o \
+            impl/BinaryFlatIndex.o \
+            impl/BroadcastSum.o \
             impl/Distance.o \
             impl/FlatIndex.o \
             impl/InvertedListAppend.o \
@@ -41,7 +43,9 @@ CUOBJ =     impl/BroadcastSum.o \
             impl/PQScanMultiPassNoPrecomputed.o \
             impl/PQScanMultiPassPrecomputed.o \
             impl/VectorResidual.o \
+            GpuDistance.o \
             GpuIndex.o \
+            GpuIndexBinaryFlat.o
             GpuIndexFlat.o \
             GpuIndexIVF.o \
             GpuIndexIVFFlat.o \
