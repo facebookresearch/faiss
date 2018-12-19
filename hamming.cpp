@@ -352,6 +352,11 @@ void hammings_knn_mc (
         nres++;
       }
     }
+    while (nres < k) {
+      labels[i * k + nres] = -1;
+      distances[i * k + nres] = std::numeric_limits<int32_t>::max();
+      ++nres;
+    }
   }
 }
 

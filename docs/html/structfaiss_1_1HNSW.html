@@ -90,6 +90,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structfaiss_1_1HNSW-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -101,6 +102,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW_1_1DistanceComputer.html">DistanceComputer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW_1_1MinimaxHeap.html">MinimaxHeap</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW_1_1NodeDistCloser.html">NodeDistCloser</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">to sort pairs of (id, distance) from nearest to fathest or the reverse  <a href="structfaiss_1_1HNSW_1_1NodeDistCloser.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW_1_1NodeDistFarther.html">NodeDistFarther</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -108,10 +116,14 @@ Public Types</h2></td></tr>
 typedef int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#ae1342fc2f07c325598a73b733e88ee74">storage_idx_t</a></td></tr>
 <tr class="memdesc:ae1342fc2f07c325598a73b733e88ee74"><td class="mdescLeft">&#160;</td><td class="mdescRight">internal storage of vectors (32 bits: this is expensive) <br/></td></tr>
 <tr class="separator:ae1342fc2f07c325598a73b733e88ee74"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a153fa41ad41a4905aa60683360a3cdf0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a153fa41ad41a4905aa60683360a3cdf0"></a>
-typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#a153fa41ad41a4905aa60683360a3cdf0">idx_t</a></td></tr>
-<tr class="memdesc:a153fa41ad41a4905aa60683360a3cdf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Faiss results are 64-bit. <br/></td></tr>
-<tr class="separator:a153fa41ad41a4905aa60683360a3cdf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84f912f99bda1a827a74cdf8793af160"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a84f912f99bda1a827a74cdf8793af160"></a>
+typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#a84f912f99bda1a827a74cdf8793af160">idx_t</a></td></tr>
+<tr class="memdesc:a84f912f99bda1a827a74cdf8793af160"><td class="mdescLeft">&#160;</td><td class="mdescRight">Faiss results are 64-bit. <br/></td></tr>
+<tr class="separator:a84f912f99bda1a827a74cdf8793af160"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7354bfe0fedc510d73071ebefd37dcb2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7354bfe0fedc510d73071ebefd37dcb2"></a>
+typedef std::pair&lt; float, <br class="typebreak"/>
+<a class="el" href="structfaiss_1_1HNSW.html#ae1342fc2f07c325598a73b733e88ee74">storage_idx_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Node</b></td></tr>
+<tr class="separator:a7354bfe0fedc510d73071ebefd37dcb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -130,7 +142,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 <tr class="memdesc:a49b512eaaa54ead77b564cad8e3e6ebd"><td class="mdescLeft">&#160;</td><td class="mdescRight">cumumlative nb up to (and excluding) this level <br/></td></tr>
 <tr class="separator:a49b512eaaa54ead77b564cad8e3e6ebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3ae6a80d358e59e3af23f918253f61d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa3ae6a80d358e59e3af23f918253f61d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#aa3ae6a80d358e59e3af23f918253f61d">neighbor_range</a> (<a class="el" href="structfaiss_1_1HNSW.html#a153fa41ad41a4905aa60683360a3cdf0">idx_t</a> no, int layer_no, size_t *begin, size_t *end) const </td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#aa3ae6a80d358e59e3af23f918253f61d">neighbor_range</a> (<a class="el" href="structfaiss_1_1HNSW.html#a84f912f99bda1a827a74cdf8793af160">idx_t</a> no, int layer_no, size_t *begin, size_t *end) const </td></tr>
 <tr class="memdesc:aa3ae6a80d358e59e3af23f918253f61d"><td class="mdescLeft">&#160;</td><td class="mdescRight">range of entries in the neighbors table of vertex no at layer_no <br/></td></tr>
 <tr class="separator:aa3ae6a80d358e59e3af23f918253f61d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fc852810a2497a8eb2c41635ec05520"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1fc852810a2497a8eb2c41635ec05520"></a>
@@ -145,10 +157,17 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#a26710980aaca3c1c8729e5e055a42ebe">fill_with_random_links</a> (size_t n)</td></tr>
 <tr class="memdesc:a26710980aaca3c1c8729e5e055a42ebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">add n random levels to table (for debugging...) <br/></td></tr>
 <tr class="separator:a26710980aaca3c1c8729e5e055a42ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41a5d502f7b17a0fca8d1b0c02123a24"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#a41a5d502f7b17a0fca8d1b0c02123a24">add_links_starting_from</a> (<a class="el" href="structfaiss_1_1HNSW_1_1DistanceComputer.html">DistanceComputer</a> &amp;ptdis, <a class="el" href="structfaiss_1_1HNSW.html#ae1342fc2f07c325598a73b733e88ee74">storage_idx_t</a> pt_id, <a class="el" href="structfaiss_1_1HNSW.html#ae1342fc2f07c325598a73b733e88ee74">storage_idx_t</a> nearest, float d_nearest, int level, omp_lock_t *locks, <a class="el" href="structfaiss_1_1VisitedTable.html">VisitedTable</a> &amp;vt)</td></tr>
+<tr class="separator:a41a5d502f7b17a0fca8d1b0c02123a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a314b809de6f329662ab09f258b49afb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#a314b809de6f329662ab09f258b49afb3">add_with_locks</a> (<a class="el" href="structfaiss_1_1HNSW_1_1DistanceComputer.html">DistanceComputer</a> &amp;ptdis, int pt_level, int pt_id, std::vector&lt; omp_lock_t &gt; &amp;locks, <a class="el" href="structfaiss_1_1VisitedTable.html">VisitedTable</a> &amp;vt)</td></tr>
 <tr class="separator:a314b809de6f329662ab09f258b49afb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad91ac2e25c896dab7fb9d32f94b60a6a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#ad91ac2e25c896dab7fb9d32f94b60a6a">search_from_candidates</a> (<a class="el" href="structfaiss_1_1HNSW_1_1DistanceComputer.html">DistanceComputer</a> &amp;qdis, int k, <a class="el" href="structfaiss_1_1HNSW.html#a84f912f99bda1a827a74cdf8793af160">idx_t</a> *I, float *D, <a class="el" href="structfaiss_1_1HNSW_1_1MinimaxHeap.html">MinimaxHeap</a> &amp;candidates, <a class="el" href="structfaiss_1_1VisitedTable.html">VisitedTable</a> &amp;vt, int level, int nres_in=0) const </td></tr>
+<tr class="separator:ad91ac2e25c896dab7fb9d32f94b60a6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8941aab69115f3f0ac08326542f2bff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af8941aab69115f3f0ac08326542f2bff"></a>
+std::priority_queue&lt; Node &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>search_from</b> (const Node &amp;node, <a class="el" href="structfaiss_1_1HNSW_1_1DistanceComputer.html">DistanceComputer</a> &amp;qdis, int ef, <a class="el" href="structfaiss_1_1VisitedTable.html">VisitedTable</a> *vt) const </td></tr>
+<tr class="separator:af8941aab69115f3f0ac08326542f2bff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a330107a5801680609932849fc9404594"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a330107a5801680609932849fc9404594"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#a330107a5801680609932849fc9404594">search</a> (<a class="el" href="structfaiss_1_1HNSW_1_1DistanceComputer.html">DistanceComputer</a> &amp;qdis, int k, <a class="el" href="structfaiss_1_1HNSW.html#a153fa41ad41a4905aa60683360a3cdf0">idx_t</a> *I, float *D, <a class="el" href="structfaiss_1_1VisitedTable.html">VisitedTable</a> &amp;vt) const </td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#a330107a5801680609932849fc9404594">search</a> (<a class="el" href="structfaiss_1_1HNSW_1_1DistanceComputer.html">DistanceComputer</a> &amp;qdis, int k, <a class="el" href="structfaiss_1_1HNSW.html#a84f912f99bda1a827a74cdf8793af160">idx_t</a> *I, float *D, <a class="el" href="structfaiss_1_1VisitedTable.html">VisitedTable</a> &amp;vt) const </td></tr>
 <tr class="memdesc:a330107a5801680609932849fc9404594"><td class="mdescLeft">&#160;</td><td class="mdescRight">search interface <br/></td></tr>
 <tr class="separator:a330107a5801680609932849fc9404594"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73b4779053c5281298e1e916bb04d42f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a73b4779053c5281298e1e916bb04d42f"></a>
@@ -160,6 +179,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clear_neighbor_tables
 <tr class="memitem:a7099f143f721ce74d7b4f5f3f66a7e5c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7099f143f721ce74d7b4f5f3f66a7e5c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>print_neighbor_stats</b> (int level) const </td></tr>
 <tr class="separator:a7099f143f721ce74d7b4f5f3f66a7e5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a805fdc261eb2d1fa66e6a457d7cde2a0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a805fdc261eb2d1fa66e6a457d7cde2a0"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>prepare_level_tab</b> (size_t n, bool preset_levels=false)</td></tr>
+<tr class="separator:a805fdc261eb2d1fa66e6a457d7cde2a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a0cf1870a859783925e95b15bf5e83584"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#a0cf1870a859783925e95b15bf5e83584">shrink_neighbor_list</a> (<a class="el" href="structfaiss_1_1HNSW_1_1DistanceComputer.html">DistanceComputer</a> &amp;qdis, std::priority_queue&lt; <a class="el" href="structfaiss_1_1HNSW_1_1NodeDistFarther.html">NodeDistFarther</a> &gt; &amp;input, std::vector&lt; <a class="el" href="structfaiss_1_1HNSW_1_1NodeDistFarther.html">NodeDistFarther</a> &gt; &amp;output, int max_size)</td></tr>
+<tr class="separator:a0cf1870a859783925e95b15bf5e83584"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -196,10 +223,6 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#a6d1cb35c4220bf554af90133c71ae04f">efSearch</a></td></tr>
 <tr class="memdesc:a6d1cb35c4220bf554af90133c71ae04f"><td class="mdescLeft">&#160;</td><td class="mdescRight">expansion factor at search time <br/></td></tr>
 <tr class="separator:a6d1cb35c4220bf554af90133c71ae04f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbf81f0b21102b942182c904892e0858"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adbf81f0b21102b942182c904892e0858"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#adbf81f0b21102b942182c904892e0858">check_relative_distance</a></td></tr>
-<tr class="memdesc:adbf81f0b21102b942182c904892e0858"><td class="mdescLeft">&#160;</td><td class="mdescRight">during search: do we check whether the next best distance is good enough? <br/></td></tr>
-<tr class="separator:adbf81f0b21102b942182c904892e0858"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a857bef0db2dc0000f312cc8a95f857b2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a857bef0db2dc0000f312cc8a95f857b2"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html#a857bef0db2dc0000f312cc8a95f857b2">upper_beam</a></td></tr>
 <tr class="memdesc:a857bef0db2dc0000f312cc8a95f857b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of entry points in levels &gt; 0. <br/></td></tr>
@@ -207,8 +230,67 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="IndexHNSW_8h_source.html#l00040">40</a> of file <a class="el" href="IndexHNSW_8h_source.html">IndexHNSW.h</a>.</p>
+<p>Definition at line <a class="el" href="HNSW_8h_source.html#l00047">47</a> of file <a class="el" href="HNSW_8h_source.html">HNSW.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a41a5d502f7b17a0fca8d1b0c02123a24"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::HNSW::add_links_starting_from </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1HNSW_1_1DistanceComputer.html">DistanceComputer</a> &amp;&#160;</td>
+          <td class="paramname"><em>ptdis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1HNSW.html#ae1342fc2f07c325598a73b733e88ee74">storage_idx_t</a>&#160;</td>
+          <td class="paramname"><em>pt_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1HNSW.html#ae1342fc2f07c325598a73b733e88ee74">storage_idx_t</a>&#160;</td>
+          <td class="paramname"><em>nearest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>d_nearest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">omp_lock_t *&#160;</td>
+          <td class="paramname"><em>locks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1VisitedTable.html">VisitedTable</a> &amp;&#160;</td>
+          <td class="paramname"><em>vt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Finds neighbors and builds links with them, starting from an entry point. The own neighbor list is assumed to be locked. </p>
+
+<p>Definition at line <a class="el" href="HNSW_8cpp_source.html#l00443">443</a> of file <a class="el" href="HNSW_8cpp_source.html">HNSW.cpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a314b809de6f329662ab09f258b49afb3"></a>
 <div class="memitem">
 <div class="memproto">
@@ -252,7 +334,72 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 </div><div class="memdoc">
 <p>add point pt_id on all levels &lt;= pt_level and build the link structure for them. </p>
 
-<p>Definition at line <a class="el" href="IndexHNSW_8cpp_source.html#l00657">657</a> of file <a class="el" href="IndexHNSW_8cpp_source.html">IndexHNSW.cpp</a>.</p>
+<p>Definition at line <a class="el" href="HNSW_8cpp_source.html#l00479">479</a> of file <a class="el" href="HNSW_8cpp_source.html">HNSW.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad91ac2e25c896dab7fb9d32f94b60a6a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int faiss::HNSW::search_from_candidates </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1HNSW_1_1DistanceComputer.html">DistanceComputer</a> &amp;&#160;</td>
+          <td class="paramname"><em>qdis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1HNSW.html#a84f912f99bda1a827a74cdf8793af160">idx_t</a> *&#160;</td>
+          <td class="paramname"><em>I</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>D</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1HNSW_1_1MinimaxHeap.html">MinimaxHeap</a> &amp;&#160;</td>
+          <td class="paramname"><em>candidates</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1VisitedTable.html">VisitedTable</a> &amp;&#160;</td>
+          <td class="paramname"><em>vt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nres_in</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Do a BFS on the candidates list </p>
+
+<p>Definition at line <a class="el" href="HNSW_8cpp_source.html#l00525">525</a> of file <a class="el" href="HNSW_8cpp_source.html">HNSW.cpp</a>.</p>
 
 </div>
 </div>
@@ -281,7 +428,56 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 </div><div class="memdoc">
 <p>initialize the assign_probas and cum_nneighbor_per_level to have 2*M links on level 0 and M links on levels &gt; 0 </p>
 
-<p>Definition at line <a class="el" href="IndexHNSW_8cpp_source.html#l00553">553</a> of file <a class="el" href="IndexHNSW_8cpp_source.html">IndexHNSW.cpp</a>.</p>
+<p>Definition at line <a class="el" href="HNSW_8cpp_source.html#l00078">78</a> of file <a class="el" href="HNSW_8cpp_source.html">HNSW.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0cf1870a859783925e95b15bf5e83584"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::HNSW::shrink_neighbor_list </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1HNSW_1_1DistanceComputer.html">DistanceComputer</a> &amp;&#160;</td>
+          <td class="paramname"><em>qdis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::priority_queue&lt; <a class="el" href="structfaiss_1_1HNSW_1_1NodeDistFarther.html">NodeDistFarther</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structfaiss_1_1HNSW_1_1NodeDistFarther.html">NodeDistFarther</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>output</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>max_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Enumerate vertices from farthest to nearest from query, keep a neighbor only if there is no previous neighbor that is closer to that vertex than the query. </p>
+
+<p>Definition at line <a class="el" href="HNSW_8cpp_source.html#l00237">237</a> of file <a class="el" href="HNSW_8cpp_source.html">HNSW.cpp</a>.</p>
 
 </div>
 </div>
@@ -297,7 +493,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 </div><div class="memdoc">
 <p>number of neighbors stored per layer (cumulative), should not be changed after first add </p>
 
-<p>Definition at line <a class="el" href="IndexHNSW_8h_source.html#l00074">74</a> of file <a class="el" href="IndexHNSW_8h_source.html">IndexHNSW.h</a>.</p>
+<p>Definition at line <a class="el" href="HNSW_8h_source.html#l00123">123</a> of file <a class="el" href="HNSW_8h_source.html">HNSW.h</a>.</p>
 
 </div>
 </div>
@@ -312,7 +508,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 </div><div class="memdoc">
 <p>neighbors[offsets[i]:offsets[i+1]] is the list of neighbors of vector i for all levels. this is where all storage goes. </p>
 
-<p>Definition at line <a class="el" href="IndexHNSW_8h_source.html#l00085">85</a> of file <a class="el" href="IndexHNSW_8h_source.html">IndexHNSW.h</a>.</p>
+<p>Definition at line <a class="el" href="HNSW_8h_source.html#l00134">134</a> of file <a class="el" href="HNSW_8h_source.html">HNSW.h</a>.</p>
 
 </div>
 </div>
@@ -327,13 +523,13 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 </div><div class="memdoc">
 <p>offsets[i] is the offset in the neighbors array where vector i is stored size ntotal + 1 </p>
 
-<p>Definition at line <a class="el" href="IndexHNSW_8h_source.html#l00081">81</a> of file <a class="el" href="IndexHNSW_8h_source.html">IndexHNSW.h</a>.</p>
+<p>Definition at line <a class="el" href="HNSW_8h_source.html#l00130">130</a> of file <a class="el" href="HNSW_8h_source.html">HNSW.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/<a class="el" href="IndexHNSW_8h_source.html">IndexHNSW.h</a></li>
-<li>/data/users/matthijs/github_faiss/faiss/<a class="el" href="IndexHNSW_8cpp_source.html">IndexHNSW.cpp</a></li>
+<li>/tmp/faiss/<a class="el" href="HNSW_8h_source.html">HNSW.h</a></li>
+<li>/tmp/faiss/<a class="el" href="HNSW_8cpp_source.html">HNSW.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

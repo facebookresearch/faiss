@@ -33,7 +33,9 @@ struct Tempfilename {
 
     Tempfilename (const char *prefix = nullptr) {
         pthread_mutex_lock (&mutex);
-        filename = tempnam (nullptr, prefix);
+        char *cfname = tempnam (nullptr, prefix);
+        filename = cfname;
+        free(cfname);
         pthread_mutex_unlock (&mutex);
     }
 

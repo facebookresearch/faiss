@@ -155,10 +155,14 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 <tr class="separator:aa05c1f4a5280fe723c9888937182df75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6536a4542048be713b5669ef8bcc5ff6"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#a6536a4542048be713b5669ef8bcc5ff6">highWaterMalloc_</a></td></tr>
 <tr class="separator:a6536a4542048be713b5669ef8bcc5ff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30b99adb89368e07f42eae0f31c97c96"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a30b99adb89368e07f42eae0f31c97c96"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#a30b99adb89368e07f42eae0f31c97c96">cudaMallocWarning_</a></td></tr>
+<tr class="memdesc:a30b99adb89368e07f42eae0f31c97c96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether or not a warning upon cudaMalloc is generated. <br/></td></tr>
+<tr class="separator:a30b99adb89368e07f42eae0f31c97c96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="StackDeviceMemory_8h_source.html#l00059">59</a> of file <a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a>.</p>
+<p>Definition at line <a class="el" href="StackDeviceMemory_8h_source.html#l00062">62</a> of file <a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="ab45d128f288728df5baf03defd50cec7"></a>
 <div class="memitem">
@@ -185,7 +189,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 </div><div class="memdoc">
 <p>Obtains an allocation; all allocations are guaranteed to be 16 byte aligned </p>
 
-<p>Definition at line <a class="el" href="StackDeviceMemory_8cpp_source.html#l00063">63</a> of file <a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StackDeviceMemory_8cpp_source.html#l00067">67</a> of file <a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a>.</p>
 
 </div>
 </div>
@@ -203,7 +207,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 </div><div class="memdoc">
 <p>Returns how much size is available for an allocation without calling cudaMalloc </p>
 
-<p>Definition at line <a class="el" href="StackDeviceMemory_8cpp_source.html#l00058">58</a> of file <a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StackDeviceMemory_8cpp_source.html#l00062">62</a> of file <a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a>.</p>
 
 </div>
 </div>
@@ -219,7 +223,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 </div><div class="memdoc">
 <p>What's the high water mark in terms of memory allocated via cudaMalloc? </p>
 
-<p>Definition at line <a class="el" href="StackDeviceMemory_8h_source.html#l00114">114</a> of file <a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a>.</p>
+<p>Definition at line <a class="el" href="StackDeviceMemory_8h_source.html#l00117">117</a> of file <a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a>.</p>
 
 </div>
 </div>
@@ -234,7 +238,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 </div><div class="memdoc">
 <p>What's the high water mark in terms of memory used from the temporary buffer? </p>
 
-<p>Definition at line <a class="el" href="StackDeviceMemory_8h_source.html#l00110">110</a> of file <a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a>.</p>
+<p>Definition at line <a class="el" href="StackDeviceMemory_8h_source.html#l00113">113</a> of file <a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a>.</p>
 
 </div>
 </div>
@@ -249,7 +253,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 </div><div class="memdoc">
 <p>List of previous last users of allocations on our stack, for possible synchronization purposes </p>
 
-<p>Definition at line <a class="el" href="StackDeviceMemory_8h_source.html#l00103">103</a> of file <a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a>.</p>
+<p>Definition at line <a class="el" href="StackDeviceMemory_8h_source.html#l00106">106</a> of file <a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a>.</p>
 
 </div>
 </div>
@@ -264,13 +268,13 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 </div><div class="memdoc">
 <p>Where our allocation begins and ends [start_, end_) is valid </p>
 
-<p>Definition at line <a class="el" href="StackDeviceMemory_8h_source.html#l00092">92</a> of file <a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a>.</p>
+<p>Definition at line <a class="el" href="StackDeviceMemory_8h_source.html#l00095">95</a> of file <a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/utils/<a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a></li>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/utils/<a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a></li>
+<li>/tmp/faiss/gpu/utils/<a class="el" href="StackDeviceMemory_8h_source.html">StackDeviceMemory.h</a></li>
+<li>/tmp/faiss/gpu/utils/<a class="el" href="StackDeviceMemory_8cpp_source.html">StackDeviceMemory.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

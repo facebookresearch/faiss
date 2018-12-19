@@ -12,12 +12,25 @@ import faiss
 
 class TestBinaryFactory(unittest.TestCase):
 
-    def test_factory_1(self):
+    def test_factory_IVF(self):
 
         index = faiss.index_binary_factory(16, "BIVF10")
         assert index.invlists is not None
+        assert index.nlist == 10
+        assert index.code_size == 2
 
-    def test_factory_2(self):
+    def test_factory_Flat(self):
 
         index = faiss.index_binary_factory(16, "BFlat")
         assert index.code_size == 2
+
+    def test_factory_HNSW(self):
+
+        index = faiss.index_binary_factory(256, "BHNSW32")
+        assert index.code_size == 32
+
+    def test_factory_IVF_HNSW(self):
+
+        index = faiss.index_binary_factory(256, "BIVF1024_BHNSW32")
+        assert index.code_size == 32
+        assert index.nlist == 1024

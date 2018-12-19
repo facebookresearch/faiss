@@ -148,6 +148,10 @@ struct ParameterSpace {
     /// independent single-searches)
     bool thread_over_batches;
 
+    /// run tests several times until they reach at least this
+    /// duration (to avoid jittering in MT mode)
+    double min_test_duration;
+
     ParameterSpace ();
 
     /// nb of combinations, = product of values sizes

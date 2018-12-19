@@ -21,6 +21,7 @@
 
 #include <omp.h>
 
+#include <immintrin.h>
 
 #include <algorithm>
 #include <vector>
@@ -53,6 +54,9 @@ int sorgqr_(FINTEGER *m, FINTEGER *n, FINTEGER *k, float *a,
             FINTEGER *lda, float *tau, float *work,
             FINTEGER *lwork, FINTEGER *info);
 
+int sgemv_(const char *trans, FINTEGER *m, FINTEGER *n, float *alpha,
+           const float *a, FINTEGER *lda, const float *x, FINTEGER *incx,
+           float *beta, float *y, FINTEGER *incy);
 
 }
 
@@ -323,31 +327,27 @@ void reflection_ref (const float * u, float * x, size_t n, size_t d, size_t nu)
    a set of ny vectors y.
    These functions are not intended to replace BLAS matrix-matrix, as they
    would be significantly less efficient in this case. */
-void fvec_inner_products_ny (float * __restrict ip,
+void fvec_inner_products_ny (float * ip,
                              const float * x,
                              const float * y,
                              size_t d, size_t ny)
 {
+    // Not sure which one is fastest
+#if 0
+    {
+        FINTEGER di = d;
+        FINTEGER nyi = ny;
+        float one = 1.0, zero = 0.0;
+        FINTEGER onei = 1;
+        sgemv_ ("T", &di, &nyi, &one, y, &di, x, &onei, &zero, ip, &onei);
+    }
+#endif
     for (size_t i = 0; i < ny; i++) {
         ip[i] = fvec_inner_product (x, y, d);
         y += d;
     }
 }
 
-
-
-
-/* compute ny L2 distances between x and a set of vectors y */
-void fvec_L2sqr_ny (float * __restrict dis,
-                    const float * x,
-                    const float * y,
-                    size_t d, size_t ny)
-{
-    for (size_t i = 0; i < ny; i++) {
-        dis[i] = fvec_L2sqr (x, y, d);
-        y += d;
-    }
-}
 
 
 
@@ -574,6 +574,10 @@ static void knn_L2sqr_blas (const float * x,
                 for (size_t j = j0; j < j1; j++) {
                     float ip = *ip_line++;
                     float dis = x_norms[i] + y_norms[j] - 2 * ip;
+
+                    // negative values can occur for identical vectors
+                    // due to roundoff errors
+                    if (dis < 0) dis = 0;
 
                     dis = corr (dis, i, j);
 
@@ -1545,14 +1549,14 @@ const float *fvecs_maybe_subsample (
 }
 
 
-void binary_to_real(int d, const uint8_t *x_in, float *x_out) {
-  for (int i = 0; i < d; ++i) {
-    x_out[i] = 2 * ((x_in[i / 8] & (1 << (i % 8))) != 0) - 1;
-  }
+void binary_to_real(size_t d, const uint8_t *x_in, float *x_out) {
+    for (size_t i = 0; i < d; ++i) {
+        x_out[i] = 2 * ((x_in[i >> 3] >> (i & 7)) & 1) - 1;
+    }
 }
 
-void real_to_binary(int d, const float *x_in, uint8_t *x_out) {
-  for (int i = 0; i < d / 8; ++i) {
+void real_to_binary(size_t d, const float *x_in, uint8_t *x_out) {
+  for (size_t i = 0; i < d / 8; ++i) {
     uint8_t b = 0;
     for (int j = 0; j < 8; ++j) {
       if (x_in[8 * i + j] > 0) {

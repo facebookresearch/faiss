@@ -27,12 +27,14 @@ struct IVFPQSearchParameters: IVFSearchParameters {
 };
 
 
+
+
 /** Inverted file with Product Quantizer encoding. Each residual
  * vector is encoded as a product quantizer code.
  */
 struct IndexIVFPQ: IndexIVF {
     bool by_residual;              ///< Encode residual or plain vector?
-    int use_precomputed_table;     ///< if by_residual, build precompute tables
+
     ProductQuantizer pq;           ///< produces the codes
 
     bool do_polysemous_training;   ///< reorder PQ centroids after training?
@@ -42,6 +44,16 @@ struct IndexIVFPQ: IndexIVF {
     size_t scan_table_threshold;   ///< use table computation or on-the-fly?
     int polysemous_ht;             ///< Hamming thresh for polysemous filtering
 
+    /** Precompute table that speed up query preprocessing at some
+     * memory cost
+     * =-1: force disable
+     * =0: decide heuristically (default: use tables only if they are
+     *     < precomputed_tables_max_bytes)
+     * =1: tables that work for all quantizers (size 256 * nlist * M)
+     * =2: specific version for MultiIndexQuantizer (much more compact)
+     */
+    int use_precomputed_table;     ///< if by_residual, build precompute tables
+    static size_t precomputed_table_max_bytes;
 
     /// if use_precompute_table
     /// size nlist * pq.M * pq.ksub
@@ -53,6 +65,10 @@ struct IndexIVFPQ: IndexIVF {
 
     void add_with_ids(idx_t n, const float* x, const long* xids = nullptr)
         override;
+
+    void encode_vectors(idx_t n, const float* x,
+                        const idx_t *list_nos,
+                        uint8_t * codes) const override;
 
     /// same as add_core, also:
     /// - output 2nd level residuals if residuals_2 != NULL
@@ -103,13 +119,8 @@ struct IndexIVFPQ: IndexIVF {
     void decode_multiple (size_t n, const long *keys,
                           const uint8_t * xcodes, float * x) const;
 
-    void search_preassigned (idx_t n, const float *x, idx_t k,
-                             const idx_t *assign,
-                             const float *centroid_dis,
-                             float *distances, idx_t *labels,
-                             bool store_pairs,
-                             const IVFSearchParameters *params=nullptr
-                             ) const override;
+    InvertedListScanner *get_InvertedListScanner (bool store_pairs)
+        const override;
 
     /// build precomputed table
     void precompute_table ();
@@ -122,9 +133,6 @@ struct IndexIVFPQ: IndexIVF {
 /// statistics are robust to internal threading, but not if
 /// IndexIVFPQ::search_preassigned is called by multiple threads
 struct IndexIVFPQStats {
-    size_t nq;       // nb of queries run
-    size_t nlist;    // nb of inverted lists scanned
-    size_t ncode;    // nb of codes visited
     size_t nrefine;  // nb of refines (IVFPQR)
 
     size_t n_hamming_pass;
@@ -132,15 +140,8 @@ struct IndexIVFPQStats {
 
     // timings measured with the CPU RTC
     // on all threads
-    size_t assign_cycles;
     size_t search_cycles;
     size_t refine_cycles; // only for IVFPQR
-
-    // single thread (double-counted with search_cycles)
-    size_t init_query_cycles;
-    size_t init_list_cycles;
-    size_t scan_cycles;
-    size_t heap_cycles;
 
     IndexIVFPQStats () {reset (); }
     void reset ();

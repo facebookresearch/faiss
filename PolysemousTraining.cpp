@@ -27,10 +27,10 @@
 
 namespace faiss {
 
+
 /****************************************************
  * Optimization code
  ****************************************************/
-
 
 SimulatedAnnealingParameters::SimulatedAnnealingParameters ()
 {

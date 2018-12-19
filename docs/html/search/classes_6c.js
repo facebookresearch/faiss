@@ -6,8 +6,6 @@ var searchData=
   ['limits_3c_20int_20_3e',['Limits&lt; int &gt;',['../structfaiss_1_1gpu_1_1Limits_3_01int_01_4.html',1,'faiss::gpu']]],
   ['limits_3c_20pair_3c_20k_2c_20v_20_3e_20_3e',['Limits&lt; Pair&lt; K, V &gt; &gt;',['../structfaiss_1_1gpu_1_1Limits_3_01Pair_3_01K_00_01V_01_4_01_4.html',1,'faiss::gpu']]],
   ['lineartransform',['LinearTransform',['../structfaiss_1_1LinearTransform.html',1,'faiss']]],
-  ['linked_5fptr',['linked_ptr',['../classtesting_1_1internal_1_1linked__ptr.html',1,'testing::internal']]],
-  ['linked_5fptr_5finternal',['linked_ptr_internal',['../classtesting_1_1internal_1_1linked__ptr__internal.html',1,'testing::internal']]],
   ['list',['List',['../structfaiss_1_1OnDiskInvertedLists_1_1List.html',1,'faiss::OnDiskInvertedLists']]],
   ['loadcode32',['LoadCode32',['../structfaiss_1_1gpu_1_1LoadCode32.html',1,'faiss::gpu']]],
   ['loadcode32_3c_201_20_3e',['LoadCode32&lt; 1 &gt;',['../structfaiss_1_1gpu_1_1LoadCode32_3_011_01_4.html',1,'faiss::gpu']]],

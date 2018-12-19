@@ -87,6 +87,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
@@ -96,18 +97,26 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="InvertedLists_8h_source.html">InvertedLists.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for faiss::InvertedLists:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="structfaiss_1_1InvertedLists.png" usemap="#faiss::InvertedLists_map" alt=""/>
   <map id="faiss::InvertedLists_map" name="faiss::InvertedLists_map">
-<area href="structfaiss_1_1ArrayInvertedLists.html" alt="faiss::ArrayInvertedLists" shape="rect" coords="0,56,156,80"/>
-<area href="structfaiss_1_1OnDiskInvertedLists.html" alt="faiss::OnDiskInvertedLists" shape="rect" coords="166,56,322,80"/>
+<area href="structfaiss_1_1ArrayInvertedLists.html" title="simple (default) implementation as an array of inverted lists " alt="faiss::ArrayInvertedLists" shape="rect" coords="0,56,193,80"/>
+<area href="structfaiss_1_1ConcatenatedInvertedLists.html" alt="faiss::ConcatenatedInvertedLists" shape="rect" coords="203,56,396,80"/>
+<area href="structfaiss_1_1OnDiskInvertedLists.html" alt="faiss::OnDiskInvertedLists" shape="rect" coords="406,56,599,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1InvertedLists_1_1ScopedCodes.html">ScopedCodes</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1InvertedLists_1_1ScopedIds.html">ScopedIds</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a2bb406f72dcad45cf03974ff14bfa473"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2bb406f72dcad45cf03974ff14bfa473"></a>
@@ -127,6 +136,14 @@ virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 <tr class="separator:a60b12f9efe940b617a8380adceef4032"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ab6b389d8d85c5fbf23889064df7e95"><td class="memItemLeft" align="right" valign="top">virtual const idx_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1InvertedLists.html#a3ab6b389d8d85c5fbf23889064df7e95">get_ids</a> (size_t list_no) const =0</td></tr>
 <tr class="separator:a3ab6b389d8d85c5fbf23889064df7e95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f88cb5bb3073eb7d9777e838208190f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3f88cb5bb3073eb7d9777e838208190f"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1InvertedLists.html#a3f88cb5bb3073eb7d9777e838208190f">release_codes</a> (const uint8_t *codes) const </td></tr>
+<tr class="memdesc:a3f88cb5bb3073eb7d9777e838208190f"><td class="mdescLeft">&#160;</td><td class="mdescRight">release codes returned by get_codes (default implementation is nop <br/></td></tr>
+<tr class="separator:a3f88cb5bb3073eb7d9777e838208190f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6930df334c12b6a20e2c82e165462028"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6930df334c12b6a20e2c82e165462028"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1InvertedLists.html#a6930df334c12b6a20e2c82e165462028">release_ids</a> (const idx_t *ids) const </td></tr>
+<tr class="memdesc:a6930df334c12b6a20e2c82e165462028"><td class="mdescLeft">&#160;</td><td class="mdescRight">release ids returned by get_ids <br/></td></tr>
+<tr class="separator:a6930df334c12b6a20e2c82e165462028"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21b52cdb0601cd225bd7924932310876"><td class="memItemLeft" align="right" valign="top">virtual idx_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1InvertedLists.html#a21b52cdb0601cd225bd7924932310876">get_single_id</a> (size_t list_no, size_t offset) const </td></tr>
 <tr class="separator:a21b52cdb0601cd225bd7924932310876"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc2760bed7c210f2fad9b03109f561ee"><td class="memItemLeft" align="right" valign="top">virtual const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1InvertedLists.html#afc2760bed7c210f2fad9b03109f561ee">get_single_code</a> (size_t list_no, size_t offset) const </td></tr>
@@ -152,6 +169,10 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>resize</b> (s
 <tr class="memitem:a72e736253a669dad5f6e5188168e5c60"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a72e736253a669dad5f6e5188168e5c60"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
 <tr class="separator:a72e736253a669dad5f6e5188168e5c60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2a0686121ef5bdd6eb70f7eb3cf9b3a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac2a0686121ef5bdd6eb70f7eb3cf9b3a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1InvertedLists.html#ac2a0686121ef5bdd6eb70f7eb3cf9b3a">merge_from</a> (<a class="el" href="structfaiss_1_1InvertedLists.html">InvertedLists</a> *oivf, size_t add_id)</td></tr>
+<tr class="memdesc:ac2a0686121ef5bdd6eb70f7eb3cf9b3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">move all entries from oivf (empty on output) <br/></td></tr>
+<tr class="separator:ac2a0686121ef5bdd6eb70f7eb3cf9b3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -172,7 +193,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 <li>for resize and add_entries, only concurrent access to different lists are allowed </li>
 </ul>
 
-<p>Definition at line <a class="el" href="IndexIVF_8h_source.html#l00067">67</a> of file <a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a>.</p>
+<p>Definition at line <a class="el" href="InvertedLists_8h_source.html#l00032">32</a> of file <a class="el" href="InvertedLists_8h_source.html">InvertedLists.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a60b12f9efe940b617a8380adceef4032"></a>
 <div class="memitem">
@@ -195,9 +216,10 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
   </tr>
 </table>
 </div><div class="memdoc">
+<p>get the codes for an inverted list must be released by release_codes</p>
 <dl class="section return"><dt>Returns</dt><dd>codes size list_size * code_size </dd></dl>
 
-<p>Implemented in <a class="el" href="structfaiss_1_1ArrayInvertedLists.html#abf4ab66d09d8a1b707dddc77d0c2e8fc">faiss::ArrayInvertedLists</a>, and <a class="el" href="structfaiss_1_1OnDiskInvertedLists.html#a1695e1d8d64a00e8e5f57ebf2210cb87">faiss::OnDiskInvertedLists</a>.</p>
+<p>Implemented in <a class="el" href="structfaiss_1_1ConcatenatedInvertedLists.html#a58b6ba927b61665915b4b9a35c5277ae">faiss::ConcatenatedInvertedLists</a>, <a class="el" href="structfaiss_1_1ArrayInvertedLists.html#abf4ab66d09d8a1b707dddc77d0c2e8fc">faiss::ArrayInvertedLists</a>, and <a class="el" href="structfaiss_1_1OnDiskInvertedLists.html#a1695e1d8d64a00e8e5f57ebf2210cb87">faiss::OnDiskInvertedLists</a>.</p>
 
 </div>
 </div>
@@ -222,9 +244,10 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
   </tr>
 </table>
 </div><div class="memdoc">
+<p>get the ids for an inverted list must be released by release_ids</p>
 <dl class="section return"><dt>Returns</dt><dd>ids size list_size </dd></dl>
 
-<p>Implemented in <a class="el" href="structfaiss_1_1ArrayInvertedLists.html#abd59f7cf340d9c17eb6b402579e4010b">faiss::ArrayInvertedLists</a>, and <a class="el" href="structfaiss_1_1OnDiskInvertedLists.html#ae54e7c6abc10c3d59ea3cd1113466957">faiss::OnDiskInvertedLists</a>.</p>
+<p>Implemented in <a class="el" href="structfaiss_1_1ConcatenatedInvertedLists.html#a886e88bc6bf2ebd996b3f62adb9d0cc6">faiss::ConcatenatedInvertedLists</a>, <a class="el" href="structfaiss_1_1ArrayInvertedLists.html#abd59f7cf340d9c17eb6b402579e4010b">faiss::ArrayInvertedLists</a>, and <a class="el" href="structfaiss_1_1OnDiskInvertedLists.html#ae54e7c6abc10c3d59ea3cd1113466957">faiss::OnDiskInvertedLists</a>.</p>
 
 </div>
 </div>
@@ -259,9 +282,11 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>a single code in an inverted list </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a single code in an inverted list (should be deallocated with release_codes) </dd></dl>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00129">129</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Reimplemented in <a class="el" href="structfaiss_1_1ConcatenatedInvertedLists.html#a159368893fd1c80999600214af416719">faiss::ConcatenatedInvertedLists</a>.</p>
+
+<p>Definition at line <a class="el" href="InvertedLists_8cpp_source.html#l00053">53</a> of file <a class="el" href="InvertedLists_8cpp_source.html">InvertedLists.cpp</a>.</p>
 
 </div>
 </div>
@@ -298,7 +323,9 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>a single id in an inverted list </dd></dl>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00118">118</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Reimplemented in <a class="el" href="structfaiss_1_1ConcatenatedInvertedLists.html#a60bcb32205363041a75bc509ce36d933">faiss::ConcatenatedInvertedLists</a>.</p>
+
+<p>Definition at line <a class="el" href="InvertedLists_8cpp_source.html#l00036">36</a> of file <a class="el" href="InvertedLists_8cpp_source.html">InvertedLists.cpp</a>.</p>
 
 </div>
 </div>
@@ -337,13 +364,13 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1OnDiskInvertedLists.html#aed1cdb979275ec1e6ab8f0c7fead60c7">faiss::OnDiskInvertedLists</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00126">126</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="InvertedLists_8cpp_source.html#l00050">50</a> of file <a class="el" href="InvertedLists_8cpp_source.html">InvertedLists.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/<a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a></li>
-<li>/data/users/matthijs/github_faiss/faiss/<a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a></li>
+<li>/tmp/faiss/<a class="el" href="InvertedLists_8h_source.html">InvertedLists.h</a></li>
+<li>/tmp/faiss/<a class="el" href="InvertedLists_8cpp_source.html">InvertedLists.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

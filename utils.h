@@ -380,20 +380,20 @@ const float *fvecs_maybe_subsample (
 
 /** Convert binary vector to +1/-1 valued float vector.
  *
- * @param d      dimension of the vector
+ * @param d      dimension of the vector (multiple of 8)
  * @param x_in   input binary vector (uint8_t table of size d / 8)
  * @param x_out  output float vector (float table of size d)
  */
-void binary_to_real(int d, const uint8_t *x_in, float *x_out);
+void binary_to_real(size_t d, const uint8_t *x_in, float *x_out);
 
 /** Convert float vector to binary vector. Components > 0 are converted to 1,
  * others to 0.
  *
- * @param d      dimension of the vector
+ * @param d      dimension of the vector (multiple of 8)
  * @param x_in   input float vector (float table of size d)
  * @param x_out  output binary vector (uint8_t table of size d / 8)
  */
-void real_to_binary(int d, const float *x_in, uint8_t *x_out);
+void real_to_binary(size_t d, const float *x_in, uint8_t *x_out);
 
 
 } // namspace faiss

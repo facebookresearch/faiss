@@ -144,8 +144,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structfaiss_1_1Clustering.html#a64c5ec0b4a7967d8be2872974b455ff1">faiss::Clustering</a>
 , <a class="el" href="structfaiss_1_1ProductQuantizer.html#aab1109a29ba0544358e274d727b23cae">faiss::ProductQuantizer</a>
 </li>
-<li>check_relative_distance
-: <a class="el" href="structfaiss_1_1HNSW.html#adbf81f0b21102b942182c904892e0858">faiss::HNSW</a>
+<li>check_compatible_for_merge()
+: <a class="el" href="structfaiss_1_1IndexIVF.html#a7fc8b9a1fff9f3d24cf7055fbc4fed7b">faiss::IndexIVF</a>
 </li>
 <li>classifyAndAddVectors()
 : <a class="el" href="classfaiss_1_1gpu_1_1IVFFlat.html#af20f96b6ad754664796c8a4e7f83ed3a">faiss::gpu::IVFFlat</a>
@@ -159,6 +159,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>clustering_index
 : <a class="el" href="structfaiss_1_1Level1Quantizer.html#a45d29dd6a5c53789c08e5ceb3f63d989">faiss::Level1Quantizer</a>
+, <a class="el" href="structfaiss_1_1IndexBinaryIVF.html#ae4b4048070a6fc5aa3226a2edf42db5e">faiss::IndexBinaryIVF</a>
 </li>
 <li>ClusteringParameters()
 : <a class="el" href="structfaiss_1_1ClusteringParameters.html#a86c8802261041f5d49b1a0d296da60be">faiss::ClusteringParameters</a>
@@ -167,10 +168,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structfaiss_1_1OperatingPoint.html#a2c023f1484e4748e3e97681bb1f4b78e">faiss::OperatingPoint</a>
 </li>
 <li>code_size
-: <a class="el" href="structfaiss_1_1InvertedLists.html#ae06049e4259edb47d443ef87bdedc744">faiss::InvertedLists</a>
+: <a class="el" href="structfaiss_1_1IndexBinary.html#a277c2645b8def11c5d982384098c5380">faiss::IndexBinary</a>
 , <a class="el" href="structfaiss_1_1IndexIVF.html#a46d1aeddb60643c5b3f096147c3e028f">faiss::IndexIVF</a>
 , <a class="el" href="structfaiss_1_1Index2Layer.html#a66403863c8ec987ed83b4d7ef4064fe9">faiss::Index2Layer</a>
 , <a class="el" href="structfaiss_1_1ScalarQuantizer.html#a647b8774e4cd8ca5623a194f5c7f8a33">faiss::ScalarQuantizer</a>
+, <a class="el" href="structfaiss_1_1InvertedLists.html#ae06049e4259edb47d443ef87bdedc744">faiss::InvertedLists</a>
 , <a class="el" href="structfaiss_1_1ProductQuantizer.html#aa61330eadb84772b71018b093773a5f9">faiss::ProductQuantizer</a>
 </li>
 <li>code_size_1
@@ -198,7 +200,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structfaiss_1_1ProductQuantizer.html#a08b130e3a21f2699a4e3bbec121fb838">faiss::ProductQuantizer</a>
 </li>
 <li>compute_code_distance()
-: <a class="el" href="structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html#a96caf21f52fcf6591d7b6b4f3fc8a729">faiss::ScalarQuantizer::DistanceComputer</a>
+: <a class="el" href="structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html#ad18c347d6f68f91feda5a54e4de93fab">faiss::ScalarQuantizer::DistanceComputer</a>
 </li>
 <li>compute_code_from_distance_table()
 : <a class="el" href="structfaiss_1_1ProductQuantizer.html#a95060fedd7c09eb20e968fd2fdb4b316">faiss::ProductQuantizer</a>
@@ -211,7 +213,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structfaiss_1_1Score3Computer.html#a1c4537d67802aef28ccc57c4bd87f766">faiss::Score3Computer&lt; Ttab, Taccu &gt;</a>
 </li>
 <li>compute_distance()
-: <a class="el" href="structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html#a6776bc6fc6c48335f132afa4ac38df33">faiss::ScalarQuantizer::DistanceComputer</a>
+: <a class="el" href="structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html#ae77082c0e7d01130834c1c615baa8249">faiss::ScalarQuantizer::DistanceComputer</a>
 </li>
 <li>compute_distance_subset()
 : <a class="el" href="structfaiss_1_1IndexFlat.html#a14b51786e7f98be1954eef35d02813a7">faiss::IndexFlat</a>
@@ -228,8 +230,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>compute_update()
 : <a class="el" href="structfaiss_1_1Score3Computer.html#a567feac7ddd3bb467a9ed30671caccb1">faiss::Score3Computer&lt; Ttab, Taccu &gt;</a>
 </li>
+<li>ConcatenatedInvertedLists()
+: <a class="el" href="structfaiss_1_1ConcatenatedInvertedLists.html#a55e8e8fcd065c34f0fb0bc51ced7b864">faiss::ConcatenatedInvertedLists</a>
+</li>
 <li>config_
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#a9efdc92bf03d2d6820fb989cf77e8067">faiss::gpu::GpuIndexFlat</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#a11662bc71807172633411268d623f9a5">faiss::gpu::GpuIndexBinaryFlat</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#a9efdc92bf03d2d6820fb989cf77e8067">faiss::gpu::GpuIndexFlat</a>
 </li>
 <li>construct_rev_map()
 : <a class="el" href="structfaiss_1_1IndexIDMap2.html#a646302669189e370d9d864fc18f096fe">faiss::IndexIDMap2</a>
@@ -247,27 +253,30 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structfaiss_1_1IndexIVF.html#a2fc63f9bbfe64e05106366465ece2187">faiss::IndexIVF</a>
 </li>
 <li>copyFrom()
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a8d48f79af9080b55706050244fc24f0e">faiss::gpu::GpuIndexIVFPQ</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6dc00c182a92389b74c89ba7fcab40d3">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a96fd66c31c7e46b1549ed61d1b3476f3">faiss::gpu::GpuIndexIVFFlat</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#a9a9de859274bb73e6d8ea02cae5ca9a6">faiss::gpu::GpuIndexFlatL2</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a94c2c171f9a2d27085dea9101067bdf2">faiss::gpu::GpuIndexIVF</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#abb964875e0893de1d8334ca5ad0f62dc">faiss::gpu::GpuIndexFlat</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#aa181b1778a8dca81ac5cf6cd6a3d5f1d">faiss::gpu::GpuIndexFlatIP</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a94c2c171f9a2d27085dea9101067bdf2">faiss::gpu::GpuIndexIVF</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6dc00c182a92389b74c89ba7fcab40d3">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#a1acf93b118b4136857b5dd9ab614e901">faiss::gpu::GpuIndexBinaryFlat</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#a9a9de859274bb73e6d8ea02cae5ca9a6">faiss::gpu::GpuIndexFlatL2</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a8d48f79af9080b55706050244fc24f0e">faiss::gpu::GpuIndexIVFPQ</a>
 </li>
 <li>copyTo()
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#ab21960d379190b98aaa05ae3877dea09">faiss::gpu::GpuIndexFlatL2</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#aad10de2407911e9adf42c1be5c5dd390">faiss::gpu::GpuIndexIVFPQ</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a345980d7ae4b5baadf93f647fc6cb0b1">faiss::gpu::GpuIndexIVFFlat</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#aad10de2407911e9adf42c1be5c5dd390">faiss::gpu::GpuIndexIVFPQ</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#a046007ff2fafcafc6ae328769c700e39">faiss::gpu::GpuIndexFlat</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6cc21376070a03d77661d6e333972c6a">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#ab21960d379190b98aaa05ae3877dea09">faiss::gpu::GpuIndexFlatL2</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#af70d0fe80cf3bf16ffffd8b16ed64f08">faiss::gpu::GpuIndexFlatIP</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a345980d7ae4b5baadf93f647fc6cb0b1">faiss::gpu::GpuIndexIVFFlat</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#a1e4c6f64fa04d9e2b035c1e390ca91f3">faiss::gpu::GpuIndexBinaryFlat</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a1db0a796b8b2917d989952c5f07fbe55">faiss::gpu::GpuIndexIVF</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6cc21376070a03d77661d6e333972c6a">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
 <li>cp
-: <a class="el" href="structfaiss_1_1ProductQuantizer.html#af265acf5aa1bcda60898002287e6a3d6">faiss::ProductQuantizer</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a520803e209b44c904b876d6b8dad23c9">faiss::gpu::GpuIndexIVF</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a520803e209b44c904b876d6b8dad23c9">faiss::gpu::GpuIndexIVF</a>
 , <a class="el" href="structfaiss_1_1Level1Quantizer.html#abb7097ed40b15ba0af08af6d03608f72">faiss::Level1Quantizer</a>
+, <a class="el" href="structfaiss_1_1ProductQuantizer.html#af265acf5aa1bcda60898002287e6a3d6">faiss::ProductQuantizer</a>
+, <a class="el" href="structfaiss_1_1IndexBinaryIVF.html#a0c3d371cf3985da70b6dacac74f03491">faiss::IndexBinaryIVF</a>
 </li>
 <li>CpuTimer()
 : <a class="el" href="classfaiss_1_1gpu_1_1CpuTimer.html#af2f8e832b4c5425e152834ae7aa2af49">faiss::gpu::CpuTimer</a>
@@ -277,6 +286,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>CudaEvent()
 : <a class="el" href="classfaiss_1_1gpu_1_1CudaEvent.html#af7f5fa36dbff9e6126c1b01218f147e1">faiss::gpu::CudaEvent</a>
+</li>
+<li>cudaMallocWarning_
+: <a class="el" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#a30b99adb89368e07f42eae0f31c97c96">faiss::gpu::StackDeviceMemory::Stack</a>
 </li>
 <li>cum_nb_neighbors()
 : <a class="el" href="structfaiss_1_1HNSW.html#a49b512eaaa54ead77b564cad8e3e6ebd">faiss::HNSW</a>

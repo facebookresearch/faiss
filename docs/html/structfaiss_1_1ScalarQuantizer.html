@@ -106,10 +106,14 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a1201dbd1611fa5c10782ade5d0e4952e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ScalarQuantizer.html#a1201dbd1611fa5c10782ade5d0e4952e">QuantizerType</a> { <a class="el" href="structfaiss_1_1ScalarQuantizer.html#a1201dbd1611fa5c10782ade5d0e4952ea1650389e3efa052ff60177d502328a2c">QT_8bit</a>, 
+<tr class="memitem:a1201dbd1611fa5c10782ade5d0e4952e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ScalarQuantizer.html#a1201dbd1611fa5c10782ade5d0e4952e">QuantizerType</a> { <br/>
+&#160;&#160;<a class="el" href="structfaiss_1_1ScalarQuantizer.html#a1201dbd1611fa5c10782ade5d0e4952ea1650389e3efa052ff60177d502328a2c">QT_8bit</a>, 
 <a class="el" href="structfaiss_1_1ScalarQuantizer.html#a1201dbd1611fa5c10782ade5d0e4952eacd3d1bd71533a7bc52149e4b3d1db13b">QT_4bit</a>, 
 <a class="el" href="structfaiss_1_1ScalarQuantizer.html#a1201dbd1611fa5c10782ade5d0e4952ea029f07a15ea64e7e73daaf9633ac429a">QT_8bit_uniform</a>, 
-<b>QT_4bit_uniform</b>
+<b>QT_4bit_uniform</b>, 
+<br/>
+&#160;&#160;<b>QT_fp16</b>
+<br/>
  }</td></tr>
 <tr class="separator:a1201dbd1611fa5c10782ade5d0e4952e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a867ad0000e4ccfd40bbb1e01e7882d06"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06">RangeStat</a> { <a class="el" href="structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06aa52f2f14616c61c04baf6323d43588fd">RS_minmax</a>, 
@@ -166,7 +170,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The uniform quantizer has a range [vmin, vmax]. The range can be the same for all dimensions (uniform) or specific per dimension (default). </p>
 
-<p>Definition at line <a class="el" href="IndexScalarQuantizer_8h_source.html#l00030">30</a> of file <a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a>.</p>
+<p>Definition at line <a class="el" href="IndexScalarQuantizer_8h_source.html#l00032">32</a> of file <a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a>.</p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a class="anchor" id="a1201dbd1611fa5c10782ade5d0e4952e"></a>
 <div class="memitem">
@@ -189,7 +193,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="IndexScalarQuantizer_8h_source.html#l00032">32</a> of file <a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a>.</p>
+<p>Definition at line <a class="el" href="IndexScalarQuantizer_8h_source.html#l00034">34</a> of file <a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a>.</p>
 
 </div>
 </div>
@@ -218,13 +222,13 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="IndexScalarQuantizer_8h_source.html#l00046">46</a> of file <a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a>.</p>
+<p>Definition at line <a class="el" href="IndexScalarQuantizer_8h_source.html#l00049">49</a> of file <a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/<a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a></li>
-<li>/data/users/matthijs/github_faiss/faiss/<a class="el" href="IndexScalarQuantizer_8cpp_source.html">IndexScalarQuantizer.cpp</a></li>
+<li>/tmp/faiss/<a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a></li>
+<li>/tmp/faiss/<a class="el" href="IndexScalarQuantizer_8cpp_source.html">IndexScalarQuantizer.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

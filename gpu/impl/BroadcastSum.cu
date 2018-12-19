@@ -196,9 +196,9 @@ __global__ void assignAlongColumns(Tensor<T, 1, true> input,
   }
 }
 
-template <typename T, typename TVec>
+template <typename T, bool ZeroClamp>
 __global__ void sumAlongRows(Tensor<T, 1, true> input,
-                             Tensor<TVec, 2, true> output) {
+                             Tensor<T, 2, true> output) {
   __shared__ T sval;
 
   int row = blockIdx.x;
@@ -213,8 +213,10 @@ __global__ void sumAlongRows(Tensor<T, 1, true> input,
 
   // FIXME: speed up
   for (int i = threadIdx.x; i < output.getSize(1); i += blockDim.x) {
-    TVec out = output[row][i];
-    out = Math<TVec>::add(out, val);
+    T out = output[row][i];
+    out = Math<T>::add(out, val);
+    out = Math<T>::lt(out, Math<T>::zero()) ? Math<T>::zero() : out;
+
     output[row][i] = out;
   }
 }
@@ -319,28 +321,22 @@ void runAssignAlongColumns(Tensor<half, 1, true>& input,
 }
 #endif
 
-template <typename T, typename TVec>
+template <typename T>
 void runSumAlongRows(Tensor<T, 1, true>& input,
                      Tensor<T, 2, true>& output,
+                     bool zeroClamp,
                      cudaStream_t stream) {
   FAISS_ASSERT(input.getSize(0) == output.getSize(0));
 
-  if (output.template canCastResize<TVec>()) {
-    auto outputV = output.template castResize<TVec>();
+  int threadsPerBlock =
+    std::min(output.getSize(1), getMaxThreadsCurrentDevice());
+  auto grid = dim3(output.getSize(0));
+  auto block = dim3(threadsPerBlock);
 
-    int threadsPerBlock =
-      std::min(outputV.getSize(1), getMaxThreadsCurrentDevice());
-    auto grid = dim3(outputV.getSize(0));
-    auto block = dim3(threadsPerBlock);
-
-    sumAlongRows<T, TVec><<<grid, block, 0, stream>>>(input, outputV);
+  if (zeroClamp) {
+    sumAlongRows<T, true><<<grid, block, 0, stream>>>(input, output);
   } else {
-    int threadsPerBlock =
-      std::min(output.getSize(1), getMaxThreadsCurrentDevice());
-    auto grid = dim3(output.getSize(0));
-    auto block = dim3(threadsPerBlock);
-
-    sumAlongRows<T, T><<<grid, block, 0, stream>>>(input, output);
+    sumAlongRows<T, false><<<grid, block, 0, stream>>>(input, output);
   }
 
   CUDA_TEST_ERROR();
@@ -348,15 +344,17 @@ void runSumAlongRows(Tensor<T, 1, true>& input,
 
 void runSumAlongRows(Tensor<float, 1, true>& input,
                      Tensor<float, 2, true>& output,
+                     bool zeroClamp,
                      cudaStream_t stream) {
-  runSumAlongRows<float, float4>(input, output, stream);
+  runSumAlongRows<float>(input, output, zeroClamp, stream);
 }
 
 #ifdef FAISS_USE_FLOAT16
 void runSumAlongRows(Tensor<half, 1, true>& input,
                      Tensor<half, 2, true>& output,
+                     bool zeroClamp,
                      cudaStream_t stream) {
-  runSumAlongRows<half, half2>(input, output, stream);
+  runSumAlongRows<half>(input, output, zeroClamp, stream);
 }
 #endif
 

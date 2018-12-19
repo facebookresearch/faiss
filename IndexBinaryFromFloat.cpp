@@ -16,6 +16,8 @@
 namespace faiss {
 
 
+IndexBinaryFromFloat::IndexBinaryFromFloat() {}
+
 IndexBinaryFromFloat::IndexBinaryFromFloat(Index *index)
     : IndexBinary(index->d),
       index(index),

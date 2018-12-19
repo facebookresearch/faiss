@@ -120,6 +120,10 @@ class ReferencedObject(unittest.TestCase):
     xb = np.random.rand(256, d).astype('float32')
     nlist = 128
 
+    d_bin = 256
+    xb_bin = np.random.randint(256, size=(10000, d_bin // 8)).astype('uint8')
+    xq_bin = np.random.randint(256, size=(1000, d_bin // 8)).astype('uint8')
+
     def test_proxy(self):
         index = faiss.IndexProxy()
         for i in range(3):
@@ -158,6 +162,50 @@ class ReferencedObject(unittest.TestCase):
         index = faiss.GpuIndexIVFPQ(
             faiss.StandardGpuResources(), index_cpu)
         index.add(self.xb)
+
+    def test_binary_flat(self):
+        k = 10
+        
+        index_ref = faiss.IndexBinaryFlat(self.d_bin)
+        index_ref.add(self.xb_bin)
+        D_ref, I_ref = index_ref.search(self.xq_bin, k)
+                
+        index = faiss.GpuIndexBinaryFlat(faiss.StandardGpuResources(),
+                                         self.d_bin)
+        index.add(self.xb_bin)
+        D, I = index.search(self.xq_bin, k)
+
+        for d_ref, i_ref, d_new, i_new in zip(D_ref, I_ref, D, I):
+            # exclude max distance
+            assert d_ref.max() == d_new.max()
+            dmax = d_ref.max()
+
+            # sort by (distance, id) pairs to be reproducible
+            ref = [(d, i) for d, i in zip(d_ref, i_ref) if d < dmax]
+            ref.sort()
+
+            new = [(d, i) for d, i in zip(d_new, i_new) if d < dmax]
+            new.sort()
+            
+            assert ref == new
+
+    def test_stress(self):
+        # a mixture of the above, from issue #631
+        target = np.random.rand(50, 16).astype('float32')
+
+        index = faiss.IndexProxy()
+        size, dim = target.shape
+        num_gpu = 4
+        for i in range(num_gpu):
+            config = faiss.GpuIndexFlatConfig()
+            config.device = 0   # simulate on a single GPU
+            sub_index = faiss.GpuIndexFlatIP(faiss.StandardGpuResources(), dim, config)
+            index.addIndex(sub_index)
+
+        index = faiss.IndexIDMap(index)
+        ids = np.arange(size)
+        index.add_with_ids(target, ids)
+
 
 
 class TestShardedFlat(unittest.TestCase):
@@ -199,6 +247,8 @@ class TestShardedFlat(unittest.TestCase):
             pass
         else:
             assert False, "this call should fail!"
+
+
 
 
 if __name__ == '__main__':

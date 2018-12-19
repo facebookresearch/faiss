@@ -194,7 +194,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Takes individual <a class="el" href="structfaiss_1_1Index.html">faiss::Index</a> instances, and splits queries for sending to each <a class="el" href="structfaiss_1_1Index.html">Index</a> instance, and joins the results together when done. Each index is managed by a separate CPU thread. </p>
 
-<p>Definition at line <a class="el" href="IndexProxy_8h_source.html#l00024">24</a> of file <a class="el" href="IndexProxy_8h_source.html">IndexProxy.h</a>.</p>
+<p>Definition at line <a class="el" href="IndexProxy_8h_source.html#l00023">23</a> of file <a class="el" href="IndexProxy_8h_source.html">IndexProxy.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a61319b7ea215bf0ec6709443d8d4ee20"></a>
 <div class="memitem">
@@ -231,7 +231,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Implements <a class="el" href="structfaiss_1_1Index.html#a1b5e9ac70adbce0897dd6c8276ad96f2">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00111">111</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00110">110</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
 
 </div>
 </div>
@@ -250,7 +250,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>Adds an index that is managed by ourselves. WARNING: once an index is added to this proxy, it becomes unsafe to touch it from any other thread than that on which is managing it, until we are shut down. Use runOnIndex to perform work on it instead. </p>
 
-<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00032">32</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00031">31</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
 
 </div>
 </div>
@@ -269,7 +269,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>Remove an index that is managed by ourselves. This will flush all pending work on that index, and then shut down its managing thread, and will remove the index. </p>
 
-<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00067">67</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00066">66</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
 
 </div>
 </div>
@@ -297,7 +297,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Implements <a class="el" href="structfaiss_1_1Index.html#a849361f5f0ab0aba8d419c86f2594191">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00100">100</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00099">99</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
 
 </div>
 </div>
@@ -316,7 +316,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>Run a function on all indices, in the thread that the index is managed in. </p>
 
-<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00085">85</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00084">84</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
 
 </div>
 </div>
@@ -373,7 +373,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Implements <a class="el" href="structfaiss_1_1Index.html#aced51b1ebc33c47ab3ae15ea906559a7">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00124">124</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00123">123</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
 
 </div>
 </div>
@@ -412,13 +412,13 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#abf601502bdbfa02b9d7bcd7b3671b71d">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00106">106</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexProxy_8cpp_source.html#l00105">105</a> of file <a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/<a class="el" href="IndexProxy_8h_source.html">IndexProxy.h</a></li>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/<a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a></li>
+<li>/tmp/faiss/gpu/<a class="el" href="IndexProxy_8h_source.html">IndexProxy.h</a></li>
+<li>/tmp/faiss/gpu/<a class="el" href="IndexProxy_8cpp_source.html">IndexProxy.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

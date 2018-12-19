@@ -87,5 +87,22 @@ class TestReferenced(unittest.TestCase):
         index.search(xb, 10)
 
 
+dbin = 32
+xtbin = np.random.randint(256, size=(100, int(dbin / 8))).astype('uint8')
+xbbin = np.random.randint(256, size=(20, int(dbin / 8))).astype('uint8')
+
+
+class TestReferencedBinary(unittest.TestCase):
+
+    def test_binary_ivf(self):
+        index = faiss.IndexBinaryIVF(faiss.IndexBinaryFlat(dbin), dbin, 10)
+        gc.collect()
+        index.train(xtbin)
+
+    def test_wrap(self):
+        index = faiss.IndexBinaryFromFloat(faiss.IndexFlatL2(dbin))
+        gc.collect()
+        index.add(xbbin)
+
 if __name__ == '__main__':
     unittest.main()

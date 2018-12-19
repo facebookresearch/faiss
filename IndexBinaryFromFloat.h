@@ -17,7 +17,7 @@
 namespace faiss {
 
 
-class Index;
+struct Index;
 
 /** IndexBinary backed by a float Index.
  *
@@ -27,9 +27,11 @@ class Index;
  * vectors.
  */
 struct IndexBinaryFromFloat : IndexBinary {
-  Index *index;
+  Index *index = nullptr;
 
-  bool own_fields; ///< Whether object owns the index pointer.
+  bool own_fields = false; ///< Whether object owns the index pointer.
+
+  IndexBinaryFromFloat();
 
   explicit IndexBinaryFromFloat(Index *index);
 

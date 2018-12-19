@@ -175,6 +175,9 @@ struct RangeSearchPartialResult: BufferList {
 
 
 struct IOReader {
+    // name that can be used in error messages
+    std::string name;
+
     // fread
     virtual size_t operator()(
          void *ptr, size_t size, size_t nitems) = 0;
@@ -186,6 +189,9 @@ struct IOReader {
 };
 
 struct IOWriter {
+    // name that can be used in error messages
+    std::string name;
+
     // fwrite
     virtual size_t operator()(
          const void *ptr, size_t size, size_t nitems) = 0;

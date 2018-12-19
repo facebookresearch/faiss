@@ -64,6 +64,10 @@ struct IVFSearchParameters {
     virtual ~IVFSearchParameters () {}
 };
 
+
+
+struct InvertedListScanner;
+
 /** Index based on a inverted file (IVF)
  *
  * In the inverted file, the quantizer (an Index instance) provides a
@@ -112,8 +116,18 @@ struct IndexIVF: Index, Level1Quantizer {
     /// Trains the quantizer and calls train_residual to train sub-quantizers
     void train(idx_t n, const float* x) override;
 
-    /// Quantizes x and calls add_with_key
+    /// Calls add_with_ids with NULL ids
     void add(idx_t n, const float* x) override;
+
+    /** Encodes a set of vectors as they would appear in the inverted lists
+     *
+     * @param list_nos   inverted list ids as returned by the
+     *                   quantizer (size n). -1s are ignored.
+     * @param codes      output codes, size n * code_size
+     */
+    virtual void encode_vectors(idx_t n, const float* x,
+                                const idx_t *list_nos,
+                                uint8_t * codes) const = 0;
 
     /// Sub-classes that encode the residuals can train their encoders here
     /// does nothing by default
@@ -121,7 +135,8 @@ struct IndexIVF: Index, Level1Quantizer {
 
     /** search a set of vectors, that are pre-quantized by the IVF
      *  quantizer. Fill in the corresponding heaps with the query
-     *  results. search() calls this.
+     *  results. The default implementation uses InvertedListScanners
+     *  to do the search.
      *
      * @param n      nb of vectors to query
      * @param x      query vectors, size nx * d
@@ -142,11 +157,17 @@ struct IndexIVF: Index, Level1Quantizer {
                                      float *distances, idx_t *labels,
                                      bool store_pairs,
                                      const IVFSearchParameters *params=nullptr
-                                     ) const = 0;
+                                     ) const;
 
     /** assign the vectors, then call search_preassign */
     virtual void search (idx_t n, const float *x, idx_t k,
                          float *distances, idx_t *labels) const override;
+
+    /// get a scanner for this index (store_pairs means ignore labels)
+    virtual InvertedListScanner *get_InvertedListScanner (
+                 bool store_pairs=false) const {
+        return nullptr;
+    }
 
     void reconstruct (idx_t key, float* recons) const override;
 
@@ -227,9 +248,47 @@ struct IndexIVF: Index, Level1Quantizer {
     /// display some stats about the inverted lists
     void print_stats () const;
 
+    /// replace the inverted lists, old one is deallocated if own_invlists
     void replace_invlists (InvertedLists *il, bool own=false);
 
     IndexIVF ();
+};
+
+/** Object that handles a query. The inverted lists to scan are
+ * provided externally. The object has a lot of state, but
+ * distance_to_code and scan_codes can be called in multiple
+ * threads */
+struct InvertedListScanner {
+
+    using idx_t = Index::idx_t;
+
+    /// from now on we handle this query.
+    virtual void set_query (const float *query_vector) = 0;
+
+    /// following codes come from this inverted list
+    virtual void set_list (idx_t list_no, float coarse_dis) = 0;
+
+    /// compute a single query-to-code distance
+    virtual float distance_to_code (const uint8_t *code) const = 0;
+
+    /** compute the distances to codes. (distances, labels) should be
+     * organized ad a min- or max-heap
+     *
+     * @param n      number of codes to scan
+     * @param codes  codes to scan (n * code_size)
+     * @param ids        corresponding ids (ignored if store_pairs)
+     * @param distances  heap distances (size k)
+     * @param labels     heap labels (size k)
+     * @param k          heap size
+     */
+    virtual size_t scan_codes (size_t n,
+                               const uint8_t *codes,
+                               const idx_t *ids,
+                               float *distances, idx_t *labels,
+                               size_t k) const = 0;
+
+    virtual ~InvertedListScanner () {}
+
 };
 
 
@@ -237,6 +296,7 @@ struct IndexIVFStats {
     size_t nq;       // nb of queries run
     size_t nlist;    // nb of inverted lists scanned
     size_t ndis;     // nb of distancs computed
+    size_t nheap_updates; // nb of times the heap was updated
 
     IndexIVFStats () {reset (); }
     void reset ();
