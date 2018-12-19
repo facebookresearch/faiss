@@ -89829,7 +89829,7 @@ SWIG_init(void) {
   SWIG_addvarlink(SWIG_globals(),(char *)"hamming_batch_size",Swig_var_hamming_batch_size_get, Swig_var_hamming_batch_size_set);
   SWIG_addvarlink(SWIG_globals(),(char *)"distance_compute_blas_threshold",Swig_var_distance_compute_blas_threshold_get, Swig_var_distance_compute_blas_threshold_set);
   SWIG_Python_SetConstant(d, "FAISS_VERSION_MAJOR",SWIG_From_int(static_cast< int >(1)));
-  SWIG_Python_SetConstant(d, "FAISS_VERSION_MINOR",SWIG_From_int(static_cast< int >(4)));
+  SWIG_Python_SetConstant(d, "FAISS_VERSION_MINOR",SWIG_From_int(static_cast< int >(5)));
   SWIG_Python_SetConstant(d, "FAISS_VERSION_PATCH",SWIG_From_int(static_cast< int >(0)));
   SWIG_Python_SetConstant(d, "METRIC_INNER_PRODUCT",SWIG_From_int(static_cast< int >(faiss::METRIC_INNER_PRODUCT)));
   SWIG_Python_SetConstant(d, "METRIC_L2",SWIG_From_int(static_cast< int >(faiss::METRIC_L2)));
