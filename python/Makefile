@@ -43,7 +43,7 @@ _swigfaiss_gpu.so: swigfaiss_gpu_wrap.o ../gpu/libgpufaiss.a ../libfaiss.a
 	$(CXX) $(SHAREDFLAGS) $(NVCCLDFLAGS) $(LDFLAGS) -o $@ $^ $(NVCCLIBS) $(LIBS)
 
 
-build: cpu
+build:
 	$(PYTHON) setup.py build
 
 install: build
@@ -53,5 +53,6 @@ clean:
 	rm -f swigfaiss_wrap.cpp swigfaiss_gpu_wrap.cpp
 	rm -f swigfaiss.py swigfaiss_gpu.py
 	rm -f _swigfaiss.so _swigfaiss_gpu.so
+	rm -rf build/
 
 .PHONY: all build clean cpu gpu install
