@@ -636,6 +636,11 @@ struct QueryTables {
         if (use_precomputed_table == 0 || use_precomputed_table == -1) {
             ivfpq.quantizer->compute_residual (qi, residual_vec, key);
             pq.compute_distance_table (residual_vec, sim_table);
+
+            if (polysemous_ht != 0) {
+                pq.compute_code (residual_vec, q_code.data());
+            }
+
         } else if (use_precomputed_table == 1) {
             dis0 = coarse_dis;
 
@@ -643,6 +648,13 @@ struct QueryTables {
                        &ivfpq.precomputed_table [key * pq.ksub * pq.M],
                        -2.0, sim_table_2,
                        sim_table);
+
+
+            if (polysemous_ht != 0) {
+                ivfpq.quantizer->compute_residual (qi, residual_vec, key);
+                pq.compute_code (residual_vec, q_code.data());
+            }
+
         } else if (use_precomputed_table == 2) {
             dis0 = coarse_dis;
 

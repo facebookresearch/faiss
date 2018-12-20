@@ -175,13 +175,16 @@ void IndexIVF::search (idx_t n, const float *x, idx_t k,
     float * coarse_dis = new float [n * nprobe];
     ScopeDeleter<float> del2 (coarse_dis);
 
+    double t0 = getmillisecs();
     quantizer->search (n, x, nprobe, coarse_dis, idx);
+    indexIVF_stats.quantization_time += getmillisecs() - t0;
 
+    t0 = getmillisecs();
     invlists->prefetch_lists (idx, n * nprobe);
 
     search_preassigned (n, x, k, idx, coarse_dis,
                         distances, labels, false);
-
+    indexIVF_stats.search_time += getmillisecs() - t0;
 }
 
 

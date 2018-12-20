@@ -26,7 +26,7 @@ kprobe = int(np.sqrt(ncentroids))
 nbits = d
 
 # Parameters for indexes involving PQ
-M = d / 8                # for PQ: #subquantizers
+M = int(d / 8)           # for PQ: #subquantizers
 nbits_per_index = 8      # for PQ
 
 
@@ -125,7 +125,6 @@ class IndexAccuracy(unittest.TestCase):
 
         stats = faiss.cvar.indexPQ_stats
         stats.reset()
-
 
         res = ev.launch('Polysemous ht=%d' % index.polysemous_ht,
                         index)
@@ -249,7 +248,7 @@ class TestSQFlavors(unittest.TestCase):
             D, I = index.search(xq, 10)
             ninter = faiss.eval_intersection(I, gt_I)
             print('(%d, %s): %d, ' % (mt, repr(qname), ninter))
-            assert ninter >= self.ref_results[(mt, qname)] - 4
+            assert abs(ninter - self.ref_results[(mt, qname)]) <= 4
 
             D2, I2 = self.subtest_add2col(xb, xq, index, qname)
 
@@ -265,10 +264,10 @@ class TestSQFlavors(unittest.TestCase):
 
 class TestPQFlavors(unittest.TestCase):
 
-    # run on Sept 6, 2018
+    # run on Dec 14, 2018
     ref_results = {
         (1, True): 800,
-        (1, True, 20): 742,
+        (1, True, 20): 794,
         (1, False): 769,
         (0, True): 831,
         (0, True, 20): 828,
@@ -312,7 +311,7 @@ class TestPQFlavors(unittest.TestCase):
             ninter = faiss.eval_intersection(I, gt_I)
             print('(%d, %s): %d, ' % (mt, by_residual, ninter))
 
-            assert ninter >= self.ref_results[mt, by_residual] - 2
+            assert abs(ninter - self.ref_results[mt, by_residual]) <= 2
 
             index.use_precomputed_table = 0
             D2, I2 = index.search(xq, 10)
@@ -412,8 +411,7 @@ class OPQRelativeAccuracy(unittest.TestCase):
         e_oivfpq = ev.evalres(res)
 
         # verify same on OIVFPQ
-        # Currently disabled because flaky.
-        # self.assertGreater(e_oivfpq[1], e_ivfpq[1])
+        assert(e_oivfpq[1] > e_ivfpq[1])
 
 
 if __name__ == '__main__':

@@ -297,6 +297,8 @@ struct IndexIVFStats {
     size_t nlist;    // nb of inverted lists scanned
     size_t ndis;     // nb of distancs computed
     size_t nheap_updates; // nb of times the heap was updated
+    double quantization_time; // time spent quantizing vectors (in ms)
+    double search_time;       // time spent searching lists (in ms)
 
     IndexIVFStats () {reset (); }
     void reset ();

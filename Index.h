@@ -18,7 +18,7 @@
 #include <sstream>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 5
+#define FAISS_VERSION_MINOR 4
 #define FAISS_VERSION_PATCH 0
 
 /**

@@ -11,7 +11,6 @@
 #include "IndexFlat.h"
 
 #include <cstring>
-#include <limits>
 #include "utils.h"
 #include "Heap.h"
 

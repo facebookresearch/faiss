@@ -21,10 +21,6 @@
 
 using namespace faiss;
 
-
-namespace {
-
-
 typedef Index::idx_t idx_t;
 
 
@@ -220,7 +216,7 @@ int test_sliding_invlists (const char *index_key) {
 }
 
 
-}  // namespace
+
 
 
 /*************************************************************
