@@ -168,6 +168,8 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 <tr class="separator:aee8fd44e15656ba80fe98de4c65ed767"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6dc3b9c5631b509cbae99bf0f24170b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ParameterSpace.html#af6dc3b9c5631b509cbae99bf0f24170b">thread_over_batches</a></td></tr>
 <tr class="separator:af6dc3b9c5631b509cbae99bf0f24170b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50d9d784d69d9812c12dc9b2baf9351d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ParameterSpace.html#a50d9d784d69d9812c12dc9b2baf9351d">min_test_duration</a></td></tr>
+<tr class="separator:a50d9d784d69d9812c12dc9b2baf9351d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Uses a-priori knowledge on the Faiss indexes to extract tunable parameters. </p>
@@ -226,7 +228,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="AutoTune_8cpp_source.html#l00555">555</a> of file <a class="el" href="AutoTune_8cpp_source.html">AutoTune.cpp</a>.</p>
+<p>Definition at line <a class="el" href="AutoTune_8cpp_source.html#l00578">578</a> of file <a class="el" href="AutoTune_8cpp_source.html">AutoTune.cpp</a>.</p>
 
 </div>
 </div>
@@ -257,7 +259,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 <p>set a combination of parameters described by a string </p>
 <p>set a combination of parameters on an index </p>
 
-<p>Definition at line <a class="el" href="AutoTune_8cpp_source.html#l00424">424</a> of file <a class="el" href="AutoTune_8cpp_source.html">AutoTune.cpp</a>.</p>
+<p>Definition at line <a class="el" href="AutoTune_8cpp_source.html#l00432">432</a> of file <a class="el" href="AutoTune_8cpp_source.html">AutoTune.cpp</a>.</p>
 
 </div>
 </div>
@@ -298,11 +300,26 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 </div><div class="memdoc">
 <p>find an upper bound on the performance and a lower bound on t for configuration cno given another operating point op </p>
 
-<p>Definition at line <a class="el" href="AutoTune_8cpp_source.html#l00541">541</a> of file <a class="el" href="AutoTune_8cpp_source.html">AutoTune.cpp</a>.</p>
+<p>Definition at line <a class="el" href="AutoTune_8cpp_source.html#l00564">564</a> of file <a class="el" href="AutoTune_8cpp_source.html">AutoTune.cpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a50d9d784d69d9812c12dc9b2baf9351d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double faiss::ParameterSpace::min_test_duration</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>run tests several times until they reach at least this duration (to avoid jittering in MT mode) </p>
+
+<p>Definition at line <a class="el" href="AutoTune_8h_source.html#l00153">153</a> of file <a class="el" href="AutoTune_8h_source.html">AutoTune.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="af6dc3b9c5631b509cbae99bf0f24170b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -319,8 +336,8 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/<a class="el" href="AutoTune_8h_source.html">AutoTune.h</a></li>
-<li>/data/users/matthijs/github_faiss/faiss/<a class="el" href="AutoTune_8cpp_source.html">AutoTune.cpp</a></li>
+<li>/tmp/faiss/<a class="el" href="AutoTune_8h_source.html">AutoTune.h</a></li>
+<li>/tmp/faiss/<a class="el" href="AutoTune_8cpp_source.html">AutoTune.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

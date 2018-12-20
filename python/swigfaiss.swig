@@ -26,6 +26,7 @@
 #pragma SWIG nowarn=403
 #pragma SWIG nowarn=325
 #pragma SWIG nowarn=389
+#pragma SWIG nowarn=341
 
 typedef unsigned long uint64_t;
 typedef uint64_t size_t;
@@ -81,6 +82,7 @@ extern "C" {
 #include "IndexIVFPQ.h"
 #include "IndexIVFFlat.h"
 #include "IndexScalarQuantizer.h"
+#include "HNSW.h"
 #include "IndexHNSW.h"
 #include "MetaIndexes.h"
 #include "FaissAssert.h"
@@ -88,9 +90,11 @@ extern "C" {
 #include "IndexBinaryFlat.h"
 #include "IndexBinaryIVF.h"
 #include "IndexBinaryFromFloat.h"
+#include "IndexBinaryHNSW.h"
 
 #include "index_io.h"
 
+#include "IVFlib.h"
 #include "utils.h"
 #include "Heap.h"
 #include "AuxIndexStructures.h"
@@ -216,8 +220,10 @@ int get_num_gpus();
 #include "gpu/GpuIndexIVF.h"
 #include "gpu/GpuIndexIVFPQ.h"
 #include "gpu/GpuIndexIVFFlat.h"
+#include "gpu/GpuIndexBinaryFlat.h"
 #include "gpu/IndexProxy.h"
 #include "gpu/GpuAutoTune.h"
+#include "gpu/GpuDistance.h"
 
 int get_num_gpus()
 {
@@ -261,8 +267,15 @@ int get_num_gpus()
 %include "PolysemousTraining.h"
 %include "IndexPQ.h"
 %include "InvertedLists.h"
+%ignore InvertedListScanner;
+%ignore BinaryInvertedListScanner;
 %include "IndexIVF.h"
+// NOTE(hoss): SWIG (wrongly) believes the overloaded const version shadows the
+//   non-const one.
+%warnfilter(509) extract_index_ivf;
+%include "IVFlib.h"
 %include "IndexScalarQuantizer.h"
+%include "HNSW.h"
 %include "IndexHNSW.h"
 %include "IndexIVFFlat.h"
 %include "OnDiskInvertedLists.h"
@@ -274,6 +287,7 @@ int get_num_gpus()
 %include "IndexBinaryFlat.h"
 %include "IndexBinaryIVF.h"
 %include "IndexBinaryFromFloat.h"
+%include "IndexBinaryHNSW.h"
 
 
 
@@ -294,7 +308,9 @@ int get_num_gpus()
 %include "gpu/GpuIndexIVF.h"
 %include "gpu/GpuIndexIVFPQ.h"
 %include "gpu/GpuIndexIVFFlat.h"
+%include "gpu/GpuIndexBinaryFlat.h"
 %include "gpu/IndexProxy.h"
+%include "gpu/GpuDistance.h"
 
 #ifdef SWIGLUA
 
@@ -433,7 +449,7 @@ struct AsyncIndexSearchC {
 #endif
 
 %newobject read_index;
-%newobject read_binary_index;
+%newobject read_index_binary;
 %newobject read_VectorTransform;
 %newobject read_ProductQuantizer;
 %newobject clone_index;
@@ -486,7 +502,11 @@ struct AsyncIndexSearchC {
     DOWNCAST ( IndexBinaryIVF )
     DOWNCAST ( IndexBinaryFlat )
     DOWNCAST ( IndexBinaryFromFloat )
-      // default for non-recognized classes
+    DOWNCAST ( IndexBinaryHNSW )
+#ifdef GPU_WRAPPER
+    DOWNCAST_GPU ( GpuIndexBinaryFlat )
+#endif
+    // default for non-recognized classes
     DOWNCAST ( IndexBinary )
     if ($1 == NULL)
     {
@@ -520,7 +540,7 @@ struct AsyncIndexSearchC {
 
 // just to downcast pointers that come from elsewhere (eg. direct
 // access to object fields)
-%{
+%inline %{
 faiss::Index * downcast_index (faiss::Index *index)
 {
     return index;
@@ -529,11 +549,11 @@ faiss::VectorTransform * downcast_VectorTransform (faiss::VectorTransform *vt)
 {
     return vt;
 }
+faiss::IndexBinary * downcast_IndexBinary (faiss::IndexBinary *index)
+{
+    return index;
+}
 %}
-
-faiss::Index * downcast_index (faiss::Index *);
-faiss::VectorTransform * downcast_VectorTransform (faiss::VectorTransform *vt);
-
 
 
 %include "index_io.h"

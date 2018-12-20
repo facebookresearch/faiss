@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: /data/users/matthijs/github_faiss/faiss/tests/test_ivfpq_codec.cpp Source File</title>
+<title>Faiss: /tmp/faiss/tests/test_ivfpq_codec.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_59425e443f801f1f2fd8bbe4959a3ccf.html">tests</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_1df44a9b705f43f2ce1efa42430a4914.html">tests</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -105,55 +105,58 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;faiss/utils.h&gt;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">// dimension of the vectors to index</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keywordtype">int</span> d = 64;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">// size of the database we plan to index</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keywordtype">size_t</span> nb = 8000;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keywordtype">double</span> eval_codec_error (<span class="keywordtype">long</span> ncentroids, <span class="keywordtype">long</span> m, <span class="keyword">const</span> std::vector&lt;float&gt; &amp;v)</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="structfaiss_1_1IndexFlatL2.html">faiss::IndexFlatL2</a> coarse_quantizer (d);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html">faiss::IndexIVFPQ</a> index (&amp;coarse_quantizer, d,</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                             ncentroids, m, 8);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    index.pq.cp.niter = 10; <span class="comment">// speed up train</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    index.train (nb, v.data());</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="comment">// encode and decode to compute reconstruction error</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>{</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">// dimension of the vectors to index</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keywordtype">int</span> d = 64;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">// size of the database we plan to index</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keywordtype">size_t</span> nb = 8000;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keywordtype">double</span> eval_codec_error (<span class="keywordtype">long</span> ncentroids, <span class="keywordtype">long</span> m, <span class="keyword">const</span> std::vector&lt;float&gt; &amp;v)</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;{</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="structfaiss_1_1IndexFlatL2.html">faiss::IndexFlatL2</a> coarse_quantizer (d);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <a class="code" href="structfaiss_1_1IndexIVFPQ.html">faiss::IndexIVFPQ</a> index (&amp;coarse_quantizer, d,</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                             ncentroids, m, 8);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    index.pq.cp.niter = 10; <span class="comment">// speed up train</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    index.train (nb, v.data());</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    std::vector&lt;long&gt; keys (nb);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    std::vector&lt;uint8_t&gt; codes (nb * m);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    index.encode_multiple (nb, keys.data(), v.data(), codes.data(), <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    std::vector&lt;float&gt; v2 (nb * d);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    index.decode_multiple (nb, keys.data(), codes.data(), v2.data());</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">faiss::fvec_L2sqr</a> (v.data(), v2.data(), nb * d);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="comment">// encode and decode to compute reconstruction error</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    std::vector&lt;long&gt; keys (nb);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    std::vector&lt;uint8_t&gt; codes (nb * m);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    index.encode_multiple (nb, keys.data(), v.data(), codes.data(), <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    std::vector&lt;float&gt; v2 (nb * d);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    index.decode_multiple (nb, keys.data(), codes.data(), v2.data());</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">faiss::fvec_L2sqr</a> (v.data(), v2.data(), nb * d);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;TEST(IVFPQ, codec) {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}  <span class="comment">// namespace</span></div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    std::vector &lt;float&gt; database (nb * d);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nb * d; i++) {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        database[i] = drand48();</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    }</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">double</span> err0 = eval_codec_error(16, 8, database);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="comment">// should be more accurate as there are more coarse centroids</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">double</span> err1 = eval_codec_error(128, 8, database);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    EXPECT_GT(err0, err1);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="comment">// should be more accurate as there are more PQ codes</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordtype">double</span> err2 = eval_codec_error(16, 16, database);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    EXPECT_GT(err0, err2);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;}</div>
-<div class="ttc" id="namespacefaiss_html_a7466bd32de31640860393a701eaac5ad"><div class="ttname"><a href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">faiss::fvec_L2sqr</a></div><div class="ttdeci">float fvec_L2sqr(const float *x, const float *y, size_t d)</div><div class="ttdoc">Squared L2 distance between two vectors. </div><div class="ttdef"><b>Definition:</b> <a href="utils_8cpp_source.html#l00574">utils.cpp:574</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexFlatL2_html"><div class="ttname"><a href="structfaiss_1_1IndexFlatL2.html">faiss::IndexFlatL2</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00079">IndexFlat.h:79</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIVFPQ_html"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQ.html">faiss::IndexIVFPQ</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8h_source.html#l00029">IndexIVFPQ.h:29</a></div></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;TEST(IVFPQ, codec) {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    std::vector &lt;float&gt; database (nb * d);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nb * d; i++) {</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        database[i] = drand48();</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">double</span> err0 = eval_codec_error(16, 8, database);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="comment">// should be more accurate as there are more coarse centroids</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordtype">double</span> err1 = eval_codec_error(128, 8, database);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    EXPECT_GT(err0, err1);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="comment">// should be more accurate as there are more PQ codes</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordtype">double</span> err2 = eval_codec_error(16, 16, database);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    EXPECT_GT(err0, err2);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
+<div class="ttc" id="namespacefaiss_html_a7466bd32de31640860393a701eaac5ad"><div class="ttname"><a href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">faiss::fvec_L2sqr</a></div><div class="ttdeci">float fvec_L2sqr(const float *x, const float *y, size_t d)</div><div class="ttdoc">Squared L2 distance between two vectors. </div><div class="ttdef"><b>Definition:</b> <a href="utils__simd_8cpp_source.html#l00502">utils_simd.cpp:502</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexFlatL2_html"><div class="ttname"><a href="structfaiss_1_1IndexFlatL2.html">faiss::IndexFlatL2</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexFlat_8h_source.html#l00078">IndexFlat.h:78</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIVFPQ_html"><div class="ttname"><a href="structfaiss_1_1IndexIVFPQ.html">faiss::IndexIVFPQ</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8h_source.html#l00035">IndexIVFPQ.h:35</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

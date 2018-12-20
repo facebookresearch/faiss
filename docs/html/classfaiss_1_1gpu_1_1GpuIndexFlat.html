@@ -214,9 +214,7 @@ const <a class="el" href="structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html">GpuInde
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#aad665a7b5888b4aafd47ae0f8d0e6c40">minPagedSize_</a></td></tr>
 <tr class="memdesc:aad665a7b5888b4aafd47ae0f8d0e6c40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size above which we page copies from the CPU to GPU. <br/></td></tr>
 <tr class="separator:aad665a7b5888b4aafd47ae0f8d0e6c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae393840fc80403369452c25c9155e067"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae393840fc80403369452c25c9155e067"></a>
-<a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html">FlatIndex</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#ae393840fc80403369452c25c9155e067">data_</a></td></tr>
-<tr class="memdesc:ae393840fc80403369452c25c9155e067"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds our GPU data containing the list of vectors. <br/></td></tr>
+<tr class="memitem:ae393840fc80403369452c25c9155e067"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html">FlatIndex</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#ae393840fc80403369452c25c9155e067">data_</a></td></tr>
 <tr class="separator:ae393840fc80403369452c25c9155e067"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classfaiss_1_1gpu_1_1GpuIndex')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html">faiss::gpu::GpuIndex</a></td></tr>
 <tr class="memitem:a17b82a8a11783da6eb1b07c9aab98c36 inherit pro_attribs_classfaiss_1_1gpu_1_1GpuIndex"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a17b82a8a11783da6eb1b07c9aab98c36"></a>
@@ -264,7 +262,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Wrapper around the GPU implementation that looks like <a class="el" href="structfaiss_1_1IndexFlat.html">faiss::IndexFlat</a>; copies over centroid data from a given <a class="el" href="structfaiss_1_1IndexFlat.html">faiss::IndexFlat</a> </p>
 
-<p>Definition at line <a class="el" href="GpuIndexFlat_8h_source.html#l00054">54</a> of file <a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a>.</p>
+<p>Definition at line <a class="el" href="GpuIndexFlat_8h_source.html#l00053">53</a> of file <a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="af8a1626e4c54a451d0b9f82df3a6687e"></a>
 <div class="memitem">
@@ -375,7 +373,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#aaef6f4132b1f390121ebb11058baf190">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="GpuIndexFlat_8cu_source.html#l00491">491</a> of file <a class="el" href="GpuIndexFlat_8cu_source.html">GpuIndexFlat.cu</a>.</p>
+<p>Definition at line <a class="el" href="GpuIndexFlat_8cu_source.html#l00488">488</a> of file <a class="el" href="GpuIndexFlat_8cu_source.html">GpuIndexFlat.cu</a>.</p>
 
 </div>
 </div>
@@ -432,7 +430,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 
 <p>Reimplemented from <a class="el" href="classfaiss_1_1gpu_1_1GpuIndex.html#a6f1cadb5e8970c9c1fdf15eddb9d874f">faiss::gpu::GpuIndex</a>.</p>
 
-<p>Definition at line <a class="el" href="GpuIndexFlat_8cu_source.html#l00205">205</a> of file <a class="el" href="GpuIndexFlat_8cu_source.html">GpuIndexFlat.cu</a>.</p>
+<p>Definition at line <a class="el" href="GpuIndexFlat_8cu_source.html#l00202">202</a> of file <a class="el" href="GpuIndexFlat_8cu_source.html">GpuIndexFlat.cu</a>.</p>
 
 </div>
 </div>
@@ -487,7 +485,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 </div><div class="memdoc">
 <p>Called from search when the input data is on the CPU; potentially allows for pinned memory usage </p>
 
-<p>Definition at line <a class="el" href="GpuIndexFlat_8cu_source.html#l00319">319</a> of file <a class="el" href="GpuIndexFlat_8cu_source.html">GpuIndexFlat.cu</a>.</p>
+<p>Definition at line <a class="el" href="GpuIndexFlat_8cu_source.html#l00316">316</a> of file <a class="el" href="GpuIndexFlat_8cu_source.html">GpuIndexFlat.cu</a>.</p>
 
 </div>
 </div>
@@ -510,9 +508,33 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 
 </div>
 </div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="ae393840fc80403369452c25c9155e067"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classfaiss_1_1gpu_1_1FlatIndex.html">FlatIndex</a>* faiss::gpu::GpuIndexFlat::data_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Holds our GPU data containing the list of vectors; is managed via raw pointer so as to allow non-CUDA compilers to see this header </p>
+
+<p>Definition at line <a class="el" href="GpuIndexFlat_8h_source.html#l00163">163</a> of file <a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/<a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a></li>
-<li>/data/users/matthijs/github_faiss/faiss/gpu/<a class="el" href="GpuIndexFlat_8cu_source.html">GpuIndexFlat.cu</a></li>
+<li>/tmp/faiss/gpu/<a class="el" href="GpuIndexFlat_8h_source.html">GpuIndexFlat.h</a></li>
+<li>/tmp/faiss/gpu/<a class="el" href="GpuIndexFlat_8cu_source.html">GpuIndexFlat.cu</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -138,6 +138,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>castResize()
 : <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6c9640c365134ccc33cdb2695b016eb3">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
+<li>check_compatible_for_merge()
+: <a class="el" href="structfaiss_1_1IndexIVF.html#a7fc8b9a1fff9f3d24cf7055fbc4fed7b">faiss::IndexIVF</a>
+</li>
 <li>classifyAndAddVectors()
 : <a class="el" href="classfaiss_1_1gpu_1_1IVFFlat.html#af20f96b6ad754664796c8a4e7f83ed3a">faiss::gpu::IVFFlat</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1IVFPQ.html#ab1e07b04b25569cc58c5f3f033f4dab3">faiss::gpu::IVFPQ</a>
@@ -164,7 +167,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structfaiss_1_1ProductQuantizer.html#a08b130e3a21f2699a4e3bbec121fb838">faiss::ProductQuantizer</a>
 </li>
 <li>compute_code_distance()
-: <a class="el" href="structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html#a96caf21f52fcf6591d7b6b4f3fc8a729">faiss::ScalarQuantizer::DistanceComputer</a>
+: <a class="el" href="structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html#ad18c347d6f68f91feda5a54e4de93fab">faiss::ScalarQuantizer::DistanceComputer</a>
 </li>
 <li>compute_code_from_distance_table()
 : <a class="el" href="structfaiss_1_1ProductQuantizer.html#a95060fedd7c09eb20e968fd2fdb4b316">faiss::ProductQuantizer</a>
@@ -177,7 +180,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structfaiss_1_1Score3Computer.html#a1c4537d67802aef28ccc57c4bd87f766">faiss::Score3Computer&lt; Ttab, Taccu &gt;</a>
 </li>
 <li>compute_distance()
-: <a class="el" href="structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html#a6776bc6fc6c48335f132afa4ac38df33">faiss::ScalarQuantizer::DistanceComputer</a>
+: <a class="el" href="structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html#ae77082c0e7d01130834c1c615baa8249">faiss::ScalarQuantizer::DistanceComputer</a>
 </li>
 <li>compute_distance_subset()
 : <a class="el" href="structfaiss_1_1IndexFlat.html#a14b51786e7f98be1954eef35d02813a7">faiss::IndexFlat</a>
@@ -194,6 +197,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>compute_update()
 : <a class="el" href="structfaiss_1_1Score3Computer.html#a567feac7ddd3bb467a9ed30671caccb1">faiss::Score3Computer&lt; Ttab, Taccu &gt;</a>
 </li>
+<li>ConcatenatedInvertedLists()
+: <a class="el" href="structfaiss_1_1ConcatenatedInvertedLists.html#a55e8e8fcd065c34f0fb0bc51ced7b864">faiss::ConcatenatedInvertedLists</a>
+</li>
 <li>construct_rev_map()
 : <a class="el" href="structfaiss_1_1IndexIDMap2.html#a646302669189e370d9d864fc18f096fe">faiss::IndexIDMap2</a>
 </li>
@@ -207,21 +213,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structfaiss_1_1IndexIVF.html#a2fc63f9bbfe64e05106366465ece2187">faiss::IndexIVF</a>
 </li>
 <li>copyFrom()
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a94c2c171f9a2d27085dea9101067bdf2">faiss::gpu::GpuIndexIVF</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#abb964875e0893de1d8334ca5ad0f62dc">faiss::gpu::GpuIndexFlat</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#aa181b1778a8dca81ac5cf6cd6a3d5f1d">faiss::gpu::GpuIndexFlatIP</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#a1acf93b118b4136857b5dd9ab614e901">faiss::gpu::GpuIndexBinaryFlat</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a94c2c171f9a2d27085dea9101067bdf2">faiss::gpu::GpuIndexIVF</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#a9a9de859274bb73e6d8ea02cae5ca9a6">faiss::gpu::GpuIndexFlatL2</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#aa181b1778a8dca81ac5cf6cd6a3d5f1d">faiss::gpu::GpuIndexFlatIP</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a96fd66c31c7e46b1549ed61d1b3476f3">faiss::gpu::GpuIndexIVFFlat</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#a8d48f79af9080b55706050244fc24f0e">faiss::gpu::GpuIndexIVFPQ</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#abb964875e0893de1d8334ca5ad0f62dc">faiss::gpu::GpuIndexFlat</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6dc00c182a92389b74c89ba7fcab40d3">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
 <li>copyTo()
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#aad10de2407911e9adf42c1be5c5dd390">faiss::gpu::GpuIndexIVFPQ</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6cc21376070a03d77661d6e333972c6a">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a345980d7ae4b5baadf93f647fc6cb0b1">faiss::gpu::GpuIndexIVFFlat</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#ab21960d379190b98aaa05ae3877dea09">faiss::gpu::GpuIndexFlatL2</a>
-, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#af70d0fe80cf3bf16ffffd8b16ed64f08">faiss::gpu::GpuIndexFlatIP</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#a1e4c6f64fa04d9e2b035c1e390ca91f3">faiss::gpu::GpuIndexBinaryFlat</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a1db0a796b8b2917d989952c5f07fbe55">faiss::gpu::GpuIndexIVF</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#a345980d7ae4b5baadf93f647fc6cb0b1">faiss::gpu::GpuIndexIVFFlat</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#af70d0fe80cf3bf16ffffd8b16ed64f08">faiss::gpu::GpuIndexFlatIP</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#ab21960d379190b98aaa05ae3877dea09">faiss::gpu::GpuIndexFlatL2</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#aad10de2407911e9adf42c1be5c5dd390">faiss::gpu::GpuIndexIVFPQ</a>
+, <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a6cc21376070a03d77661d6e333972c6a">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 , <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html#a046007ff2fafcafc6ae328769c700e39">faiss::gpu::GpuIndexFlat</a>
 </li>
 <li>CpuTimer()

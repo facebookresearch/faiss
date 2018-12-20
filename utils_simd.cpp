@@ -98,6 +98,20 @@ float fvec_norm_L2sqr_ref (const float *x, size_t d)
 }
 
 
+void fvec_L2sqr_ny_ref (float * dis,
+                    const float * x,
+                    const float * y,
+                    size_t d, size_t ny)
+{
+    for (size_t i = 0; i < ny; i++) {
+        dis[i] = fvec_L2sqr (x, y, d);
+        y += d;
+    }
+}
+
+
+
+
 /*********************************************************
  * SSE and AVX implementations
  */
@@ -140,6 +154,146 @@ float fvec_norm_L2sqr (const float *  x,
     msum1 = _mm_hadd_ps (msum1, msum1);
     return  _mm_cvtss_f32 (msum1);
 }
+
+namespace {
+
+float sqr (float x) {
+    return x * x;
+}
+
+
+void fvec_L2sqr_ny_D1 (float * dis, const float * x,
+                       const float * y, size_t ny)
+{
+    float x0s = x[0];
+    __m128 x0 = _mm_set_ps (x0s, x0s, x0s, x0s);
+
+    size_t i;
+    for (i = 0; i + 3 < ny; i += 4) {
+        __m128 tmp, accu;
+        tmp = x0 - _mm_loadu_ps (y); y += 4;
+        accu = tmp * tmp;
+        dis[i] = _mm_cvtss_f32 (accu);
+        tmp = _mm_shuffle_ps (accu, accu, 1);
+        dis[i + 1] = _mm_cvtss_f32 (tmp);
+        tmp = _mm_shuffle_ps (accu, accu, 2);
+        dis[i + 2] = _mm_cvtss_f32 (tmp);
+        tmp = _mm_shuffle_ps (accu, accu, 3);
+        dis[i + 3] = _mm_cvtss_f32 (tmp);
+    }
+    while (i < ny) { // handle non-multiple-of-4 case
+        dis[i++] = sqr(x0s - *y++);
+    }
+}
+
+
+void fvec_L2sqr_ny_D2 (float * dis, const float * x,
+                       const float * y, size_t ny)
+{
+    __m128 x0 = _mm_set_ps (x[1], x[0], x[1], x[0]);
+
+    size_t i;
+    for (i = 0; i + 1 < ny; i += 2) {
+        __m128 tmp, accu;
+        tmp = x0 - _mm_loadu_ps (y); y += 4;
+        accu = tmp * tmp;
+        accu = _mm_hadd_ps (accu, accu);
+        dis[i] = _mm_cvtss_f32 (accu);
+        accu = _mm_shuffle_ps (accu, accu, 3);
+        dis[i + 1] = _mm_cvtss_f32 (accu);
+    }
+    if (i < ny) { // handle odd case
+        dis[i] = sqr(x[0] - y[0]) + sqr(x[1] - y[1]);
+    }
+}
+
+
+
+void fvec_L2sqr_ny_D4 (float * dis, const float * x,
+                        const float * y, size_t ny)
+{
+    __m128 x0 = _mm_loadu_ps(x);
+
+    for (size_t i = 0; i < ny; i++) {
+        __m128 tmp, accu;
+        tmp = x0 - _mm_loadu_ps (y); y += 4;
+        accu = tmp * tmp;
+        accu = _mm_hadd_ps (accu, accu);
+        accu = _mm_hadd_ps (accu, accu);
+        dis[i] = _mm_cvtss_f32 (accu);
+    }
+}
+
+
+void fvec_L2sqr_ny_D8 (float * dis, const float * x,
+                        const float * y, size_t ny)
+{
+    __m128 x0 = _mm_loadu_ps(x);
+    __m128 x1 = _mm_loadu_ps(x + 4);
+
+    for (size_t i = 0; i < ny; i++) {
+        __m128 tmp, accu;
+        tmp = x0 - _mm_loadu_ps (y); y += 4;
+        accu = tmp * tmp;
+        tmp = x1 - _mm_loadu_ps (y); y += 4;
+        accu += tmp * tmp;
+        accu = _mm_hadd_ps (accu, accu);
+        accu = _mm_hadd_ps (accu, accu);
+        dis[i] = _mm_cvtss_f32 (accu);
+    }
+}
+
+
+void fvec_L2sqr_ny_D12 (float * dis, const float * x,
+                        const float * y, size_t ny)
+{
+    __m128 x0 = _mm_loadu_ps(x);
+    __m128 x1 = _mm_loadu_ps(x + 4);
+    __m128 x2 = _mm_loadu_ps(x + 8);
+
+    for (size_t i = 0; i < ny; i++) {
+        __m128 tmp, accu;
+        tmp = x0 - _mm_loadu_ps (y); y += 4;
+        accu = tmp * tmp;
+        tmp = x1 - _mm_loadu_ps (y); y += 4;
+        accu += tmp * tmp;
+        tmp = x2 - _mm_loadu_ps (y); y += 4;
+        accu += tmp * tmp;
+        accu = _mm_hadd_ps (accu, accu);
+        accu = _mm_hadd_ps (accu, accu);
+        dis[i] = _mm_cvtss_f32 (accu);
+    }
+}
+
+
+} // anonymous namespace
+
+void fvec_L2sqr_ny (float * dis, const float * x,
+                        const float * y, size_t d, size_t ny) {
+    // optimized for a few special cases
+    switch(d) {
+    case 1:
+        fvec_L2sqr_ny_D1 (dis, x, y, ny);
+        return;
+    case 2:
+        fvec_L2sqr_ny_D2 (dis, x, y, ny);
+        return;
+    case 4:
+        fvec_L2sqr_ny_D4 (dis, x, y, ny);
+        return;
+    case 8:
+        fvec_L2sqr_ny_D8 (dis, x, y, ny);
+        return;
+    case 12:
+        fvec_L2sqr_ny_D12 (dis, x, y, ny);
+        return;
+    default:
+        fvec_L2sqr_ny_ref (dis, x, y, d, ny);
+        return;
+    }
+}
+
+
 
 #endif
 
@@ -335,6 +489,12 @@ float fvec_norm_L2sqr (const float *x, size_t d)
     return vdups_laneq_f32 (a2, 0) + vdups_laneq_f32 (a2, 1);
 }
 
+// not optimized for ARM
+void fvec_L2sqr_ny (float * dis, const float * x,
+                        const float * y, size_t d, size_t ny) {
+    fvec_L2sqr_ny_ref (dis, x, y, d, ny);
+}
+
 
 #else
 // scalar implementation
@@ -358,7 +518,14 @@ float fvec_norm_L2sqr (const float *x, size_t d)
     return fvec_norm_L2sqr_ref (x, d);
 }
 
+void fvec_L2sqr_ny (float * dis, const float * x,
+                        const float * y, size_t d, size_t ny) {
+    fvec_L2sqr_ny_ref (dis, x, y, d, ny);
+}
+
+
 #endif
+
 
 
 

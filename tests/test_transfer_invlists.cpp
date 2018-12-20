@@ -6,9 +6,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <memory>
 #include <cstdio>
 #include <cstdlib>
+#include <memory>
 
 #include <gtest/gtest.h>
 
@@ -20,8 +20,8 @@
 #include <faiss/utils.h>
 #include <faiss/IVFlib.h>
 
-using namespace faiss;
 
+using namespace faiss;
 
 namespace {
 
@@ -34,7 +34,6 @@ size_t nt = 500;
 int k = 10;
 int nlist = 40;
 
-
 typedef faiss::Index::idx_t idx_t;
 
 
@@ -43,10 +42,6 @@ std::vector<float> get_data (size_t nb, int seed) {
     float_randn (x.data(), nb * d, seed);
     return x;
 }
-
-
-
-
 
 void test_index_type(const char *factory_string) {
 

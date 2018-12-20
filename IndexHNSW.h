@@ -11,8 +11,8 @@
 #pragma once
 
 #include <vector>
-#include <omp.h>
 
+#include "HNSW.h"
 #include "IndexFlat.h"
 #include "IndexPQ.h"
 #include "IndexScalarQuantizer.h"
@@ -187,15 +187,15 @@ struct ReconstructFromNeighbors {
     size_t ntotal;
     size_t d, dsub; // derived values
 
-    ReconstructFromNeighbors(const IndexHNSW & index,
-                             size_t k=256, size_t nsq=1);
+    explicit ReconstructFromNeighbors(const IndexHNSW& index,
+                                      size_t k=256, size_t nsq=1);
 
     /// codes must be added in the correct order and the IndexHNSW
     /// must be populated and sorted
     void add_codes(size_t n, const float *x);
 
     size_t compute_distances(size_t n, const idx_t *shortlist,
-                           const float *query, float *distances) const;
+                             const float *query, float *distances) const;
 
     /// called by add_codes
     void estimate_code(const float *x, storage_idx_t i, uint8_t *code) const;
@@ -214,7 +214,7 @@ struct ReconstructFromNeighbors {
 /** The HNSW index is a normal random-access index with a HNSW
  * link structure built on top */
 
-struct IndexHNSW: Index {
+struct IndexHNSW : Index {
 
     typedef HNSW::storage_idx_t storage_idx_t;
 
@@ -223,17 +223,17 @@ struct IndexHNSW: Index {
 
     // the sequential storage
     bool own_fields;
-    Index * storage;
+    Index *storage;
 
     ReconstructFromNeighbors *reconstruct_from_neighbors;
 
     explicit IndexHNSW (int d = 0, int M = 32);
-    explicit IndexHNSW (Index * storage, int M = 32);
+    explicit IndexHNSW (Index *storage, int M = 32);
 
     ~IndexHNSW() override;
 
     // get a DistanceComputer object for this kind of storage
-    virtual HNSW::DistanceComputer * get_distance_computer() const = 0;
+    virtual HNSW::DistanceComputer *get_distance_computer() const = 0;
 
     void add(idx_t n, const float *x) override;
 
@@ -282,37 +282,41 @@ struct IndexHNSW: Index {
  *  more efficiently.
  */
 
-struct IndexHNSWFlat: IndexHNSW {
+struct IndexHNSWFlat : IndexHNSW {
     IndexHNSWFlat();
     IndexHNSWFlat(int d, int M);
-    HNSW::DistanceComputer * get_distance_computer() const override;
+    HNSW::DistanceComputer *
+      get_distance_computer() const override;
 };
 
 /** PQ index topped with with a HNSW structure to access elements
  *  more efficiently.
  */
-struct IndexHNSWPQ: IndexHNSW {
+struct IndexHNSWPQ : IndexHNSW {
     IndexHNSWPQ();
     IndexHNSWPQ(int d, int pq_m, int M);
     void train(idx_t n, const float* x) override;
-    HNSW::DistanceComputer * get_distance_computer() const override;
+    HNSW::DistanceComputer *
+      get_distance_computer() const override;
 };
 
 /** SQ index topped with with a HNSW structure to access elements
  *  more efficiently.
  */
-struct IndexHNSWSQ: IndexHNSW {
+struct IndexHNSWSQ : IndexHNSW {
     IndexHNSWSQ();
     IndexHNSWSQ(int d, ScalarQuantizer::QuantizerType qtype, int M);
-    HNSW::DistanceComputer * get_distance_computer() const override;
+    HNSW::DistanceComputer *
+      get_distance_computer() const override;
 };
 
 /** 2-level code structure with fast random access
  */
-struct IndexHNSW2Level: IndexHNSW {
+struct IndexHNSW2Level : IndexHNSW {
     IndexHNSW2Level();
     IndexHNSW2Level(Index *quantizer, size_t nlist, int m_pq, int M);
-    HNSW::DistanceComputer * get_distance_computer() const override;
+    HNSW::DistanceComputer *
+      get_distance_computer() const override;
     void flip_to_ivf();
 
     /// entry point for search
@@ -322,4 +326,4 @@ struct IndexHNSW2Level: IndexHNSW {
 };
 
 
-}
+}  // namespace faiss

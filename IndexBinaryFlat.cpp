@@ -34,8 +34,8 @@ void IndexBinaryFlat::reset() {
 
 void IndexBinaryFlat::search(idx_t n, const uint8_t *x, idx_t k,
                              int32_t *distances, idx_t *labels) const {
-  const size_t block_size = query_batch_size;
-  for (size_t s = 0; s < n; s += block_size) {
+  const idx_t block_size = query_batch_size;
+  for (idx_t s = 0; s < n; s += block_size) {
     idx_t nn = block_size;
     if (s + block_size > n) {
       nn = n - s;
@@ -51,7 +51,7 @@ void IndexBinaryFlat::search(idx_t n, const uint8_t *x, idx_t k,
                       /* ordered = */ true);
     } else {
       hammings_knn_mc(x + s * code_size, xb.data(), nn, ntotal, k, code_size,
-                      distances, labels);
+                      distances + s * k, labels + s * k);
     }
   }
 }

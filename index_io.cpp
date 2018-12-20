@@ -33,6 +33,8 @@
 #include "IndexHNSW.h"
 #include "OnDiskInvertedLists.h"
 #include "IndexBinaryFlat.h"
+#include "IndexBinaryFromFloat.h"
+#include "IndexBinaryHNSW.h"
 #include "IndexBinaryIVF.h"
 
 
@@ -78,14 +80,18 @@ static uint32_t fourcc (const char sx[4]) {
  **************************************************************/
 
 
-#define WRITEANDCHECK(ptr, n) {                             \
-        size_t ret = (*f)(ptr, sizeof(*(ptr)), n);          \
-        FAISS_THROW_IF_NOT_MSG(ret == (n), "write error");  \
+#define WRITEANDCHECK(ptr, n) {                                 \
+        size_t ret = (*f)(ptr, sizeof(*(ptr)), n);              \
+        FAISS_THROW_IF_NOT_FMT(ret == (n),                      \
+            "write error in %s: %ld != %ld (%s)",               \
+            f->name.c_str(), ret, size_t(n), strerror(errno));  \
     }
 
-#define READANDCHECK(ptr, n) {                              \
-        size_t ret = (*f)(ptr, sizeof(*(ptr)), n);          \
-        FAISS_THROW_IF_NOT_MSG(ret == (n), "read error");   \
+#define READANDCHECK(ptr, n) {                                  \
+        size_t ret = (*f)(ptr, sizeof(*(ptr)), n);              \
+        FAISS_THROW_IF_NOT_FMT(ret == (n),                      \
+            "read error in %s: %ld != %ld (%s)",                \
+            f->name.c_str(), ret, size_t(n), strerror(errno));  \
     }
 
 #define WRITE1(x) WRITEANDCHECK(&(x), 1)
@@ -97,6 +103,7 @@ static uint32_t fourcc (const char sx[4]) {
         WRITEANDCHECK ((vec).data (), size);    \
     }
 
+// will fail if we write 256G of data at once...
 #define READVECTOR(vec) {                       \
         long size;                            \
         READANDCHECK (&size, 1);                \
@@ -116,10 +123,28 @@ namespace {
 
 struct FileIOReader: IOReader {
     FILE *f = nullptr;
+    bool need_close = false;
 
     FileIOReader(FILE *rf): f(rf) {}
 
-    ~FileIOReader() = default;
+    FileIOReader(const char * fname)
+    {
+        name = fname;
+        f = fopen(fname, "rb");
+        FAISS_THROW_IF_NOT_FMT (
+             f, "could not open %s for reading: %s",
+             fname, strerror(errno));
+        need_close = true;
+    }
+
+    ~FileIOReader() {
+        if (need_close) {
+            int ret = fclose(f);
+            FAISS_THROW_IF_NOT_FMT (
+               ret == 0, "file %s close error: %s",
+               name.c_str(), strerror(errno));
+        }
+    }
 
     size_t operator()(
             void *ptr, size_t size, size_t nitems) override {
@@ -134,9 +159,28 @@ struct FileIOReader: IOReader {
 
 struct FileIOWriter: IOWriter {
     FILE *f = nullptr;
+    bool need_close = false;
 
     FileIOWriter(FILE *wf): f(wf) {}
-    ~FileIOWriter() = default;
+
+    FileIOWriter(const char * fname)
+    {
+        name = fname;
+        f = fopen(fname, "wb");
+        FAISS_THROW_IF_NOT_FMT (
+             f, "could not open %s for writing: %s",
+             fname, strerror(errno));
+        need_close = true;
+    }
+
+    ~FileIOWriter() {
+        if (need_close) {
+            int ret = fclose(f);
+            FAISS_THROW_IF_NOT_FMT (
+               ret == 0, "file %s close error: %s",
+               name.c_str(), strerror(errno));
+        }
+    }
 
     size_t operator()(
             const void *ptr, size_t size, size_t nitems) override {
@@ -208,8 +252,7 @@ void write_VectorTransform (const VectorTransform *vt, IOWriter *f) {
     WRITE1 (vt->is_trained);
 }
 
-static void write_ProductQuantizer (
-        const ProductQuantizer *pq, IOWriter *f) {
+void write_ProductQuantizer (const ProductQuantizer *pq, IOWriter *f) {
     WRITE1 (pq->d);
     WRITE1 (pq->M);
     WRITE1 (pq->nbits);
@@ -301,11 +344,7 @@ void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
 
 
 void write_ProductQuantizer (const ProductQuantizer*pq, const char *fname) {
-    FILE *f = fopen (fname, "w");
-    FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for writing", fname);
-    ScopeFileCloser closer(f);
-
-    FileIOWriter writer(f);
+    FileIOWriter writer(fname);
     write_ProductQuantizer (pq, &writer);
 }
 
@@ -483,22 +522,16 @@ void write_index (const Index *idx, IOWriter *f) {
 
 void write_index (const Index *idx, FILE *f) {
     FileIOWriter writer(f);
-    write_index(idx, &writer);
+    write_index (idx, &writer);
 }
 
 void write_index (const Index *idx, const char *fname) {
-    FILE *f = fopen (fname, "w");
-    FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for writing", fname);
-    ScopeFileCloser closer(f);
-    write_index (idx, f);
+    FileIOWriter writer(fname);
+    write_index (idx, &writer);
 }
 
 void write_VectorTransform (const VectorTransform *vt, const char *fname) {
-    FILE *f = fopen (fname, "w");
-    FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for writing", fname);
-    ScopeFileCloser closer(f);
-
-    FileIOWriter writer(f);
+    FileIOWriter writer(fname);
     write_VectorTransform (vt, &writer);
 }
 
@@ -569,7 +602,6 @@ VectorTransform* read_VectorTransform (IOReader *f) {
 static void read_ArrayInvertedLists_sizes (
          IOReader *f, std::vector<size_t> & sizes)
 {
-    size_t nlist = sizes.size();
     uint32_t list_type;
     READ1(list_type);
     if (list_type == fourcc("full")) {
@@ -731,16 +763,17 @@ static void read_HNSW (HNSW *hnsw, IOReader *f) {
 }
 
 ProductQuantizer * read_ProductQuantizer (const char*fname) {
-    FILE *f = fopen (fname, "r");
-    FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for writing", fname);
-    ScopeFileCloser closer(f);
-    ProductQuantizer *pq = new ProductQuantizer();
-    ScopeDeleter1<ProductQuantizer> del (pq);
+    FileIOReader reader(fname);
+    return read_ProductQuantizer(&reader);
+}
 
-    FileIOReader reader(f);
-    read_ProductQuantizer(pq, &reader);
-    del.release ();
-    return pq;
+ProductQuantizer * read_ProductQuantizer (IOReader *reader) {
+  ProductQuantizer *pq = new ProductQuantizer();
+  ScopeDeleter1<ProductQuantizer> del (pq);
+
+  read_ProductQuantizer(pq, reader);
+  del.release ();
+  return pq;
 }
 
 static void read_ivf_header (
@@ -1024,24 +1057,14 @@ Index *read_index (FILE * f, int io_flags) {
 }
 
 Index *read_index (const char *fname, int io_flags) {
-    FILE *f = fopen (fname, "r");
-    FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for reading:", fname);
-    Index *idx = read_index (f, io_flags);
-    fclose (f);
+    FileIOReader reader(fname);
+    Index *idx = read_index (&reader, io_flags);
     return idx;
 }
 
 VectorTransform *read_VectorTransform (const char *fname) {
-    FILE *f = fopen (fname, "r");
-    if (!f) {
-        fprintf (stderr, "cannot open %s for reading:", fname);
-        perror ("");
-        abort ();
-    }
-
-    FileIOReader reader(f);
+    FileIOReader reader(fname);
     VectorTransform *vt = read_VectorTransform (&reader);
-    fclose (f);
     return vt;
 }
 
@@ -1152,18 +1175,32 @@ static void write_binary_ivf_header (const IndexBinaryIVF *ivf, IOWriter *f) {
 }
 
 void write_index_binary (const IndexBinary *idx, IOWriter *f) {
-    if (const IndexBinaryFlat * idxf = dynamic_cast<const IndexBinaryFlat *> (idx)) {
+    if (const IndexBinaryFlat *idxf =
+        dynamic_cast<const IndexBinaryFlat *> (idx)) {
         uint32_t h = fourcc ("IBxF");
         WRITE1 (h);
         write_index_binary_header (idx, f);
         WRITEVECTOR (idxf->xb);
-    } else if(const IndexBinaryIVF * ivf =
-              dynamic_cast<const IndexBinaryIVF *> (idx)) {
+    } else if (const IndexBinaryIVF *ivf =
+               dynamic_cast<const IndexBinaryIVF *> (idx)) {
         uint32_t h = fourcc ("IBwF");
         WRITE1 (h);
         write_binary_ivf_header (ivf, f);
         write_InvertedLists (ivf->invlists, f);
-    }  else {
+    } else if(const IndexBinaryFromFloat * idxff =
+              dynamic_cast<const IndexBinaryFromFloat *> (idx)) {
+        uint32_t h = fourcc ("IBFf");
+        WRITE1 (h);
+        write_index_binary_header (idxff, f);
+        write_index (idxff->index, f);
+    } else if (const IndexBinaryHNSW *idxhnsw =
+               dynamic_cast<const IndexBinaryHNSW *> (idx)) {
+        uint32_t h = fourcc ("IBHf");
+        WRITE1 (h);
+        write_index_binary_header (idxhnsw, f);
+        write_HNSW (&idxhnsw->hnsw, f);
+        write_index_binary (idxhnsw->storage, f);
+    } else {
         FAISS_THROW_MSG ("don't know how to serialize this type of index");
     }
 }
@@ -1174,10 +1211,8 @@ void write_index_binary (const IndexBinary *idx, FILE *f) {
 }
 
 void write_index_binary (const IndexBinary *idx, const char *fname) {
-    FILE *f = fopen (fname, "w");
-    FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for writing", fname);
-    ScopeFileCloser closer(f);
-    write_index_binary (idx, f);
+    FileIOWriter writer(fname);
+    write_index_binary (idx, &writer);
 }
 
 static void read_index_binary_header (IndexBinary *idx, IOReader *f) {
@@ -1219,10 +1254,23 @@ IndexBinary *read_index_binary (IOReader *f, int io_flags) {
         // leak!
         idx = idxf;
     } else if (h == fourcc ("IBwF")) {
-        IndexBinaryIVF * ivf = new IndexBinaryIVF ();
+        IndexBinaryIVF *ivf = new IndexBinaryIVF ();
         read_binary_ivf_header (ivf, f);
         read_InvertedLists (ivf, f, io_flags);
         idx = ivf;
+    } else if (h == fourcc ("IBFf")) {
+        IndexBinaryFromFloat *idxff = new IndexBinaryFromFloat ();
+        read_index_binary_header (idxff, f);
+        idxff->own_fields = true;
+        idxff->index = read_index (f, io_flags);
+        idx = idxff;
+    } else if (h == fourcc ("IBHf")) {
+        IndexBinaryHNSW *idxhnsw = new IndexBinaryHNSW ();
+        read_index_binary_header (idxhnsw, f);
+        read_HNSW (&idxhnsw->hnsw, f);
+        idxhnsw->storage = read_index_binary (f, io_flags);
+        idxhnsw->own_fields = true;
+        idx = idxhnsw;
     } else {
         FAISS_THROW_FMT("Index type 0x%08x not supported\n", h);
         idx = nullptr;
@@ -1236,10 +1284,8 @@ IndexBinary *read_index_binary (FILE * f, int io_flags) {
 }
 
 IndexBinary *read_index_binary (const char *fname, int io_flags) {
-    FILE *f = fopen (fname, "r");
-    FAISS_THROW_IF_NOT_FMT (f, "cannot open %s for reading:", fname);
-    IndexBinary *idx = read_index_binary (f, io_flags);
-    fclose (f);
+    FileIOReader reader(fname);
+    IndexBinary *idx = read_index_binary (&reader, io_flags);
     return idx;
 }
 

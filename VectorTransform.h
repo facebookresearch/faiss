@@ -122,6 +122,9 @@ struct RandomRotationMatrix: LinearTransform {
      /// must be called before the transform is used
      void init(int seed);
 
+     // intializes with an arbitrary seed
+     void train(Index::idx_t n, const float* x) override;
+
      RandomRotationMatrix () {}
 };
 

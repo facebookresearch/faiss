@@ -111,6 +111,18 @@ class TestBinaryFlat(unittest.TestCase):
                 ref_dis = binary_dis(self.xq[i], self.xb[j])
                 assert dj == ref_dis
 
+    def test_empty_flat(self):
+        d = self.xq.shape[1] * 8
+
+        index = faiss.IndexBinaryFlat(d)
+
+        for use_heap in [True, False]:
+            index.use_heap = use_heap
+            Dflat, Iflat = index.search(self.xq, 10)
+
+            assert(np.all(Iflat == -1))
+            assert(np.all(Dflat == 2147483647)) # NOTE(hoss): int32_t max
+
 
 class TestBinaryIVF(unittest.TestCase):
 
@@ -153,6 +165,64 @@ class TestBinaryIVF(unittest.TestCase):
 
         self.assertEqual((self.Dref == Divfflat).sum(), 4122)
 
+    def test_ivf_flat_empty(self):
+        d = self.xq.shape[1] * 8
+
+        index = faiss.IndexBinaryIVF(faiss.IndexBinaryFlat(d), d, 8)
+        index.train(self.xt)
+
+        for use_heap in [True, False]:
+            index.use_heap = use_heap
+            Divfflat, Iivfflat = index.search(self.xq, 10)
+
+            assert(np.all(Iivfflat == -1))
+            assert(np.all(Divfflat == 2147483647)) # NOTE(hoss): int32_t max
+
+class TestHNSW(unittest.TestCase):
+
+    def __init__(self, *args, **kwargs):
+        unittest.TestCase.__init__(self, *args, **kwargs)
+        d = 32
+        nt = 0
+        nb = 1500
+        nq = 500
+
+        (_, self.xb, self.xq) = make_binary_dataset(d, nb, nt, nq)
+
+    def test_hnsw_exact_distances(self):
+        d = self.xq.shape[1] * 8
+        nq = self.xq.shape[0]
+
+        index = faiss.IndexBinaryHNSW(d, 16)
+        index.add(self.xb)
+        Dists, Ids = index.search(self.xq, 3)
+
+        for i in range(nq):
+            for j, dj in zip(Ids[i], Dists[i]):
+                ref_dis = binary_dis(self.xq[i], self.xb[j])
+                self.assertEqual(dj, ref_dis)
+
+    def test_hnsw(self):
+        d = self.xq.shape[1] * 8
+
+        # NOTE(hoss): Ensure the HNSW construction is deterministic.
+        nthreads = faiss.omp_get_max_threads()
+        faiss.omp_set_num_threads(1)
+
+        index_hnsw_float = faiss.IndexHNSWFlat(d, 16)
+        index_hnsw_ref = faiss.IndexBinaryFromFloat(index_hnsw_float)
+
+        index_hnsw_bin = faiss.IndexBinaryHNSW(d, 16)
+
+        index_hnsw_ref.add(self.xb)
+        index_hnsw_bin.add(self.xb)
+
+        faiss.omp_set_num_threads(nthreads)
+
+        Dref, Iref = index_hnsw_ref.search(self.xq, 3)
+        Dbin, Ibin = index_hnsw_bin.search(self.xq, 3)
+
+        self.assertTrue((Dref == Dbin).all())
 
 
 if __name__ == '__main__':

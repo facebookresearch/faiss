@@ -53,9 +53,19 @@ bool randBool() {
 
 std::vector<float> randVecs(size_t num, size_t dim) {
   std::vector<float> v(num * dim);
-  static bool first = true;
 
   faiss::float_rand(v.data(), v.size(), s_seed);
+  // unfortunately we generate separate sets of vectors, and don't
+  // want the same values
+  ++s_seed;
+
+  return v;
+}
+
+std::vector<unsigned char> randBinaryVecs(size_t num, size_t dim) {
+  std::vector<unsigned char> v(num * (dim / 8));
+
+  faiss::byte_rand(v.data(), v.size(), s_seed);
   // unfortunately we generate separate sets of vectors, and don't
   // want the same values
   ++s_seed;

@@ -10,6 +10,7 @@
 #pragma once
 
 #include <cuda.h>
+#include "../../Index.h"
 #include "Float16.cuh"
 
 namespace faiss { namespace gpu {
@@ -17,6 +18,12 @@ namespace faiss { namespace gpu {
 //
 // Conversion utilities
 //
+
+struct IntToIdxType {
+  inline __device__ faiss::Index::idx_t operator()(int v) const {
+    return (faiss::Index::idx_t) v;
+  }
+};
 
 template <typename T>
 struct ConvertTo {

@@ -35,6 +35,11 @@ struct IndexIVFFlat: IndexIVF {
     /// implemented for all IndexIVF* classes
     void add_with_ids(idx_t n, const float* x, const long* xids) override;
 
+    void encode_vectors(idx_t n, const float* x,
+                        const idx_t *list_nos,
+                        uint8_t * codes) const override;
+
+    /*
     void search_preassigned (idx_t n, const float *x, idx_t k,
                              const idx_t *assign,
                              const float *centroid_dis,
@@ -42,6 +47,9 @@ struct IndexIVFFlat: IndexIVF {
                              bool store_pairs,
                              const IVFSearchParameters *params=nullptr
                              ) const override;
+    */
+    InvertedListScanner *get_InvertedListScanner (bool store_pairs)
+        const override;
 
     void range_search(
         idx_t n,

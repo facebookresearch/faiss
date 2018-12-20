@@ -27,6 +27,9 @@ except ImportError as e:
         sys.stderr.write("Faiss falling back to CPU-only.\n")
     from .swigfaiss import *
 
+__version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
+                            FAISS_VERSION_MINOR,
+                            FAISS_VERSION_PATCH)
 
 ##################################################################
 # The functions below add or replace some methods for classes
@@ -365,7 +368,6 @@ add_ref_in_constructor(IndexIDMap, 0)
 add_ref_in_constructor(IndexIDMap2, 0)
 add_ref_in_method(IndexShards, 'add_shard', 0)
 add_ref_in_constructor(IndexRefineFlat, 0)
-
 add_ref_in_constructor(IndexBinaryIVF, 0)
 add_ref_in_constructor(IndexBinaryFromFloat, 0)
 
@@ -378,8 +380,11 @@ if hasattr(this_module, 'IndexProxy'):
     # handle all the GPUResources refs
     add_ref_in_function('index_cpu_to_gpu', 0)
     add_ref_in_constructor(GpuIndexFlat, 0)
+    add_ref_in_constructor(GpuIndexFlatIP, 0)
+    add_ref_in_constructor(GpuIndexFlatL2, 0)
     add_ref_in_constructor(GpuIndexIVFFlat, 0)
     add_ref_in_constructor(GpuIndexIVFPQ, 0)
+    add_ref_in_constructor(GpuIndexBinaryFlat, 0)
 
 
 

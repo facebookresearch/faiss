@@ -77,115 +77,94 @@ void IndexIVFFlat::add_core (idx_t n, const float * x, const long *xids,
         printf("IndexIVFFlat::add_core: added %ld / %ld vectors\n",
                n_add, n);
     }
-    ntotal += n_add;
+    ntotal += n;
 }
+
+void IndexIVFFlat::encode_vectors(idx_t n, const float* x,
+                                  const idx_t * /* list_nos */,
+                                  uint8_t * codes) const
+{
+    memcpy (codes, x, code_size * n);
+}
+
 
 
 namespace {
 
 
 template<MetricType metric, bool store_pairs, class C>
-void search_knn_for_ivf (const IndexIVFFlat & ivf,
-                         size_t nx,
-                         const float * x,
-                         const long * keys,
-                         HeapArray<C> * res,
-                         const IVFSearchParameters *params)
-{
-    long nprobe = params ? params->nprobe : ivf.nprobe;
-    long max_codes = params ? params->max_codes : ivf.max_codes;
+struct IVFFlatScanner: InvertedListScanner {
 
-    const size_t k = res->k;
-    size_t nlistv = 0, ndis = 0;
-    size_t d = ivf.d;
+    size_t d;
+    IVFFlatScanner(size_t d): d(d) {}
 
-#pragma omp parallel for reduction(+: nlistv, ndis)
-    for (size_t i = 0; i < nx; i++) {
-        const float * xi = x + i * d;
-        const long * keysi = keys + i * nprobe;
-        float * __restrict simi = res->get_val (i);
-        long * __restrict idxi = res->get_ids (i);
-        heap_heapify<C> (k, simi, idxi);
-        size_t nscan = 0;
-
-        for (size_t ik = 0; ik < nprobe; ik++) {
-            long key = keysi[ik];  /* select the list  */
-            if (key < 0) {
-                // not enough centroids for multiprobe
-                continue;
-            }
-            FAISS_THROW_IF_NOT_FMT (
-                key < (long) ivf.nlist,
-                "Invalid key=%ld  at ik=%ld nlist=%ld\n",
-                key, ik, ivf.nlist);
-
-            nlistv++;
-            size_t list_size = ivf.invlists->list_size(key);
-            InvertedLists::ScopedCodes scodes (ivf.invlists, key);
-            const float * list_vecs = (const float*)scodes.get();
-            const Index::idx_t * ids = store_pairs ? nullptr :
-                ivf.invlists->get_ids (key);
-
-            for (size_t j = 0; j < list_size; j++) {
-                const float * yj = list_vecs + d * j;
-                float dis = metric == METRIC_INNER_PRODUCT ?
-                    fvec_inner_product (xi, yj, d) : fvec_L2sqr (xi, yj, d);
-                if (C::cmp (simi[0], dis)) {
-                    heap_pop<C> (k, simi, idxi);
-                    long id = store_pairs ? (key << 32 | j) : ids[j];
-                    heap_push<C> (k, simi, idxi, dis, id);
-                }
-            }
-            if (ids) {
-                ivf.invlists->release_ids (ids);
-            }
-
-            nscan += list_size;
-            if (max_codes && nscan >= max_codes)
-                break;
-        }
-        ndis += nscan;
-        heap_reorder<C> (k, simi, idxi);
+    const float *xi;
+    void set_query (const float *query) override {
+        this->xi = query;
     }
-    indexIVF_stats.nq += nx;
-    indexIVF_stats.nlist += nlistv;
-    indexIVF_stats.ndis += ndis;
-}
 
+    idx_t list_no;
+    void set_list (idx_t list_no, float /* coarse_dis */) override {
+        this->list_no = list_no;
+    }
 
+    float distance_to_code (const uint8_t *code) const override {
+        const float *yj = (float*)code;
+        float dis = metric == METRIC_INNER_PRODUCT ?
+            fvec_inner_product (xi, yj, d) : fvec_L2sqr (xi, yj, d);
+        return dis;
+    }
+
+    size_t scan_codes (size_t list_size,
+                       const uint8_t *codes,
+                       const idx_t *ids,
+                       float *simi, idx_t *idxi,
+                       size_t k) const override
+    {
+        const float *list_vecs = (const float*)codes;
+        size_t nup = 0;
+        for (size_t j = 0; j < list_size; j++) {
+            const float * yj = list_vecs + d * j;
+            float dis = metric == METRIC_INNER_PRODUCT ?
+                fvec_inner_product (xi, yj, d) : fvec_L2sqr (xi, yj, d);
+            if (C::cmp (simi[0], dis)) {
+                heap_pop<C> (k, simi, idxi);
+                long id = store_pairs ? (list_no << 32 | j) : ids[j];
+                heap_push<C> (k, simi, idxi, dis, id);
+                nup++;
+            }
+        }
+        return nup;
+    }
+
+};
 
 
 } // anonymous namespace
 
-void IndexIVFFlat::search_preassigned (idx_t n, const float *x, idx_t k,
-                                       const idx_t *idx,
-                                       const float * /* coarse_dis */,
-                                       float *distances, idx_t *labels,
-                                       bool store_pairs,
-                                       const IVFSearchParameters *params) const
-{
-   if (metric_type == METRIC_INNER_PRODUCT) {
-        float_minheap_array_t res = {
-            size_t(n), size_t(k), labels, distances};
-        if (store_pairs) {
-            search_knn_for_ivf<METRIC_INNER_PRODUCT, true, CMin<float, long> >
-                (*this, n, x, idx, &res, params);
-        } else {
-            search_knn_for_ivf<METRIC_INNER_PRODUCT, false, CMin<float, long> >
-                (*this, n, x, idx, &res, params);
-        }
 
-    } else if (metric_type == METRIC_L2) {
-        float_maxheap_array_t res = {
-            size_t(n), size_t(k), labels, distances};
+
+InvertedListScanner* IndexIVFFlat::get_InvertedListScanner
+     (bool store_pairs) const
+{
+    if (metric_type == METRIC_INNER_PRODUCT) {
         if (store_pairs) {
-            search_knn_for_ivf<METRIC_L2, true, CMax<float, long> >
-                (*this, n, x, idx, &res, params);
+            return new IVFFlatScanner<
+                METRIC_INNER_PRODUCT, true, CMin<float, long> > (d);
         } else {
-            search_knn_for_ivf<METRIC_L2, false, CMax<float, long> >
-                (*this, n, x, idx, &res, params);
+            return new IVFFlatScanner<
+                METRIC_INNER_PRODUCT, false, CMin<float, long> >(d);
+        }
+    } else if (metric_type == METRIC_L2) {
+        if (store_pairs) {
+            return new IVFFlatScanner<
+                METRIC_L2, true, CMax<float, long> > (d);
+        } else {
+            return new IVFFlatScanner<
+                METRIC_L2, false, CMax<float, long> >(d);
         }
     }
+    return nullptr;
 }
 
 

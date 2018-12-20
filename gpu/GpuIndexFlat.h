@@ -158,7 +158,8 @@ class GpuIndexFlat : public GpuIndex {
   /// Size above which we page copies from the CPU to GPU
   size_t minPagedSize_;
 
-  /// Holds our GPU data containing the list of vectors
+  /// Holds our GPU data containing the list of vectors; is managed via raw
+  /// pointer so as to allow non-CUDA compilers to see this header
   FlatIndex* data_;
 };
 

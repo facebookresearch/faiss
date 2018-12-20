@@ -30,28 +30,28 @@ namespace faiss { namespace gpu {
 // T: the type we are doing the math in (e.g., float, half)
 // TVec: the potentially vectorized type we are loading in (e.g.,
 // float4, half2)
-template <typename T, typename TVec, typename TIndex,
+template <typename T, typename TVec, typename int64_t,
           int RowTileSize, bool NormLoop, bool NormSquared>
-__global__ void l2Norm(Tensor<TVec, 2, true, TIndex> input,
-                       Tensor<T, 1, true, TIndex> output) {
+__global__ void l2Norm(Tensor<TVec, 2, true, int64_t> input,
+                       Tensor<T, 1, true, int64_t> output) {
   extern __shared__ char smemByte[]; // #warps * RowTileSize elements
   T* smem = (T*) smemByte;
 
-  TIndex numWarps = utils::divUp(blockDim.x, kWarpSize);
-  TIndex laneId = getLaneId();
-  TIndex warpId = threadIdx.x / kWarpSize;
+  int64_t numWarps = utils::divUp(blockDim.x, kWarpSize);
+  int64_t laneId = getLaneId();
+  int64_t warpId = threadIdx.x / kWarpSize;
 
   bool lastRowTile = (blockIdx.x == (gridDim.x - 1));
-  TIndex rowStart = RowTileSize * blockIdx.x;
+  int64_t rowStart = RowTileSize * blockIdx.x;
   T rowNorm[RowTileSize];
 
   if (lastRowTile) {
     // We are handling the very end of the input matrix rows
-    for (TIndex row = 0; row < input.getSize(0) - rowStart; ++row) {
+    for (int64_t row = 0; row < input.getSize(0) - rowStart; ++row) {
       if (NormLoop) {
         rowNorm[0] = Math<T>::zero();
 
-        for (TIndex col = threadIdx.x;
+        for (int64_t col = threadIdx.x;
              col < input.getSize(1); col += blockDim.x) {
           TVec val = input[rowStart + row][col];
           val = Math<TVec>::mul(val, val);
@@ -82,7 +82,7 @@ __global__ void l2Norm(Tensor<TVec, 2, true, TIndex> input,
         rowNorm[row] = Math<T>::zero();
       }
 
-      for (TIndex col = threadIdx.x;
+      for (int64_t col = threadIdx.x;
            col < input.getSize(1); col += blockDim.x) {
 #pragma unroll
         for (int row = 0; row < RowTileSize; ++row) {
@@ -173,32 +173,32 @@ __global__ void l2Norm(Tensor<TVec, 2, true, TIndex> input,
   }
 }
 
-template <typename T, typename TVec, typename TIndex>
-void runL2Norm(Tensor<T, 2, true, TIndex>& input,
-               Tensor<T, 1, true, TIndex>& output,
+template <typename T, typename TVec, typename int64_t>
+void runL2Norm(Tensor<T, 2, true, int64_t>& input,
+               Tensor<T, 1, true, int64_t>& output,
                bool normSquared,
                cudaStream_t stream) {
   FAISS_ASSERT(input.getSize(0) == output.getSize(0));
 
-  TIndex maxThreads = (TIndex) getMaxThreadsCurrentDevice();
+  int64_t maxThreads = (int64_t) getMaxThreadsCurrentDevice();
   constexpr int rowTileSize = 8;
 
 #define RUN_L2(TYPE_T, TYPE_TVEC, INPUT)                                \
   do {                                                                  \
     if (normLoop) {                                                     \
       if (normSquared) {                                                \
-        l2Norm<TYPE_T, TYPE_TVEC, TIndex, rowTileSize, true, true>      \
+        l2Norm<TYPE_T, TYPE_TVEC, int64_t, rowTileSize, true, true>      \
           <<<grid, block, smem, stream>>>(INPUT, output);               \
       } else {                                                          \
-        l2Norm<TYPE_T, TYPE_TVEC, TIndex, rowTileSize, true, false>     \
+        l2Norm<TYPE_T, TYPE_TVEC, int64_t, rowTileSize, true, false>     \
           <<<grid, block, smem, stream>>>(INPUT, output);               \
       }                                                                 \
     } else {                                                            \
       if (normSquared) {                                                \
-        l2Norm<TYPE_T, TYPE_TVEC, TIndex, rowTileSize, false, true>     \
+        l2Norm<TYPE_T, TYPE_TVEC, int64_t, rowTileSize, false, true>     \
           <<<grid, block, smem, stream>>>(INPUT, output);               \
       } else {                                                          \
-        l2Norm<TYPE_T, TYPE_TVEC, TIndex, rowTileSize, false, false>    \
+        l2Norm<TYPE_T, TYPE_TVEC, int64_t, rowTileSize, false, false>    \
           <<<grid, block, smem, stream>>>(INPUT, output);               \
       }                                                                 \
     }                                                                   \

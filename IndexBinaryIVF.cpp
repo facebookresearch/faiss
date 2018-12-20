@@ -33,7 +33,9 @@ IndexBinaryIVF::IndexBinaryIVF(IndexBinary *quantizer, size_t d, size_t nlist)
       maintain_direct_map(false),
       quantizer(quantizer),
       nlist(nlist),
-      own_fields(false) {
+      own_fields(false),
+      clustering_index(nullptr)
+{
   FAISS_THROW_IF_NOT (d == quantizer->d);
   is_trained = quantizer->is_trained && (quantizer->ntotal == nlist);
 
@@ -48,7 +50,9 @@ IndexBinaryIVF::IndexBinaryIVF()
       maintain_direct_map(false),
       quantizer(nullptr),
       nlist(0),
-      own_fields(false) {}
+      own_fields(false),
+      clustering_index(nullptr)
+{}
 
 void IndexBinaryIVF::add(idx_t n, const uint8_t *x) {
   add_with_ids(n, x, nullptr);
@@ -323,7 +327,12 @@ void IndexBinaryIVF::train_q1(size_t n, const uint8_t *x, bool verbose) {
 
     IndexFlatL2 index_tmp(d);
 
-    clus.train(n, x_f.get(), index_tmp);
+    if (clustering_index && verbose) {
+        printf("using clustering_index of dimension %d to do the clustering\n",
+               clustering_index->d);
+    }
+
+    clus.train(n, x_f.get(), clustering_index ? *clustering_index : index_tmp);
 
     std::unique_ptr<uint8_t[]> x_b(new uint8_t[clus.k * code_size]);
     real_to_binary(d * clus.k, clus.centroids.data(), x_b.get());
@@ -336,74 +345,175 @@ void IndexBinaryIVF::train_q1(size_t n, const uint8_t *x, bool verbose) {
 
 namespace {
 
+using idx_t = Index::idx_t;
+
 
 template<class HammingComputer, bool store_pairs>
-void search_knn_hamming_heap(const IndexBinaryIVF& ivf,
-                             size_t nx,
-                             const uint8_t *x,
-                             const long *keys,
-                             int_maxheap_array_t *res,
-                             const IVFSearchParameters *params) {
-  const size_t k = res->k;
-  size_t nlistv = 0, ndis = 0;
-  long nprobe = params ? params->nprobe : ivf.nprobe;
-  long max_codes = params ? params->max_codes : ivf.max_codes;
+struct IVFBinaryScannerL2: BinaryInvertedListScanner {
 
-#pragma omp parallel for reduction(+: nlistv, ndis)
-  for (size_t i = 0; i < nx; i++) {
-    const uint8_t *xi = x + i * ivf.code_size;
-    const long * keysi = keys + i * nprobe;
-    int32_t * __restrict disi = res->get_val(i);
-    long * __restrict idxi = res->get_ids(i);
-    maxheap_heapify(k, disi, idxi);
+    HammingComputer hc;
+    size_t code_size;
 
-    size_t nscan = 0;
+    IVFBinaryScannerL2 (size_t code_size): code_size (code_size)
+    {}
 
-    for (size_t ik = 0; ik < nprobe; ik++) {
-      long key = keysi[ik];  /* select the list  */
-      if (key < 0) {
-        // not enough centroids for multiprobe
-        continue;
-      }
-      FAISS_THROW_IF_NOT_FMT (
-        key < (long) ivf.nlist,
-        "Invalid key=%ld  at ik=%ld nlist=%ld\n",
-        key, ik, ivf.nlist);
-
-      nlistv++;
-      size_t list_size = ivf.invlists->list_size(key);
-
-      InvertedLists::ScopedCodes scodes (ivf.invlists, key);
-      const uint8_t *list_vecs = scodes.get();
-      const Index::idx_t *ids = store_pairs
-        ? nullptr
-        : ivf.invlists->get_ids(key);
-      HammingComputer hc(xi, ivf.code_size);
-
-      for (size_t j = 0; j < list_size; j++) {
-        const uint8_t * yj = list_vecs + ivf.code_size * j;
-
-        int32_t disij = hc.hamming(yj);
-
-        if (disij < disi[0]) {
-          maxheap_pop(k, disi, idxi);
-          long id = store_pairs ? (key << 32 | j) : ids[j];
-          maxheap_push(k, disi, idxi, disij, id);
-        }
-      }
-      if (ids)
-        ivf.invlists->release_ids (ids);
-
-      nscan += list_size;
-      if (max_codes && nscan >= max_codes)
-        break;
+    void set_query (const uint8_t *query_vector) override {
+        hc.set (query_vector, code_size);
     }
-    ndis += nscan;
-    maxheap_reorder(k, disi, idxi);
-  }
-  indexIVF_stats.nq += nx;
-  indexIVF_stats.nlist += nlistv;
-  indexIVF_stats.ndis += ndis;
+
+    idx_t list_no;
+    void set_list (idx_t list_no, uint8_t /* coarse_dis */) override {
+        this->list_no = list_no;
+    }
+
+    uint32_t distance_to_code (const uint8_t *code) const override {
+        return hc.hamming (code);
+    }
+
+    size_t scan_codes (size_t n,
+                       const uint8_t *codes,
+                       const idx_t *ids,
+                       int32_t *simi, idx_t *idxi,
+                       size_t k) const override
+    {
+        using C = CMax<int32_t, idx_t>;
+
+        size_t nup = 0;
+        for (size_t j = 0; j < n; j++) {
+            uint32_t dis = hc.hamming (codes);
+            if (dis < simi[0]) {
+                heap_pop<C> (k, simi, idxi);
+                long id = store_pairs ? (list_no << 32 | j) : ids[j];
+                heap_push<C> (k, simi, idxi, dis, id);
+                nup++;
+            }
+            codes += code_size;
+        }
+        return nup;
+    }
+
+
+};
+
+
+template <bool store_pairs>
+BinaryInvertedListScanner *select_IVFBinaryScannerL2 (size_t code_size) {
+
+    switch (code_size) {
+#define HANDLE_CS(cs)                                                  \
+    case cs:                                                            \
+        return new IVFBinaryScannerL2<HammingComputer ## cs, store_pairs> (cs);
+      HANDLE_CS(4);
+      HANDLE_CS(8);
+      HANDLE_CS(16);
+      HANDLE_CS(20);
+      HANDLE_CS(32);
+      HANDLE_CS(64);
+#undef HANDLE_CS
+    default:
+        if (code_size % 8 == 0) {
+            return new IVFBinaryScannerL2<HammingComputerM8,
+                store_pairs> (code_size);
+        } else if (code_size % 4 == 0) {
+            return new IVFBinaryScannerL2<HammingComputerM4,
+                store_pairs> (code_size);
+        } else {
+            return new IVFBinaryScannerL2<HammingComputerDefault,
+                store_pairs> (code_size);
+        }
+    }
+}
+
+
+void search_knn_hamming_heap(const IndexBinaryIVF& ivf,
+                             size_t n,
+                             const uint8_t *x,
+                             idx_t k,
+                             const idx_t *keys,
+                             const int32_t * coarse_dis,
+                             int32_t *distances, idx_t *labels,
+                             bool store_pairs,
+                             const IVFSearchParameters *params)
+{
+    long nprobe = params ? params->nprobe : ivf.nprobe;
+    long max_codes = params ? params->max_codes : ivf.max_codes;
+    MetricType metric_type = ivf.metric_type;
+
+    // almost verbatim copy from IndexIVF::search_preassigned
+
+    size_t nlistv = 0, ndis = 0, nheap = 0;
+    using HeapForIP = CMin<int32_t, idx_t>;
+    using HeapForL2 = CMax<int32_t, idx_t>;
+
+#pragma omp parallel if(n > 1) reduction(+: nlistv, ndis, nheap)
+    {
+        std::unique_ptr<BinaryInvertedListScanner> scanner
+            (ivf.get_InvertedListScanner (store_pairs));
+
+#pragma omp for
+        for (size_t i = 0; i < n; i++) {
+            const uint8_t *xi = x + i * ivf.code_size;
+            scanner->set_query(xi);
+
+            const long * keysi = keys + i * nprobe;
+            int32_t * simi = distances + k * i;
+            long * idxi = labels + k * i;
+
+            if (metric_type == METRIC_INNER_PRODUCT) {
+                heap_heapify<HeapForIP> (k, simi, idxi);
+            } else {
+                heap_heapify<HeapForL2> (k, simi, idxi);
+            }
+
+            size_t nscan = 0;
+
+            for (size_t ik = 0; ik < nprobe; ik++) {
+                long key = keysi[ik];  /* select the list  */
+                if (key < 0) {
+                    // not enough centroids for multiprobe
+                    continue;
+                }
+                FAISS_THROW_IF_NOT_FMT
+                    (key < (long) ivf.nlist,
+                     "Invalid key=%ld  at ik=%ld nlist=%ld\n",
+                     key, ik, ivf.nlist);
+
+                scanner->set_list (key, coarse_dis[i * nprobe + ik]);
+
+                nlistv++;
+
+                size_t list_size = ivf.invlists->list_size(key);
+                InvertedLists::ScopedCodes scodes (ivf.invlists, key);
+                const Index::idx_t * ids = store_pairs ? nullptr :
+                    ivf.invlists->get_ids (key);
+
+                nheap += scanner->scan_codes (list_size, scodes.get(),
+                                              ids, simi, idxi, k);
+
+                if (ids) {
+                    ivf.invlists->release_ids (ids);
+                }
+
+                nscan += list_size;
+                if (max_codes && nscan >= max_codes)
+                    break;
+            }
+
+            ndis += nscan;
+            if (metric_type == METRIC_INNER_PRODUCT) {
+                heap_reorder<HeapForIP> (k, simi, idxi);
+            } else {
+                heap_reorder<HeapForL2> (k, simi, idxi);
+            }
+
+        } // parallel for
+    } // parallel
+
+    indexIVF_stats.nq += n;
+    indexIVF_stats.nlist += nlistv;
+    indexIVF_stats.ndis += ndis;
+    indexIVF_stats.nheap_updates += nheap;
+
 }
 
 template<class HammingComputer, bool store_pairs>
@@ -484,87 +594,92 @@ void search_knn_hamming_count(const IndexBinaryIVF& ivf,
         nres++;
       }
     }
+    while (nres < k) {
+      labels[i * k + nres] = -1;
+      distances[i * k + nres] = std::numeric_limits<int32_t>::max();
+      ++nres;
+    }
   }
+
   indexIVF_stats.nq += nx;
   indexIVF_stats.nlist += nlistv;
   indexIVF_stats.ndis += ndis;
 }
 
 
-template<class HammingComputer>
-void search_knn_hamming(const IndexBinaryIVF& ivf,
+
+template<bool store_pairs>
+void search_knn_hamming_count_1 (
+                        const IndexBinaryIVF& ivf,
                         size_t nx,
                         const uint8_t *x,
                         const long *keys,
                         int k,
                         int32_t *distances,
                         long *labels,
-                        bool store_pairs,
-                        bool use_heap,
                         const IVFSearchParameters *params) {
-  if (use_heap) {
-    int_maxheap_array_t res = {
-      size_t(nx), size_t(k), labels, distances};
-    if (store_pairs) {
-        search_knn_hamming_heap<HammingComputer, true>(
-            ivf, nx, x, keys, &res, params);
-    } else {
-        search_knn_hamming_heap<HammingComputer, false>(
-            ivf, nx, x, keys, &res, params);
+    switch (ivf.code_size) {
+#define HANDLE_CS(cs)                                                  \
+    case cs:                                                            \
+       search_knn_hamming_count<HammingComputer ## cs, store_pairs>(    \
+           ivf, nx, x, keys, k, distances, labels, params);             \
+      break;
+      HANDLE_CS(4);
+      HANDLE_CS(8);
+      HANDLE_CS(16);
+      HANDLE_CS(20);
+      HANDLE_CS(32);
+      HANDLE_CS(64);
+#undef HANDLE_CS
+    default:
+        if (ivf.code_size % 8 == 0) {
+            search_knn_hamming_count<HammingComputerM8, store_pairs>
+                (ivf, nx, x, keys, k, distances, labels, params);
+        } else if (ivf.code_size % 4 == 0) {
+            search_knn_hamming_count<HammingComputerM4, store_pairs>
+                (ivf, nx, x, keys, k, distances, labels, params);
+        } else {
+            search_knn_hamming_count<HammingComputerDefault, store_pairs>
+                (ivf, nx, x, keys, k, distances, labels, params);
+        }
+        break;
     }
-  } else {
-    if (store_pairs) {
-      search_knn_hamming_count<HammingComputer, true>(
-           ivf, nx, x, keys, k, distances, labels, params);
-    } else {
-      search_knn_hamming_count<HammingComputer, false>(
-           ivf, nx, x, keys, k, distances, labels, params);
-    }
-  }
-}
 
+}
 
 }  // namespace
 
+BinaryInvertedListScanner *IndexBinaryIVF::get_InvertedListScanner
+      (bool store_pairs) const
+{
+    if (store_pairs) {
+        return select_IVFBinaryScannerL2<true> (code_size);
+    } else {
+        return select_IVFBinaryScannerL2<false> (code_size);
+    }
+}
 
 void IndexBinaryIVF::search_preassigned(idx_t n, const uint8_t *x, idx_t k,
                                         const idx_t *idx,
-                                        const int32_t * /* coarse_dis */,
+                                        const int32_t * coarse_dis,
                                         int32_t *distances, idx_t *labels,
                                         bool store_pairs,
                                         const IVFSearchParameters *params
                                         ) const {
-  switch (code_size) {
-#define HANNDLE_CS(cs)                                  \
-    case cs:                                            \
-      search_knn_hamming<HammingComputer ## cs>(        \
-            *this, n, x, idx, k, distances,             \
-            labels, store_pairs, use_heap, params);     \
-      break;
-      HANNDLE_CS(4);
-      HANNDLE_CS(8);
-      HANNDLE_CS(16);
-      HANNDLE_CS(20);
-      HANNDLE_CS(32);
-      HANNDLE_CS(64);
-#undef HANNDLE_CS
 
-    default:
-      if (code_size % 8 == 0) {
-        search_knn_hamming<HammingComputerM8>(
-             *this, n, x, idx, k, distances,
-             labels, store_pairs, use_heap, params);
-      } else if (code_size % 4 == 0) {
-          search_knn_hamming<HammingComputerM4>(
-             *this, n, x, idx, k, distances,
-             labels, store_pairs, use_heap, params);
-      } else {
-          search_knn_hamming<HammingComputerDefault>(
-             *this, n, x, idx, k, distances,
-             labels, store_pairs, use_heap, params);
-      }
-      break;
-  }
+    if (use_heap) {
+        search_knn_hamming_heap (*this, n, x, k, idx, coarse_dis,
+                                 distances, labels, store_pairs,
+                                 params);
+    } else {
+        if (store_pairs) {
+            search_knn_hamming_count_1<true>
+                (*this, n, x, idx, k, distances, labels, params);
+        } else {
+            search_knn_hamming_count_1<false>
+                (*this, n, x, idx, k, distances, labels, params);
+        }
+    }
 }
 
 IndexBinaryIVF::~IndexBinaryIVF() {
