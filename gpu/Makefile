@@ -45,7 +45,7 @@ CUOBJ =     impl/BinaryDistance.o \
             impl/VectorResidual.o \
             GpuDistance.o \
             GpuIndex.o \
-            GpuIndexBinaryFlat.o
+            GpuIndexBinaryFlat.o \
             GpuIndexFlat.o \
             GpuIndexIVF.o \
             GpuIndexIVFFlat.o \
