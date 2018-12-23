@@ -23,7 +23,14 @@ int faiss_GpuClonerOptions_new(FaissGpuClonerOptions** p) {
     } CATCH_AND_HANDLE
 }
 
+int faiss_GpuMultipleClonerOptions_new(FaissGpuMultipleClonerOptions** p) {
+    try {
+        *p = reinterpret_cast<FaissGpuMultipleClonerOptions*>(new GpuMultipleClonerOptions());
+    } CATCH_AND_HANDLE
+}
+
 DEFINE_DESTRUCTOR(GpuClonerOptions)
+DEFINE_DESTRUCTOR(GpuMultipleClonerOptions)
 
 DEFINE_GETTER(GpuClonerOptions, FaissIndicesOptions, indicesOptions)
 DEFINE_GETTER(GpuClonerOptions, int, useFloat16CoarseQuantizer)

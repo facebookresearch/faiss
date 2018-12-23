@@ -23,7 +23,7 @@ FAISS_DECLARE_CLASS(GpuClonerOptions)
 
 FAISS_DECLARE_DESTRUCTOR(GpuClonerOptions)
 
-// Default constructor for GpuClonerOptions
+/// Default constructor for GpuClonerOptions
 int faiss_GpuClonerOptions_new(FaissGpuClonerOptions**);
 
 /// how should indices be stored on index types that support indices
@@ -50,6 +50,11 @@ FAISS_DECLARE_GETTER_SETTER(GpuClonerOptions, int, storeTransposed)
 FAISS_DECLARE_GETTER_SETTER(GpuClonerOptions, int, verbose)
 
 FAISS_DECLARE_CLASS_INHERITED(GpuMultipleClonerOptions, GpuClonerOptions)
+
+FAISS_DECLARE_DESTRUCTOR(GpuMultipleClonerOptions)
+
+/// Default constructor for GpuMultipleClonerOptions
+int faiss_GpuMultipleClonerOptions_new(FaissGpuMultipleClonerOptions**);
 
 /// (boolean) Whether to shard the index across GPUs, versus replication
 /// across GPUs

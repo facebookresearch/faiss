@@ -12,7 +12,7 @@
 #ifndef FAISS_INDEX_C_H
 #define FAISS_INDEX_C_H
 
-#include <stdio.h>
+#include <stddef.h>
 #include "faiss_c.h"
 
 #ifdef __cplusplus
