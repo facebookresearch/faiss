@@ -9,8 +9,8 @@ CXXCPP       = @CXXCPP@
 # TODO: Investigate the LAPACKE wrapper for LAPACK, which defines the correct
 #   type for FORTRAN integers.
 CPPFLAGS     = -DFINTEGER=int @CPPFLAGS@
-CXXFLAGS     = -fPIC @OPENMP_CXXFLAGS@ -m64 -Wno-sign-compare @CXXFLAGS@
-CPUFLAGS     = -msse4 -mpopcnt
+CXXFLAGS     = -fPIC @OPENMP_CXXFLAGS@ @ARCH_CXXFLAGS@ -Wno-sign-compare @CXXFLAGS@
+CPUFLAGS     = @ARCH_CPUFLAGS@
 LDFLAGS      = @OPENMP_LDFLAGS@ @LDFLAGS@
 LIBS         = @BLAS_LIBS@ @LAPACK_LIBS@ @LIBS@
 PYTHONCFLAGS = @PYTHON_CFLAGS@ -I@NUMPY_INCLUDE@

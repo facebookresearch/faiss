@@ -21,7 +21,14 @@
 
 #include <omp.h>
 
+#ifdef __SSE__
 #include <immintrin.h>
+#endif
+
+#ifdef __aarch64__
+#include  <arm_neon.h>
+#endif
+
 
 #include <algorithm>
 #include <vector>
