@@ -73,6 +73,9 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
                     n, d);
 
         Clustering clus (d, nlist, cp);
+        if(verbose) {
+            clus.verbose = true;
+        }
         quantizer->reset();
         if (clustering_index) {
             clus.train (n, x, *clustering_index);
@@ -89,6 +92,9 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
                 clustering_index ? "(user provided index)" : "");
         FAISS_THROW_IF_NOT (metric_type == METRIC_L2);
         Clustering clus (d, nlist, cp);
+        if(verbose) {
+            clus.verbose = true;
+        }        
         if (!clustering_index) {
             IndexFlatL2 assigner (d);
             clus.train(n, x, assigner);
