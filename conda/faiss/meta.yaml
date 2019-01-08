@@ -3,8 +3,8 @@ package:
   version: "1.5.0"
 
 source:
-  git_rev: v1.5.0
-  git_url: https://github.com/facebookresearch/faiss.git
+  git_rev: packages
+  git_url: https://github.com/beauby/faiss.git
 
 requirements:
   build:
