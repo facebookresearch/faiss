@@ -14,6 +14,7 @@ requirements:
     - mkl
     - numpy
     - setuptools
+    - blas=*=mkl
 
   run:
     - python {{ python }}
