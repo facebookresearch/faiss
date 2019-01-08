@@ -236,7 +236,7 @@ class Merge(unittest.TestCase):
             nr, faiss.swig_ptr(toremove))
 
         for i in range(nr):
-            assert(idsel.is_member(toremove[i]))
+            assert(idsel.is_member(int(toremove[i])))
 
         nremoved = index.remove_ids(idsel)
 

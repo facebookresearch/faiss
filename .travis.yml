@@ -50,15 +50,17 @@ matrix:
         # NOTE: Hack, c.f. https://github.com/travis-ci/travis-ci/issues/8613
         - LD_LIBRARY_PATH="/usr/local/clang/lib"
     - os: osx
-      osx_image: xcode9.3
       env:
         - MATRIX_EVAL="brew install gcc@6 numpy swig; brew link --overwrite gcc@6; export CC=gcc-6 CXX=g++-6"
     - os: osx
-      osx_image: xcode9.3
       env:
         - MATRIX_EVAL="brew install llvm numpy swig; brew link --overwrite llvm; export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++"
         - LDFLAGS="-L/usr/local/opt/llvm/lib"
         - CPPFLAGS="-I/usr/local/opt/llvm/include"
+  allow_failures:
+    - os: osx
+      env:
+        - MATRIX_EVAL="brew install gcc@6 numpy swig; brew link --overwrite gcc@6; export CC=gcc-6 CXX=g++-6"
 
 before_install:
   - eval "$MATRIX_EVAL"
