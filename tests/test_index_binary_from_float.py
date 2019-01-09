@@ -4,7 +4,7 @@
 # This source code is licensed under the BSD+Patents license found in the
 # LICENSE file in the root directory of this source tree.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function
 import numpy as np
 import unittest
 import faiss
@@ -175,7 +175,7 @@ class TestOverrideKmeansQuantizer(unittest.TestCase):
         (xt, xb, xq) = make_binary_dataset(d, nb, nt, nq)
 
         def train_and_get_centroids(override_kmeans_index):
-            index = faiss.index_binary_factory(d, b"BIVF10")
+            index = faiss.index_binary_factory(d, "BIVF10")
             index.verbose = True
 
             if override_kmeans_index is not None:

@@ -379,7 +379,7 @@ void test_lowlevel_access_binary (const char *index_key) {
         printf("]\n");
 
         // re-order heap
-        heap_reorder<CMax<int32_t, int64_t> > (k, D.data(), I.data());
+        heap_reorder<CMax<int32_t, idx_t> > (k, D.data(), I.data());
 
         printf("ref: [");
         for (int j = 0; j < k; j++)

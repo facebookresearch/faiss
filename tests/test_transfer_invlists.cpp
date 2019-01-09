@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <memory>
 #include <cstdio>
 #include <cstdlib>
 
@@ -19,6 +20,8 @@
 #include <faiss/utils.h>
 #include <faiss/IVFlib.h>
 
+
+namespace {
 
 // parameters to use for the test
 int d = 64;
@@ -38,9 +41,6 @@ std::vector<float> get_data (size_t nb, int seed) {
     float_randn (x.data(), nb * d, seed);
     return x;
 }
-
-
-
 
 
 void test_index_type(const char *factory_string) {
@@ -145,6 +145,8 @@ void test_index_type(const char *factory_string) {
     EXPECT_TRUE (Dref == Dnew);
 
 }
+
+}  // namespace
 
 
 TEST(TRANS, IVFFlat) {
