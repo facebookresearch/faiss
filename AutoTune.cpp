@@ -488,7 +488,10 @@ void ParameterSpace::set_index_parameter (
     }
 
     if (name == "nprobe") {
-        if ( DC(IndexIVF)) {
+        if (DC (IndexIDMap)) {
+            set_index_parameter (ix->index, name, val);
+            return;
+        } else if (DC (IndexIVF)) {
             ix->nprobe = int(val);
             return;
         }
