@@ -89,4 +89,12 @@ depend:
 	    $(CXXCPP) $(CPPFLAGS) -x c++ -MM $$i; \
 	done > depend
 
+install: libgpufaiss.a libgpufaiss.$(SHAREDEXT) installdirs
+	cp libgpufaiss.a libgpufaiss.$(SHAREDEXT) $(DESTDIR)$(libdir)
+	cp *.h $(DESTDIR)$(includedir)/faiss/gpu
+	cp --parents **/**.h $(DESTDIR)$(includedir)/faiss/gpu
+
+installdirs:
+	$(MKDIR_P) $(DESTDIR)$(libdir) $(DESTDIR)$(includedir)/faiss/gpu
+
 .PHONY: all clean
