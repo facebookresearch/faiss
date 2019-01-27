@@ -4,6 +4,7 @@ MAINTAINER Pierre Letessier <pletessier@ina.fr>
 RUN apt-get update -y
 RUN apt-get install -y libopenblas-dev python-numpy python-dev swig git python-pip wget
 
+RUN pip install --upgrade pip
 RUN pip install matplotlib
 
 COPY . /opt/faiss
