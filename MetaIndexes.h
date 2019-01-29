@@ -134,6 +134,8 @@ struct IndexShards : Index {
 
     void reset() override;
 
+    void reconstruct (idx_t key, float * recons) const override;
+
     ~IndexShards() override;
 };
 
