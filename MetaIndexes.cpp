@@ -575,6 +575,9 @@ void IndexShards::reconstruct (idx_t key, float * recons) const
         } catch (const std::out_of_range& e) {
             if (verbose)
                 printf ("key %ld not found in shard %d\n", key, i);
+        } catch (const faiss::FaissException& e) {
+            if (verbose)
+                printf ("key %ld not found in shard %d\n", key, i);
         }
     }
     FAISS_THROW_FMT ("key %ld not found", key);
