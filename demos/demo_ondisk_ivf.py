@@ -51,7 +51,7 @@ if 1 <= stage <= 4:
     i0, i1 = int(bno * xb.shape[0] / 4), int((bno + 1) * xb.shape[0] / 4)
     index = faiss.read_index(tmpdir + "trained.index")
     print("adding vectors %d:%d" % (i0, i1))
-    index.add(xb[i0:i1])
+    index.add_with_ids(xb[i0:i1], np.arange(i0, i1))
     print("write " + tmpdir + "block_%d.index" % bno)
     faiss.write_index(index, tmpdir + "block_%d.index" % bno)
 
