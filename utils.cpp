@@ -21,8 +21,6 @@
 
 #include <omp.h>
 
-#include <immintrin.h>
-
 #include <algorithm>
 #include <vector>
 
