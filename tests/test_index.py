@@ -16,7 +16,7 @@ import os
 import re
 
 
-from .common import get_dataset, get_dataset_2
+from common import get_dataset, get_dataset_2
 
 class TestModuleInterface(unittest.TestCase):
 
