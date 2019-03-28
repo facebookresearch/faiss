@@ -44,7 +44,7 @@
                                                                         \
     auto grid = dim3(in.getSize(0));                                    \
                                                                         \
-    constexpr int kBlockSelectNumThreads = 128;                         \
+    constexpr int kBlockSelectNumThreads = (WARP_Q <= 1024) ? 128 : 64; \
     auto block = dim3(kBlockSelectNumThreads);                          \
                                                                         \
     FAISS_ASSERT(k <= WARP_Q);                                          \
@@ -71,7 +71,7 @@
                                                                         \
     auto grid = dim3(inK.getSize(0));                                   \
                                                                         \
-    constexpr int kBlockSelectNumThreads = 128;                         \
+    constexpr int kBlockSelectNumThreads = (WARP_Q <= 1024) ? 128 : 64; \
     auto block = dim3(kBlockSelectNumThreads);                          \
                                                                         \
     FAISS_ASSERT(k <= WARP_Q);                                          \

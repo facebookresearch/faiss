@@ -86,7 +86,7 @@ struct IndexHNSW : Index {
     ~IndexHNSW() override;
 
     // get a DistanceComputer object for this kind of storage
-    virtual HNSW::DistanceComputer *get_distance_computer() const = 0;
+    virtual DistanceComputer *get_distance_computer() const = 0;
 
     void add(idx_t n, const float *x) override;
 
@@ -138,7 +138,7 @@ struct IndexHNSW : Index {
 struct IndexHNSWFlat : IndexHNSW {
     IndexHNSWFlat();
     IndexHNSWFlat(int d, int M);
-    HNSW::DistanceComputer *
+    DistanceComputer *
       get_distance_computer() const override;
 };
 
@@ -149,7 +149,7 @@ struct IndexHNSWPQ : IndexHNSW {
     IndexHNSWPQ();
     IndexHNSWPQ(int d, int pq_m, int M);
     void train(idx_t n, const float* x) override;
-    HNSW::DistanceComputer *
+    DistanceComputer *
       get_distance_computer() const override;
 };
 
@@ -159,7 +159,7 @@ struct IndexHNSWPQ : IndexHNSW {
 struct IndexHNSWSQ : IndexHNSW {
     IndexHNSWSQ();
     IndexHNSWSQ(int d, ScalarQuantizer::QuantizerType qtype, int M);
-    HNSW::DistanceComputer *
+    DistanceComputer *
       get_distance_computer() const override;
 };
 
@@ -168,7 +168,7 @@ struct IndexHNSWSQ : IndexHNSW {
 struct IndexHNSW2Level : IndexHNSW {
     IndexHNSW2Level();
     IndexHNSW2Level(Index *quantizer, size_t nlist, int m_pq, int M);
-    HNSW::DistanceComputer *
+    DistanceComputer *
       get_distance_computer() const override;
     void flip_to_ivf();
 

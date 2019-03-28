@@ -34,7 +34,7 @@ void pickEncoding(int& codes, int& dim) {
 
     // for such a small test, super-low or high dim is more likely to
     // generate comparison errors
-    if (dim < 512 && dim >= 64) {
+    if (dim < 256 && dim >= 64) {
       return;
     }
   }
@@ -42,16 +42,20 @@ void pickEncoding(int& codes, int& dim) {
 
 struct Options {
   Options() {
-    numAdd = faiss::gpu::randVal(10000, 30000);
+    numAdd = faiss::gpu::randVal(2000, 5000);
     numCentroids = std::sqrt((float) numAdd);
     numTrain = numCentroids * 40;
 
     pickEncoding(codes, dim);
 
-    bitsPerCode = faiss::gpu::randVal(3, 8);
+    bitsPerCode = faiss::gpu::randVal(3, 7);
     nprobe = std::min(faiss::gpu::randVal(40, 1000), numCentroids);
-    numQuery = faiss::gpu::randVal(32, 256);
-    k = std::min(faiss::gpu::randVal(10, 50), numAdd / 40);
+    numQuery = faiss::gpu::randVal(1, 8);
+
+    // Due to the approximate nature of the query and of floating point
+    // differences between GPU and CPU, to stay within our error bounds, only
+    // use a small k
+    k = std::min(faiss::gpu::randVal(5, 20), numAdd / 40);
     usePrecomputed = faiss::gpu::randBool();
     indicesOpt = faiss::gpu::randSelect({
         faiss::gpu::INDICES_CPU,
@@ -113,7 +117,7 @@ struct Options {
 };
 
 TEST(TestGpuIndexIVFPQ, Query) {
-  for (int tries = 0; tries < 5; ++tries) {
+  for (int tries = 0; tries < 2; ++tries) {
     Options opt;
 
     std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
@@ -147,7 +151,7 @@ TEST(TestGpuIndexIVFPQ, Query) {
 }
 
 TEST(TestGpuIndexIVFPQ, Add) {
-  for (int tries = 0; tries < 5; ++tries) {
+  for (int tries = 0; tries < 2; ++tries) {
     Options opt;
 
     std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
@@ -310,7 +314,7 @@ TEST(TestGpuIndexIVFPQ, QueryNaN) {
   gpuIndex.train(opt.numTrain, trainVecs.data());
   gpuIndex.add(opt.numAdd, addVecs.data());
 
-  int numQuery = 10;
+  int numQuery = 5;
   std::vector<float> nans(numQuery * opt.dim,
                           std::numeric_limits<float>::quiet_NaN());
 
@@ -369,9 +373,6 @@ TEST(TestGpuIndexIVFPQ, AddNaN) {
   EXPECT_EQ(gpuIndex.ntotal, 0);
   gpuIndex.add(numNans, nans.data());
 
-  // Only the single valid vector should have added
-  EXPECT_EQ(gpuIndex.ntotal, 1);
-
   std::vector<float> queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
   std::vector<float> distance(opt.numQuery * opt.k, 0);
   std::vector<faiss::Index::idx_t> indices(opt.numQuery * opt.k, 0);
@@ -379,7 +380,6 @@ TEST(TestGpuIndexIVFPQ, AddNaN) {
   // should not crash
   gpuIndex.search(opt.numQuery, queryVecs.data(), opt.k,
                   distance.data(), indices.data());
-
 }
 
 TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
@@ -391,13 +391,13 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
     return;
   }
 
-  int dim = 256;
+  int dim = 128;
 
-  int numCentroids = 1024;
+  int numCentroids = 256;
   // Unfortunately it would take forever to add 24 GB in IVFPQ data,
   // so just perform a small test with data allocated in the unified
   // memory address space
-  size_t numAdd = 100000;
+  size_t numAdd = 10000;
   size_t numTrain = numCentroids * 40;
   int numQuery = 10;
   int k = 10;

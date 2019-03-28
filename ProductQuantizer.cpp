@@ -379,10 +379,74 @@ void ProductQuantizer::compute_code_from_distance_table (const float *tab,
     }
 }
 
+void ProductQuantizer::compute_codes_with_assign_index (
+                const float * x,
+                uint8_t * codes,
+                size_t n)
+{
+    FAISS_THROW_IF_NOT (assign_index && assign_index->d == dsub);
+
+    for (size_t m = 0; m < M; m++) {
+        assign_index->reset ();
+        assign_index->add (ksub, get_centroids (m, 0));
+        size_t bs = 65536;
+        float * xslice = new float[bs * dsub];
+        ScopeDeleter<float> del (xslice);
+        idx_t *assign = new idx_t[bs];
+        ScopeDeleter<idx_t> del2 (assign);
+
+        for (size_t i0 = 0; i0 < n; i0 += bs) {
+            size_t i1 = std::min(i0 + bs, n);
+
+            for (size_t i = i0; i < i1; i++) {
+                memcpy (xslice + (i - i0) * dsub,
+                        x + i * d + m * dsub,
+                        dsub * sizeof(float));
+            }
+
+            assign_index->assign (i1 - i0, xslice, assign);
+
+            switch (byte_per_idx) {
+            case 1:
+                {
+                    uint8_t *c = codes + code_size * i0 + m;
+                    for (size_t i = i0; i < i1; i++) {
+                        *c = assign[i - i0];
+                        c += M;
+                    }
+                }
+                break;
+           case 2:
+               {
+                   uint16_t *c = (uint16_t*)(codes + code_size * i0 + m * 2);
+                   for (size_t i = i0; i < i1; i++) {
+                       *c = assign[i - i0];
+                       c += M;
+                   }
+               }
+               break;
+            }
+
+        }
+    }
+
+}
+
 void ProductQuantizer::compute_codes (const float * x,
                                       uint8_t * codes,
                                       size_t n)  const
 {
+
+    // process by blocks to avoid using too much RAM
+    size_t bs = 256 * 1024;
+    if (n > bs) {
+        for (size_t i0 = 0; i0 < n; i0 += bs) {
+            size_t i1 = std::min(i0 + bs, n);
+            compute_codes (x + d * i0, codes + code_size * i0, i1 - i0);
+        }
+        return;
+    }
+
     if (dsub < 16) { // simple direct computation
 
 #pragma omp parallel for
@@ -525,15 +589,6 @@ static void pq_knn_search_with_tables (
     }
 }
 
-    /*
-static inline void pq_estimators_from_tables (const ProductQuantizer * pq,
-                                              const CT * codes,
-                                              size_t ncodes,
-                                              const float * dis_table,
-                                              size_t k,
-                                              float * heap_dis,
-                                              long * heap_ids)
-    */
 void ProductQuantizer::search (const float * __restrict x,
                                size_t nx,
                                const uint8_t * codes,

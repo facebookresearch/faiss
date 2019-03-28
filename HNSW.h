@@ -37,12 +37,12 @@ namespace faiss {
  * (https://github.com/searchivarius/nmslib)
  *
  * The HNSW object stores only the neighbor link structure, see
- * IndexHNSW below for the full index object.
+ * IndexHNSW.h for the full index object.
  */
 
 
 struct VisitedTable;
-
+struct DistanceComputer; // from AuxIndexStructures
 
 struct HNSW {
   /// internal storage of vectors (32 bits: this is expensive)
@@ -53,37 +53,18 @@ struct HNSW {
 
   typedef std::pair<float, storage_idx_t> Node;
 
-  /** The HNSW structure does not store vectors, it only accesses
-   * them through this class.
-   *
-   * Functions are guaranteed to be be accessed only from 1 thread. */
-  struct DistanceComputer {
-    idx_t d;
-
-    /// called before computing distances
-    virtual void set_query(const float *x) = 0;
-
-    /// compute distance of vector i to current query
-    virtual float operator () (storage_idx_t i) = 0;
-
-    /// compute distance between two stored vectors
-    virtual float symmetric_dis(storage_idx_t i, storage_idx_t j) = 0;
-
-    virtual ~DistanceComputer() {}
-  };
-
-
   /** Heap structure that allows fast
    */
   struct MinimaxHeap {
     int n;
     int k;
+    int nvalid;
 
     std::vector<storage_idx_t> ids;
     std::vector<float> dis;
     typedef faiss::CMax<float, storage_idx_t> HC;
 
-    explicit MinimaxHeap(int n): n(n), k(0), ids(n), dis(n) {}
+    explicit MinimaxHeap(int n): n(n), k(0), nvalid(0), ids(n), dis(n) {}
 
     void push(storage_idx_t i, float v);
 
@@ -147,8 +128,14 @@ struct HNSW {
   /// expansion factor at search time
   int efSearch;
 
+  /// during search: do we check whether the next best distance is good enough?
+  bool check_relative_distance = true;
+
   /// number of entry points in levels > 0.
   int upper_beam;
+
+  /// use bounded queue during exploration
+  bool search_bounded_queue = true;
 
   // methods that initialize the tree sizes
 
@@ -201,10 +188,12 @@ struct HNSW {
                              VisitedTable &vt,
                              int level, int nres_in = 0) const;
 
-  std::priority_queue<Node> search_from(const Node& node,
-                                        DistanceComputer& qdis,
-                                        int ef,
-                                        VisitedTable *vt) const;
+  std::priority_queue<Node> search_from_candidate_unbounded(
+    const Node& node,
+    DistanceComputer& qdis,
+    int ef,
+    VisitedTable *vt
+  ) const;
 
   /// search interface
   void search(DistanceComputer& qdis, int k,

@@ -9,6 +9,7 @@
 
 #include "StackDeviceMemory.h"
 #include "DeviceUtils.h"
+#include "MemorySpace.h"
 #include "StaticUtils.h"
 #include "../../FaissAssert.h"
 #include <stdio.h>
@@ -29,8 +30,7 @@ StackDeviceMemory::Stack::Stack(int d, size_t sz)
       cudaMallocWarning_(true) {
   DeviceScope s(device_);
 
-  cudaError_t err = cudaMalloc(&start_, size_);
-  FAISS_ASSERT(err == cudaSuccess);
+  allocMemorySpace(MemorySpace::Device, &start_, size_);
 
   head_ = start_;
   end_ = start_ + size_;
@@ -53,8 +53,7 @@ StackDeviceMemory::Stack::~Stack() {
   if (isOwner_) {
     DeviceScope s(device_);
 
-    cudaError_t err = cudaFree(start_);
-    FAISS_ASSERT(err == cudaSuccess);
+    freeMemorySpace(MemorySpace::Device, start_);
   }
 }
 
@@ -78,10 +77,7 @@ StackDeviceMemory::Stack::getAlloc(size_t size,
     }
 
     char* p = nullptr;
-    auto err = cudaMalloc(&p, size);
-    FAISS_ASSERT_FMT(err == cudaSuccess,
-                     "cudaMalloc error %d on alloc size %zu",
-                     (int) err, size);
+    allocMemorySpace(MemorySpace::Device, &p, size);
 
     mallocCurrent_ += size;
     highWaterMalloc_ = std::max(highWaterMalloc_, mallocCurrent_);
@@ -141,10 +137,7 @@ StackDeviceMemory::Stack::returnAlloc(char* p,
     // This is not on our stack; it was a one-off allocation
     DeviceScope s(device_);
 
-    auto err = cudaFree(p);
-    FAISS_ASSERT_FMT(err == cudaSuccess,
-                     "cudaFree error %d (addr %p size %zu)",
-                     (int) err, p, size);
+    freeMemorySpace(MemorySpace::Device, p);
 
     FAISS_ASSERT(mallocCurrent_ >= size);
     mallocCurrent_ -= size;
@@ -155,7 +148,7 @@ StackDeviceMemory::Stack::returnAlloc(char* p,
 
     head_ = p;
     lastUsers_.push_back(Range(p, p + size, stream));
-   }
+  }
 }
 
 std::string

@@ -8,28 +8,38 @@
 
 
 #include "StandardGpuResources.h"
+#include "utils/MemorySpace.h"
 #include "../FaissAssert.h"
+#include <limits>
 
 namespace faiss { namespace gpu {
 
 namespace {
 
+// How many streams per device we allocate by default (for multi-streaming)
 constexpr int kNumStreams = 2;
 
-/// Use 18% of GPU memory for temporary space by default
-constexpr float kDefaultTempMemFraction = 0.18f;
-
-/// Default pinned memory allocation size
+// Use 256 MiB of pinned memory for async CPU <-> GPU copies by default
 constexpr size_t kDefaultPinnedMemoryAllocation = (size_t) 256 * 1024 * 1024;
+
+// Default temporary memory allocation for <= 4 GiB memory GPUs
+constexpr size_t k4GiBTempMem = (size_t) 512 * 1024 * 1024;
+
+// Default temporary memory allocation for <= 8 GiB memory GPUs
+constexpr size_t k8GiBTempMem = (size_t) 1024 * 1024 * 1024;
+
+// Maximum temporary memory allocation for all GPUs
+constexpr size_t kMaxTempMem = (size_t) 1536 * 1024 * 1024;
 
 }
 
 StandardGpuResources::StandardGpuResources() :
     pinnedMemAlloc_(nullptr),
     pinnedMemAllocSize_(0),
-    tempMemFraction_(kDefaultTempMemFraction),
-    tempMemSize_(0),
-    useFraction_(true),
+    // let the adjustment function determine the memory size for us by passing
+    // in a huge value that will then be adjusted
+    tempMemSize_(getDefaultTempMemForGPU(-1,
+                                         std::numeric_limits<size_t>::max())),
     pinnedMemSize_(kDefaultPinnedMemoryAllocation),
     cudaMallocWarning_(true) {
 }
@@ -68,8 +78,38 @@ StandardGpuResources::~StandardGpuResources() {
   }
 
   if (pinnedMemAlloc_) {
-    CUDA_VERIFY(cudaFreeHost(pinnedMemAlloc_));
+    freeMemorySpace(MemorySpace::HostPinned, pinnedMemAlloc_);
   }
+}
+
+size_t
+StandardGpuResources::getDefaultTempMemForGPU(int device,
+                                              size_t requested) {
+  auto totalMem = device != -1 ?
+    getDeviceProperties(device).totalGlobalMem :
+    std::numeric_limits<size_t>::max();
+
+  if (totalMem <= (size_t) 4 * 1024 * 1024 * 1024) {
+    // If the GPU has <= 4 GiB of memory, reserve 512 MiB
+
+    if (requested > k4GiBTempMem) {
+      return k4GiBTempMem;
+    }
+  } else if (totalMem <= (size_t) 8 * 1024 * 1024 * 1024) {
+    // If the GPU has <= 8 GiB of memory, reserve 1 GiB
+
+    if (requested > k8GiBTempMem) {
+      return k8GiBTempMem;
+    }
+  } else {
+    // Never use more than 1.5 GiB
+    if (requested > kMaxTempMem) {
+      return kMaxTempMem;
+    }
+  }
+
+  // use whatever lower limit the user requested
+  return requested;
 }
 
 void
@@ -80,15 +120,27 @@ StandardGpuResources::noTempMemory() {
 
 void
 StandardGpuResources::setTempMemory(size_t size) {
-  useFraction_ = false;
-  tempMemSize_ = size;
-}
+  if (tempMemSize_ != size) {
+    // adjust based on general limits
+    tempMemSize_ = getDefaultTempMemForGPU(-1, size);
 
-void
-StandardGpuResources::setTempMemoryFraction(float fraction) {
-  FAISS_ASSERT(fraction >= 0.0f && fraction <= 0.5f);
-  useFraction_ = true;
-  tempMemFraction_ = fraction;
+    // We need to re-initialize memory resources for all current devices that
+    // have been initialized.
+    // This should be safe to do, even if we are currently running work, because
+    // the cudaFree call that this implies will force-synchronize all GPUs with
+    // the CPU
+    for (auto& p : memory_) {
+      int device = p.first;
+      // Free the existing memory first
+      p.second.reset();
+
+      // Allocate new
+      p.second = std::unique_ptr<StackDeviceMemory>(
+        new StackDeviceMemory(p.first,
+                              // adjust for this specific device
+                              getDefaultTempMemForGPU(device, tempMemSize_)));
+    }
+  }
 }
 
 void
@@ -128,20 +180,23 @@ StandardGpuResources::setCudaMallocWarning(bool b) {
   }
 }
 
-void
-StandardGpuResources::initializeForDevice(int device) {
+bool
+StandardGpuResources::isInitialized(int device) const {
   // Use default streams as a marker for whether or not a certain
   // device has been initialized
-  if (defaultStreams_.count(device) != 0) {
+  return defaultStreams_.count(device) != 0;
+}
+
+void
+StandardGpuResources::initializeForDevice(int device) {
+  if (isInitialized(device)) {
     return;
   }
 
   // If this is the first device that we're initializing, create our
   // pinned memory allocation
   if (defaultStreams_.empty() && pinnedMemSize_ > 0) {
-    CUDA_VERIFY(cudaHostAlloc(&pinnedMemAlloc_,
-                              pinnedMemSize_,
-                              cudaHostAllocDefault));
+    allocMemorySpace(MemorySpace::HostPinned, &pinnedMemAlloc_, pinnedMemSize_);
     pinnedMemAllocSize_ = pinnedMemSize_;
   }
 
@@ -193,22 +248,12 @@ StandardGpuResources::initializeForDevice(int device) {
   FAISS_ASSERT(blasStatus == CUBLAS_STATUS_SUCCESS);
   blasHandles_[device] = blasHandle;
 
-  size_t toAlloc = 0;
-  if (useFraction_) {
-    size_t devFree = 0;
-    size_t devTotal = 0;
-
-    CUDA_VERIFY(cudaMemGetInfo(&devFree, &devTotal));
-
-    toAlloc = (size_t) (tempMemFraction_ * devTotal);
-  } else {
-    toAlloc = tempMemSize_;
-  }
-
   FAISS_ASSERT(memory_.count(device) == 0);
 
   auto mem = std::unique_ptr<StackDeviceMemory>(
-    new StackDeviceMemory(device, toAlloc));
+    new StackDeviceMemory(device,
+                          // adjust for this specific device
+                          getDefaultTempMemForGPU(device, tempMemSize_)));
   mem->setCudaMallocWarning(cudaMallocWarning_);
 
   memory_.emplace(device, std::move(mem));

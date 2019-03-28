@@ -129,7 +129,7 @@ class IndexAccuracy(unittest.TestCase):
         res = ev.launch('Polysemous ht=%d' % index.polysemous_ht,
                         index)
         e_polysemous = ev.evalres(res)
-        print(e_baseline, e_polysemous,  index.polysemous_ht)
+        print(e_baseline, e_polysemous, index.polysemous_ht)
         print(stats.n_hamming_pass, stats.ncode)
         # The randu dataset is difficult, so we are not too picky on
         # the results. Here we assert that we have < 10 % loss when
@@ -254,12 +254,95 @@ class TestSQFlavors(unittest.TestCase):
 
             assert np.all(I2 == I)
 
+            # also test range search
+
+            if mt == faiss.METRIC_INNER_PRODUCT:
+                radius = float(D[:, -1].max())
+            else:
+                radius = float(D[:, -1].min())
+            print('radius', radius)
+
+            lims, D3, I3 = index.range_search(xq, radius)
+            ntot = ndiff = 0
+            for i in range(len(xq)):
+                l0, l1 = lims[i], lims[i + 1]
+                Inew = set(I3[l0:l1])
+                if mt == faiss.METRIC_INNER_PRODUCT:
+                    mask = D2[i] > radius
+                else:
+                    mask = D2[i] < radius
+                Iref = set(I2[i, mask])
+                ndiff += len(Inew ^ Iref)
+                ntot += len(Iref)
+            print('ndiff %d / %d' % (ndiff, ntot))
+            assert ndiff < ntot * 0.01
+
 
     def test_SQ_IP(self):
         self.subtest(faiss.METRIC_INNER_PRODUCT)
 
     def test_SQ_L2(self):
         self.subtest(faiss.METRIC_L2)
+
+
+class TestSQByte(unittest.TestCase):
+
+    def subtest_8bit_direct(self, metric_type, d):
+        xt, xb, xq = get_dataset_2(d, 1000, 500, 30)
+
+        # rescale everything to get integer
+        tmin, tmax = xt.min(), xt.max()
+
+        def rescale(x):
+            x = np.floor((x - tmin) * 256 / (tmax - tmin))
+            x[x < 0] = 0
+            x[x > 255] = 255
+            return x
+
+        xt = rescale(xt)
+        xb = rescale(xb)
+        xq = rescale(xq)
+
+        gt_index = faiss.IndexFlat(d, metric_type)
+        gt_index.add(xb)
+        Dref, Iref = gt_index.search(xq, 10)
+
+        index = faiss.IndexScalarQuantizer(
+            d, faiss.ScalarQuantizer.QT_8bit_direct, metric_type)
+        index.add(xb)
+        D, I = index.search(xq, 10)
+
+        assert np.all(I == Iref)
+        assert np.all(D == Dref)
+
+        # same, with IVF
+
+        nlist = 64
+        quantizer = faiss.IndexFlat(d, metric_type)
+
+        gt_index = faiss.IndexIVFFlat(quantizer, d, nlist, metric_type)
+        gt_index.nprobe = 4
+        gt_index.train(xt)
+        gt_index.add(xb)
+        Dref, Iref = gt_index.search(xq, 10)
+
+        index = faiss.IndexIVFScalarQuantizer(
+            quantizer, d, nlist,
+            faiss.ScalarQuantizer.QT_8bit_direct, metric_type)
+        index.nprobe = 4
+        index.by_residual = False
+        index.train(xt)
+        index.add(xb)
+        D, I = index.search(xq, 10)
+
+        assert np.all(I == Iref)
+        assert np.all(D == Dref)
+
+    def test_8bit_direct(self):
+        for d in 13, 16, 24:
+            for metric_type in faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT:
+                self.subtest_8bit_direct(metric_type, d)
+
 
 
 class TestPQFlavors(unittest.TestCase):
@@ -413,6 +496,40 @@ class OPQRelativeAccuracy(unittest.TestCase):
         # TODO(beauby): Fix and re-enable.
         # verify same on OIVFPQ
         # assert(e_oivfpq[1] > e_ivfpq[1])
+
+
+class TestRoundoff(unittest.TestCase):
+
+    def test_roundoff(self):
+        # params that force use of BLAS implementation
+        nb = 100
+        nq = 25
+        d = 4
+        xb = np.zeros((nb, d), dtype='float32')
+
+        xb[:, 0] = np.arange(nb) + 12345
+        xq = xb[:nq] + 0.3
+
+        index = faiss.IndexFlat(d)
+        index.add(xb)
+
+        D, I = index.search(xq, 1)
+
+        # this does not work
+        assert not np.all(I.ravel() == np.arange(nq))
+
+        index = faiss.IndexPreTransform(
+            faiss.CenteringTransform(d),
+            faiss.IndexFlat(d))
+
+        index.train(xb)
+        index.add(xb)
+
+        D, I = index.search(xq, 1)
+
+        # this works
+        assert np.all(I.ravel() == np.arange(nq))
+
 
 
 if __name__ == '__main__':

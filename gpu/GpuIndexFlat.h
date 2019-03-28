@@ -66,13 +66,6 @@ class GpuIndexFlat : public GpuIndex {
 
   ~GpuIndexFlat() override;
 
-  /// Set the minimum data size for searches (in MiB) for which we use
-  /// CPU -> GPU paging
-  void setMinPagingSize(size_t size);
-
-  /// Returns the current minimum data size for paged searches
-  size_t getMinPagingSize() const;
-
   /// Initialize ourselves from the given CPU index; will overwrite
   /// all data in ourselves
   void copyFrom(const faiss::IndexFlat* index);
@@ -93,18 +86,6 @@ class GpuIndexFlat : public GpuIndex {
   /// Overrides to avoid excessive copies
   void add(faiss::Index::idx_t, const float* x) override;
 
-  /// `x`, `distances` and `labels` can be resident on the CPU or any
-  /// GPU; copies are performed as needed
-  /// We have our own implementation here which handles CPU async
-  /// copies; searchImpl_ is not called
-  /// FIXME: move paged impl into GpuIndex
-  void search(
-      faiss::Index::idx_t n,
-      const float* x,
-      faiss::Index::idx_t k,
-      float* distances,
-      faiss::Index::idx_t* labels) const override;
-
   /// Reconstruction methods; prefer the batch reconstruct as it will
   /// be more efficient
   void reconstruct(faiss::Index::idx_t key, float* out) const override;
@@ -119,33 +100,20 @@ class GpuIndexFlat : public GpuIndex {
   inline FlatIndex* getGpuData() { return data_; }
 
  protected:
+  /// Flat index does not require IDs as there is no storage available for them
+  bool addImplRequiresIDs_() const override;
+
   /// Called from GpuIndex for add
-  void addImpl_(
-      faiss::Index::idx_t n,
-      const float* x,
-      const faiss::Index::idx_t* ids) override;
+  void addImpl_(int n,
+                const float* x,
+                const Index::idx_t* ids) override;
 
-  /// Should not be called (we have our own implementation)
-  void searchImpl_(
-      faiss::Index::idx_t n,
-      const float* x,
-      faiss::Index::idx_t k,
-      float* distances,
-      faiss::Index::idx_t* labels) const override;
-
-  /// Called from search when the input data is on the CPU;
-  /// potentially allows for pinned memory usage
-  void searchFromCpuPaged_(int n,
-                           const float* x,
-                           int k,
-                           float* outDistancesData,
-                           int* outIndicesData) const;
-
-  void searchNonPaged_(int n,
-                       const float* x,
-                       int k,
-                       float* outDistancesData,
-                       int* outIndicesData) const;
+  /// Called from GpuIndex for search
+  void searchImpl_(int n,
+                   const float* x,
+                   int k,
+                   float* distances,
+                   faiss::Index::idx_t* labels) const override;
 
  private:
   /// Checks user settings for consistency
@@ -154,9 +122,6 @@ class GpuIndexFlat : public GpuIndex {
  protected:
   /// Our config object
   const GpuIndexFlatConfig config_;
-
-  /// Size above which we page copies from the CPU to GPU
-  size_t minPagedSize_;
 
   /// Holds our GPU data containing the list of vectors; is managed via raw
   /// pointer so as to allow non-CUDA compilers to see this header

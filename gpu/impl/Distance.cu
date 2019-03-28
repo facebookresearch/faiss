@@ -13,6 +13,7 @@
 #include "L2Select.cuh"
 #include "../../FaissAssert.h"
 #include "../GpuResources.h"
+#include "../utils/DeviceDefs.cuh"
 #include "../utils/DeviceUtils.h"
 #include "../utils/Limits.cuh"
 #include "../utils/MatrixMult.cuh"
@@ -195,8 +196,9 @@ void runDistance(bool computeL2,
 
   int numColTiles = utils::divUp(centroids.getSize(0), tileCols);
 
-  FAISS_ASSERT(k <= centroids.getSize(0));
-  FAISS_ASSERT(k <= 1024); // select limitation
+  // We can have any number of vectors to query against, even less than k, in
+  // which case we'll return -1 for the index
+  FAISS_ASSERT(k <= GPU_MAX_SELECTION_K); // select limitation
 
   // Temporary output memory space we'll use
   DeviceTensor<T, 2, true> distanceBuf1(

@@ -97,6 +97,34 @@ void InvertedLists::merge_from (InvertedLists *oivf, size_t add_id) {
     }
 }
 
+double InvertedLists::imbalance_factor () const {
+    std::vector<int> hist(nlist);
+
+    for (size_t i = 0; i < nlist; i++) {
+        hist[i] = list_size(i);
+    }
+
+    return faiss::imbalance_factor(nlist, hist.data());
+}
+
+void InvertedLists::print_stats () const {
+    std::vector<int> sizes(40);
+    for (size_t i = 0; i < nlist; i++) {
+        for (size_t j = 0; j < sizes.size(); j++) {
+            if ((list_size(i) >> j) == 0) {
+                sizes[j]++;
+                break;
+            }
+        }
+    }
+    for (size_t i = 0; i < sizes.size(); i++) {
+        if (sizes[i]) {
+            printf("list size in < %d: %d instances\n", 1 << i, sizes[i]);
+        }
+    }
+}
+
+
 /*****************************************
  * ArrayInvertedLists implementation
  ******************************************/

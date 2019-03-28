@@ -18,14 +18,14 @@ import pdb
 # we import * so that the symbol X can be accessed as faiss.X
 
 try:
-    from .swigfaiss_gpu import *
+    from swigfaiss_gpu import *
 except ImportError as e:
 
     if 'No module named' not in e.args[0]:
         # swigfaiss_gpu is there but failed to load: Warn user about it.
         sys.stderr.write("Failed to load GPU Faiss: %s\n" % e.args[0])
         sys.stderr.write("Faiss falling back to CPU-only.\n")
-    from .swigfaiss import *
+    from swigfaiss import *
 
 __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
                             FAISS_VERSION_MINOR,
@@ -213,6 +213,11 @@ def handle_IndexBinary(the_class):
         assert d * 8 == self.d
         self.train_c(n, swig_ptr(x))
 
+    def replacement_reconstruct(self, key):
+        x = np.empty(self.d // 8, dtype=np.uint8)
+        self.reconstruct_c(key, swig_ptr(x))
+        return x
+
     def replacement_search(self, x, k):
         n, d = x.shape
         assert d * 8 == self.d
@@ -227,6 +232,8 @@ def handle_IndexBinary(the_class):
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'train', replacement_train)
     replace_method(the_class, 'search', replacement_search)
+    replace_method(the_class, 'reconstruct', replacement_reconstruct)
+
 
 def handle_VectorTransform(the_class):
 
@@ -283,6 +290,18 @@ def handle_ParameterSpace(the_class):
                        crit, ops)
         return ops
     replace_method(the_class, 'explore', replacement_explore)
+
+
+def handle_MatrixStats(the_class):
+    original_init = the_class.__init__
+
+    def replacement_init(self, m):
+        assert len(m.shape) == 2
+        original_init(self, m.shape[0], m.shape[1], swig_ptr(m))
+
+    the_class.__init__ = replacement_init
+
+handle_MatrixStats(MatrixStats)
 
 
 this_module = sys.modules[__name__]
@@ -371,12 +390,11 @@ add_ref_in_constructor(IndexRefineFlat, 0)
 add_ref_in_constructor(IndexBinaryIVF, 0)
 add_ref_in_constructor(IndexBinaryFromFloat, 0)
 
+add_ref_in_method(IndexReplicas, 'addIndex', 0)
+# seems really marginal...
+# remove_ref_from_method(IndexReplicas, 'removeIndex', 0)
 
-if hasattr(this_module, 'IndexProxy'):
-    add_ref_in_method(IndexProxy, 'addIndex', 0)
-    # seems really marginal...
-    # remove_ref_from_method(IndexProxy, 'removeIndex', 0)
-
+if hasattr(this_module, 'GpuIndexFlat'):
     # handle all the GPUResources refs
     add_ref_in_function('index_cpu_to_gpu', 0)
     add_ref_in_constructor(GpuIndexFlat, 0)
@@ -435,7 +453,8 @@ def vector_to_array(v):
     assert classname.endswith('Vector')
     dtype = np.dtype(vector_name_map[classname[:-6]])
     a = np.empty(v.size(), dtype=dtype)
-    memcpy(swig_ptr(a), v.data(), a.nbytes)
+    if v.size() > 0:
+        memcpy(swig_ptr(a), v.data(), a.nbytes)
     return a
 
 
@@ -453,7 +472,8 @@ def copy_array_to_vector(a, v):
         'cannot copy a %s array to a %s (should be %s)' % (
             a.dtype, classname, dtype))
     v.resize(n)
-    memcpy(v.data(), swig_ptr(a), a.nbytes)
+    if n > 0:
+        memcpy(v.data(), swig_ptr(a), a.nbytes)
 
 
 ###########################################
@@ -549,18 +569,24 @@ replace_method(MapLong2Long, 'search_multiple', replacement_map_search_multiple)
 
 
 class Kmeans:
+    """shallow wrapper around the Clustering object. The important method
+    is train()."""
 
-    def __init__(self, d, k, niter=25, verbose=False, spherical = False):
+    def __init__(self, d, k, **kwargs):
+        """d: input dimension, k: nb of centroids. Additional
+         parameters are passed on the ClusteringParameters object,
+         including niter=25, verbose=False, spherical = False
+        """
         self.d = d
         self.k = k
         self.cp = ClusteringParameters()
-        self.cp.niter = niter
-        self.cp.verbose = verbose
-        self.cp.spherical = spherical
+        for k, v in kwargs.items():
+            # if this raises an exception, it means that it is a non-existent field
+            getattr(self.cp, k)
+            setattr(self.cp, k, v)
         self.centroids = None
 
     def train(self, x):
-        assert x.flags.contiguous
         n, d = x.shape
         assert d == self.d
         clus = Clustering(d, self.k, self.cp)
@@ -580,3 +606,7 @@ class Kmeans:
         index.add(self.centroids)
         D, I = index.search(x, 1)
         return D.ravel(), I.ravel()
+
+# IndexProxy was renamed to IndexReplicas, remap the old name for any old code
+# people may have
+IndexProxy = IndexReplicas

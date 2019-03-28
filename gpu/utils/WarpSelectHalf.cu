@@ -7,6 +7,7 @@
  */
 
 #include "warpselect/WarpSelectImpl.cuh"
+#include "DeviceDefs.cuh"
 
 namespace faiss { namespace gpu {
 
@@ -20,6 +21,7 @@ namespace faiss { namespace gpu {
 // 256, 4
 // 512, 8
 // 1024, 8
+// 2048, 8
 
 WARP_SELECT_DECL(half, true, 1);
 WARP_SELECT_DECL(half, true, 32);
@@ -28,6 +30,9 @@ WARP_SELECT_DECL(half, true, 128);
 WARP_SELECT_DECL(half, true, 256);
 WARP_SELECT_DECL(half, true, 512);
 WARP_SELECT_DECL(half, true, 1024);
+#if GPU_MAX_SELECTION_K >= 2048
+WARP_SELECT_DECL(half, true, 2048);
+#endif
 
 WARP_SELECT_DECL(half, false, 1);
 WARP_SELECT_DECL(half, false, 32);
@@ -36,6 +41,9 @@ WARP_SELECT_DECL(half, false, 128);
 WARP_SELECT_DECL(half, false, 256);
 WARP_SELECT_DECL(half, false, 512);
 WARP_SELECT_DECL(half, false, 1024);
+#if GPU_MAX_SELECTION_K >= 2048
+WARP_SELECT_DECL(half, false, 2048);
+#endif
 
 void runWarpSelect(Tensor<half, 2, true>& in,
                       Tensor<half, 2, true>& outK,
@@ -58,6 +66,10 @@ void runWarpSelect(Tensor<half, 2, true>& in,
       WARP_SELECT_CALL(half, true, 512);
     } else if (k <= 1024) {
       WARP_SELECT_CALL(half, true, 1024);
+#if GPU_MAX_SELECTION_K >= 2048
+    } else if (k <= 2048) {
+      WARP_SELECT_CALL(half, true, 2048);
+#endif
     }
   } else {
     if (k == 1) {
@@ -74,6 +86,10 @@ void runWarpSelect(Tensor<half, 2, true>& in,
       WARP_SELECT_CALL(half, false, 512);
     } else if (k <= 1024) {
       WARP_SELECT_CALL(half, false, 1024);
+#if GPU_MAX_SELECTION_K >= 2048
+    } else if (k <= 2048) {
+      WARP_SELECT_CALL(half, false, 2048);
+#endif
     }
   }
 }

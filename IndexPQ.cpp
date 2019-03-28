@@ -796,7 +796,7 @@ struct MinSumK {
             // enqueue followers
             long ii = ti;
             for (int m = 0; m < M; m++) {
-                long n = ii & ((1 << nbit) - 1);
+                long n = ii & ((1L << nbit) - 1);
                 ii >>= nbit;
                 if (n + 1 >= N) continue;
 
@@ -819,8 +819,8 @@ struct MinSumK {
             }
             long ti = 0;
             for (int m = 0; m < M; m++) {
-                long n = ii & ((1 << nbit) - 1);
-                ti += ssx[m].get_ord(n) << (nbit * m);
+                long n = ii & ((1L << nbit) - 1);
+                ti += long(ssx[m].get_ord(n)) << (nbit * m);
                 ii >>= nbit;
             }
             terms[k] = ti;

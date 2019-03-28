@@ -3017,228 +3017,233 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_faiss__AutoTuneCriterion swig_types[11]
 #define SWIGTYPE_p_faiss__BinaryInvertedListScanner swig_types[12]
 #define SWIGTYPE_p_faiss__BufferList swig_types[13]
-#define SWIGTYPE_p_faiss__Cloner swig_types[14]
-#define SWIGTYPE_p_faiss__Clustering swig_types[15]
-#define SWIGTYPE_p_faiss__ClusteringParameters swig_types[16]
-#define SWIGTYPE_p_faiss__ConcatenatedInvertedLists swig_types[17]
-#define SWIGTYPE_p_faiss__GenHammingComputer16 swig_types[18]
-#define SWIGTYPE_p_faiss__GenHammingComputer32 swig_types[19]
-#define SWIGTYPE_p_faiss__GenHammingComputer8 swig_types[20]
-#define SWIGTYPE_p_faiss__GenHammingComputerM8 swig_types[21]
-#define SWIGTYPE_p_faiss__HNSW swig_types[22]
-#define SWIGTYPE_p_faiss__HNSWStats swig_types[23]
-#define SWIGTYPE_p_faiss__HNSW__DistanceComputer swig_types[24]
-#define SWIGTYPE_p_faiss__HNSW__MinimaxHeap swig_types[25]
-#define SWIGTYPE_p_faiss__HammingComputer16 swig_types[26]
-#define SWIGTYPE_p_faiss__HammingComputer20 swig_types[27]
-#define SWIGTYPE_p_faiss__HammingComputer32 swig_types[28]
-#define SWIGTYPE_p_faiss__HammingComputer4 swig_types[29]
-#define SWIGTYPE_p_faiss__HammingComputer64 swig_types[30]
-#define SWIGTYPE_p_faiss__HammingComputer8 swig_types[31]
-#define SWIGTYPE_p_faiss__HammingComputerDefault swig_types[32]
-#define SWIGTYPE_p_faiss__HammingComputerM4 swig_types[33]
-#define SWIGTYPE_p_faiss__HammingComputerM8 swig_types[34]
-#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMaxT_float_long_t_t swig_types[35]
-#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMaxT_int_long_t_t swig_types[36]
-#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMinT_float_long_t_t swig_types[37]
-#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMinT_int_long_t_t swig_types[38]
-#define SWIGTYPE_p_faiss__IDSelector swig_types[39]
-#define SWIGTYPE_p_faiss__IDSelectorBatch swig_types[40]
-#define SWIGTYPE_p_faiss__IDSelectorRange swig_types[41]
-#define SWIGTYPE_p_faiss__IOReader swig_types[42]
-#define SWIGTYPE_p_faiss__IOWriter swig_types[43]
-#define SWIGTYPE_p_faiss__IVFPQSearchParameters swig_types[44]
-#define SWIGTYPE_p_faiss__IVFSearchParameters swig_types[45]
-#define SWIGTYPE_p_faiss__Index swig_types[46]
-#define SWIGTYPE_p_faiss__Index2Layer swig_types[47]
-#define SWIGTYPE_p_faiss__IndexBinary swig_types[48]
-#define SWIGTYPE_p_faiss__IndexBinaryFlat swig_types[49]
-#define SWIGTYPE_p_faiss__IndexBinaryFromFloat swig_types[50]
-#define SWIGTYPE_p_faiss__IndexBinaryHNSW swig_types[51]
-#define SWIGTYPE_p_faiss__IndexBinaryIVF swig_types[52]
-#define SWIGTYPE_p_faiss__IndexFlat swig_types[53]
-#define SWIGTYPE_p_faiss__IndexFlat1D swig_types[54]
-#define SWIGTYPE_p_faiss__IndexFlatIP swig_types[55]
-#define SWIGTYPE_p_faiss__IndexFlatL2 swig_types[56]
-#define SWIGTYPE_p_faiss__IndexFlatL2BaseShift swig_types[57]
-#define SWIGTYPE_p_faiss__IndexHNSW swig_types[58]
-#define SWIGTYPE_p_faiss__IndexHNSW2Level swig_types[59]
-#define SWIGTYPE_p_faiss__IndexHNSWFlat swig_types[60]
-#define SWIGTYPE_p_faiss__IndexHNSWPQ swig_types[61]
-#define SWIGTYPE_p_faiss__IndexHNSWSQ swig_types[62]
-#define SWIGTYPE_p_faiss__IndexIDMap swig_types[63]
-#define SWIGTYPE_p_faiss__IndexIDMap2 swig_types[64]
-#define SWIGTYPE_p_faiss__IndexIVF swig_types[65]
-#define SWIGTYPE_p_faiss__IndexIVFFlat swig_types[66]
-#define SWIGTYPE_p_faiss__IndexIVFFlatDedup swig_types[67]
-#define SWIGTYPE_p_faiss__IndexIVFPQ swig_types[68]
-#define SWIGTYPE_p_faiss__IndexIVFPQR swig_types[69]
-#define SWIGTYPE_p_faiss__IndexIVFPQStats swig_types[70]
-#define SWIGTYPE_p_faiss__IndexIVFScalarQuantizer swig_types[71]
-#define SWIGTYPE_p_faiss__IndexIVFStats swig_types[72]
-#define SWIGTYPE_p_faiss__IndexLSH swig_types[73]
-#define SWIGTYPE_p_faiss__IndexPQ swig_types[74]
-#define SWIGTYPE_p_faiss__IndexPQStats swig_types[75]
-#define SWIGTYPE_p_faiss__IndexPreTransform swig_types[76]
-#define SWIGTYPE_p_faiss__IndexRefineFlat swig_types[77]
-#define SWIGTYPE_p_faiss__IndexScalarQuantizer swig_types[78]
-#define SWIGTYPE_p_faiss__IndexShards swig_types[79]
-#define SWIGTYPE_p_faiss__IndexSplitVectors swig_types[80]
-#define SWIGTYPE_p_faiss__IntersectionCriterion swig_types[81]
-#define SWIGTYPE_p_faiss__InvertedListScanner swig_types[82]
-#define SWIGTYPE_p_faiss__InvertedLists swig_types[83]
-#define SWIGTYPE_p_faiss__Level1Quantizer swig_types[84]
-#define SWIGTYPE_p_faiss__LinearTransform swig_types[85]
-#define SWIGTYPE_p_faiss__LockLevels swig_types[86]
-#define SWIGTYPE_p_faiss__MultiIndexQuantizer swig_types[87]
-#define SWIGTYPE_p_faiss__MultiIndexQuantizer2 swig_types[88]
-#define SWIGTYPE_p_faiss__NormalizationTransform swig_types[89]
-#define SWIGTYPE_p_faiss__OPQMatrix swig_types[90]
-#define SWIGTYPE_p_faiss__OnDiskInvertedLists swig_types[91]
-#define SWIGTYPE_p_faiss__OnDiskInvertedLists__OngoingPrefetch swig_types[92]
-#define SWIGTYPE_p_faiss__OneRecallAtRCriterion swig_types[93]
-#define SWIGTYPE_p_faiss__OperatingPoint swig_types[94]
-#define SWIGTYPE_p_faiss__OperatingPoints swig_types[95]
-#define SWIGTYPE_p_faiss__PCAMatrix swig_types[96]
-#define SWIGTYPE_p_faiss__ParameterRange swig_types[97]
-#define SWIGTYPE_p_faiss__ParameterSpace swig_types[98]
-#define SWIGTYPE_p_faiss__PermutationObjective swig_types[99]
-#define SWIGTYPE_p_faiss__PolysemousTraining swig_types[100]
-#define SWIGTYPE_p_faiss__ProductQuantizer swig_types[101]
-#define SWIGTYPE_p_faiss__RandomGenerator swig_types[102]
-#define SWIGTYPE_p_faiss__RandomRotationMatrix swig_types[103]
-#define SWIGTYPE_p_faiss__RangeSearchPartialResult swig_types[104]
-#define SWIGTYPE_p_faiss__RangeSearchPartialResult__QueryResult swig_types[105]
-#define SWIGTYPE_p_faiss__RangeSearchResult swig_types[106]
-#define SWIGTYPE_p_faiss__ReconstructFromNeighbors swig_types[107]
-#define SWIGTYPE_p_faiss__RemapDimensionsTransform swig_types[108]
-#define SWIGTYPE_p_faiss__ReproduceDistancesObjective swig_types[109]
-#define SWIGTYPE_p_faiss__ScalarQuantizer swig_types[110]
-#define SWIGTYPE_p_faiss__ScalarQuantizer__DistanceComputer swig_types[111]
-#define SWIGTYPE_p_faiss__SimulatedAnnealingOptimizer swig_types[112]
-#define SWIGTYPE_p_faiss__SimulatedAnnealingParameters swig_types[113]
-#define SWIGTYPE_p_faiss__VectorIOReader swig_types[114]
-#define SWIGTYPE_p_faiss__VectorIOWriter swig_types[115]
-#define SWIGTYPE_p_faiss__VectorTransform swig_types[116]
-#define SWIGTYPE_p_faiss__VisitedTable swig_types[117]
-#define SWIGTYPE_p_faiss__gpu__FlatIndex swig_types[118]
-#define SWIGTYPE_p_faiss__gpu__GpuClonerOptions swig_types[119]
-#define SWIGTYPE_p_faiss__gpu__GpuIndex swig_types[120]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat swig_types[121]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlatConfig swig_types[122]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexConfig swig_types[123]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexFlat swig_types[124]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig swig_types[125]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatIP swig_types[126]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatL2 swig_types[127]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVF swig_types[128]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFConfig swig_types[129]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat swig_types[130]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlatConfig swig_types[131]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ swig_types[132]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQConfig swig_types[133]
-#define SWIGTYPE_p_faiss__gpu__GpuMultipleClonerOptions swig_types[134]
-#define SWIGTYPE_p_faiss__gpu__GpuParameterSpace swig_types[135]
-#define SWIGTYPE_p_faiss__gpu__GpuResources swig_types[136]
-#define SWIGTYPE_p_faiss__gpu__IndexProxy swig_types[137]
-#define SWIGTYPE_p_faiss__gpu__StandardGpuResources swig_types[138]
-#define SWIGTYPE_p_faiss__ivflib__SlidingIndexWindow swig_types[139]
-#define SWIGTYPE_p_float swig_types[140]
-#define SWIGTYPE_p_idx_t swig_types[141]
-#define SWIGTYPE_p_int swig_types[142]
-#define SWIGTYPE_p_long swig_types[143]
-#define SWIGTYPE_p_omp_lock_t swig_types[144]
-#define SWIGTYPE_p_p_faiss__ArrayInvertedLists swig_types[145]
-#define SWIGTYPE_p_p_faiss__ConcatenatedInvertedLists swig_types[146]
-#define SWIGTYPE_p_p_faiss__Index swig_types[147]
-#define SWIGTYPE_p_p_faiss__Index2Layer swig_types[148]
-#define SWIGTYPE_p_p_faiss__IndexFlat swig_types[149]
-#define SWIGTYPE_p_p_faiss__IndexFlat1D swig_types[150]
-#define SWIGTYPE_p_p_faiss__IndexFlatIP swig_types[151]
-#define SWIGTYPE_p_p_faiss__IndexFlatL2 swig_types[152]
-#define SWIGTYPE_p_p_faiss__IndexFlatL2BaseShift swig_types[153]
-#define SWIGTYPE_p_p_faiss__IndexHNSW swig_types[154]
-#define SWIGTYPE_p_p_faiss__IndexHNSW2Level swig_types[155]
-#define SWIGTYPE_p_p_faiss__IndexHNSWFlat swig_types[156]
-#define SWIGTYPE_p_p_faiss__IndexHNSWPQ swig_types[157]
-#define SWIGTYPE_p_p_faiss__IndexHNSWSQ swig_types[158]
-#define SWIGTYPE_p_p_faiss__IndexIDMap swig_types[159]
-#define SWIGTYPE_p_p_faiss__IndexIDMap2 swig_types[160]
-#define SWIGTYPE_p_p_faiss__IndexIVF swig_types[161]
-#define SWIGTYPE_p_p_faiss__IndexIVFFlat swig_types[162]
-#define SWIGTYPE_p_p_faiss__IndexIVFFlatDedup swig_types[163]
-#define SWIGTYPE_p_p_faiss__IndexIVFPQ swig_types[164]
-#define SWIGTYPE_p_p_faiss__IndexIVFPQR swig_types[165]
-#define SWIGTYPE_p_p_faiss__IndexIVFScalarQuantizer swig_types[166]
-#define SWIGTYPE_p_p_faiss__IndexLSH swig_types[167]
-#define SWIGTYPE_p_p_faiss__IndexPQ swig_types[168]
-#define SWIGTYPE_p_p_faiss__IndexPreTransform swig_types[169]
-#define SWIGTYPE_p_p_faiss__IndexRefineFlat swig_types[170]
-#define SWIGTYPE_p_p_faiss__IndexScalarQuantizer swig_types[171]
-#define SWIGTYPE_p_p_faiss__IndexShards swig_types[172]
-#define SWIGTYPE_p_p_faiss__IndexSplitVectors swig_types[173]
-#define SWIGTYPE_p_p_faiss__InvertedLists swig_types[174]
-#define SWIGTYPE_p_p_faiss__LinearTransform swig_types[175]
-#define SWIGTYPE_p_p_faiss__MultiIndexQuantizer swig_types[176]
-#define SWIGTYPE_p_p_faiss__MultiIndexQuantizer2 swig_types[177]
-#define SWIGTYPE_p_p_faiss__NormalizationTransform swig_types[178]
-#define SWIGTYPE_p_p_faiss__OPQMatrix swig_types[179]
-#define SWIGTYPE_p_p_faiss__OnDiskInvertedLists swig_types[180]
-#define SWIGTYPE_p_p_faiss__PCAMatrix swig_types[181]
-#define SWIGTYPE_p_p_faiss__RandomRotationMatrix swig_types[182]
-#define SWIGTYPE_p_p_faiss__RemapDimensionsTransform swig_types[183]
-#define SWIGTYPE_p_p_faiss__VectorTransform swig_types[184]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndex swig_types[185]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndexFlat swig_types[186]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndexFlatIP swig_types[187]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndexFlatL2 swig_types[188]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndexIVF swig_types[189]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndexIVFFlat swig_types[190]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndexIVFPQ swig_types[191]
-#define SWIGTYPE_p_p_faiss__gpu__GpuResources swig_types[192]
-#define SWIGTYPE_p_p_faiss__gpu__IndexProxy swig_types[193]
-#define SWIGTYPE_p_p_faiss__gpu__StandardGpuResources swig_types[194]
-#define SWIGTYPE_p_p_void swig_types[195]
-#define SWIGTYPE_p_std__functionT_void_ffaiss__Index_pF_t swig_types[196]
-#define SWIGTYPE_p_std__listT_faiss__OnDiskInvertedLists__Slot_t swig_types[197]
-#define SWIGTYPE_p_std__mt19937 swig_types[198]
-#define SWIGTYPE_p_std__pairT_float_int_t swig_types[199]
-#define SWIGTYPE_p_std__pairT_void_p_unsigned_long_t swig_types[200]
-#define SWIGTYPE_p_std__priority_queueT_faiss__HNSW__NodeDistFarther_t swig_types[201]
-#define SWIGTYPE_p_std__priority_queueT_std__pairT_float_int_t_t swig_types[202]
-#define SWIGTYPE_p_std__unordered_mapT_long_long_t swig_types[203]
-#define SWIGTYPE_p_std__unordered_multimapT_long_long_t swig_types[204]
-#define SWIGTYPE_p_std__vectorT_char_t swig_types[205]
-#define SWIGTYPE_p_std__vectorT_cudaStream_t_t swig_types[206]
-#define SWIGTYPE_p_std__vectorT_double_t swig_types[207]
-#define SWIGTYPE_p_std__vectorT_faiss__BufferList__Buffer_t swig_types[208]
-#define SWIGTYPE_p_std__vectorT_faiss__HNSW__NodeDistFarther_t swig_types[209]
-#define SWIGTYPE_p_std__vectorT_faiss__Index_p_t swig_types[210]
-#define SWIGTYPE_p_std__vectorT_faiss__InvertedLists_const_p_t swig_types[211]
-#define SWIGTYPE_p_std__vectorT_faiss__InvertedLists_p_t swig_types[212]
-#define SWIGTYPE_p_std__vectorT_faiss__OnDiskInvertedLists__List_t swig_types[213]
-#define SWIGTYPE_p_std__vectorT_faiss__OperatingPoint_t swig_types[214]
-#define SWIGTYPE_p_std__vectorT_faiss__ParameterRange_t swig_types[215]
-#define SWIGTYPE_p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t swig_types[216]
-#define SWIGTYPE_p_std__vectorT_faiss__VectorTransform_p_t swig_types[217]
-#define SWIGTYPE_p_std__vectorT_faiss__gpu__GpuResources_p_t swig_types[218]
-#define SWIGTYPE_p_std__vectorT_float_t swig_types[219]
-#define SWIGTYPE_p_std__vectorT_int_t swig_types[220]
-#define SWIGTYPE_p_std__vectorT_long_t swig_types[221]
-#define SWIGTYPE_p_std__vectorT_omp_lock_t_t swig_types[222]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_float_t_t swig_types[223]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_long_t_t swig_types[224]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_uint8_t_t_t swig_types[225]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_unsigned_long_t_t swig_types[226]
-#define SWIGTYPE_p_std__vectorT_unsigned_char_t swig_types[227]
-#define SWIGTYPE_p_std__vectorT_unsigned_long_t swig_types[228]
-#define SWIGTYPE_p_storage_idx_t swig_types[229]
-#define SWIGTYPE_p_uint32_t swig_types[230]
-#define SWIGTYPE_p_unsigned_char swig_types[231]
-#define SWIGTYPE_p_unsigned_long swig_types[232]
-#define SWIGTYPE_p_void swig_types[233]
-static swig_type_info *swig_types[235];
-static swig_module_info swig_module = {swig_types, 234, 0, 0, 0, 0};
+#define SWIGTYPE_p_faiss__CenteringTransform swig_types[14]
+#define SWIGTYPE_p_faiss__Cloner swig_types[15]
+#define SWIGTYPE_p_faiss__Clustering swig_types[16]
+#define SWIGTYPE_p_faiss__ClusteringParameters swig_types[17]
+#define SWIGTYPE_p_faiss__ConcatenatedInvertedLists swig_types[18]
+#define SWIGTYPE_p_faiss__DistanceComputer swig_types[19]
+#define SWIGTYPE_p_faiss__GenHammingComputer16 swig_types[20]
+#define SWIGTYPE_p_faiss__GenHammingComputer32 swig_types[21]
+#define SWIGTYPE_p_faiss__GenHammingComputer8 swig_types[22]
+#define SWIGTYPE_p_faiss__GenHammingComputerM8 swig_types[23]
+#define SWIGTYPE_p_faiss__HNSW swig_types[24]
+#define SWIGTYPE_p_faiss__HNSWStats swig_types[25]
+#define SWIGTYPE_p_faiss__HNSW__MinimaxHeap swig_types[26]
+#define SWIGTYPE_p_faiss__HammingComputer16 swig_types[27]
+#define SWIGTYPE_p_faiss__HammingComputer20 swig_types[28]
+#define SWIGTYPE_p_faiss__HammingComputer32 swig_types[29]
+#define SWIGTYPE_p_faiss__HammingComputer4 swig_types[30]
+#define SWIGTYPE_p_faiss__HammingComputer64 swig_types[31]
+#define SWIGTYPE_p_faiss__HammingComputer8 swig_types[32]
+#define SWIGTYPE_p_faiss__HammingComputerDefault swig_types[33]
+#define SWIGTYPE_p_faiss__HammingComputerM4 swig_types[34]
+#define SWIGTYPE_p_faiss__HammingComputerM8 swig_types[35]
+#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMaxT_float_long_t_t swig_types[36]
+#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMaxT_int_long_t_t swig_types[37]
+#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMinT_float_long_t_t swig_types[38]
+#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMinT_int_long_t_t swig_types[39]
+#define SWIGTYPE_p_faiss__IDSelector swig_types[40]
+#define SWIGTYPE_p_faiss__IDSelectorBatch swig_types[41]
+#define SWIGTYPE_p_faiss__IDSelectorRange swig_types[42]
+#define SWIGTYPE_p_faiss__IOReader swig_types[43]
+#define SWIGTYPE_p_faiss__IOWriter swig_types[44]
+#define SWIGTYPE_p_faiss__IVFPQSearchParameters swig_types[45]
+#define SWIGTYPE_p_faiss__IVFSearchParameters swig_types[46]
+#define SWIGTYPE_p_faiss__Index swig_types[47]
+#define SWIGTYPE_p_faiss__Index2Layer swig_types[48]
+#define SWIGTYPE_p_faiss__IndexBinary swig_types[49]
+#define SWIGTYPE_p_faiss__IndexBinaryFlat swig_types[50]
+#define SWIGTYPE_p_faiss__IndexBinaryFromFloat swig_types[51]
+#define SWIGTYPE_p_faiss__IndexBinaryHNSW swig_types[52]
+#define SWIGTYPE_p_faiss__IndexBinaryIVF swig_types[53]
+#define SWIGTYPE_p_faiss__IndexFlat swig_types[54]
+#define SWIGTYPE_p_faiss__IndexFlat1D swig_types[55]
+#define SWIGTYPE_p_faiss__IndexFlatIP swig_types[56]
+#define SWIGTYPE_p_faiss__IndexFlatL2 swig_types[57]
+#define SWIGTYPE_p_faiss__IndexFlatL2BaseShift swig_types[58]
+#define SWIGTYPE_p_faiss__IndexHNSW swig_types[59]
+#define SWIGTYPE_p_faiss__IndexHNSW2Level swig_types[60]
+#define SWIGTYPE_p_faiss__IndexHNSWFlat swig_types[61]
+#define SWIGTYPE_p_faiss__IndexHNSWPQ swig_types[62]
+#define SWIGTYPE_p_faiss__IndexHNSWSQ swig_types[63]
+#define SWIGTYPE_p_faiss__IndexIDMap swig_types[64]
+#define SWIGTYPE_p_faiss__IndexIDMap2 swig_types[65]
+#define SWIGTYPE_p_faiss__IndexIVF swig_types[66]
+#define SWIGTYPE_p_faiss__IndexIVFFlat swig_types[67]
+#define SWIGTYPE_p_faiss__IndexIVFFlatDedup swig_types[68]
+#define SWIGTYPE_p_faiss__IndexIVFPQ swig_types[69]
+#define SWIGTYPE_p_faiss__IndexIVFPQR swig_types[70]
+#define SWIGTYPE_p_faiss__IndexIVFPQStats swig_types[71]
+#define SWIGTYPE_p_faiss__IndexIVFScalarQuantizer swig_types[72]
+#define SWIGTYPE_p_faiss__IndexIVFStats swig_types[73]
+#define SWIGTYPE_p_faiss__IndexLSH swig_types[74]
+#define SWIGTYPE_p_faiss__IndexPQ swig_types[75]
+#define SWIGTYPE_p_faiss__IndexPQStats swig_types[76]
+#define SWIGTYPE_p_faiss__IndexPreTransform swig_types[77]
+#define SWIGTYPE_p_faiss__IndexRefineFlat swig_types[78]
+#define SWIGTYPE_p_faiss__IndexReplicas swig_types[79]
+#define SWIGTYPE_p_faiss__IndexScalarQuantizer swig_types[80]
+#define SWIGTYPE_p_faiss__IndexShards swig_types[81]
+#define SWIGTYPE_p_faiss__IndexSplitVectors swig_types[82]
+#define SWIGTYPE_p_faiss__IntersectionCriterion swig_types[83]
+#define SWIGTYPE_p_faiss__InvertedListScanner swig_types[84]
+#define SWIGTYPE_p_faiss__InvertedLists swig_types[85]
+#define SWIGTYPE_p_faiss__Level1Quantizer swig_types[86]
+#define SWIGTYPE_p_faiss__LinearTransform swig_types[87]
+#define SWIGTYPE_p_faiss__LockLevels swig_types[88]
+#define SWIGTYPE_p_faiss__MatrixStats swig_types[89]
+#define SWIGTYPE_p_faiss__MultiIndexQuantizer swig_types[90]
+#define SWIGTYPE_p_faiss__MultiIndexQuantizer2 swig_types[91]
+#define SWIGTYPE_p_faiss__NormalizationTransform swig_types[92]
+#define SWIGTYPE_p_faiss__OPQMatrix swig_types[93]
+#define SWIGTYPE_p_faiss__OnDiskInvertedLists swig_types[94]
+#define SWIGTYPE_p_faiss__OnDiskInvertedLists__OngoingPrefetch swig_types[95]
+#define SWIGTYPE_p_faiss__OneRecallAtRCriterion swig_types[96]
+#define SWIGTYPE_p_faiss__OperatingPoint swig_types[97]
+#define SWIGTYPE_p_faiss__OperatingPoints swig_types[98]
+#define SWIGTYPE_p_faiss__PCAMatrix swig_types[99]
+#define SWIGTYPE_p_faiss__ParameterRange swig_types[100]
+#define SWIGTYPE_p_faiss__ParameterSpace swig_types[101]
+#define SWIGTYPE_p_faiss__PermutationObjective swig_types[102]
+#define SWIGTYPE_p_faiss__PolysemousTraining swig_types[103]
+#define SWIGTYPE_p_faiss__ProductQuantizer swig_types[104]
+#define SWIGTYPE_p_faiss__RandomGenerator swig_types[105]
+#define SWIGTYPE_p_faiss__RandomRotationMatrix swig_types[106]
+#define SWIGTYPE_p_faiss__RangeQueryResult swig_types[107]
+#define SWIGTYPE_p_faiss__RangeSearchPartialResult swig_types[108]
+#define SWIGTYPE_p_faiss__RangeSearchResult swig_types[109]
+#define SWIGTYPE_p_faiss__ReconstructFromNeighbors swig_types[110]
+#define SWIGTYPE_p_faiss__RemapDimensionsTransform swig_types[111]
+#define SWIGTYPE_p_faiss__ReproduceDistancesObjective swig_types[112]
+#define SWIGTYPE_p_faiss__SQDistanceComputer swig_types[113]
+#define SWIGTYPE_p_faiss__ScalarQuantizer swig_types[114]
+#define SWIGTYPE_p_faiss__SimulatedAnnealingOptimizer swig_types[115]
+#define SWIGTYPE_p_faiss__SimulatedAnnealingParameters swig_types[116]
+#define SWIGTYPE_p_faiss__VectorIOReader swig_types[117]
+#define SWIGTYPE_p_faiss__VectorIOWriter swig_types[118]
+#define SWIGTYPE_p_faiss__VectorTransform swig_types[119]
+#define SWIGTYPE_p_faiss__VisitedTable swig_types[120]
+#define SWIGTYPE_p_faiss__gpu__FlatIndex swig_types[121]
+#define SWIGTYPE_p_faiss__gpu__GpuClonerOptions swig_types[122]
+#define SWIGTYPE_p_faiss__gpu__GpuIndex swig_types[123]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat swig_types[124]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlatConfig swig_types[125]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexConfig swig_types[126]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexFlat swig_types[127]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig swig_types[128]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatIP swig_types[129]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatL2 swig_types[130]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVF swig_types[131]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFConfig swig_types[132]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat swig_types[133]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlatConfig swig_types[134]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ swig_types[135]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQConfig swig_types[136]
+#define SWIGTYPE_p_faiss__gpu__GpuMultipleClonerOptions swig_types[137]
+#define SWIGTYPE_p_faiss__gpu__GpuParameterSpace swig_types[138]
+#define SWIGTYPE_p_faiss__gpu__GpuResources swig_types[139]
+#define SWIGTYPE_p_faiss__gpu__StandardGpuResources swig_types[140]
+#define SWIGTYPE_p_faiss__ivflib__SlidingIndexWindow swig_types[141]
+#define SWIGTYPE_p_float swig_types[142]
+#define SWIGTYPE_p_idx_t swig_types[143]
+#define SWIGTYPE_p_int swig_types[144]
+#define SWIGTYPE_p_long swig_types[145]
+#define SWIGTYPE_p_omp_lock_t swig_types[146]
+#define SWIGTYPE_p_p_faiss__ArrayInvertedLists swig_types[147]
+#define SWIGTYPE_p_p_faiss__CenteringTransform swig_types[148]
+#define SWIGTYPE_p_p_faiss__ConcatenatedInvertedLists swig_types[149]
+#define SWIGTYPE_p_p_faiss__Index swig_types[150]
+#define SWIGTYPE_p_p_faiss__Index2Layer swig_types[151]
+#define SWIGTYPE_p_p_faiss__IndexFlat swig_types[152]
+#define SWIGTYPE_p_p_faiss__IndexFlat1D swig_types[153]
+#define SWIGTYPE_p_p_faiss__IndexFlatIP swig_types[154]
+#define SWIGTYPE_p_p_faiss__IndexFlatL2 swig_types[155]
+#define SWIGTYPE_p_p_faiss__IndexFlatL2BaseShift swig_types[156]
+#define SWIGTYPE_p_p_faiss__IndexHNSW swig_types[157]
+#define SWIGTYPE_p_p_faiss__IndexHNSW2Level swig_types[158]
+#define SWIGTYPE_p_p_faiss__IndexHNSWFlat swig_types[159]
+#define SWIGTYPE_p_p_faiss__IndexHNSWPQ swig_types[160]
+#define SWIGTYPE_p_p_faiss__IndexHNSWSQ swig_types[161]
+#define SWIGTYPE_p_p_faiss__IndexIDMap swig_types[162]
+#define SWIGTYPE_p_p_faiss__IndexIDMap2 swig_types[163]
+#define SWIGTYPE_p_p_faiss__IndexIVF swig_types[164]
+#define SWIGTYPE_p_p_faiss__IndexIVFFlat swig_types[165]
+#define SWIGTYPE_p_p_faiss__IndexIVFFlatDedup swig_types[166]
+#define SWIGTYPE_p_p_faiss__IndexIVFPQ swig_types[167]
+#define SWIGTYPE_p_p_faiss__IndexIVFPQR swig_types[168]
+#define SWIGTYPE_p_p_faiss__IndexIVFScalarQuantizer swig_types[169]
+#define SWIGTYPE_p_p_faiss__IndexLSH swig_types[170]
+#define SWIGTYPE_p_p_faiss__IndexPQ swig_types[171]
+#define SWIGTYPE_p_p_faiss__IndexPreTransform swig_types[172]
+#define SWIGTYPE_p_p_faiss__IndexRefineFlat swig_types[173]
+#define SWIGTYPE_p_p_faiss__IndexReplicas swig_types[174]
+#define SWIGTYPE_p_p_faiss__IndexScalarQuantizer swig_types[175]
+#define SWIGTYPE_p_p_faiss__IndexShards swig_types[176]
+#define SWIGTYPE_p_p_faiss__IndexSplitVectors swig_types[177]
+#define SWIGTYPE_p_p_faiss__InvertedLists swig_types[178]
+#define SWIGTYPE_p_p_faiss__LinearTransform swig_types[179]
+#define SWIGTYPE_p_p_faiss__MultiIndexQuantizer swig_types[180]
+#define SWIGTYPE_p_p_faiss__MultiIndexQuantizer2 swig_types[181]
+#define SWIGTYPE_p_p_faiss__NormalizationTransform swig_types[182]
+#define SWIGTYPE_p_p_faiss__OPQMatrix swig_types[183]
+#define SWIGTYPE_p_p_faiss__OnDiskInvertedLists swig_types[184]
+#define SWIGTYPE_p_p_faiss__PCAMatrix swig_types[185]
+#define SWIGTYPE_p_p_faiss__RandomRotationMatrix swig_types[186]
+#define SWIGTYPE_p_p_faiss__RemapDimensionsTransform swig_types[187]
+#define SWIGTYPE_p_p_faiss__VectorTransform swig_types[188]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndex swig_types[189]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndexFlat swig_types[190]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndexFlatIP swig_types[191]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndexFlatL2 swig_types[192]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndexIVF swig_types[193]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndexIVFFlat swig_types[194]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndexIVFPQ swig_types[195]
+#define SWIGTYPE_p_p_faiss__gpu__GpuResources swig_types[196]
+#define SWIGTYPE_p_p_faiss__gpu__StandardGpuResources swig_types[197]
+#define SWIGTYPE_p_p_void swig_types[198]
+#define SWIGTYPE_p_std__functionT_void_ffaiss__Index_pF_t swig_types[199]
+#define SWIGTYPE_p_std__listT_faiss__OnDiskInvertedLists__Slot_t swig_types[200]
+#define SWIGTYPE_p_std__mt19937 swig_types[201]
+#define SWIGTYPE_p_std__pairT_float_int_t swig_types[202]
+#define SWIGTYPE_p_std__pairT_void_p_unsigned_long_t swig_types[203]
+#define SWIGTYPE_p_std__priority_queueT_faiss__HNSW__NodeDistFarther_t swig_types[204]
+#define SWIGTYPE_p_std__priority_queueT_std__pairT_float_int_t_t swig_types[205]
+#define SWIGTYPE_p_std__unordered_mapT_long_long_t swig_types[206]
+#define SWIGTYPE_p_std__unordered_mapT_unsigned_long_faiss__MatrixStats__Occurrence_t swig_types[207]
+#define SWIGTYPE_p_std__unordered_multimapT_long_long_t swig_types[208]
+#define SWIGTYPE_p_std__vectorT_char_t swig_types[209]
+#define SWIGTYPE_p_std__vectorT_cudaStream_t_t swig_types[210]
+#define SWIGTYPE_p_std__vectorT_double_t swig_types[211]
+#define SWIGTYPE_p_std__vectorT_faiss__BufferList__Buffer_t swig_types[212]
+#define SWIGTYPE_p_std__vectorT_faiss__HNSW__NodeDistFarther_t swig_types[213]
+#define SWIGTYPE_p_std__vectorT_faiss__Index_p_t swig_types[214]
+#define SWIGTYPE_p_std__vectorT_faiss__InvertedLists_const_p_t swig_types[215]
+#define SWIGTYPE_p_std__vectorT_faiss__InvertedLists_p_t swig_types[216]
+#define SWIGTYPE_p_std__vectorT_faiss__MatrixStats__PerDimStats_t swig_types[217]
+#define SWIGTYPE_p_std__vectorT_faiss__OnDiskInvertedLists__List_t swig_types[218]
+#define SWIGTYPE_p_std__vectorT_faiss__OperatingPoint_t swig_types[219]
+#define SWIGTYPE_p_std__vectorT_faiss__ParameterRange_t swig_types[220]
+#define SWIGTYPE_p_std__vectorT_faiss__RangeQueryResult_t swig_types[221]
+#define SWIGTYPE_p_std__vectorT_faiss__VectorTransform_p_t swig_types[222]
+#define SWIGTYPE_p_std__vectorT_faiss__gpu__GpuResources_p_t swig_types[223]
+#define SWIGTYPE_p_std__vectorT_float_t swig_types[224]
+#define SWIGTYPE_p_std__vectorT_int_t swig_types[225]
+#define SWIGTYPE_p_std__vectorT_long_t swig_types[226]
+#define SWIGTYPE_p_std__vectorT_omp_lock_t_t swig_types[227]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_float_t_t swig_types[228]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_long_t_t swig_types[229]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_uint8_t_t_t swig_types[230]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_unsigned_long_t_t swig_types[231]
+#define SWIGTYPE_p_std__vectorT_unsigned_char_t swig_types[232]
+#define SWIGTYPE_p_std__vectorT_unsigned_long_t swig_types[233]
+#define SWIGTYPE_p_storage_idx_t swig_types[234]
+#define SWIGTYPE_p_uint32_t swig_types[235]
+#define SWIGTYPE_p_unsigned_char swig_types[236]
+#define SWIGTYPE_p_unsigned_long swig_types[237]
+#define SWIGTYPE_p_void swig_types[238]
+static swig_type_info *swig_types[240];
+static swig_module_info swig_module = {swig_types, 239, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3383,6 +3388,8 @@ extern "C" {
 #include "IndexIVFPQ.h"
 #include "IndexIVFFlat.h"
 #include "IndexScalarQuantizer.h"
+#include "IndexShards.h"
+#include "IndexReplicas.h"
 #include "HNSW.h"
 #include "IndexHNSW.h"
 #include "MetaIndexes.h"
@@ -4035,7 +4042,6 @@ SWIGINTERNINLINE PyObject*
 #include "gpu/GpuIndexIVFPQ.h"
 #include "gpu/GpuIndexIVFFlat.h"
 #include "gpu/GpuIndexBinaryFlat.h"
-#include "gpu/IndexProxy.h"
 #include "gpu/GpuAutoTune.h"
 #include "gpu/GpuDistance.h"
 
@@ -13374,46 +13380,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_StandardGpuResources_setTempMemoryFraction(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::StandardGpuResources *arg1 = (faiss::gpu::StandardGpuResources *) 0 ;
-  float arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  float val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:StandardGpuResources_setTempMemoryFraction",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__StandardGpuResources, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StandardGpuResources_setTempMemoryFraction" "', argument " "1"" of type '" "faiss::gpu::StandardGpuResources *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::StandardGpuResources * >(argp1);
-  ecode2 = SWIG_AsVal_float(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "StandardGpuResources_setTempMemoryFraction" "', argument " "2"" of type '" "float""'");
-  } 
-  arg2 = static_cast< float >(val2);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->setTempMemoryFraction(arg2);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_StandardGpuResources_setPinnedMemory(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::gpu::StandardGpuResources *arg1 = (faiss::gpu::StandardGpuResources *) 0 ;
@@ -18030,6 +17996,70 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_hash_bytes(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  uint8_t *arg1 = (uint8_t *) 0 ;
+  long arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  uint64_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:hash_bytes",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "hash_bytes" "', argument " "1"" of type '" "uint8_t const *""'"); 
+  }
+  arg1 = reinterpret_cast< uint8_t * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "hash_bytes" "', argument " "2"" of type '" "long""'");
+  } 
+  arg2 = static_cast< long >(val2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (uint64_t)faiss::hash_bytes((unsigned char const *)arg1,arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_From_unsigned_SS_long(static_cast< unsigned long >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_check_openmp(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)":check_openmp")) SWIG_fail;
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (bool)faiss::check_openmp();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Index_d_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::Index *arg1 = (faiss::Index *) 0 ;
@@ -19394,6 +19424,58 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_ClusteringParameters_int_centroids_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::ClusteringParameters *arg1 = (faiss::ClusteringParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:ClusteringParameters_int_centroids_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__ClusteringParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ClusteringParameters_int_centroids_set" "', argument " "1"" of type '" "faiss::ClusteringParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::ClusteringParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ClusteringParameters_int_centroids_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->int_centroids = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_ClusteringParameters_int_centroids_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::ClusteringParameters *arg1 = (faiss::ClusteringParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:ClusteringParameters_int_centroids_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__ClusteringParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ClusteringParameters_int_centroids_get" "', argument " "1"" of type '" "faiss::ClusteringParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::ClusteringParameters * >(argp1);
+  result = (bool) ((arg1)->int_centroids);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_ClusteringParameters_update_index_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::ClusteringParameters *arg1 = (faiss::ClusteringParameters *) 0 ;
@@ -20112,6 +20194,37 @@ SWIGINTERN PyObject *_wrap_Clustering_train(PyObject *SWIGUNUSEDPARM(self), PyOb
     Py_BEGIN_ALLOW_THREADS
     try {
       (arg1)->train(arg2,(float const *)arg3,*arg4);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Clustering_post_process_centroids(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::Clustering *arg1 = (faiss::Clustering *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Clustering_post_process_centroids",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__Clustering, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Clustering_post_process_centroids" "', argument " "1"" of type '" "faiss::Clustering *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::Clustering * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->post_process_centroids();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -21248,6 +21361,64 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_compute_codes(PyObject *SWIGUNUSEDPA
     Py_BEGIN_ALLOW_THREADS
     try {
       ((faiss::ProductQuantizer const *)arg1)->compute_codes((float const *)arg2,arg3,arg4);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_ProductQuantizer_compute_codes_with_assign_index(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::ProductQuantizer *arg1 = (faiss::ProductQuantizer *) 0 ;
+  float *arg2 = (float *) 0 ;
+  uint8_t *arg3 = (uint8_t *) 0 ;
+  size_t arg4 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  size_t val4 ;
+  int ecode4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:ProductQuantizer_compute_codes_with_assign_index",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__ProductQuantizer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ProductQuantizer_compute_codes_with_assign_index" "', argument " "1"" of type '" "faiss::ProductQuantizer *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::ProductQuantizer * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ProductQuantizer_compute_codes_with_assign_index" "', argument " "2"" of type '" "float const *""'"); 
+  }
+  arg2 = reinterpret_cast< float * >(argp2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ProductQuantizer_compute_codes_with_assign_index" "', argument " "3"" of type '" "uint8_t *""'"); 
+  }
+  arg3 = reinterpret_cast< uint8_t * >(argp3);
+  ecode4 = SWIG_AsVal_size_t(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "ProductQuantizer_compute_codes_with_assign_index" "', argument " "4"" of type '" "size_t""'");
+  } 
+  arg4 = static_cast< size_t >(val4);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->compute_codes_with_assign_index((float const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -26223,6 +26394,341 @@ SWIGINTERN PyObject *NormalizationTransform_swigregister(PyObject *SWIGUNUSEDPAR
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_CenteringTransform_mean_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::CenteringTransform *arg1 = (faiss::CenteringTransform *) 0 ;
+  std::vector< float > *arg2 = (std::vector< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:CenteringTransform_mean_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__CenteringTransform, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CenteringTransform_mean_set" "', argument " "1"" of type '" "faiss::CenteringTransform *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::CenteringTransform * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_std__vectorT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CenteringTransform_mean_set" "', argument " "2"" of type '" "std::vector< float > *""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< float > * >(argp2);
+  if (arg1) (arg1)->mean = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CenteringTransform_mean_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::CenteringTransform *arg1 = (faiss::CenteringTransform *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  std::vector< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CenteringTransform_mean_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__CenteringTransform, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CenteringTransform_mean_get" "', argument " "1"" of type '" "faiss::CenteringTransform *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::CenteringTransform * >(argp1);
+  result = (std::vector< float > *)& ((arg1)->mean);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_float_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_CenteringTransform__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  PyObject * obj0 = 0 ;
+  faiss::CenteringTransform *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_CenteringTransform",&obj0)) SWIG_fail;
+  ecode1 = SWIG_AsVal_int(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_CenteringTransform" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = static_cast< int >(val1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::CenteringTransform *)new faiss::CenteringTransform(arg1);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__CenteringTransform, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_CenteringTransform__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::CenteringTransform *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_CenteringTransform")) SWIG_fail;
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::CenteringTransform *)new faiss::CenteringTransform();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__CenteringTransform, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_CenteringTransform(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[2] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 1) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 0) {
+    return _wrap_new_CenteringTransform__SWIG_1(self, args);
+  }
+  if (argc == 1) {
+    int _v;
+    {
+      int res = SWIG_AsVal_int(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      return _wrap_new_CenteringTransform__SWIG_0(self, args);
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_CenteringTransform'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    faiss::CenteringTransform::CenteringTransform(int)\n"
+    "    faiss::CenteringTransform::CenteringTransform()\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_CenteringTransform_train(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::CenteringTransform *arg1 = (faiss::CenteringTransform *) 0 ;
+  faiss::Index::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:CenteringTransform_train",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__CenteringTransform, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CenteringTransform_train" "', argument " "1"" of type '" "faiss::CenteringTransform *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::CenteringTransform * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CenteringTransform_train" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CenteringTransform_train" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->train(arg2,(float const *)arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CenteringTransform_apply_noalloc(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::CenteringTransform *arg1 = (faiss::CenteringTransform *) 0 ;
+  faiss::VectorTransform::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  float *arg4 = (float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:CenteringTransform_apply_noalloc",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__CenteringTransform, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CenteringTransform_apply_noalloc" "', argument " "1"" of type '" "faiss::CenteringTransform const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::CenteringTransform * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CenteringTransform_apply_noalloc" "', argument " "2"" of type '" "faiss::VectorTransform::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::VectorTransform::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CenteringTransform_apply_noalloc" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "CenteringTransform_apply_noalloc" "', argument " "4"" of type '" "float *""'"); 
+  }
+  arg4 = reinterpret_cast< float * >(argp4);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      ((faiss::CenteringTransform const *)arg1)->apply_noalloc(arg2,(float const *)arg3,arg4);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CenteringTransform_reverse_transform(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::CenteringTransform *arg1 = (faiss::CenteringTransform *) 0 ;
+  faiss::VectorTransform::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  float *arg4 = (float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:CenteringTransform_reverse_transform",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__CenteringTransform, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CenteringTransform_reverse_transform" "', argument " "1"" of type '" "faiss::CenteringTransform const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::CenteringTransform * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CenteringTransform_reverse_transform" "', argument " "2"" of type '" "faiss::VectorTransform::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::VectorTransform::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CenteringTransform_reverse_transform" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "CenteringTransform_reverse_transform" "', argument " "4"" of type '" "float *""'"); 
+  }
+  arg4 = reinterpret_cast< float * >(argp4);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      ((faiss::CenteringTransform const *)arg1)->reverse_transform(arg2,(float const *)arg3,arg4);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_CenteringTransform(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::CenteringTransform *arg1 = (faiss::CenteringTransform *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_CenteringTransform",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__CenteringTransform, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CenteringTransform" "', argument " "1"" of type '" "faiss::CenteringTransform *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::CenteringTransform * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *CenteringTransform_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__CenteringTransform, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 SWIGINTERN PyObject *_wrap_IndexPreTransform_chain_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::IndexPreTransform *arg1 = (faiss::IndexPreTransform *) 0 ;
@@ -26857,6 +27363,73 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_search(PyObject *SWIGUNUSEDPARM(sel
     Py_BEGIN_ALLOW_THREADS
     try {
       ((faiss::IndexPreTransform const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexPreTransform_range_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexPreTransform *arg1 = (faiss::IndexPreTransform *) 0 ;
+  faiss::Index::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  float arg4 ;
+  faiss::RangeSearchResult *arg5 = (faiss::RangeSearchResult *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  float val4 ;
+  int ecode4 = 0 ;
+  void *argp5 = 0 ;
+  int res5 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:IndexPreTransform_range_search",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexPreTransform, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexPreTransform_range_search" "', argument " "1"" of type '" "faiss::IndexPreTransform const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexPreTransform * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexPreTransform_range_search" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexPreTransform_range_search" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  ecode4 = SWIG_AsVal_float(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexPreTransform_range_search" "', argument " "4"" of type '" "float""'");
+  } 
+  arg4 = static_cast< float >(val4);
+  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_faiss__RangeSearchResult, 0 |  0 );
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexPreTransform_range_search" "', argument " "5"" of type '" "faiss::RangeSearchResult *""'"); 
+  }
+  arg5 = reinterpret_cast< faiss::RangeSearchResult * >(argp5);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      ((faiss::IndexPreTransform const *)arg1)->range_search(arg2,(float const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -35545,6 +36118,69 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_InvertedLists_imbalance_factor(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::InvertedLists *arg1 = (faiss::InvertedLists *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:InvertedLists_imbalance_factor",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__InvertedLists, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "InvertedLists_imbalance_factor" "', argument " "1"" of type '" "faiss::InvertedLists const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::InvertedLists * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (double)((faiss::InvertedLists const *)arg1)->imbalance_factor();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_InvertedLists_print_stats(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::InvertedLists *arg1 = (faiss::InvertedLists *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:InvertedLists_print_stats",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__InvertedLists, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "InvertedLists_print_stats" "', argument " "1"" of type '" "faiss::InvertedLists const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::InvertedLists * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      ((faiss::InvertedLists const *)arg1)->print_stats();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *InvertedLists_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
@@ -38375,6 +39011,73 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_IndexIVF_range_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexIVF *arg1 = (faiss::IndexIVF *) 0 ;
+  faiss::Index::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  float arg4 ;
+  faiss::RangeSearchResult *arg5 = (faiss::RangeSearchResult *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  float val4 ;
+  int ecode4 = 0 ;
+  void *argp5 = 0 ;
+  int res5 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:IndexIVF_range_search",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexIVF, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexIVF_range_search" "', argument " "1"" of type '" "faiss::IndexIVF const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexIVF * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexIVF_range_search" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexIVF_range_search" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  ecode4 = SWIG_AsVal_float(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexIVF_range_search" "', argument " "4"" of type '" "float""'");
+  } 
+  arg4 = static_cast< float >(val4);
+  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_faiss__RangeSearchResult, 0 |  0 );
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexIVF_range_search" "', argument " "5"" of type '" "faiss::RangeSearchResult *""'"); 
+  }
+  arg5 = reinterpret_cast< faiss::RangeSearchResult * >(argp5);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      ((faiss::IndexIVF const *)arg1)->range_search(arg2,(float const *)arg3,arg4,arg5);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_IndexIVF_get_InvertedListScanner__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::IndexIVF *arg1 = (faiss::IndexIVF *) 0 ;
@@ -39142,69 +39845,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_IndexIVF_imbalance_factor(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexIVF *arg1 = (faiss::IndexIVF *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  double result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexIVF_imbalance_factor",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexIVF, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexIVF_imbalance_factor" "', argument " "1"" of type '" "faiss::IndexIVF const *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexIVF * >(argp1);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      result = (double)((faiss::IndexIVF const *)arg1)->imbalance_factor();
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_From_double(static_cast< double >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexIVF_print_stats(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexIVF *arg1 = (faiss::IndexIVF *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexIVF_print_stats",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexIVF, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexIVF_print_stats" "', argument " "1"" of type '" "faiss::IndexIVF const *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexIVF * >(argp1);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      ((faiss::IndexIVF const *)arg1)->print_stats();
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_IndexIVF_replace_invlists__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::IndexIVF *arg1 = (faiss::IndexIVF *) 0 ;
@@ -39559,6 +40199,110 @@ SWIGINTERN PyObject *_wrap_IndexIVFStats_nheap_updates_get(PyObject *SWIGUNUSEDP
   arg1 = reinterpret_cast< faiss::IndexIVFStats * >(argp1);
   result = (size_t) ((arg1)->nheap_updates);
   resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexIVFStats_quantization_time_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexIVFStats *arg1 = (faiss::IndexIVFStats *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexIVFStats_quantization_time_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexIVFStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexIVFStats_quantization_time_set" "', argument " "1"" of type '" "faiss::IndexIVFStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexIVFStats * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexIVFStats_quantization_time_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->quantization_time = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexIVFStats_quantization_time_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexIVFStats *arg1 = (faiss::IndexIVFStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexIVFStats_quantization_time_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexIVFStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexIVFStats_quantization_time_get" "', argument " "1"" of type '" "faiss::IndexIVFStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexIVFStats * >(argp1);
+  result = (double) ((arg1)->quantization_time);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexIVFStats_search_time_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexIVFStats *arg1 = (faiss::IndexIVFStats *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexIVFStats_search_time_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexIVFStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexIVFStats_search_time_set" "', argument " "1"" of type '" "faiss::IndexIVFStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexIVFStats * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexIVFStats_search_time_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->search_time = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexIVFStats_search_time_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexIVFStats *arg1 = (faiss::IndexIVFStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexIVFStats_search_time_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexIVFStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexIVFStats_search_time_get" "', argument " "1"" of type '" "faiss::IndexIVFStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexIVFStats * >(argp1);
+  result = (double) ((arg1)->search_time);
+  resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
 fail:
   return NULL;
@@ -41176,7 +41920,7 @@ SWIGINTERN PyObject *_wrap_ScalarQuantizer_get_distance_computer__SWIG_0(PyObjec
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  faiss::ScalarQuantizer::DistanceComputer *result = 0 ;
+  faiss::SQDistanceComputer *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:ScalarQuantizer_get_distance_computer",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__ScalarQuantizer, 0 |  0 );
@@ -41192,7 +41936,7 @@ SWIGINTERN PyObject *_wrap_ScalarQuantizer_get_distance_computer__SWIG_0(PyObjec
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (faiss::ScalarQuantizer::DistanceComputer *)((faiss::ScalarQuantizer const *)arg1)->get_distance_computer(arg2);
+      result = (faiss::SQDistanceComputer *)((faiss::ScalarQuantizer const *)arg1)->get_distance_computer(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -41200,7 +41944,7 @@ SWIGINTERN PyObject *_wrap_ScalarQuantizer_get_distance_computer__SWIG_0(PyObjec
     }
     Py_END_ALLOW_THREADS
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__ScalarQuantizer__DistanceComputer, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__SQDistanceComputer, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -41213,7 +41957,7 @@ SWIGINTERN PyObject *_wrap_ScalarQuantizer_get_distance_computer__SWIG_1(PyObjec
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  faiss::ScalarQuantizer::DistanceComputer *result = 0 ;
+  faiss::SQDistanceComputer *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ScalarQuantizer_get_distance_computer",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__ScalarQuantizer, 0 |  0 );
@@ -41224,7 +41968,7 @@ SWIGINTERN PyObject *_wrap_ScalarQuantizer_get_distance_computer__SWIG_1(PyObjec
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (faiss::ScalarQuantizer::DistanceComputer *)((faiss::ScalarQuantizer const *)arg1)->get_distance_computer();
+      result = (faiss::SQDistanceComputer *)((faiss::ScalarQuantizer const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -41232,7 +41976,7 @@ SWIGINTERN PyObject *_wrap_ScalarQuantizer_get_distance_computer__SWIG_1(PyObjec
     }
     Py_END_ALLOW_THREADS
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__ScalarQuantizer__DistanceComputer, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__SQDistanceComputer, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -41959,6 +42703,38 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_IndexScalarQuantizer_get_distance_computer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexScalarQuantizer *arg1 = (faiss::IndexScalarQuantizer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  faiss::DistanceComputer *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexScalarQuantizer_get_distance_computer",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexScalarQuantizer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexScalarQuantizer_get_distance_computer" "', argument " "1"" of type '" "faiss::IndexScalarQuantizer const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexScalarQuantizer * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::DistanceComputer *)((faiss::IndexScalarQuantizer const *)arg1)->get_distance_computer();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__DistanceComputer, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_delete_IndexScalarQuantizer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::IndexScalarQuantizer *arg1 = (faiss::IndexScalarQuantizer *) 0 ;
@@ -42033,6 +42809,58 @@ SWIGINTERN PyObject *_wrap_IndexIVFScalarQuantizer_sq_get(PyObject *SWIGUNUSEDPA
   arg1 = reinterpret_cast< faiss::IndexIVFScalarQuantizer * >(argp1);
   result = (faiss::ScalarQuantizer *)& ((arg1)->sq);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__ScalarQuantizer, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexIVFScalarQuantizer_by_residual_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexIVFScalarQuantizer *arg1 = (faiss::IndexIVFScalarQuantizer *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexIVFScalarQuantizer_by_residual_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexIVFScalarQuantizer_by_residual_set" "', argument " "1"" of type '" "faiss::IndexIVFScalarQuantizer *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexIVFScalarQuantizer * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexIVFScalarQuantizer_by_residual_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->by_residual = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexIVFScalarQuantizer_by_residual_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexIVFScalarQuantizer *arg1 = (faiss::IndexIVFScalarQuantizer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexIVFScalarQuantizer_by_residual_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexIVFScalarQuantizer_by_residual_get" "', argument " "1"" of type '" "faiss::IndexIVFScalarQuantizer *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexIVFScalarQuantizer * >(argp1);
+  result = (bool) ((arg1)->by_residual);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
   return NULL;
@@ -43096,6 +43924,58 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_HNSW_check_relative_distance_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::HNSW *arg1 = (faiss::HNSW *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:HNSW_check_relative_distance_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__HNSW, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_check_relative_distance_set" "', argument " "1"" of type '" "faiss::HNSW *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::HNSW * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "HNSW_check_relative_distance_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->check_relative_distance = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_HNSW_check_relative_distance_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::HNSW *arg1 = (faiss::HNSW *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:HNSW_check_relative_distance_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__HNSW, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_check_relative_distance_get" "', argument " "1"" of type '" "faiss::HNSW *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::HNSW * >(argp1);
+  result = (bool) ((arg1)->check_relative_distance);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_HNSW_upper_beam_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::HNSW *arg1 = (faiss::HNSW *) 0 ;
@@ -43142,6 +44022,58 @@ SWIGINTERN PyObject *_wrap_HNSW_upper_beam_get(PyObject *SWIGUNUSEDPARM(self), P
   arg1 = reinterpret_cast< faiss::HNSW * >(argp1);
   result = (int) ((arg1)->upper_beam);
   resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_HNSW_search_bounded_queue_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::HNSW *arg1 = (faiss::HNSW *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:HNSW_search_bounded_queue_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__HNSW, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_search_bounded_queue_set" "', argument " "1"" of type '" "faiss::HNSW *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::HNSW * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "HNSW_search_bounded_queue_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->search_bounded_queue = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_HNSW_search_bounded_queue_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::HNSW *arg1 = (faiss::HNSW *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:HNSW_search_bounded_queue_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__HNSW, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_search_bounded_queue_get" "', argument " "1"" of type '" "faiss::HNSW *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::HNSW * >(argp1);
+  result = (bool) ((arg1)->search_bounded_queue);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
   return NULL;
@@ -43560,7 +44492,7 @@ fail:
 SWIGINTERN PyObject *_wrap_HNSW_add_links_starting_from(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::HNSW *arg1 = (faiss::HNSW *) 0 ;
-  faiss::HNSW::DistanceComputer *arg2 = 0 ;
+  faiss::DistanceComputer *arg2 = 0 ;
   faiss::HNSW::storage_idx_t arg3 ;
   faiss::HNSW::storage_idx_t arg4 ;
   float arg5 ;
@@ -43598,14 +44530,14 @@ SWIGINTERN PyObject *_wrap_HNSW_add_links_starting_from(PyObject *SWIGUNUSEDPARM
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_add_links_starting_from" "', argument " "1"" of type '" "faiss::HNSW *""'"); 
   }
   arg1 = reinterpret_cast< faiss::HNSW * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_faiss__HNSW__DistanceComputer,  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_faiss__DistanceComputer,  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_add_links_starting_from" "', argument " "2"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_add_links_starting_from" "', argument " "2"" of type '" "faiss::DistanceComputer &""'"); 
   }
   if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_add_links_starting_from" "', argument " "2"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_add_links_starting_from" "', argument " "2"" of type '" "faiss::DistanceComputer &""'"); 
   }
-  arg2 = reinterpret_cast< faiss::HNSW::DistanceComputer * >(argp2);
+  arg2 = reinterpret_cast< faiss::DistanceComputer * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "HNSW_add_links_starting_from" "', argument " "3"" of type '" "faiss::HNSW::storage_idx_t""'");
@@ -43660,7 +44592,7 @@ fail:
 SWIGINTERN PyObject *_wrap_HNSW_add_with_locks(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::HNSW *arg1 = (faiss::HNSW *) 0 ;
-  faiss::HNSW::DistanceComputer *arg2 = 0 ;
+  faiss::DistanceComputer *arg2 = 0 ;
   int arg3 ;
   int arg4 ;
   std::vector< omp_lock_t > *arg5 = 0 ;
@@ -43690,14 +44622,14 @@ SWIGINTERN PyObject *_wrap_HNSW_add_with_locks(PyObject *SWIGUNUSEDPARM(self), P
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_add_with_locks" "', argument " "1"" of type '" "faiss::HNSW *""'"); 
   }
   arg1 = reinterpret_cast< faiss::HNSW * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_faiss__HNSW__DistanceComputer,  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_faiss__DistanceComputer,  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_add_with_locks" "', argument " "2"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_add_with_locks" "', argument " "2"" of type '" "faiss::DistanceComputer &""'"); 
   }
   if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_add_with_locks" "', argument " "2"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_add_with_locks" "', argument " "2"" of type '" "faiss::DistanceComputer &""'"); 
   }
-  arg2 = reinterpret_cast< faiss::HNSW::DistanceComputer * >(argp2);
+  arg2 = reinterpret_cast< faiss::DistanceComputer * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "HNSW_add_with_locks" "', argument " "3"" of type '" "int""'");
@@ -43745,7 +44677,7 @@ fail:
 SWIGINTERN PyObject *_wrap_HNSW_search_from_candidates__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::HNSW *arg1 = (faiss::HNSW *) 0 ;
-  faiss::HNSW::DistanceComputer *arg2 = 0 ;
+  faiss::DistanceComputer *arg2 = 0 ;
   int arg3 ;
   faiss::HNSW::idx_t *arg4 = (faiss::HNSW::idx_t *) 0 ;
   float *arg5 = (float *) 0 ;
@@ -43788,14 +44720,14 @@ SWIGINTERN PyObject *_wrap_HNSW_search_from_candidates__SWIG_0(PyObject *SWIGUNU
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_search_from_candidates" "', argument " "1"" of type '" "faiss::HNSW const *""'"); 
   }
   arg1 = reinterpret_cast< faiss::HNSW * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_faiss__HNSW__DistanceComputer,  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_faiss__DistanceComputer,  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_search_from_candidates" "', argument " "2"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_search_from_candidates" "', argument " "2"" of type '" "faiss::DistanceComputer &""'"); 
   }
   if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_search_from_candidates" "', argument " "2"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_search_from_candidates" "', argument " "2"" of type '" "faiss::DistanceComputer &""'"); 
   }
-  arg2 = reinterpret_cast< faiss::HNSW::DistanceComputer * >(argp2);
+  arg2 = reinterpret_cast< faiss::DistanceComputer * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "HNSW_search_from_candidates" "', argument " "3"" of type '" "int""'");
@@ -43858,7 +44790,7 @@ fail:
 SWIGINTERN PyObject *_wrap_HNSW_search_from_candidates__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::HNSW *arg1 = (faiss::HNSW *) 0 ;
-  faiss::HNSW::DistanceComputer *arg2 = 0 ;
+  faiss::DistanceComputer *arg2 = 0 ;
   int arg3 ;
   faiss::HNSW::idx_t *arg4 = (faiss::HNSW::idx_t *) 0 ;
   float *arg5 = (float *) 0 ;
@@ -43897,14 +44829,14 @@ SWIGINTERN PyObject *_wrap_HNSW_search_from_candidates__SWIG_1(PyObject *SWIGUNU
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_search_from_candidates" "', argument " "1"" of type '" "faiss::HNSW const *""'"); 
   }
   arg1 = reinterpret_cast< faiss::HNSW * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_faiss__HNSW__DistanceComputer,  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_faiss__DistanceComputer,  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_search_from_candidates" "', argument " "2"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_search_from_candidates" "', argument " "2"" of type '" "faiss::DistanceComputer &""'"); 
   }
   if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_search_from_candidates" "', argument " "2"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_search_from_candidates" "', argument " "2"" of type '" "faiss::DistanceComputer &""'"); 
   }
-  arg2 = reinterpret_cast< faiss::HNSW::DistanceComputer * >(argp2);
+  arg2 = reinterpret_cast< faiss::DistanceComputer * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "HNSW_search_from_candidates" "', argument " "3"" of type '" "int""'");
@@ -43978,7 +44910,7 @@ SWIGINTERN PyObject *_wrap_HNSW_search_from_candidates(PyObject *self, PyObject 
     _v = SWIG_CheckState(res);
     if (_v) {
       void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_faiss__HNSW__DistanceComputer, 0);
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_faiss__DistanceComputer, 0);
       _v = SWIG_CheckState(res);
       if (_v) {
         {
@@ -44024,7 +44956,7 @@ SWIGINTERN PyObject *_wrap_HNSW_search_from_candidates(PyObject *self, PyObject 
     _v = SWIG_CheckState(res);
     if (_v) {
       void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_faiss__HNSW__DistanceComputer, 0);
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_faiss__DistanceComputer, 0);
       _v = SWIG_CheckState(res);
       if (_v) {
         {
@@ -44073,17 +45005,17 @@ SWIGINTERN PyObject *_wrap_HNSW_search_from_candidates(PyObject *self, PyObject 
 fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'HNSW_search_from_candidates'.\n"
     "  Possible C/C++ prototypes are:\n"
-    "    faiss::HNSW::search_from_candidates(faiss::HNSW::DistanceComputer &,int,faiss::HNSW::idx_t *,float *,faiss::HNSW::MinimaxHeap &,faiss::VisitedTable &,int,int) const\n"
-    "    faiss::HNSW::search_from_candidates(faiss::HNSW::DistanceComputer &,int,faiss::HNSW::idx_t *,float *,faiss::HNSW::MinimaxHeap &,faiss::VisitedTable &,int) const\n");
+    "    faiss::HNSW::search_from_candidates(faiss::DistanceComputer &,int,faiss::HNSW::idx_t *,float *,faiss::HNSW::MinimaxHeap &,faiss::VisitedTable &,int,int) const\n"
+    "    faiss::HNSW::search_from_candidates(faiss::DistanceComputer &,int,faiss::HNSW::idx_t *,float *,faiss::HNSW::MinimaxHeap &,faiss::VisitedTable &,int) const\n");
   return 0;
 }
 
 
-SWIGINTERN PyObject *_wrap_HNSW_search_from(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_HNSW_search_from_candidate_unbounded(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::HNSW *arg1 = (faiss::HNSW *) 0 ;
   faiss::HNSW::Node *arg2 = 0 ;
-  faiss::HNSW::DistanceComputer *arg3 = 0 ;
+  faiss::DistanceComputer *arg3 = 0 ;
   int arg4 ;
   faiss::VisitedTable *arg5 = (faiss::VisitedTable *) 0 ;
   void *argp1 = 0 ;
@@ -44103,42 +45035,42 @@ SWIGINTERN PyObject *_wrap_HNSW_search_from(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj4 = 0 ;
   std::priority_queue< faiss::HNSW::Node > result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOO:HNSW_search_from",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:HNSW_search_from_candidate_unbounded",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__HNSW, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_search_from" "', argument " "1"" of type '" "faiss::HNSW const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_search_from_candidate_unbounded" "', argument " "1"" of type '" "faiss::HNSW const *""'"); 
   }
   arg1 = reinterpret_cast< faiss::HNSW * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__pairT_float_int_t,  0  | 0);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_search_from" "', argument " "2"" of type '" "faiss::HNSW::Node const &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_search_from_candidate_unbounded" "', argument " "2"" of type '" "faiss::HNSW::Node const &""'"); 
   }
   if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_search_from" "', argument " "2"" of type '" "faiss::HNSW::Node const &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_search_from_candidate_unbounded" "', argument " "2"" of type '" "faiss::HNSW::Node const &""'"); 
   }
   arg2 = reinterpret_cast< faiss::HNSW::Node * >(argp2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_faiss__HNSW__DistanceComputer,  0 );
+  res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_faiss__DistanceComputer,  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "HNSW_search_from" "', argument " "3"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "HNSW_search_from_candidate_unbounded" "', argument " "3"" of type '" "faiss::DistanceComputer &""'"); 
   }
   if (!argp3) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_search_from" "', argument " "3"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_search_from_candidate_unbounded" "', argument " "3"" of type '" "faiss::DistanceComputer &""'"); 
   }
-  arg3 = reinterpret_cast< faiss::HNSW::DistanceComputer * >(argp3);
+  arg3 = reinterpret_cast< faiss::DistanceComputer * >(argp3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "HNSW_search_from" "', argument " "4"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "HNSW_search_from_candidate_unbounded" "', argument " "4"" of type '" "int""'");
   } 
   arg4 = static_cast< int >(val4);
   res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_faiss__VisitedTable, 0 |  0 );
   if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "HNSW_search_from" "', argument " "5"" of type '" "faiss::VisitedTable *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "HNSW_search_from_candidate_unbounded" "', argument " "5"" of type '" "faiss::VisitedTable *""'"); 
   }
   arg5 = reinterpret_cast< faiss::VisitedTable * >(argp5);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = ((faiss::HNSW const *)arg1)->search_from((faiss::HNSW::Node const &)*arg2,*arg3,arg4,arg5);
+      result = ((faiss::HNSW const *)arg1)->search_from_candidate_unbounded((faiss::HNSW::Node const &)*arg2,*arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -44156,7 +45088,7 @@ fail:
 SWIGINTERN PyObject *_wrap_HNSW_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::HNSW *arg1 = (faiss::HNSW *) 0 ;
-  faiss::HNSW::DistanceComputer *arg2 = 0 ;
+  faiss::DistanceComputer *arg2 = 0 ;
   int arg3 ;
   faiss::HNSW::idx_t *arg4 = (faiss::HNSW::idx_t *) 0 ;
   float *arg5 = (float *) 0 ;
@@ -44186,14 +45118,14 @@ SWIGINTERN PyObject *_wrap_HNSW_search(PyObject *SWIGUNUSEDPARM(self), PyObject 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_search" "', argument " "1"" of type '" "faiss::HNSW const *""'"); 
   }
   arg1 = reinterpret_cast< faiss::HNSW * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_faiss__HNSW__DistanceComputer,  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_faiss__DistanceComputer,  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_search" "', argument " "2"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_search" "', argument " "2"" of type '" "faiss::DistanceComputer &""'"); 
   }
   if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_search" "', argument " "2"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_search" "', argument " "2"" of type '" "faiss::DistanceComputer &""'"); 
   }
-  arg2 = reinterpret_cast< faiss::HNSW::DistanceComputer * >(argp2);
+  arg2 = reinterpret_cast< faiss::DistanceComputer * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "HNSW_search" "', argument " "3"" of type '" "int""'");
@@ -44497,7 +45429,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_HNSW_shrink_neighbor_list(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::HNSW::DistanceComputer *arg1 = 0 ;
+  faiss::DistanceComputer *arg1 = 0 ;
   std::priority_queue< faiss::HNSW::NodeDistFarther > *arg2 = 0 ;
   std::vector< faiss::HNSW::NodeDistFarther > *arg3 = 0 ;
   int arg4 ;
@@ -44515,14 +45447,14 @@ SWIGINTERN PyObject *_wrap_HNSW_shrink_neighbor_list(PyObject *SWIGUNUSEDPARM(se
   PyObject * obj3 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:HNSW_shrink_neighbor_list",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_faiss__HNSW__DistanceComputer,  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_faiss__DistanceComputer,  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_shrink_neighbor_list" "', argument " "1"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "HNSW_shrink_neighbor_list" "', argument " "1"" of type '" "faiss::DistanceComputer &""'"); 
   }
   if (!argp1) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_shrink_neighbor_list" "', argument " "1"" of type '" "faiss::HNSW::DistanceComputer &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "HNSW_shrink_neighbor_list" "', argument " "1"" of type '" "faiss::DistanceComputer &""'"); 
   }
-  arg1 = reinterpret_cast< faiss::HNSW::DistanceComputer * >(argp1);
+  arg1 = reinterpret_cast< faiss::DistanceComputer * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__priority_queueT_faiss__HNSW__NodeDistFarther_t,  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "HNSW_shrink_neighbor_list" "', argument " "2"" of type '" "std::priority_queue< faiss::HNSW::NodeDistFarther > &""'"); 
@@ -46642,7 +47574,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_get_distance_computer(PyObject *SWIGUNUSEDP
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  faiss::HNSW::DistanceComputer *result = 0 ;
+  faiss::DistanceComputer *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexHNSW_get_distance_computer",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexHNSW, 0 |  0 );
@@ -46653,7 +47585,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_get_distance_computer(PyObject *SWIGUNUSEDP
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (faiss::HNSW::DistanceComputer *)((faiss::IndexHNSW const *)arg1)->get_distance_computer();
+      result = (faiss::DistanceComputer *)((faiss::IndexHNSW const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -46661,7 +47593,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_get_distance_computer(PyObject *SWIGUNUSEDP
     }
     Py_END_ALLOW_THREADS
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__HNSW__DistanceComputer, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__DistanceComputer, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -47746,7 +48678,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSWFlat_get_distance_computer(PyObject *SWIGUNU
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  faiss::HNSW::DistanceComputer *result = 0 ;
+  faiss::DistanceComputer *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexHNSWFlat_get_distance_computer",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexHNSWFlat, 0 |  0 );
@@ -47757,7 +48689,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSWFlat_get_distance_computer(PyObject *SWIGUNU
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (faiss::HNSW::DistanceComputer *)((faiss::IndexHNSWFlat const *)arg1)->get_distance_computer();
+      result = (faiss::DistanceComputer *)((faiss::IndexHNSWFlat const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -47765,7 +48697,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSWFlat_get_distance_computer(PyObject *SWIGUNU
     }
     Py_END_ALLOW_THREADS
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__HNSW__DistanceComputer, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__DistanceComputer, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -47975,7 +48907,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSWPQ_get_distance_computer(PyObject *SWIGUNUSE
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  faiss::HNSW::DistanceComputer *result = 0 ;
+  faiss::DistanceComputer *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexHNSWPQ_get_distance_computer",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexHNSWPQ, 0 |  0 );
@@ -47986,7 +48918,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSWPQ_get_distance_computer(PyObject *SWIGUNUSE
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (faiss::HNSW::DistanceComputer *)((faiss::IndexHNSWPQ const *)arg1)->get_distance_computer();
+      result = (faiss::DistanceComputer *)((faiss::IndexHNSWPQ const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -47994,7 +48926,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSWPQ_get_distance_computer(PyObject *SWIGUNUSE
     }
     Py_END_ALLOW_THREADS
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__HNSW__DistanceComputer, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__DistanceComputer, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -48155,7 +49087,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSWSQ_get_distance_computer(PyObject *SWIGUNUSE
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  faiss::HNSW::DistanceComputer *result = 0 ;
+  faiss::DistanceComputer *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexHNSWSQ_get_distance_computer",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexHNSWSQ, 0 |  0 );
@@ -48166,7 +49098,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSWSQ_get_distance_computer(PyObject *SWIGUNUSE
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (faiss::HNSW::DistanceComputer *)((faiss::IndexHNSWSQ const *)arg1)->get_distance_computer();
+      result = (faiss::DistanceComputer *)((faiss::IndexHNSWSQ const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -48174,7 +49106,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSWSQ_get_distance_computer(PyObject *SWIGUNUSE
     }
     Py_END_ALLOW_THREADS
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__HNSW__DistanceComputer, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__DistanceComputer, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -48349,7 +49281,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSW2Level_get_distance_computer(PyObject *SWIGU
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  faiss::HNSW::DistanceComputer *result = 0 ;
+  faiss::DistanceComputer *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexHNSW2Level_get_distance_computer",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexHNSW2Level, 0 |  0 );
@@ -48360,7 +49292,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSW2Level_get_distance_computer(PyObject *SWIGU
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (faiss::HNSW::DistanceComputer *)((faiss::IndexHNSW2Level const *)arg1)->get_distance_computer();
+      result = (faiss::DistanceComputer *)((faiss::IndexHNSW2Level const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -48368,7 +49300,7 @@ SWIGINTERN PyObject *_wrap_IndexHNSW2Level_get_distance_computer(PyObject *SWIGU
     }
     Py_END_ALLOW_THREADS
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__HNSW__DistanceComputer, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__DistanceComputer, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -48846,73 +49778,6 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlat_get_InvertedListScanner(PyObject *SWIGUN
     Py_END_ALLOW_THREADS
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__InvertedListScanner, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexIVFFlat_range_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexIVFFlat *arg1 = (faiss::IndexIVFFlat *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  float arg4 ;
-  faiss::RangeSearchResult *arg5 = (faiss::RangeSearchResult *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  long val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  float val4 ;
-  int ecode4 = 0 ;
-  void *argp5 = 0 ;
-  int res5 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOO:IndexIVFFlat_range_search",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexIVFFlat, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexIVFFlat_range_search" "', argument " "1"" of type '" "faiss::IndexIVFFlat const *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexIVFFlat * >(argp1);
-  ecode2 = SWIG_AsVal_long(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexIVFFlat_range_search" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexIVFFlat_range_search" "', argument " "3"" of type '" "float const *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  ecode4 = SWIG_AsVal_float(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexIVFFlat_range_search" "', argument " "4"" of type '" "float""'");
-  } 
-  arg4 = static_cast< float >(val4);
-  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_faiss__RangeSearchResult, 0 |  0 );
-  if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexIVFFlat_range_search" "', argument " "5"" of type '" "faiss::RangeSearchResult *""'"); 
-  }
-  arg5 = reinterpret_cast< faiss::RangeSearchResult * >(argp5);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      ((faiss::IndexIVFFlat const *)arg1)->range_search(arg2,(float const *)arg3,arg4,arg5);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -57972,64 +58837,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_IndexBinaryIVF_train_q1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexBinaryIVF *arg1 = (faiss::IndexBinaryIVF *) 0 ;
-  size_t arg2 ;
-  uint8_t *arg3 = (uint8_t *) 0 ;
-  bool arg4 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  size_t val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  bool val4 ;
-  int ecode4 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:IndexBinaryIVF_train_q1",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexBinaryIVF, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryIVF_train_q1" "', argument " "1"" of type '" "faiss::IndexBinaryIVF *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexBinaryIVF * >(argp1);
-  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryIVF_train_q1" "', argument " "2"" of type '" "size_t""'");
-  } 
-  arg2 = static_cast< size_t >(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_unsigned_char, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexBinaryIVF_train_q1" "', argument " "3"" of type '" "uint8_t const *""'"); 
-  }
-  arg3 = reinterpret_cast< uint8_t * >(argp3);
-  ecode4 = SWIG_AsVal_bool(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexBinaryIVF_train_q1" "', argument " "4"" of type '" "bool""'");
-  } 
-  arg4 = static_cast< bool >(val4);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->train_q1(arg2,(uint8_t const *)arg3,arg4);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_new_IndexBinaryIVF__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::IndexBinary *arg1 = (faiss::IndexBinary *) 0 ;
@@ -59479,69 +60286,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_IndexBinaryIVF_imbalance_factor(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexBinaryIVF *arg1 = (faiss::IndexBinaryIVF *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  double result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexBinaryIVF_imbalance_factor",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexBinaryIVF, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryIVF_imbalance_factor" "', argument " "1"" of type '" "faiss::IndexBinaryIVF const *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexBinaryIVF * >(argp1);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      result = (double)((faiss::IndexBinaryIVF const *)arg1)->imbalance_factor();
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_From_double(static_cast< double >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexBinaryIVF_print_stats(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexBinaryIVF *arg1 = (faiss::IndexBinaryIVF *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexBinaryIVF_print_stats",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexBinaryIVF, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryIVF_print_stats" "', argument " "1"" of type '" "faiss::IndexBinaryIVF const *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexBinaryIVF * >(argp1);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      ((faiss::IndexBinaryIVF const *)arg1)->print_stats();
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_IndexBinaryIVF_replace_invlists__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::IndexBinaryIVF *arg1 = (faiss::IndexBinaryIVF *) 0 ;
@@ -60570,7 +61314,7 @@ SWIGINTERN PyObject *_wrap_IndexBinaryHNSW_get_distance_computer(PyObject *SWIGU
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  faiss::HNSW::DistanceComputer *result = 0 ;
+  faiss::DistanceComputer *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexBinaryHNSW_get_distance_computer",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexBinaryHNSW, 0 |  0 );
@@ -60581,7 +61325,7 @@ SWIGINTERN PyObject *_wrap_IndexBinaryHNSW_get_distance_computer(PyObject *SWIGU
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (faiss::HNSW::DistanceComputer *)((faiss::IndexBinaryHNSW const *)arg1)->get_distance_computer();
+      result = (faiss::DistanceComputer *)((faiss::IndexBinaryHNSW const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -60589,7 +61333,7 @@ SWIGINTERN PyObject *_wrap_IndexBinaryHNSW_get_distance_computer(PyObject *SWIGU
     }
     Py_END_ALLOW_THREADS
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__HNSW__DistanceComputer, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__DistanceComputer, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -60854,6 +61598,1389 @@ SWIGINTERN PyObject *IndexBinaryHNSW_swigregister(PyObject *SWIGUNUSEDPARM(self)
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
   SWIG_TypeNewClientData(SWIGTYPE_p_faiss__IndexBinaryHNSW, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_IndexShards_shard_indexes_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  std::vector< faiss::Index * > *arg2 = (std::vector< faiss::Index * > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_shard_indexes_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_shard_indexes_set" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_std__vectorT_faiss__Index_p_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexShards_shard_indexes_set" "', argument " "2"" of type '" "std::vector< faiss::Index * > *""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< faiss::Index * > * >(argp2);
+  if (arg1) (arg1)->shard_indexes = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_shard_indexes_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  std::vector< faiss::Index * > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_shard_indexes_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_shard_indexes_get" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  result = (std::vector< faiss::Index * > *)& ((arg1)->shard_indexes);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_faiss__Index_p_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_own_fields_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_own_fields_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_own_fields_set" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_own_fields_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->own_fields = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_own_fields_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_own_fields_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_own_fields_get" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  result = (bool) ((arg1)->own_fields);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_threaded_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_threaded_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_threaded_set" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_threaded_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->threaded = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_threaded_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_threaded_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_threaded_get" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  result = (bool) ((arg1)->threaded);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_successive_ids_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_successive_ids_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_successive_ids_set" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_successive_ids_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->successive_ids = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_successive_ids_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_successive_ids_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_successive_ids_get" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  result = (bool) ((arg1)->successive_ids);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::Index::idx_t arg1 ;
+  bool arg2 ;
+  bool arg3 ;
+  long val1 ;
+  int ecode1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  bool val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  faiss::IndexShards *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:new_IndexShards",&obj0,&obj1,&obj2)) SWIG_fail;
+  ecode1 = SWIG_AsVal_long(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexShards" "', argument " "1"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg1 = static_cast< faiss::Index::idx_t >(val1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_IndexShards" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  ecode3 = SWIG_AsVal_bool(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_IndexShards" "', argument " "3"" of type '" "bool""'");
+  } 
+  arg3 = static_cast< bool >(val3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::IndexShards *)new faiss::IndexShards(arg1,arg2,arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShards, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::Index::idx_t arg1 ;
+  bool arg2 ;
+  long val1 ;
+  int ecode1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::IndexShards *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_IndexShards",&obj0,&obj1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_long(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexShards" "', argument " "1"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg1 = static_cast< faiss::Index::idx_t >(val1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_IndexShards" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::IndexShards *)new faiss::IndexShards(arg1,arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShards, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::Index::idx_t arg1 ;
+  long val1 ;
+  int ecode1 = 0 ;
+  PyObject * obj0 = 0 ;
+  faiss::IndexShards *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_IndexShards",&obj0)) SWIG_fail;
+  ecode1 = SWIG_AsVal_long(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexShards" "', argument " "1"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg1 = static_cast< faiss::Index::idx_t >(val1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::IndexShards *)new faiss::IndexShards(arg1);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShards, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IndexShards(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 1) {
+    int _v;
+    {
+      int res = SWIG_AsVal_long(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      return _wrap_new_IndexShards__SWIG_2(self, args);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      int res = SWIG_AsVal_long(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      {
+        int res = SWIG_AsVal_bool(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_new_IndexShards__SWIG_1(self, args);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      int res = SWIG_AsVal_long(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      {
+        int res = SWIG_AsVal_bool(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_bool(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_new_IndexShards__SWIG_0(self, args);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_IndexShards'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    faiss::IndexShards::IndexShards(faiss::Index::idx_t,bool,bool)\n"
+    "    faiss::IndexShards::IndexShards(faiss::Index::idx_t,bool)\n"
+    "    faiss::IndexShards::IndexShards(faiss::Index::idx_t)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_add_shard(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::Index *arg2 = (faiss::Index *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_add_shard",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_add_shard" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__Index, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexShards_add_shard" "', argument " "2"" of type '" "faiss::Index *""'"); 
+  }
+  arg2 = reinterpret_cast< faiss::Index * >(argp2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->add_shard(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_sync_with_shard_indexes(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_sync_with_shard_indexes",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_sync_with_shard_indexes" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->sync_with_shard_indexes();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_at(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::Index *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_at",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_at" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_at" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::Index *)(arg1)->at(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__Index, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_add(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::Index::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexShards_add",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_add" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_add" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_add" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->add(arg2,(float const *)arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_add_with_ids(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::Index::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  long *arg4 = (long *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:IndexShards_add_with_ids",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_add_with_ids" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_add_with_ids" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_add_with_ids" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_long, 0 |  0 );
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "IndexShards_add_with_ids" "', argument " "4"" of type '" "long const *""'"); 
+  }
+  arg4 = reinterpret_cast< long * >(argp4);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->add_with_ids(arg2,(float const *)arg3,(long const *)arg4);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::Index::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  faiss::Index::idx_t arg4 ;
+  float *arg5 = (float *) 0 ;
+  faiss::Index::idx_t *arg6 = (faiss::Index::idx_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  long val4 ;
+  int ecode4 = 0 ;
+  void *argp5 = 0 ;
+  int res5 = 0 ;
+  void *argp6 = 0 ;
+  int res6 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:IndexShards_search",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_search" "', argument " "1"" of type '" "faiss::IndexShards const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_search" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_search" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  ecode4 = SWIG_AsVal_long(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexShards_search" "', argument " "4"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg4 = static_cast< faiss::Index::idx_t >(val4);
+  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexShards_search" "', argument " "5"" of type '" "float *""'"); 
+  }
+  arg5 = reinterpret_cast< float * >(argp5);
+  res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_long, 0 |  0 );
+  if (!SWIG_IsOK(res6)) {
+    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "IndexShards_search" "', argument " "6"" of type '" "faiss::Index::idx_t *""'"); 
+  }
+  arg6 = reinterpret_cast< faiss::Index::idx_t * >(argp6);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      ((faiss::IndexShards const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_train(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::Index::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexShards_train",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_train" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_train" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_train" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->train(arg2,(float const *)arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexShards_reset(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_reset",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_reset" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->reset();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_IndexShards(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_IndexShards",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IndexShards" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      delete arg1;
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *IndexShards_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__IndexShards, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_new_IndexReplicas(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_IndexReplicas")) SWIG_fail;
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::IndexReplicas *)new faiss::IndexReplicas();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexReplicas, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_IndexReplicas(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_IndexReplicas",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IndexReplicas" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      delete arg1;
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_addIndex(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::Index *arg2 = (faiss::Index *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexReplicas_addIndex",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_addIndex" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__Index, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexReplicas_addIndex" "', argument " "2"" of type '" "faiss::Index *""'"); 
+  }
+  arg2 = reinterpret_cast< faiss::Index * >(argp2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->addIndex(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_removeIndex(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::Index *arg2 = (faiss::Index *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexReplicas_removeIndex",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_removeIndex" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__Index, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexReplicas_removeIndex" "', argument " "2"" of type '" "faiss::Index *""'"); 
+  }
+  arg2 = reinterpret_cast< faiss::Index * >(argp2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->removeIndex(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_runOnIndex(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  SwigValueWrapper< std::function< void (faiss::Index *) > > arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexReplicas_runOnIndex",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_runOnIndex" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__functionT_void_ffaiss__Index_pF_t,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexReplicas_runOnIndex" "', argument " "2"" of type '" "std::function< void (faiss::Index *) >""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "IndexReplicas_runOnIndex" "', argument " "2"" of type '" "std::function< void (faiss::Index *) >""'");
+    } else {
+      std::function< void (faiss::Index *) > * temp = reinterpret_cast< std::function< void (faiss::Index *) > * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->runOnIndex(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_reset(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexReplicas_reset",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_reset" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->reset();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_train(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::Index::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexReplicas_train",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_train" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_train" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexReplicas_train" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->train(arg2,(float const *)arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_add(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::Index::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexReplicas_add",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_add" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_add" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexReplicas_add" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->add(arg2,(float const *)arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::Index::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  faiss::Index::idx_t arg4 ;
+  float *arg5 = (float *) 0 ;
+  faiss::Index::idx_t *arg6 = (faiss::Index::idx_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  long val4 ;
+  int ecode4 = 0 ;
+  void *argp5 = 0 ;
+  int res5 = 0 ;
+  void *argp6 = 0 ;
+  int res6 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:IndexReplicas_search",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_search" "', argument " "1"" of type '" "faiss::IndexReplicas const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_search" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexReplicas_search" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  ecode4 = SWIG_AsVal_long(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexReplicas_search" "', argument " "4"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg4 = static_cast< faiss::Index::idx_t >(val4);
+  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexReplicas_search" "', argument " "5"" of type '" "float *""'"); 
+  }
+  arg5 = reinterpret_cast< float * >(argp5);
+  res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_long, 0 |  0 );
+  if (!SWIG_IsOK(res6)) {
+    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "IndexReplicas_search" "', argument " "6"" of type '" "faiss::Index::idx_t *""'"); 
+  }
+  arg6 = reinterpret_cast< faiss::Index::idx_t * >(argp6);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      ((faiss::IndexReplicas const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_reconstruct(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::Index::idx_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexReplicas_reconstruct",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_reconstruct" "', argument " "1"" of type '" "faiss::IndexReplicas const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_reconstruct" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexReplicas_reconstruct" "', argument " "3"" of type '" "float *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      ((faiss::IndexReplicas const *)arg1)->reconstruct(arg2,arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_own_fields_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexReplicas_own_fields_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_own_fields_set" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_own_fields_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->own_fields = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_own_fields_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexReplicas_own_fields_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_own_fields_get" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  result = (bool) ((arg1)->own_fields);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_count(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexReplicas_count",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_count" "', argument " "1"" of type '" "faiss::IndexReplicas const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (int)((faiss::IndexReplicas const *)arg1)->count();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_at(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::Index *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexReplicas_at",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_at" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_at" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::Index *)(arg1)->at(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__Index, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *IndexReplicas_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__IndexReplicas, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
@@ -61880,821 +64007,6 @@ SWIGINTERN PyObject *IndexIDMap2_swigregister(PyObject *SWIGUNUSEDPARM(self), Py
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
   SWIG_TypeNewClientData(SWIGTYPE_p_faiss__IndexIDMap2, SWIG_NewClientData(obj));
-  return SWIG_Py_Void();
-}
-
-SWIGINTERN PyObject *_wrap_IndexShards_shard_indexes_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  std::vector< faiss::Index * > *arg2 = (std::vector< faiss::Index * > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_shard_indexes_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_shard_indexes_set" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_std__vectorT_faiss__Index_p_t, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexShards_shard_indexes_set" "', argument " "2"" of type '" "std::vector< faiss::Index * > *""'"); 
-  }
-  arg2 = reinterpret_cast< std::vector< faiss::Index * > * >(argp2);
-  if (arg1) (arg1)->shard_indexes = *arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_shard_indexes_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  std::vector< faiss::Index * > *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_shard_indexes_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_shard_indexes_get" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  result = (std::vector< faiss::Index * > *)& ((arg1)->shard_indexes);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_faiss__Index_p_t, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_own_fields_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  bool arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_own_fields_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_own_fields_set" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  ecode2 = SWIG_AsVal_bool(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_own_fields_set" "', argument " "2"" of type '" "bool""'");
-  } 
-  arg2 = static_cast< bool >(val2);
-  if (arg1) (arg1)->own_fields = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_own_fields_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  bool result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_own_fields_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_own_fields_get" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  result = (bool) ((arg1)->own_fields);
-  resultobj = SWIG_From_bool(static_cast< bool >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_threaded_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  bool arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_threaded_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_threaded_set" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  ecode2 = SWIG_AsVal_bool(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_threaded_set" "', argument " "2"" of type '" "bool""'");
-  } 
-  arg2 = static_cast< bool >(val2);
-  if (arg1) (arg1)->threaded = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_threaded_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  bool result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_threaded_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_threaded_get" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  result = (bool) ((arg1)->threaded);
-  resultobj = SWIG_From_bool(static_cast< bool >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_successive_ids_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  bool arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_successive_ids_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_successive_ids_set" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  ecode2 = SWIG_AsVal_bool(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_successive_ids_set" "', argument " "2"" of type '" "bool""'");
-  } 
-  arg2 = static_cast< bool >(val2);
-  if (arg1) (arg1)->successive_ids = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_successive_ids_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  bool result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_successive_ids_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_successive_ids_get" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  result = (bool) ((arg1)->successive_ids);
-  resultobj = SWIG_From_bool(static_cast< bool >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::Index::idx_t arg1 ;
-  bool arg2 ;
-  bool arg3 ;
-  long val1 ;
-  int ecode1 = 0 ;
-  bool val2 ;
-  int ecode2 = 0 ;
-  bool val3 ;
-  int ecode3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  faiss::IndexShards *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:new_IndexShards",&obj0,&obj1,&obj2)) SWIG_fail;
-  ecode1 = SWIG_AsVal_long(obj0, &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexShards" "', argument " "1"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg1 = static_cast< faiss::Index::idx_t >(val1);
-  ecode2 = SWIG_AsVal_bool(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_IndexShards" "', argument " "2"" of type '" "bool""'");
-  } 
-  arg2 = static_cast< bool >(val2);
-  ecode3 = SWIG_AsVal_bool(obj2, &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_IndexShards" "', argument " "3"" of type '" "bool""'");
-  } 
-  arg3 = static_cast< bool >(val3);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      result = (faiss::IndexShards *)new faiss::IndexShards(arg1,arg2,arg3);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShards, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::Index::idx_t arg1 ;
-  bool arg2 ;
-  long val1 ;
-  int ecode1 = 0 ;
-  bool val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  faiss::IndexShards *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:new_IndexShards",&obj0,&obj1)) SWIG_fail;
-  ecode1 = SWIG_AsVal_long(obj0, &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexShards" "', argument " "1"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg1 = static_cast< faiss::Index::idx_t >(val1);
-  ecode2 = SWIG_AsVal_bool(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_IndexShards" "', argument " "2"" of type '" "bool""'");
-  } 
-  arg2 = static_cast< bool >(val2);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      result = (faiss::IndexShards *)new faiss::IndexShards(arg1,arg2);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShards, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::Index::idx_t arg1 ;
-  long val1 ;
-  int ecode1 = 0 ;
-  PyObject * obj0 = 0 ;
-  faiss::IndexShards *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:new_IndexShards",&obj0)) SWIG_fail;
-  ecode1 = SWIG_AsVal_long(obj0, &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexShards" "', argument " "1"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg1 = static_cast< faiss::Index::idx_t >(val1);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      result = (faiss::IndexShards *)new faiss::IndexShards(arg1);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShards, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_new_IndexShards(PyObject *self, PyObject *args) {
-  Py_ssize_t argc;
-  PyObject *argv[4] = {
-    0
-  };
-  Py_ssize_t ii;
-  
-  if (!PyTuple_Check(args)) SWIG_fail;
-  argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
-    argv[ii] = PyTuple_GET_ITEM(args,ii);
-  }
-  if (argc == 1) {
-    int _v;
-    {
-      int res = SWIG_AsVal_long(argv[0], NULL);
-      _v = SWIG_CheckState(res);
-    }
-    if (_v) {
-      return _wrap_new_IndexShards__SWIG_2(self, args);
-    }
-  }
-  if (argc == 2) {
-    int _v;
-    {
-      int res = SWIG_AsVal_long(argv[0], NULL);
-      _v = SWIG_CheckState(res);
-    }
-    if (_v) {
-      {
-        int res = SWIG_AsVal_bool(argv[1], NULL);
-        _v = SWIG_CheckState(res);
-      }
-      if (_v) {
-        return _wrap_new_IndexShards__SWIG_1(self, args);
-      }
-    }
-  }
-  if (argc == 3) {
-    int _v;
-    {
-      int res = SWIG_AsVal_long(argv[0], NULL);
-      _v = SWIG_CheckState(res);
-    }
-    if (_v) {
-      {
-        int res = SWIG_AsVal_bool(argv[1], NULL);
-        _v = SWIG_CheckState(res);
-      }
-      if (_v) {
-        {
-          int res = SWIG_AsVal_bool(argv[2], NULL);
-          _v = SWIG_CheckState(res);
-        }
-        if (_v) {
-          return _wrap_new_IndexShards__SWIG_0(self, args);
-        }
-      }
-    }
-  }
-  
-fail:
-  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_IndexShards'.\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    faiss::IndexShards::IndexShards(faiss::Index::idx_t,bool,bool)\n"
-    "    faiss::IndexShards::IndexShards(faiss::Index::idx_t,bool)\n"
-    "    faiss::IndexShards::IndexShards(faiss::Index::idx_t)\n");
-  return 0;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_add_shard(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  faiss::Index *arg2 = (faiss::Index *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_add_shard",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_add_shard" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__Index, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexShards_add_shard" "', argument " "2"" of type '" "faiss::Index *""'"); 
-  }
-  arg2 = reinterpret_cast< faiss::Index * >(argp2);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->add_shard(arg2);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_sync_with_shard_indexes(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_sync_with_shard_indexes",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_sync_with_shard_indexes" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->sync_with_shard_indexes();
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_at(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  faiss::Index *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_at",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_at" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_at" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = static_cast< int >(val2);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      result = (faiss::Index *)(arg1)->at(arg2);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__Index, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_add(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  long val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexShards_add",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_add" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  ecode2 = SWIG_AsVal_long(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_add" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_add" "', argument " "3"" of type '" "float const *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->add(arg2,(float const *)arg3);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_add_with_ids(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  long *arg4 = (long *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  long val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  void *argp4 = 0 ;
-  int res4 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:IndexShards_add_with_ids",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_add_with_ids" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  ecode2 = SWIG_AsVal_long(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_add_with_ids" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_add_with_ids" "', argument " "3"" of type '" "float const *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_long, 0 |  0 );
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "IndexShards_add_with_ids" "', argument " "4"" of type '" "long const *""'"); 
-  }
-  arg4 = reinterpret_cast< long * >(argp4);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->add_with_ids(arg2,(float const *)arg3,(long const *)arg4);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  faiss::Index::idx_t arg4 ;
-  float *arg5 = (float *) 0 ;
-  faiss::Index::idx_t *arg6 = (faiss::Index::idx_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  long val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  long val4 ;
-  int ecode4 = 0 ;
-  void *argp5 = 0 ;
-  int res5 = 0 ;
-  void *argp6 = 0 ;
-  int res6 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:IndexShards_search",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_search" "', argument " "1"" of type '" "faiss::IndexShards const *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  ecode2 = SWIG_AsVal_long(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_search" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_search" "', argument " "3"" of type '" "float const *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  ecode4 = SWIG_AsVal_long(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexShards_search" "', argument " "4"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg4 = static_cast< faiss::Index::idx_t >(val4);
-  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexShards_search" "', argument " "5"" of type '" "float *""'"); 
-  }
-  arg5 = reinterpret_cast< float * >(argp5);
-  res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_long, 0 |  0 );
-  if (!SWIG_IsOK(res6)) {
-    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "IndexShards_search" "', argument " "6"" of type '" "faiss::Index::idx_t *""'"); 
-  }
-  arg6 = reinterpret_cast< faiss::Index::idx_t * >(argp6);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      ((faiss::IndexShards const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_train(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  long val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexShards_train",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_train" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  ecode2 = SWIG_AsVal_long(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_train" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_train" "', argument " "3"" of type '" "float const *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->train(arg2,(float const *)arg3);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexShards_reset(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_reset",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_reset" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->reset();
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_IndexShards(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_IndexShards",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IndexShards" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      delete arg1;
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *IndexShards_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *obj;
-  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__IndexShards, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
@@ -63911,7 +65223,7 @@ SWIGINTERN PyObject *GpuMultipleClonerOptions_swigregister(PyObject *SWIGUNUSEDP
   return SWIG_Py_Void();
 }
 
-SWIGINTERN PyObject *_wrap_allocMemorySpace(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_allocMemorySpaceV(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::gpu::MemorySpace arg1 ;
   void **arg2 = (void **) 0 ;
@@ -63926,26 +65238,64 @@ SWIGINTERN PyObject *_wrap_allocMemorySpace(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:allocMemorySpace",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO:allocMemorySpaceV",&obj0,&obj1,&obj2)) SWIG_fail;
   ecode1 = SWIG_AsVal_int(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "allocMemorySpace" "', argument " "1"" of type '" "faiss::gpu::MemorySpace""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "allocMemorySpaceV" "', argument " "1"" of type '" "faiss::gpu::MemorySpace""'");
   } 
   arg1 = static_cast< faiss::gpu::MemorySpace >(val1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_p_void, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "allocMemorySpace" "', argument " "2"" of type '" "void **""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "allocMemorySpaceV" "', argument " "2"" of type '" "void **""'"); 
   }
   arg2 = reinterpret_cast< void ** >(argp2);
   ecode3 = SWIG_AsVal_size_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "allocMemorySpace" "', argument " "3"" of type '" "size_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "allocMemorySpaceV" "', argument " "3"" of type '" "size_t""'");
   } 
   arg3 = static_cast< size_t >(val3);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      faiss::gpu::allocMemorySpace(arg1,arg2,arg3);
+      faiss::gpu::allocMemorySpaceV(arg1,arg2,arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_freeMemorySpace(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::MemorySpace arg1 ;
+  void *arg2 = (void *) 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int res2 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:freeMemorySpace",&obj0,&obj1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_int(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "freeMemorySpace" "', argument " "1"" of type '" "faiss::gpu::MemorySpace""'");
+  } 
+  arg1 = static_cast< faiss::gpu::MemorySpace >(val1);
+  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "freeMemorySpace" "', argument " "2"" of type '" "void *""'"); 
+  }
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      faiss::gpu::freeMemorySpace(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -64173,6 +65523,78 @@ SWIGINTERN PyObject *_wrap_GpuIndex_getResources(PyObject *SWIGUNUSEDPARM(self),
     Py_END_ALLOW_THREADS
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__GpuResources, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GpuIndex_setMinPagingSize(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuIndex *arg1 = (faiss::gpu::GpuIndex *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GpuIndex_setMinPagingSize",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndex, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndex_setMinPagingSize" "', argument " "1"" of type '" "faiss::gpu::GpuIndex *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuIndex * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GpuIndex_setMinPagingSize" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->setMinPagingSize(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GpuIndex_getMinPagingSize(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::gpu::GpuIndex *arg1 = (faiss::gpu::GpuIndex *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GpuIndex_getMinPagingSize",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndex, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndex_getMinPagingSize" "', argument " "1"" of type '" "faiss::gpu::GpuIndex const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::gpu::GpuIndex * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (size_t)((faiss::gpu::GpuIndex const *)arg1)->getMinPagingSize();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
   return NULL;
@@ -64946,78 +66368,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_GpuIndexFlat_setMinPagingSize(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::GpuIndexFlat *arg1 = (faiss::gpu::GpuIndexFlat *) 0 ;
-  size_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  size_t val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:GpuIndexFlat_setMinPagingSize",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexFlat, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndexFlat_setMinPagingSize" "', argument " "1"" of type '" "faiss::gpu::GpuIndexFlat *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::GpuIndexFlat * >(argp1);
-  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GpuIndexFlat_setMinPagingSize" "', argument " "2"" of type '" "size_t""'");
-  } 
-  arg2 = static_cast< size_t >(val2);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->setMinPagingSize(arg2);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_GpuIndexFlat_getMinPagingSize(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::GpuIndexFlat *arg1 = (faiss::gpu::GpuIndexFlat *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  size_t result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:GpuIndexFlat_getMinPagingSize",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexFlat, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndexFlat_getMinPagingSize" "', argument " "1"" of type '" "faiss::gpu::GpuIndexFlat const *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::GpuIndexFlat * >(argp1);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      result = (size_t)((faiss::gpu::GpuIndexFlat const *)arg1)->getMinPagingSize();
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_GpuIndexFlat_copyFrom(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::gpu::GpuIndexFlat *arg1 = (faiss::gpu::GpuIndexFlat *) 0 ;
@@ -65245,82 +66595,6 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlat_add(PyObject *SWIGUNUSEDPARM(self), PyOb
     Py_BEGIN_ALLOW_THREADS
     try {
       (arg1)->add(arg2,(float const *)arg3);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_GpuIndexFlat_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::GpuIndexFlat *arg1 = (faiss::gpu::GpuIndexFlat *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  faiss::Index::idx_t arg4 ;
-  float *arg5 = (float *) 0 ;
-  faiss::Index::idx_t *arg6 = (faiss::Index::idx_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  long val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  long val4 ;
-  int ecode4 = 0 ;
-  void *argp5 = 0 ;
-  int res5 = 0 ;
-  void *argp6 = 0 ;
-  int res6 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:GpuIndexFlat_search",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexFlat, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndexFlat_search" "', argument " "1"" of type '" "faiss::gpu::GpuIndexFlat const *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::GpuIndexFlat * >(argp1);
-  ecode2 = SWIG_AsVal_long(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GpuIndexFlat_search" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "GpuIndexFlat_search" "', argument " "3"" of type '" "float const *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  ecode4 = SWIG_AsVal_long(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "GpuIndexFlat_search" "', argument " "4"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg4 = static_cast< faiss::Index::idx_t >(val4);
-  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "GpuIndexFlat_search" "', argument " "5"" of type '" "float *""'"); 
-  }
-  arg5 = reinterpret_cast< float * >(argp5);
-  res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_long, 0 |  0 );
-  if (!SWIG_IsOK(res6)) {
-    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "GpuIndexFlat_search" "', argument " "6"" of type '" "faiss::Index::idx_t *""'"); 
-  }
-  arg6 = reinterpret_cast< faiss::Index::idx_t * >(argp6);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      ((faiss::gpu::GpuIndexFlat const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
       PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -66669,55 +67943,6 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVF_getNumProbes(PyObject *SWIGUNUSEDPARM(sel
     Py_END_ALLOW_THREADS
   }
   resultobj = SWIG_From_int(static_cast< int >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_GpuIndexIVF_add(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::GpuIndexIVF *arg1 = (faiss::gpu::GpuIndexIVF *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  long val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:GpuIndexIVF_add",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__GpuIndexIVF, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GpuIndexIVF_add" "', argument " "1"" of type '" "faiss::gpu::GpuIndexIVF *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::GpuIndexIVF * >(argp1);
-  ecode2 = SWIG_AsVal_long(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GpuIndexIVF_add" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "GpuIndexIVF_add" "', argument " "3"" of type '" "float const *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->add(arg2,(float const *)arg3);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -69280,669 +70505,6 @@ SWIGINTERN PyObject *GpuIndexBinaryFlat_swigregister(PyObject *SWIGUNUSEDPARM(se
   return SWIG_Py_Void();
 }
 
-SWIGINTERN PyObject *_wrap_new_IndexProxy(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)":new_IndexProxy")) SWIG_fail;
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      result = (faiss::gpu::IndexProxy *)new faiss::gpu::IndexProxy();
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__gpu__IndexProxy, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_IndexProxy(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_IndexProxy",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IndexProxy" "', argument " "1"" of type '" "faiss::gpu::IndexProxy *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      delete arg1;
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexProxy_addIndex(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  faiss::Index *arg2 = (faiss::Index *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:IndexProxy_addIndex",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexProxy_addIndex" "', argument " "1"" of type '" "faiss::gpu::IndexProxy *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__Index, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexProxy_addIndex" "', argument " "2"" of type '" "faiss::Index *""'"); 
-  }
-  arg2 = reinterpret_cast< faiss::Index * >(argp2);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->addIndex(arg2);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexProxy_removeIndex(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  faiss::Index *arg2 = (faiss::Index *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:IndexProxy_removeIndex",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexProxy_removeIndex" "', argument " "1"" of type '" "faiss::gpu::IndexProxy *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__Index, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexProxy_removeIndex" "', argument " "2"" of type '" "faiss::Index *""'"); 
-  }
-  arg2 = reinterpret_cast< faiss::Index * >(argp2);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->removeIndex(arg2);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexProxy_runOnIndex(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  SwigValueWrapper< std::function< void (faiss::Index *) > > arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:IndexProxy_runOnIndex",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexProxy_runOnIndex" "', argument " "1"" of type '" "faiss::gpu::IndexProxy *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__functionT_void_ffaiss__Index_pF_t,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexProxy_runOnIndex" "', argument " "2"" of type '" "std::function< void (faiss::Index *) >""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "IndexProxy_runOnIndex" "', argument " "2"" of type '" "std::function< void (faiss::Index *) >""'");
-    } else {
-      std::function< void (faiss::Index *) > * temp = reinterpret_cast< std::function< void (faiss::Index *) > * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
-  }
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->runOnIndex(arg2);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexProxy_reset(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexProxy_reset",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexProxy_reset" "', argument " "1"" of type '" "faiss::gpu::IndexProxy *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->reset();
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexProxy_train(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  long val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexProxy_train",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexProxy_train" "', argument " "1"" of type '" "faiss::gpu::IndexProxy *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  ecode2 = SWIG_AsVal_long(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexProxy_train" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexProxy_train" "', argument " "3"" of type '" "float const *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->train(arg2,(float const *)arg3);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexProxy_add(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  long val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexProxy_add",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexProxy_add" "', argument " "1"" of type '" "faiss::gpu::IndexProxy *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  ecode2 = SWIG_AsVal_long(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexProxy_add" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexProxy_add" "', argument " "3"" of type '" "float const *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      (arg1)->add(arg2,(float const *)arg3);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexProxy_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  faiss::Index::idx_t arg4 ;
-  float *arg5 = (float *) 0 ;
-  faiss::Index::idx_t *arg6 = (faiss::Index::idx_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  long val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  long val4 ;
-  int ecode4 = 0 ;
-  void *argp5 = 0 ;
-  int res5 = 0 ;
-  void *argp6 = 0 ;
-  int res6 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:IndexProxy_search",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexProxy_search" "', argument " "1"" of type '" "faiss::gpu::IndexProxy const *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  ecode2 = SWIG_AsVal_long(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexProxy_search" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexProxy_search" "', argument " "3"" of type '" "float const *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  ecode4 = SWIG_AsVal_long(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexProxy_search" "', argument " "4"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg4 = static_cast< faiss::Index::idx_t >(val4);
-  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexProxy_search" "', argument " "5"" of type '" "float *""'"); 
-  }
-  arg5 = reinterpret_cast< float * >(argp5);
-  res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_long, 0 |  0 );
-  if (!SWIG_IsOK(res6)) {
-    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "IndexProxy_search" "', argument " "6"" of type '" "faiss::Index::idx_t *""'"); 
-  }
-  arg6 = reinterpret_cast< faiss::Index::idx_t * >(argp6);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      ((faiss::gpu::IndexProxy const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexProxy_reconstruct(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  long val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexProxy_reconstruct",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexProxy_reconstruct" "', argument " "1"" of type '" "faiss::gpu::IndexProxy const *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  ecode2 = SWIG_AsVal_long(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexProxy_reconstruct" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
-  } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexProxy_reconstruct" "', argument " "3"" of type '" "float *""'"); 
-  }
-  arg3 = reinterpret_cast< float * >(argp3);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      ((faiss::gpu::IndexProxy const *)arg1)->reconstruct(arg2,arg3);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexProxy_own_fields_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  bool arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:IndexProxy_own_fields_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexProxy_own_fields_set" "', argument " "1"" of type '" "faiss::gpu::IndexProxy *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  ecode2 = SWIG_AsVal_bool(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexProxy_own_fields_set" "', argument " "2"" of type '" "bool""'");
-  } 
-  arg2 = static_cast< bool >(val2);
-  if (arg1) (arg1)->own_fields = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexProxy_own_fields_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  bool result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexProxy_own_fields_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexProxy_own_fields_get" "', argument " "1"" of type '" "faiss::gpu::IndexProxy *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  result = (bool) ((arg1)->own_fields);
-  resultobj = SWIG_From_bool(static_cast< bool >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexProxy_count(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:IndexProxy_count",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexProxy_count" "', argument " "1"" of type '" "faiss::gpu::IndexProxy const *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      result = (int)((faiss::gpu::IndexProxy const *)arg1)->count();
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_From_int(static_cast< int >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_IndexProxy_at(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  faiss::gpu::IndexProxy *arg1 = (faiss::gpu::IndexProxy *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  faiss::Index *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:IndexProxy_at",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__gpu__IndexProxy, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexProxy_at" "', argument " "1"" of type '" "faiss::gpu::IndexProxy *""'"); 
-  }
-  arg1 = reinterpret_cast< faiss::gpu::IndexProxy * >(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexProxy_at" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = static_cast< int >(val2);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      result = (faiss::Index *)(arg1)->at(arg2);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__Index, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *IndexProxy_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *obj;
-  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__gpu__IndexProxy, SWIG_NewClientData(obj));
-  return SWIG_Py_Void();
-}
-
-SWIGINTERN PyObject *_wrap_kmeans_clustering_gpu(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  int arg1 ;
-  size_t arg2 ;
-  size_t arg3 ;
-  size_t arg4 ;
-  float *arg5 = (float *) 0 ;
-  float *arg6 = (float *) 0 ;
-  bool arg7 ;
-  bool arg8 ;
-  int val1 ;
-  int ecode1 = 0 ;
-  size_t val2 ;
-  int ecode2 = 0 ;
-  size_t val3 ;
-  int ecode3 = 0 ;
-  size_t val4 ;
-  int ecode4 = 0 ;
-  void *argp5 = 0 ;
-  int res5 = 0 ;
-  void *argp6 = 0 ;
-  int res6 = 0 ;
-  bool val7 ;
-  int ecode7 = 0 ;
-  bool val8 ;
-  int ecode8 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  PyObject * obj6 = 0 ;
-  PyObject * obj7 = 0 ;
-  float result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOO:kmeans_clustering_gpu",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7)) SWIG_fail;
-  ecode1 = SWIG_AsVal_int(obj0, &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "kmeans_clustering_gpu" "', argument " "1"" of type '" "int""'");
-  } 
-  arg1 = static_cast< int >(val1);
-  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "kmeans_clustering_gpu" "', argument " "2"" of type '" "size_t""'");
-  } 
-  arg2 = static_cast< size_t >(val2);
-  ecode3 = SWIG_AsVal_size_t(obj2, &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "kmeans_clustering_gpu" "', argument " "3"" of type '" "size_t""'");
-  } 
-  arg3 = static_cast< size_t >(val3);
-  ecode4 = SWIG_AsVal_size_t(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "kmeans_clustering_gpu" "', argument " "4"" of type '" "size_t""'");
-  } 
-  arg4 = static_cast< size_t >(val4);
-  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "kmeans_clustering_gpu" "', argument " "5"" of type '" "float const *""'"); 
-  }
-  arg5 = reinterpret_cast< float * >(argp5);
-  res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_float, 0 |  0 );
-  if (!SWIG_IsOK(res6)) {
-    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "kmeans_clustering_gpu" "', argument " "6"" of type '" "float *""'"); 
-  }
-  arg6 = reinterpret_cast< float * >(argp6);
-  ecode7 = SWIG_AsVal_bool(obj6, &val7);
-  if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "kmeans_clustering_gpu" "', argument " "7"" of type '" "bool""'");
-  } 
-  arg7 = static_cast< bool >(val7);
-  ecode8 = SWIG_AsVal_bool(obj7, &val8);
-  if (!SWIG_IsOK(ecode8)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "kmeans_clustering_gpu" "', argument " "8"" of type '" "bool""'");
-  } 
-  arg8 = static_cast< bool >(val8);
-  {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-      result = (float)faiss::gpu::kmeans_clustering_gpu(arg1,arg2,arg3,arg4,(float const *)arg5,arg6,arg7,arg8);
-    } catch(faiss::FaissException & e) {
-      PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-  }
-  resultobj = SWIG_From_float(static_cast< float >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_bruteForceKnn(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::gpu::GpuResources *arg1 = (faiss::gpu::GpuResources *) 0 ;
@@ -70081,125 +70643,125 @@ SWIGINTERN PyObject *_wrap_downcast_index(PyObject *SWIGUNUSEDPARM(self), PyObje
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,0);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,0);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,0);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,0);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,0);
     } else
@@ -70248,37 +70810,42 @@ SWIGINTERN PyObject *_wrap_downcast_VectorTransform(PyObject *SWIGUNUSEDPARM(sel
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::RemapDimensionsTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__RemapDimensionsTransform,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::OPQMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__OPQMatrix,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::PCAMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__PCAMatrix,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::RandomRotationMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__RandomRotationMatrix,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::LinearTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__LinearTransform,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::NormalizationTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__NormalizationTransform,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::CenteringTransform *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__CenteringTransform,0);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::VectorTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__VectorTransform,0);
     } else
@@ -70322,35 +70889,35 @@ SWIGINTERN PyObject *_wrap_downcast_IndexBinary(PyObject *SWIGUNUSEDPARM(self), 
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,0);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,0);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,0);
     } else
@@ -70775,6 +71342,20 @@ SWIGINTERN PyObject *Swig_var_IO_FLAG_READ_ONLY_get(void) {
 }
 
 
+SWIGINTERN int Swig_var_IO_FLAG_ONDISK_SAME_DIR_set(PyObject *) {
+  SWIG_Error(SWIG_AttributeError,"Variable IO_FLAG_ONDISK_SAME_DIR is read-only.");
+  return 1;
+}
+
+
+SWIGINTERN PyObject *Swig_var_IO_FLAG_ONDISK_SAME_DIR_get(void) {
+  PyObject *pyobj = 0;
+  
+  pyobj = SWIG_From_int(static_cast< int >(faiss::IO_FLAG_ONDISK_SAME_DIR));
+  return pyobj;
+}
+
+
 SWIGINTERN PyObject *_wrap_read_index__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
@@ -70811,125 +71392,125 @@ SWIGINTERN PyObject *_wrap_read_index__SWIG_0(PyObject *SWIGUNUSEDPARM(self), Py
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -70981,125 +71562,125 @@ SWIGINTERN PyObject *_wrap_read_index__SWIG_1(PyObject *SWIGUNUSEDPARM(self), Py
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -71159,125 +71740,125 @@ SWIGINTERN PyObject *_wrap_read_index__SWIG_2(PyObject *SWIGUNUSEDPARM(self), Py
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -71326,125 +71907,125 @@ SWIGINTERN PyObject *_wrap_read_index__SWIG_3(PyObject *SWIGUNUSEDPARM(self), Py
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -71502,125 +72083,125 @@ SWIGINTERN PyObject *_wrap_read_index__SWIG_4(PyObject *SWIGUNUSEDPARM(self), Py
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -71669,125 +72250,125 @@ SWIGINTERN PyObject *_wrap_read_index__SWIG_5(PyObject *SWIGUNUSEDPARM(self), Py
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -71942,35 +72523,35 @@ SWIGINTERN PyObject *_wrap_read_index_binary__SWIG_0(PyObject *SWIGUNUSEDPARM(se
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -72022,35 +72603,35 @@ SWIGINTERN PyObject *_wrap_read_index_binary__SWIG_1(PyObject *SWIGUNUSEDPARM(se
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -72110,35 +72691,35 @@ SWIGINTERN PyObject *_wrap_read_index_binary__SWIG_2(PyObject *SWIGUNUSEDPARM(se
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -72187,35 +72768,35 @@ SWIGINTERN PyObject *_wrap_read_index_binary__SWIG_3(PyObject *SWIGUNUSEDPARM(se
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -72273,35 +72854,35 @@ SWIGINTERN PyObject *_wrap_read_index_binary__SWIG_4(PyObject *SWIGUNUSEDPARM(se
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -72350,35 +72931,35 @@ SWIGINTERN PyObject *_wrap_read_index_binary__SWIG_5(PyObject *SWIGUNUSEDPARM(se
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -72567,37 +73148,42 @@ SWIGINTERN PyObject *_wrap_read_VectorTransform(PyObject *SWIGUNUSEDPARM(self), 
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::RemapDimensionsTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__RemapDimensionsTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::OPQMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__OPQMatrix,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::PCAMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__PCAMatrix,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::RandomRotationMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__RandomRotationMatrix,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::LinearTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__LinearTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::NormalizationTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__NormalizationTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::CenteringTransform *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__CenteringTransform,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::VectorTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__VectorTransform,SWIG_POINTER_OWN);
     } else
@@ -73040,125 +73626,125 @@ SWIGINTERN PyObject *_wrap_clone_index(PyObject *SWIGUNUSEDPARM(self), PyObject 
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -73216,37 +73802,42 @@ SWIGINTERN PyObject *_wrap_Cloner_clone_VectorTransform(PyObject *SWIGUNUSEDPARM
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::RemapDimensionsTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__RemapDimensionsTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::OPQMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__OPQMatrix,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::PCAMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__PCAMatrix,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::RandomRotationMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__RandomRotationMatrix,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::LinearTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__LinearTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::NormalizationTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__NormalizationTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::CenteringTransform *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__CenteringTransform,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::VectorTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__VectorTransform,SWIG_POINTER_OWN);
     } else
@@ -73299,125 +73890,125 @@ SWIGINTERN PyObject *_wrap_Cloner_clone_Index(PyObject *SWIGUNUSEDPARM(self), Py
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,0);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,0);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,0);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,0);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,0);
     } else
@@ -76544,125 +77135,125 @@ SWIGINTERN PyObject *_wrap_index_factory__SWIG_0(PyObject *SWIGUNUSEDPARM(self),
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -76723,125 +77314,125 @@ SWIGINTERN PyObject *_wrap_index_factory__SWIG_1(PyObject *SWIGUNUSEDPARM(self),
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -76958,35 +77549,35 @@ SWIGINTERN PyObject *_wrap_index_binary_factory(PyObject *SWIGUNUSEDPARM(self), 
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -77010,6 +77601,782 @@ fail:
   return NULL;
 }
 
+
+SWIGINTERN PyObject *_wrap_new_MatrixStats(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  size_t arg1 ;
+  size_t arg2 ;
+  float *arg3 = (float *) 0 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  faiss::MatrixStats *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:new_MatrixStats",&obj0,&obj1,&obj2)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_MatrixStats" "', argument " "1"" of type '" "size_t""'");
+  } 
+  arg1 = static_cast< size_t >(val1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_MatrixStats" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_MatrixStats" "', argument " "3"" of type '" "float const *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::MatrixStats *)new faiss::MatrixStats(arg1,arg2,(float const *)arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__MatrixStats, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_comments_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_comments_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_comments_set" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(obj1, &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MatrixStats_comments_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MatrixStats_comments_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->comments = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_comments_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  std::string *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MatrixStats_comments_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_comments_get" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  result = (std::string *) & ((arg1)->comments);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_n_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_n_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_n_set" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MatrixStats_n_set" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->n = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_n_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MatrixStats_n_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_n_get" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  result = (size_t) ((arg1)->n);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_d_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_d_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_d_set" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MatrixStats_d_set" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->d = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_d_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MatrixStats_d_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_d_get" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  result = (size_t) ((arg1)->d);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_n_collision_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_n_collision_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_n_collision_set" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MatrixStats_n_collision_set" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->n_collision = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_n_collision_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MatrixStats_n_collision_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_n_collision_get" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  result = (size_t) ((arg1)->n_collision);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_n_valid_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_n_valid_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_n_valid_set" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MatrixStats_n_valid_set" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->n_valid = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_n_valid_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MatrixStats_n_valid_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_n_valid_get" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  result = (size_t) ((arg1)->n_valid);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_n0_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_n0_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_n0_set" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MatrixStats_n0_set" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->n0 = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_n0_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MatrixStats_n0_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_n0_get" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  result = (size_t) ((arg1)->n0);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_min_norm2_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_min_norm2_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_min_norm2_set" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MatrixStats_min_norm2_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->min_norm2 = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_min_norm2_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MatrixStats_min_norm2_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_min_norm2_get" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  result = (double) ((arg1)->min_norm2);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_max_norm2_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_max_norm2_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_max_norm2_set" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MatrixStats_max_norm2_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->max_norm2 = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_max_norm2_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MatrixStats_max_norm2_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_max_norm2_get" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  result = (double) ((arg1)->max_norm2);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_per_dim_stats_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  std::vector< faiss::MatrixStats::PerDimStats > *arg2 = (std::vector< faiss::MatrixStats::PerDimStats > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_per_dim_stats_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_per_dim_stats_set" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_std__vectorT_faiss__MatrixStats__PerDimStats_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MatrixStats_per_dim_stats_set" "', argument " "2"" of type '" "std::vector< faiss::MatrixStats::PerDimStats > *""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< faiss::MatrixStats::PerDimStats > * >(argp2);
+  if (arg1) (arg1)->per_dim_stats = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_per_dim_stats_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  std::vector< faiss::MatrixStats::PerDimStats > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MatrixStats_per_dim_stats_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_per_dim_stats_get" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  result = (std::vector< faiss::MatrixStats::PerDimStats > *)& ((arg1)->per_dim_stats);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_faiss__MatrixStats__PerDimStats_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_occurrences_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  std::unordered_map< uint64_t,faiss::MatrixStats::Occurrence > *arg2 = (std::unordered_map< uint64_t,faiss::MatrixStats::Occurrence > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_occurrences_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_occurrences_set" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_std__unordered_mapT_unsigned_long_faiss__MatrixStats__Occurrence_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MatrixStats_occurrences_set" "', argument " "2"" of type '" "std::unordered_map< uint64_t,faiss::MatrixStats::Occurrence > *""'"); 
+  }
+  arg2 = reinterpret_cast< std::unordered_map< uint64_t,faiss::MatrixStats::Occurrence > * >(argp2);
+  if (arg1) (arg1)->occurrences = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_occurrences_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  std::unordered_map< uint64_t,faiss::MatrixStats::Occurrence > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MatrixStats_occurrences_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_occurrences_get" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  result = (std::unordered_map< uint64_t,faiss::MatrixStats::Occurrence > *)& ((arg1)->occurrences);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__unordered_mapT_unsigned_long_faiss__MatrixStats__Occurrence_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_buf_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_buf_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_buf_set" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MatrixStats_buf_set" "', argument " "2"" of type '" "char *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  if (arg1->buf) delete[] arg1->buf;
+  if (arg2) {
+    size_t size = strlen(reinterpret_cast< const char * >(arg2)) + 1;
+    arg1->buf = (char *)reinterpret_cast< char* >(memcpy(new char[size], reinterpret_cast< const char * >(arg2), sizeof(char)*(size)));
+  } else {
+    arg1->buf = 0;
+  }
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_buf_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MatrixStats_buf_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_buf_get" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  result = (char *) ((arg1)->buf);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_nbuf_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_nbuf_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_nbuf_set" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MatrixStats_nbuf_set" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->nbuf = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_nbuf_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MatrixStats_nbuf_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_nbuf_get" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  result = (size_t) ((arg1)->nbuf);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_do_comment__varargs__(PyObject *SWIGUNUSEDPARM(self), PyObject *args, PyObject *varargs) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:MatrixStats_do_comment",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MatrixStats_do_comment" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MatrixStats_do_comment" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->do_comment((char const *)arg2,arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MatrixStats_do_comment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj;
+  PyObject *varargs;
+  PyObject *newargs;
+  
+  newargs = PyTuple_GetSlice(args,0,2);
+  varargs = PyTuple_GetSlice(args,2,PyTuple_Size(args));
+  resultobj = _wrap_MatrixStats_do_comment__varargs__(NULL,newargs,varargs);
+  Py_XDECREF(newargs);
+  Py_XDECREF(varargs);
+  return resultobj;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_MatrixStats(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::MatrixStats *arg1 = (faiss::MatrixStats *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_MatrixStats",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__MatrixStats, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_MatrixStats" "', argument " "1"" of type '" "faiss::MatrixStats *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::MatrixStats * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *MatrixStats_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__MatrixStats, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
 
 SWIGINTERN PyObject *_wrap_index_gpu_to_cpu(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
@@ -77037,125 +78404,125 @@ SWIGINTERN PyObject *_wrap_index_gpu_to_cpu(PyObject *SWIGUNUSEDPARM(self), PyOb
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -77231,125 +78598,125 @@ SWIGINTERN PyObject *_wrap_index_cpu_to_gpu__SWIG_0(PyObject *SWIGUNUSEDPARM(sel
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -77416,125 +78783,125 @@ SWIGINTERN PyObject *_wrap_index_cpu_to_gpu__SWIG_1(PyObject *SWIGUNUSEDPARM(sel
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -77683,125 +79050,125 @@ SWIGINTERN PyObject *_wrap_index_cpu_to_gpu_multiple__SWIG_0(PyObject *SWIGUNUSE
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -77874,125 +79241,125 @@ SWIGINTERN PyObject *_wrap_index_cpu_to_gpu_multiple__SWIG_1(PyObject *SWIGUNUSE
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    if (dynamic_cast<faiss::IndexReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
-    if (dynamic_cast<faiss::gpu::IndexProxy *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__IndexProxy,SWIG_POINTER_OWN);
-    } else
-    /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,443,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,437,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -84645,6 +86012,242 @@ SWIGINTERN PyObject *BufferList_swigregister(PyObject *SWIGUNUSEDPARM(self), PyO
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_RangeQueryResult_qno_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::RangeQueryResult *arg1 = (faiss::RangeQueryResult *) 0 ;
+  faiss::RangeQueryResult::idx_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:RangeQueryResult_qno_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RangeQueryResult, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RangeQueryResult_qno_set" "', argument " "1"" of type '" "faiss::RangeQueryResult *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::RangeQueryResult * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "RangeQueryResult_qno_set" "', argument " "2"" of type '" "faiss::RangeQueryResult::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::RangeQueryResult::idx_t >(val2);
+  if (arg1) (arg1)->qno = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_RangeQueryResult_qno_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::RangeQueryResult *arg1 = (faiss::RangeQueryResult *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  faiss::RangeQueryResult::idx_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:RangeQueryResult_qno_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RangeQueryResult, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RangeQueryResult_qno_get" "', argument " "1"" of type '" "faiss::RangeQueryResult *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::RangeQueryResult * >(argp1);
+  result = (faiss::RangeQueryResult::idx_t) ((arg1)->qno);
+  resultobj = SWIG_From_long(static_cast< long >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_RangeQueryResult_nres_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::RangeQueryResult *arg1 = (faiss::RangeQueryResult *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:RangeQueryResult_nres_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RangeQueryResult, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RangeQueryResult_nres_set" "', argument " "1"" of type '" "faiss::RangeQueryResult *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::RangeQueryResult * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "RangeQueryResult_nres_set" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->nres = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_RangeQueryResult_nres_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::RangeQueryResult *arg1 = (faiss::RangeQueryResult *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:RangeQueryResult_nres_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RangeQueryResult, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RangeQueryResult_nres_get" "', argument " "1"" of type '" "faiss::RangeQueryResult *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::RangeQueryResult * >(argp1);
+  result = (size_t) ((arg1)->nres);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_RangeQueryResult_pres_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::RangeQueryResult *arg1 = (faiss::RangeQueryResult *) 0 ;
+  faiss::RangeSearchPartialResult *arg2 = (faiss::RangeSearchPartialResult *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:RangeQueryResult_pres_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RangeQueryResult, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RangeQueryResult_pres_set" "', argument " "1"" of type '" "faiss::RangeQueryResult *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::RangeQueryResult * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__RangeSearchPartialResult, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "RangeQueryResult_pres_set" "', argument " "2"" of type '" "faiss::RangeSearchPartialResult *""'"); 
+  }
+  arg2 = reinterpret_cast< faiss::RangeSearchPartialResult * >(argp2);
+  if (arg1) (arg1)->pres = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_RangeQueryResult_pres_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::RangeQueryResult *arg1 = (faiss::RangeQueryResult *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  faiss::RangeSearchPartialResult *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:RangeQueryResult_pres_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RangeQueryResult, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RangeQueryResult_pres_get" "', argument " "1"" of type '" "faiss::RangeQueryResult *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::RangeQueryResult * >(argp1);
+  result = (faiss::RangeSearchPartialResult *) ((arg1)->pres);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__RangeSearchPartialResult, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_RangeQueryResult_add(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::RangeQueryResult *arg1 = (faiss::RangeQueryResult *) 0 ;
+  float arg2 ;
+  faiss::RangeQueryResult::idx_t arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  long val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:RangeQueryResult_add",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RangeQueryResult, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RangeQueryResult_add" "', argument " "1"" of type '" "faiss::RangeQueryResult *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::RangeQueryResult * >(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "RangeQueryResult_add" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = static_cast< float >(val2);
+  ecode3 = SWIG_AsVal_long(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "RangeQueryResult_add" "', argument " "3"" of type '" "faiss::RangeQueryResult::idx_t""'");
+  } 
+  arg3 = static_cast< faiss::RangeQueryResult::idx_t >(val3);
+  (arg1)->add(arg2,arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_RangeQueryResult(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::RangeQueryResult *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_RangeQueryResult")) SWIG_fail;
+  result = (faiss::RangeQueryResult *)new faiss::RangeQueryResult();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__RangeQueryResult, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_RangeQueryResult(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::RangeQueryResult *arg1 = (faiss::RangeQueryResult *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_RangeQueryResult",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RangeQueryResult, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_RangeQueryResult" "', argument " "1"" of type '" "faiss::RangeQueryResult *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::RangeQueryResult * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *RangeQueryResult_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__RangeQueryResult, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 SWIGINTERN PyObject *_wrap_RangeSearchPartialResult_res_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::RangeSearchPartialResult *arg1 = (faiss::RangeSearchPartialResult *) 0 ;
@@ -84722,7 +86325,7 @@ fail:
 SWIGINTERN PyObject *_wrap_RangeSearchPartialResult_queries_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   faiss::RangeSearchPartialResult *arg1 = (faiss::RangeSearchPartialResult *) 0 ;
-  std::vector< faiss::RangeSearchPartialResult::QueryResult > *arg2 = (std::vector< faiss::RangeSearchPartialResult::QueryResult > *) 0 ;
+  std::vector< faiss::RangeQueryResult > *arg2 = (std::vector< faiss::RangeQueryResult > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -84736,11 +86339,11 @@ SWIGINTERN PyObject *_wrap_RangeSearchPartialResult_queries_set(PyObject *SWIGUN
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RangeSearchPartialResult_queries_set" "', argument " "1"" of type '" "faiss::RangeSearchPartialResult *""'"); 
   }
   arg1 = reinterpret_cast< faiss::RangeSearchPartialResult * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t, 0 |  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_std__vectorT_faiss__RangeQueryResult_t, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "RangeSearchPartialResult_queries_set" "', argument " "2"" of type '" "std::vector< faiss::RangeSearchPartialResult::QueryResult > *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "RangeSearchPartialResult_queries_set" "', argument " "2"" of type '" "std::vector< faiss::RangeQueryResult > *""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< faiss::RangeSearchPartialResult::QueryResult > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< faiss::RangeQueryResult > * >(argp2);
   if (arg1) (arg1)->queries = *arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -84755,7 +86358,7 @@ SWIGINTERN PyObject *_wrap_RangeSearchPartialResult_queries_get(PyObject *SWIGUN
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  std::vector< faiss::RangeSearchPartialResult::QueryResult > *result = 0 ;
+  std::vector< faiss::RangeQueryResult > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:RangeSearchPartialResult_queries_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RangeSearchPartialResult, 0 |  0 );
@@ -84763,8 +86366,8 @@ SWIGINTERN PyObject *_wrap_RangeSearchPartialResult_queries_get(PyObject *SWIGUN
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RangeSearchPartialResult_queries_get" "', argument " "1"" of type '" "faiss::RangeSearchPartialResult *""'"); 
   }
   arg1 = reinterpret_cast< faiss::RangeSearchPartialResult * >(argp1);
-  result = (std::vector< faiss::RangeSearchPartialResult::QueryResult > *)& ((arg1)->queries);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t, 0 |  0 );
+  result = (std::vector< faiss::RangeQueryResult > *)& ((arg1)->queries);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_faiss__RangeQueryResult_t, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -84781,7 +86384,7 @@ SWIGINTERN PyObject *_wrap_RangeSearchPartialResult_new_result(PyObject *SWIGUNU
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  faiss::RangeSearchPartialResult::QueryResult *result = 0 ;
+  faiss::RangeQueryResult *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:RangeSearchPartialResult_new_result",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__RangeSearchPartialResult, 0 |  0 );
@@ -84794,8 +86397,8 @@ SWIGINTERN PyObject *_wrap_RangeSearchPartialResult_new_result(PyObject *SWIGUNU
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "RangeSearchPartialResult_new_result" "', argument " "2"" of type '" "faiss::BufferList::idx_t""'");
   } 
   arg2 = static_cast< faiss::BufferList::idx_t >(val2);
-  result = (faiss::RangeSearchPartialResult::QueryResult *) &(arg1)->new_result(arg2);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__RangeSearchPartialResult__QueryResult, 0 |  0 );
+  result = (faiss::RangeQueryResult *) &(arg1)->new_result(arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__RangeQueryResult, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -85613,6 +87216,135 @@ SWIGINTERN PyObject *VectorIOWriter_swigregister(PyObject *SWIGUNUSEDPARM(self),
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_DistanceComputer_set_query(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::DistanceComputer *arg1 = (faiss::DistanceComputer *) 0 ;
+  float *arg2 = (float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:DistanceComputer_set_query",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__DistanceComputer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DistanceComputer_set_query" "', argument " "1"" of type '" "faiss::DistanceComputer *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::DistanceComputer * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DistanceComputer_set_query" "', argument " "2"" of type '" "float const *""'"); 
+  }
+  arg2 = reinterpret_cast< float * >(argp2);
+  (arg1)->set_query((float const *)arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DistanceComputer___call__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::DistanceComputer *arg1 = (faiss::DistanceComputer *) 0 ;
+  faiss::DistanceComputer::idx_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:DistanceComputer___call__",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__DistanceComputer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DistanceComputer___call__" "', argument " "1"" of type '" "faiss::DistanceComputer *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::DistanceComputer * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DistanceComputer___call__" "', argument " "2"" of type '" "faiss::DistanceComputer::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::DistanceComputer::idx_t >(val2);
+  result = (float)(arg1)->operator ()(arg2);
+  resultobj = SWIG_From_float(static_cast< float >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DistanceComputer_symmetric_dis(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::DistanceComputer *arg1 = (faiss::DistanceComputer *) 0 ;
+  faiss::DistanceComputer::idx_t arg2 ;
+  faiss::DistanceComputer::idx_t arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  long val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:DistanceComputer_symmetric_dis",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__DistanceComputer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DistanceComputer_symmetric_dis" "', argument " "1"" of type '" "faiss::DistanceComputer *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::DistanceComputer * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DistanceComputer_symmetric_dis" "', argument " "2"" of type '" "faiss::DistanceComputer::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::DistanceComputer::idx_t >(val2);
+  ecode3 = SWIG_AsVal_long(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DistanceComputer_symmetric_dis" "', argument " "3"" of type '" "faiss::DistanceComputer::idx_t""'");
+  } 
+  arg3 = static_cast< faiss::DistanceComputer::idx_t >(val3);
+  result = (float)(arg1)->symmetric_dis(arg2,arg3);
+  resultobj = SWIG_From_float(static_cast< float >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_DistanceComputer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::DistanceComputer *arg1 = (faiss::DistanceComputer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_DistanceComputer",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__DistanceComputer, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_DistanceComputer" "', argument " "1"" of type '" "faiss::DistanceComputer *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::DistanceComputer * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *DistanceComputer_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__DistanceComputer, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 SWIGINTERN PyObject *_wrap_ignore_SIGTTIN(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   
@@ -86156,7 +87888,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_StandardGpuResources", _wrap_delete_StandardGpuResources, METH_VARARGS, NULL},
 	 { (char *)"StandardGpuResources_noTempMemory", _wrap_StandardGpuResources_noTempMemory, METH_VARARGS, NULL},
 	 { (char *)"StandardGpuResources_setTempMemory", _wrap_StandardGpuResources_setTempMemory, METH_VARARGS, NULL},
-	 { (char *)"StandardGpuResources_setTempMemoryFraction", _wrap_StandardGpuResources_setTempMemoryFraction, METH_VARARGS, NULL},
 	 { (char *)"StandardGpuResources_setPinnedMemory", _wrap_StandardGpuResources_setPinnedMemory, METH_VARARGS, NULL},
 	 { (char *)"StandardGpuResources_setDefaultStream", _wrap_StandardGpuResources_setDefaultStream, METH_VARARGS, NULL},
 	 { (char *)"StandardGpuResources_setDefaultNullStreamAllDevices", _wrap_StandardGpuResources_setDefaultNullStreamAllDevices, METH_VARARGS, NULL},
@@ -86220,6 +87951,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"fvecs_maybe_subsample", _wrap_fvecs_maybe_subsample, METH_VARARGS, NULL},
 	 { (char *)"binary_to_real", _wrap_binary_to_real, METH_VARARGS, NULL},
 	 { (char *)"real_to_binary", _wrap_real_to_binary, METH_VARARGS, NULL},
+	 { (char *)"hash_bytes", _wrap_hash_bytes, METH_VARARGS, NULL},
+	 { (char *)"check_openmp", _wrap_check_openmp, METH_VARARGS, NULL},
 	 { (char *)"Index_d_set", _wrap_Index_d_set, METH_VARARGS, NULL},
 	 { (char *)"Index_d_get", _wrap_Index_d_get, METH_VARARGS, NULL},
 	 { (char *)"Index_ntotal_set", _wrap_Index_ntotal_set, METH_VARARGS, NULL},
@@ -86253,6 +87986,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"ClusteringParameters_verbose_get", _wrap_ClusteringParameters_verbose_get, METH_VARARGS, NULL},
 	 { (char *)"ClusteringParameters_spherical_set", _wrap_ClusteringParameters_spherical_set, METH_VARARGS, NULL},
 	 { (char *)"ClusteringParameters_spherical_get", _wrap_ClusteringParameters_spherical_get, METH_VARARGS, NULL},
+	 { (char *)"ClusteringParameters_int_centroids_set", _wrap_ClusteringParameters_int_centroids_set, METH_VARARGS, NULL},
+	 { (char *)"ClusteringParameters_int_centroids_get", _wrap_ClusteringParameters_int_centroids_get, METH_VARARGS, NULL},
 	 { (char *)"ClusteringParameters_update_index_set", _wrap_ClusteringParameters_update_index_set, METH_VARARGS, NULL},
 	 { (char *)"ClusteringParameters_update_index_get", _wrap_ClusteringParameters_update_index_get, METH_VARARGS, NULL},
 	 { (char *)"ClusteringParameters_frozen_centroids_set", _wrap_ClusteringParameters_frozen_centroids_set, METH_VARARGS, NULL},
@@ -86276,6 +88011,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Clustering_obj_get", _wrap_Clustering_obj_get, METH_VARARGS, NULL},
 	 { (char *)"new_Clustering", _wrap_new_Clustering, METH_VARARGS, NULL},
 	 { (char *)"Clustering_train", _wrap_Clustering_train, METH_VARARGS, NULL},
+	 { (char *)"Clustering_post_process_centroids", _wrap_Clustering_post_process_centroids, METH_VARARGS, NULL},
 	 { (char *)"delete_Clustering", _wrap_delete_Clustering, METH_VARARGS, NULL},
 	 { (char *)"Clustering_swigregister", Clustering_swigregister, METH_VARARGS, NULL},
 	 { (char *)"kmeans_clustering", _wrap_kmeans_clustering, METH_VARARGS, NULL},
@@ -86310,6 +88046,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"ProductQuantizer_set_params", _wrap_ProductQuantizer_set_params, METH_VARARGS, NULL},
 	 { (char *)"ProductQuantizer_compute_code", _wrap_ProductQuantizer_compute_code, METH_VARARGS, NULL},
 	 { (char *)"ProductQuantizer_compute_codes", _wrap_ProductQuantizer_compute_codes, METH_VARARGS, NULL},
+	 { (char *)"ProductQuantizer_compute_codes_with_assign_index", _wrap_ProductQuantizer_compute_codes_with_assign_index, METH_VARARGS, NULL},
 	 { (char *)"ProductQuantizer_decode", _wrap_ProductQuantizer_decode, METH_VARARGS, NULL},
 	 { (char *)"ProductQuantizer_compute_code_from_distance_table", _wrap_ProductQuantizer_compute_code_from_distance_table, METH_VARARGS, NULL},
 	 { (char *)"ProductQuantizer_compute_distance_table", _wrap_ProductQuantizer_compute_distance_table, METH_VARARGS, NULL},
@@ -86410,6 +88147,14 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"NormalizationTransform_reverse_transform", _wrap_NormalizationTransform_reverse_transform, METH_VARARGS, NULL},
 	 { (char *)"delete_NormalizationTransform", _wrap_delete_NormalizationTransform, METH_VARARGS, NULL},
 	 { (char *)"NormalizationTransform_swigregister", NormalizationTransform_swigregister, METH_VARARGS, NULL},
+	 { (char *)"CenteringTransform_mean_set", _wrap_CenteringTransform_mean_set, METH_VARARGS, NULL},
+	 { (char *)"CenteringTransform_mean_get", _wrap_CenteringTransform_mean_get, METH_VARARGS, NULL},
+	 { (char *)"new_CenteringTransform", _wrap_new_CenteringTransform, METH_VARARGS, NULL},
+	 { (char *)"CenteringTransform_train", _wrap_CenteringTransform_train, METH_VARARGS, NULL},
+	 { (char *)"CenteringTransform_apply_noalloc", _wrap_CenteringTransform_apply_noalloc, METH_VARARGS, NULL},
+	 { (char *)"CenteringTransform_reverse_transform", _wrap_CenteringTransform_reverse_transform, METH_VARARGS, NULL},
+	 { (char *)"delete_CenteringTransform", _wrap_delete_CenteringTransform, METH_VARARGS, NULL},
+	 { (char *)"CenteringTransform_swigregister", CenteringTransform_swigregister, METH_VARARGS, NULL},
 	 { (char *)"IndexPreTransform_chain_set", _wrap_IndexPreTransform_chain_set, METH_VARARGS, NULL},
 	 { (char *)"IndexPreTransform_chain_get", _wrap_IndexPreTransform_chain_get, METH_VARARGS, NULL},
 	 { (char *)"IndexPreTransform_index_set", _wrap_IndexPreTransform_index_set, METH_VARARGS, NULL},
@@ -86424,6 +88169,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexPreTransform_reset", _wrap_IndexPreTransform_reset, METH_VARARGS, NULL},
 	 { (char *)"IndexPreTransform_remove_ids", _wrap_IndexPreTransform_remove_ids, METH_VARARGS, NULL},
 	 { (char *)"IndexPreTransform_search", _wrap_IndexPreTransform_search, METH_VARARGS, NULL},
+	 { (char *)"IndexPreTransform_range_search", _wrap_IndexPreTransform_range_search, METH_VARARGS, NULL},
 	 { (char *)"IndexPreTransform_reconstruct", _wrap_IndexPreTransform_reconstruct, METH_VARARGS, NULL},
 	 { (char *)"IndexPreTransform_reconstruct_n", _wrap_IndexPreTransform_reconstruct_n, METH_VARARGS, NULL},
 	 { (char *)"IndexPreTransform_search_and_reconstruct", _wrap_IndexPreTransform_search_and_reconstruct, METH_VARARGS, NULL},
@@ -86652,6 +88398,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"InvertedLists_reset", _wrap_InvertedLists_reset, METH_VARARGS, NULL},
 	 { (char *)"InvertedLists_merge_from", _wrap_InvertedLists_merge_from, METH_VARARGS, NULL},
 	 { (char *)"delete_InvertedLists", _wrap_delete_InvertedLists, METH_VARARGS, NULL},
+	 { (char *)"InvertedLists_imbalance_factor", _wrap_InvertedLists_imbalance_factor, METH_VARARGS, NULL},
+	 { (char *)"InvertedLists_print_stats", _wrap_InvertedLists_print_stats, METH_VARARGS, NULL},
 	 { (char *)"InvertedLists_swigregister", InvertedLists_swigregister, METH_VARARGS, NULL},
 	 { (char *)"ArrayInvertedLists_codes_set", _wrap_ArrayInvertedLists_codes_set, METH_VARARGS, NULL},
 	 { (char *)"ArrayInvertedLists_codes_get", _wrap_ArrayInvertedLists_codes_get, METH_VARARGS, NULL},
@@ -86725,6 +88473,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexIVF_train_residual", _wrap_IndexIVF_train_residual, METH_VARARGS, NULL},
 	 { (char *)"IndexIVF_search_preassigned", _wrap_IndexIVF_search_preassigned, METH_VARARGS, NULL},
 	 { (char *)"IndexIVF_search", _wrap_IndexIVF_search, METH_VARARGS, NULL},
+	 { (char *)"IndexIVF_range_search", _wrap_IndexIVF_range_search, METH_VARARGS, NULL},
 	 { (char *)"IndexIVF_get_InvertedListScanner", _wrap_IndexIVF_get_InvertedListScanner, METH_VARARGS, NULL},
 	 { (char *)"IndexIVF_reconstruct", _wrap_IndexIVF_reconstruct, METH_VARARGS, NULL},
 	 { (char *)"IndexIVF_reconstruct_n", _wrap_IndexIVF_reconstruct_n, METH_VARARGS, NULL},
@@ -86737,8 +88486,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_IndexIVF", _wrap_delete_IndexIVF, METH_VARARGS, NULL},
 	 { (char *)"IndexIVF_get_list_size", _wrap_IndexIVF_get_list_size, METH_VARARGS, NULL},
 	 { (char *)"IndexIVF_make_direct_map", _wrap_IndexIVF_make_direct_map, METH_VARARGS, NULL},
-	 { (char *)"IndexIVF_imbalance_factor", _wrap_IndexIVF_imbalance_factor, METH_VARARGS, NULL},
-	 { (char *)"IndexIVF_print_stats", _wrap_IndexIVF_print_stats, METH_VARARGS, NULL},
 	 { (char *)"IndexIVF_replace_invlists", _wrap_IndexIVF_replace_invlists, METH_VARARGS, NULL},
 	 { (char *)"IndexIVF_swigregister", IndexIVF_swigregister, METH_VARARGS, NULL},
 	 { (char *)"IndexIVFStats_nq_set", _wrap_IndexIVFStats_nq_set, METH_VARARGS, NULL},
@@ -86749,6 +88496,10 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexIVFStats_ndis_get", _wrap_IndexIVFStats_ndis_get, METH_VARARGS, NULL},
 	 { (char *)"IndexIVFStats_nheap_updates_set", _wrap_IndexIVFStats_nheap_updates_set, METH_VARARGS, NULL},
 	 { (char *)"IndexIVFStats_nheap_updates_get", _wrap_IndexIVFStats_nheap_updates_get, METH_VARARGS, NULL},
+	 { (char *)"IndexIVFStats_quantization_time_set", _wrap_IndexIVFStats_quantization_time_set, METH_VARARGS, NULL},
+	 { (char *)"IndexIVFStats_quantization_time_get", _wrap_IndexIVFStats_quantization_time_get, METH_VARARGS, NULL},
+	 { (char *)"IndexIVFStats_search_time_set", _wrap_IndexIVFStats_search_time_set, METH_VARARGS, NULL},
+	 { (char *)"IndexIVFStats_search_time_get", _wrap_IndexIVFStats_search_time_get, METH_VARARGS, NULL},
 	 { (char *)"new_IndexIVFStats", _wrap_new_IndexIVFStats, METH_VARARGS, NULL},
 	 { (char *)"IndexIVFStats_reset", _wrap_IndexIVFStats_reset, METH_VARARGS, NULL},
 	 { (char *)"delete_IndexIVFStats", _wrap_delete_IndexIVFStats, METH_VARARGS, NULL},
@@ -86807,10 +88558,13 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexScalarQuantizer_reset", _wrap_IndexScalarQuantizer_reset, METH_VARARGS, NULL},
 	 { (char *)"IndexScalarQuantizer_reconstruct_n", _wrap_IndexScalarQuantizer_reconstruct_n, METH_VARARGS, NULL},
 	 { (char *)"IndexScalarQuantizer_reconstruct", _wrap_IndexScalarQuantizer_reconstruct, METH_VARARGS, NULL},
+	 { (char *)"IndexScalarQuantizer_get_distance_computer", _wrap_IndexScalarQuantizer_get_distance_computer, METH_VARARGS, NULL},
 	 { (char *)"delete_IndexScalarQuantizer", _wrap_delete_IndexScalarQuantizer, METH_VARARGS, NULL},
 	 { (char *)"IndexScalarQuantizer_swigregister", IndexScalarQuantizer_swigregister, METH_VARARGS, NULL},
 	 { (char *)"IndexIVFScalarQuantizer_sq_set", _wrap_IndexIVFScalarQuantizer_sq_set, METH_VARARGS, NULL},
 	 { (char *)"IndexIVFScalarQuantizer_sq_get", _wrap_IndexIVFScalarQuantizer_sq_get, METH_VARARGS, NULL},
+	 { (char *)"IndexIVFScalarQuantizer_by_residual_set", _wrap_IndexIVFScalarQuantizer_by_residual_set, METH_VARARGS, NULL},
+	 { (char *)"IndexIVFScalarQuantizer_by_residual_get", _wrap_IndexIVFScalarQuantizer_by_residual_get, METH_VARARGS, NULL},
 	 { (char *)"new_IndexIVFScalarQuantizer", _wrap_new_IndexIVFScalarQuantizer, METH_VARARGS, NULL},
 	 { (char *)"IndexIVFScalarQuantizer_train_residual", _wrap_IndexIVFScalarQuantizer_train_residual, METH_VARARGS, NULL},
 	 { (char *)"IndexIVFScalarQuantizer_encode_vectors", _wrap_IndexIVFScalarQuantizer_encode_vectors, METH_VARARGS, NULL},
@@ -86839,8 +88593,12 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"HNSW_efConstruction_get", _wrap_HNSW_efConstruction_get, METH_VARARGS, NULL},
 	 { (char *)"HNSW_efSearch_set", _wrap_HNSW_efSearch_set, METH_VARARGS, NULL},
 	 { (char *)"HNSW_efSearch_get", _wrap_HNSW_efSearch_get, METH_VARARGS, NULL},
+	 { (char *)"HNSW_check_relative_distance_set", _wrap_HNSW_check_relative_distance_set, METH_VARARGS, NULL},
+	 { (char *)"HNSW_check_relative_distance_get", _wrap_HNSW_check_relative_distance_get, METH_VARARGS, NULL},
 	 { (char *)"HNSW_upper_beam_set", _wrap_HNSW_upper_beam_set, METH_VARARGS, NULL},
 	 { (char *)"HNSW_upper_beam_get", _wrap_HNSW_upper_beam_get, METH_VARARGS, NULL},
+	 { (char *)"HNSW_search_bounded_queue_set", _wrap_HNSW_search_bounded_queue_set, METH_VARARGS, NULL},
+	 { (char *)"HNSW_search_bounded_queue_get", _wrap_HNSW_search_bounded_queue_get, METH_VARARGS, NULL},
 	 { (char *)"HNSW_set_default_probas", _wrap_HNSW_set_default_probas, METH_VARARGS, NULL},
 	 { (char *)"HNSW_set_nb_neighbors", _wrap_HNSW_set_nb_neighbors, METH_VARARGS, NULL},
 	 { (char *)"HNSW_nb_neighbors", _wrap_HNSW_nb_neighbors, METH_VARARGS, NULL},
@@ -86852,7 +88610,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"HNSW_add_links_starting_from", _wrap_HNSW_add_links_starting_from, METH_VARARGS, NULL},
 	 { (char *)"HNSW_add_with_locks", _wrap_HNSW_add_with_locks, METH_VARARGS, NULL},
 	 { (char *)"HNSW_search_from_candidates", _wrap_HNSW_search_from_candidates, METH_VARARGS, NULL},
-	 { (char *)"HNSW_search_from", _wrap_HNSW_search_from, METH_VARARGS, NULL},
+	 { (char *)"HNSW_search_from_candidate_unbounded", _wrap_HNSW_search_from_candidate_unbounded, METH_VARARGS, NULL},
 	 { (char *)"HNSW_search", _wrap_HNSW_search, METH_VARARGS, NULL},
 	 { (char *)"HNSW_reset", _wrap_HNSW_reset, METH_VARARGS, NULL},
 	 { (char *)"HNSW_clear_neighbor_tables", _wrap_HNSW_clear_neighbor_tables, METH_VARARGS, NULL},
@@ -86962,7 +88720,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexIVFFlat_add_with_ids", _wrap_IndexIVFFlat_add_with_ids, METH_VARARGS, NULL},
 	 { (char *)"IndexIVFFlat_encode_vectors", _wrap_IndexIVFFlat_encode_vectors, METH_VARARGS, NULL},
 	 { (char *)"IndexIVFFlat_get_InvertedListScanner", _wrap_IndexIVFFlat_get_InvertedListScanner, METH_VARARGS, NULL},
-	 { (char *)"IndexIVFFlat_range_search", _wrap_IndexIVFFlat_range_search, METH_VARARGS, NULL},
 	 { (char *)"IndexIVFFlat_update_vectors", _wrap_IndexIVFFlat_update_vectors, METH_VARARGS, NULL},
 	 { (char *)"IndexIVFFlat_reconstruct_from_offset", _wrap_IndexIVFFlat_reconstruct_from_offset, METH_VARARGS, NULL},
 	 { (char *)"new_IndexIVFFlat", _wrap_new_IndexIVFFlat, METH_VARARGS, NULL},
@@ -87167,7 +88924,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexBinaryIVF_cp_get", _wrap_IndexBinaryIVF_cp_get, METH_VARARGS, NULL},
 	 { (char *)"IndexBinaryIVF_clustering_index_set", _wrap_IndexBinaryIVF_clustering_index_set, METH_VARARGS, NULL},
 	 { (char *)"IndexBinaryIVF_clustering_index_get", _wrap_IndexBinaryIVF_clustering_index_get, METH_VARARGS, NULL},
-	 { (char *)"IndexBinaryIVF_train_q1", _wrap_IndexBinaryIVF_train_q1, METH_VARARGS, NULL},
 	 { (char *)"new_IndexBinaryIVF", _wrap_new_IndexBinaryIVF, METH_VARARGS, NULL},
 	 { (char *)"delete_IndexBinaryIVF", _wrap_delete_IndexBinaryIVF, METH_VARARGS, NULL},
 	 { (char *)"IndexBinaryIVF_reset", _wrap_IndexBinaryIVF_reset, METH_VARARGS, NULL},
@@ -87186,8 +88942,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexBinaryIVF_merge_from", _wrap_IndexBinaryIVF_merge_from, METH_VARARGS, NULL},
 	 { (char *)"IndexBinaryIVF_get_list_size", _wrap_IndexBinaryIVF_get_list_size, METH_VARARGS, NULL},
 	 { (char *)"IndexBinaryIVF_make_direct_map", _wrap_IndexBinaryIVF_make_direct_map, METH_VARARGS, NULL},
-	 { (char *)"IndexBinaryIVF_imbalance_factor", _wrap_IndexBinaryIVF_imbalance_factor, METH_VARARGS, NULL},
-	 { (char *)"IndexBinaryIVF_print_stats", _wrap_IndexBinaryIVF_print_stats, METH_VARARGS, NULL},
 	 { (char *)"IndexBinaryIVF_replace_invlists", _wrap_IndexBinaryIVF_replace_invlists, METH_VARARGS, NULL},
 	 { (char *)"IndexBinaryIVF_swigregister", IndexBinaryIVF_swigregister, METH_VARARGS, NULL},
 	 { (char *)"IndexBinaryFromFloat_index_set", _wrap_IndexBinaryFromFloat_index_set, METH_VARARGS, NULL},
@@ -87216,6 +88970,40 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexBinaryHNSW_reconstruct", _wrap_IndexBinaryHNSW_reconstruct, METH_VARARGS, NULL},
 	 { (char *)"IndexBinaryHNSW_reset", _wrap_IndexBinaryHNSW_reset, METH_VARARGS, NULL},
 	 { (char *)"IndexBinaryHNSW_swigregister", IndexBinaryHNSW_swigregister, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_shard_indexes_set", _wrap_IndexShards_shard_indexes_set, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_shard_indexes_get", _wrap_IndexShards_shard_indexes_get, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_own_fields_set", _wrap_IndexShards_own_fields_set, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_own_fields_get", _wrap_IndexShards_own_fields_get, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_threaded_set", _wrap_IndexShards_threaded_set, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_threaded_get", _wrap_IndexShards_threaded_get, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_successive_ids_set", _wrap_IndexShards_successive_ids_set, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_successive_ids_get", _wrap_IndexShards_successive_ids_get, METH_VARARGS, NULL},
+	 { (char *)"new_IndexShards", _wrap_new_IndexShards, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_add_shard", _wrap_IndexShards_add_shard, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_sync_with_shard_indexes", _wrap_IndexShards_sync_with_shard_indexes, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_at", _wrap_IndexShards_at, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_add", _wrap_IndexShards_add, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_add_with_ids", _wrap_IndexShards_add_with_ids, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_search", _wrap_IndexShards_search, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_train", _wrap_IndexShards_train, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_reset", _wrap_IndexShards_reset, METH_VARARGS, NULL},
+	 { (char *)"delete_IndexShards", _wrap_delete_IndexShards, METH_VARARGS, NULL},
+	 { (char *)"IndexShards_swigregister", IndexShards_swigregister, METH_VARARGS, NULL},
+	 { (char *)"new_IndexReplicas", _wrap_new_IndexReplicas, METH_VARARGS, NULL},
+	 { (char *)"delete_IndexReplicas", _wrap_delete_IndexReplicas, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_addIndex", _wrap_IndexReplicas_addIndex, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_removeIndex", _wrap_IndexReplicas_removeIndex, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_runOnIndex", _wrap_IndexReplicas_runOnIndex, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_reset", _wrap_IndexReplicas_reset, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_train", _wrap_IndexReplicas_train, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_add", _wrap_IndexReplicas_add, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_search", _wrap_IndexReplicas_search, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_reconstruct", _wrap_IndexReplicas_reconstruct, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_own_fields_set", _wrap_IndexReplicas_own_fields_set, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_own_fields_get", _wrap_IndexReplicas_own_fields_get, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_count", _wrap_IndexReplicas_count, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_at", _wrap_IndexReplicas_at, METH_VARARGS, NULL},
+	 { (char *)"IndexReplicas_swigregister", IndexReplicas_swigregister, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_index_set", _wrap_IndexIDMap_index_set, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_index_get", _wrap_IndexIDMap_index_get, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_own_fields_set", _wrap_IndexIDMap_own_fields_set, METH_VARARGS, NULL},
@@ -87241,25 +89029,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_IndexIDMap2", _wrap_delete_IndexIDMap2, METH_VARARGS, NULL},
 	 { (char *)"new_IndexIDMap2", _wrap_new_IndexIDMap2, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap2_swigregister", IndexIDMap2_swigregister, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_shard_indexes_set", _wrap_IndexShards_shard_indexes_set, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_shard_indexes_get", _wrap_IndexShards_shard_indexes_get, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_own_fields_set", _wrap_IndexShards_own_fields_set, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_own_fields_get", _wrap_IndexShards_own_fields_get, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_threaded_set", _wrap_IndexShards_threaded_set, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_threaded_get", _wrap_IndexShards_threaded_get, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_successive_ids_set", _wrap_IndexShards_successive_ids_set, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_successive_ids_get", _wrap_IndexShards_successive_ids_get, METH_VARARGS, NULL},
-	 { (char *)"new_IndexShards", _wrap_new_IndexShards, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_add_shard", _wrap_IndexShards_add_shard, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_sync_with_shard_indexes", _wrap_IndexShards_sync_with_shard_indexes, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_at", _wrap_IndexShards_at, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_add", _wrap_IndexShards_add, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_add_with_ids", _wrap_IndexShards_add_with_ids, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_search", _wrap_IndexShards_search, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_train", _wrap_IndexShards_train, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_reset", _wrap_IndexShards_reset, METH_VARARGS, NULL},
-	 { (char *)"delete_IndexShards", _wrap_delete_IndexShards, METH_VARARGS, NULL},
-	 { (char *)"IndexShards_swigregister", IndexShards_swigregister, METH_VARARGS, NULL},
 	 { (char *)"IndexSplitVectors_own_fields_set", _wrap_IndexSplitVectors_own_fields_set, METH_VARARGS, NULL},
 	 { (char *)"IndexSplitVectors_own_fields_get", _wrap_IndexSplitVectors_own_fields_get, METH_VARARGS, NULL},
 	 { (char *)"IndexSplitVectors_threaded_set", _wrap_IndexSplitVectors_threaded_set, METH_VARARGS, NULL},
@@ -87301,7 +89070,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GpuMultipleClonerOptions_shard_type_get", _wrap_GpuMultipleClonerOptions_shard_type_get, METH_VARARGS, NULL},
 	 { (char *)"delete_GpuMultipleClonerOptions", _wrap_delete_GpuMultipleClonerOptions, METH_VARARGS, NULL},
 	 { (char *)"GpuMultipleClonerOptions_swigregister", GpuMultipleClonerOptions_swigregister, METH_VARARGS, NULL},
-	 { (char *)"allocMemorySpace", _wrap_allocMemorySpace, METH_VARARGS, NULL},
+	 { (char *)"allocMemorySpaceV", _wrap_allocMemorySpaceV, METH_VARARGS, NULL},
+	 { (char *)"freeMemorySpace", _wrap_freeMemorySpace, METH_VARARGS, NULL},
 	 { (char *)"new_GpuIndexConfig", _wrap_new_GpuIndexConfig, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexConfig_device_set", _wrap_GpuIndexConfig_device_set, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexConfig_device_get", _wrap_GpuIndexConfig_device_get, METH_VARARGS, NULL},
@@ -87311,6 +89081,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GpuIndexConfig_swigregister", GpuIndexConfig_swigregister, METH_VARARGS, NULL},
 	 { (char *)"GpuIndex_getDevice", _wrap_GpuIndex_getDevice, METH_VARARGS, NULL},
 	 { (char *)"GpuIndex_getResources", _wrap_GpuIndex_getResources, METH_VARARGS, NULL},
+	 { (char *)"GpuIndex_setMinPagingSize", _wrap_GpuIndex_setMinPagingSize, METH_VARARGS, NULL},
+	 { (char *)"GpuIndex_getMinPagingSize", _wrap_GpuIndex_getMinPagingSize, METH_VARARGS, NULL},
 	 { (char *)"GpuIndex_add", _wrap_GpuIndex_add, METH_VARARGS, NULL},
 	 { (char *)"GpuIndex_add_with_ids", _wrap_GpuIndex_add_with_ids, METH_VARARGS, NULL},
 	 { (char *)"GpuIndex_search", _wrap_GpuIndex_search, METH_VARARGS, NULL},
@@ -87327,15 +89099,12 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GpuIndexFlatConfig_swigregister", GpuIndexFlatConfig_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_GpuIndexFlat", _wrap_new_GpuIndexFlat, METH_VARARGS, NULL},
 	 { (char *)"delete_GpuIndexFlat", _wrap_delete_GpuIndexFlat, METH_VARARGS, NULL},
-	 { (char *)"GpuIndexFlat_setMinPagingSize", _wrap_GpuIndexFlat_setMinPagingSize, METH_VARARGS, NULL},
-	 { (char *)"GpuIndexFlat_getMinPagingSize", _wrap_GpuIndexFlat_getMinPagingSize, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexFlat_copyFrom", _wrap_GpuIndexFlat_copyFrom, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexFlat_copyTo", _wrap_GpuIndexFlat_copyTo, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexFlat_getNumVecs", _wrap_GpuIndexFlat_getNumVecs, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexFlat_reset", _wrap_GpuIndexFlat_reset, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexFlat_train", _wrap_GpuIndexFlat_train, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexFlat_add", _wrap_GpuIndexFlat_add, METH_VARARGS, NULL},
-	 { (char *)"GpuIndexFlat_search", _wrap_GpuIndexFlat_search, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexFlat_reconstruct", _wrap_GpuIndexFlat_reconstruct, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexFlat_reconstruct_n", _wrap_GpuIndexFlat_reconstruct_n, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexFlat_getGpuData", _wrap_GpuIndexFlat_getGpuData, METH_VARARGS, NULL},
@@ -87364,7 +89133,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GpuIndexIVF_getQuantizer", _wrap_GpuIndexIVF_getQuantizer, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexIVF_setNumProbes", _wrap_GpuIndexIVF_setNumProbes, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexIVF_getNumProbes", _wrap_GpuIndexIVF_getNumProbes, METH_VARARGS, NULL},
-	 { (char *)"GpuIndexIVF_add", _wrap_GpuIndexIVF_add, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexIVF_cp_set", _wrap_GpuIndexIVF_cp_set, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexIVF_cp_get", _wrap_GpuIndexIVF_cp_get, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexIVF_swigregister", GpuIndexIVF_swigregister, METH_VARARGS, NULL},
@@ -87418,22 +89186,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GpuIndexBinaryFlat_search", _wrap_GpuIndexBinaryFlat_search, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexBinaryFlat_reconstruct", _wrap_GpuIndexBinaryFlat_reconstruct, METH_VARARGS, NULL},
 	 { (char *)"GpuIndexBinaryFlat_swigregister", GpuIndexBinaryFlat_swigregister, METH_VARARGS, NULL},
-	 { (char *)"new_IndexProxy", _wrap_new_IndexProxy, METH_VARARGS, NULL},
-	 { (char *)"delete_IndexProxy", _wrap_delete_IndexProxy, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_addIndex", _wrap_IndexProxy_addIndex, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_removeIndex", _wrap_IndexProxy_removeIndex, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_runOnIndex", _wrap_IndexProxy_runOnIndex, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_reset", _wrap_IndexProxy_reset, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_train", _wrap_IndexProxy_train, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_add", _wrap_IndexProxy_add, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_search", _wrap_IndexProxy_search, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_reconstruct", _wrap_IndexProxy_reconstruct, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_own_fields_set", _wrap_IndexProxy_own_fields_set, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_own_fields_get", _wrap_IndexProxy_own_fields_get, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_count", _wrap_IndexProxy_count, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_at", _wrap_IndexProxy_at, METH_VARARGS, NULL},
-	 { (char *)"IndexProxy_swigregister", IndexProxy_swigregister, METH_VARARGS, NULL},
-	 { (char *)"kmeans_clustering_gpu", _wrap_kmeans_clustering_gpu, METH_VARARGS, NULL},
 	 { (char *)"bruteForceKnn", _wrap_bruteForceKnn, METH_VARARGS, NULL},
 	 { (char *)"downcast_index", _wrap_downcast_index, METH_VARARGS, NULL},
 	 { (char *)"downcast_VectorTransform", _wrap_downcast_VectorTransform, METH_VARARGS, NULL},
@@ -87540,6 +89292,34 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"ParameterSpace_swigregister", ParameterSpace_swigregister, METH_VARARGS, NULL},
 	 { (char *)"index_factory", _wrap_index_factory, METH_VARARGS, NULL},
 	 { (char *)"index_binary_factory", _wrap_index_binary_factory, METH_VARARGS, NULL},
+	 { (char *)"new_MatrixStats", _wrap_new_MatrixStats, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_comments_set", _wrap_MatrixStats_comments_set, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_comments_get", _wrap_MatrixStats_comments_get, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_n_set", _wrap_MatrixStats_n_set, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_n_get", _wrap_MatrixStats_n_get, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_d_set", _wrap_MatrixStats_d_set, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_d_get", _wrap_MatrixStats_d_get, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_n_collision_set", _wrap_MatrixStats_n_collision_set, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_n_collision_get", _wrap_MatrixStats_n_collision_get, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_n_valid_set", _wrap_MatrixStats_n_valid_set, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_n_valid_get", _wrap_MatrixStats_n_valid_get, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_n0_set", _wrap_MatrixStats_n0_set, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_n0_get", _wrap_MatrixStats_n0_get, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_min_norm2_set", _wrap_MatrixStats_min_norm2_set, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_min_norm2_get", _wrap_MatrixStats_min_norm2_get, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_max_norm2_set", _wrap_MatrixStats_max_norm2_set, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_max_norm2_get", _wrap_MatrixStats_max_norm2_get, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_per_dim_stats_set", _wrap_MatrixStats_per_dim_stats_set, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_per_dim_stats_get", _wrap_MatrixStats_per_dim_stats_get, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_occurrences_set", _wrap_MatrixStats_occurrences_set, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_occurrences_get", _wrap_MatrixStats_occurrences_get, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_buf_set", _wrap_MatrixStats_buf_set, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_buf_get", _wrap_MatrixStats_buf_get, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_nbuf_set", _wrap_MatrixStats_nbuf_set, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_nbuf_get", _wrap_MatrixStats_nbuf_get, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_do_comment", _wrap_MatrixStats_do_comment, METH_VARARGS, NULL},
+	 { (char *)"delete_MatrixStats", _wrap_delete_MatrixStats, METH_VARARGS, NULL},
+	 { (char *)"MatrixStats_swigregister", MatrixStats_swigregister, METH_VARARGS, NULL},
 	 { (char *)"index_gpu_to_cpu", _wrap_index_gpu_to_cpu, METH_VARARGS, NULL},
 	 { (char *)"index_cpu_to_gpu", _wrap_index_cpu_to_gpu, METH_VARARGS, NULL},
 	 { (char *)"index_cpu_to_gpu_multiple", _wrap_index_cpu_to_gpu_multiple, METH_VARARGS, NULL},
@@ -87673,6 +89453,16 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"BufferList_add", _wrap_BufferList_add, METH_VARARGS, NULL},
 	 { (char *)"BufferList_copy_range", _wrap_BufferList_copy_range, METH_VARARGS, NULL},
 	 { (char *)"BufferList_swigregister", BufferList_swigregister, METH_VARARGS, NULL},
+	 { (char *)"RangeQueryResult_qno_set", _wrap_RangeQueryResult_qno_set, METH_VARARGS, NULL},
+	 { (char *)"RangeQueryResult_qno_get", _wrap_RangeQueryResult_qno_get, METH_VARARGS, NULL},
+	 { (char *)"RangeQueryResult_nres_set", _wrap_RangeQueryResult_nres_set, METH_VARARGS, NULL},
+	 { (char *)"RangeQueryResult_nres_get", _wrap_RangeQueryResult_nres_get, METH_VARARGS, NULL},
+	 { (char *)"RangeQueryResult_pres_set", _wrap_RangeQueryResult_pres_set, METH_VARARGS, NULL},
+	 { (char *)"RangeQueryResult_pres_get", _wrap_RangeQueryResult_pres_get, METH_VARARGS, NULL},
+	 { (char *)"RangeQueryResult_add", _wrap_RangeQueryResult_add, METH_VARARGS, NULL},
+	 { (char *)"new_RangeQueryResult", _wrap_new_RangeQueryResult, METH_VARARGS, NULL},
+	 { (char *)"delete_RangeQueryResult", _wrap_delete_RangeQueryResult, METH_VARARGS, NULL},
+	 { (char *)"RangeQueryResult_swigregister", RangeQueryResult_swigregister, METH_VARARGS, NULL},
 	 { (char *)"RangeSearchPartialResult_res_set", _wrap_RangeSearchPartialResult_res_set, METH_VARARGS, NULL},
 	 { (char *)"RangeSearchPartialResult_res_get", _wrap_RangeSearchPartialResult_res_get, METH_VARARGS, NULL},
 	 { (char *)"new_RangeSearchPartialResult", _wrap_new_RangeSearchPartialResult, METH_VARARGS, NULL},
@@ -87710,6 +89500,11 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_VectorIOWriter", _wrap_new_VectorIOWriter, METH_VARARGS, NULL},
 	 { (char *)"delete_VectorIOWriter", _wrap_delete_VectorIOWriter, METH_VARARGS, NULL},
 	 { (char *)"VectorIOWriter_swigregister", VectorIOWriter_swigregister, METH_VARARGS, NULL},
+	 { (char *)"DistanceComputer_set_query", _wrap_DistanceComputer_set_query, METH_VARARGS, NULL},
+	 { (char *)"DistanceComputer___call__", _wrap_DistanceComputer___call__, METH_VARARGS, NULL},
+	 { (char *)"DistanceComputer_symmetric_dis", _wrap_DistanceComputer_symmetric_dis, METH_VARARGS, NULL},
+	 { (char *)"delete_DistanceComputer", _wrap_delete_DistanceComputer, METH_VARARGS, NULL},
+	 { (char *)"DistanceComputer_swigregister", DistanceComputer_swigregister, METH_VARARGS, NULL},
 	 { (char *)"ignore_SIGTTIN", _wrap_ignore_SIGTTIN, METH_VARARGS, NULL},
 	 { (char *)"MapLong2Long_map_set", _wrap_MapLong2Long_map_set, METH_VARARGS, NULL},
 	 { (char *)"MapLong2Long_map_get", _wrap_MapLong2Long_map_get, METH_VARARGS, NULL},
@@ -87761,6 +89556,9 @@ static void *_p_faiss__RemapDimensionsTransformTo_p_faiss__VectorTransform(void 
 static void *_p_faiss__NormalizationTransformTo_p_faiss__VectorTransform(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::VectorTransform *)  ((faiss::NormalizationTransform *) x));
 }
+static void *_p_faiss__CenteringTransformTo_p_faiss__VectorTransform(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((faiss::VectorTransform *)  ((faiss::CenteringTransform *) x));
+}
 static void *_p_faiss__RandomRotationMatrixTo_p_faiss__LinearTransform(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::LinearTransform *)  ((faiss::RandomRotationMatrix *) x));
 }
@@ -87787,6 +89585,9 @@ static void *_p_p_faiss__RemapDimensionsTransformTo_p_p_faiss__VectorTransform(v
 }
 static void *_p_p_faiss__NormalizationTransformTo_p_p_faiss__VectorTransform(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::VectorTransform **)  ((faiss::NormalizationTransform **) x));
+}
+static void *_p_p_faiss__CenteringTransformTo_p_p_faiss__VectorTransform(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((faiss::VectorTransform **)  ((faiss::CenteringTransform **) x));
 }
 static void *_p_faiss__gpu__GpuMultipleClonerOptionsTo_p_faiss__gpu__GpuClonerOptions(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::gpu::GpuClonerOptions *)  ((faiss::gpu::GpuMultipleClonerOptions *) x));
@@ -87935,6 +89736,9 @@ static void *_p_p_faiss__IndexPreTransformTo_p_p_faiss__Index(void *x, int *SWIG
 static void *_p_p_faiss__IndexSplitVectorsTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index **)  ((faiss::IndexSplitVectors **) x));
 }
+static void *_p_p_faiss__IndexReplicasTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((faiss::Index **)  ((faiss::IndexReplicas **) x));
+}
 static void *_p_p_faiss__IndexIDMap2To_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index **) (faiss::IndexIDMap *) ((faiss::IndexIDMap2 **) x));
 }
@@ -87956,20 +89760,17 @@ static void *_p_p_faiss__IndexIVFScalarQuantizerTo_p_p_faiss__Index(void *x, int
 static void *_p_p_faiss__IndexRefineFlatTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index **)  ((faiss::IndexRefineFlat **) x));
 }
-static void *_p_p_faiss__gpu__GpuIndexIVFPQTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((faiss::Index **) (faiss::gpu::GpuIndex *)(faiss::gpu::GpuIndexIVF *) ((faiss::gpu::GpuIndexIVFPQ **) x));
-}
 static void *_p_p_faiss__IndexIVFPQTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index **) (faiss::IndexIVF *) ((faiss::IndexIVFPQ **) x));
 }
 static void *_p_p_faiss__IndexLSHTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index **)  ((faiss::IndexLSH **) x));
 }
+static void *_p_p_faiss__gpu__GpuIndexIVFPQTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((faiss::Index **) (faiss::gpu::GpuIndex *)(faiss::gpu::GpuIndexIVF *) ((faiss::gpu::GpuIndexIVFPQ **) x));
+}
 static void *_p_p_faiss__IndexHNSWSQTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index **) (faiss::IndexHNSW *) ((faiss::IndexHNSWSQ **) x));
-}
-static void *_p_p_faiss__gpu__IndexProxyTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((faiss::Index **)  ((faiss::gpu::IndexProxy **) x));
 }
 static void *_p_p_faiss__gpu__GpuIndexTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index **)  ((faiss::gpu::GpuIndex **) x));
@@ -88043,6 +89844,9 @@ static void *_p_faiss__IndexPreTransformTo_p_faiss__Index(void *x, int *SWIGUNUS
 static void *_p_faiss__IndexSplitVectorsTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index *)  ((faiss::IndexSplitVectors *) x));
 }
+static void *_p_faiss__IndexReplicasTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((faiss::Index *)  ((faiss::IndexReplicas *) x));
+}
 static void *_p_faiss__IndexIDMap2To_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index *) (faiss::IndexIDMap *) ((faiss::IndexIDMap2 *) x));
 }
@@ -88064,20 +89868,17 @@ static void *_p_faiss__IndexIVFScalarQuantizerTo_p_faiss__Index(void *x, int *SW
 static void *_p_faiss__IndexRefineFlatTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index *)  ((faiss::IndexRefineFlat *) x));
 }
-static void *_p_faiss__gpu__GpuIndexIVFPQTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((faiss::Index *) (faiss::gpu::GpuIndex *)(faiss::gpu::GpuIndexIVF *) ((faiss::gpu::GpuIndexIVFPQ *) x));
-}
 static void *_p_faiss__IndexIVFPQTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index *) (faiss::IndexIVF *) ((faiss::IndexIVFPQ *) x));
 }
 static void *_p_faiss__IndexLSHTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index *)  ((faiss::IndexLSH *) x));
 }
+static void *_p_faiss__gpu__GpuIndexIVFPQTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((faiss::Index *) (faiss::gpu::GpuIndex *)(faiss::gpu::GpuIndexIVF *) ((faiss::gpu::GpuIndexIVFPQ *) x));
+}
 static void *_p_faiss__IndexHNSWSQTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index *) (faiss::IndexHNSW *) ((faiss::IndexHNSWSQ *) x));
-}
-static void *_p_faiss__gpu__IndexProxyTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((faiss::Index *)  ((faiss::gpu::IndexProxy *) x));
 }
 static void *_p_faiss__gpu__GpuIndexTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index *)  ((faiss::gpu::GpuIndex *) x));
@@ -88207,17 +90008,18 @@ static swig_type_info _swigt__p_faiss__ArrayInvertedLists = {"_p_faiss__ArrayInv
 static swig_type_info _swigt__p_faiss__AutoTuneCriterion = {"_p_faiss__AutoTuneCriterion", "faiss::AutoTuneCriterion *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__BinaryInvertedListScanner = {"_p_faiss__BinaryInvertedListScanner", "faiss::BinaryInvertedListScanner *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__BufferList = {"_p_faiss__BufferList", "faiss::BufferList *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_faiss__CenteringTransform = {"_p_faiss__CenteringTransform", "faiss::CenteringTransform *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__Cloner = {"_p_faiss__Cloner", "faiss::Cloner *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__Clustering = {"_p_faiss__Clustering", "faiss::Clustering *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__ClusteringParameters = {"_p_faiss__ClusteringParameters", "faiss::ClusteringParameters *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__ConcatenatedInvertedLists = {"_p_faiss__ConcatenatedInvertedLists", "faiss::ConcatenatedInvertedLists *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_faiss__DistanceComputer = {"_p_faiss__DistanceComputer", "faiss::DistanceComputer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__GenHammingComputer16 = {"_p_faiss__GenHammingComputer16", "faiss::GenHammingComputer16 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__GenHammingComputer32 = {"_p_faiss__GenHammingComputer32", "faiss::GenHammingComputer32 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__GenHammingComputer8 = {"_p_faiss__GenHammingComputer8", "faiss::GenHammingComputer8 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__GenHammingComputerM8 = {"_p_faiss__GenHammingComputerM8", "faiss::GenHammingComputerM8 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__HNSW = {"_p_faiss__HNSW", "faiss::HNSW *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__HNSWStats = {"_p_faiss__HNSWStats", "faiss::HNSWStats *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_faiss__HNSW__DistanceComputer = {"_p_faiss__HNSW__DistanceComputer", "faiss::HNSW::DistanceComputer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__HNSW__MinimaxHeap = {"_p_faiss__HNSW__MinimaxHeap", "faiss::HNSW::MinimaxHeap *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__HammingComputer16 = {"_p_faiss__HammingComputer16", "faiss::HammingComputer16 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__HammingComputer20 = {"_p_faiss__HammingComputer20", "faiss::HammingComputer20 *", 0, 0, (void*)0, 0};
@@ -88271,6 +90073,7 @@ static swig_type_info _swigt__p_faiss__IndexPQ = {"_p_faiss__IndexPQ", "faiss::I
 static swig_type_info _swigt__p_faiss__IndexPQStats = {"_p_faiss__IndexPQStats", "faiss::IndexPQStats *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__IndexPreTransform = {"_p_faiss__IndexPreTransform", "faiss::IndexPreTransform *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__IndexRefineFlat = {"_p_faiss__IndexRefineFlat", "faiss::IndexRefineFlat *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_faiss__IndexReplicas = {"_p_faiss__IndexReplicas", "faiss::IndexReplicas *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__IndexScalarQuantizer = {"_p_faiss__IndexScalarQuantizer", "faiss::IndexScalarQuantizer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__IndexShards = {"_p_faiss__IndexShards", "faiss::IndexShards *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__IndexSplitVectors = {"_p_faiss__IndexSplitVectors", "faiss::IndexSplitVectors *", 0, 0, (void*)0, 0};
@@ -88280,6 +90083,7 @@ static swig_type_info _swigt__p_faiss__InvertedLists = {"_p_faiss__InvertedLists
 static swig_type_info _swigt__p_faiss__Level1Quantizer = {"_p_faiss__Level1Quantizer", "faiss::Level1Quantizer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__LinearTransform = {"_p_faiss__LinearTransform", "faiss::LinearTransform *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__LockLevels = {"_p_faiss__LockLevels", "faiss::LockLevels *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_faiss__MatrixStats = {"_p_faiss__MatrixStats", "faiss::MatrixStats *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__MultiIndexQuantizer = {"_p_faiss__MultiIndexQuantizer", "faiss::MultiIndexQuantizer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__MultiIndexQuantizer2 = {"_p_faiss__MultiIndexQuantizer2", "faiss::MultiIndexQuantizer2 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__NormalizationTransform = {"_p_faiss__NormalizationTransform", "faiss::NormalizationTransform *", 0, 0, (void*)0, 0};
@@ -88297,14 +90101,14 @@ static swig_type_info _swigt__p_faiss__PolysemousTraining = {"_p_faiss__Polysemo
 static swig_type_info _swigt__p_faiss__ProductQuantizer = {"_p_faiss__ProductQuantizer", "faiss::ProductQuantizer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__RandomGenerator = {"_p_faiss__RandomGenerator", "faiss::RandomGenerator *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__RandomRotationMatrix = {"_p_faiss__RandomRotationMatrix", "faiss::RandomRotationMatrix *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_faiss__RangeQueryResult = {"_p_faiss__RangeQueryResult", "faiss::RangeQueryResult *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__RangeSearchPartialResult = {"_p_faiss__RangeSearchPartialResult", "faiss::RangeSearchPartialResult *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_faiss__RangeSearchPartialResult__QueryResult = {"_p_faiss__RangeSearchPartialResult__QueryResult", "faiss::RangeSearchPartialResult::QueryResult *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__RangeSearchResult = {"_p_faiss__RangeSearchResult", "faiss::RangeSearchResult *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__ReconstructFromNeighbors = {"_p_faiss__ReconstructFromNeighbors", "faiss::ReconstructFromNeighbors *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__RemapDimensionsTransform = {"_p_faiss__RemapDimensionsTransform", "faiss::RemapDimensionsTransform *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__ReproduceDistancesObjective = {"_p_faiss__ReproduceDistancesObjective", "faiss::ReproduceDistancesObjective *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_faiss__SQDistanceComputer = {"_p_faiss__SQDistanceComputer", "faiss::SQDistanceComputer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__ScalarQuantizer = {"_p_faiss__ScalarQuantizer", "faiss::ScalarQuantizer *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_faiss__ScalarQuantizer__DistanceComputer = {"_p_faiss__ScalarQuantizer__DistanceComputer", "faiss::ScalarQuantizer::DistanceComputer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__SimulatedAnnealingOptimizer = {"_p_faiss__SimulatedAnnealingOptimizer", "faiss::SimulatedAnnealingOptimizer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__SimulatedAnnealingParameters = {"_p_faiss__SimulatedAnnealingParameters", "faiss::SimulatedAnnealingParameters *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__VectorIOReader = {"_p_faiss__VectorIOReader", "faiss::VectorIOReader *", 0, 0, (void*)0, 0};
@@ -88330,7 +90134,6 @@ static swig_type_info _swigt__p_faiss__gpu__GpuIndexIVFPQConfig = {"_p_faiss__gp
 static swig_type_info _swigt__p_faiss__gpu__GpuMultipleClonerOptions = {"_p_faiss__gpu__GpuMultipleClonerOptions", "faiss::gpu::GpuMultipleClonerOptions *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__gpu__GpuParameterSpace = {"_p_faiss__gpu__GpuParameterSpace", "faiss::gpu::GpuParameterSpace *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__gpu__GpuResources = {"_p_faiss__gpu__GpuResources", "faiss::gpu::GpuResources *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_faiss__gpu__IndexProxy = {"_p_faiss__gpu__IndexProxy", "faiss::gpu::IndexProxy *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__gpu__StandardGpuResources = {"_p_faiss__gpu__StandardGpuResources", "faiss::gpu::StandardGpuResources *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__ivflib__SlidingIndexWindow = {"_p_faiss__ivflib__SlidingIndexWindow", "faiss::ivflib::SlidingIndexWindow *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_float = {"_p_float", "float *|faiss::HeapArray< faiss::CMin< float,long > >::T *|faiss::HeapArray< faiss::CMax< float,long > >::T *", 0, 0, (void*)0, 0};
@@ -88343,6 +90146,7 @@ static swig_type_info _swigt__p_p_faiss__IndexPQ = {"_p_p_faiss__IndexPQ", 0, 0,
 static swig_type_info _swigt__p_p_faiss__IndexIVFFlatDedup = {"_p_p_faiss__IndexIVFFlatDedup", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexPreTransform = {"_p_p_faiss__IndexPreTransform", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexSplitVectors = {"_p_p_faiss__IndexSplitVectors", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_p_faiss__IndexReplicas = {"_p_p_faiss__IndexReplicas", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexIDMap2 = {"_p_p_faiss__IndexIDMap2", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexIVFFlat = {"_p_p_faiss__IndexIVFFlat", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__gpu__GpuIndexIVFFlat = {"_p_p_faiss__gpu__GpuIndexIVFFlat", 0, 0, 0, 0, 0};
@@ -88350,11 +90154,10 @@ static swig_type_info _swigt__p_p_faiss__MultiIndexQuantizer = {"_p_p_faiss__Mul
 static swig_type_info _swigt__p_p_faiss__IndexScalarQuantizer = {"_p_p_faiss__IndexScalarQuantizer", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexIVFScalarQuantizer = {"_p_p_faiss__IndexIVFScalarQuantizer", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexRefineFlat = {"_p_p_faiss__IndexRefineFlat", 0, 0, 0, 0, 0};
-static swig_type_info _swigt__p_p_faiss__gpu__GpuIndexIVFPQ = {"_p_p_faiss__gpu__GpuIndexIVFPQ", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexIVFPQ = {"_p_p_faiss__IndexIVFPQ", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_p_faiss__gpu__GpuIndexIVFPQ = {"_p_p_faiss__gpu__GpuIndexIVFPQ", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexLSH = {"_p_p_faiss__IndexLSH", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexHNSWSQ = {"_p_p_faiss__IndexHNSWSQ", 0, 0, 0, 0, 0};
-static swig_type_info _swigt__p_p_faiss__gpu__IndexProxy = {"_p_p_faiss__gpu__IndexProxy", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__gpu__GpuIndex = {"_p_p_faiss__gpu__GpuIndex", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexIDMap = {"_p_p_faiss__IndexIDMap", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexHNSW2Level = {"_p_p_faiss__IndexHNSW2Level", 0, 0, 0, 0, 0};
@@ -88386,6 +90189,7 @@ static swig_type_info _swigt__p_p_faiss__OPQMatrix = {"_p_p_faiss__OPQMatrix", 0
 static swig_type_info _swigt__p_p_faiss__LinearTransform = {"_p_p_faiss__LinearTransform", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__RemapDimensionsTransform = {"_p_p_faiss__RemapDimensionsTransform", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__NormalizationTransform = {"_p_p_faiss__NormalizationTransform", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_p_faiss__CenteringTransform = {"_p_p_faiss__CenteringTransform", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__gpu__GpuResources = {"_p_p_faiss__gpu__GpuResources", "faiss::gpu::GpuResources **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_faiss__gpu__StandardGpuResources = {"_p_p_faiss__gpu__StandardGpuResources", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_void = {"_p_p_void", "void **", 0, 0, (void*)0, 0};
@@ -88397,6 +90201,7 @@ static swig_type_info _swigt__p_std__pairT_void_p_unsigned_long_t = {"_p_std__pa
 static swig_type_info _swigt__p_std__priority_queueT_faiss__HNSW__NodeDistFarther_t = {"_p_std__priority_queueT_faiss__HNSW__NodeDistFarther_t", "std::priority_queue< faiss::HNSW::NodeDistFarther > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__priority_queueT_std__pairT_float_int_t_t = {"_p_std__priority_queueT_std__pairT_float_int_t_t", "std::priority_queue< std::pair< float,int > > *|std::priority_queue< faiss::HNSW::Node > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__unordered_mapT_long_long_t = {"_p_std__unordered_mapT_long_long_t", "std::unordered_map< long,long > *|std::unordered_map< faiss::Index::idx_t,faiss::Index::idx_t > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__unordered_mapT_unsigned_long_faiss__MatrixStats__Occurrence_t = {"_p_std__unordered_mapT_unsigned_long_faiss__MatrixStats__Occurrence_t", "std::unordered_map< uint64_t,faiss::MatrixStats::Occurrence > *|std::unordered_map< unsigned long,faiss::MatrixStats::Occurrence > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__unordered_multimapT_long_long_t = {"_p_std__unordered_multimapT_long_long_t", "std::unordered_multimap< long,long > *|std::unordered_multimap< faiss::Index::idx_t,faiss::Index::idx_t > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_char_t = {"_p_std__vectorT_char_t", "std::vector< char > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_cudaStream_t_t = {"_p_std__vectorT_cudaStream_t_t", "std::vector< cudaStream_t > *", 0, 0, (void*)0, 0};
@@ -88406,10 +90211,11 @@ static swig_type_info _swigt__p_std__vectorT_faiss__HNSW__NodeDistFarther_t = {"
 static swig_type_info _swigt__p_std__vectorT_faiss__Index_p_t = {"_p_std__vectorT_faiss__Index_p_t", "std::vector< faiss::Index * > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_faiss__InvertedLists_const_p_t = {"_p_std__vectorT_faiss__InvertedLists_const_p_t", "std::vector< faiss::InvertedLists const * > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_faiss__InvertedLists_p_t = {"_p_std__vectorT_faiss__InvertedLists_p_t", "std::vector< faiss::InvertedLists * > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_faiss__MatrixStats__PerDimStats_t = {"_p_std__vectorT_faiss__MatrixStats__PerDimStats_t", "std::vector< faiss::MatrixStats::PerDimStats > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_faiss__OnDiskInvertedLists__List_t = {"_p_std__vectorT_faiss__OnDiskInvertedLists__List_t", "std::vector< faiss::OnDiskInvertedLists::List > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_faiss__OperatingPoint_t = {"_p_std__vectorT_faiss__OperatingPoint_t", "std::vector< faiss::OperatingPoint > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_faiss__ParameterRange_t = {"_p_std__vectorT_faiss__ParameterRange_t", "std::vector< faiss::ParameterRange > *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t = {"_p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t", "std::vector< faiss::RangeSearchPartialResult::QueryResult > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_faiss__RangeQueryResult_t = {"_p_std__vectorT_faiss__RangeQueryResult_t", "std::vector< faiss::RangeQueryResult > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_faiss__VectorTransform_p_t = {"_p_std__vectorT_faiss__VectorTransform_p_t", "std::vector< faiss::VectorTransform * > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_faiss__gpu__GpuResources_p_t = {"_p_std__vectorT_faiss__gpu__GpuResources_p_t", "std::vector< faiss::gpu::GpuResources * > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_float_t = {"_p_std__vectorT_float_t", "std::vector< float > *", 0, 0, (void*)0, 0};
@@ -88443,17 +90249,18 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_faiss__AutoTuneCriterion,
   &_swigt__p_faiss__BinaryInvertedListScanner,
   &_swigt__p_faiss__BufferList,
+  &_swigt__p_faiss__CenteringTransform,
   &_swigt__p_faiss__Cloner,
   &_swigt__p_faiss__Clustering,
   &_swigt__p_faiss__ClusteringParameters,
   &_swigt__p_faiss__ConcatenatedInvertedLists,
+  &_swigt__p_faiss__DistanceComputer,
   &_swigt__p_faiss__GenHammingComputer16,
   &_swigt__p_faiss__GenHammingComputer32,
   &_swigt__p_faiss__GenHammingComputer8,
   &_swigt__p_faiss__GenHammingComputerM8,
   &_swigt__p_faiss__HNSW,
   &_swigt__p_faiss__HNSWStats,
-  &_swigt__p_faiss__HNSW__DistanceComputer,
   &_swigt__p_faiss__HNSW__MinimaxHeap,
   &_swigt__p_faiss__HammingComputer16,
   &_swigt__p_faiss__HammingComputer20,
@@ -88507,6 +90314,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_faiss__IndexPQStats,
   &_swigt__p_faiss__IndexPreTransform,
   &_swigt__p_faiss__IndexRefineFlat,
+  &_swigt__p_faiss__IndexReplicas,
   &_swigt__p_faiss__IndexScalarQuantizer,
   &_swigt__p_faiss__IndexShards,
   &_swigt__p_faiss__IndexSplitVectors,
@@ -88516,6 +90324,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_faiss__Level1Quantizer,
   &_swigt__p_faiss__LinearTransform,
   &_swigt__p_faiss__LockLevels,
+  &_swigt__p_faiss__MatrixStats,
   &_swigt__p_faiss__MultiIndexQuantizer,
   &_swigt__p_faiss__MultiIndexQuantizer2,
   &_swigt__p_faiss__NormalizationTransform,
@@ -88533,14 +90342,14 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_faiss__ProductQuantizer,
   &_swigt__p_faiss__RandomGenerator,
   &_swigt__p_faiss__RandomRotationMatrix,
+  &_swigt__p_faiss__RangeQueryResult,
   &_swigt__p_faiss__RangeSearchPartialResult,
-  &_swigt__p_faiss__RangeSearchPartialResult__QueryResult,
   &_swigt__p_faiss__RangeSearchResult,
   &_swigt__p_faiss__ReconstructFromNeighbors,
   &_swigt__p_faiss__RemapDimensionsTransform,
   &_swigt__p_faiss__ReproduceDistancesObjective,
+  &_swigt__p_faiss__SQDistanceComputer,
   &_swigt__p_faiss__ScalarQuantizer,
-  &_swigt__p_faiss__ScalarQuantizer__DistanceComputer,
   &_swigt__p_faiss__SimulatedAnnealingOptimizer,
   &_swigt__p_faiss__SimulatedAnnealingParameters,
   &_swigt__p_faiss__VectorIOReader,
@@ -88566,7 +90375,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_faiss__gpu__GpuMultipleClonerOptions,
   &_swigt__p_faiss__gpu__GpuParameterSpace,
   &_swigt__p_faiss__gpu__GpuResources,
-  &_swigt__p_faiss__gpu__IndexProxy,
   &_swigt__p_faiss__gpu__StandardGpuResources,
   &_swigt__p_faiss__ivflib__SlidingIndexWindow,
   &_swigt__p_float,
@@ -88575,6 +90383,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_long,
   &_swigt__p_omp_lock_t,
   &_swigt__p_p_faiss__ArrayInvertedLists,
+  &_swigt__p_p_faiss__CenteringTransform,
   &_swigt__p_p_faiss__ConcatenatedInvertedLists,
   &_swigt__p_p_faiss__Index,
   &_swigt__p_p_faiss__Index2Layer,
@@ -88600,6 +90409,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_p_faiss__IndexPQ,
   &_swigt__p_p_faiss__IndexPreTransform,
   &_swigt__p_p_faiss__IndexRefineFlat,
+  &_swigt__p_p_faiss__IndexReplicas,
   &_swigt__p_p_faiss__IndexScalarQuantizer,
   &_swigt__p_p_faiss__IndexShards,
   &_swigt__p_p_faiss__IndexSplitVectors,
@@ -88622,7 +90432,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_p_faiss__gpu__GpuIndexIVFFlat,
   &_swigt__p_p_faiss__gpu__GpuIndexIVFPQ,
   &_swigt__p_p_faiss__gpu__GpuResources,
-  &_swigt__p_p_faiss__gpu__IndexProxy,
   &_swigt__p_p_faiss__gpu__StandardGpuResources,
   &_swigt__p_p_void,
   &_swigt__p_std__functionT_void_ffaiss__Index_pF_t,
@@ -88633,6 +90442,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_std__priority_queueT_faiss__HNSW__NodeDistFarther_t,
   &_swigt__p_std__priority_queueT_std__pairT_float_int_t_t,
   &_swigt__p_std__unordered_mapT_long_long_t,
+  &_swigt__p_std__unordered_mapT_unsigned_long_faiss__MatrixStats__Occurrence_t,
   &_swigt__p_std__unordered_multimapT_long_long_t,
   &_swigt__p_std__vectorT_char_t,
   &_swigt__p_std__vectorT_cudaStream_t_t,
@@ -88642,10 +90452,11 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_std__vectorT_faiss__Index_p_t,
   &_swigt__p_std__vectorT_faiss__InvertedLists_const_p_t,
   &_swigt__p_std__vectorT_faiss__InvertedLists_p_t,
+  &_swigt__p_std__vectorT_faiss__MatrixStats__PerDimStats_t,
   &_swigt__p_std__vectorT_faiss__OnDiskInvertedLists__List_t,
   &_swigt__p_std__vectorT_faiss__OperatingPoint_t,
   &_swigt__p_std__vectorT_faiss__ParameterRange_t,
-  &_swigt__p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t,
+  &_swigt__p_std__vectorT_faiss__RangeQueryResult_t,
   &_swigt__p_std__vectorT_faiss__VectorTransform_p_t,
   &_swigt__p_std__vectorT_faiss__gpu__GpuResources_p_t,
   &_swigt__p_std__vectorT_float_t,
@@ -88679,17 +90490,18 @@ static swig_cast_info _swigc__p_faiss__ArrayInvertedLists[] = {  {&_swigt__p_fai
 static swig_cast_info _swigc__p_faiss__AutoTuneCriterion[] = {  {&_swigt__p_faiss__AutoTuneCriterion, 0, 0, 0},  {&_swigt__p_faiss__OneRecallAtRCriterion, _p_faiss__OneRecallAtRCriterionTo_p_faiss__AutoTuneCriterion, 0, 0},  {&_swigt__p_faiss__IntersectionCriterion, _p_faiss__IntersectionCriterionTo_p_faiss__AutoTuneCriterion, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__BinaryInvertedListScanner[] = {  {&_swigt__p_faiss__BinaryInvertedListScanner, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__BufferList[] = {  {&_swigt__p_faiss__RangeSearchPartialResult, _p_faiss__RangeSearchPartialResultTo_p_faiss__BufferList, 0, 0},  {&_swigt__p_faiss__BufferList, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__CenteringTransform[] = {  {&_swigt__p_faiss__CenteringTransform, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__Cloner[] = {  {&_swigt__p_faiss__Cloner, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__Clustering[] = {  {&_swigt__p_faiss__Clustering, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__ClusteringParameters[] = {  {&_swigt__p_faiss__Clustering, _p_faiss__ClusteringTo_p_faiss__ClusteringParameters, 0, 0},  {&_swigt__p_faiss__ClusteringParameters, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__ConcatenatedInvertedLists[] = {  {&_swigt__p_faiss__ConcatenatedInvertedLists, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__DistanceComputer[] = {  {&_swigt__p_faiss__DistanceComputer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__GenHammingComputer16[] = {  {&_swigt__p_faiss__GenHammingComputer16, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__GenHammingComputer32[] = {  {&_swigt__p_faiss__GenHammingComputer32, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__GenHammingComputer8[] = {  {&_swigt__p_faiss__GenHammingComputer8, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__GenHammingComputerM8[] = {  {&_swigt__p_faiss__GenHammingComputerM8, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__HNSW[] = {  {&_swigt__p_faiss__HNSW, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__HNSWStats[] = {  {&_swigt__p_faiss__HNSWStats, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_faiss__HNSW__DistanceComputer[] = {  {&_swigt__p_faiss__HNSW__DistanceComputer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__HNSW__MinimaxHeap[] = {  {&_swigt__p_faiss__HNSW__MinimaxHeap, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__HammingComputer16[] = {  {&_swigt__p_faiss__HammingComputer16, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__HammingComputer20[] = {  {&_swigt__p_faiss__HammingComputer20, 0, 0, 0},{0, 0, 0, 0}};
@@ -88711,7 +90523,7 @@ static swig_cast_info _swigc__p_faiss__IOReader[] = {  {&_swigt__p_faiss__IORead
 static swig_cast_info _swigc__p_faiss__IOWriter[] = {  {&_swigt__p_faiss__IOWriter, 0, 0, 0},  {&_swigt__p_faiss__VectorIOWriter, _p_faiss__VectorIOWriterTo_p_faiss__IOWriter, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IVFPQSearchParameters[] = {  {&_swigt__p_faiss__IVFPQSearchParameters, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IVFSearchParameters[] = {  {&_swigt__p_faiss__IVFSearchParameters, 0, 0, 0},  {&_swigt__p_faiss__IVFPQSearchParameters, _p_faiss__IVFPQSearchParametersTo_p_faiss__IVFSearchParameters, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_faiss__Index[] = {  {&_swigt__p_faiss__IndexPQ, _p_faiss__IndexPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFFlatDedup, _p_faiss__IndexIVFFlatDedupTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexPreTransform, _p_faiss__IndexPreTransformTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__Index, 0, 0, 0},  {&_swigt__p_faiss__IndexSplitVectors, _p_faiss__IndexSplitVectorsTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIDMap2, _p_faiss__IndexIDMap2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFFlat, _p_faiss__IndexIVFFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVFFlat, _p_faiss__gpu__GpuIndexIVFFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__MultiIndexQuantizer, _p_faiss__MultiIndexQuantizerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexScalarQuantizer, _p_faiss__IndexScalarQuantizerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFScalarQuantizer, _p_faiss__IndexIVFScalarQuantizerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexRefineFlat, _p_faiss__IndexRefineFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFPQ, _p_faiss__IndexIVFPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVFPQ, _p_faiss__gpu__GpuIndexIVFPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexLSH, _p_faiss__IndexLSHTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSWSQ, _p_faiss__IndexHNSWSQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__IndexProxy, _p_faiss__gpu__IndexProxyTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndex, _p_faiss__gpu__GpuIndexTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIDMap, _p_faiss__IndexIDMapTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSW2Level, _p_faiss__IndexHNSW2LevelTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__Index2Layer, _p_faiss__Index2LayerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlatL2, _p_faiss__IndexFlatL2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlatL2, _p_faiss__gpu__GpuIndexFlatL2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSWFlat, _p_faiss__IndexHNSWFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFPQR, _p_faiss__IndexIVFPQRTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlat1D, _p_faiss__IndexFlat1DTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlat, _p_faiss__IndexFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlat, _p_faiss__gpu__GpuIndexFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlatIP, _p_faiss__IndexFlatIPTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlatIP, _p_faiss__gpu__GpuIndexFlatIPTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSW, _p_faiss__IndexHNSWTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSWPQ, _p_faiss__IndexHNSWPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlatL2BaseShift, _p_faiss__IndexFlatL2BaseShiftTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVF, _p_faiss__gpu__GpuIndexIVFTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVF, _p_faiss__IndexIVFTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__MultiIndexQuantizer2, _p_faiss__MultiIndexQuantizer2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexShards, _p_faiss__IndexShardsTo_p_faiss__Index, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__Index[] = {  {&_swigt__p_faiss__IndexPQ, _p_faiss__IndexPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFFlatDedup, _p_faiss__IndexIVFFlatDedupTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexPreTransform, _p_faiss__IndexPreTransformTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__Index, 0, 0, 0},  {&_swigt__p_faiss__IndexSplitVectors, _p_faiss__IndexSplitVectorsTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexReplicas, _p_faiss__IndexReplicasTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIDMap2, _p_faiss__IndexIDMap2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFFlat, _p_faiss__IndexIVFFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVFFlat, _p_faiss__gpu__GpuIndexIVFFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__MultiIndexQuantizer, _p_faiss__MultiIndexQuantizerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexScalarQuantizer, _p_faiss__IndexScalarQuantizerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFScalarQuantizer, _p_faiss__IndexIVFScalarQuantizerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexRefineFlat, _p_faiss__IndexRefineFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFPQ, _p_faiss__IndexIVFPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVFPQ, _p_faiss__gpu__GpuIndexIVFPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexLSH, _p_faiss__IndexLSHTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSWSQ, _p_faiss__IndexHNSWSQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndex, _p_faiss__gpu__GpuIndexTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIDMap, _p_faiss__IndexIDMapTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSW2Level, _p_faiss__IndexHNSW2LevelTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__Index2Layer, _p_faiss__Index2LayerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlatL2, _p_faiss__IndexFlatL2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlatL2, _p_faiss__gpu__GpuIndexFlatL2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSWFlat, _p_faiss__IndexHNSWFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFPQR, _p_faiss__IndexIVFPQRTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlat1D, _p_faiss__IndexFlat1DTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlat, _p_faiss__IndexFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlat, _p_faiss__gpu__GpuIndexFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlatIP, _p_faiss__IndexFlatIPTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlatIP, _p_faiss__gpu__GpuIndexFlatIPTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSW, _p_faiss__IndexHNSWTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSWPQ, _p_faiss__IndexHNSWPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlatL2BaseShift, _p_faiss__IndexFlatL2BaseShiftTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVF, _p_faiss__gpu__GpuIndexIVFTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVF, _p_faiss__IndexIVFTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__MultiIndexQuantizer2, _p_faiss__MultiIndexQuantizer2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexShards, _p_faiss__IndexShardsTo_p_faiss__Index, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__Index2Layer[] = {  {&_swigt__p_faiss__Index2Layer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexBinary[] = {  {&_swigt__p_faiss__IndexBinaryFlat, _p_faiss__IndexBinaryFlatTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexBinaryFlat, _p_faiss__gpu__GpuIndexBinaryFlatTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__IndexBinary, 0, 0, 0},  {&_swigt__p_faiss__IndexBinaryHNSW, _p_faiss__IndexBinaryHNSWTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__IndexBinaryIVF, _p_faiss__IndexBinaryIVFTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__IndexBinaryFromFloat, _p_faiss__IndexBinaryFromFloatTo_p_faiss__IndexBinary, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexBinaryFlat[] = {  {&_swigt__p_faiss__IndexBinaryFlat, 0, 0, 0},{0, 0, 0, 0}};
@@ -88743,6 +90555,7 @@ static swig_cast_info _swigc__p_faiss__IndexPQ[] = {  {&_swigt__p_faiss__IndexPQ
 static swig_cast_info _swigc__p_faiss__IndexPQStats[] = {  {&_swigt__p_faiss__IndexPQStats, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexPreTransform[] = {  {&_swigt__p_faiss__IndexPreTransform, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexRefineFlat[] = {  {&_swigt__p_faiss__IndexRefineFlat, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__IndexReplicas[] = {  {&_swigt__p_faiss__IndexReplicas, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexScalarQuantizer[] = {  {&_swigt__p_faiss__IndexScalarQuantizer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexShards[] = {  {&_swigt__p_faiss__IndexShards, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexSplitVectors[] = {  {&_swigt__p_faiss__IndexSplitVectors, 0, 0, 0},{0, 0, 0, 0}};
@@ -88752,6 +90565,7 @@ static swig_cast_info _swigc__p_faiss__InvertedLists[] = {  {&_swigt__p_faiss__I
 static swig_cast_info _swigc__p_faiss__Level1Quantizer[] = {  {&_swigt__p_faiss__Level1Quantizer, 0, 0, 0},  {&_swigt__p_faiss__IndexIVF, _p_faiss__IndexIVFTo_p_faiss__Level1Quantizer, 0, 0},  {&_swigt__p_faiss__IndexIVFScalarQuantizer, _p_faiss__IndexIVFScalarQuantizerTo_p_faiss__Level1Quantizer, 0, 0},  {&_swigt__p_faiss__IndexIVFPQ, _p_faiss__IndexIVFPQTo_p_faiss__Level1Quantizer, 0, 0},  {&_swigt__p_faiss__IndexIVFFlat, _p_faiss__IndexIVFFlatTo_p_faiss__Level1Quantizer, 0, 0},  {&_swigt__p_faiss__IndexIVFFlatDedup, _p_faiss__IndexIVFFlatDedupTo_p_faiss__Level1Quantizer, 0, 0},  {&_swigt__p_faiss__IndexIVFPQR, _p_faiss__IndexIVFPQRTo_p_faiss__Level1Quantizer, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__LinearTransform[] = {  {&_swigt__p_faiss__RandomRotationMatrix, _p_faiss__RandomRotationMatrixTo_p_faiss__LinearTransform, 0, 0},  {&_swigt__p_faiss__PCAMatrix, _p_faiss__PCAMatrixTo_p_faiss__LinearTransform, 0, 0},  {&_swigt__p_faiss__OPQMatrix, _p_faiss__OPQMatrixTo_p_faiss__LinearTransform, 0, 0},  {&_swigt__p_faiss__LinearTransform, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__LockLevels[] = {  {&_swigt__p_faiss__LockLevels, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__MatrixStats[] = {  {&_swigt__p_faiss__MatrixStats, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__MultiIndexQuantizer[] = {  {&_swigt__p_faiss__MultiIndexQuantizer, 0, 0, 0},  {&_swigt__p_faiss__MultiIndexQuantizer2, _p_faiss__MultiIndexQuantizer2To_p_faiss__MultiIndexQuantizer, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__MultiIndexQuantizer2[] = {  {&_swigt__p_faiss__MultiIndexQuantizer2, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__NormalizationTransform[] = {  {&_swigt__p_faiss__NormalizationTransform, 0, 0, 0},{0, 0, 0, 0}};
@@ -88769,19 +90583,19 @@ static swig_cast_info _swigc__p_faiss__PolysemousTraining[] = {  {&_swigt__p_fai
 static swig_cast_info _swigc__p_faiss__ProductQuantizer[] = {  {&_swigt__p_faiss__ProductQuantizer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__RandomGenerator[] = {  {&_swigt__p_faiss__RandomGenerator, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__RandomRotationMatrix[] = {  {&_swigt__p_faiss__RandomRotationMatrix, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__RangeQueryResult[] = {  {&_swigt__p_faiss__RangeQueryResult, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__RangeSearchPartialResult[] = {  {&_swigt__p_faiss__RangeSearchPartialResult, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_faiss__RangeSearchPartialResult__QueryResult[] = {  {&_swigt__p_faiss__RangeSearchPartialResult__QueryResult, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__RangeSearchResult[] = {  {&_swigt__p_faiss__RangeSearchResult, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__ReconstructFromNeighbors[] = {  {&_swigt__p_faiss__ReconstructFromNeighbors, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__RemapDimensionsTransform[] = {  {&_swigt__p_faiss__RemapDimensionsTransform, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__ReproduceDistancesObjective[] = {  {&_swigt__p_faiss__ReproduceDistancesObjective, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__SQDistanceComputer[] = {  {&_swigt__p_faiss__SQDistanceComputer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__ScalarQuantizer[] = {  {&_swigt__p_faiss__ScalarQuantizer, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_faiss__ScalarQuantizer__DistanceComputer[] = {  {&_swigt__p_faiss__ScalarQuantizer__DistanceComputer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__SimulatedAnnealingOptimizer[] = {  {&_swigt__p_faiss__SimulatedAnnealingOptimizer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__SimulatedAnnealingParameters[] = {  {&_swigt__p_faiss__SimulatedAnnealingParameters, 0, 0, 0},  {&_swigt__p_faiss__PolysemousTraining, _p_faiss__PolysemousTrainingTo_p_faiss__SimulatedAnnealingParameters, 0, 0},  {&_swigt__p_faiss__SimulatedAnnealingOptimizer, _p_faiss__SimulatedAnnealingOptimizerTo_p_faiss__SimulatedAnnealingParameters, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__VectorIOReader[] = {  {&_swigt__p_faiss__VectorIOReader, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__VectorIOWriter[] = {  {&_swigt__p_faiss__VectorIOWriter, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_faiss__VectorTransform[] = {  {&_swigt__p_faiss__RandomRotationMatrix, _p_faiss__RandomRotationMatrixTo_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_faiss__PCAMatrix, _p_faiss__PCAMatrixTo_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_faiss__OPQMatrix, _p_faiss__OPQMatrixTo_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_faiss__VectorTransform, 0, 0, 0},  {&_swigt__p_faiss__LinearTransform, _p_faiss__LinearTransformTo_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_faiss__RemapDimensionsTransform, _p_faiss__RemapDimensionsTransformTo_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_faiss__NormalizationTransform, _p_faiss__NormalizationTransformTo_p_faiss__VectorTransform, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__VectorTransform[] = {  {&_swigt__p_faiss__RandomRotationMatrix, _p_faiss__RandomRotationMatrixTo_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_faiss__PCAMatrix, _p_faiss__PCAMatrixTo_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_faiss__OPQMatrix, _p_faiss__OPQMatrixTo_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_faiss__VectorTransform, 0, 0, 0},  {&_swigt__p_faiss__LinearTransform, _p_faiss__LinearTransformTo_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_faiss__RemapDimensionsTransform, _p_faiss__RemapDimensionsTransformTo_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_faiss__NormalizationTransform, _p_faiss__NormalizationTransformTo_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_faiss__CenteringTransform, _p_faiss__CenteringTransformTo_p_faiss__VectorTransform, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__VisitedTable[] = {  {&_swigt__p_faiss__VisitedTable, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__gpu__FlatIndex[] = {  {&_swigt__p_faiss__gpu__FlatIndex, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__gpu__GpuClonerOptions[] = {  {&_swigt__p_faiss__gpu__GpuClonerOptions, 0, 0, 0},  {&_swigt__p_faiss__gpu__GpuMultipleClonerOptions, _p_faiss__gpu__GpuMultipleClonerOptionsTo_p_faiss__gpu__GpuClonerOptions, 0, 0},{0, 0, 0, 0}};
@@ -88802,7 +90616,6 @@ static swig_cast_info _swigc__p_faiss__gpu__GpuIndexIVFPQConfig[] = {  {&_swigt_
 static swig_cast_info _swigc__p_faiss__gpu__GpuMultipleClonerOptions[] = {  {&_swigt__p_faiss__gpu__GpuMultipleClonerOptions, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__gpu__GpuParameterSpace[] = {  {&_swigt__p_faiss__gpu__GpuParameterSpace, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__gpu__GpuResources[] = {  {&_swigt__p_faiss__gpu__GpuResources, 0, 0, 0},  {&_swigt__p_faiss__gpu__StandardGpuResources, _p_faiss__gpu__StandardGpuResourcesTo_p_faiss__gpu__GpuResources, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_faiss__gpu__IndexProxy[] = {  {&_swigt__p_faiss__gpu__IndexProxy, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__gpu__StandardGpuResources[] = {  {&_swigt__p_faiss__gpu__StandardGpuResources, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__ivflib__SlidingIndexWindow[] = {  {&_swigt__p_faiss__ivflib__SlidingIndexWindow, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
@@ -88814,6 +90627,7 @@ static swig_cast_info _swigc__p_p_faiss__IndexPQ[] = {{&_swigt__p_p_faiss__Index
 static swig_cast_info _swigc__p_p_faiss__IndexIVFFlatDedup[] = {{&_swigt__p_p_faiss__IndexIVFFlatDedup, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexPreTransform[] = {{&_swigt__p_p_faiss__IndexPreTransform, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexSplitVectors[] = {{&_swigt__p_p_faiss__IndexSplitVectors, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_faiss__IndexReplicas[] = {{&_swigt__p_p_faiss__IndexReplicas, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexIDMap2[] = {{&_swigt__p_p_faiss__IndexIDMap2, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexIVFFlat[] = {{&_swigt__p_p_faiss__IndexIVFFlat, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__gpu__GpuIndexIVFFlat[] = {{&_swigt__p_p_faiss__gpu__GpuIndexIVFFlat, 0, 0, 0},{0, 0, 0, 0}};
@@ -88821,11 +90635,10 @@ static swig_cast_info _swigc__p_p_faiss__MultiIndexQuantizer[] = {{&_swigt__p_p_
 static swig_cast_info _swigc__p_p_faiss__IndexScalarQuantizer[] = {{&_swigt__p_p_faiss__IndexScalarQuantizer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexIVFScalarQuantizer[] = {{&_swigt__p_p_faiss__IndexIVFScalarQuantizer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexRefineFlat[] = {{&_swigt__p_p_faiss__IndexRefineFlat, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_p_faiss__gpu__GpuIndexIVFPQ[] = {{&_swigt__p_p_faiss__gpu__GpuIndexIVFPQ, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexIVFPQ[] = {{&_swigt__p_p_faiss__IndexIVFPQ, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_faiss__gpu__GpuIndexIVFPQ[] = {{&_swigt__p_p_faiss__gpu__GpuIndexIVFPQ, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexLSH[] = {{&_swigt__p_p_faiss__IndexLSH, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexHNSWSQ[] = {{&_swigt__p_p_faiss__IndexHNSWSQ, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_p_faiss__gpu__IndexProxy[] = {{&_swigt__p_p_faiss__gpu__IndexProxy, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__gpu__GpuIndex[] = {{&_swigt__p_p_faiss__gpu__GpuIndex, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexIDMap[] = {{&_swigt__p_p_faiss__IndexIDMap, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexHNSW2Level[] = {{&_swigt__p_p_faiss__IndexHNSW2Level, 0, 0, 0},{0, 0, 0, 0}};
@@ -88846,7 +90659,7 @@ static swig_cast_info _swigc__p_p_faiss__gpu__GpuIndexIVF[] = {{&_swigt__p_p_fai
 static swig_cast_info _swigc__p_p_faiss__IndexIVF[] = {{&_swigt__p_p_faiss__IndexIVF, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__MultiIndexQuantizer2[] = {{&_swigt__p_p_faiss__MultiIndexQuantizer2, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexShards[] = {{&_swigt__p_p_faiss__IndexShards, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_p_faiss__Index[] = {  {&_swigt__p_p_faiss__IndexPQ, _p_p_faiss__IndexPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFFlatDedup, _p_p_faiss__IndexIVFFlatDedupTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexPreTransform, _p_p_faiss__IndexPreTransformTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__Index, 0, 0, 0},  {&_swigt__p_p_faiss__IndexSplitVectors, _p_p_faiss__IndexSplitVectorsTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIDMap2, _p_p_faiss__IndexIDMap2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFFlat, _p_p_faiss__IndexIVFFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexIVFFlat, _p_p_faiss__gpu__GpuIndexIVFFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__MultiIndexQuantizer, _p_p_faiss__MultiIndexQuantizerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexScalarQuantizer, _p_p_faiss__IndexScalarQuantizerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFScalarQuantizer, _p_p_faiss__IndexIVFScalarQuantizerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexRefineFlat, _p_p_faiss__IndexRefineFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexIVFPQ, _p_p_faiss__gpu__GpuIndexIVFPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFPQ, _p_p_faiss__IndexIVFPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexLSH, _p_p_faiss__IndexLSHTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSWSQ, _p_p_faiss__IndexHNSWSQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__IndexProxy, _p_p_faiss__gpu__IndexProxyTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndex, _p_p_faiss__gpu__GpuIndexTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIDMap, _p_p_faiss__IndexIDMapTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSW2Level, _p_p_faiss__IndexHNSW2LevelTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__Index2Layer, _p_p_faiss__Index2LayerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexFlatL2, _p_p_faiss__gpu__GpuIndexFlatL2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlatL2, _p_p_faiss__IndexFlatL2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSWFlat, _p_p_faiss__IndexHNSWFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFPQR, _p_p_faiss__IndexIVFPQRTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlat1D, _p_p_faiss__IndexFlat1DTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexFlat, _p_p_faiss__gpu__GpuIndexFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlat, _p_p_faiss__IndexFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexFlatIP, _p_p_faiss__gpu__GpuIndexFlatIPTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlatIP, _p_p_faiss__IndexFlatIPTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSW, _p_p_faiss__IndexHNSWTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSWPQ, _p_p_faiss__IndexHNSWPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlatL2BaseShift, _p_p_faiss__IndexFlatL2BaseShiftTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexIVF, _p_p_faiss__gpu__GpuIndexIVFTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVF, _p_p_faiss__IndexIVFTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__MultiIndexQuantizer2, _p_p_faiss__MultiIndexQuantizer2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexShards, _p_p_faiss__IndexShardsTo_p_p_faiss__Index, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_faiss__Index[] = {  {&_swigt__p_p_faiss__IndexPQ, _p_p_faiss__IndexPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFFlatDedup, _p_p_faiss__IndexIVFFlatDedupTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexPreTransform, _p_p_faiss__IndexPreTransformTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__Index, 0, 0, 0},  {&_swigt__p_p_faiss__IndexSplitVectors, _p_p_faiss__IndexSplitVectorsTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexReplicas, _p_p_faiss__IndexReplicasTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIDMap2, _p_p_faiss__IndexIDMap2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFFlat, _p_p_faiss__IndexIVFFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexIVFFlat, _p_p_faiss__gpu__GpuIndexIVFFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__MultiIndexQuantizer, _p_p_faiss__MultiIndexQuantizerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexScalarQuantizer, _p_p_faiss__IndexScalarQuantizerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFScalarQuantizer, _p_p_faiss__IndexIVFScalarQuantizerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexRefineFlat, _p_p_faiss__IndexRefineFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFPQ, _p_p_faiss__IndexIVFPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexIVFPQ, _p_p_faiss__gpu__GpuIndexIVFPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexLSH, _p_p_faiss__IndexLSHTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSWSQ, _p_p_faiss__IndexHNSWSQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndex, _p_p_faiss__gpu__GpuIndexTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIDMap, _p_p_faiss__IndexIDMapTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSW2Level, _p_p_faiss__IndexHNSW2LevelTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__Index2Layer, _p_p_faiss__Index2LayerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexFlatL2, _p_p_faiss__gpu__GpuIndexFlatL2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlatL2, _p_p_faiss__IndexFlatL2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSWFlat, _p_p_faiss__IndexHNSWFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFPQR, _p_p_faiss__IndexIVFPQRTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlat1D, _p_p_faiss__IndexFlat1DTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexFlat, _p_p_faiss__gpu__GpuIndexFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlat, _p_p_faiss__IndexFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexFlatIP, _p_p_faiss__gpu__GpuIndexFlatIPTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlatIP, _p_p_faiss__IndexFlatIPTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSW, _p_p_faiss__IndexHNSWTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSWPQ, _p_p_faiss__IndexHNSWPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlatL2BaseShift, _p_p_faiss__IndexFlatL2BaseShiftTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexIVF, _p_p_faiss__gpu__GpuIndexIVFTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVF, _p_p_faiss__IndexIVFTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__MultiIndexQuantizer2, _p_p_faiss__MultiIndexQuantizer2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexShards, _p_p_faiss__IndexShardsTo_p_p_faiss__Index, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__ArrayInvertedLists[] = {{&_swigt__p_p_faiss__ArrayInvertedLists, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__ConcatenatedInvertedLists[] = {{&_swigt__p_p_faiss__ConcatenatedInvertedLists, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__OnDiskInvertedLists[] = {{&_swigt__p_p_faiss__OnDiskInvertedLists, 0, 0, 0},{0, 0, 0, 0}};
@@ -88857,7 +90670,8 @@ static swig_cast_info _swigc__p_p_faiss__OPQMatrix[] = {{&_swigt__p_p_faiss__OPQ
 static swig_cast_info _swigc__p_p_faiss__LinearTransform[] = {{&_swigt__p_p_faiss__LinearTransform, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__RemapDimensionsTransform[] = {{&_swigt__p_p_faiss__RemapDimensionsTransform, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__NormalizationTransform[] = {{&_swigt__p_p_faiss__NormalizationTransform, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_p_faiss__VectorTransform[] = {  {&_swigt__p_p_faiss__RandomRotationMatrix, _p_p_faiss__RandomRotationMatrixTo_p_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_p_faiss__PCAMatrix, _p_p_faiss__PCAMatrixTo_p_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_p_faiss__OPQMatrix, _p_p_faiss__OPQMatrixTo_p_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_p_faiss__VectorTransform, 0, 0, 0},  {&_swigt__p_p_faiss__LinearTransform, _p_p_faiss__LinearTransformTo_p_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_p_faiss__RemapDimensionsTransform, _p_p_faiss__RemapDimensionsTransformTo_p_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_p_faiss__NormalizationTransform, _p_p_faiss__NormalizationTransformTo_p_p_faiss__VectorTransform, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_faiss__CenteringTransform[] = {{&_swigt__p_p_faiss__CenteringTransform, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_faiss__VectorTransform[] = {  {&_swigt__p_p_faiss__RandomRotationMatrix, _p_p_faiss__RandomRotationMatrixTo_p_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_p_faiss__PCAMatrix, _p_p_faiss__PCAMatrixTo_p_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_p_faiss__OPQMatrix, _p_p_faiss__OPQMatrixTo_p_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_p_faiss__VectorTransform, 0, 0, 0},  {&_swigt__p_p_faiss__LinearTransform, _p_p_faiss__LinearTransformTo_p_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_p_faiss__RemapDimensionsTransform, _p_p_faiss__RemapDimensionsTransformTo_p_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_p_faiss__NormalizationTransform, _p_p_faiss__NormalizationTransformTo_p_p_faiss__VectorTransform, 0, 0},  {&_swigt__p_p_faiss__CenteringTransform, _p_p_faiss__CenteringTransformTo_p_p_faiss__VectorTransform, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__gpu__StandardGpuResources[] = {{&_swigt__p_p_faiss__gpu__StandardGpuResources, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__gpu__GpuResources[] = {  {&_swigt__p_p_faiss__gpu__GpuResources, 0, 0, 0},  {&_swigt__p_p_faiss__gpu__StandardGpuResources, _p_p_faiss__gpu__StandardGpuResourcesTo_p_p_faiss__gpu__GpuResources, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_void[] = {  {&_swigt__p_p_void, 0, 0, 0},{0, 0, 0, 0}};
@@ -88869,6 +90683,7 @@ static swig_cast_info _swigc__p_std__pairT_void_p_unsigned_long_t[] = {  {&_swig
 static swig_cast_info _swigc__p_std__priority_queueT_faiss__HNSW__NodeDistFarther_t[] = {  {&_swigt__p_std__priority_queueT_faiss__HNSW__NodeDistFarther_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__priority_queueT_std__pairT_float_int_t_t[] = {  {&_swigt__p_std__priority_queueT_std__pairT_float_int_t_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__unordered_mapT_long_long_t[] = {  {&_swigt__p_std__unordered_mapT_long_long_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__unordered_mapT_unsigned_long_faiss__MatrixStats__Occurrence_t[] = {  {&_swigt__p_std__unordered_mapT_unsigned_long_faiss__MatrixStats__Occurrence_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__unordered_multimapT_long_long_t[] = {  {&_swigt__p_std__unordered_multimapT_long_long_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_char_t[] = {  {&_swigt__p_std__vectorT_char_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_cudaStream_t_t[] = {  {&_swigt__p_std__vectorT_cudaStream_t_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -88878,10 +90693,11 @@ static swig_cast_info _swigc__p_std__vectorT_faiss__HNSW__NodeDistFarther_t[] = 
 static swig_cast_info _swigc__p_std__vectorT_faiss__Index_p_t[] = {  {&_swigt__p_std__vectorT_faiss__Index_p_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_faiss__InvertedLists_const_p_t[] = {  {&_swigt__p_std__vectorT_faiss__InvertedLists_const_p_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_faiss__InvertedLists_p_t[] = {  {&_swigt__p_std__vectorT_faiss__InvertedLists_p_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_faiss__MatrixStats__PerDimStats_t[] = {  {&_swigt__p_std__vectorT_faiss__MatrixStats__PerDimStats_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_faiss__OnDiskInvertedLists__List_t[] = {  {&_swigt__p_std__vectorT_faiss__OnDiskInvertedLists__List_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_faiss__OperatingPoint_t[] = {  {&_swigt__p_std__vectorT_faiss__OperatingPoint_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_faiss__ParameterRange_t[] = {  {&_swigt__p_std__vectorT_faiss__ParameterRange_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t[] = {  {&_swigt__p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_faiss__RangeQueryResult_t[] = {  {&_swigt__p_std__vectorT_faiss__RangeQueryResult_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_faiss__VectorTransform_p_t[] = {  {&_swigt__p_std__vectorT_faiss__VectorTransform_p_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_faiss__gpu__GpuResources_p_t[] = {  {&_swigt__p_std__vectorT_faiss__gpu__GpuResources_p_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_float_t[] = {  {&_swigt__p_std__vectorT_float_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -88915,17 +90731,18 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_faiss__AutoTuneCriterion,
   _swigc__p_faiss__BinaryInvertedListScanner,
   _swigc__p_faiss__BufferList,
+  _swigc__p_faiss__CenteringTransform,
   _swigc__p_faiss__Cloner,
   _swigc__p_faiss__Clustering,
   _swigc__p_faiss__ClusteringParameters,
   _swigc__p_faiss__ConcatenatedInvertedLists,
+  _swigc__p_faiss__DistanceComputer,
   _swigc__p_faiss__GenHammingComputer16,
   _swigc__p_faiss__GenHammingComputer32,
   _swigc__p_faiss__GenHammingComputer8,
   _swigc__p_faiss__GenHammingComputerM8,
   _swigc__p_faiss__HNSW,
   _swigc__p_faiss__HNSWStats,
-  _swigc__p_faiss__HNSW__DistanceComputer,
   _swigc__p_faiss__HNSW__MinimaxHeap,
   _swigc__p_faiss__HammingComputer16,
   _swigc__p_faiss__HammingComputer20,
@@ -88979,6 +90796,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_faiss__IndexPQStats,
   _swigc__p_faiss__IndexPreTransform,
   _swigc__p_faiss__IndexRefineFlat,
+  _swigc__p_faiss__IndexReplicas,
   _swigc__p_faiss__IndexScalarQuantizer,
   _swigc__p_faiss__IndexShards,
   _swigc__p_faiss__IndexSplitVectors,
@@ -88988,6 +90806,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_faiss__Level1Quantizer,
   _swigc__p_faiss__LinearTransform,
   _swigc__p_faiss__LockLevels,
+  _swigc__p_faiss__MatrixStats,
   _swigc__p_faiss__MultiIndexQuantizer,
   _swigc__p_faiss__MultiIndexQuantizer2,
   _swigc__p_faiss__NormalizationTransform,
@@ -89005,14 +90824,14 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_faiss__ProductQuantizer,
   _swigc__p_faiss__RandomGenerator,
   _swigc__p_faiss__RandomRotationMatrix,
+  _swigc__p_faiss__RangeQueryResult,
   _swigc__p_faiss__RangeSearchPartialResult,
-  _swigc__p_faiss__RangeSearchPartialResult__QueryResult,
   _swigc__p_faiss__RangeSearchResult,
   _swigc__p_faiss__ReconstructFromNeighbors,
   _swigc__p_faiss__RemapDimensionsTransform,
   _swigc__p_faiss__ReproduceDistancesObjective,
+  _swigc__p_faiss__SQDistanceComputer,
   _swigc__p_faiss__ScalarQuantizer,
-  _swigc__p_faiss__ScalarQuantizer__DistanceComputer,
   _swigc__p_faiss__SimulatedAnnealingOptimizer,
   _swigc__p_faiss__SimulatedAnnealingParameters,
   _swigc__p_faiss__VectorIOReader,
@@ -89038,7 +90857,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_faiss__gpu__GpuMultipleClonerOptions,
   _swigc__p_faiss__gpu__GpuParameterSpace,
   _swigc__p_faiss__gpu__GpuResources,
-  _swigc__p_faiss__gpu__IndexProxy,
   _swigc__p_faiss__gpu__StandardGpuResources,
   _swigc__p_faiss__ivflib__SlidingIndexWindow,
   _swigc__p_float,
@@ -89047,6 +90865,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_long,
   _swigc__p_omp_lock_t,
   _swigc__p_p_faiss__ArrayInvertedLists,
+  _swigc__p_p_faiss__CenteringTransform,
   _swigc__p_p_faiss__ConcatenatedInvertedLists,
   _swigc__p_p_faiss__Index,
   _swigc__p_p_faiss__Index2Layer,
@@ -89072,6 +90891,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_p_faiss__IndexPQ,
   _swigc__p_p_faiss__IndexPreTransform,
   _swigc__p_p_faiss__IndexRefineFlat,
+  _swigc__p_p_faiss__IndexReplicas,
   _swigc__p_p_faiss__IndexScalarQuantizer,
   _swigc__p_p_faiss__IndexShards,
   _swigc__p_p_faiss__IndexSplitVectors,
@@ -89094,7 +90914,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_p_faiss__gpu__GpuIndexIVFFlat,
   _swigc__p_p_faiss__gpu__GpuIndexIVFPQ,
   _swigc__p_p_faiss__gpu__GpuResources,
-  _swigc__p_p_faiss__gpu__IndexProxy,
   _swigc__p_p_faiss__gpu__StandardGpuResources,
   _swigc__p_p_void,
   _swigc__p_std__functionT_void_ffaiss__Index_pF_t,
@@ -89105,6 +90924,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_std__priority_queueT_faiss__HNSW__NodeDistFarther_t,
   _swigc__p_std__priority_queueT_std__pairT_float_int_t_t,
   _swigc__p_std__unordered_mapT_long_long_t,
+  _swigc__p_std__unordered_mapT_unsigned_long_faiss__MatrixStats__Occurrence_t,
   _swigc__p_std__unordered_multimapT_long_long_t,
   _swigc__p_std__vectorT_char_t,
   _swigc__p_std__vectorT_cudaStream_t_t,
@@ -89114,10 +90934,11 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_std__vectorT_faiss__Index_p_t,
   _swigc__p_std__vectorT_faiss__InvertedLists_const_p_t,
   _swigc__p_std__vectorT_faiss__InvertedLists_p_t,
+  _swigc__p_std__vectorT_faiss__MatrixStats__PerDimStats_t,
   _swigc__p_std__vectorT_faiss__OnDiskInvertedLists__List_t,
   _swigc__p_std__vectorT_faiss__OperatingPoint_t,
   _swigc__p_std__vectorT_faiss__ParameterRange_t,
-  _swigc__p_std__vectorT_faiss__RangeSearchPartialResult__QueryResult_t,
+  _swigc__p_std__vectorT_faiss__RangeQueryResult_t,
   _swigc__p_std__vectorT_faiss__VectorTransform_p_t,
   _swigc__p_std__vectorT_faiss__gpu__GpuResources_p_t,
   _swigc__p_std__vectorT_float_t,
@@ -89829,7 +91650,7 @@ SWIG_init(void) {
   SWIG_addvarlink(SWIG_globals(),(char *)"hamming_batch_size",Swig_var_hamming_batch_size_get, Swig_var_hamming_batch_size_set);
   SWIG_addvarlink(SWIG_globals(),(char *)"distance_compute_blas_threshold",Swig_var_distance_compute_blas_threshold_get, Swig_var_distance_compute_blas_threshold_set);
   SWIG_Python_SetConstant(d, "FAISS_VERSION_MAJOR",SWIG_From_int(static_cast< int >(1)));
-  SWIG_Python_SetConstant(d, "FAISS_VERSION_MINOR",SWIG_From_int(static_cast< int >(5)));
+  SWIG_Python_SetConstant(d, "FAISS_VERSION_MINOR",SWIG_From_int(static_cast< int >(4)));
   SWIG_Python_SetConstant(d, "FAISS_VERSION_PATCH",SWIG_From_int(static_cast< int >(0)));
   SWIG_Python_SetConstant(d, "METRIC_INNER_PRODUCT",SWIG_From_int(static_cast< int >(faiss::METRIC_INNER_PRODUCT)));
   SWIG_Python_SetConstant(d, "METRIC_L2",SWIG_From_int(static_cast< int >(faiss::METRIC_L2)));
@@ -89854,6 +91675,7 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "ScalarQuantizer_QT_8bit_uniform",SWIG_From_int(static_cast< int >(faiss::ScalarQuantizer::QT_8bit_uniform)));
   SWIG_Python_SetConstant(d, "ScalarQuantizer_QT_4bit_uniform",SWIG_From_int(static_cast< int >(faiss::ScalarQuantizer::QT_4bit_uniform)));
   SWIG_Python_SetConstant(d, "ScalarQuantizer_QT_fp16",SWIG_From_int(static_cast< int >(faiss::ScalarQuantizer::QT_fp16)));
+  SWIG_Python_SetConstant(d, "ScalarQuantizer_QT_8bit_direct",SWIG_From_int(static_cast< int >(faiss::ScalarQuantizer::QT_8bit_direct)));
   SWIG_Python_SetConstant(d, "ScalarQuantizer_RS_minmax",SWIG_From_int(static_cast< int >(faiss::ScalarQuantizer::RS_minmax)));
   SWIG_Python_SetConstant(d, "ScalarQuantizer_RS_meanstd",SWIG_From_int(static_cast< int >(faiss::ScalarQuantizer::RS_meanstd)));
   SWIG_Python_SetConstant(d, "ScalarQuantizer_RS_quantiles",SWIG_From_int(static_cast< int >(faiss::ScalarQuantizer::RS_quantiles)));
@@ -89867,8 +91689,10 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "INDICES_64_BIT",SWIG_From_int(static_cast< int >(faiss::gpu::INDICES_64_BIT)));
   SWIG_Python_SetConstant(d, "Device",SWIG_From_int(static_cast< int >(faiss::gpu::Device)));
   SWIG_Python_SetConstant(d, "Unified",SWIG_From_int(static_cast< int >(faiss::gpu::Unified)));
+  SWIG_Python_SetConstant(d, "HostPinned",SWIG_From_int(static_cast< int >(faiss::gpu::HostPinned)));
   SWIG_addvarlink(SWIG_globals(),(char *)"IO_FLAG_MMAP",Swig_var_IO_FLAG_MMAP_get, Swig_var_IO_FLAG_MMAP_set);
   SWIG_addvarlink(SWIG_globals(),(char *)"IO_FLAG_READ_ONLY",Swig_var_IO_FLAG_READ_ONLY_get, Swig_var_IO_FLAG_READ_ONLY_set);
+  SWIG_addvarlink(SWIG_globals(),(char *)"IO_FLAG_ONDISK_SAME_DIR",Swig_var_IO_FLAG_ONDISK_SAME_DIR_get, Swig_var_IO_FLAG_ONDISK_SAME_DIR_set);
   
   /* needed, else crash at runtime */
   import_array();

@@ -16,8 +16,15 @@
 
 #include <cstdio>
 
-namespace faiss {
+/** I/O functions can read/write to a filename, a file handle or to an
+ * object that abstracts the medium.
+ *
+ * The read functions return objects that should be deallocated with
+ * delete. All references within these objectes are owned by the
+ * object.
+ */
 
+namespace faiss {
 
 struct Index;
 struct IndexBinary;
@@ -36,8 +43,12 @@ void write_index_binary (const IndexBinary *idx, const char *fname);
 void write_index_binary (const IndexBinary *idx, FILE *f);
 void write_index_binary (const IndexBinary *idx, IOWriter *writer);
 
+// The read_index flags are implemented only for a subset of index types.
 const int IO_FLAG_MMAP = 1; // try to memmap if possible
 const int IO_FLAG_READ_ONLY = 2;
+// strip directory component from ondisk filename, and assume it's in
+// the same directory as the index file
+const int IO_FLAG_ONDISK_SAME_DIR = 4;
 
 Index *read_index (const char *fname, int io_flags = 0);
 Index *read_index (FILE * f, int io_flags = 0);

@@ -654,7 +654,7 @@ def get_populated_index(preproc):
 
         print "Copy CPU index to %d sharded GPU indexes" % replicas
 
-        index = faiss.IndexProxy()
+        index = faiss.IndexReplicas()
 
         for i in range(replicas):
             gpu0 = ngpu * i / replicas

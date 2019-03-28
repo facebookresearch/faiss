@@ -35,6 +35,7 @@
 #include "FaissAssert.h"
 #include "IndexFlat.h"
 #include "IndexIVFPQ.h"
+#include "AuxIndexStructures.h"
 
 
 extern "C" {
@@ -55,7 +56,6 @@ using MinimaxHeap = HNSW::MinimaxHeap;
 using storage_idx_t = HNSW::storage_idx_t;
 using NodeDistCloser = HNSW::NodeDistCloser;
 using NodeDistFarther = HNSW::NodeDistFarther;
-using DistanceComputer = HNSW::DistanceComputer;
 
 HNSWStats hnsw_stats;
 
@@ -71,6 +71,7 @@ void hnsw_add_vertices(IndexHNSW &index_hnsw,
                        size_t n, const float *x,
                        bool verbose,
                        bool preset_levels = false) {
+    size_t d = index_hnsw.d;
     HNSW & hnsw = index_hnsw.hnsw;
     size_t ntotal = n0 + n;
     double t0 = getmillisecs();
@@ -78,6 +79,10 @@ void hnsw_add_vertices(IndexHNSW &index_hnsw,
         printf("hnsw_add_vertices: adding %ld elements on top of %ld "
                "(preset_levels=%d)\n",
                n, n0, int(preset_levels));
+    }
+
+    if (n == 0) {
+        return;
     }
 
     int max_level = hnsw.prepare_level_tab(n, preset_levels);
@@ -136,7 +141,7 @@ void hnsw_add_vertices(IndexHNSW &index_hnsw,
             for (int j = i0; j < i1; j++)
                 std::swap(order[j], order[j + rng2.rand_int(i1 - j)]);
 
-#pragma omp parallel
+#pragma omp parallel if(n > 1)
             {
                 VisitedTable vt (ntotal);
 
@@ -147,7 +152,7 @@ void hnsw_add_vertices(IndexHNSW &index_hnsw,
 #pragma omp  for schedule(dynamic)
                 for (int i = i0; i < i1; i++) {
                     storage_idx_t pt_id = order[i];
-                    dis->set_query (x + (pt_id - n0) * dis->d);
+                    dis->set_query (x + (pt_id - n0) * d);
 
                     hnsw.add_with_locks(*dis, pt_level, pt_id, locks, vt);
 
@@ -552,7 +557,7 @@ namespace {
 
 // storage that explicitly reconstructs vectors before computing distances
 struct GenericDistanceComputer: DistanceComputer {
-
+    size_t d;
     const Index & storage;
     std::vector<float> buf;
     const float *q;
@@ -563,13 +568,13 @@ struct GenericDistanceComputer: DistanceComputer {
         buf.resize(d * 2);
     }
 
-    float operator () (storage_idx_t i) override
+    float operator () (idx_t i) override
     {
         storage.reconstruct(i, buf.data());
         return fvec_L2sqr(q, buf.data(), d);
     }
 
-    float symmetric_dis(storage_idx_t i, storage_idx_t j) override
+    float symmetric_dis(idx_t i, idx_t j) override
     {
         storage.reconstruct(i, buf.data());
         storage.reconstruct(j, buf.data() + d);
@@ -830,18 +835,19 @@ namespace {
 
 
 struct FlatL2Dis: DistanceComputer {
+    size_t d;
     Index::idx_t nb;
     const float *q;
     const float *b;
     size_t ndis;
 
-    float operator () (storage_idx_t i) override
+    float operator () (idx_t i) override
     {
         ndis++;
         return (fvec_L2sqr(q, b + i * d, d));
     }
 
-    float symmetric_dis(storage_idx_t i, storage_idx_t j) override
+    float symmetric_dis(idx_t i, idx_t j) override
     {
         return (fvec_L2sqr(b + j * d, b + i * d, d));
     }
@@ -860,7 +866,7 @@ struct FlatL2Dis: DistanceComputer {
         q = x;
     }
 
-    virtual ~FlatL2Dis () {
+    ~FlatL2Dis() override {
 #pragma omp critical
         {
             hnsw_stats.ndis += ndis;
@@ -903,6 +909,7 @@ namespace {
 
 
 struct PQDis: DistanceComputer {
+    size_t d;
     Index::idx_t nb;
     const uint8_t *codes;
     size_t code_size;
@@ -911,7 +918,7 @@ struct PQDis: DistanceComputer {
     std::vector<float> precomputed_table;
     size_t ndis;
 
-    float operator () (storage_idx_t i) override
+    float operator () (idx_t i) override
     {
         const uint8_t *code = codes + i * code_size;
         const float *dt = precomputed_table.data();
@@ -924,7 +931,7 @@ struct PQDis: DistanceComputer {
         return accu;
     }
 
-    float symmetric_dis(storage_idx_t i, storage_idx_t j) override
+    float symmetric_dis(idx_t i, idx_t j) override
     {
         const float * sdci = sdc;
         float accu = 0;
@@ -955,7 +962,7 @@ struct PQDis: DistanceComputer {
         pq.compute_distance_table(x, precomputed_table.data());
     }
 
-    virtual ~PQDis () {
+    ~PQDis() override {
 #pragma omp critical
         {
             hnsw_stats.ndis += ndis;
@@ -995,56 +1002,10 @@ DistanceComputer * IndexHNSWPQ::get_distance_computer () const
  **************************************************************/
 
 
-namespace {
-
-
-struct SQDis: DistanceComputer {
-    Index::idx_t nb;
-    const uint8_t *codes;
-    size_t code_size;
-    const ScalarQuantizer & sq;
-    const float *q;
-    ScalarQuantizer::DistanceComputer * dc;
-
-    float operator () (storage_idx_t i) override
-    {
-        const uint8_t *code = codes + i * code_size;
-
-        return dc->compute_distance (q, code);
-    }
-
-    float symmetric_dis(storage_idx_t i, storage_idx_t j) override
-    {
-        const uint8_t *codei = codes + i * code_size;
-        const uint8_t *codej = codes + j * code_size;
-        return dc->compute_code_distance (codei, codej);
-    }
-
-    SQDis(const IndexScalarQuantizer& storage, const float* /*q*/ = nullptr)
-        : sq(storage.sq) {
-      nb = storage.ntotal;
-      d = storage.d;
-      codes = storage.codes.data();
-      code_size = sq.code_size;
-      dc = sq.get_distance_computer();
-    }
-
-    void set_query(const float *x) override {
-        q = x;
-    }
-
-    virtual ~SQDis () {
-        delete dc;
-    }
-};
-
-
-}  // namespace
-
-
 IndexHNSWSQ::IndexHNSWSQ(int d, ScalarQuantizer::QuantizerType qtype, int M):
     IndexHNSW (new IndexScalarQuantizer (d, qtype), M)
 {
+    is_trained = false;
     own_fields = true;
 }
 
@@ -1052,7 +1013,8 @@ IndexHNSWSQ::IndexHNSWSQ() {}
 
 DistanceComputer * IndexHNSWSQ::get_distance_computer () const
 {
-    return new SQDis (*dynamic_cast<IndexScalarQuantizer*> (storage));
+    return (dynamic_cast<const IndexScalarQuantizer*> (storage))->
+        get_distance_computer ();
 }
 
 
@@ -1078,7 +1040,7 @@ namespace {
 
 
 struct Distance2Level: DistanceComputer {
-
+    size_t d;
     const Index2Layer & storage;
     std::vector<float> buf;
     const float *q;
@@ -1093,7 +1055,7 @@ struct Distance2Level: DistanceComputer {
         buf.resize(2 * d);
     }
 
-    float symmetric_dis(storage_idx_t i, storage_idx_t j) override
+    float symmetric_dis(idx_t i, idx_t j) override
     {
         storage.reconstruct(i, buf.data());
         storage.reconstruct(j, buf.data() + d);
@@ -1122,7 +1084,7 @@ struct DistanceXPQ4: Distance2Level {
         pq_l1_tab = quantizer->xb.data();
     }
 
-    float operator () (storage_idx_t i) override
+    float operator () (idx_t i) override
     {
 #ifdef __SSE__
         const uint8_t *code = storage.codes.data() + i * storage.code_size;
@@ -1173,7 +1135,7 @@ struct Distance2xXPQ4: Distance2Level {
         pq_l1_tab = mi->pq.centroids.data();
     }
 
-    float operator () (storage_idx_t i) override
+    float operator () (idx_t i) override
     {
         const uint8_t *code = storage.codes.data() + i * storage.code_size;
         long key01 = 0;

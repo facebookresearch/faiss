@@ -21,6 +21,8 @@
 
 #include <omp.h>
 
+#include <immintrin.h>
+
 #include <algorithm>
 #include <vector>
 
@@ -835,8 +837,7 @@ static void range_search_blas (
             for (size_t i = i0; i < i1; i++) {
                 const float *ip_line = ip_block + (i - i0) * (j1 - j0);
 
-                RangeSearchPartialResult::QueryResult & qres =
-                    pres->new_result (i);
+                RangeQueryResult & qres = pres->new_result (i);
 
                 for (size_t j = j0; j < j1; j++) {
                     float ip = *ip_line++;
@@ -900,8 +901,7 @@ static void range_search_sse (const float * x,
             const float * y_ = y;
             size_t j;
 
-            RangeSearchPartialResult::QueryResult & qres =
-                pres.new_result (i);
+            RangeQueryResult & qres = pres.new_result (i);
 
             for (j = 0; j < ny; j++) {
                 if (compute_l2) {
@@ -1565,5 +1565,57 @@ void real_to_binary(size_t d, const float *x_in, uint8_t *x_out) {
   }
 }
 
+
+// from Python's stringobject.c
+uint64_t hash_bytes (const uint8_t *bytes, long n) {
+    const uint8_t *p = bytes;
+    uint64_t x = (uint64_t)(*p) << 7;
+    long len = n;
+    while (--len >= 0) {
+        x = (1000003*x) ^ *p++;
+    }
+    x ^= n;
+    return x;
+}
+
+
+bool check_openmp() {
+  omp_set_num_threads(10);
+
+  if (omp_get_max_threads() != 10) {
+    return false;
+  }
+
+  std::vector<int> nt_per_thread(10);
+  size_t sum = 0;
+  bool in_parallel = true;
+#pragma omp parallel reduction(+: sum)
+  {
+    if (!omp_in_parallel()) {
+      in_parallel = false;
+    }
+
+    int nt = omp_get_num_threads();
+    int rank = omp_get_thread_num();
+
+    nt_per_thread[rank] = nt;
+#pragma omp for
+    for(int i = 0; i < 1000 * 1000 * 10; i++) {
+      sum += i;
+    }
+  }
+
+  if (!in_parallel) {
+    return false;
+  }
+  if (nt_per_thread[0] != 10) {
+    return false;
+  }
+  if (sum == 0) {
+    return false;
+  }
+
+  return true;
+}
 
 } // namespace faiss

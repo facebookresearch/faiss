@@ -101,6 +101,16 @@ struct InvertedLists {
 
     virtual ~InvertedLists ();
 
+    /*************************
+     * statistics            */
+
+    /// 1= perfectly balanced, >1: imbalanced
+    double imbalance_factor () const;
+
+    /// display some stats about the inverted lists
+    void print_stats () const;
+
+
     /**************************************
      * Scoped inverted lists (for automatic deallocation)
      *

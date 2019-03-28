@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "MemorySpace.h"
 #include <cuda.h>
 #include <unordered_set>
 
@@ -26,6 +27,11 @@ class GpuResourcesThrustAllocator {
   }
 
   ~GpuResourcesThrustAllocator() {
+    // In the case of an exception being thrown, we may not have called
+    // deallocate on all of our sub-allocations. Free them here
+    for (auto p : mallocAllocs_) {
+      freeMemorySpace(MemorySpace::Device, p);
+    }
   }
 
   char* allocate(std::ptrdiff_t size) {
@@ -37,7 +43,7 @@ class GpuResourcesThrustAllocator {
       return p;
     } else {
       char* p = nullptr;
-      CUDA_VERIFY(cudaMalloc(&p, size));
+      allocMemorySpace(MemorySpace::Device, &p, size);
       mallocAllocs_.insert(p);
       return p;
     }
@@ -48,7 +54,7 @@ class GpuResourcesThrustAllocator {
     // didn't cudaMalloc
     auto it = mallocAllocs_.find(p);
     if (it != mallocAllocs_.end()) {
-      CUDA_VERIFY(cudaFree(p));
+      freeMemorySpace(MemorySpace::Device, p);
       mallocAllocs_.erase(it);
     }
   }

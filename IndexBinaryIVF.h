@@ -58,9 +58,6 @@ struct IndexBinaryIVF : IndexBinary {
     ClusteringParameters cp; ///< to override default clustering params
     Index *clustering_index; ///< to override index used during clustering
 
-    /// Trains the quantizer and calls train_residual to train sub-quantizers
-    void train_q1(size_t n, const uint8_t *x, bool verbose);
-
     /** The Inverted file takes a quantizer (an IndexBinary) on input,
      * which implements the function mapping a vector to a list
      * identifier. The pointer is borrowed: the quantizer should not
@@ -74,10 +71,9 @@ struct IndexBinaryIVF : IndexBinary {
 
     void reset() override;
 
-    /// Trains the quantizer and calls train_residual to train sub-quantizers
+    /// Trains the quantizer
     void train(idx_t n, const uint8_t *x) override;
 
-    /// Quantizes x and calls add_with_key
     void add(idx_t n, const uint8_t *x) override;
 
     void add_with_ids(idx_t n, const uint8_t *x, const long *xids) override;
@@ -173,12 +169,6 @@ struct IndexBinaryIVF : IndexBinary {
      *                                   else clear it
      */
     void make_direct_map(bool new_maintain_direct_map=true);
-
-    /// 1= perfectly balanced, >1: imbalanced
-    double imbalance_factor() const;
-
-    /// display some stats about the inverted lists
-    void print_stats() const;
 
     void replace_invlists(InvertedLists *il, bool own=false);
 };

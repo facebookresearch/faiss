@@ -111,6 +111,9 @@ class TestBinaryFlat(unittest.TestCase):
                 ref_dis = binary_dis(self.xq[i], self.xb[j])
                 assert dj == ref_dis
 
+        # test reconstruction
+        assert np.all(index.reconstruct(12) == self.xb[12])
+
     def test_empty_flat(self):
         d = self.xq.shape[1] * 8
 

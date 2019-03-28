@@ -137,12 +137,13 @@ struct FileIOReader: IOReader {
         need_close = true;
     }
 
-    ~FileIOReader() {
+    ~FileIOReader() override {
         if (need_close) {
             int ret = fclose(f);
-            FAISS_THROW_IF_NOT_FMT (
-               ret == 0, "file %s close error: %s",
-               name.c_str(), strerror(errno));
+            if (ret != 0) {// we cannot raise and exception in the destructor
+                fprintf(stderr, "file %s close error: %s",
+                        name.c_str(), strerror(errno));
+            }
         }
     }
 
@@ -173,12 +174,14 @@ struct FileIOWriter: IOWriter {
         need_close = true;
     }
 
-    ~FileIOWriter() {
+    ~FileIOWriter() override {
         if (need_close) {
             int ret = fclose(f);
-            FAISS_THROW_IF_NOT_FMT (
-               ret == 0, "file %s close error: %s",
-               name.c_str(), strerror(errno));
+            if (ret != 0) {
+                // we cannot raise and exception in the destructor
+                fprintf(stderr, "file %s close error: %s",
+                        name.c_str(), strerror(errno));
+            }
         }
     }
 
@@ -243,6 +246,11 @@ void write_VectorTransform (const VectorTransform *vt, IOWriter *f) {
         uint32_t h = fourcc ("VNrm");
         WRITE1 (h);
         WRITE1 (nt->norm);
+    } else if (const CenteringTransform *ct =
+               dynamic_cast<const CenteringTransform *>(vt)) {
+        uint32_t h = fourcc ("VCnt");
+        WRITE1 (h);
+        WRITEVECTOR (ct->mean);
     } else {
         FAISS_THROW_MSG ("cannot serialize this");
     }
@@ -445,11 +453,12 @@ void write_index (const Index *idx, IOWriter *f) {
         write_InvertedLists (ivfl->invlists, f);
     } else if(const IndexIVFScalarQuantizer * ivsc =
               dynamic_cast<const IndexIVFScalarQuantizer *> (idx)) {
-        uint32_t h = fourcc ("IwSQ");
+        uint32_t h = fourcc ("IwSq");
         WRITE1 (h);
         write_ivf_header (ivsc, f);
         write_ScalarQuantizer (&ivsc->sq, f);
         WRITE1 (ivsc->code_size);
+        WRITE1 (ivsc->by_residual);
         write_InvertedLists (ivsc->invlists, f);
     } else if(const IndexIVFPQ * ivpq =
               dynamic_cast<const IndexIVFPQ *> (idx)) {
@@ -589,6 +598,10 @@ VectorTransform* read_VectorTransform (IOReader *f) {
         NormalizationTransform *nt = new NormalizationTransform ();
         READ1 (nt->norm);
         vt = nt;
+    } else if (h == fourcc ("VCnt")) {
+        CenteringTransform *ct = new CenteringTransform ();
+        READVECTOR (ct->mean);
+        vt = ct;
     } else {
         FAISS_THROW_MSG("fourcc not recognized");
     }
@@ -703,6 +716,30 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
             std::vector<char> x;
             READVECTOR(x);
             od->filename.assign(x.begin(), x.end());
+
+            if (io_flags & IO_FLAG_ONDISK_SAME_DIR) {
+                FileIOReader *reader = dynamic_cast<FileIOReader*>(f);
+                FAISS_THROW_IF_NOT_MSG (
+                    reader, "IO_FLAG_ONDISK_SAME_DIR only supported "
+                    "when reading from file");
+                std::string indexname = reader->name;
+                std::string dirname = "./";
+                size_t slash = indexname.find_last_of('/');
+                if (slash != std::string::npos) {
+                    dirname = indexname.substr(0, slash + 1);
+                }
+                std::string filename = od->filename;
+                slash = filename.find_last_of('/');
+                if (slash != std::string::npos) {
+                    filename = filename.substr(slash + 1);
+                }
+                filename = dirname + filename;
+                printf("IO_FLAG_ONDISK_SAME_DIR: "
+                       "updating ondisk filename from %s to %s\n",
+                       od->filename.c_str(), filename.c_str());
+                od->filename = filename;
+            }
+
         }
         READ1(od->totsize);
         od->do_mmap();
@@ -963,11 +1000,16 @@ Index *read_index (IOReader *f, int io_flags) {
         for(int i = 0; i < ivsc->nlist; i++)
             READVECTOR (ail->codes[i]);
         idx = ivsc;
-    } else if(h == fourcc ("IwSQ")) {
+    } else if(h == fourcc ("IwSQ") || h == fourcc ("IwSq")) {
         IndexIVFScalarQuantizer * ivsc = new IndexIVFScalarQuantizer();
         read_ivf_header (ivsc, f);
         read_ScalarQuantizer (&ivsc->sq, f);
         READ1 (ivsc->code_size);
+        if (h == fourcc ("IwSQ")) {
+            ivsc->by_residual = true;
+        } else {
+            READ1 (ivsc->by_residual);
+        }
         read_InvertedLists (ivsc, f, io_flags);
         idx = ivsc;
     } else if(h == fourcc ("IvPQ") || h == fourcc ("IvQR") ||

@@ -82,6 +82,8 @@ extern "C" {
 #include "IndexIVFPQ.h"
 #include "IndexIVFFlat.h"
 #include "IndexScalarQuantizer.h"
+#include "IndexShards.h"
+#include "IndexReplicas.h"
 #include "HNSW.h"
 #include "IndexHNSW.h"
 #include "MetaIndexes.h"
@@ -221,7 +223,6 @@ int get_num_gpus();
 #include "gpu/GpuIndexIVFPQ.h"
 #include "gpu/GpuIndexIVFFlat.h"
 #include "gpu/GpuIndexBinaryFlat.h"
-#include "gpu/IndexProxy.h"
 #include "gpu/GpuAutoTune.h"
 #include "gpu/GpuDistance.h"
 
@@ -291,6 +292,10 @@ int get_num_gpus()
 
 
 
+%ignore faiss::IndexReplicas::at(int) const;
+
+%include "IndexShards.h"
+%include "IndexReplicas.h"
 %include "MetaIndexes.h"
 
 
@@ -298,7 +303,6 @@ int get_num_gpus()
 
 // quiet SWIG warnings
 %ignore faiss::gpu::GpuIndexIVF::GpuIndexIVF;
-%ignore faiss::gpu::IndexProxy::at(int) const;
 
 %include "gpu/GpuIndicesOptions.h"
 %include "gpu/GpuClonerOptions.h"
@@ -309,7 +313,6 @@ int get_num_gpus()
 %include "gpu/GpuIndexIVFPQ.h"
 %include "gpu/GpuIndexIVFFlat.h"
 %include "gpu/GpuIndexBinaryFlat.h"
-%include "gpu/IndexProxy.h"
 %include "gpu/GpuDistance.h"
 
 #ifdef SWIGLUA
@@ -459,6 +462,7 @@ struct AsyncIndexSearchC {
 %typemap(out) faiss::Index * {
     DOWNCAST ( IndexIDMap )
     DOWNCAST ( IndexShards )
+    DOWNCAST ( IndexReplicas )
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
     DOWNCAST ( IndexIVFScalarQuantizer )
@@ -477,7 +481,6 @@ struct AsyncIndexSearchC {
     DOWNCAST ( IndexHNSW2Level )
     DOWNCAST ( Index2Layer )
 #ifdef GPU_WRAPPER
-    DOWNCAST_GPU ( IndexProxy )
     DOWNCAST_GPU ( GpuIndexIVFPQ )
     DOWNCAST_GPU ( GpuIndexIVFFlat )
     DOWNCAST_GPU ( GpuIndexFlat )
@@ -529,6 +532,7 @@ struct AsyncIndexSearchC {
     DOWNCAST (RandomRotationMatrix)
     DOWNCAST (LinearTransform)
     DOWNCAST (NormalizationTransform)
+    DOWNCAST (CenteringTransform)
     DOWNCAST (VectorTransform)
     {
         assert(false);

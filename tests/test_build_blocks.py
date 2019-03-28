@@ -20,6 +20,8 @@ class TestClustering(unittest.TestCase):
         rs = np.random.RandomState(123)
         x = rs.uniform(size=(n, d)).astype('float32')
 
+        x *= 10
+
         km = faiss.Kmeans(d, 32, niter=10)
         err32 = km.train(x)
 
@@ -34,6 +36,14 @@ class TestClustering(unittest.TestCase):
 
         # check that 64 centroids give a lower quantization error than 32
         self.assertGreater(err32, err64)
+
+        km = faiss.Kmeans(d, 32, niter=10, int_centroids=True)
+        err_int = km.train(x)
+
+        # check that integer centoids are not as good as float ones
+        self.assertGreater(err_int, err32)
+        self.assertTrue(np.all(km.centroids == np.floor(km.centroids)))
+
 
     def test_nasty_clustering(self):
         d = 2
@@ -116,6 +126,41 @@ class TestProductQuantizer(unittest.TestCase):
         x10 = pq10.decode(codes)
         diff10 = ((x - x10)**2).sum()
         self.assertGreater(diff, diff10)
+
+    def do_test_codec(self, nbit):
+        pq = faiss.ProductQuantizer(16, 2, nbit)
+
+        # simulate training
+        rs = np.random.RandomState(123)
+        centroids = rs.rand(2, 1 << nbit, 8).astype('float32')
+        faiss.copy_array_to_vector(centroids.ravel(), pq.centroids)
+
+        idx = rs.randint(1 << nbit, size=(100, 2))
+        # can be encoded exactly
+        x = np.hstack((
+            centroids[0, idx[:, 0]],
+            centroids[1, idx[:, 1]]
+        ))
+
+        # encode / decode
+        codes = pq.compute_codes(x)
+        xr = pq.decode(codes)
+        assert np.all(xr == x)
+
+        # encode w/ external index
+        assign_index = faiss.IndexFlatL2(8)
+        pq.assign_index = assign_index
+        codes2 = np.empty((100, pq.code_size), dtype='uint8')
+        pq.compute_codes_with_assign_index(
+            faiss.swig_ptr(x), faiss.swig_ptr(codes2), 100)
+
+        assert np.all(codes == codes2)
+
+    def test_codec(self):
+        self.do_test_codec(6)
+        self.do_test_codec(10)
+        # self.do_test_codec(16)
+
 
 
 
@@ -266,6 +311,90 @@ class TestNyFuncs(unittest.TestCase):
                 faiss.fvec_inner_products_ny(
                     swig_ptr(new), swig_ptr(x), swig_ptr(y), d, ny)
                 assert np.abs(ref - new).max() < 1e-4
+
+
+class TestMatrixStats(unittest.TestCase):
+
+    def test_0s(self):
+        rs = np.random.RandomState(123)
+        m = rs.rand(40, 20).astype('float32')
+        m[5:10] = 0
+        comments = faiss.MatrixStats(m).comments
+        print comments
+        assert 'has 5 copies' in comments
+        assert '5 null vectors' in comments
+
+    def test_copies(self):
+        rs = np.random.RandomState(123)
+        m = rs.rand(40, 20).astype('float32')
+        m[::2] = m[1::2]
+        comments = faiss.MatrixStats(m).comments
+        print comments
+        assert '20 vectors are distinct' in comments
+
+    def test_dead_dims(self):
+        rs = np.random.RandomState(123)
+        m = rs.rand(40, 20).astype('float32')
+        m[:, 5:10] = 0
+        comments = faiss.MatrixStats(m).comments
+        print comments
+        assert '5 dimensions are constant' in comments
+
+    def test_rogue_means(self):
+        rs = np.random.RandomState(123)
+        m = rs.rand(40, 20).astype('float32')
+        m[:, 5:10] += 12345
+        comments = faiss.MatrixStats(m).comments
+        print comments
+        assert '5 dimensions are too large wrt. their variance' in comments
+
+    def test_normalized(self):
+        rs = np.random.RandomState(123)
+        m = rs.rand(40, 20).astype('float32')
+        faiss.normalize_L2(m)
+        comments = faiss.MatrixStats(m).comments
+        print comments
+        assert 'vectors are normalized' in comments
+
+
+class TestScalarQuantizer(unittest.TestCase):
+
+    def test_8bit_equiv(self):
+        rs = np.random.RandomState(123)
+        for it in range(20):
+            for d in 13, 16, 24:
+                x = np.floor(rs.rand(5, d) * 256).astype('float32')
+                x[0] = 0
+                x[1] = 255
+
+                # make sure to test extreme cases
+                x[2, 0] = 0
+                x[3, 0] = 255
+                x[2, 1] = 255
+                x[3, 1] = 0
+
+                ref_index = faiss.IndexScalarQuantizer(d, faiss.ScalarQuantizer.QT_8bit)
+                ref_index.train(x[:2])
+                ref_index.add(x[2:3])
+
+                index = faiss.IndexScalarQuantizer(
+                    d, faiss.ScalarQuantizer.QT_8bit_direct)
+                assert index.is_trained
+                index.add(x[2:3])
+
+                assert np.all(
+                    faiss.vector_to_array(ref_index.codes) ==
+                    faiss.vector_to_array(index.codes))
+
+                # Note that distances are not the same because ref_index
+                # reconstructs x as x + 0.5
+                D, I = index.search(x[3:], 1)
+
+                # assert D[0, 0] == Dref[0, 0]
+                print(D[0, 0], ((x[3] - x[2]) ** 2).sum())
+                assert D[0, 0] == ((x[3] - x[2]) ** 2).sum()
+
+
 
 
 

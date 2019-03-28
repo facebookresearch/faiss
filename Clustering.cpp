@@ -24,7 +24,9 @@ namespace faiss {
 ClusteringParameters::ClusteringParameters ():
     niter(25),
     nredo(1),
-    verbose(false), spherical(false),
+    verbose(false),
+    spherical(false),
+    int_centroids(false),
     update_index(false),
     frozen_centroids(false),
     min_points_per_centroid(39),
@@ -58,7 +60,18 @@ static double imbalance_factor (int n, int k, long *assign) {
     return uf;
 }
 
+void Clustering::post_process_centroids ()
+{
 
+    if (spherical) {
+        fvec_renorm_L2 (d, k, centroids.data());
+    }
+
+    if (int_centroids) {
+        for (size_t i = 0; i < centroids.size(); i++)
+            centroids[i] = roundf (centroids[i]);
+    }
+}
 
 
 void Clustering::train (idx_t nx, const float *x_in, Index & index) {
@@ -117,9 +130,6 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
                "redo %d times, %d iterations\n",
                int(nx), d, k, nredo, niter);
 
-
-
-
     idx_t * assign = new idx_t[nx];
     ScopeDeleter<idx_t> del (assign);
     float * dis = new float[nx];
@@ -146,7 +156,7 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
     double t_search_tot = 0;
     if (verbose) {
         printf("  Preprocessing in %.2f s\n",
-               (getmillisecs() - t0)/1000.);
+               (getmillisecs() - t0) / 1000.);
     }
     t0 = getmillisecs();
 
@@ -155,7 +165,6 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
         if (verbose && nredo > 1) {
             printf("Outer iteration %d / %d\n", redo, nredo);
         }
-
 
         // initialize remaining centroids with random points from the dataset
         centroids.resize (d * k);
@@ -166,9 +175,7 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
             memcpy (&centroids[i * d], x + perm[i] * d,
                     d * sizeof (float));
 
-        if (spherical) {
-            fvec_renorm_L2 (d, k, centroids.data());
-        }
+        post_process_centroids ();
 
         if (index.ntotal != 0) {
             index.reset();
@@ -204,8 +211,7 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
                 fflush (stdout);
             }
 
-            if (spherical)
-                fvec_renorm_L2 (d, k, centroids.data());
+            post_process_centroids ();
 
             index.reset ();
             if (update_index)

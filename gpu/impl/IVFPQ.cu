@@ -517,9 +517,9 @@ IVFPQ::query(Tensor<float, 2, true>& queries,
              int k,
              Tensor<float, 2, true>& outDistances,
              Tensor<long, 2, true>& outIndices) {
-  // Validate these at a top level
-  FAISS_ASSERT(nprobe <= 1024);
-  FAISS_ASSERT(k <= 1024);
+  // These are caught at a higher level
+  FAISS_ASSERT(nprobe <= GPU_MAX_SELECTION_K);
+  FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
 
   auto& mem = resources_->getMemoryManagerCurrentDevice();
   auto stream = resources_->getDefaultStreamCurrentDevice();

@@ -8,6 +8,7 @@
 
 
 #include "IVFUtils.cuh"
+#include "../utils/DeviceDefs.cuh"
 #include "../utils/DeviceUtils.h"
 #include "../utils/Limits.cuh"
 #include "../utils/Select.cuh"
@@ -155,16 +156,12 @@ runPass2SelectLists(Tensor<float, 2, true>& heapDistances,
                     Tensor<float, 2, true>& outDistances,
                     Tensor<long, 2, true>& outIndices,
                     cudaStream_t stream) {
-  constexpr auto kThreadsPerBlock = 128;
-
   auto grid = dim3(topQueryToCentroid.getSize(0));
-  auto block = dim3(kThreadsPerBlock);
 
-#define RUN_PASS(NUM_WARP_Q, NUM_THREAD_Q, DIR)                         \
+#define RUN_PASS(BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR)                  \
   do {                                                                  \
-    pass2SelectLists<kThreadsPerBlock,                                  \
-                     NUM_WARP_Q, NUM_THREAD_Q, DIR>                     \
-      <<<grid, block, 0, stream>>>(heapDistances,                       \
+    pass2SelectLists<BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR>              \
+      <<<grid, BLOCK, 0, stream>>>(heapDistances,                       \
                                    heapIndices,                         \
                                    listIndices.data().get(),            \
                                    prefixSumOffsets,                    \
@@ -177,24 +174,52 @@ runPass2SelectLists(Tensor<float, 2, true>& heapDistances,
     return; /* success */                                               \
   } while (0)
 
-#define RUN_PASS_DIR(DIR)                                \
-  do {                                                   \
-    if (k == 1) {                                        \
-      RUN_PASS(1, 1, DIR);                               \
-    } else if (k <= 32) {                                \
-      RUN_PASS(32, 2, DIR);                              \
-    } else if (k <= 64) {                                \
-      RUN_PASS(64, 3, DIR);                              \
-    } else if (k <= 128) {                               \
-      RUN_PASS(128, 3, DIR);                             \
-    } else if (k <= 256) {                               \
-      RUN_PASS(256, 4, DIR);                             \
-    } else if (k <= 512) {                               \
-      RUN_PASS(512, 8, DIR);                             \
-    } else if (k <= 1024) {                              \
-      RUN_PASS(1024, 8, DIR);                            \
-    }                                                    \
+#if GPU_MAX_SELECTION_K >= 2048
+
+  // block size 128 for k <= 1024, 64 for k = 2048
+#define RUN_PASS_DIR(DIR)                                 \
+  do {                                                    \
+    if (k == 1) {                                         \
+      RUN_PASS(128, 1, 1, DIR);                           \
+    } else if (k <= 32) {                                 \
+      RUN_PASS(128, 32, 2, DIR);                          \
+    } else if (k <= 64) {                                 \
+      RUN_PASS(128, 64, 3, DIR);                          \
+    } else if (k <= 128) {                                \
+      RUN_PASS(128, 128, 3, DIR);                         \
+    } else if (k <= 256) {                                \
+      RUN_PASS(128, 256, 4, DIR);                         \
+    } else if (k <= 512) {                                \
+      RUN_PASS(128, 512, 8, DIR);                         \
+    } else if (k <= 1024) {                               \
+      RUN_PASS(128, 1024, 8, DIR);                        \
+    } else if (k <= 2048) {                               \
+      RUN_PASS(64, 2048, 8, DIR);                         \
+    }                                                     \
   } while (0)
+
+#else
+
+#define RUN_PASS_DIR(DIR)                                 \
+  do {                                                    \
+    if (k == 1) {                                         \
+      RUN_PASS(128, 1, 1, DIR);                           \
+    } else if (k <= 32) {                                 \
+      RUN_PASS(128, 32, 2, DIR);                          \
+    } else if (k <= 64) {                                 \
+      RUN_PASS(128, 64, 3, DIR);                          \
+    } else if (k <= 128) {                                \
+      RUN_PASS(128, 128, 3, DIR);                         \
+    } else if (k <= 256) {                                \
+      RUN_PASS(128, 256, 4, DIR);                         \
+    } else if (k <= 512) {                                \
+      RUN_PASS(128, 512, 8, DIR);                         \
+    } else if (k <= 1024) {                               \
+      RUN_PASS(128, 1024, 8, DIR);                        \
+    }                                                     \
+  } while (0)
+
+#endif // GPU_MAX_SELECTION_K
 
   if (chooseLargest) {
     RUN_PASS_DIR(true);

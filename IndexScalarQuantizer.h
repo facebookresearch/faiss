@@ -28,6 +28,7 @@ namespace faiss {
  * (default).
  */
 
+struct SQDistanceComputer;
 
 struct ScalarQuantizer {
 
@@ -37,6 +38,7 @@ struct ScalarQuantizer {
         QT_8bit_uniform,     ///< same, shared range for all dimensions
         QT_4bit_uniform,
         QT_fp16,
+        QT_8bit_direct,      /// fast indexing of uint8s
     };
 
     QuantizerType qtype;
@@ -79,25 +81,13 @@ struct ScalarQuantizer {
     /// decode a vector from a given code (or n vectors if third argument)
     void decode (const uint8_t *code, float *x, size_t n) const;
 
-    // fast, non thread-safe way of computing vector-to-code and
-    // code-to-code distances.
-    struct DistanceComputer {
 
-        /// vector-to-code distance computation
-        virtual float compute_distance (const float *x,
-                                        const uint8_t *code) const = 0;
-
-        /// code-to-code distance computation
-        virtual float compute_code_distance (const uint8_t *code1,
-                                             const uint8_t *code2) const = 0;
-        virtual ~DistanceComputer () {}
-    };
-
-    DistanceComputer *get_distance_computer (MetricType metric = METRIC_L2)
+    SQDistanceComputer *get_distance_computer (MetricType metric = METRIC_L2)
         const;
 
 };
 
+struct DistanceComputer;
 
 struct IndexScalarQuantizer: Index {
     /// Used to encode the vectors
@@ -137,6 +127,8 @@ struct IndexScalarQuantizer: Index {
 
     void reconstruct(idx_t key, float* recons) const override;
 
+    DistanceComputer *get_distance_computer () const;
+
 };
 
 
@@ -148,6 +140,7 @@ struct IndexScalarQuantizer: Index {
 
 struct IndexIVFScalarQuantizer: IndexIVF {
     ScalarQuantizer sq;
+    bool by_residual;
 
     IndexIVFScalarQuantizer(Index *quantizer, size_t d, size_t nlist,
                             ScalarQuantizer::QuantizerType qtype,

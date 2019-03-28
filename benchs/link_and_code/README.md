@@ -11,14 +11,12 @@ Link & code is an indexing method that combines HNSW indexing with
 compression and exploits the neighborhood structure of the similarity
 graph to improve the reconstruction. It is described in
 
-```
 @inproceedings{link_and_code,
    author = {Matthijs Douze and Alexandre Sablayrolles and Herv\'e J\'egou},
    title = {Link and code: Fast indexing with graphs and compact regression codes},
    booktitle = {CVPR},
    year = {2018}
 }
-```
 
 ArXiV [here](https://arxiv.org/abs/1804.09996)
 

@@ -66,13 +66,8 @@ class GpuIndexIVF : public GpuIndex {
   /// Returns our current number of list probes per query
   int getNumProbes() const;
 
-  /// `x` can be resident on the CPU or any GPU; the proper copies are
-  /// performed
-  /// Forwards to add_with_ids; assigns IDs as needed
-  /// FIXME: remove override for C++03 compatibility
-  void add(Index::idx_t n, const float* x) override;
-
  protected:
+  bool addImplRequiresIDs_() const override;
   void trainQuantizer_(faiss::Index::idx_t n, const float* x);
 
  public:

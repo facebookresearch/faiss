@@ -43,6 +43,7 @@ print "load GT"
 
 gt = ivecs_read("sift1M/sift_groundtruth.ivecs")
 
+k = int(sys.argv[1])
 todo = sys.argv[1:]
 
 if todo == []:
@@ -54,12 +55,13 @@ def evaluate(index):
     # faiss.omp_set_num_threads(1)
 
     t0 = time.time()
-    D, I = index.search(xq, 1)
+    D, I = index.search(xq, k)
     t1 = time.time()
 
+    missing_rate = (I == -1).sum() / float(k * nq)
     recall_at_1 = (I == gt[:, :1]).sum() / float(nq)
-    print "\t %7.3f ms per query, R@1 %.4f" % (
-        (t1 - t0) * 1000.0 / nq, recall_at_1)
+    print "\t %7.3f ms per query, R@1 %.4f, missing rate %.4f" % (
+        (t1 - t0) * 1000.0 / nq, recall_at_1, missing_rate)
 
 
 if 'hnsw' in todo:
@@ -81,9 +83,11 @@ if 'hnsw' in todo:
 
     print "search"
     for efSearch in 16, 32, 64, 128, 256:
-        print "efSearch", efSearch,
-        index.hnsw.efSearch = efSearch
-        evaluate(index)
+        for bounded_queue in [True, False]:
+            print "efSearch", efSearch, "bounded queue", bounded_queue,
+            index.hnsw.search_bounded_queue = bounded_queue
+            index.hnsw.efSearch = efSearch
+            evaluate(index)
 
 if 'hnsw_sq' in todo:
 

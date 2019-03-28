@@ -160,14 +160,15 @@ struct IndexIVF: Index, Level1Quantizer {
                                      ) const;
 
     /** assign the vectors, then call search_preassign */
-    virtual void search (idx_t n, const float *x, idx_t k,
-                         float *distances, idx_t *labels) const override;
+    void search (idx_t n, const float *x, idx_t k,
+                 float *distances, idx_t *labels) const override;
+
+    void range_search (idx_t n, const float* x, float radius,
+                       RangeSearchResult* result) const override;
 
     /// get a scanner for this index (store_pairs means ignore labels)
     virtual InvertedListScanner *get_InvertedListScanner (
-                 bool store_pairs=false) const {
-        return nullptr;
-    }
+        bool store_pairs=false) const;
 
     void reconstruct (idx_t key, float* recons) const override;
 
@@ -242,17 +243,13 @@ struct IndexIVF: Index, Level1Quantizer {
      */
     void make_direct_map (bool new_maintain_direct_map=true);
 
-    /// 1= perfectly balanced, >1: imbalanced
-    double imbalance_factor () const;
-
-    /// display some stats about the inverted lists
-    void print_stats () const;
-
     /// replace the inverted lists, old one is deallocated if own_invlists
     void replace_invlists (InvertedLists *il, bool own=false);
 
     IndexIVF ();
 };
+
+class RangeQueryResult;
 
 /** Object that handles a query. The inverted lists to scan are
  * provided externally. The object has a lot of state, but
@@ -271,8 +268,8 @@ struct InvertedListScanner {
     /// compute a single query-to-code distance
     virtual float distance_to_code (const uint8_t *code) const = 0;
 
-    /** compute the distances to codes. (distances, labels) should be
-     * organized ad a min- or max-heap
+    /** scan a set of codes, compute distances to current query and
+     * update heap of results if necessary.
      *
      * @param n      number of codes to scan
      * @param codes  codes to scan (n * code_size)
@@ -280,12 +277,23 @@ struct InvertedListScanner {
      * @param distances  heap distances (size k)
      * @param labels     heap labels (size k)
      * @param k          heap size
+     * @return number of heap updates performed
      */
     virtual size_t scan_codes (size_t n,
                                const uint8_t *codes,
                                const idx_t *ids,
                                float *distances, idx_t *labels,
                                size_t k) const = 0;
+
+    /** scan a set of codes, compute distances to current query and
+     * update results if distances are below radius
+     *
+     * (default implementation fails) */
+    virtual void scan_codes_range (size_t n,
+                                   const uint8_t *codes,
+                                   const idx_t *ids,
+                                   float radius,
+                                   RangeQueryResult &result) const;
 
     virtual ~InvertedListScanner () {}
 

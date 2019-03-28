@@ -16,7 +16,7 @@ import os
 import re
 
 
-from common import get_dataset, get_dataset_2
+from .common import get_dataset, get_dataset_2
 
 class TestModuleInterface(unittest.TestCase):
 
@@ -252,9 +252,7 @@ class TestScalarQuantizer(unittest.TestCase):
             index = faiss.IndexScalarQuantizer(d, qtype, faiss.METRIC_L2)
             index.train(xt)
             index.add(xb)
-
             D, I = index.search(xq, 10)
-
             nok[qname] = (I[:, 0] == I_ref[:, 0]).sum()
 
         print(nok, nq)
@@ -436,6 +434,18 @@ class TestHNSW(unittest.TestCase):
 
         self.io_and_retest(index, Dhnsw, Ihnsw)
 
+    def test_hnsw_unbounded_queue(self):
+        d = self.xq.shape[1]
+
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.add(self.xb)
+        index.search_bounded_queue = False
+        Dhnsw, Ihnsw = index.search(self.xq, 1)
+
+        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 460)
+
+        self.io_and_retest(index, Dhnsw, Ihnsw)
+
     def io_and_retest(self, index, Dhnsw, Ihnsw):
         _, tmpfile = tempfile.mkstemp()
         try:
@@ -463,6 +473,12 @@ class TestHNSW(unittest.TestCase):
         self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 310)
 
         self.io_and_retest(index, Dhnsw, Ihnsw)
+
+    def test_add_0_vecs(self):
+        index = faiss.IndexHNSWFlat(10, 16)
+        zero_vecs = np.zeros((0, 10), dtype='float32')
+        # infinite loop
+        index.add(zero_vecs)
 
 
 class TestIOError(unittest.TestCase):
@@ -521,6 +537,29 @@ class TestDistancesPositive(unittest.TestCase):
         assert np.all(D >= 0)
 
 
+class TestReconsException(unittest.TestCase):
+
+    def test_recons(self):
+
+        d = 64                           # dimension
+        nb = 1000
+        rs = np.random.RandomState(1234)
+        xb = rs.rand(nb, d).astype('float32')
+        nlist = 10
+        quantizer = faiss.IndexFlatL2(d)  # the other index
+        index = faiss.IndexIVFFlat(quantizer, d, nlist)
+        index.train(xb)
+        index.add(xb)
+        index.make_direct_map()
+
+        index.reconstruct(9)
+
+        try:
+            index.reconstruct(100001)
+        except RuntimeError:
+            pass
+        else:
+            assert False, "should raise an exception"
 
 
 
