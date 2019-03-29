@@ -37,7 +37,7 @@ struct IndexBinaryHNSW : IndexBinary {
 
   ~IndexBinaryHNSW() override;
 
-  HNSW::DistanceComputer *get_distance_computer() const;
+  DistanceComputer *get_distance_computer() const;
 
   void add(idx_t n, const uint8_t *x) override;
 

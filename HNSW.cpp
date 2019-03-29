@@ -9,12 +9,11 @@
 // -*- c++ -*-
 
 #include "HNSW.h"
-
+#include "AuxIndexStructures.h"
 
 namespace faiss {
 
 using idx_t = Index::idx_t;
-using DistanceComputer = HNSW::DistanceComputer;
 
 /**************************************************************
  * HNSW structure implementation
@@ -544,11 +543,23 @@ int HNSW::search_from_candidates(
     vt.set(v1);
   }
 
+  bool do_dis_check = check_relative_distance;
   int nstep = 0;
 
   while (candidates.size() > 0) {
     float d0 = 0;
     int v0 = candidates.pop_min(&d0);
+
+    if (do_dis_check) {
+      // tricky stopping condition: there are more that ef
+      // distances that are processed already that are smaller
+      // than d0
+
+      int n_dis_below = candidates.count_below(d0);
+      if(n_dis_below >= efSearch) {
+        break;
+      }
+    }
 
     size_t begin, end;
     neighbor_range(v0, level, &begin, &end);
@@ -572,7 +583,7 @@ int HNSW::search_from_candidates(
     }
 
     nstep++;
-    if (nstep > efSearch) {
+    if (!do_dis_check && nstep > efSearch) {
       break;
     }
   }
@@ -596,38 +607,31 @@ int HNSW::search_from_candidates(
  * Searching
  **************************************************************/
 
-template<typename T>
-using MaxHeap = std::priority_queue<T, std::vector<T>, std::less<T>>;
-template<typename T>
-using MinHeap = std::priority_queue<T, std::vector<T>, std::greater<T>>;
-
-
-MaxHeap<HNSW::Node> HNSW::search_from(
+std::priority_queue<HNSW::Node> HNSW::search_from_candidate_unbounded(
   const Node& node,
   DistanceComputer& qdis,
   int ef,
   VisitedTable *vt) const
 {
-  MaxHeap<Node> top_candidates;
-  MinHeap<Node> candidate_set;
+  int ndis = 0;
+  std::priority_queue<Node> top_candidates;
+  std::priority_queue<Node, std::vector<Node>, std::greater<Node>> candidates;
 
   top_candidates.push(node);
-  candidate_set.push(node);
+  candidates.push(node);
 
   vt->set(node.second);
 
-  float lower_bound = node.first;
-
-  while (!candidate_set.empty()) {
+  while (!candidates.empty()) {
     float d0;
     storage_idx_t v0;
-    std::tie(d0, v0) = candidate_set.top();
+    std::tie(d0, v0) = candidates.top();
 
-    if (d0 > lower_bound) {
+    if (d0 > top_candidates.top().first) {
       break;
     }
 
-    candidate_set.pop();
+    candidates.pop();
 
     size_t begin, end;
     neighbor_range(v0, 0, &begin, &end);
@@ -645,18 +649,26 @@ MaxHeap<HNSW::Node> HNSW::search_from(
       vt->set(v1);
 
       float d1 = qdis(v1);
+      ++ndis;
 
       if (top_candidates.top().first > d1 || top_candidates.size() < ef) {
-        candidate_set.emplace(d1, v1);
+        candidates.emplace(d1, v1);
         top_candidates.emplace(d1, v1);
 
         if (top_candidates.size() > ef) {
           top_candidates.pop();
         }
-
-        lower_bound = top_candidates.top().first;
       }
     }
+  }
+
+#pragma omp critical
+  {
+    ++hnsw_stats.n1;
+    if (candidates.size() == 0) {
+      ++hnsw_stats.n2;
+    }
+    hnsw_stats.n3 += ndis;
   }
 
   return top_candidates;
@@ -677,32 +689,34 @@ void HNSW::search(DistanceComputer& qdis, int k,
     }
 
     int ef = std::max(efSearch, k);
-    MaxHeap<Node> top_candidates = search_from(Node(d_nearest, nearest), qdis, ef, &vt);
-    while (top_candidates.size() > k) {
-      top_candidates.pop();
+    if (search_bounded_queue) {
+      MinimaxHeap candidates(ef);
+
+      candidates.push(nearest, d_nearest);
+
+      search_from_candidates(qdis, k, I, D, candidates, vt, 0);
+    } else {
+      std::priority_queue<Node> top_candidates =
+        search_from_candidate_unbounded(Node(d_nearest, nearest),
+                                        qdis, ef, &vt);
+
+      while (top_candidates.size() > k) {
+        top_candidates.pop();
+      }
+
+      int nres = 0;
+      while (!top_candidates.empty()) {
+        float d;
+        storage_idx_t label;
+        std::tie(d, label) = top_candidates.top();
+        faiss::maxheap_push(++nres, D, I, d, label);
+        top_candidates.pop();
+      }
     }
 
-    int nres = 0;
-    while (!top_candidates.empty()) {
-      float d;
-      storage_idx_t label;
-      std::tie(d, label) = top_candidates.top();
-      faiss::maxheap_push(++nres, D, I, d, label);
-      top_candidates.pop();
-    }
-
-    // MinimaxHeap candidates(candidates_size);
-
-//    top_candidates.emplace(d_nearest, nearest);
-
-    // search_from_candidates(qdis, k, I, D, candidates, vt, 0);
-
-    // NOTE(hoss): Init at the beginning?
     vt.advance();
 
   } else {
-    assert(false);
-
     int candidates_size = upper_beam;
     MinimaxHeap candidates(candidates_size);
 
@@ -742,44 +756,47 @@ void HNSW::MinimaxHeap::push(storage_idx_t i, float v) {
   if (k == n) {
     if (v >= dis[0]) return;
     faiss::heap_pop<HC> (k--, dis.data(), ids.data());
+    --nvalid;
   }
   faiss::heap_push<HC> (++k, dis.data(), ids.data(), v, i);
+  ++nvalid;
 }
 
 float HNSW::MinimaxHeap::max() const {
-  assert(k > 0);
-
   return dis[0];
 }
 
 int HNSW::MinimaxHeap::size() const {
-  return k;
+  return nvalid;
 }
 
 void HNSW::MinimaxHeap::clear() {
-  k = 0;
+  nvalid = k = 0;
 }
 
 int HNSW::MinimaxHeap::pop_min(float *vmin_out) {
   assert(k > 0);
   // returns min. This is an O(n) operation
   int i = k - 1;
+  while (i >= 0) {
+    if (ids[i] != -1) break;
+    i--;
+  }
+  if (i == -1) return -1;
   int imin = i;
   float vmin = dis[i];
   i--;
   while(i >= 0) {
-    if (dis[i] < vmin) {
+    if (ids[i] != -1 && dis[i] < vmin) {
       vmin = dis[i];
       imin = i;
     }
     i--;
   }
-  assert(2 * i > k);
   if (vmin_out) *vmin_out = vmin;
   int ret = ids[imin];
-
-  --k;
-  faiss::heap_push<HC>(++imin, dis.data(), ids.data(), ids[k], dis[k]);
+  ids[imin] = -1;
+  --nvalid;
 
   return ret;
 }

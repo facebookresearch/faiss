@@ -7,6 +7,7 @@
  */
 
 
+#include "../utils/DeviceDefs.cuh"
 #include "../utils/DeviceUtils.h"
 #include "../utils/BlockSelectKernel.cuh"
 #include "../utils/WarpSelectKernel.cuh"
@@ -26,7 +27,7 @@ DEFINE_int32(k, 100, "k");
 DEFINE_bool(dir, false, "direction of sort");
 DEFINE_bool(warp, false, "warp select");
 DEFINE_int32(iter, 5, "iterations to run");
-DEFINE_bool(k_powers, false, "test k powers of 2 from 1 -> 1024");
+DEFINE_bool(k_powers, false, "test k powers of 2 from 1 -> max k");
 
 int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
@@ -43,19 +44,18 @@ int main(int argc, char** argv) {
   // Select top-k on GPU
   faiss::gpu::DeviceTensor<float, 2, true> gpuVal(hostVal, 0);
 
-  // enough space for any k
-  faiss::gpu::DeviceTensor<float, 2, true> gpuOutVal({FLAGS_rows, 1024});
-  faiss::gpu::DeviceTensor<int, 2, true> gpuOutInd({FLAGS_rows, 1024});
-
   int startK = FLAGS_k;
   int limitK = FLAGS_k;
 
   if (FLAGS_k_powers) {
     startK = 1;
-    limitK = 1024;
+    limitK = GPU_MAX_SELECTION_K;
   }
 
   for (int k = startK; k <= limitK; k *= 2) {
+    faiss::gpu::DeviceTensor<float, 2, true> gpuOutVal({FLAGS_rows, k});
+    faiss::gpu::DeviceTensor<int, 2, true> gpuOutInd({FLAGS_rows, k});
+
     for (int i = 0; i < FLAGS_iter; ++i) {
       if (FLAGS_warp) {
         faiss::gpu::runWarpSelect(gpuVal, gpuOutVal, gpuOutInd,

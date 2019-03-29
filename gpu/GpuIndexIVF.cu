@@ -89,6 +89,12 @@ GpuIndexIVF::copyFrom(const faiss::IndexIVF* index) {
                      "GPU index only supports %zu inverted lists",
                      (size_t) std::numeric_limits<int>::max());
   nlist_ = index->nlist;
+
+  FAISS_THROW_IF_NOT_FMT(index->nprobe > 0 &&
+                         index->nprobe <= getMaxKSelection(),
+                         "GPU index only supports nprobe <= %zu; passed %zu",
+                         (size_t) getMaxKSelection(),
+                         index->nprobe);
   nprobe_ = index->nprobe;
 
   // The metric type may have changed as well, so we might have to
@@ -198,9 +204,10 @@ GpuIndexIVF::getNumLists() const {
 
 void
 GpuIndexIVF::setNumProbes(int nprobe) {
-  FAISS_THROW_IF_NOT_FMT(nprobe > 0 && nprobe <= 1024,
-                     "nprobe must be from 1 to 1024; passed %d",
-                     nprobe);
+  FAISS_THROW_IF_NOT_FMT(nprobe > 0 && nprobe <= getMaxKSelection(),
+                         "GPU index only supports nprobe <= %d; passed %d",
+                         getMaxKSelection(),
+                         nprobe);
   nprobe_ = nprobe;
 }
 
@@ -209,15 +216,10 @@ GpuIndexIVF::getNumProbes() const {
   return nprobe_;
 }
 
-void
-GpuIndexIVF::add(Index::idx_t n, const float* x) {
-  // FIXME: GPU-ize
-  std::vector<Index::idx_t> ids(n);
-  for (Index::idx_t i = 0; i < n; ++i) {
-    ids[i] = this->ntotal + i;
-  }
-
-  add_with_ids(n, x, ids.data());
+bool
+GpuIndexIVF::addImplRequiresIDs_() const {
+  // All IVF indices have storage for IDs
+  return true;
 }
 
 void

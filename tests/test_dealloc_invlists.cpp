@@ -122,26 +122,21 @@ struct EncapsulateInvertedLists: InvertedLists {
                                  code_size);
     }
 
-    virtual size_t add_entries (
-           size_t, size_t,
-           const idx_t*, const uint8_t *) override
-    {
-        assert(!"not implemented");
-        return 0;
+    size_t add_entries(size_t, size_t, const idx_t*, const uint8_t*) override {
+      assert(!"not implemented");
+      return 0;
     }
 
-
-    virtual void update_entries (size_t , size_t , size_t ,
-                                 const idx_t *, const uint8_t *)
+    void update_entries(size_t, size_t, size_t, const idx_t*, const uint8_t*)
         override {
-        assert(!"not implemented");
+      assert(!"not implemented");
     }
 
-    virtual void resize (size_t , size_t ) override {
-        assert(!"not implemented");
+    void resize(size_t, size_t) override {
+      assert(!"not implemented");
     }
 
-    ~EncapsulateInvertedLists () {}
+    ~EncapsulateInvertedLists() override {}
 };
 
 

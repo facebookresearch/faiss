@@ -396,6 +396,12 @@ void binary_to_real(size_t d, const uint8_t *x_in, float *x_out);
 void real_to_binary(size_t d, const float *x_in, uint8_t *x_out);
 
 
+/** A reasonable hashing function */
+uint64_t hash_bytes (const uint8_t *bytes, long n);
+
+/** Whether OpenMP annotations were respected. */
+bool check_openmp();
+
 } // namspace faiss
 
 

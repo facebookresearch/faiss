@@ -49,7 +49,7 @@ def train_kmeans(x, k, ngpu, max_points_per_centroid=256):
         else:
             indexes = [faiss.GpuIndexFlatL2(res[i], d, flat_config[i])
                        for i in range(ngpu)]
-            index = faiss.IndexProxy()
+            index = faiss.IndexReplicas()
             for sub_index in indexes:
                 index.addIndex(sub_index)
 

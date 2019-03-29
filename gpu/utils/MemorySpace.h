@@ -9,7 +9,6 @@
 
 #pragma once
 
-#include "../../FaissAssert.h"
 #include <cuda.h>
 
 #if CUDA_VERSION >= 8000
@@ -24,9 +23,23 @@ enum MemorySpace {
   Device = 1,
   /// Managed using cudaMallocManaged/cudaFree
   Unified = 2,
+  /// Managed using cudaHostAlloc/cudaFreeHost
+  HostPinned = 3,
 };
 
-/// Allocates CUDA memory for a given memory space
-void allocMemorySpace(MemorySpace space, void** p, size_t size);
+/// All memory allocations and de-allocations come through these functions
+
+/// Allocates CUDA memory for a given memory space (void pointer)
+/// Throws a FaissException if we are unable to allocate the memory
+void allocMemorySpaceV(MemorySpace space, void** p, size_t size);
+
+template <typename T>
+inline void allocMemorySpace(MemorySpace space, T** p, size_t size) {
+  allocMemorySpaceV(space, (void**)(void*) p, size);
+}
+
+/// Frees CUDA memory for a given memory space
+/// Asserts if we are unable to free the region
+void freeMemorySpace(MemorySpace space, void* p);
 
 } }

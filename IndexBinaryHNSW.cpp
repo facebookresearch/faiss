@@ -32,7 +32,7 @@
 #include "FaissAssert.h"
 #include "IndexBinaryFlat.h"
 #include "hamming.h"
-
+#include "AuxIndexStructures.h"
 
 namespace faiss {
 
@@ -121,7 +121,7 @@ void hnsw_add_vertices(IndexBinaryHNSW& index_hnsw,
       {
         VisitedTable vt (ntotal);
 
-        std::unique_ptr<HNSW::DistanceComputer> dis(
+        std::unique_ptr<DistanceComputer> dis(
           index_hnsw.get_distance_computer()
         );
         int prev_display = verbose && omp_get_thread_num() == 0 ? 0 : -1;
@@ -202,7 +202,7 @@ void IndexBinaryHNSW::search(idx_t n, const uint8_t *x, idx_t k,
 #pragma omp parallel
   {
     VisitedTable vt(ntotal);
-    std::unique_ptr<HNSW::DistanceComputer> dis(get_distance_computer());
+    std::unique_ptr<DistanceComputer> dis(get_distance_computer());
 
 #pragma omp for
     for(idx_t i = 0; i < n; i++) {
@@ -252,18 +252,18 @@ namespace {
 
 
 template<class HammingComputer>
-struct FlatHammingDis : HNSW::DistanceComputer {
+struct FlatHammingDis : DistanceComputer {
   const int code_size;
   const uint8_t *b;
   size_t ndis;
   HammingComputer hc;
 
-  float operator () (HNSW::storage_idx_t i) override {
+  float operator () (idx_t i) override {
     ndis++;
     return hc.hamming(b + i * code_size);
   }
 
-  float symmetric_dis(HNSW::storage_idx_t i, HNSW::storage_idx_t j) override {
+  float symmetric_dis(idx_t i, idx_t j) override {
     return HammingComputerDefault(b + j * code_size, code_size)
       .hamming(b + i * code_size);
   }
@@ -281,7 +281,7 @@ struct FlatHammingDis : HNSW::DistanceComputer {
     hc.set((uint8_t *)x, code_size);
   }
 
-  virtual ~FlatHammingDis() {
+  ~FlatHammingDis() override {
 #pragma omp critical
     {
       hnsw_stats.ndis += ndis;
@@ -293,7 +293,7 @@ struct FlatHammingDis : HNSW::DistanceComputer {
 }  // namespace
 
 
-HNSW::DistanceComputer *IndexBinaryHNSW::get_distance_computer() const {
+DistanceComputer *IndexBinaryHNSW::get_distance_computer() const {
   IndexBinaryFlat *flat_storage = dynamic_cast<IndexBinaryFlat *>(storage);
 
   FAISS_ASSERT(flat_storage != nullptr);

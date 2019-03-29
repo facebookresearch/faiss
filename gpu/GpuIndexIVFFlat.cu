@@ -200,73 +200,45 @@ GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
 }
 
 void
-GpuIndexIVFFlat::addImpl_(Index::idx_t n,
+GpuIndexIVFFlat::addImpl_(int n,
                           const float* x,
                           const Index::idx_t* xids) {
-  // Device is already set in GpuIndex::addInternal_
+  // Device is already set in GpuIndex::add
   FAISS_ASSERT(index_);
   FAISS_ASSERT(n > 0);
 
-  auto stream = resources_->getDefaultStreamCurrentDevice();
-
-  auto deviceVecs =
-    toDevice<float, 2>(resources_,
-                       device_,
-                       const_cast<float*>(x),
-                       stream,
-                       {(int) n, index_->getDim()});
+  // Data is already resident on the GPU
+  Tensor<float, 2, true> data(const_cast<float*>(x), {n, (int) this->d});
 
   static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
-  auto deviceIds =
-    toDevice<long, 1>(resources_,
-                      device_,
-                      const_cast<long*>(xids),
-                      stream,
-                      {(int) n});
+  Tensor<long, 1, true> labels(const_cast<long*>(xids), {n});
 
-  // Not all vectors may be able to be added (some may contain NaNs
-  // etc)
-  ntotal += index_->classifyAndAddVectors(deviceVecs, deviceIds);
+  // Not all vectors may be able to be added (some may contain NaNs etc)
+  index_->classifyAndAddVectors(data, labels);
+
+  // but keep the ntotal based on the total number of vectors that we attempted
+  // to add
+  ntotal += n;
 }
 
 void
-GpuIndexIVFFlat::searchImpl_(faiss::Index::idx_t n,
+GpuIndexIVFFlat::searchImpl_(int n,
                              const float* x,
-                             faiss::Index::idx_t k,
+                             int k,
                              float* distances,
-                             faiss::Index::idx_t* labels) const {
+                             Index::idx_t* labels) const {
   // Device is already set in GpuIndex::search
   FAISS_ASSERT(index_);
   FAISS_ASSERT(n > 0);
 
-  auto stream = resources_->getDefaultStream(device_);
+  // Data is already resident on the GPU
+  Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int) this->d});
+  Tensor<float, 2, true> outDistances(distances, {n, k});
 
-  // Make sure arguments are on the device we desire; use temporary
-  // memory allocations to move it if necessary
-  auto devX =
-    toDevice<float, 2>(resources_,
-                       device_,
-                       const_cast<float*>(x),
-                       stream,
-                       {(int) n, this->d});
-  auto devDistances =
-    toDevice<float, 2>(resources_,
-                       device_,
-                       distances,
-                       stream,
-                       {(int) n, (int) k});
-  auto devLabels =
-    toDevice<faiss::Index::idx_t, 2>(resources_,
-                                     device_,
-                                     labels,
-                                     stream,
-                                     {(int) n, (int) k});
+  static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
+  Tensor<long, 2, true> outLabels(const_cast<long*>(labels), {n, k});
 
-  index_->query(devX, nprobe_, k, devDistances, devLabels);
-
-  // Copy back if necessary
-  fromDevice<float, 2>(devDistances, distances, stream);
-  fromDevice<faiss::Index::idx_t, 2>(devLabels, labels, stream);
+  index_->query(queries, nprobe_, k, outDistances, outLabels);
 }
 
 

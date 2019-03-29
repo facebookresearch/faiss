@@ -26,6 +26,7 @@ struct ClusteringParameters {
 
     bool verbose;
     bool spherical;     ///< do we want normalized centroids?
+    bool int_centroids; ///< round centroids coordinates to integer
     bool update_index;  ///< update index after each iteration?
     bool frozen_centroids;  ///< use the centroids provided as input and do not change them during iterations
 
@@ -71,6 +72,10 @@ struct Clustering: ClusteringParameters {
 
     /// Index is used during the assignment stage
     virtual void train (idx_t n, const float * x, faiss::Index & index);
+
+    /// Post-process the centroids after each centroid update.
+    /// includes optional L2 normalization and nearest integer rounding
+    void post_process_centroids ();
 
     virtual ~Clustering() {}
 };

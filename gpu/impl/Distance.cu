@@ -12,7 +12,9 @@
 #include "L2Norm.cuh"
 #include "L2Select.cuh"
 #include "../../FaissAssert.h"
+#include "../../AuxIndexStructures.h"
 #include "../GpuResources.h"
+#include "../utils/DeviceDefs.cuh"
 #include "../utils/DeviceUtils.h"
 #include "../utils/Limits.cuh"
 #include "../utils/MatrixMult.cuh"
@@ -195,8 +197,9 @@ void runDistance(bool computeL2,
 
   int numColTiles = utils::divUp(centroids.getSize(0), tileCols);
 
-  FAISS_ASSERT(k <= centroids.getSize(0));
-  FAISS_ASSERT(k <= 1024); // select limitation
+  // We can have any number of vectors to query against, even less than k, in
+  // which case we'll return -1 for the index
+  FAISS_ASSERT(k <= GPU_MAX_SELECTION_K); // select limitation
 
   // Temporary output memory space we'll use
   DeviceTensor<T, 2, true> distanceBuf1(
@@ -224,9 +227,16 @@ void runDistance(bool computeL2,
   streamWait(streams, {defaultStream});
 
   int curStream = 0;
+  bool interrupt = false;
 
   // Tile over the input queries
   for (int i = 0; i < queries.getSize(0); i += tileRows) {
+
+    if (interrupt || InterruptCallback::is_interrupted()) {
+      interrupt = true;
+      break;
+    }
+
     int curQuerySize = std::min(tileRows, queries.getSize(0) - i);
 
     auto outDistanceView =
@@ -246,6 +256,12 @@ void runDistance(bool computeL2,
 
     // Tile over the centroids
     for (int j = 0; j < centroids.getSize(0); j += tileCols) {
+
+      if (InterruptCallback::is_interrupted()) {
+        interrupt = true;
+        break;
+      }
+
       int curCentroidSize = std::min(tileCols, centroids.getSize(0) - j);
 
       int curColTile = j / tileCols;
@@ -336,6 +352,8 @@ void runDistance(bool computeL2,
                          true, k, streams[curStream]);
         }
       }
+
+
     }
 
     // As we're finished with processing a full set of centroids, perform the
@@ -357,6 +375,10 @@ void runDistance(bool computeL2,
 
   // Have the desired ordering stream wait on the multi-stream
   streamWait({defaultStream}, streams);
+
+  if (interrupt) {
+    FAISS_THROW_MSG("interrupted");
+  }
 }
 
 template <typename T>

@@ -234,7 +234,7 @@ void SlidingIndexWindow::step(const Index *sub_index, bool remove_oldest) {
             for (int j = 0; j + 1 < n_slice; j++) {
                 sizes[i][j] = sizes[i][j + 1] - amount_to_remove;
             }
-            sizes[i].resize(sizes[i].size() - 1);
+            sizes[i].pop_back ();
         }
         n_slice--;
     } else {

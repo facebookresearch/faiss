@@ -125,7 +125,7 @@ class ReferencedObject(unittest.TestCase):
     xq_bin = np.random.randint(256, size=(1000, d_bin // 8)).astype('uint8')
 
     def test_proxy(self):
-        index = faiss.IndexProxy()
+        index = faiss.IndexReplicas()
         for i in range(3):
             sub_index = faiss.IndexFlatL2(self.d)
             sub_index.add(self.xb)
@@ -165,11 +165,11 @@ class ReferencedObject(unittest.TestCase):
 
     def test_binary_flat(self):
         k = 10
-        
+
         index_ref = faiss.IndexBinaryFlat(self.d_bin)
         index_ref.add(self.xb_bin)
         D_ref, I_ref = index_ref.search(self.xq_bin, k)
-                
+
         index = faiss.GpuIndexBinaryFlat(faiss.StandardGpuResources(),
                                          self.d_bin)
         index.add(self.xb_bin)
@@ -186,14 +186,14 @@ class ReferencedObject(unittest.TestCase):
 
             new = [(d, i) for d, i in zip(d_new, i_new) if d < dmax]
             new.sort()
-            
+
             assert ref == new
 
     def test_stress(self):
         # a mixture of the above, from issue #631
         target = np.random.rand(50, 16).astype('float32')
 
-        index = faiss.IndexProxy()
+        index = faiss.IndexReplicas()
         size, dim = target.shape
         num_gpu = 4
         for i in range(num_gpu):

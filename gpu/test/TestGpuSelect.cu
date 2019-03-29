@@ -7,12 +7,13 @@
  */
 
 
-#include "../utils/DeviceUtils.h"
-#include "../utils/BlockSelectKernel.cuh"
-#include "../utils/WarpSelectKernel.cuh"
-#include "../utils/HostTensor.cuh"
-#include "../utils/DeviceTensor.cuh"
 #include "../test/TestUtils.h"
+#include "../utils/BlockSelectKernel.cuh"
+#include "../utils/DeviceDefs.cuh"
+#include "../utils/DeviceTensor.cuh"
+#include "../utils/DeviceUtils.h"
+#include "../utils/HostTensor.cuh"
+#include "../utils/WarpSelectKernel.cuh"
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <sstream>
@@ -115,7 +116,7 @@ TEST(TestGpuSelect, test) {
   for (int i = 0; i < 10; ++i) {
     int rows = faiss::gpu::randVal(10, 100);
     int cols = faiss::gpu::randVal(1, 30000);
-    int k = std::min(cols, faiss::gpu::randVal(1, 1024));
+    int k = std::min(cols, faiss::gpu::randVal(1, GPU_MAX_SELECTION_K));
     bool dir = faiss::gpu::randBool();
 
     testForSize(rows, cols, k, dir, false);
@@ -138,7 +139,7 @@ TEST(TestGpuSelect, test1) {
 TEST(TestGpuSelect, testExact) {
   for (int i = 0; i < 5; ++i) {
     int rows = faiss::gpu::randVal(10, 100);
-    int cols = faiss::gpu::randVal(1, 1024);
+    int cols = faiss::gpu::randVal(1, GPU_MAX_SELECTION_K);
     bool dir = faiss::gpu::randBool();
 
     testForSize(rows, cols, cols, dir, false);
@@ -150,7 +151,7 @@ TEST(TestGpuSelect, testWarp) {
   for (int i = 0; i < 10; ++i) {
     int rows = faiss::gpu::randVal(10, 100);
     int cols = faiss::gpu::randVal(1, 30000);
-    int k = std::min(cols, faiss::gpu::randVal(1, 1024));
+    int k = std::min(cols, faiss::gpu::randVal(1, GPU_MAX_SELECTION_K));
     bool dir = faiss::gpu::randBool();
 
     testForSize(rows, cols, k, dir, true);
@@ -173,7 +174,7 @@ TEST(TestGpuSelect, test1Warp) {
 TEST(TestGpuSelect, testExactWarp) {
   for (int i = 0; i < 5; ++i) {
     int rows = faiss::gpu::randVal(10, 100);
-    int cols = faiss::gpu::randVal(1, 1024);
+    int cols = faiss::gpu::randVal(1, GPU_MAX_SELECTION_K);
     bool dir = faiss::gpu::randBool();
 
     testForSize(rows, cols, cols, dir, true);

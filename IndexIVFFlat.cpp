@@ -137,6 +137,25 @@ struct IVFFlatScanner: InvertedListScanner {
         return nup;
     }
 
+    void scan_codes_range (size_t list_size,
+                           const uint8_t *codes,
+                           const idx_t *ids,
+                           float radius,
+                           RangeQueryResult & res) const override
+    {
+        const float *list_vecs = (const float*)codes;
+        for (size_t j = 0; j < list_size; j++) {
+            const float * yj = list_vecs + d * j;
+            float dis = metric == METRIC_INNER_PRODUCT ?
+                fvec_inner_product (xi, yj, d) : fvec_L2sqr (xi, yj, d);
+            if (C::cmp (radius, dis)) {
+                long id = store_pairs ? (list_no << 32 | j) : ids[j];
+                res.add (dis, id);
+            }
+        }
+    }
+
+
 };
 
 
@@ -168,57 +187,6 @@ InvertedListScanner* IndexIVFFlat::get_InvertedListScanner
 }
 
 
-void IndexIVFFlat::range_search (idx_t nx, const float *x, float radius,
-                                 RangeSearchResult *result) const
-{
-    idx_t * keys = new idx_t [nx * nprobe];
-    ScopeDeleter<idx_t> del (keys);
-    quantizer->assign (nx, x, keys, nprobe);
-
-#pragma omp parallel
-    {
-        RangeSearchPartialResult pres(result);
-
-        for (size_t i = 0; i < nx; i++) {
-            const float * xi = x + i * d;
-            const long * keysi = keys + i * nprobe;
-
-            RangeSearchPartialResult::QueryResult & qres =
-                pres.new_result (i);
-
-            for (size_t ik = 0; ik < nprobe; ik++) {
-                long key = keysi[ik];  /* select the list  */
-                if (key < 0 || key >= (long) nlist) {
-                    fprintf (stderr, "Invalid key=%ld  at ik=%ld nlist=%ld\n",
-                             key, ik, nlist);
-                    throw;
-                }
-
-                const size_t list_size = invlists->list_size(key);
-                InvertedLists::ScopedCodes scodes (invlists, key);
-                const float * list_vecs = (const float*)scodes.get();
-                InvertedLists::ScopedIds ids (invlists, key);
-
-                for (size_t j = 0; j < list_size; j++) {
-                    const float * yj = list_vecs + d * j;
-                    if (metric_type == METRIC_L2) {
-                        float disij = fvec_L2sqr (xi, yj, d);
-                        if (disij < radius) {
-                            qres.add (disij, ids[j]);
-                        }
-                    } else if (metric_type == METRIC_INNER_PRODUCT) {
-                        float disij = fvec_inner_product(xi, yj, d);
-                        if (disij > radius) {
-                            qres.add (disij, ids[j]);
-                        }
-                    }
-                }
-            }
-        }
-
-        pres.finalize ();
-    }
-}
 
 void IndexIVFFlat::update_vectors (int n, idx_t *new_ids, const float *x)
 {
@@ -271,18 +239,6 @@ IndexIVFFlatDedup::IndexIVFFlatDedup (
             MetricType metric_type):
     IndexIVFFlat (quantizer, d, nlist_, metric_type)
 {}
-
-// from Python's stringobject.c
-static uint64_t hash_bytes (const uint8_t *bytes, long n) {
-    const uint8_t *p = bytes;
-    uint64_t x = (uint64_t)(*p) << 7;
-    long len = n;
-    while (--len >= 0) {
-        x = (1000003*x) ^ *p++;
-    }
-    x ^= n;
-    return x;
-}
 
 
 void IndexIVFFlatDedup::train(idx_t n, const float* x)

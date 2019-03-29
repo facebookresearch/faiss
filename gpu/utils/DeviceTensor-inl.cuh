@@ -75,7 +75,7 @@ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
     state_(AllocState::Owner),
     space_(space) {
 
-  allocMemorySpace(space, (void**) &this->data_, this->getSizeInBytes());
+  allocMemorySpace(space, &this->data_, this->getSizeInBytes());
   FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
 }
 
@@ -89,7 +89,7 @@ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
     state_(AllocState::Owner),
     space_(space) {
 
-  allocMemorySpace(space, (void**) &this->data_, this->getSizeInBytes());
+  allocMemorySpace(space, &this->data_, this->getSizeInBytes());
   FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
 }
 
@@ -183,7 +183,7 @@ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
     state_(AllocState::Owner),
     space_(space) {
 
-  allocMemorySpace(space_, (void**) &this->data_, this->getSizeInBytes());
+  allocMemorySpace(space_, &this->data_, this->getSizeInBytes());
   FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
   this->copyFrom(t, stream);
 }

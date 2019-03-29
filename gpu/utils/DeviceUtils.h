@@ -59,6 +59,11 @@ bool getFullUnifiedMemSupport(int device);
 /// Equivalent to getFullUnifiedMemSupport(getCurrentDevice())
 bool getFullUnifiedMemSupportCurrentDevice();
 
+/// Returns the maximum k-selection value supported based on the CUDA SDK that
+/// we were compiled with. .cu files can use DeviceDefs.cuh, but this is for
+/// non-CUDA files
+int getMaxKSelection();
+
 /// RAII object to set the current device, and restore the previous
 /// device upon destruction
 class DeviceScope {
@@ -107,10 +112,11 @@ class CudaEvent {
 };
 
 /// Wrapper to test return status of CUDA functions
-#define CUDA_VERIFY(X)                          \
+#define CUDA_VERIFY(X)                                                  \
   do {                                                                  \
     auto err__ = (X);                                                   \
-    FAISS_ASSERT_FMT(err__ == cudaSuccess, "CUDA error %d", (int) err__); \
+    FAISS_ASSERT_FMT(err__ == cudaSuccess, "CUDA error %d %s",          \
+                     (int) err__, cudaGetErrorString(err__));           \
   } while (0)
 
 /// Wrapper to synchronously probe for CUDA errors

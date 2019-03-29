@@ -39,7 +39,7 @@ class DeviceVector {
 
   // Clear all allocated memory; reset to zero size
   void clear() {
-    CUDA_VERIFY(cudaFree(data_));
+    freeMemorySpace(space_, data_);
     data_ = nullptr;
     num_ = 0;
     capacity_ = 0;
@@ -154,11 +154,10 @@ class DeviceVector {
     FAISS_ASSERT(num_ <= newCapacity);
 
     T* newData = nullptr;
-    allocMemorySpace(space_, (void**) &newData, newCapacity * sizeof(T));
+    allocMemorySpace(space_, &newData, newCapacity * sizeof(T));
     CUDA_VERIFY(cudaMemcpyAsync(newData, data_, num_ * sizeof(T),
                                 cudaMemcpyDeviceToDevice, stream));
-    // FIXME: keep on reclamation queue to avoid hammering cudaFree?
-    CUDA_VERIFY(cudaFree(data_));
+    freeMemorySpace(space_, data_);
 
     data_ = newData;
     capacity_ = newCapacity;

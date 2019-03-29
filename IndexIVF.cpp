@@ -204,76 +204,82 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
     using HeapForIP = CMin<float, idx_t>;
     using HeapForL2 = CMax<float, idx_t>;
 
+    idx_t check_period = InterruptCallback::get_period_hint
+        (nprobe * ntotal * d / nlist);
+
+    for (idx_t i0 = 0; i0 < n; i0 += check_period) {
+        idx_t i1 = std::min(i0 + check_period, n);
+
 #pragma omp parallel reduction(+: nlistv, ndis, nheap)
-    {
-        InvertedListScanner *scanner = get_InvertedListScanner(store_pairs);
-        ScopeDeleter1<InvertedListScanner> del(scanner);
+        {
+            InvertedListScanner *scanner = get_InvertedListScanner(store_pairs);
+            ScopeDeleter1<InvertedListScanner> del(scanner);
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
-            // loop over queries
-            const float * xi = x + i * d;
-            scanner->set_query (xi);
-            const long * keysi = keys + i * nprobe;
-            float * simi = distances + i * k;
-            long * idxi = labels + i * k;
+            for (size_t i = i0; i < i1; i++) {
+                // loop over queries
+                const float * xi = x + i * d;
+                scanner->set_query (xi);
+                const long * keysi = keys + i * nprobe;
+                float * simi = distances + i * k;
+                long * idxi = labels + i * k;
 
-            if (metric_type == METRIC_INNER_PRODUCT) {
-                heap_heapify<HeapForIP> (k, simi, idxi);
-            } else {
-                heap_heapify<HeapForL2> (k, simi, idxi);
-            }
-
-            long nscan = 0;
-
-            // loop over probes
-            for (size_t ik = 0; ik < nprobe; ik++) {
-                long key = keysi[ik];  /* select the list  */
-                if (key < 0) {
-                    // not enough centroids for multiprobe
-                    continue;
-                }
-                FAISS_THROW_IF_NOT_FMT (key < (long) nlist,
-                      "Invalid key=%ld  at ik=%ld nlist=%ld\n",
-                      key, ik, nlist);
-
-
-                size_t list_size = invlists->list_size(key);
-
-                // don't waste time on empty lists
-                if (list_size == 0) {
-                    continue;
+                if (metric_type == METRIC_INNER_PRODUCT) {
+                    heap_heapify<HeapForIP> (k, simi, idxi);
+                } else {
+                    heap_heapify<HeapForL2> (k, simi, idxi);
                 }
 
-                scanner->set_list (key, coarse_dis[i * nprobe + ik]);
+                long nscan = 0;
 
-                nlistv++;
+                // loop over probes
+                for (size_t ik = 0; ik < nprobe; ik++) {
+                    long key = keysi[ik];  /* select the list  */
+                    if (key < 0) {
+                        // not enough centroids for multiprobe
+                        continue;
+                    }
+                    FAISS_THROW_IF_NOT_FMT (key < (long) nlist,
+                        "Invalid key=%ld  at ik=%ld nlist=%ld\n",
+                        key, ik, nlist);
 
 
-                InvertedLists::ScopedCodes scodes (invlists, key);
-                const Index::idx_t * ids = store_pairs ? nullptr :
-                    invlists->get_ids (key);
+                    size_t list_size = invlists->list_size(key);
 
-                nheap += scanner->scan_codes (list_size, scodes.get(),
-                                     ids, simi, idxi, k);
+                    // don't waste time on empty lists
+                    if (list_size == 0) {
+                        continue;
+                    }
 
-                if (ids) {
-                    invlists->release_ids (ids);
+                    scanner->set_list (key, coarse_dis[i * nprobe + ik]);
+
+                    nlistv++;
+
+                    InvertedLists::ScopedCodes scodes (invlists, key);
+                    const Index::idx_t * ids = store_pairs ? nullptr :
+                        invlists->get_ids (key);
+
+                    nheap += scanner->scan_codes (list_size, scodes.get(),
+                                                  ids, simi, idxi, k);
+
+                    if (ids) {
+                        invlists->release_ids (ids);
+                    }
+
+                    nscan += list_size;
+                    if (max_codes && nscan >= max_codes)
+                        break;
                 }
 
-                nscan += list_size;
-                if (max_codes && nscan >= max_codes)
-                    break;
-            }
-
-            ndis += nscan;
-            if (metric_type == METRIC_INNER_PRODUCT) {
-                heap_reorder<HeapForIP> (k, simi, idxi);
-            } else {
-                heap_reorder<HeapForL2> (k, simi, idxi);
-            }
-
-        } // parallel for
-    } // parallel
+                ndis += nscan;
+                if (metric_type == METRIC_INNER_PRODUCT) {
+                    heap_reorder<HeapForIP> (k, simi, idxi);
+                } else {
+                    heap_reorder<HeapForL2> (k, simi, idxi);
+                }
+            } // parallel for
+        } // parallel
+        InterruptCallback::check ();
+    } // loop over blocks
 
     indexIVF_stats.nq += n;
     indexIVF_stats.nlist += nlistv;
@@ -284,10 +290,83 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
 
 
 
+
+void IndexIVF::range_search (idx_t nx, const float *x, float radius,
+                             RangeSearchResult *result) const
+{
+
+    long * keys = new long [nx * nprobe];
+    ScopeDeleter<long> del (keys);
+    float * coarse_dis = new float [nx * nprobe];
+    ScopeDeleter<float> del2 (coarse_dis);
+
+    double t0 = getmillisecs();
+    quantizer->search (nx, x, nprobe, coarse_dis, keys);
+    indexIVF_stats.quantization_time += getmillisecs() - t0;
+
+    t0 = getmillisecs();
+    invlists->prefetch_lists (keys, nx * nprobe);
+
+    size_t nlistv = 0, ndis = 0;
+    bool store_pairs = false;
+
+#pragma omp parallel reduction(+: nlistv, ndis)
+    {
+        RangeSearchPartialResult pres(result);
+        InvertedListScanner *scanner = get_InvertedListScanner(store_pairs);
+        ScopeDeleter1<InvertedListScanner> del3(scanner);
+
+#pragma omp for
+        for (size_t i = 0; i < nx; i++) {
+            const float * xi = x + i * d;
+            scanner->set_query (xi);
+            const long * keysi = keys + i * nprobe;
+
+            RangeQueryResult & qres = pres.new_result (i);
+
+            for (size_t ik = 0; ik < nprobe; ik++) {
+                long key = keysi[ik];  /* select the list  */
+                if (key < 0) continue;
+                FAISS_THROW_IF_NOT_FMT (key < (long) nlist,
+                      "Invalid key=%ld  at ik=%ld nlist=%ld\n",
+                      key, ik, nlist);
+                const size_t list_size = invlists->list_size(key);
+
+                if (list_size == 0) continue;
+
+                InvertedLists::ScopedCodes scodes (invlists, key);
+                InvertedLists::ScopedIds ids (invlists, key);
+
+                scanner->set_list (key, coarse_dis[i * nprobe + ik]);
+                nlistv++;
+                ndis += list_size;
+                scanner->scan_codes_range (list_size, scodes.get(),
+                                           ids.get(), radius, qres);
+
+            }
+        }
+
+        pres.finalize ();
+    }
+    indexIVF_stats.search_time += getmillisecs() - t0;
+    indexIVF_stats.nq += nx;
+    indexIVF_stats.nlist += nlistv;
+    indexIVF_stats.ndis += ndis;
+}
+
+
+InvertedListScanner *IndexIVF::get_InvertedListScanner (
+    bool /*store_pairs*/) const
+{
+    return nullptr;
+}
+
 void IndexIVF::reconstruct (idx_t key, float* recons) const
 {
     FAISS_THROW_IF_NOT_MSG (direct_map.size() == ntotal,
                             "direct map is not initialized");
+    FAISS_THROW_IF_NOT_MSG (key >= 0 && key < direct_map.size(),
+                            "invalid key");
     long list_no = direct_map[key] >> 32;
     long offset = direct_map[key] & 0xffffffff;
     reconstruct_from_offset (list_no, offset, recons);
@@ -333,23 +412,23 @@ void IndexIVF::search_and_reconstruct (idx_t n, const float *x, idx_t k,
     search_preassigned (n, x, k, idx, coarse_dis,
                         distances, labels, true /* store_pairs */);
     for (idx_t i = 0; i < n; ++i) {
-      for (idx_t j = 0; j < k; ++j) {
-        idx_t ij = i * k + j;
-        idx_t key = labels[ij];
-        float* reconstructed = recons + ij * d;
-        if (key < 0) {
-          // Fill with NaNs
-          memset(reconstructed, -1, sizeof(*reconstructed) * d);
-        } else {
-          int list_no = key >> 32;
-          int offset = key & 0xffffffff;
+        for (idx_t j = 0; j < k; ++j) {
+            idx_t ij = i * k + j;
+            idx_t key = labels[ij];
+            float* reconstructed = recons + ij * d;
+            if (key < 0) {
+                // Fill with NaNs
+                memset(reconstructed, -1, sizeof(*reconstructed) * d);
+            } else {
+                int list_no = key >> 32;
+                int offset = key & 0xffffffff;
 
-          // Update label to the actual id
-          labels[ij] = invlists->get_single_id (list_no, offset);
+                // Update label to the actual id
+                labels[ij] = invlists->get_single_id (list_no, offset);
 
-          reconstruct_from_offset (list_no, offset, reconstructed);
+                reconstruct_from_offset (list_no, offset, reconstructed);
+            }
         }
-      }
     }
 }
 
@@ -427,37 +506,6 @@ void IndexIVF::train_residual(idx_t /*n*/, const float* /*x*/) {
   if (verbose)
     printf("IndexIVF: no residual training\n");
   // does nothing by default
-}
-
-
-
-double IndexIVF::imbalance_factor () const
-{
-    std::vector<int> hist (nlist);
-    for (int i = 0; i < nlist; i++) {
-        hist[i] = invlists->list_size(i);
-    }
-    return faiss::imbalance_factor (nlist, hist.data());
-}
-
-void IndexIVF::print_stats () const
-{
-    std::vector<int> sizes(40);
-    for (int i = 0; i < nlist; i++) {
-        for (int j = 0; j < sizes.size(); j++) {
-            if ((invlists->list_size(i) >> j) == 0) {
-                sizes[j]++;
-                break;
-            }
-        }
-    }
-    for (int i = 0; i < sizes.size(); i++) {
-        if (sizes[i]) {
-            printf ("list size in < %d: %d instances\n",
-                    1 << i, sizes[i]);
-        }
-    }
-
 }
 
 
@@ -580,6 +628,16 @@ void IndexIVFStats::reset()
 
 
 IndexIVFStats indexIVF_stats;
+
+void InvertedListScanner::scan_codes_range (size_t ,
+                       const uint8_t *,
+                       const idx_t *,
+                       float ,
+                       RangeQueryResult &) const
+{
+    FAISS_THROW_MSG ("scan_codes_range not implemented");
+}
+
 
 
 } // namespace faiss

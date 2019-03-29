@@ -35,10 +35,6 @@ DeviceMemoryReservation::DeviceMemoryReservation(DeviceMemory* state,
 
 DeviceMemoryReservation::DeviceMemoryReservation(
   DeviceMemoryReservation&& m) noexcept {
-  if (data_) {
-    FAISS_ASSERT(state_);
-    state_->returnAllocation(*this);
-  }
 
   state_ = m.state_;
   device_ = m.device_;

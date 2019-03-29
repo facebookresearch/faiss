@@ -10,6 +10,7 @@
 #include "L2Select.cuh"
 #include "../../FaissAssert.h"
 
+#include "../utils/DeviceDefs.cuh"
 #include "../utils/DeviceUtils.h"
 #include "../utils/MathOperators.cuh"
 #include "../utils/Pair.cuh"
@@ -159,7 +160,6 @@ __global__ void l2SelectMinK(Tensor<T, 2, true> productDistances,
   }
 }
 
-// FIXME: no TVec specialization
 template <typename T>
 void runL2SelectMin(Tensor<T, 2, true>& productDistances,
                     Tensor<T, 1, true>& centroidDistances,
@@ -172,7 +172,7 @@ void runL2SelectMin(Tensor<T, 2, true>& productDistances,
   FAISS_ASSERT(centroidDistances.getSize(0) == productDistances.getSize(1));
   FAISS_ASSERT(outDistances.getSize(1) == k);
   FAISS_ASSERT(outIndices.getSize(1) == k);
-  FAISS_ASSERT(k <= 1024);
+  FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
 
   if (k == 1) {
     constexpr int kThreadsPerBlock = 256;
@@ -185,31 +185,36 @@ void runL2SelectMin(Tensor<T, 2, true>& productDistances,
       <<<grid, block, 0, stream>>>(productDistances, centroidDistances,
                                    outDistances, outIndices);
   } else {
-    constexpr int kThreadsPerBlock = 128;
-
-    auto block = dim3(kThreadsPerBlock);
     auto grid = dim3(outDistances.getSize(0));
 
-#define RUN_L2_SELECT(NUM_WARP_Q, NUM_THREAD_Q)                         \
+#define RUN_L2_SELECT(BLOCK, NUM_WARP_Q, NUM_THREAD_Q)                  \
     do {                                                                \
-      l2SelectMinK<T, NUM_WARP_Q, NUM_THREAD_Q, kThreadsPerBlock>       \
-        <<<grid, block, 0, stream>>>(productDistances, centroidDistances, \
+      l2SelectMinK<T, NUM_WARP_Q, NUM_THREAD_Q, BLOCK>                  \
+        <<<grid, BLOCK, 0, stream>>>(productDistances, centroidDistances, \
                                      outDistances, outIndices,          \
                                      k, Limits<T>::getMax());           \
     } while (0)
 
+    // block size 128 for everything <= 1024
     if (k <= 32) {
-      RUN_L2_SELECT(32, 2);
+      RUN_L2_SELECT(128, 32, 2);
     } else if (k <= 64) {
-      RUN_L2_SELECT(64, 3);
+      RUN_L2_SELECT(128, 64, 3);
     } else if (k <= 128) {
-      RUN_L2_SELECT(128, 3);
+      RUN_L2_SELECT(128, 128, 3);
     } else if (k <= 256) {
-      RUN_L2_SELECT(256, 4);
+      RUN_L2_SELECT(128, 256, 4);
     } else if (k <= 512) {
-      RUN_L2_SELECT(512, 8);
+      RUN_L2_SELECT(128, 512, 8);
     } else if (k <= 1024) {
-      RUN_L2_SELECT(1024, 8);
+      RUN_L2_SELECT(128, 1024, 8);
+
+#if GPU_MAX_SELECTION_K >= 2048
+    } else if (k <= 2048) {
+      // smaller block for less shared memory
+      RUN_L2_SELECT(64, 2048, 8);
+#endif
+
     } else {
       FAISS_ASSERT(false);
     }

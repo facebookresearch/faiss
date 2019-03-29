@@ -60,8 +60,9 @@ struct RangeSearchResult;
  * database-to-database queries are not implemented.
  */
 struct Index {
-
-    typedef long idx_t;    ///< all indices are this type
+    using idx_t = long;    ///< all indices are this type
+    using component_t = float;
+    using distance_t = float;
 
     int d;                 ///< vector dimension
     idx_t ntotal;          ///< total nb of indexed vectors

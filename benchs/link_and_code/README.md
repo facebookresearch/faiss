@@ -1,6 +1,3 @@
-
-
-
 README for the link & code implementation
 =========================================
 

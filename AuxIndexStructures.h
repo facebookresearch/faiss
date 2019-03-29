@@ -18,6 +18,7 @@
 
 #include <vector>
 #include <unordered_set>
+#include <memory>
 
 
 #include "Index.h"
@@ -117,16 +118,7 @@ struct BufferList {
     // create a new buffer
     void append_buffer ();
 
-    inline void add (idx_t id, float dis)
-    {
-        if (wp == buffer_size) { // need new buffer
-            append_buffer();
-        }
-        Buffer & buf = buffers.back();
-        buf.ids [wp] = id;
-        buf.dis [wp] = dis;
-        wp++;
-    }
+    void add (idx_t id, float dis);
 
     /// copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to
     /// tables dest_ids, dest_dis
@@ -135,7 +127,17 @@ struct BufferList {
 
 };
 
+struct RangeSearchPartialResult;
 
+/// result structure for a single query
+struct RangeQueryResult {
+    using idx_t = Index::idx_t;
+    idx_t qno;
+    size_t nres;
+    RangeSearchPartialResult * pres;
+
+    void add (float dis, idx_t id);
+};
 
 /// the entries in the buffers are split per query
 struct RangeSearchPartialResult: BufferList {
@@ -143,21 +145,10 @@ struct RangeSearchPartialResult: BufferList {
 
     explicit RangeSearchPartialResult (RangeSearchResult * res_in);
 
-    /// result structure for a single query
-    struct QueryResult {
-        idx_t qno;
-        size_t nres;
-        RangeSearchPartialResult * pres;
-        inline void add (float dis, idx_t id) {
-            nres++;
-            pres->add (id, dis);
-        }
-    };
-
-    std::vector<QueryResult> queries;
+    std::vector<RangeQueryResult> queries;
 
     /// begin a new result
-    QueryResult & new_result (idx_t qno);
+    RangeQueryResult & new_result (idx_t qno);
 
     void finalize ();
 
@@ -172,7 +163,6 @@ struct RangeSearchPartialResult: BufferList {
 /***********************************************************
  * Abstract I/O objects
  ***********************************************************/
-
 
 struct IOReader {
     // name that can be used in error messages
@@ -212,6 +202,57 @@ struct VectorIOReader:IOReader {
 struct VectorIOWriter:IOWriter {
     std::vector<uint8_t> data;
     size_t operator()(const void *ptr, size_t size, size_t nitems) override;
+};
+
+/***********************************************************
+ * The distance computer maintains a current query and computes
+ * distances to elements in an index that supports random access.
+ *
+ * The DistanceComputer is not intended to be thread-safe (eg. because
+ * it maintains counters) so the distance functions are not const,
+ * instanciate one from each thread if needed.
+ ***********************************************************/
+ struct DistanceComputer {
+     using idx_t = Index::idx_t;
+
+     /// called before computing distances
+     virtual void set_query(const float *x) = 0;
+
+     /// compute distance of vector i to current query
+     virtual float operator () (idx_t i) = 0;
+
+     /// compute distance between two stored vectors
+     virtual float symmetric_dis (idx_t i, idx_t j) = 0;
+
+     virtual ~DistanceComputer() {}
+ };
+
+/***********************************************************
+ * Interrupt callback
+ ***********************************************************/
+
+struct InterruptCallback {
+    virtual bool want_interrupt () = 0;
+    virtual ~InterruptCallback() {}
+
+    static std::unique_ptr<InterruptCallback> instance;
+
+    /** check if:
+     * - an interrupt callback is set
+     * - the callback retuns true
+     * if this is the case, then throw an exception
+     */
+    static void check ();
+
+    /// same as check() but return true if is interrupted instead of
+    /// throwing
+    static bool is_interrupted ();
+
+    /** assuming each iteration takes a certain number of flops, what
+     * is a reasonable interval to check for interrupts?
+     */
+    static size_t get_period_hint (size_t flops);
+
 };
 
 

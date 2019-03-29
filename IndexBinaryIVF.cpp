@@ -252,39 +252,42 @@ long IndexBinaryIVF::remove_ids(const IDSelector& sel) {
 }
 
 void IndexBinaryIVF::train(idx_t n, const uint8_t *x) {
-  if (verbose)
-    printf("Training level-1 quantizer\n");
+  if (verbose) {
+    printf("Training quantizer\n");
+  }
 
-  train_q1(n, x, verbose);
+  if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
+    if (verbose) {
+      printf("IVF quantizer does not need training.\n");
+    }
+  } else {
+    if (verbose) {
+      printf("Training quantizer on %ld vectors in %dD\n", n, d);
+    }
+
+    Clustering clus(d, nlist, cp);
+    quantizer->reset();
+
+    std::unique_ptr<float[]> x_f(new float[n * d]);
+    binary_to_real(n * d, x, x_f.get());
+
+    IndexFlatL2 index_tmp(d);
+
+    if (clustering_index && verbose) {
+      printf("using clustering_index of dimension %d to do the clustering\n",
+             clustering_index->d);
+    }
+
+    clus.train(n, x_f.get(), clustering_index ? *clustering_index : index_tmp);
+
+    std::unique_ptr<uint8_t[]> x_b(new uint8_t[clus.k * code_size]);
+    real_to_binary(d * clus.k, clus.centroids.data(), x_b.get());
+
+    quantizer->add(clus.k, x_b.get());
+    quantizer->is_trained = true;
+  }
 
   is_trained = true;
-}
-
-double IndexBinaryIVF::imbalance_factor () const {
-  std::vector<int> hist(nlist);
-
-  for (int i = 0; i < nlist; i++) {
-    hist[i] = invlists->list_size(i);
-  }
-
-  return faiss::imbalance_factor(nlist, hist.data());
-}
-
-void IndexBinaryIVF::print_stats() const {
-  std::vector<int> sizes(40);
-  for (int i = 0; i < nlist; i++) {
-    for (int j = 0; j < sizes.size(); j++) {
-      if ((invlists->list_size(i) >> j) == 0) {
-        sizes[j]++;
-        break;
-      }
-    }
-  }
-  for (int i = 0; i < sizes.size(); i++) {
-    if (sizes[i]) {
-      printf("list size in < %d: %d instances\n", 1 << i, sizes[i]);
-    }
-  }
 }
 
 void IndexBinaryIVF::merge_from(IndexBinaryIVF &other, idx_t add_id) {
@@ -312,38 +315,6 @@ void IndexBinaryIVF::replace_invlists(InvertedLists *il, bool own) {
   }
   invlists = il;
   own_invlists = own;
-}
-
-
-void IndexBinaryIVF::train_q1(size_t n, const uint8_t *x, bool verbose) {
-  if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
-    if (verbose)
-      printf("IVF quantizer does not need training.\n");
-  } else {
-    if (verbose)
-      printf("Training level-1 quantizer on %ld vectors in %dD\n", n, d);
-
-    Clustering clus(d, nlist, cp);
-    quantizer->reset();
-
-    std::unique_ptr<float[]> x_f(new float[n * d]);
-    binary_to_real(n * d, x, x_f.get());
-
-    IndexFlatL2 index_tmp(d);
-
-    if (clustering_index && verbose) {
-        printf("using clustering_index of dimension %d to do the clustering\n",
-               clustering_index->d);
-    }
-
-    clus.train(n, x_f.get(), clustering_index ? *clustering_index : index_tmp);
-
-    std::unique_ptr<uint8_t[]> x_b(new uint8_t[clus.k * code_size]);
-    real_to_binary(d * clus.k, clus.centroids.data(), x_b.get());
-
-    quantizer->add(clus.k, x_b.get());
-    quantizer->is_trained = true;
-  }
 }
 
 

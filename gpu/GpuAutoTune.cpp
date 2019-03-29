@@ -16,12 +16,13 @@
 #include "../IndexIVF.h"
 #include "../IndexIVFFlat.h"
 #include "../IndexIVFPQ.h"
+#include "../IndexReplicas.h"
 #include "../VectorTransform.h"
 #include "../MetaIndexes.h"
 #include "GpuIndexFlat.h"
 #include "GpuIndexIVFFlat.h"
 #include "GpuIndexIVFPQ.h"
-#include "IndexProxy.h"
+#include "utils/DeviceUtils.h"
 
 namespace faiss { namespace gpu {
 
@@ -66,7 +67,7 @@ struct ToCPUCloner: Cloner {
             ipq->copyTo(res);
             return res;
 
-            // for IndexShards and IndexProxy we assume that the
+            // for IndexShards and IndexReplicas we assume that the
             // objective is to make a single component out of them
             // (inverse op of ToGpuClonerMultiple)
 
@@ -80,7 +81,7 @@ struct ToCPUCloner: Cloner {
                 delete res_i;
             }
             return res;
-        } else if(auto ipr = dynamic_cast<const IndexProxy *>(index)) {
+        } else if(auto ipr = dynamic_cast<const IndexReplicas *>(index)) {
             // just clone one of the replicas
             FAISS_ASSERT(ipr->count() > 0);
             return clone_Index(ipr->at(0));
@@ -297,7 +298,7 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
            dynamic_cast<const faiss::IndexIVFFlat *>(index) ||
            dynamic_cast<const faiss::IndexIVFPQ *>(index)) {
             if(!shard) {
-                IndexProxy * res = new IndexProxy();
+                IndexReplicas * res = new IndexReplicas();
                 for(auto & sub_cloner: sub_cloners) {
                     res->addIndex(sub_cloner.clone_Index(index));
                 }
@@ -366,7 +367,7 @@ void GpuParameterSpace::initialize (const Index * index)
     if (DC (IndexPreTransform)) {
         index = ix->index;
     }
-    if (DC (IndexProxy)) {
+    if (DC (IndexReplicas)) {
         if (ix->count() == 0) return;
         index = ix->at(0);
     }
@@ -379,7 +380,7 @@ void GpuParameterSpace::initialize (const Index * index)
         for (int i = 0; i < 12; i++) {
             size_t nprobe = 1 << i;
             if (nprobe >= ix->getNumLists() ||
-                nprobe > 1024) break;
+                nprobe > getMaxKSelection()) break;
             pr.values.push_back (nprobe);
         }
     }
@@ -397,7 +398,7 @@ void GpuParameterSpace::initialize (const Index * index)
 void GpuParameterSpace::set_index_parameter (
         Index * index, const std::string & name, double val) const
 {
-    if (DC (IndexProxy)) {
+    if (DC (IndexReplicas)) {
         for (int i = 0; i < ix->count(); i++)
             set_index_parameter (ix->at(i), name, val);
         return;

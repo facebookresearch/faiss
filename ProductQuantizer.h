@@ -23,6 +23,8 @@ namespace faiss {
 /** Product Quantizer. Implemented only for METRIC_L2 */
 struct ProductQuantizer {
 
+    using idx_t = Index::idx_t;
+
     size_t d;              ///< size of the input vectors
     size_t M;              ///< number of subquantizers
     size_t nbits;          ///< number of bits per quantization index
@@ -85,6 +87,13 @@ struct ProductQuantizer {
     void compute_codes (const float * x,
                         uint8_t * codes,
                         size_t n) const ;
+
+    /// speed up code assignment using assign_index
+    /// (non-const because the index is changed)
+    void compute_codes_with_assign_index (
+                const float * x,
+                uint8_t * codes,
+                size_t n);
 
     /// decode a vector from a given code (or n vectors if third argument)
     void decode (const uint8_t *code, float *x) const;

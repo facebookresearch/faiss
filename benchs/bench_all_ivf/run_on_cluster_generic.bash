@@ -23,14 +23,14 @@ function run_on_1machine () {
     # To be implemented
 }
 
-function run_on_1machine () {
+function run_on_8gpu () {
     # To be implemented
 }
 
 
 # prepare output directories
-
-basedir=/mnt/vol/gfsai-east/ai-group/users/matthijs/bench_all_ivf
+# set to some directory where all indexes, can be written.
+basedir=XXXXX
 
 logdir=$basedir/logs
 indexdir=$basedir/indexes
