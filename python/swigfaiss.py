@@ -4706,6 +4706,68 @@ class IndexShards(Index):
 IndexShards_swigregister = _swigfaiss.IndexShards_swigregister
 IndexShards_swigregister(IndexShards)
 
+class IndexBinaryShards(IndexBinary):
+    __swig_setmethods__ = {}
+    for _s in [IndexBinary]:
+        __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, IndexBinaryShards, name, value)
+    __swig_getmethods__ = {}
+    for _s in [IndexBinary]:
+        __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
+    __getattr__ = lambda self, name: _swig_getattr(self, IndexBinaryShards, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["shard_indexes"] = _swigfaiss.IndexBinaryShards_shard_indexes_set
+    __swig_getmethods__["shard_indexes"] = _swigfaiss.IndexBinaryShards_shard_indexes_get
+    if _newclass:
+        shard_indexes = _swig_property(_swigfaiss.IndexBinaryShards_shard_indexes_get, _swigfaiss.IndexBinaryShards_shard_indexes_set)
+    __swig_setmethods__["own_fields"] = _swigfaiss.IndexBinaryShards_own_fields_set
+    __swig_getmethods__["own_fields"] = _swigfaiss.IndexBinaryShards_own_fields_get
+    if _newclass:
+        own_fields = _swig_property(_swigfaiss.IndexBinaryShards_own_fields_get, _swigfaiss.IndexBinaryShards_own_fields_set)
+    __swig_setmethods__["threaded"] = _swigfaiss.IndexBinaryShards_threaded_set
+    __swig_getmethods__["threaded"] = _swigfaiss.IndexBinaryShards_threaded_get
+    if _newclass:
+        threaded = _swig_property(_swigfaiss.IndexBinaryShards_threaded_get, _swigfaiss.IndexBinaryShards_threaded_set)
+    __swig_setmethods__["successive_ids"] = _swigfaiss.IndexBinaryShards_successive_ids_set
+    __swig_getmethods__["successive_ids"] = _swigfaiss.IndexBinaryShards_successive_ids_get
+    if _newclass:
+        successive_ids = _swig_property(_swigfaiss.IndexBinaryShards_successive_ids_get, _swigfaiss.IndexBinaryShards_successive_ids_set)
+
+    def __init__(self, d, threaded=False, successive_ids=True):
+        this = _swigfaiss.new_IndexBinaryShards(d, threaded, successive_ids)
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+
+    def add_shard(self, arg2):
+        return _swigfaiss.IndexBinaryShards_add_shard(self, arg2)
+
+    def sync_with_shard_indexes(self):
+        return _swigfaiss.IndexBinaryShards_sync_with_shard_indexes(self)
+
+    def at(self, i):
+        return _swigfaiss.IndexBinaryShards_at(self, i)
+
+    def add(self, n, x):
+        return _swigfaiss.IndexBinaryShards_add(self, n, x)
+
+    def add_with_ids(self, n, x, xids):
+        return _swigfaiss.IndexBinaryShards_add_with_ids(self, n, x, xids)
+
+    def search(self, n, x, k, distances, labels):
+        return _swigfaiss.IndexBinaryShards_search(self, n, x, k, distances, labels)
+
+    def train(self, n, x):
+        return _swigfaiss.IndexBinaryShards_train(self, n, x)
+
+    def reset(self):
+        return _swigfaiss.IndexBinaryShards_reset(self)
+    __swig_destroy__ = _swigfaiss.delete_IndexBinaryShards
+    __del__ = lambda self: None
+IndexBinaryShards_swigregister = _swigfaiss.IndexBinaryShards_swigregister
+IndexBinaryShards_swigregister(IndexBinaryShards)
+
 class IndexReplicas(Index):
     __swig_setmethods__ = {}
     for _s in [Index]:
@@ -4757,10 +4819,66 @@ class IndexReplicas(Index):
     def count(self):
         return _swigfaiss.IndexReplicas_count(self)
 
-    def at(self, i):
-        return _swigfaiss.IndexReplicas_at(self, i)
+    def at(self, *args):
+        return _swigfaiss.IndexReplicas_at(self, *args)
 IndexReplicas_swigregister = _swigfaiss.IndexReplicas_swigregister
 IndexReplicas_swigregister(IndexReplicas)
+
+class IndexBinaryReplicas(IndexBinary):
+    __swig_setmethods__ = {}
+    for _s in [IndexBinary]:
+        __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, IndexBinaryReplicas, name, value)
+    __swig_getmethods__ = {}
+    for _s in [IndexBinary]:
+        __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
+    __getattr__ = lambda self, name: _swig_getattr(self, IndexBinaryReplicas, name)
+    __repr__ = _swig_repr
+
+    def __init__(self):
+        this = _swigfaiss.new_IndexBinaryReplicas()
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+    __swig_destroy__ = _swigfaiss.delete_IndexBinaryReplicas
+    __del__ = lambda self: None
+
+    def addIndex(self, index):
+        return _swigfaiss.IndexBinaryReplicas_addIndex(self, index)
+
+    def removeIndex(self, index):
+        return _swigfaiss.IndexBinaryReplicas_removeIndex(self, index)
+
+    def runOnIndex(self, f):
+        return _swigfaiss.IndexBinaryReplicas_runOnIndex(self, f)
+
+    def reset(self):
+        return _swigfaiss.IndexBinaryReplicas_reset(self)
+
+    def train(self, n, x):
+        return _swigfaiss.IndexBinaryReplicas_train(self, n, x)
+
+    def add(self, n, x):
+        return _swigfaiss.IndexBinaryReplicas_add(self, n, x)
+
+    def search(self, n, x, k, distances, labels):
+        return _swigfaiss.IndexBinaryReplicas_search(self, n, x, k, distances, labels)
+
+    def reconstruct(self, arg2, v):
+        return _swigfaiss.IndexBinaryReplicas_reconstruct(self, arg2, v)
+    __swig_setmethods__["own_fields"] = _swigfaiss.IndexBinaryReplicas_own_fields_set
+    __swig_getmethods__["own_fields"] = _swigfaiss.IndexBinaryReplicas_own_fields_get
+    if _newclass:
+        own_fields = _swig_property(_swigfaiss.IndexBinaryReplicas_own_fields_get, _swigfaiss.IndexBinaryReplicas_own_fields_set)
+
+    def count(self):
+        return _swigfaiss.IndexBinaryReplicas_count(self)
+
+    def at(self, *args):
+        return _swigfaiss.IndexBinaryReplicas_at(self, *args)
+IndexBinaryReplicas_swigregister = _swigfaiss.IndexBinaryReplicas_swigregister
+IndexBinaryReplicas_swigregister(IndexBinaryReplicas)
 
 class IndexIDMap(Index):
     __swig_setmethods__ = {}
@@ -5973,6 +6091,47 @@ class DistanceComputer(_object):
     __del__ = lambda self: None
 DistanceComputer_swigregister = _swigfaiss.DistanceComputer_swigregister
 DistanceComputer_swigregister(DistanceComputer)
+
+class InterruptCallback(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, InterruptCallback, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, InterruptCallback, name)
+
+    def __init__(self, *args, **kwargs):
+        raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+
+    def want_interrupt(self):
+        return _swigfaiss.InterruptCallback_want_interrupt(self)
+    __swig_destroy__ = _swigfaiss.delete_InterruptCallback
+    __del__ = lambda self: None
+    if _newclass:
+        check = staticmethod(_swigfaiss.InterruptCallback_check)
+    else:
+        check = _swigfaiss.InterruptCallback_check
+    if _newclass:
+        is_interrupted = staticmethod(_swigfaiss.InterruptCallback_is_interrupted)
+    else:
+        is_interrupted = _swigfaiss.InterruptCallback_is_interrupted
+    if _newclass:
+        get_period_hint = staticmethod(_swigfaiss.InterruptCallback_get_period_hint)
+    else:
+        get_period_hint = _swigfaiss.InterruptCallback_get_period_hint
+InterruptCallback_swigregister = _swigfaiss.InterruptCallback_swigregister
+InterruptCallback_swigregister(InterruptCallback)
+
+def InterruptCallback_check():
+    return _swigfaiss.InterruptCallback_check()
+InterruptCallback_check = _swigfaiss.InterruptCallback_check
+
+def InterruptCallback_is_interrupted():
+    return _swigfaiss.InterruptCallback_is_interrupted()
+InterruptCallback_is_interrupted = _swigfaiss.InterruptCallback_is_interrupted
+
+def InterruptCallback_get_period_hint(flops):
+    return _swigfaiss.InterruptCallback_get_period_hint(flops)
+InterruptCallback_get_period_hint = _swigfaiss.InterruptCallback_get_period_hint
 
 
 def ignore_SIGTTIN():

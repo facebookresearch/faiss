@@ -3010,240 +3010,247 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_T swig_types[4]
 #define SWIGTYPE_p_TI swig_types[5]
 #define SWIGTYPE_p_char swig_types[6]
-#define SWIGTYPE_p_cublasHandle_t swig_types[7]
-#define SWIGTYPE_p_cudaStream_t swig_types[8]
-#define SWIGTYPE_p_double swig_types[9]
-#define SWIGTYPE_p_faiss__ArrayInvertedLists swig_types[10]
-#define SWIGTYPE_p_faiss__AutoTuneCriterion swig_types[11]
-#define SWIGTYPE_p_faiss__BinaryInvertedListScanner swig_types[12]
-#define SWIGTYPE_p_faiss__BufferList swig_types[13]
-#define SWIGTYPE_p_faiss__CenteringTransform swig_types[14]
-#define SWIGTYPE_p_faiss__Cloner swig_types[15]
-#define SWIGTYPE_p_faiss__Clustering swig_types[16]
-#define SWIGTYPE_p_faiss__ClusteringParameters swig_types[17]
-#define SWIGTYPE_p_faiss__ConcatenatedInvertedLists swig_types[18]
-#define SWIGTYPE_p_faiss__DistanceComputer swig_types[19]
-#define SWIGTYPE_p_faiss__GenHammingComputer16 swig_types[20]
-#define SWIGTYPE_p_faiss__GenHammingComputer32 swig_types[21]
-#define SWIGTYPE_p_faiss__GenHammingComputer8 swig_types[22]
-#define SWIGTYPE_p_faiss__GenHammingComputerM8 swig_types[23]
-#define SWIGTYPE_p_faiss__HNSW swig_types[24]
-#define SWIGTYPE_p_faiss__HNSWStats swig_types[25]
-#define SWIGTYPE_p_faiss__HNSW__MinimaxHeap swig_types[26]
-#define SWIGTYPE_p_faiss__HammingComputer16 swig_types[27]
-#define SWIGTYPE_p_faiss__HammingComputer20 swig_types[28]
-#define SWIGTYPE_p_faiss__HammingComputer32 swig_types[29]
-#define SWIGTYPE_p_faiss__HammingComputer4 swig_types[30]
-#define SWIGTYPE_p_faiss__HammingComputer64 swig_types[31]
-#define SWIGTYPE_p_faiss__HammingComputer8 swig_types[32]
-#define SWIGTYPE_p_faiss__HammingComputerDefault swig_types[33]
-#define SWIGTYPE_p_faiss__HammingComputerM4 swig_types[34]
-#define SWIGTYPE_p_faiss__HammingComputerM8 swig_types[35]
-#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMaxT_float_long_t_t swig_types[36]
-#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMaxT_int_long_t_t swig_types[37]
-#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMinT_float_long_t_t swig_types[38]
-#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMinT_int_long_t_t swig_types[39]
-#define SWIGTYPE_p_faiss__IDSelector swig_types[40]
-#define SWIGTYPE_p_faiss__IDSelectorBatch swig_types[41]
-#define SWIGTYPE_p_faiss__IDSelectorRange swig_types[42]
-#define SWIGTYPE_p_faiss__IOReader swig_types[43]
-#define SWIGTYPE_p_faiss__IOWriter swig_types[44]
-#define SWIGTYPE_p_faiss__IVFPQSearchParameters swig_types[45]
-#define SWIGTYPE_p_faiss__IVFSearchParameters swig_types[46]
-#define SWIGTYPE_p_faiss__Index swig_types[47]
-#define SWIGTYPE_p_faiss__Index2Layer swig_types[48]
-#define SWIGTYPE_p_faiss__IndexBinary swig_types[49]
-#define SWIGTYPE_p_faiss__IndexBinaryFlat swig_types[50]
-#define SWIGTYPE_p_faiss__IndexBinaryFromFloat swig_types[51]
-#define SWIGTYPE_p_faiss__IndexBinaryHNSW swig_types[52]
-#define SWIGTYPE_p_faiss__IndexBinaryIVF swig_types[53]
-#define SWIGTYPE_p_faiss__IndexFlat swig_types[54]
-#define SWIGTYPE_p_faiss__IndexFlat1D swig_types[55]
-#define SWIGTYPE_p_faiss__IndexFlatIP swig_types[56]
-#define SWIGTYPE_p_faiss__IndexFlatL2 swig_types[57]
-#define SWIGTYPE_p_faiss__IndexFlatL2BaseShift swig_types[58]
-#define SWIGTYPE_p_faiss__IndexHNSW swig_types[59]
-#define SWIGTYPE_p_faiss__IndexHNSW2Level swig_types[60]
-#define SWIGTYPE_p_faiss__IndexHNSWFlat swig_types[61]
-#define SWIGTYPE_p_faiss__IndexHNSWPQ swig_types[62]
-#define SWIGTYPE_p_faiss__IndexHNSWSQ swig_types[63]
-#define SWIGTYPE_p_faiss__IndexIDMap swig_types[64]
-#define SWIGTYPE_p_faiss__IndexIDMap2 swig_types[65]
-#define SWIGTYPE_p_faiss__IndexIVF swig_types[66]
-#define SWIGTYPE_p_faiss__IndexIVFFlat swig_types[67]
-#define SWIGTYPE_p_faiss__IndexIVFFlatDedup swig_types[68]
-#define SWIGTYPE_p_faiss__IndexIVFPQ swig_types[69]
-#define SWIGTYPE_p_faiss__IndexIVFPQR swig_types[70]
-#define SWIGTYPE_p_faiss__IndexIVFPQStats swig_types[71]
-#define SWIGTYPE_p_faiss__IndexIVFScalarQuantizer swig_types[72]
-#define SWIGTYPE_p_faiss__IndexIVFStats swig_types[73]
-#define SWIGTYPE_p_faiss__IndexLSH swig_types[74]
-#define SWIGTYPE_p_faiss__IndexPQ swig_types[75]
-#define SWIGTYPE_p_faiss__IndexPQStats swig_types[76]
-#define SWIGTYPE_p_faiss__IndexPreTransform swig_types[77]
-#define SWIGTYPE_p_faiss__IndexRefineFlat swig_types[78]
-#define SWIGTYPE_p_faiss__IndexReplicas swig_types[79]
-#define SWIGTYPE_p_faiss__IndexScalarQuantizer swig_types[80]
-#define SWIGTYPE_p_faiss__IndexShards swig_types[81]
-#define SWIGTYPE_p_faiss__IndexSplitVectors swig_types[82]
-#define SWIGTYPE_p_faiss__IntersectionCriterion swig_types[83]
-#define SWIGTYPE_p_faiss__InvertedListScanner swig_types[84]
-#define SWIGTYPE_p_faiss__InvertedLists swig_types[85]
-#define SWIGTYPE_p_faiss__Level1Quantizer swig_types[86]
-#define SWIGTYPE_p_faiss__LinearTransform swig_types[87]
-#define SWIGTYPE_p_faiss__LockLevels swig_types[88]
-#define SWIGTYPE_p_faiss__MatrixStats swig_types[89]
-#define SWIGTYPE_p_faiss__MultiIndexQuantizer swig_types[90]
-#define SWIGTYPE_p_faiss__MultiIndexQuantizer2 swig_types[91]
-#define SWIGTYPE_p_faiss__NormalizationTransform swig_types[92]
-#define SWIGTYPE_p_faiss__OPQMatrix swig_types[93]
-#define SWIGTYPE_p_faiss__OnDiskInvertedLists swig_types[94]
-#define SWIGTYPE_p_faiss__OnDiskInvertedLists__OngoingPrefetch swig_types[95]
-#define SWIGTYPE_p_faiss__OneRecallAtRCriterion swig_types[96]
-#define SWIGTYPE_p_faiss__OperatingPoint swig_types[97]
-#define SWIGTYPE_p_faiss__OperatingPoints swig_types[98]
-#define SWIGTYPE_p_faiss__PCAMatrix swig_types[99]
-#define SWIGTYPE_p_faiss__ParameterRange swig_types[100]
-#define SWIGTYPE_p_faiss__ParameterSpace swig_types[101]
-#define SWIGTYPE_p_faiss__PermutationObjective swig_types[102]
-#define SWIGTYPE_p_faiss__PolysemousTraining swig_types[103]
-#define SWIGTYPE_p_faiss__ProductQuantizer swig_types[104]
-#define SWIGTYPE_p_faiss__RandomGenerator swig_types[105]
-#define SWIGTYPE_p_faiss__RandomRotationMatrix swig_types[106]
-#define SWIGTYPE_p_faiss__RangeQueryResult swig_types[107]
-#define SWIGTYPE_p_faiss__RangeSearchPartialResult swig_types[108]
-#define SWIGTYPE_p_faiss__RangeSearchResult swig_types[109]
-#define SWIGTYPE_p_faiss__ReconstructFromNeighbors swig_types[110]
-#define SWIGTYPE_p_faiss__RemapDimensionsTransform swig_types[111]
-#define SWIGTYPE_p_faiss__ReproduceDistancesObjective swig_types[112]
-#define SWIGTYPE_p_faiss__SQDistanceComputer swig_types[113]
-#define SWIGTYPE_p_faiss__ScalarQuantizer swig_types[114]
-#define SWIGTYPE_p_faiss__SimulatedAnnealingOptimizer swig_types[115]
-#define SWIGTYPE_p_faiss__SimulatedAnnealingParameters swig_types[116]
-#define SWIGTYPE_p_faiss__VectorIOReader swig_types[117]
-#define SWIGTYPE_p_faiss__VectorIOWriter swig_types[118]
-#define SWIGTYPE_p_faiss__VectorTransform swig_types[119]
-#define SWIGTYPE_p_faiss__VisitedTable swig_types[120]
-#define SWIGTYPE_p_faiss__gpu__FlatIndex swig_types[121]
-#define SWIGTYPE_p_faiss__gpu__GpuClonerOptions swig_types[122]
-#define SWIGTYPE_p_faiss__gpu__GpuIndex swig_types[123]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat swig_types[124]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlatConfig swig_types[125]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexConfig swig_types[126]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexFlat swig_types[127]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig swig_types[128]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatIP swig_types[129]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatL2 swig_types[130]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVF swig_types[131]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFConfig swig_types[132]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat swig_types[133]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlatConfig swig_types[134]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ swig_types[135]
-#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQConfig swig_types[136]
-#define SWIGTYPE_p_faiss__gpu__GpuMultipleClonerOptions swig_types[137]
-#define SWIGTYPE_p_faiss__gpu__GpuParameterSpace swig_types[138]
-#define SWIGTYPE_p_faiss__gpu__GpuResources swig_types[139]
-#define SWIGTYPE_p_faiss__gpu__StandardGpuResources swig_types[140]
-#define SWIGTYPE_p_faiss__ivflib__SlidingIndexWindow swig_types[141]
-#define SWIGTYPE_p_float swig_types[142]
-#define SWIGTYPE_p_idx_t swig_types[143]
-#define SWIGTYPE_p_int swig_types[144]
-#define SWIGTYPE_p_long swig_types[145]
-#define SWIGTYPE_p_omp_lock_t swig_types[146]
-#define SWIGTYPE_p_p_faiss__ArrayInvertedLists swig_types[147]
-#define SWIGTYPE_p_p_faiss__CenteringTransform swig_types[148]
-#define SWIGTYPE_p_p_faiss__ConcatenatedInvertedLists swig_types[149]
-#define SWIGTYPE_p_p_faiss__Index swig_types[150]
-#define SWIGTYPE_p_p_faiss__Index2Layer swig_types[151]
-#define SWIGTYPE_p_p_faiss__IndexFlat swig_types[152]
-#define SWIGTYPE_p_p_faiss__IndexFlat1D swig_types[153]
-#define SWIGTYPE_p_p_faiss__IndexFlatIP swig_types[154]
-#define SWIGTYPE_p_p_faiss__IndexFlatL2 swig_types[155]
-#define SWIGTYPE_p_p_faiss__IndexFlatL2BaseShift swig_types[156]
-#define SWIGTYPE_p_p_faiss__IndexHNSW swig_types[157]
-#define SWIGTYPE_p_p_faiss__IndexHNSW2Level swig_types[158]
-#define SWIGTYPE_p_p_faiss__IndexHNSWFlat swig_types[159]
-#define SWIGTYPE_p_p_faiss__IndexHNSWPQ swig_types[160]
-#define SWIGTYPE_p_p_faiss__IndexHNSWSQ swig_types[161]
-#define SWIGTYPE_p_p_faiss__IndexIDMap swig_types[162]
-#define SWIGTYPE_p_p_faiss__IndexIDMap2 swig_types[163]
-#define SWIGTYPE_p_p_faiss__IndexIVF swig_types[164]
-#define SWIGTYPE_p_p_faiss__IndexIVFFlat swig_types[165]
-#define SWIGTYPE_p_p_faiss__IndexIVFFlatDedup swig_types[166]
-#define SWIGTYPE_p_p_faiss__IndexIVFPQ swig_types[167]
-#define SWIGTYPE_p_p_faiss__IndexIVFPQR swig_types[168]
-#define SWIGTYPE_p_p_faiss__IndexIVFScalarQuantizer swig_types[169]
-#define SWIGTYPE_p_p_faiss__IndexLSH swig_types[170]
-#define SWIGTYPE_p_p_faiss__IndexPQ swig_types[171]
-#define SWIGTYPE_p_p_faiss__IndexPreTransform swig_types[172]
-#define SWIGTYPE_p_p_faiss__IndexRefineFlat swig_types[173]
-#define SWIGTYPE_p_p_faiss__IndexReplicas swig_types[174]
-#define SWIGTYPE_p_p_faiss__IndexScalarQuantizer swig_types[175]
-#define SWIGTYPE_p_p_faiss__IndexShards swig_types[176]
-#define SWIGTYPE_p_p_faiss__IndexSplitVectors swig_types[177]
-#define SWIGTYPE_p_p_faiss__InvertedLists swig_types[178]
-#define SWIGTYPE_p_p_faiss__LinearTransform swig_types[179]
-#define SWIGTYPE_p_p_faiss__MultiIndexQuantizer swig_types[180]
-#define SWIGTYPE_p_p_faiss__MultiIndexQuantizer2 swig_types[181]
-#define SWIGTYPE_p_p_faiss__NormalizationTransform swig_types[182]
-#define SWIGTYPE_p_p_faiss__OPQMatrix swig_types[183]
-#define SWIGTYPE_p_p_faiss__OnDiskInvertedLists swig_types[184]
-#define SWIGTYPE_p_p_faiss__PCAMatrix swig_types[185]
-#define SWIGTYPE_p_p_faiss__RandomRotationMatrix swig_types[186]
-#define SWIGTYPE_p_p_faiss__RemapDimensionsTransform swig_types[187]
-#define SWIGTYPE_p_p_faiss__VectorTransform swig_types[188]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndex swig_types[189]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndexFlat swig_types[190]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndexFlatIP swig_types[191]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndexFlatL2 swig_types[192]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndexIVF swig_types[193]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndexIVFFlat swig_types[194]
-#define SWIGTYPE_p_p_faiss__gpu__GpuIndexIVFPQ swig_types[195]
-#define SWIGTYPE_p_p_faiss__gpu__GpuResources swig_types[196]
-#define SWIGTYPE_p_p_faiss__gpu__StandardGpuResources swig_types[197]
-#define SWIGTYPE_p_p_void swig_types[198]
-#define SWIGTYPE_p_std__functionT_void_ffaiss__Index_pF_t swig_types[199]
-#define SWIGTYPE_p_std__listT_faiss__OnDiskInvertedLists__Slot_t swig_types[200]
-#define SWIGTYPE_p_std__mt19937 swig_types[201]
-#define SWIGTYPE_p_std__pairT_float_int_t swig_types[202]
-#define SWIGTYPE_p_std__pairT_void_p_unsigned_long_t swig_types[203]
-#define SWIGTYPE_p_std__priority_queueT_faiss__HNSW__NodeDistFarther_t swig_types[204]
-#define SWIGTYPE_p_std__priority_queueT_std__pairT_float_int_t_t swig_types[205]
-#define SWIGTYPE_p_std__unordered_mapT_long_long_t swig_types[206]
-#define SWIGTYPE_p_std__unordered_mapT_unsigned_long_faiss__MatrixStats__Occurrence_t swig_types[207]
-#define SWIGTYPE_p_std__unordered_multimapT_long_long_t swig_types[208]
-#define SWIGTYPE_p_std__vectorT_char_t swig_types[209]
-#define SWIGTYPE_p_std__vectorT_cudaStream_t_t swig_types[210]
-#define SWIGTYPE_p_std__vectorT_double_t swig_types[211]
-#define SWIGTYPE_p_std__vectorT_faiss__BufferList__Buffer_t swig_types[212]
-#define SWIGTYPE_p_std__vectorT_faiss__HNSW__NodeDistFarther_t swig_types[213]
-#define SWIGTYPE_p_std__vectorT_faiss__Index_p_t swig_types[214]
-#define SWIGTYPE_p_std__vectorT_faiss__InvertedLists_const_p_t swig_types[215]
-#define SWIGTYPE_p_std__vectorT_faiss__InvertedLists_p_t swig_types[216]
-#define SWIGTYPE_p_std__vectorT_faiss__MatrixStats__PerDimStats_t swig_types[217]
-#define SWIGTYPE_p_std__vectorT_faiss__OnDiskInvertedLists__List_t swig_types[218]
-#define SWIGTYPE_p_std__vectorT_faiss__OperatingPoint_t swig_types[219]
-#define SWIGTYPE_p_std__vectorT_faiss__ParameterRange_t swig_types[220]
-#define SWIGTYPE_p_std__vectorT_faiss__RangeQueryResult_t swig_types[221]
-#define SWIGTYPE_p_std__vectorT_faiss__VectorTransform_p_t swig_types[222]
-#define SWIGTYPE_p_std__vectorT_faiss__gpu__GpuResources_p_t swig_types[223]
-#define SWIGTYPE_p_std__vectorT_float_t swig_types[224]
-#define SWIGTYPE_p_std__vectorT_int_t swig_types[225]
-#define SWIGTYPE_p_std__vectorT_long_t swig_types[226]
-#define SWIGTYPE_p_std__vectorT_omp_lock_t_t swig_types[227]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_float_t_t swig_types[228]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_long_t_t swig_types[229]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_uint8_t_t_t swig_types[230]
-#define SWIGTYPE_p_std__vectorT_std__vectorT_unsigned_long_t_t swig_types[231]
-#define SWIGTYPE_p_std__vectorT_unsigned_char_t swig_types[232]
-#define SWIGTYPE_p_std__vectorT_unsigned_long_t swig_types[233]
-#define SWIGTYPE_p_storage_idx_t swig_types[234]
-#define SWIGTYPE_p_uint32_t swig_types[235]
-#define SWIGTYPE_p_unsigned_char swig_types[236]
-#define SWIGTYPE_p_unsigned_long swig_types[237]
-#define SWIGTYPE_p_void swig_types[238]
-static swig_type_info *swig_types[240];
-static swig_module_info swig_module = {swig_types, 239, 0, 0, 0, 0};
+#define SWIGTYPE_p_component_t swig_types[7]
+#define SWIGTYPE_p_cublasHandle_t swig_types[8]
+#define SWIGTYPE_p_cudaStream_t swig_types[9]
+#define SWIGTYPE_p_distance_t swig_types[10]
+#define SWIGTYPE_p_double swig_types[11]
+#define SWIGTYPE_p_faiss__ArrayInvertedLists swig_types[12]
+#define SWIGTYPE_p_faiss__AutoTuneCriterion swig_types[13]
+#define SWIGTYPE_p_faiss__BinaryInvertedListScanner swig_types[14]
+#define SWIGTYPE_p_faiss__BufferList swig_types[15]
+#define SWIGTYPE_p_faiss__CenteringTransform swig_types[16]
+#define SWIGTYPE_p_faiss__Cloner swig_types[17]
+#define SWIGTYPE_p_faiss__Clustering swig_types[18]
+#define SWIGTYPE_p_faiss__ClusteringParameters swig_types[19]
+#define SWIGTYPE_p_faiss__ConcatenatedInvertedLists swig_types[20]
+#define SWIGTYPE_p_faiss__DistanceComputer swig_types[21]
+#define SWIGTYPE_p_faiss__GenHammingComputer16 swig_types[22]
+#define SWIGTYPE_p_faiss__GenHammingComputer32 swig_types[23]
+#define SWIGTYPE_p_faiss__GenHammingComputer8 swig_types[24]
+#define SWIGTYPE_p_faiss__GenHammingComputerM8 swig_types[25]
+#define SWIGTYPE_p_faiss__HNSW swig_types[26]
+#define SWIGTYPE_p_faiss__HNSWStats swig_types[27]
+#define SWIGTYPE_p_faiss__HNSW__MinimaxHeap swig_types[28]
+#define SWIGTYPE_p_faiss__HammingComputer16 swig_types[29]
+#define SWIGTYPE_p_faiss__HammingComputer20 swig_types[30]
+#define SWIGTYPE_p_faiss__HammingComputer32 swig_types[31]
+#define SWIGTYPE_p_faiss__HammingComputer4 swig_types[32]
+#define SWIGTYPE_p_faiss__HammingComputer64 swig_types[33]
+#define SWIGTYPE_p_faiss__HammingComputer8 swig_types[34]
+#define SWIGTYPE_p_faiss__HammingComputerDefault swig_types[35]
+#define SWIGTYPE_p_faiss__HammingComputerM4 swig_types[36]
+#define SWIGTYPE_p_faiss__HammingComputerM8 swig_types[37]
+#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMaxT_float_long_t_t swig_types[38]
+#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMaxT_int_long_t_t swig_types[39]
+#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMinT_float_long_t_t swig_types[40]
+#define SWIGTYPE_p_faiss__HeapArrayT_faiss__CMinT_int_long_t_t swig_types[41]
+#define SWIGTYPE_p_faiss__IDSelector swig_types[42]
+#define SWIGTYPE_p_faiss__IDSelectorBatch swig_types[43]
+#define SWIGTYPE_p_faiss__IDSelectorRange swig_types[44]
+#define SWIGTYPE_p_faiss__IOReader swig_types[45]
+#define SWIGTYPE_p_faiss__IOWriter swig_types[46]
+#define SWIGTYPE_p_faiss__IVFPQSearchParameters swig_types[47]
+#define SWIGTYPE_p_faiss__IVFSearchParameters swig_types[48]
+#define SWIGTYPE_p_faiss__Index swig_types[49]
+#define SWIGTYPE_p_faiss__Index2Layer swig_types[50]
+#define SWIGTYPE_p_faiss__IndexBinary swig_types[51]
+#define SWIGTYPE_p_faiss__IndexBinaryFlat swig_types[52]
+#define SWIGTYPE_p_faiss__IndexBinaryFromFloat swig_types[53]
+#define SWIGTYPE_p_faiss__IndexBinaryHNSW swig_types[54]
+#define SWIGTYPE_p_faiss__IndexBinaryIVF swig_types[55]
+#define SWIGTYPE_p_faiss__IndexFlat swig_types[56]
+#define SWIGTYPE_p_faiss__IndexFlat1D swig_types[57]
+#define SWIGTYPE_p_faiss__IndexFlatIP swig_types[58]
+#define SWIGTYPE_p_faiss__IndexFlatL2 swig_types[59]
+#define SWIGTYPE_p_faiss__IndexFlatL2BaseShift swig_types[60]
+#define SWIGTYPE_p_faiss__IndexHNSW swig_types[61]
+#define SWIGTYPE_p_faiss__IndexHNSW2Level swig_types[62]
+#define SWIGTYPE_p_faiss__IndexHNSWFlat swig_types[63]
+#define SWIGTYPE_p_faiss__IndexHNSWPQ swig_types[64]
+#define SWIGTYPE_p_faiss__IndexHNSWSQ swig_types[65]
+#define SWIGTYPE_p_faiss__IndexIDMap swig_types[66]
+#define SWIGTYPE_p_faiss__IndexIDMap2 swig_types[67]
+#define SWIGTYPE_p_faiss__IndexIVF swig_types[68]
+#define SWIGTYPE_p_faiss__IndexIVFFlat swig_types[69]
+#define SWIGTYPE_p_faiss__IndexIVFFlatDedup swig_types[70]
+#define SWIGTYPE_p_faiss__IndexIVFPQ swig_types[71]
+#define SWIGTYPE_p_faiss__IndexIVFPQR swig_types[72]
+#define SWIGTYPE_p_faiss__IndexIVFPQStats swig_types[73]
+#define SWIGTYPE_p_faiss__IndexIVFScalarQuantizer swig_types[74]
+#define SWIGTYPE_p_faiss__IndexIVFStats swig_types[75]
+#define SWIGTYPE_p_faiss__IndexLSH swig_types[76]
+#define SWIGTYPE_p_faiss__IndexPQ swig_types[77]
+#define SWIGTYPE_p_faiss__IndexPQStats swig_types[78]
+#define SWIGTYPE_p_faiss__IndexPreTransform swig_types[79]
+#define SWIGTYPE_p_faiss__IndexRefineFlat swig_types[80]
+#define SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t swig_types[81]
+#define SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t swig_types[82]
+#define SWIGTYPE_p_faiss__IndexScalarQuantizer swig_types[83]
+#define SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t swig_types[84]
+#define SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t swig_types[85]
+#define SWIGTYPE_p_faiss__IndexSplitVectors swig_types[86]
+#define SWIGTYPE_p_faiss__InterruptCallback swig_types[87]
+#define SWIGTYPE_p_faiss__IntersectionCriterion swig_types[88]
+#define SWIGTYPE_p_faiss__InvertedListScanner swig_types[89]
+#define SWIGTYPE_p_faiss__InvertedLists swig_types[90]
+#define SWIGTYPE_p_faiss__Level1Quantizer swig_types[91]
+#define SWIGTYPE_p_faiss__LinearTransform swig_types[92]
+#define SWIGTYPE_p_faiss__LockLevels swig_types[93]
+#define SWIGTYPE_p_faiss__MatrixStats swig_types[94]
+#define SWIGTYPE_p_faiss__MultiIndexQuantizer swig_types[95]
+#define SWIGTYPE_p_faiss__MultiIndexQuantizer2 swig_types[96]
+#define SWIGTYPE_p_faiss__NormalizationTransform swig_types[97]
+#define SWIGTYPE_p_faiss__OPQMatrix swig_types[98]
+#define SWIGTYPE_p_faiss__OnDiskInvertedLists swig_types[99]
+#define SWIGTYPE_p_faiss__OnDiskInvertedLists__OngoingPrefetch swig_types[100]
+#define SWIGTYPE_p_faiss__OneRecallAtRCriterion swig_types[101]
+#define SWIGTYPE_p_faiss__OperatingPoint swig_types[102]
+#define SWIGTYPE_p_faiss__OperatingPoints swig_types[103]
+#define SWIGTYPE_p_faiss__PCAMatrix swig_types[104]
+#define SWIGTYPE_p_faiss__ParameterRange swig_types[105]
+#define SWIGTYPE_p_faiss__ParameterSpace swig_types[106]
+#define SWIGTYPE_p_faiss__PermutationObjective swig_types[107]
+#define SWIGTYPE_p_faiss__PolysemousTraining swig_types[108]
+#define SWIGTYPE_p_faiss__ProductQuantizer swig_types[109]
+#define SWIGTYPE_p_faiss__RandomGenerator swig_types[110]
+#define SWIGTYPE_p_faiss__RandomRotationMatrix swig_types[111]
+#define SWIGTYPE_p_faiss__RangeQueryResult swig_types[112]
+#define SWIGTYPE_p_faiss__RangeSearchPartialResult swig_types[113]
+#define SWIGTYPE_p_faiss__RangeSearchResult swig_types[114]
+#define SWIGTYPE_p_faiss__ReconstructFromNeighbors swig_types[115]
+#define SWIGTYPE_p_faiss__RemapDimensionsTransform swig_types[116]
+#define SWIGTYPE_p_faiss__ReproduceDistancesObjective swig_types[117]
+#define SWIGTYPE_p_faiss__SQDistanceComputer swig_types[118]
+#define SWIGTYPE_p_faiss__ScalarQuantizer swig_types[119]
+#define SWIGTYPE_p_faiss__SimulatedAnnealingOptimizer swig_types[120]
+#define SWIGTYPE_p_faiss__SimulatedAnnealingParameters swig_types[121]
+#define SWIGTYPE_p_faiss__VectorIOReader swig_types[122]
+#define SWIGTYPE_p_faiss__VectorIOWriter swig_types[123]
+#define SWIGTYPE_p_faiss__VectorTransform swig_types[124]
+#define SWIGTYPE_p_faiss__VisitedTable swig_types[125]
+#define SWIGTYPE_p_faiss__gpu__FlatIndex swig_types[126]
+#define SWIGTYPE_p_faiss__gpu__GpuClonerOptions swig_types[127]
+#define SWIGTYPE_p_faiss__gpu__GpuIndex swig_types[128]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat swig_types[129]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlatConfig swig_types[130]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexConfig swig_types[131]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexFlat swig_types[132]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatConfig swig_types[133]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatIP swig_types[134]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexFlatL2 swig_types[135]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVF swig_types[136]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFConfig swig_types[137]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat swig_types[138]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlatConfig swig_types[139]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ swig_types[140]
+#define SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQConfig swig_types[141]
+#define SWIGTYPE_p_faiss__gpu__GpuMultipleClonerOptions swig_types[142]
+#define SWIGTYPE_p_faiss__gpu__GpuParameterSpace swig_types[143]
+#define SWIGTYPE_p_faiss__gpu__GpuResources swig_types[144]
+#define SWIGTYPE_p_faiss__gpu__StandardGpuResources swig_types[145]
+#define SWIGTYPE_p_faiss__ivflib__SlidingIndexWindow swig_types[146]
+#define SWIGTYPE_p_float swig_types[147]
+#define SWIGTYPE_p_idx_t swig_types[148]
+#define SWIGTYPE_p_int swig_types[149]
+#define SWIGTYPE_p_long swig_types[150]
+#define SWIGTYPE_p_omp_lock_t swig_types[151]
+#define SWIGTYPE_p_p_faiss__ArrayInvertedLists swig_types[152]
+#define SWIGTYPE_p_p_faiss__CenteringTransform swig_types[153]
+#define SWIGTYPE_p_p_faiss__ConcatenatedInvertedLists swig_types[154]
+#define SWIGTYPE_p_p_faiss__Index swig_types[155]
+#define SWIGTYPE_p_p_faiss__Index2Layer swig_types[156]
+#define SWIGTYPE_p_p_faiss__IndexFlat swig_types[157]
+#define SWIGTYPE_p_p_faiss__IndexFlat1D swig_types[158]
+#define SWIGTYPE_p_p_faiss__IndexFlatIP swig_types[159]
+#define SWIGTYPE_p_p_faiss__IndexFlatL2 swig_types[160]
+#define SWIGTYPE_p_p_faiss__IndexFlatL2BaseShift swig_types[161]
+#define SWIGTYPE_p_p_faiss__IndexHNSW swig_types[162]
+#define SWIGTYPE_p_p_faiss__IndexHNSW2Level swig_types[163]
+#define SWIGTYPE_p_p_faiss__IndexHNSWFlat swig_types[164]
+#define SWIGTYPE_p_p_faiss__IndexHNSWPQ swig_types[165]
+#define SWIGTYPE_p_p_faiss__IndexHNSWSQ swig_types[166]
+#define SWIGTYPE_p_p_faiss__IndexIDMap swig_types[167]
+#define SWIGTYPE_p_p_faiss__IndexIDMap2 swig_types[168]
+#define SWIGTYPE_p_p_faiss__IndexIVF swig_types[169]
+#define SWIGTYPE_p_p_faiss__IndexIVFFlat swig_types[170]
+#define SWIGTYPE_p_p_faiss__IndexIVFFlatDedup swig_types[171]
+#define SWIGTYPE_p_p_faiss__IndexIVFPQ swig_types[172]
+#define SWIGTYPE_p_p_faiss__IndexIVFPQR swig_types[173]
+#define SWIGTYPE_p_p_faiss__IndexIVFScalarQuantizer swig_types[174]
+#define SWIGTYPE_p_p_faiss__IndexLSH swig_types[175]
+#define SWIGTYPE_p_p_faiss__IndexPQ swig_types[176]
+#define SWIGTYPE_p_p_faiss__IndexPreTransform swig_types[177]
+#define SWIGTYPE_p_p_faiss__IndexRefineFlat swig_types[178]
+#define SWIGTYPE_p_p_faiss__IndexReplicasTemplateT_faiss__Index_t swig_types[179]
+#define SWIGTYPE_p_p_faiss__IndexScalarQuantizer swig_types[180]
+#define SWIGTYPE_p_p_faiss__IndexShardsTemplateT_faiss__Index_t swig_types[181]
+#define SWIGTYPE_p_p_faiss__IndexSplitVectors swig_types[182]
+#define SWIGTYPE_p_p_faiss__InvertedLists swig_types[183]
+#define SWIGTYPE_p_p_faiss__LinearTransform swig_types[184]
+#define SWIGTYPE_p_p_faiss__MultiIndexQuantizer swig_types[185]
+#define SWIGTYPE_p_p_faiss__MultiIndexQuantizer2 swig_types[186]
+#define SWIGTYPE_p_p_faiss__NormalizationTransform swig_types[187]
+#define SWIGTYPE_p_p_faiss__OPQMatrix swig_types[188]
+#define SWIGTYPE_p_p_faiss__OnDiskInvertedLists swig_types[189]
+#define SWIGTYPE_p_p_faiss__PCAMatrix swig_types[190]
+#define SWIGTYPE_p_p_faiss__RandomRotationMatrix swig_types[191]
+#define SWIGTYPE_p_p_faiss__RemapDimensionsTransform swig_types[192]
+#define SWIGTYPE_p_p_faiss__VectorTransform swig_types[193]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndex swig_types[194]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndexFlat swig_types[195]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndexFlatIP swig_types[196]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndexFlatL2 swig_types[197]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndexIVF swig_types[198]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndexIVFFlat swig_types[199]
+#define SWIGTYPE_p_p_faiss__gpu__GpuIndexIVFPQ swig_types[200]
+#define SWIGTYPE_p_p_faiss__gpu__GpuResources swig_types[201]
+#define SWIGTYPE_p_p_faiss__gpu__StandardGpuResources swig_types[202]
+#define SWIGTYPE_p_p_void swig_types[203]
+#define SWIGTYPE_p_std__functionT_void_ffaiss__IndexBinary_pF_t swig_types[204]
+#define SWIGTYPE_p_std__functionT_void_ffaiss__Index_pF_t swig_types[205]
+#define SWIGTYPE_p_std__listT_faiss__OnDiskInvertedLists__Slot_t swig_types[206]
+#define SWIGTYPE_p_std__mt19937 swig_types[207]
+#define SWIGTYPE_p_std__pairT_float_int_t swig_types[208]
+#define SWIGTYPE_p_std__pairT_void_p_unsigned_long_t swig_types[209]
+#define SWIGTYPE_p_std__priority_queueT_faiss__HNSW__NodeDistFarther_t swig_types[210]
+#define SWIGTYPE_p_std__priority_queueT_std__pairT_float_int_t_t swig_types[211]
+#define SWIGTYPE_p_std__unordered_mapT_long_long_t swig_types[212]
+#define SWIGTYPE_p_std__unordered_mapT_unsigned_long_faiss__MatrixStats__Occurrence_t swig_types[213]
+#define SWIGTYPE_p_std__unordered_multimapT_long_long_t swig_types[214]
+#define SWIGTYPE_p_std__vectorT_char_t swig_types[215]
+#define SWIGTYPE_p_std__vectorT_cudaStream_t_t swig_types[216]
+#define SWIGTYPE_p_std__vectorT_double_t swig_types[217]
+#define SWIGTYPE_p_std__vectorT_faiss__BufferList__Buffer_t swig_types[218]
+#define SWIGTYPE_p_std__vectorT_faiss__HNSW__NodeDistFarther_t swig_types[219]
+#define SWIGTYPE_p_std__vectorT_faiss__IndexBinary_p_t swig_types[220]
+#define SWIGTYPE_p_std__vectorT_faiss__Index_p_t swig_types[221]
+#define SWIGTYPE_p_std__vectorT_faiss__InvertedLists_const_p_t swig_types[222]
+#define SWIGTYPE_p_std__vectorT_faiss__InvertedLists_p_t swig_types[223]
+#define SWIGTYPE_p_std__vectorT_faiss__MatrixStats__PerDimStats_t swig_types[224]
+#define SWIGTYPE_p_std__vectorT_faiss__OnDiskInvertedLists__List_t swig_types[225]
+#define SWIGTYPE_p_std__vectorT_faiss__OperatingPoint_t swig_types[226]
+#define SWIGTYPE_p_std__vectorT_faiss__ParameterRange_t swig_types[227]
+#define SWIGTYPE_p_std__vectorT_faiss__RangeQueryResult_t swig_types[228]
+#define SWIGTYPE_p_std__vectorT_faiss__VectorTransform_p_t swig_types[229]
+#define SWIGTYPE_p_std__vectorT_faiss__gpu__GpuResources_p_t swig_types[230]
+#define SWIGTYPE_p_std__vectorT_float_t swig_types[231]
+#define SWIGTYPE_p_std__vectorT_int_t swig_types[232]
+#define SWIGTYPE_p_std__vectorT_long_t swig_types[233]
+#define SWIGTYPE_p_std__vectorT_omp_lock_t_t swig_types[234]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_float_t_t swig_types[235]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_long_t_t swig_types[236]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_uint8_t_t_t swig_types[237]
+#define SWIGTYPE_p_std__vectorT_std__vectorT_unsigned_long_t_t swig_types[238]
+#define SWIGTYPE_p_std__vectorT_unsigned_char_t swig_types[239]
+#define SWIGTYPE_p_std__vectorT_unsigned_long_t swig_types[240]
+#define SWIGTYPE_p_storage_idx_t swig_types[241]
+#define SWIGTYPE_p_uint32_t swig_types[242]
+#define SWIGTYPE_p_unsigned_char swig_types[243]
+#define SWIGTYPE_p_unsigned_long swig_types[244]
+#define SWIGTYPE_p_void swig_types[245]
+static swig_type_info *swig_types[247];
+static swig_module_info swig_module = {swig_types, 246, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -4165,6 +4172,22 @@ PyObject *swig_ptr (PyObject *a)
     PyErr_SetString(PyExc_ValueError, "did not recognize array type");
     return NULL;
 }
+
+
+struct PythonInterruptCallback: faiss::InterruptCallback {
+
+    bool want_interrupt () override {
+        int err;
+        {
+            PyGILState_STATE gstate;
+            gstate = PyGILState_Ensure();
+            err = PyErr_CheckSignals();
+            PyGILState_Release(gstate);
+        }
+        return err == -1;
+    }
+
+};
 
 
 
@@ -7544,7 +7567,12 @@ SWIGINTERN PyObject *_wrap_popcount64(PyObject *SWIGUNUSEDPARM(self), PyObject *
       result = (int)faiss::popcount64(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -7620,7 +7648,12 @@ SWIGINTERN PyObject *_wrap_hammings(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
       faiss::hammings((unsigned char const *)arg1,(unsigned char const *)arg2,arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -7660,7 +7693,12 @@ SWIGINTERN PyObject *_wrap_bitvec_print(PyObject *SWIGUNUSEDPARM(self), PyObject
       faiss::bitvec_print((unsigned char const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -7718,7 +7756,12 @@ SWIGINTERN PyObject *_wrap_fvecs2bitvecs(PyObject *SWIGUNUSEDPARM(self), PyObjec
       faiss::fvecs2bitvecs((float const *)arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -7767,7 +7810,12 @@ SWIGINTERN PyObject *_wrap_fvec2bitvec(PyObject *SWIGUNUSEDPARM(self), PyObject 
       faiss::fvec2bitvec((float const *)arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -7843,7 +7891,12 @@ SWIGINTERN PyObject *_wrap_hammings_knn_hc(PyObject *SWIGUNUSEDPARM(self), PyObj
       faiss::hammings_knn_hc(arg1,(unsigned char const *)arg2,(unsigned char const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -7919,7 +7972,12 @@ SWIGINTERN PyObject *_wrap_hammings_knn(PyObject *SWIGUNUSEDPARM(self), PyObject
       faiss::hammings_knn(arg1,(unsigned char const *)arg2,(unsigned char const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8013,7 +8071,12 @@ SWIGINTERN PyObject *_wrap_hammings_knn_mc(PyObject *SWIGUNUSEDPARM(self), PyObj
       faiss::hammings_knn_mc((unsigned char const *)arg1,(unsigned char const *)arg2,arg3,arg4,arg5,arg6,arg7,arg8);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8098,7 +8161,12 @@ SWIGINTERN PyObject *_wrap_hamming_count_thres(PyObject *SWIGUNUSEDPARM(self), P
       faiss::hamming_count_thres((unsigned char const *)arg1,(unsigned char const *)arg2,arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8193,7 +8261,12 @@ SWIGINTERN PyObject *_wrap_match_hamming_thres(PyObject *SWIGUNUSEDPARM(self), P
       result = (size_t)faiss::match_hamming_thres((unsigned char const *)arg1,(unsigned char const *)arg2,arg3,arg4,arg5,arg6,arg7,arg8);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8260,7 +8333,12 @@ SWIGINTERN PyObject *_wrap_crosshamming_count_thres(PyObject *SWIGUNUSEDPARM(sel
       faiss::crosshamming_count_thres((unsigned char const *)arg1,arg2,arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8343,7 +8421,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputer4__SWIG_0(PyObject *SWIGUNUSEDPARM
       result = (faiss::HammingComputer4 *)new faiss::HammingComputer4();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8384,7 +8467,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputer4__SWIG_1(PyObject *SWIGUNUSEDPARM
       result = (faiss::HammingComputer4 *)new faiss::HammingComputer4((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8473,7 +8561,12 @@ SWIGINTERN PyObject *_wrap_HammingComputer4_set(PyObject *SWIGUNUSEDPARM(self), 
       (arg1)->set((uint8_t const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8514,7 +8607,12 @@ SWIGINTERN PyObject *_wrap_HammingComputer4_hamming(PyObject *SWIGUNUSEDPARM(sel
       result = (int)((faiss::HammingComputer4 const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8617,7 +8715,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputer8__SWIG_0(PyObject *SWIGUNUSEDPARM
       result = (faiss::HammingComputer8 *)new faiss::HammingComputer8();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8658,7 +8761,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputer8__SWIG_1(PyObject *SWIGUNUSEDPARM
       result = (faiss::HammingComputer8 *)new faiss::HammingComputer8((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8747,7 +8855,12 @@ SWIGINTERN PyObject *_wrap_HammingComputer8_set(PyObject *SWIGUNUSEDPARM(self), 
       (arg1)->set((uint8_t const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8788,7 +8901,12 @@ SWIGINTERN PyObject *_wrap_HammingComputer8_hamming(PyObject *SWIGUNUSEDPARM(sel
       result = (int)((faiss::HammingComputer8 const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8943,7 +9061,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputer16__SWIG_0(PyObject *SWIGUNUSEDPAR
       result = (faiss::HammingComputer16 *)new faiss::HammingComputer16();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -8984,7 +9107,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputer16__SWIG_1(PyObject *SWIGUNUSEDPAR
       result = (faiss::HammingComputer16 *)new faiss::HammingComputer16((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -9073,7 +9201,12 @@ SWIGINTERN PyObject *_wrap_HammingComputer16_set(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->set((uint8_t const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -9114,7 +9247,12 @@ SWIGINTERN PyObject *_wrap_HammingComputer16_hamming(PyObject *SWIGUNUSEDPARM(se
       result = (int)((faiss::HammingComputer16 const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -9329,7 +9467,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputer20__SWIG_0(PyObject *SWIGUNUSEDPAR
       result = (faiss::HammingComputer20 *)new faiss::HammingComputer20();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -9370,7 +9513,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputer20__SWIG_1(PyObject *SWIGUNUSEDPAR
       result = (faiss::HammingComputer20 *)new faiss::HammingComputer20((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -9459,7 +9607,12 @@ SWIGINTERN PyObject *_wrap_HammingComputer20_set(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->set((uint8_t const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -9500,7 +9653,12 @@ SWIGINTERN PyObject *_wrap_HammingComputer20_hamming(PyObject *SWIGUNUSEDPARM(se
       result = (int)((faiss::HammingComputer20 const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -9759,7 +9917,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputer32__SWIG_0(PyObject *SWIGUNUSEDPAR
       result = (faiss::HammingComputer32 *)new faiss::HammingComputer32();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -9800,7 +9963,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputer32__SWIG_1(PyObject *SWIGUNUSEDPAR
       result = (faiss::HammingComputer32 *)new faiss::HammingComputer32((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -9889,7 +10057,12 @@ SWIGINTERN PyObject *_wrap_HammingComputer32_set(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->set((uint8_t const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -9930,7 +10103,12 @@ SWIGINTERN PyObject *_wrap_HammingComputer32_hamming(PyObject *SWIGUNUSEDPARM(se
       result = (int)((faiss::HammingComputer32 const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -10397,7 +10575,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputer64__SWIG_0(PyObject *SWIGUNUSEDPAR
       result = (faiss::HammingComputer64 *)new faiss::HammingComputer64();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -10438,7 +10621,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputer64__SWIG_1(PyObject *SWIGUNUSEDPAR
       result = (faiss::HammingComputer64 *)new faiss::HammingComputer64((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -10527,7 +10715,12 @@ SWIGINTERN PyObject *_wrap_HammingComputer64_set(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->set((uint8_t const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -10568,7 +10761,12 @@ SWIGINTERN PyObject *_wrap_HammingComputer64_hamming(PyObject *SWIGUNUSEDPARM(se
       result = (int)((faiss::HammingComputer64 const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -10723,7 +10921,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputerDefault__SWIG_0(PyObject *SWIGUNUS
       result = (faiss::HammingComputerDefault *)new faiss::HammingComputerDefault();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -10764,7 +10967,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputerDefault__SWIG_1(PyObject *SWIGUNUS
       result = (faiss::HammingComputerDefault *)new faiss::HammingComputerDefault((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -10853,7 +11061,12 @@ SWIGINTERN PyObject *_wrap_HammingComputerDefault_set(PyObject *SWIGUNUSEDPARM(s
       (arg1)->set((uint8_t const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -10894,7 +11107,12 @@ SWIGINTERN PyObject *_wrap_HammingComputerDefault_hamming(PyObject *SWIGUNUSEDPA
       result = (int)((faiss::HammingComputerDefault const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11049,7 +11267,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputerM8__SWIG_0(PyObject *SWIGUNUSEDPAR
       result = (faiss::HammingComputerM8 *)new faiss::HammingComputerM8();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11090,7 +11313,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputerM8__SWIG_1(PyObject *SWIGUNUSEDPAR
       result = (faiss::HammingComputerM8 *)new faiss::HammingComputerM8((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11179,7 +11407,12 @@ SWIGINTERN PyObject *_wrap_HammingComputerM8_set(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->set((uint8_t const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11220,7 +11453,12 @@ SWIGINTERN PyObject *_wrap_HammingComputerM8_hamming(PyObject *SWIGUNUSEDPARM(se
       result = (int)((faiss::HammingComputerM8 const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11375,7 +11613,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputerM4__SWIG_0(PyObject *SWIGUNUSEDPAR
       result = (faiss::HammingComputerM4 *)new faiss::HammingComputerM4();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11416,7 +11659,12 @@ SWIGINTERN PyObject *_wrap_new_HammingComputerM4__SWIG_1(PyObject *SWIGUNUSEDPAR
       result = (faiss::HammingComputerM4 *)new faiss::HammingComputerM4((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11505,7 +11753,12 @@ SWIGINTERN PyObject *_wrap_HammingComputerM4_set(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->set((uint8_t const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11546,7 +11799,12 @@ SWIGINTERN PyObject *_wrap_HammingComputerM4_hamming(PyObject *SWIGUNUSEDPARM(se
       result = (int)((faiss::HammingComputerM4 const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11606,7 +11864,12 @@ SWIGINTERN PyObject *_wrap_generalized_hamming_64(PyObject *SWIGUNUSEDPARM(self)
       result = (int)faiss::generalized_hamming_64(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11699,7 +11962,12 @@ SWIGINTERN PyObject *_wrap_new_GenHammingComputer8(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::GenHammingComputer8 *)new faiss::GenHammingComputer8((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11740,7 +12008,12 @@ SWIGINTERN PyObject *_wrap_GenHammingComputer8_hamming(PyObject *SWIGUNUSEDPARM(
       result = (int)((faiss::GenHammingComputer8 const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11913,7 +12186,12 @@ SWIGINTERN PyObject *_wrap_new_GenHammingComputer16(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::GenHammingComputer16 *)new faiss::GenHammingComputer16((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -11954,7 +12232,12 @@ SWIGINTERN PyObject *_wrap_GenHammingComputer16_hamming(PyObject *SWIGUNUSEDPARM
       result = (int)((faiss::GenHammingComputer16 const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12231,7 +12514,12 @@ SWIGINTERN PyObject *_wrap_new_GenHammingComputer32(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::GenHammingComputer32 *)new faiss::GenHammingComputer32((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12272,7 +12560,12 @@ SWIGINTERN PyObject *_wrap_GenHammingComputer32_hamming(PyObject *SWIGUNUSEDPARM
       result = (int)((faiss::GenHammingComputer32 const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12445,7 +12738,12 @@ SWIGINTERN PyObject *_wrap_new_GenHammingComputerM8(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::GenHammingComputerM8 *)new faiss::GenHammingComputerM8((uint8_t const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12486,7 +12784,12 @@ SWIGINTERN PyObject *_wrap_GenHammingComputerM8_hamming(PyObject *SWIGUNUSEDPARM
       result = (int)((faiss::GenHammingComputerM8 const *)arg1)->hamming((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12590,7 +12893,12 @@ SWIGINTERN PyObject *_wrap_generalized_hammings_knn_hc__SWIG_0(PyObject *SWIGUNU
       faiss::generalized_hammings_knn_hc(arg1,(unsigned char const *)arg2,(unsigned char const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12657,7 +12965,12 @@ SWIGINTERN PyObject *_wrap_generalized_hammings_knn_hc__SWIG_1(PyObject *SWIGUNU
       faiss::generalized_hammings_knn_hc(arg1,(unsigned char const *)arg2,(unsigned char const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12770,7 +13083,12 @@ SWIGINTERN PyObject *_wrap_get_num_gpus(PyObject *SWIGUNUSEDPARM(self), PyObject
       result = (int)get_num_gpus();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12801,7 +13119,12 @@ SWIGINTERN PyObject *_wrap_delete_GpuResources(PyObject *SWIGUNUSEDPARM(self), P
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12841,7 +13164,12 @@ SWIGINTERN PyObject *_wrap_GpuResources_initializeForDevice(PyObject *SWIGUNUSED
       (arg1)->initializeForDevice(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12882,7 +13210,12 @@ SWIGINTERN PyObject *_wrap_GpuResources_getBlasHandle(PyObject *SWIGUNUSEDPARM(s
       result = (arg1)->getBlasHandle(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12923,7 +13256,12 @@ SWIGINTERN PyObject *_wrap_GpuResources_getDefaultStream(PyObject *SWIGUNUSEDPAR
       result = (arg1)->getDefaultStream(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12964,7 +13302,12 @@ SWIGINTERN PyObject *_wrap_GpuResources_getAlternateStreams(PyObject *SWIGUNUSED
       result = (arg1)->getAlternateStreams(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -12996,7 +13339,12 @@ SWIGINTERN PyObject *_wrap_GpuResources_getPinnedMemory(PyObject *SWIGUNUSEDPARM
       result = (arg1)->getPinnedMemory();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13037,7 +13385,12 @@ SWIGINTERN PyObject *_wrap_GpuResources_getAsyncCopyStream(PyObject *SWIGUNUSEDP
       result = (arg1)->getAsyncCopyStream(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13069,7 +13422,12 @@ SWIGINTERN PyObject *_wrap_GpuResources_getBlasHandleCurrentDevice(PyObject *SWI
       result = (arg1)->getBlasHandleCurrentDevice();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13101,7 +13459,12 @@ SWIGINTERN PyObject *_wrap_GpuResources_getDefaultStreamCurrentDevice(PyObject *
       result = (arg1)->getDefaultStreamCurrentDevice();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13141,7 +13504,12 @@ SWIGINTERN PyObject *_wrap_GpuResources_syncDefaultStream(PyObject *SWIGUNUSEDPA
       (arg1)->syncDefaultStream(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13172,7 +13540,12 @@ SWIGINTERN PyObject *_wrap_GpuResources_syncDefaultStreamCurrentDevice(PyObject 
       (arg1)->syncDefaultStreamCurrentDevice();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13204,7 +13577,12 @@ SWIGINTERN PyObject *_wrap_GpuResources_getAlternateStreamsCurrentDevice(PyObjec
       result = (arg1)->getAlternateStreamsCurrentDevice();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13236,7 +13614,12 @@ SWIGINTERN PyObject *_wrap_GpuResources_getAsyncCopyStreamCurrentDevice(PyObject
       result = (arg1)->getAsyncCopyStreamCurrentDevice();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13266,7 +13649,12 @@ SWIGINTERN PyObject *_wrap_new_StandardGpuResources(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::gpu::StandardGpuResources *)new faiss::gpu::StandardGpuResources();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13297,7 +13685,12 @@ SWIGINTERN PyObject *_wrap_delete_StandardGpuResources(PyObject *SWIGUNUSEDPARM(
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13328,7 +13721,12 @@ SWIGINTERN PyObject *_wrap_StandardGpuResources_noTempMemory(PyObject *SWIGUNUSE
       (arg1)->noTempMemory();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13368,7 +13766,12 @@ SWIGINTERN PyObject *_wrap_StandardGpuResources_setTempMemory(PyObject *SWIGUNUS
       (arg1)->setTempMemory(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13408,7 +13811,12 @@ SWIGINTERN PyObject *_wrap_StandardGpuResources_setPinnedMemory(PyObject *SWIGUN
       (arg1)->setPinnedMemory(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13465,7 +13873,12 @@ SWIGINTERN PyObject *_wrap_StandardGpuResources_setDefaultStream(PyObject *SWIGU
       (arg1)->setDefaultStream(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13496,7 +13909,12 @@ SWIGINTERN PyObject *_wrap_StandardGpuResources_setDefaultNullStreamAllDevices(P
       (arg1)->setDefaultNullStreamAllDevices();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13536,7 +13954,12 @@ SWIGINTERN PyObject *_wrap_StandardGpuResources_setCudaMallocWarning(PyObject *S
       (arg1)->setCudaMallocWarning(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13576,7 +13999,12 @@ SWIGINTERN PyObject *_wrap_StandardGpuResources_initializeForDevice(PyObject *SW
       (arg1)->initializeForDevice(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13617,7 +14045,12 @@ SWIGINTERN PyObject *_wrap_StandardGpuResources_getBlasHandle(PyObject *SWIGUNUS
       result = (arg1)->getBlasHandle(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13658,7 +14091,12 @@ SWIGINTERN PyObject *_wrap_StandardGpuResources_getDefaultStream(PyObject *SWIGU
       result = (arg1)->getDefaultStream(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13699,7 +14137,12 @@ SWIGINTERN PyObject *_wrap_StandardGpuResources_getAlternateStreams(PyObject *SW
       result = (arg1)->getAlternateStreams(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13731,7 +14174,12 @@ SWIGINTERN PyObject *_wrap_StandardGpuResources_getPinnedMemory(PyObject *SWIGUN
       result = (arg1)->getPinnedMemory();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13772,7 +14220,12 @@ SWIGINTERN PyObject *_wrap_StandardGpuResources_getAsyncCopyStream(PyObject *SWI
       result = (arg1)->getAsyncCopyStream(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13802,7 +14255,12 @@ SWIGINTERN PyObject *_wrap_getmillisecs(PyObject *SWIGUNUSEDPARM(self), PyObject
       result = (double)faiss::getmillisecs();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13825,7 +14283,12 @@ SWIGINTERN PyObject *_wrap_get_mem_usage_kb(PyObject *SWIGUNUSEDPARM(self), PyOb
       result = (size_t)faiss::get_mem_usage_kb();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13917,7 +14380,12 @@ SWIGINTERN PyObject *_wrap_RandomGenerator_rand_int__SWIG_0(PyObject *SWIGUNUSED
       result = (int)(arg1)->rand_int();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13949,7 +14417,12 @@ SWIGINTERN PyObject *_wrap_RandomGenerator_rand_long(PyObject *SWIGUNUSEDPARM(se
       result = (long)(arg1)->rand_long();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -13990,7 +14463,12 @@ SWIGINTERN PyObject *_wrap_RandomGenerator_rand_int__SWIG_1(PyObject *SWIGUNUSED
       result = (int)(arg1)->rand_int(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14068,7 +14546,12 @@ SWIGINTERN PyObject *_wrap_RandomGenerator_rand_float(PyObject *SWIGUNUSEDPARM(s
       result = (float)(arg1)->rand_float();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14100,7 +14583,12 @@ SWIGINTERN PyObject *_wrap_RandomGenerator_rand_double(PyObject *SWIGUNUSEDPARM(
       result = (double)(arg1)->rand_double();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14132,7 +14620,12 @@ SWIGINTERN PyObject *_wrap_new_RandomGenerator__SWIG_0(PyObject *SWIGUNUSEDPARM(
       result = (faiss::RandomGenerator *)new faiss::RandomGenerator(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14155,7 +14648,12 @@ SWIGINTERN PyObject *_wrap_new_RandomGenerator__SWIG_1(PyObject *SWIGUNUSEDPARM(
       result = (faiss::RandomGenerator *)new faiss::RandomGenerator();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14267,7 +14765,12 @@ SWIGINTERN PyObject *_wrap_float_rand(PyObject *SWIGUNUSEDPARM(self), PyObject *
       faiss::float_rand(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14316,7 +14819,12 @@ SWIGINTERN PyObject *_wrap_float_randn(PyObject *SWIGUNUSEDPARM(self), PyObject 
       faiss::float_randn(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14365,7 +14873,12 @@ SWIGINTERN PyObject *_wrap_long_rand(PyObject *SWIGUNUSEDPARM(self), PyObject *a
       faiss::long_rand(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14414,7 +14927,12 @@ SWIGINTERN PyObject *_wrap_byte_rand(PyObject *SWIGUNUSEDPARM(self), PyObject *a
       faiss::byte_rand(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14463,7 +14981,12 @@ SWIGINTERN PyObject *_wrap_rand_perm(PyObject *SWIGUNUSEDPARM(self), PyObject *a
       faiss::rand_perm(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14513,7 +15036,12 @@ SWIGINTERN PyObject *_wrap_fvec_L2sqr(PyObject *SWIGUNUSEDPARM(self), PyObject *
       result = (float)faiss::fvec_L2sqr((float const *)arg1,(float const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14563,7 +15091,12 @@ SWIGINTERN PyObject *_wrap_fvec_inner_product(PyObject *SWIGUNUSEDPARM(self), Py
       result = (float)faiss::fvec_inner_product((float const *)arg1,(float const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14613,7 +15146,12 @@ SWIGINTERN PyObject *_wrap_imbalance_factor__SWIG_0(PyObject *SWIGUNUSEDPARM(sel
       result = (double)faiss::imbalance_factor(arg1,arg2,(long const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14654,7 +15192,12 @@ SWIGINTERN PyObject *_wrap_imbalance_factor__SWIG_1(PyObject *SWIGUNUSEDPARM(sel
       result = (double)faiss::imbalance_factor(arg1,(int const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14815,7 +15358,12 @@ SWIGINTERN PyObject *_wrap_pairwise_L2sqr__SWIG_0(PyObject *SWIGUNUSEDPARM(self)
       faiss::pairwise_L2sqr(arg1,arg2,(float const *)arg3,arg4,(float const *)arg5,arg6,arg7,arg8,arg9);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14909,7 +15457,12 @@ SWIGINTERN PyObject *_wrap_pairwise_L2sqr__SWIG_1(PyObject *SWIGUNUSEDPARM(self)
       faiss::pairwise_L2sqr(arg1,arg2,(float const *)arg3,arg4,(float const *)arg5,arg6,arg7,arg8);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -14994,7 +15547,12 @@ SWIGINTERN PyObject *_wrap_pairwise_L2sqr__SWIG_2(PyObject *SWIGUNUSEDPARM(self)
       faiss::pairwise_L2sqr(arg1,arg2,(float const *)arg3,arg4,(float const *)arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -15070,7 +15628,12 @@ SWIGINTERN PyObject *_wrap_pairwise_L2sqr__SWIG_3(PyObject *SWIGUNUSEDPARM(self)
       faiss::pairwise_L2sqr(arg1,arg2,(float const *)arg3,arg4,(float const *)arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -15345,7 +15908,12 @@ SWIGINTERN PyObject *_wrap_fvec_inner_products_ny(PyObject *SWIGUNUSEDPARM(self)
       faiss::fvec_inner_products_ny(arg1,(float const *)arg2,(float const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -15412,7 +15980,12 @@ SWIGINTERN PyObject *_wrap_fvec_L2sqr_ny(PyObject *SWIGUNUSEDPARM(self), PyObjec
       faiss::fvec_L2sqr_ny(arg1,(float const *)arg2,(float const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -15453,7 +16026,12 @@ SWIGINTERN PyObject *_wrap_fvec_norm_L2sqr(PyObject *SWIGUNUSEDPARM(self), PyObj
       result = (float)faiss::fvec_norm_L2sqr((float const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -15511,7 +16089,12 @@ SWIGINTERN PyObject *_wrap_fvec_norms_L2(PyObject *SWIGUNUSEDPARM(self), PyObjec
       faiss::fvec_norms_L2(arg1,(float const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -15569,7 +16152,12 @@ SWIGINTERN PyObject *_wrap_fvec_norms_L2sqr(PyObject *SWIGUNUSEDPARM(self), PyOb
       faiss::fvec_norms_L2sqr(arg1,(float const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -15618,7 +16206,12 @@ SWIGINTERN PyObject *_wrap_fvec_renorm_L2(PyObject *SWIGUNUSEDPARM(self), PyObje
       faiss::fvec_renorm_L2(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -15685,7 +16278,12 @@ SWIGINTERN PyObject *_wrap_inner_product_to_L2sqr(PyObject *SWIGUNUSEDPARM(self)
       faiss::inner_product_to_L2sqr(arg1,(float const *)arg2,(float const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -15770,7 +16368,12 @@ SWIGINTERN PyObject *_wrap_fvec_inner_products_by_idx(PyObject *SWIGUNUSEDPARM(s
       faiss::fvec_inner_products_by_idx(arg1,(float const *)arg2,(float const *)arg3,(long const *)arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -15855,7 +16458,12 @@ SWIGINTERN PyObject *_wrap_fvec_L2sqr_by_idx(PyObject *SWIGUNUSEDPARM(self), PyO
       faiss::fvec_L2sqr_by_idx(arg1,(float const *)arg2,(float const *)arg3,(long const *)arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -15954,7 +16562,12 @@ SWIGINTERN PyObject *_wrap_knn_inner_product(PyObject *SWIGUNUSEDPARM(self), PyO
       faiss::knn_inner_product((float const *)arg1,(float const *)arg2,arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16030,7 +16643,12 @@ SWIGINTERN PyObject *_wrap_knn_L2sqr(PyObject *SWIGUNUSEDPARM(self), PyObject *a
       faiss::knn_L2sqr((float const *)arg1,(float const *)arg2,arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16115,7 +16733,12 @@ SWIGINTERN PyObject *_wrap_knn_L2sqr_base_shift(PyObject *SWIGUNUSEDPARM(self), 
       faiss::knn_L2sqr_base_shift((float const *)arg1,(float const *)arg2,arg3,arg4,arg5,arg6,(float const *)arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16200,7 +16823,12 @@ SWIGINTERN PyObject *_wrap_knn_inner_products_by_idx(PyObject *SWIGUNUSEDPARM(se
       faiss::knn_inner_products_by_idx((float const *)arg1,(float const *)arg2,(long const *)arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16285,7 +16913,12 @@ SWIGINTERN PyObject *_wrap_knn_L2sqr_by_idx(PyObject *SWIGUNUSEDPARM(self), PyOb
       faiss::knn_L2sqr_by_idx((float const *)arg1,(float const *)arg2,(long const *)arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16370,7 +17003,12 @@ SWIGINTERN PyObject *_wrap_range_search_L2sqr(PyObject *SWIGUNUSEDPARM(self), Py
       faiss::range_search_L2sqr((float const *)arg1,(float const *)arg2,arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16455,7 +17093,12 @@ SWIGINTERN PyObject *_wrap_range_search_inner_product(PyObject *SWIGUNUSEDPARM(s
       faiss::range_search_inner_product((float const *)arg1,(float const *)arg2,arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16522,7 +17165,12 @@ SWIGINTERN PyObject *_wrap_fvec_madd(PyObject *SWIGUNUSEDPARM(self), PyObject *a
       faiss::fvec_madd(arg1,(float const *)arg2,arg3,(float const *)arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16590,7 +17238,12 @@ SWIGINTERN PyObject *_wrap_fvec_madd_and_argmin(PyObject *SWIGUNUSEDPARM(self), 
       result = (int)faiss::fvec_madd_and_argmin(arg1,(float const *)arg2,arg3,(float const *)arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16657,7 +17310,12 @@ SWIGINTERN PyObject *_wrap_reflection(PyObject *SWIGUNUSEDPARM(self), PyObject *
       faiss::reflection((float const *)arg1,arg2,arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16743,7 +17401,12 @@ SWIGINTERN PyObject *_wrap_km_update_centroids(PyObject *SWIGUNUSEDPARM(self), P
       result = (int)faiss::km_update_centroids((float const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16792,7 +17455,12 @@ SWIGINTERN PyObject *_wrap_matrix_qr(PyObject *SWIGUNUSEDPARM(self), PyObject *a
       faiss::matrix_qr(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16841,7 +17509,12 @@ SWIGINTERN PyObject *_wrap_ranklist_handle_ties(PyObject *SWIGUNUSEDPARM(self), 
       faiss::ranklist_handle_ties(arg1,arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16900,7 +17573,12 @@ SWIGINTERN PyObject *_wrap_ranklist_intersection_size(PyObject *SWIGUNUSEDPARM(s
       result = (size_t)faiss::ranklist_intersection_size(arg1,(long const *)arg2,arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -16995,7 +17673,12 @@ SWIGINTERN PyObject *_wrap_merge_result_table_with__SWIG_0(PyObject *SWIGUNUSEDP
       result = (size_t)faiss::merge_result_table_with(arg1,arg2,arg3,arg4,(long const *)arg5,(float const *)arg6,arg7,arg8);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -17081,7 +17764,12 @@ SWIGINTERN PyObject *_wrap_merge_result_table_with__SWIG_1(PyObject *SWIGUNUSEDP
       result = (size_t)faiss::merge_result_table_with(arg1,arg2,arg3,arg4,(long const *)arg5,(float const *)arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -17158,7 +17846,12 @@ SWIGINTERN PyObject *_wrap_merge_result_table_with__SWIG_2(PyObject *SWIGUNUSEDP
       result = (size_t)faiss::merge_result_table_with(arg1,arg2,arg3,arg4,(long const *)arg5,(float const *)arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -17356,7 +18049,12 @@ SWIGINTERN PyObject *_wrap_fvec_argsort(PyObject *SWIGUNUSEDPARM(self), PyObject
       faiss::fvec_argsort(arg1,(float const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -17405,7 +18103,12 @@ SWIGINTERN PyObject *_wrap_fvec_argsort_parallel(PyObject *SWIGUNUSEDPARM(self),
       faiss::fvec_argsort_parallel(arg1,(float const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -17464,7 +18167,12 @@ SWIGINTERN PyObject *_wrap_ivec_hist(PyObject *SWIGUNUSEDPARM(self), PyObject *a
       result = (int)faiss::ivec_hist(arg1,(int const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -17522,7 +18230,12 @@ SWIGINTERN PyObject *_wrap_bincode_hist(PyObject *SWIGUNUSEDPARM(self), PyObject
       faiss::bincode_hist(arg1,arg2,(unsigned char const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -17563,7 +18276,12 @@ SWIGINTERN PyObject *_wrap_ivec_checksum(PyObject *SWIGUNUSEDPARM(self), PyObjec
       result = (size_t)faiss::ivec_checksum(arg1,(int const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -17640,7 +18358,12 @@ SWIGINTERN PyObject *_wrap_fvecs_maybe_subsample__SWIG_0(PyObject *SWIGUNUSEDPAR
       result = (float *)faiss::fvecs_maybe_subsample(arg1,arg2,arg3,(float const *)arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -17708,7 +18431,12 @@ SWIGINTERN PyObject *_wrap_fvecs_maybe_subsample__SWIG_1(PyObject *SWIGUNUSEDPAR
       result = (float *)faiss::fvecs_maybe_subsample(arg1,arg2,arg3,(float const *)arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -17767,7 +18495,12 @@ SWIGINTERN PyObject *_wrap_fvecs_maybe_subsample__SWIG_2(PyObject *SWIGUNUSEDPAR
       result = (float *)faiss::fvecs_maybe_subsample(arg1,arg2,arg3,(float const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -17935,7 +18668,12 @@ SWIGINTERN PyObject *_wrap_binary_to_real(PyObject *SWIGUNUSEDPARM(self), PyObje
       faiss::binary_to_real(arg1,(unsigned char const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -17984,7 +18722,12 @@ SWIGINTERN PyObject *_wrap_real_to_binary(PyObject *SWIGUNUSEDPARM(self), PyObje
       faiss::real_to_binary(arg1,(float const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18025,7 +18768,12 @@ SWIGINTERN PyObject *_wrap_hash_bytes(PyObject *SWIGUNUSEDPARM(self), PyObject *
       result = (uint64_t)faiss::hash_bytes((unsigned char const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18048,7 +18796,12 @@ SWIGINTERN PyObject *_wrap_check_openmp(PyObject *SWIGUNUSEDPARM(self), PyObject
       result = (bool)faiss::check_openmp();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18339,7 +19092,12 @@ SWIGINTERN PyObject *_wrap_delete_Index(PyObject *SWIGUNUSEDPARM(self), PyObject
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18388,7 +19146,12 @@ SWIGINTERN PyObject *_wrap_Index_train(PyObject *SWIGUNUSEDPARM(self), PyObject 
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18437,7 +19200,12 @@ SWIGINTERN PyObject *_wrap_Index_add(PyObject *SWIGUNUSEDPARM(self), PyObject *a
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18495,7 +19263,12 @@ SWIGINTERN PyObject *_wrap_Index_add_with_ids(PyObject *SWIGUNUSEDPARM(self), Py
       (arg1)->add_with_ids(arg2,(float const *)arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18571,7 +19344,12 @@ SWIGINTERN PyObject *_wrap_Index_search(PyObject *SWIGUNUSEDPARM(self), PyObject
       ((faiss::Index const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18638,7 +19416,12 @@ SWIGINTERN PyObject *_wrap_Index_range_search(PyObject *SWIGUNUSEDPARM(self), Py
       ((faiss::Index const *)arg1)->range_search(arg2,(float const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18705,7 +19488,12 @@ SWIGINTERN PyObject *_wrap_Index_assign__SWIG_0(PyObject *SWIGUNUSEDPARM(self), 
       (arg1)->assign(arg2,(float const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18763,7 +19551,12 @@ SWIGINTERN PyObject *_wrap_Index_assign__SWIG_1(PyObject *SWIGUNUSEDPARM(self), 
       (arg1)->assign(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18872,7 +19665,12 @@ SWIGINTERN PyObject *_wrap_Index_reset(PyObject *SWIGUNUSEDPARM(self), PyObject 
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18916,7 +19714,12 @@ SWIGINTERN PyObject *_wrap_Index_remove_ids(PyObject *SWIGUNUSEDPARM(self), PyOb
       result = (long)(arg1)->remove_ids((faiss::IDSelector const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -18965,7 +19768,12 @@ SWIGINTERN PyObject *_wrap_Index_reconstruct(PyObject *SWIGUNUSEDPARM(self), PyO
       ((faiss::Index const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -19023,7 +19831,12 @@ SWIGINTERN PyObject *_wrap_Index_reconstruct_n(PyObject *SWIGUNUSEDPARM(self), P
       ((faiss::Index const *)arg1)->reconstruct_n(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -19108,7 +19921,12 @@ SWIGINTERN PyObject *_wrap_Index_search_and_reconstruct(PyObject *SWIGUNUSEDPARM
       ((faiss::Index const *)arg1)->search_and_reconstruct(arg2,(float const *)arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -19166,7 +19984,12 @@ SWIGINTERN PyObject *_wrap_Index_compute_residual(PyObject *SWIGUNUSEDPARM(self)
       ((faiss::Index const *)arg1)->compute_residual((float const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -19197,7 +20020,12 @@ SWIGINTERN PyObject *_wrap_Index_display(PyObject *SWIGUNUSEDPARM(self), PyObjec
       ((faiss::Index const *)arg1)->display();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -19747,7 +20575,12 @@ SWIGINTERN PyObject *_wrap_new_ClusteringParameters(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::ClusteringParameters *)new faiss::ClusteringParameters();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -20024,7 +20857,12 @@ SWIGINTERN PyObject *_wrap_new_Clustering__SWIG_0(PyObject *SWIGUNUSEDPARM(self)
       result = (faiss::Clustering *)new faiss::Clustering(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -20077,7 +20915,12 @@ SWIGINTERN PyObject *_wrap_new_Clustering__SWIG_1(PyObject *SWIGUNUSEDPARM(self)
       result = (faiss::Clustering *)new faiss::Clustering(arg1,arg2,(faiss::ClusteringParameters const &)*arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -20196,7 +21039,12 @@ SWIGINTERN PyObject *_wrap_Clustering_train(PyObject *SWIGUNUSEDPARM(self), PyOb
       (arg1)->train(arg2,(float const *)arg3,*arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -20227,7 +21075,12 @@ SWIGINTERN PyObject *_wrap_Clustering_post_process_centroids(PyObject *SWIGUNUSE
       (arg1)->post_process_centroids();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -20258,7 +21111,12 @@ SWIGINTERN PyObject *_wrap_delete_Clustering(PyObject *SWIGUNUSEDPARM(self), PyO
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -20333,7 +21191,12 @@ SWIGINTERN PyObject *_wrap_kmeans_clustering(PyObject *SWIGUNUSEDPARM(self), PyO
       result = (float)faiss::kmeans_clustering(arg1,arg2,arg3,(float const *)arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21007,7 +21870,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_get_centroids(PyObject *SWIGUNUSEDPA
       result = (float *)(arg1)->get_centroids(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21056,7 +21924,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_train(PyObject *SWIGUNUSEDPARM(self)
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21106,7 +21979,12 @@ SWIGINTERN PyObject *_wrap_new_ProductQuantizer__SWIG_0(PyObject *SWIGUNUSEDPARM
       result = (faiss::ProductQuantizer *)new faiss::ProductQuantizer(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21129,7 +22007,12 @@ SWIGINTERN PyObject *_wrap_new_ProductQuantizer__SWIG_1(PyObject *SWIGUNUSEDPARM
       result = (faiss::ProductQuantizer *)new faiss::ProductQuantizer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21207,7 +22090,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_set_derived_values(PyObject *SWIGUNU
       (arg1)->set_derived_values();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21256,7 +22144,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_set_params(PyObject *SWIGUNUSEDPARM(
       (arg1)->set_params((float const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21305,7 +22198,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_compute_code(PyObject *SWIGUNUSEDPAR
       ((faiss::ProductQuantizer const *)arg1)->compute_code((float const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21363,7 +22261,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_compute_codes(PyObject *SWIGUNUSEDPA
       ((faiss::ProductQuantizer const *)arg1)->compute_codes((float const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21421,7 +22324,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_compute_codes_with_assign_index(PyOb
       (arg1)->compute_codes_with_assign_index((float const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21470,7 +22378,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_decode__SWIG_0(PyObject *SWIGUNUSEDP
       ((faiss::ProductQuantizer const *)arg1)->decode((uint8_t const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21528,7 +22441,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_decode__SWIG_1(PyObject *SWIGUNUSEDP
       ((faiss::ProductQuantizer const *)arg1)->decode((uint8_t const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21643,7 +22561,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_compute_code_from_distance_table(PyO
       ((faiss::ProductQuantizer const *)arg1)->compute_code_from_distance_table((float const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21692,7 +22615,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_compute_distance_table(PyObject *SWI
       ((faiss::ProductQuantizer const *)arg1)->compute_distance_table((float const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21741,7 +22669,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_compute_inner_prod_table(PyObject *S
       ((faiss::ProductQuantizer const *)arg1)->compute_inner_prod_table((float const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21799,7 +22732,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_compute_distance_tables(PyObject *SW
       ((faiss::ProductQuantizer const *)arg1)->compute_distance_tables(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21857,7 +22795,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_compute_inner_prod_tables(PyObject *
       ((faiss::ProductQuantizer const *)arg1)->compute_inner_prod_tables(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -21942,7 +22885,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_search__SWIG_0(PyObject *SWIGUNUSEDP
       ((faiss::ProductQuantizer const *)arg1)->search((float const *)arg2,arg3,(uint8_t const *)arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -22018,7 +22966,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_search__SWIG_1(PyObject *SWIGUNUSEDP
       ((faiss::ProductQuantizer const *)arg1)->search((float const *)arg2,arg3,(uint8_t const *)arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -22203,7 +23156,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_search_ip__SWIG_0(PyObject *SWIGUNUS
       ((faiss::ProductQuantizer const *)arg1)->search_ip((float const *)arg2,arg3,(uint8_t const *)arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -22279,7 +23237,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_search_ip__SWIG_1(PyObject *SWIGUNUS
       ((faiss::ProductQuantizer const *)arg1)->search_ip((float const *)arg2,arg3,(uint8_t const *)arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -22462,7 +23425,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_compute_sdc_table(PyObject *SWIGUNUS
       (arg1)->compute_sdc_table();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -22547,7 +23515,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_search_sdc__SWIG_0(PyObject *SWIGUNU
       ((faiss::ProductQuantizer const *)arg1)->search_sdc((uint8_t const *)arg2,arg3,(uint8_t const *)arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -22623,7 +23596,12 @@ SWIGINTERN PyObject *_wrap_ProductQuantizer_search_sdc__SWIG_1(PyObject *SWIGUNU
       ((faiss::ProductQuantizer const *)arg1)->search_sdc((uint8_t const *)arg2,arg3,(uint8_t const *)arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -22956,7 +23934,12 @@ SWIGINTERN PyObject *_wrap_VectorTransform_train(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23006,7 +23989,12 @@ SWIGINTERN PyObject *_wrap_VectorTransform_apply(PyObject *SWIGUNUSEDPARM(self),
       result = (float *)((faiss::VectorTransform const *)arg1)->apply(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23064,7 +24052,12 @@ SWIGINTERN PyObject *_wrap_VectorTransform_apply_noalloc(PyObject *SWIGUNUSEDPAR
       ((faiss::VectorTransform const *)arg1)->apply_noalloc(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23122,7 +24115,12 @@ SWIGINTERN PyObject *_wrap_VectorTransform_reverse_transform(PyObject *SWIGUNUSE
       ((faiss::VectorTransform const *)arg1)->reverse_transform(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23153,7 +24151,12 @@ SWIGINTERN PyObject *_wrap_delete_VectorTransform(PyObject *SWIGUNUSEDPARM(self)
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23418,7 +24421,12 @@ SWIGINTERN PyObject *_wrap_new_LinearTransform__SWIG_0(PyObject *SWIGUNUSEDPARM(
       result = (faiss::LinearTransform *)new faiss::LinearTransform(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23459,7 +24467,12 @@ SWIGINTERN PyObject *_wrap_new_LinearTransform__SWIG_1(PyObject *SWIGUNUSEDPARM(
       result = (faiss::LinearTransform *)new faiss::LinearTransform(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23491,7 +24504,12 @@ SWIGINTERN PyObject *_wrap_new_LinearTransform__SWIG_2(PyObject *SWIGUNUSEDPARM(
       result = (faiss::LinearTransform *)new faiss::LinearTransform(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23514,7 +24532,12 @@ SWIGINTERN PyObject *_wrap_new_LinearTransform__SWIG_3(PyObject *SWIGUNUSEDPARM(
       result = (faiss::LinearTransform *)new faiss::LinearTransform();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23647,7 +24670,12 @@ SWIGINTERN PyObject *_wrap_LinearTransform_apply_noalloc(PyObject *SWIGUNUSEDPAR
       ((faiss::LinearTransform const *)arg1)->apply_noalloc(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23705,7 +24733,12 @@ SWIGINTERN PyObject *_wrap_LinearTransform_transform_transpose(PyObject *SWIGUNU
       ((faiss::LinearTransform const *)arg1)->transform_transpose(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23763,7 +24796,12 @@ SWIGINTERN PyObject *_wrap_LinearTransform_reverse_transform(PyObject *SWIGUNUSE
       ((faiss::LinearTransform const *)arg1)->reverse_transform(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23794,7 +24832,12 @@ SWIGINTERN PyObject *_wrap_LinearTransform_set_is_orthonormal(PyObject *SWIGUNUS
       (arg1)->set_is_orthonormal();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23877,7 +24920,12 @@ SWIGINTERN PyObject *_wrap_delete_LinearTransform(PyObject *SWIGUNUSEDPARM(self)
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23925,7 +24973,12 @@ SWIGINTERN PyObject *_wrap_new_RandomRotationMatrix__SWIG_0(PyObject *SWIGUNUSED
       result = (faiss::RandomRotationMatrix *)new faiss::RandomRotationMatrix(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -23965,7 +25018,12 @@ SWIGINTERN PyObject *_wrap_RandomRotationMatrix_init(PyObject *SWIGUNUSEDPARM(se
       (arg1)->init(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -24014,7 +25072,12 @@ SWIGINTERN PyObject *_wrap_RandomRotationMatrix_train(PyObject *SWIGUNUSEDPARM(s
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -24037,7 +25100,12 @@ SWIGINTERN PyObject *_wrap_new_RandomRotationMatrix__SWIG_1(PyObject *SWIGUNUSED
       result = (faiss::RandomRotationMatrix *)new faiss::RandomRotationMatrix();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -24529,7 +25597,12 @@ SWIGINTERN PyObject *_wrap_new_PCAMatrix__SWIG_0(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::PCAMatrix *)new faiss::PCAMatrix(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -24579,7 +25652,12 @@ SWIGINTERN PyObject *_wrap_new_PCAMatrix__SWIG_1(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::PCAMatrix *)new faiss::PCAMatrix(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -24620,7 +25698,12 @@ SWIGINTERN PyObject *_wrap_new_PCAMatrix__SWIG_2(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::PCAMatrix *)new faiss::PCAMatrix(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -24652,7 +25735,12 @@ SWIGINTERN PyObject *_wrap_new_PCAMatrix__SWIG_3(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::PCAMatrix *)new faiss::PCAMatrix(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -24675,7 +25763,12 @@ SWIGINTERN PyObject *_wrap_new_PCAMatrix__SWIG_4(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::PCAMatrix *)new faiss::PCAMatrix();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -24828,7 +25921,12 @@ SWIGINTERN PyObject *_wrap_PCAMatrix_train(PyObject *SWIGUNUSEDPARM(self), PyObj
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -24871,7 +25969,12 @@ SWIGINTERN PyObject *_wrap_PCAMatrix_copy_from(PyObject *SWIGUNUSEDPARM(self), P
       (arg1)->copy_from((faiss::PCAMatrix const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -24902,7 +26005,12 @@ SWIGINTERN PyObject *_wrap_PCAMatrix_prepare_Ab(PyObject *SWIGUNUSEDPARM(self), 
       (arg1)->prepare_Ab();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -25344,7 +26452,12 @@ SWIGINTERN PyObject *_wrap_new_OPQMatrix__SWIG_0(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::OPQMatrix *)new faiss::OPQMatrix(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -25385,7 +26498,12 @@ SWIGINTERN PyObject *_wrap_new_OPQMatrix__SWIG_1(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::OPQMatrix *)new faiss::OPQMatrix(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -25417,7 +26535,12 @@ SWIGINTERN PyObject *_wrap_new_OPQMatrix__SWIG_2(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::OPQMatrix *)new faiss::OPQMatrix(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -25440,7 +26563,12 @@ SWIGINTERN PyObject *_wrap_new_OPQMatrix__SWIG_3(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::OPQMatrix *)new faiss::OPQMatrix();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -25564,7 +26692,12 @@ SWIGINTERN PyObject *_wrap_OPQMatrix_train(PyObject *SWIGUNUSEDPARM(self), PyObj
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -25694,7 +26827,12 @@ SWIGINTERN PyObject *_wrap_new_RemapDimensionsTransform__SWIG_0(PyObject *SWIGUN
       result = (faiss::RemapDimensionsTransform *)new faiss::RemapDimensionsTransform(arg1,arg2,(int const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -25744,7 +26882,12 @@ SWIGINTERN PyObject *_wrap_new_RemapDimensionsTransform__SWIG_1(PyObject *SWIGUN
       result = (faiss::RemapDimensionsTransform *)new faiss::RemapDimensionsTransform(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -25785,7 +26928,12 @@ SWIGINTERN PyObject *_wrap_new_RemapDimensionsTransform__SWIG_2(PyObject *SWIGUN
       result = (faiss::RemapDimensionsTransform *)new faiss::RemapDimensionsTransform(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -25843,7 +26991,12 @@ SWIGINTERN PyObject *_wrap_RemapDimensionsTransform_apply_noalloc(PyObject *SWIG
       ((faiss::RemapDimensionsTransform const *)arg1)->apply_noalloc(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -25901,7 +27054,12 @@ SWIGINTERN PyObject *_wrap_RemapDimensionsTransform_reverse_transform(PyObject *
       ((faiss::RemapDimensionsTransform const *)arg1)->reverse_transform(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -25924,7 +27082,12 @@ SWIGINTERN PyObject *_wrap_new_RemapDimensionsTransform__SWIG_3(PyObject *SWIGUN
       result = (faiss::RemapDimensionsTransform *)new faiss::RemapDimensionsTransform();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26131,7 +27294,12 @@ SWIGINTERN PyObject *_wrap_new_NormalizationTransform__SWIG_0(PyObject *SWIGUNUS
       result = (faiss::NormalizationTransform *)new faiss::NormalizationTransform(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26163,7 +27331,12 @@ SWIGINTERN PyObject *_wrap_new_NormalizationTransform__SWIG_1(PyObject *SWIGUNUS
       result = (faiss::NormalizationTransform *)new faiss::NormalizationTransform(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26186,7 +27359,12 @@ SWIGINTERN PyObject *_wrap_new_NormalizationTransform__SWIG_2(PyObject *SWIGUNUS
       result = (faiss::NormalizationTransform *)new faiss::NormalizationTransform();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26296,7 +27474,12 @@ SWIGINTERN PyObject *_wrap_NormalizationTransform_apply_noalloc(PyObject *SWIGUN
       ((faiss::NormalizationTransform const *)arg1)->apply_noalloc(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26354,7 +27537,12 @@ SWIGINTERN PyObject *_wrap_NormalizationTransform_reverse_transform(PyObject *SW
       ((faiss::NormalizationTransform const *)arg1)->reverse_transform(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26466,7 +27654,12 @@ SWIGINTERN PyObject *_wrap_new_CenteringTransform__SWIG_0(PyObject *SWIGUNUSEDPA
       result = (faiss::CenteringTransform *)new faiss::CenteringTransform(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26489,7 +27682,12 @@ SWIGINTERN PyObject *_wrap_new_CenteringTransform__SWIG_1(PyObject *SWIGUNUSEDPA
       result = (faiss::CenteringTransform *)new faiss::CenteringTransform();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26573,7 +27771,12 @@ SWIGINTERN PyObject *_wrap_CenteringTransform_train(PyObject *SWIGUNUSEDPARM(sel
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26631,7 +27834,12 @@ SWIGINTERN PyObject *_wrap_CenteringTransform_apply_noalloc(PyObject *SWIGUNUSED
       ((faiss::CenteringTransform const *)arg1)->apply_noalloc(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26689,7 +27897,12 @@ SWIGINTERN PyObject *_wrap_CenteringTransform_reverse_transform(PyObject *SWIGUN
       ((faiss::CenteringTransform const *)arg1)->reverse_transform(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26905,7 +28118,12 @@ SWIGINTERN PyObject *_wrap_new_IndexPreTransform__SWIG_0(PyObject *SWIGUNUSEDPAR
       result = (faiss::IndexPreTransform *)new faiss::IndexPreTransform(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26928,7 +28146,12 @@ SWIGINTERN PyObject *_wrap_new_IndexPreTransform__SWIG_1(PyObject *SWIGUNUSEDPAR
       result = (faiss::IndexPreTransform *)new faiss::IndexPreTransform();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -26969,7 +28192,12 @@ SWIGINTERN PyObject *_wrap_new_IndexPreTransform__SWIG_2(PyObject *SWIGUNUSEDPAR
       result = (faiss::IndexPreTransform *)new faiss::IndexPreTransform(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27058,7 +28286,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_prepend_transform(PyObject *SWIGUNU
       (arg1)->prepend_transform(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27107,7 +28340,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_train(PyObject *SWIGUNUSEDPARM(self
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27156,7 +28394,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_add(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27214,7 +28457,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_add_with_ids(PyObject *SWIGUNUSEDPA
       (arg1)->add_with_ids(arg2,(float const *)arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27245,7 +28493,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_reset(PyObject *SWIGUNUSEDPARM(self
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27289,7 +28542,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_remove_ids(PyObject *SWIGUNUSEDPARM
       result = (long)(arg1)->remove_ids((faiss::IDSelector const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27365,7 +28623,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_search(PyObject *SWIGUNUSEDPARM(sel
       ((faiss::IndexPreTransform const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27432,7 +28695,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_range_search(PyObject *SWIGUNUSEDPA
       ((faiss::IndexPreTransform const *)arg1)->range_search(arg2,(float const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27481,7 +28749,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_reconstruct(PyObject *SWIGUNUSEDPAR
       ((faiss::IndexPreTransform const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27539,7 +28812,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_reconstruct_n(PyObject *SWIGUNUSEDP
       ((faiss::IndexPreTransform const *)arg1)->reconstruct_n(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27624,7 +28902,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_search_and_reconstruct(PyObject *SW
       ((faiss::IndexPreTransform const *)arg1)->search_and_reconstruct(arg2,(float const *)arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27674,7 +28957,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_apply_chain(PyObject *SWIGUNUSEDPAR
       result = (float *)((faiss::IndexPreTransform const *)arg1)->apply_chain(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27732,7 +29020,12 @@ SWIGINTERN PyObject *_wrap_IndexPreTransform_reverse_chain(PyObject *SWIGUNUSEDP
       ((faiss::IndexPreTransform const *)arg1)->reverse_chain(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27763,7 +29056,12 @@ SWIGINTERN PyObject *_wrap_delete_IndexPreTransform(PyObject *SWIGUNUSEDPARM(sel
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27863,7 +29161,12 @@ SWIGINTERN PyObject *_wrap_new_IndexFlat__SWIG_0(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::IndexFlat *)new faiss::IndexFlat(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27895,7 +29198,12 @@ SWIGINTERN PyObject *_wrap_new_IndexFlat__SWIG_1(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::IndexFlat *)new faiss::IndexFlat(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27944,7 +29252,12 @@ SWIGINTERN PyObject *_wrap_IndexFlat_add(PyObject *SWIGUNUSEDPARM(self), PyObjec
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -27975,7 +29288,12 @@ SWIGINTERN PyObject *_wrap_IndexFlat_reset(PyObject *SWIGUNUSEDPARM(self), PyObj
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -28051,7 +29369,12 @@ SWIGINTERN PyObject *_wrap_IndexFlat_search(PyObject *SWIGUNUSEDPARM(self), PyOb
       ((faiss::IndexFlat const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -28118,7 +29441,12 @@ SWIGINTERN PyObject *_wrap_IndexFlat_range_search(PyObject *SWIGUNUSEDPARM(self)
       ((faiss::IndexFlat const *)arg1)->range_search(arg2,(float const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -28167,7 +29495,12 @@ SWIGINTERN PyObject *_wrap_IndexFlat_reconstruct(PyObject *SWIGUNUSEDPARM(self),
       ((faiss::IndexFlat const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -28243,7 +29576,12 @@ SWIGINTERN PyObject *_wrap_IndexFlat_compute_distance_subset(PyObject *SWIGUNUSE
       ((faiss::IndexFlat const *)arg1)->compute_distance_subset(arg2,(float const *)arg3,arg4,arg5,(faiss::Index::idx_t const *)arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -28287,7 +29625,12 @@ SWIGINTERN PyObject *_wrap_IndexFlat_remove_ids(PyObject *SWIGUNUSEDPARM(self), 
       result = (long)(arg1)->remove_ids((faiss::IDSelector const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -28310,7 +29653,12 @@ SWIGINTERN PyObject *_wrap_new_IndexFlat__SWIG_2(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::IndexFlat *)new faiss::IndexFlat();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -28422,7 +29770,12 @@ SWIGINTERN PyObject *_wrap_new_IndexFlatIP__SWIG_0(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexFlatIP *)new faiss::IndexFlatIP(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -28445,7 +29798,12 @@ SWIGINTERN PyObject *_wrap_new_IndexFlatIP__SWIG_1(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexFlatIP *)new faiss::IndexFlatIP();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -28540,7 +29898,12 @@ SWIGINTERN PyObject *_wrap_new_IndexFlatL2__SWIG_0(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexFlatL2 *)new faiss::IndexFlatL2(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -28563,7 +29926,12 @@ SWIGINTERN PyObject *_wrap_new_IndexFlatL2__SWIG_1(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexFlatL2 *)new faiss::IndexFlatL2();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -28728,7 +30096,12 @@ SWIGINTERN PyObject *_wrap_new_IndexFlatL2BaseShift(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::IndexFlatL2BaseShift *)new faiss::IndexFlatL2BaseShift(arg1,arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -28804,7 +30177,12 @@ SWIGINTERN PyObject *_wrap_IndexFlatL2BaseShift_search(PyObject *SWIGUNUSEDPARM(
       ((faiss::IndexFlatL2BaseShift const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29072,7 +30450,12 @@ SWIGINTERN PyObject *_wrap_new_IndexRefineFlat__SWIG_0(PyObject *SWIGUNUSEDPARM(
       result = (faiss::IndexRefineFlat *)new faiss::IndexRefineFlat(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29095,7 +30478,12 @@ SWIGINTERN PyObject *_wrap_new_IndexRefineFlat__SWIG_1(PyObject *SWIGUNUSEDPARM(
       result = (faiss::IndexRefineFlat *)new faiss::IndexRefineFlat();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29178,7 +30566,12 @@ SWIGINTERN PyObject *_wrap_IndexRefineFlat_train(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29227,7 +30620,12 @@ SWIGINTERN PyObject *_wrap_IndexRefineFlat_add(PyObject *SWIGUNUSEDPARM(self), P
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29258,7 +30656,12 @@ SWIGINTERN PyObject *_wrap_IndexRefineFlat_reset(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29334,7 +30737,12 @@ SWIGINTERN PyObject *_wrap_IndexRefineFlat_search(PyObject *SWIGUNUSEDPARM(self)
       ((faiss::IndexRefineFlat const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29365,7 +30773,12 @@ SWIGINTERN PyObject *_wrap_delete_IndexRefineFlat(PyObject *SWIGUNUSEDPARM(self)
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29508,7 +30921,12 @@ SWIGINTERN PyObject *_wrap_new_IndexFlat1D__SWIG_0(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexFlat1D *)new faiss::IndexFlat1D(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29531,7 +30949,12 @@ SWIGINTERN PyObject *_wrap_new_IndexFlat1D__SWIG_1(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexFlat1D *)new faiss::IndexFlat1D();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29597,7 +31020,12 @@ SWIGINTERN PyObject *_wrap_IndexFlat1D_update_permutation(PyObject *SWIGUNUSEDPA
       (arg1)->update_permutation();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29646,7 +31074,12 @@ SWIGINTERN PyObject *_wrap_IndexFlat1D_add(PyObject *SWIGUNUSEDPARM(self), PyObj
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29677,7 +31110,12 @@ SWIGINTERN PyObject *_wrap_IndexFlat1D_reset(PyObject *SWIGUNUSEDPARM(self), PyO
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -29753,7 +31191,12 @@ SWIGINTERN PyObject *_wrap_IndexFlat1D_search(PyObject *SWIGUNUSEDPARM(self), Py
       ((faiss::IndexFlat1D const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -30204,7 +31647,12 @@ SWIGINTERN PyObject *_wrap_new_IndexLSH__SWIG_0(PyObject *SWIGUNUSEDPARM(self), 
       result = (faiss::IndexLSH *)new faiss::IndexLSH(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -30254,7 +31702,12 @@ SWIGINTERN PyObject *_wrap_new_IndexLSH__SWIG_1(PyObject *SWIGUNUSEDPARM(self), 
       result = (faiss::IndexLSH *)new faiss::IndexLSH(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -30295,7 +31748,12 @@ SWIGINTERN PyObject *_wrap_new_IndexLSH__SWIG_2(PyObject *SWIGUNUSEDPARM(self), 
       result = (faiss::IndexLSH *)new faiss::IndexLSH(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -30345,7 +31803,12 @@ SWIGINTERN PyObject *_wrap_IndexLSH_apply_preprocess(PyObject *SWIGUNUSEDPARM(se
       result = (float *)((faiss::IndexLSH const *)arg1)->apply_preprocess(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -30394,7 +31857,12 @@ SWIGINTERN PyObject *_wrap_IndexLSH_train(PyObject *SWIGUNUSEDPARM(self), PyObje
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -30443,7 +31911,12 @@ SWIGINTERN PyObject *_wrap_IndexLSH_add(PyObject *SWIGUNUSEDPARM(self), PyObject
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -30519,7 +31992,12 @@ SWIGINTERN PyObject *_wrap_IndexLSH_search(PyObject *SWIGUNUSEDPARM(self), PyObj
       ((faiss::IndexLSH const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -30550,7 +32028,12 @@ SWIGINTERN PyObject *_wrap_IndexLSH_reset(PyObject *SWIGUNUSEDPARM(self), PyObje
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -30590,7 +32073,12 @@ SWIGINTERN PyObject *_wrap_IndexLSH_transfer_thresholds(PyObject *SWIGUNUSEDPARM
       (arg1)->transfer_thresholds(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -30621,7 +32109,12 @@ SWIGINTERN PyObject *_wrap_delete_IndexLSH(PyObject *SWIGUNUSEDPARM(self), PyObj
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -30644,7 +32137,12 @@ SWIGINTERN PyObject *_wrap_new_IndexLSH__SWIG_3(PyObject *SWIGUNUSEDPARM(self), 
       result = (faiss::IndexLSH *)new faiss::IndexLSH();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -31183,7 +32681,12 @@ SWIGINTERN PyObject *_wrap_new_SimulatedAnnealingParameters(PyObject *SWIGUNUSED
       result = (faiss::SimulatedAnnealingParameters *)new faiss::SimulatedAnnealingParameters();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -31304,7 +32807,12 @@ SWIGINTERN PyObject *_wrap_PermutationObjective_compute_cost(PyObject *SWIGUNUSE
       result = (double)((faiss::PermutationObjective const *)arg1)->compute_cost((int const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -31363,7 +32871,12 @@ SWIGINTERN PyObject *_wrap_PermutationObjective_cost_update(PyObject *SWIGUNUSED
       result = (double)((faiss::PermutationObjective const *)arg1)->cost_update((int const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -31394,7 +32907,12 @@ SWIGINTERN PyObject *_wrap_delete_PermutationObjective(PyObject *SWIGUNUSEDPARM(
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -31485,7 +33003,12 @@ SWIGINTERN PyObject *_wrap_ReproduceDistancesObjective_sqr(PyObject *SWIGUNUSEDP
       result = (double)faiss::ReproduceDistancesObjective::sqr(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -31526,7 +33049,12 @@ SWIGINTERN PyObject *_wrap_ReproduceDistancesObjective_dis_weight(PyObject *SWIG
       result = (double)((faiss::ReproduceDistancesObjective const *)arg1)->dis_weight(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -31732,7 +33260,12 @@ SWIGINTERN PyObject *_wrap_ReproduceDistancesObjective_get_source_dis(PyObject *
       result = (double)((faiss::ReproduceDistancesObjective const *)arg1)->get_source_dis(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -31773,7 +33306,12 @@ SWIGINTERN PyObject *_wrap_ReproduceDistancesObjective_compute_cost(PyObject *SW
       result = (double)((faiss::ReproduceDistancesObjective const *)arg1)->compute_cost((int const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -31832,7 +33370,12 @@ SWIGINTERN PyObject *_wrap_ReproduceDistancesObjective_cost_update(PyObject *SWI
       result = (double)((faiss::ReproduceDistancesObjective const *)arg1)->cost_update((int const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -31891,7 +33434,12 @@ SWIGINTERN PyObject *_wrap_new_ReproduceDistancesObjective(PyObject *SWIGUNUSEDP
       result = (faiss::ReproduceDistancesObjective *)new faiss::ReproduceDistancesObjective(arg1,(double const *)arg2,(double const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -31949,7 +33497,12 @@ SWIGINTERN PyObject *_wrap_ReproduceDistancesObjective_compute_mean_stdev(PyObje
       faiss::ReproduceDistancesObjective::compute_mean_stdev((double const *)arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -31989,7 +33542,12 @@ SWIGINTERN PyObject *_wrap_ReproduceDistancesObjective_set_affine_target_dis(PyO
       (arg1)->set_affine_target_dis((double const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -32020,7 +33578,12 @@ SWIGINTERN PyObject *_wrap_delete_ReproduceDistancesObjective(PyObject *SWIGUNUS
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -32227,7 +33790,12 @@ SWIGINTERN PyObject *_wrap_new_SimulatedAnnealingOptimizer(PyObject *SWIGUNUSEDP
       result = (faiss::SimulatedAnnealingOptimizer *)new faiss::SimulatedAnnealingOptimizer(arg1,(faiss::SimulatedAnnealingParameters const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -32372,7 +33940,12 @@ SWIGINTERN PyObject *_wrap_SimulatedAnnealingOptimizer_optimize(PyObject *SWIGUN
       result = (double)(arg1)->optimize(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -32413,7 +33986,12 @@ SWIGINTERN PyObject *_wrap_SimulatedAnnealingOptimizer_run_optimization(PyObject
       result = (double)(arg1)->run_optimization(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -32444,7 +34022,12 @@ SWIGINTERN PyObject *_wrap_delete_SimulatedAnnealingOptimizer(PyObject *SWIGUNUS
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -32689,7 +34272,12 @@ SWIGINTERN PyObject *_wrap_new_PolysemousTraining(PyObject *SWIGUNUSEDPARM(self)
       result = (faiss::PolysemousTraining *)new faiss::PolysemousTraining();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -32750,7 +34338,12 @@ SWIGINTERN PyObject *_wrap_PolysemousTraining_optimize_pq_for_hamming(PyObject *
       ((faiss::PolysemousTraining const *)arg1)->optimize_pq_for_hamming(*arg2,arg3,(float const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -32811,7 +34404,12 @@ SWIGINTERN PyObject *_wrap_PolysemousTraining_optimize_ranking(PyObject *SWIGUNU
       ((faiss::PolysemousTraining const *)arg1)->optimize_ranking(*arg2,arg3,(float const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -32854,7 +34452,12 @@ SWIGINTERN PyObject *_wrap_PolysemousTraining_optimize_reproduce_distances(PyObj
       ((faiss::PolysemousTraining const *)arg1)->optimize_reproduce_distances(*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -33045,7 +34648,12 @@ SWIGINTERN PyObject *_wrap_new_IndexPQ__SWIG_0(PyObject *SWIGUNUSEDPARM(self), P
       result = (faiss::IndexPQ *)new faiss::IndexPQ(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -33095,7 +34703,12 @@ SWIGINTERN PyObject *_wrap_new_IndexPQ__SWIG_1(PyObject *SWIGUNUSEDPARM(self), P
       result = (faiss::IndexPQ *)new faiss::IndexPQ(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -33118,7 +34731,12 @@ SWIGINTERN PyObject *_wrap_new_IndexPQ__SWIG_2(PyObject *SWIGUNUSEDPARM(self), P
       result = (faiss::IndexPQ *)new faiss::IndexPQ();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -33243,7 +34861,12 @@ SWIGINTERN PyObject *_wrap_IndexPQ_train(PyObject *SWIGUNUSEDPARM(self), PyObjec
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -33292,7 +34915,12 @@ SWIGINTERN PyObject *_wrap_IndexPQ_add(PyObject *SWIGUNUSEDPARM(self), PyObject 
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -33368,7 +34996,12 @@ SWIGINTERN PyObject *_wrap_IndexPQ_search(PyObject *SWIGUNUSEDPARM(self), PyObje
       ((faiss::IndexPQ const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -33399,7 +35032,12 @@ SWIGINTERN PyObject *_wrap_IndexPQ_reset(PyObject *SWIGUNUSEDPARM(self), PyObjec
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -33457,7 +35095,12 @@ SWIGINTERN PyObject *_wrap_IndexPQ_reconstruct_n(PyObject *SWIGUNUSEDPARM(self),
       ((faiss::IndexPQ const *)arg1)->reconstruct_n(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -33506,7 +35149,12 @@ SWIGINTERN PyObject *_wrap_IndexPQ_reconstruct(PyObject *SWIGUNUSEDPARM(self), P
       ((faiss::IndexPQ const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -33550,7 +35198,12 @@ SWIGINTERN PyObject *_wrap_IndexPQ_remove_ids(PyObject *SWIGUNUSEDPARM(self), Py
       result = (long)(arg1)->remove_ids((faiss::IDSelector const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -33886,7 +35539,12 @@ SWIGINTERN PyObject *_wrap_IndexPQ_search_core_polysemous(PyObject *SWIGUNUSEDPA
       ((faiss::IndexPQ const *)arg1)->search_core_polysemous(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -33962,7 +35620,12 @@ SWIGINTERN PyObject *_wrap_IndexPQ_hamming_distance_histogram(PyObject *SWIGUNUS
       (arg1)->hamming_distance_histogram(arg2,(float const *)arg3,arg4,(float const *)arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -34020,7 +35683,12 @@ SWIGINTERN PyObject *_wrap_IndexPQ_hamming_distance_table(PyObject *SWIGUNUSEDPA
       ((faiss::IndexPQ const *)arg1)->hamming_distance_table(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -34227,7 +35895,12 @@ SWIGINTERN PyObject *_wrap_new_IndexPQStats(PyObject *SWIGUNUSEDPARM(self), PyOb
       result = (faiss::IndexPQStats *)new faiss::IndexPQStats();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -34258,7 +35931,12 @@ SWIGINTERN PyObject *_wrap_IndexPQStats_reset(PyObject *SWIGUNUSEDPARM(self), Py
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -34418,7 +36096,12 @@ SWIGINTERN PyObject *_wrap_new_MultiIndexQuantizer__SWIG_0(PyObject *SWIGUNUSEDP
       result = (faiss::MultiIndexQuantizer *)new faiss::MultiIndexQuantizer(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -34467,7 +36150,12 @@ SWIGINTERN PyObject *_wrap_MultiIndexQuantizer_train(PyObject *SWIGUNUSEDPARM(se
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -34543,7 +36231,12 @@ SWIGINTERN PyObject *_wrap_MultiIndexQuantizer_search(PyObject *SWIGUNUSEDPARM(s
       ((faiss::MultiIndexQuantizer const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -34592,7 +36285,12 @@ SWIGINTERN PyObject *_wrap_MultiIndexQuantizer_add(PyObject *SWIGUNUSEDPARM(self
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -34623,7 +36321,12 @@ SWIGINTERN PyObject *_wrap_MultiIndexQuantizer_reset(PyObject *SWIGUNUSEDPARM(se
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -34646,7 +36349,12 @@ SWIGINTERN PyObject *_wrap_new_MultiIndexQuantizer__SWIG_1(PyObject *SWIGUNUSEDP
       result = (faiss::MultiIndexQuantizer *)new faiss::MultiIndexQuantizer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -34742,7 +36450,12 @@ SWIGINTERN PyObject *_wrap_MultiIndexQuantizer_reconstruct(PyObject *SWIGUNUSEDP
       ((faiss::MultiIndexQuantizer const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -34933,7 +36646,12 @@ SWIGINTERN PyObject *_wrap_new_MultiIndexQuantizer2__SWIG_0(PyObject *SWIGUNUSED
       result = (faiss::MultiIndexQuantizer2 *)new faiss::MultiIndexQuantizer2(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -34992,7 +36710,12 @@ SWIGINTERN PyObject *_wrap_new_MultiIndexQuantizer2__SWIG_1(PyObject *SWIGUNUSED
       result = (faiss::MultiIndexQuantizer2 *)new faiss::MultiIndexQuantizer2(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35116,7 +36839,12 @@ SWIGINTERN PyObject *_wrap_MultiIndexQuantizer2_train(PyObject *SWIGUNUSEDPARM(s
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35192,7 +36920,12 @@ SWIGINTERN PyObject *_wrap_MultiIndexQuantizer2_search(PyObject *SWIGUNUSEDPARM(
       ((faiss::MultiIndexQuantizer2 const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35365,7 +37098,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_list_size(PyObject *SWIGUNUSEDPARM(self
       result = (size_t)((faiss::InvertedLists const *)arg1)->list_size(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35406,7 +37144,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_get_codes(PyObject *SWIGUNUSEDPARM(self
       result = (uint8_t *)((faiss::InvertedLists const *)arg1)->get_codes(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35447,7 +37190,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_get_ids(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::InvertedLists::idx_t *)((faiss::InvertedLists const *)arg1)->get_ids(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35487,7 +37235,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_release_codes(PyObject *SWIGUNUSEDPARM(
       ((faiss::InvertedLists const *)arg1)->release_codes((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35527,7 +37280,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_release_ids(PyObject *SWIGUNUSEDPARM(se
       ((faiss::InvertedLists const *)arg1)->release_ids((faiss::InvertedLists::idx_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35577,7 +37335,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_get_single_id(PyObject *SWIGUNUSEDPARM(
       result = (faiss::InvertedLists::idx_t)((faiss::InvertedLists const *)arg1)->get_single_id(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35627,7 +37390,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_get_single_code(PyObject *SWIGUNUSEDPAR
       result = (uint8_t *)((faiss::InvertedLists const *)arg1)->get_single_code(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35676,7 +37444,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_prefetch_lists(PyObject *SWIGUNUSEDPARM
       ((faiss::InvertedLists const *)arg1)->prefetch_lists((long const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35735,7 +37508,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_add_entry(PyObject *SWIGUNUSEDPARM(self
       result = (size_t)(arg1)->add_entry(arg2,arg3,(uint8_t const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35803,7 +37581,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_add_entries(PyObject *SWIGUNUSEDPARM(se
       result = (size_t)(arg1)->add_entries(arg2,arg3,(faiss::InvertedLists::idx_t const *)arg4,(uint8_t const *)arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35870,7 +37653,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_update_entry(PyObject *SWIGUNUSEDPARM(s
       (arg1)->update_entry(arg2,arg3,arg4,(uint8_t const *)arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35946,7 +37734,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_update_entries(PyObject *SWIGUNUSEDPARM
       (arg1)->update_entries(arg2,arg3,arg4,(faiss::InvertedLists::idx_t const *)arg5,(uint8_t const *)arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -35995,7 +37788,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_resize(PyObject *SWIGUNUSEDPARM(self), 
       (arg1)->resize(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36026,7 +37824,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_reset(PyObject *SWIGUNUSEDPARM(self), P
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36075,7 +37878,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_merge_from(PyObject *SWIGUNUSEDPARM(sel
       (arg1)->merge_from(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36106,7 +37914,12 @@ SWIGINTERN PyObject *_wrap_delete_InvertedLists(PyObject *SWIGUNUSEDPARM(self), 
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36138,7 +37951,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_imbalance_factor(PyObject *SWIGUNUSEDPA
       result = (double)((faiss::InvertedLists const *)arg1)->imbalance_factor();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36169,7 +37987,12 @@ SWIGINTERN PyObject *_wrap_InvertedLists_print_stats(PyObject *SWIGUNUSEDPARM(se
       ((faiss::InvertedLists const *)arg1)->print_stats();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36321,7 +38144,12 @@ SWIGINTERN PyObject *_wrap_new_ArrayInvertedLists(PyObject *SWIGUNUSEDPARM(self)
       result = (faiss::ArrayInvertedLists *)new faiss::ArrayInvertedLists(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36362,7 +38190,12 @@ SWIGINTERN PyObject *_wrap_ArrayInvertedLists_list_size(PyObject *SWIGUNUSEDPARM
       result = (size_t)((faiss::ArrayInvertedLists const *)arg1)->list_size(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36403,7 +38236,12 @@ SWIGINTERN PyObject *_wrap_ArrayInvertedLists_get_codes(PyObject *SWIGUNUSEDPARM
       result = (uint8_t *)((faiss::ArrayInvertedLists const *)arg1)->get_codes(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36444,7 +38282,12 @@ SWIGINTERN PyObject *_wrap_ArrayInvertedLists_get_ids(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::InvertedLists::idx_t *)((faiss::ArrayInvertedLists const *)arg1)->get_ids(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36512,7 +38355,12 @@ SWIGINTERN PyObject *_wrap_ArrayInvertedLists_add_entries(PyObject *SWIGUNUSEDPA
       result = (size_t)(arg1)->add_entries(arg2,arg3,(faiss::InvertedLists::idx_t const *)arg4,(uint8_t const *)arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36588,7 +38436,12 @@ SWIGINTERN PyObject *_wrap_ArrayInvertedLists_update_entries(PyObject *SWIGUNUSE
       (arg1)->update_entries(arg2,arg3,arg4,(faiss::InvertedLists::idx_t const *)arg5,(uint8_t const *)arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36637,7 +38490,12 @@ SWIGINTERN PyObject *_wrap_ArrayInvertedLists_resize(PyObject *SWIGUNUSEDPARM(se
       (arg1)->resize(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36668,7 +38526,12 @@ SWIGINTERN PyObject *_wrap_delete_ArrayInvertedLists(PyObject *SWIGUNUSEDPARM(se
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36768,7 +38631,12 @@ SWIGINTERN PyObject *_wrap_new_ConcatenatedInvertedLists(PyObject *SWIGUNUSEDPAR
       result = (faiss::ConcatenatedInvertedLists *)new faiss::ConcatenatedInvertedLists(arg1,(faiss::InvertedLists const **)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36809,7 +38677,12 @@ SWIGINTERN PyObject *_wrap_ConcatenatedInvertedLists_list_size(PyObject *SWIGUNU
       result = (size_t)((faiss::ConcatenatedInvertedLists const *)arg1)->list_size(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36850,7 +38723,12 @@ SWIGINTERN PyObject *_wrap_ConcatenatedInvertedLists_get_codes(PyObject *SWIGUNU
       result = (uint8_t *)((faiss::ConcatenatedInvertedLists const *)arg1)->get_codes(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36891,7 +38769,12 @@ SWIGINTERN PyObject *_wrap_ConcatenatedInvertedLists_get_ids(PyObject *SWIGUNUSE
       result = (faiss::InvertedLists::idx_t *)((faiss::ConcatenatedInvertedLists const *)arg1)->get_ids(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36931,7 +38814,12 @@ SWIGINTERN PyObject *_wrap_ConcatenatedInvertedLists_release_codes(PyObject *SWI
       ((faiss::ConcatenatedInvertedLists const *)arg1)->release_codes((uint8_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -36971,7 +38859,12 @@ SWIGINTERN PyObject *_wrap_ConcatenatedInvertedLists_release_ids(PyObject *SWIGU
       ((faiss::ConcatenatedInvertedLists const *)arg1)->release_ids((faiss::InvertedLists::idx_t const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -37021,7 +38914,12 @@ SWIGINTERN PyObject *_wrap_ConcatenatedInvertedLists_get_single_id(PyObject *SWI
       result = (faiss::InvertedLists::idx_t)((faiss::ConcatenatedInvertedLists const *)arg1)->get_single_id(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -37071,7 +38969,12 @@ SWIGINTERN PyObject *_wrap_ConcatenatedInvertedLists_get_single_code(PyObject *S
       result = (uint8_t *)((faiss::ConcatenatedInvertedLists const *)arg1)->get_single_code(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -37139,7 +39042,12 @@ SWIGINTERN PyObject *_wrap_ConcatenatedInvertedLists_add_entries(PyObject *SWIGU
       result = (size_t)(arg1)->add_entries(arg2,arg3,(faiss::InvertedLists::idx_t const *)arg4,(uint8_t const *)arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -37215,7 +39123,12 @@ SWIGINTERN PyObject *_wrap_ConcatenatedInvertedLists_update_entries(PyObject *SW
       (arg1)->update_entries(arg2,arg3,arg4,(faiss::InvertedLists::idx_t const *)arg5,(uint8_t const *)arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -37264,7 +39177,12 @@ SWIGINTERN PyObject *_wrap_ConcatenatedInvertedLists_resize(PyObject *SWIGUNUSED
       (arg1)->resize(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -37671,7 +39589,12 @@ SWIGINTERN PyObject *_wrap_Level1Quantizer_train_q1(PyObject *SWIGUNUSEDPARM(sel
       (arg1)->train_q1(arg2,(float const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -37712,7 +39635,12 @@ SWIGINTERN PyObject *_wrap_new_Level1Quantizer__SWIG_0(PyObject *SWIGUNUSEDPARM(
       result = (faiss::Level1Quantizer *)new faiss::Level1Quantizer(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -37735,7 +39663,12 @@ SWIGINTERN PyObject *_wrap_new_Level1Quantizer__SWIG_1(PyObject *SWIGUNUSEDPARM(
       result = (faiss::Level1Quantizer *)new faiss::Level1Quantizer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -37806,7 +39739,12 @@ SWIGINTERN PyObject *_wrap_delete_Level1Quantizer(PyObject *SWIGUNUSEDPARM(self)
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -37948,7 +39886,12 @@ SWIGINTERN PyObject *_wrap_delete_IVFSearchParameters(PyObject *SWIGUNUSEDPARM(s
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -38363,7 +40306,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_reset(PyObject *SWIGUNUSEDPARM(self), PyObje
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -38412,7 +40360,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_train(PyObject *SWIGUNUSEDPARM(self), PyObje
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -38461,7 +40414,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_add(PyObject *SWIGUNUSEDPARM(self), PyObject
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -38528,7 +40486,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_encode_vectors(PyObject *SWIGUNUSEDPARM(self
       ((faiss::IndexIVF const *)arg1)->encode_vectors(arg2,(float const *)arg3,(faiss::Index::idx_t const *)arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -38577,7 +40540,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_train_residual(PyObject *SWIGUNUSEDPARM(self
       (arg1)->train_residual(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -38689,7 +40657,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_search_preassigned__SWIG_0(PyObject *SWIGUNU
       ((faiss::IndexIVF const *)arg1)->search_preassigned(arg2,(float const *)arg3,arg4,(faiss::Index::idx_t const *)arg5,(float const *)arg6,arg7,arg8,arg9,(faiss::IVFSearchParameters const *)arg10);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -38792,7 +40765,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_search_preassigned__SWIG_1(PyObject *SWIGUNU
       ((faiss::IndexIVF const *)arg1)->search_preassigned(arg2,(float const *)arg3,arg4,(faiss::Index::idx_t const *)arg5,(float const *)arg6,arg7,arg8,arg9);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -38999,7 +40977,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_search(PyObject *SWIGUNUSEDPARM(self), PyObj
       ((faiss::IndexIVF const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39066,7 +41049,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_range_search(PyObject *SWIGUNUSEDPARM(self),
       ((faiss::IndexIVF const *)arg1)->range_search(arg2,(float const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39107,7 +41095,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_get_InvertedListScanner__SWIG_0(PyObject *SW
       result = (faiss::InvertedListScanner *)((faiss::IndexIVF const *)arg1)->get_InvertedListScanner(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39139,7 +41132,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_get_InvertedListScanner__SWIG_1(PyObject *SW
       result = (faiss::InvertedListScanner *)((faiss::IndexIVF const *)arg1)->get_InvertedListScanner();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39234,7 +41232,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_reconstruct(PyObject *SWIGUNUSEDPARM(self), 
       ((faiss::IndexIVF const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39292,7 +41295,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_reconstruct_n(PyObject *SWIGUNUSEDPARM(self)
       ((faiss::IndexIVF const *)arg1)->reconstruct_n(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39377,7 +41385,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_search_and_reconstruct(PyObject *SWIGUNUSEDP
       ((faiss::IndexIVF const *)arg1)->search_and_reconstruct(arg2,(float const *)arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39435,7 +41448,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_reconstruct_from_offset(PyObject *SWIGUNUSED
       ((faiss::IndexIVF const *)arg1)->reconstruct_from_offset(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39479,7 +41497,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_remove_ids(PyObject *SWIGUNUSEDPARM(self), P
       result = (long)(arg1)->remove_ids((faiss::IDSelector const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39522,7 +41545,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_check_compatible_for_merge(PyObject *SWIGUNU
       ((faiss::IndexIVF const *)arg1)->check_compatible_for_merge((faiss::IndexIVF const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39574,7 +41602,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_merge_from(PyObject *SWIGUNUSEDPARM(self), P
       (arg1)->merge_from(*arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39644,7 +41677,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_copy_subset_to(PyObject *SWIGUNUSEDPARM(self
       ((faiss::IndexIVF const *)arg1)->copy_subset_to(*arg2,arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39675,7 +41713,12 @@ SWIGINTERN PyObject *_wrap_delete_IndexIVF(PyObject *SWIGUNUSEDPARM(self), PyObj
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39716,7 +41759,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_get_list_size(PyObject *SWIGUNUSEDPARM(self)
       result = (size_t)((faiss::IndexIVF const *)arg1)->get_list_size(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39756,7 +41804,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_make_direct_map__SWIG_0(PyObject *SWIGUNUSED
       (arg1)->make_direct_map(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39787,7 +41840,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_make_direct_map__SWIG_1(PyObject *SWIGUNUSED
       (arg1)->make_direct_map();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39882,7 +41940,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_replace_invlists__SWIG_0(PyObject *SWIGUNUSE
       (arg1)->replace_invlists(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -39922,7 +41985,12 @@ SWIGINTERN PyObject *_wrap_IndexIVF_replace_invlists__SWIG_1(PyObject *SWIGUNUSE
       (arg1)->replace_invlists(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -40320,7 +42388,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFStats(PyObject *SWIGUNUSEDPARM(self), PyO
       result = (faiss::IndexIVFStats *)new faiss::IndexIVFStats();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -40351,7 +42424,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFStats_reset(PyObject *SWIGUNUSEDPARM(self), P
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -40449,7 +42527,12 @@ SWIGINTERN PyObject *_wrap_check_compatible_for_merge(PyObject *SWIGUNUSEDPARM(s
       faiss::ivflib::check_compatible_for_merge((faiss::Index const *)arg1,(faiss::Index const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -40481,7 +42564,12 @@ SWIGINTERN PyObject *_wrap_extract_index_ivf__SWIG_0(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::IndexIVF *)faiss::ivflib::extract_index_ivf((faiss::Index const *)arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -40513,7 +42601,12 @@ SWIGINTERN PyObject *_wrap_extract_index_ivf__SWIG_1(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::IndexIVF *)faiss::ivflib::extract_index_ivf(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -40602,7 +42695,12 @@ SWIGINTERN PyObject *_wrap_merge_into(PyObject *SWIGUNUSEDPARM(self), PyObject *
       faiss::ivflib::merge_into(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -40660,7 +42758,12 @@ SWIGINTERN PyObject *_wrap_search_centroid(PyObject *SWIGUNUSEDPARM(self), PyObj
       faiss::ivflib::search_centroid(arg1,(float const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -40754,7 +42857,12 @@ SWIGINTERN PyObject *_wrap_search_and_return_centroids(PyObject *SWIGUNUSEDPARM(
       faiss::ivflib::search_and_return_centroids(arg1,arg2,(float const *)arg3,arg4,arg5,arg6,arg7,arg8);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -41046,7 +43154,12 @@ SWIGINTERN PyObject *_wrap_new_SlidingIndexWindow(PyObject *SWIGUNUSEDPARM(self)
       result = (faiss::ivflib::SlidingIndexWindow *)new faiss::ivflib::SlidingIndexWindow(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -41095,7 +43208,12 @@ SWIGINTERN PyObject *_wrap_SlidingIndexWindow_step(PyObject *SWIGUNUSEDPARM(self
       (arg1)->step((faiss::Index const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -41173,7 +43291,12 @@ SWIGINTERN PyObject *_wrap_get_invlist_range(PyObject *SWIGUNUSEDPARM(self), PyO
       result = (faiss::ArrayInvertedLists *)faiss::ivflib::get_invlist_range((faiss::Index const *)arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -41231,7 +43354,12 @@ SWIGINTERN PyObject *_wrap_set_invlist_range(PyObject *SWIGUNUSEDPARM(self), PyO
       faiss::ivflib::set_invlist_range(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -41316,7 +43444,12 @@ SWIGINTERN PyObject *_wrap_search_with_parameters(PyObject *SWIGUNUSEDPARM(self)
       faiss::ivflib::search_with_parameters((faiss::Index const *)arg1,arg2,(float const *)arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -41669,7 +43802,12 @@ SWIGINTERN PyObject *_wrap_new_ScalarQuantizer__SWIG_0(PyObject *SWIGUNUSEDPARM(
       result = (faiss::ScalarQuantizer *)new faiss::ScalarQuantizer(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -41692,7 +43830,12 @@ SWIGINTERN PyObject *_wrap_new_ScalarQuantizer__SWIG_1(PyObject *SWIGUNUSEDPARM(
       result = (faiss::ScalarQuantizer *)new faiss::ScalarQuantizer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -41782,7 +43925,12 @@ SWIGINTERN PyObject *_wrap_ScalarQuantizer_train(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -41840,7 +43988,12 @@ SWIGINTERN PyObject *_wrap_ScalarQuantizer_compute_codes(PyObject *SWIGUNUSEDPAR
       ((faiss::ScalarQuantizer const *)arg1)->compute_codes((float const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -41898,7 +44051,12 @@ SWIGINTERN PyObject *_wrap_ScalarQuantizer_decode(PyObject *SWIGUNUSEDPARM(self)
       ((faiss::ScalarQuantizer const *)arg1)->decode((uint8_t const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -41939,7 +44097,12 @@ SWIGINTERN PyObject *_wrap_ScalarQuantizer_get_distance_computer__SWIG_0(PyObjec
       result = (faiss::SQDistanceComputer *)((faiss::ScalarQuantizer const *)arg1)->get_distance_computer(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -41971,7 +44134,12 @@ SWIGINTERN PyObject *_wrap_ScalarQuantizer_get_distance_computer__SWIG_1(PyObjec
       result = (faiss::SQDistanceComputer *)((faiss::ScalarQuantizer const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -42251,7 +44419,12 @@ SWIGINTERN PyObject *_wrap_new_IndexScalarQuantizer__SWIG_0(PyObject *SWIGUNUSED
       result = (faiss::IndexScalarQuantizer *)new faiss::IndexScalarQuantizer(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -42292,7 +44465,12 @@ SWIGINTERN PyObject *_wrap_new_IndexScalarQuantizer__SWIG_1(PyObject *SWIGUNUSED
       result = (faiss::IndexScalarQuantizer *)new faiss::IndexScalarQuantizer(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -42315,7 +44493,12 @@ SWIGINTERN PyObject *_wrap_new_IndexScalarQuantizer__SWIG_2(PyObject *SWIGUNUSED
       result = (faiss::IndexScalarQuantizer *)new faiss::IndexScalarQuantizer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -42428,7 +44611,12 @@ SWIGINTERN PyObject *_wrap_IndexScalarQuantizer_train(PyObject *SWIGUNUSEDPARM(s
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -42477,7 +44665,12 @@ SWIGINTERN PyObject *_wrap_IndexScalarQuantizer_add(PyObject *SWIGUNUSEDPARM(sel
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -42553,7 +44746,12 @@ SWIGINTERN PyObject *_wrap_IndexScalarQuantizer_search(PyObject *SWIGUNUSEDPARM(
       ((faiss::IndexScalarQuantizer const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -42584,7 +44782,12 @@ SWIGINTERN PyObject *_wrap_IndexScalarQuantizer_reset(PyObject *SWIGUNUSEDPARM(s
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -42642,7 +44845,12 @@ SWIGINTERN PyObject *_wrap_IndexScalarQuantizer_reconstruct_n(PyObject *SWIGUNUS
       ((faiss::IndexScalarQuantizer const *)arg1)->reconstruct_n(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -42691,7 +44899,12 @@ SWIGINTERN PyObject *_wrap_IndexScalarQuantizer_reconstruct(PyObject *SWIGUNUSED
       ((faiss::IndexScalarQuantizer const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -42723,7 +44936,12 @@ SWIGINTERN PyObject *_wrap_IndexScalarQuantizer_get_distance_computer(PyObject *
       result = (faiss::DistanceComputer *)((faiss::IndexScalarQuantizer const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -42923,7 +45141,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFScalarQuantizer__SWIG_0(PyObject *SWIGUNU
       result = (faiss::IndexIVFScalarQuantizer *)new faiss::IndexIVFScalarQuantizer(arg1,arg2,arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -42982,7 +45205,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFScalarQuantizer__SWIG_1(PyObject *SWIGUNU
       result = (faiss::IndexIVFScalarQuantizer *)new faiss::IndexIVFScalarQuantizer(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -43005,7 +45233,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFScalarQuantizer__SWIG_2(PyObject *SWIGUNU
       result = (faiss::IndexIVFScalarQuantizer *)new faiss::IndexIVFScalarQuantizer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -43140,7 +45373,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFScalarQuantizer_train_residual(PyObject *SWIG
       (arg1)->train_residual(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -43207,7 +45445,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFScalarQuantizer_encode_vectors(PyObject *SWIG
       ((faiss::IndexIVFScalarQuantizer const *)arg1)->encode_vectors(arg2,(float const *)arg3,(faiss::Index::idx_t const *)arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -43265,7 +45508,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFScalarQuantizer_add_with_ids(PyObject *SWIGUN
       (arg1)->add_with_ids(arg2,(float const *)arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -43306,7 +45554,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFScalarQuantizer_get_InvertedListScanner(PyObj
       result = (faiss::InvertedListScanner *)((faiss::IndexIVFScalarQuantizer const *)arg1)->get_InvertedListScanner(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -43364,7 +45617,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFScalarQuantizer_reconstruct_from_offset(PyObj
       ((faiss::IndexIVFScalarQuantizer const *)arg1)->reconstruct_from_offset(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44117,7 +46375,12 @@ SWIGINTERN PyObject *_wrap_HNSW_set_default_probas(PyObject *SWIGUNUSEDPARM(self
       (arg1)->set_default_probas(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44166,7 +46429,12 @@ SWIGINTERN PyObject *_wrap_HNSW_set_nb_neighbors(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->set_nb_neighbors(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44207,7 +46475,12 @@ SWIGINTERN PyObject *_wrap_HNSW_nb_neighbors(PyObject *SWIGUNUSEDPARM(self), PyO
       result = (int)((faiss::HNSW const *)arg1)->nb_neighbors(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44248,7 +46521,12 @@ SWIGINTERN PyObject *_wrap_HNSW_cum_nb_neighbors(PyObject *SWIGUNUSEDPARM(self),
       result = (int)((faiss::HNSW const *)arg1)->cum_nb_neighbors(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44315,7 +46593,12 @@ SWIGINTERN PyObject *_wrap_HNSW_neighbor_range(PyObject *SWIGUNUSEDPARM(self), P
       ((faiss::HNSW const *)arg1)->neighbor_range(arg2,arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44347,7 +46630,12 @@ SWIGINTERN PyObject *_wrap_new_HNSW__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyOb
       result = (faiss::HNSW *)new faiss::HNSW(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44370,7 +46658,12 @@ SWIGINTERN PyObject *_wrap_new_HNSW__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyOb
       result = (faiss::HNSW *)new faiss::HNSW();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44437,7 +46730,12 @@ SWIGINTERN PyObject *_wrap_HNSW_random_level(PyObject *SWIGUNUSEDPARM(self), PyO
       result = (int)(arg1)->random_level();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44477,7 +46775,12 @@ SWIGINTERN PyObject *_wrap_HNSW_fill_with_random_links(PyObject *SWIGUNUSEDPARM(
       (arg1)->fill_with_random_links(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44577,7 +46880,12 @@ SWIGINTERN PyObject *_wrap_HNSW_add_links_starting_from(PyObject *SWIGUNUSEDPARM
       (arg1)->add_links_starting_from(*arg2,arg3,arg4,arg5,arg6,arg7,*arg8);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44662,7 +46970,12 @@ SWIGINTERN PyObject *_wrap_HNSW_add_with_locks(PyObject *SWIGUNUSEDPARM(self), P
       (arg1)->add_with_locks(*arg2,arg3,arg4,*arg5,*arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44775,7 +47088,12 @@ SWIGINTERN PyObject *_wrap_HNSW_search_from_candidates__SWIG_0(PyObject *SWIGUNU
       result = (int)((faiss::HNSW const *)arg1)->search_from_candidates(*arg2,arg3,arg4,arg5,*arg6,*arg7,arg8,arg9);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -44879,7 +47197,12 @@ SWIGINTERN PyObject *_wrap_HNSW_search_from_candidates__SWIG_1(PyObject *SWIGUNU
       result = (int)((faiss::HNSW const *)arg1)->search_from_candidates(*arg2,arg3,arg4,arg5,*arg6,*arg7,arg8);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -45073,7 +47396,12 @@ SWIGINTERN PyObject *_wrap_HNSW_search_from_candidate_unbounded(PyObject *SWIGUN
       result = ((faiss::HNSW const *)arg1)->search_from_candidate_unbounded((faiss::HNSW::Node const &)*arg2,*arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -45155,7 +47483,12 @@ SWIGINTERN PyObject *_wrap_HNSW_search(PyObject *SWIGUNUSEDPARM(self), PyObject 
       ((faiss::HNSW const *)arg1)->search(*arg2,arg3,arg4,arg5,*arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -45186,7 +47519,12 @@ SWIGINTERN PyObject *_wrap_HNSW_reset(PyObject *SWIGUNUSEDPARM(self), PyObject *
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -45226,7 +47564,12 @@ SWIGINTERN PyObject *_wrap_HNSW_clear_neighbor_tables(PyObject *SWIGUNUSEDPARM(s
       (arg1)->clear_neighbor_tables(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -45266,7 +47609,12 @@ SWIGINTERN PyObject *_wrap_HNSW_print_neighbor_stats(PyObject *SWIGUNUSEDPARM(se
       ((faiss::HNSW const *)arg1)->print_neighbor_stats(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -45316,7 +47664,12 @@ SWIGINTERN PyObject *_wrap_HNSW_prepare_level_tab__SWIG_0(PyObject *SWIGUNUSEDPA
       result = (int)(arg1)->prepare_level_tab(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -45357,7 +47710,12 @@ SWIGINTERN PyObject *_wrap_HNSW_prepare_level_tab__SWIG_1(PyObject *SWIGUNUSEDPA
       result = (int)(arg1)->prepare_level_tab(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -45482,7 +47840,12 @@ SWIGINTERN PyObject *_wrap_HNSW_shrink_neighbor_list(PyObject *SWIGUNUSEDPARM(se
       faiss::HNSW::shrink_neighbor_list(*arg1,*arg2,*arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -45646,7 +48009,12 @@ SWIGINTERN PyObject *_wrap_new_VisitedTable(PyObject *SWIGUNUSEDPARM(self), PyOb
       result = (faiss::VisitedTable *)new faiss::VisitedTable(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -45686,7 +48054,12 @@ SWIGINTERN PyObject *_wrap_VisitedTable_set(PyObject *SWIGUNUSEDPARM(self), PyOb
       (arg1)->set(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -45727,7 +48100,12 @@ SWIGINTERN PyObject *_wrap_VisitedTable_get(PyObject *SWIGUNUSEDPARM(self), PyOb
       result = (bool)((faiss::VisitedTable const *)arg1)->get(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -45758,7 +48136,12 @@ SWIGINTERN PyObject *_wrap_VisitedTable_advance(PyObject *SWIGUNUSEDPARM(self), 
       (arg1)->advance();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -46121,7 +48504,12 @@ SWIGINTERN PyObject *_wrap_new_HNSWStats(PyObject *SWIGUNUSEDPARM(self), PyObjec
       result = (faiss::HNSWStats *)new faiss::HNSWStats();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -46152,7 +48540,12 @@ SWIGINTERN PyObject *_wrap_HNSWStats_reset(PyObject *SWIGUNUSEDPARM(self), PyObj
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -46805,7 +49198,12 @@ SWIGINTERN PyObject *_wrap_new_ReconstructFromNeighbors__SWIG_0(PyObject *SWIGUN
       result = (faiss::ReconstructFromNeighbors *)new faiss::ReconstructFromNeighbors((faiss::IndexHNSW const &)*arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -46849,7 +49247,12 @@ SWIGINTERN PyObject *_wrap_new_ReconstructFromNeighbors__SWIG_1(PyObject *SWIGUN
       result = (faiss::ReconstructFromNeighbors *)new faiss::ReconstructFromNeighbors((faiss::IndexHNSW const &)*arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -46884,7 +49287,12 @@ SWIGINTERN PyObject *_wrap_new_ReconstructFromNeighbors__SWIG_2(PyObject *SWIGUN
       result = (faiss::ReconstructFromNeighbors *)new faiss::ReconstructFromNeighbors((faiss::IndexHNSW const &)*arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -46998,7 +49406,12 @@ SWIGINTERN PyObject *_wrap_ReconstructFromNeighbors_add_codes(PyObject *SWIGUNUS
       (arg1)->add_codes(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47066,7 +49479,12 @@ SWIGINTERN PyObject *_wrap_ReconstructFromNeighbors_compute_distances(PyObject *
       result = (size_t)((faiss::ReconstructFromNeighbors const *)arg1)->compute_distances(arg2,(faiss::ReconstructFromNeighbors::idx_t const *)arg3,(float const *)arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47124,7 +49542,12 @@ SWIGINTERN PyObject *_wrap_ReconstructFromNeighbors_estimate_code(PyObject *SWIG
       ((faiss::ReconstructFromNeighbors const *)arg1)->estimate_code((float const *)arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47182,7 +49605,12 @@ SWIGINTERN PyObject *_wrap_ReconstructFromNeighbors_reconstruct(PyObject *SWIGUN
       ((faiss::ReconstructFromNeighbors const *)arg1)->reconstruct(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47240,7 +49668,12 @@ SWIGINTERN PyObject *_wrap_ReconstructFromNeighbors_reconstruct_n(PyObject *SWIG
       ((faiss::ReconstructFromNeighbors const *)arg1)->reconstruct_n(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47289,7 +49722,12 @@ SWIGINTERN PyObject *_wrap_ReconstructFromNeighbors_get_neighbor_table(PyObject 
       ((faiss::ReconstructFromNeighbors const *)arg1)->get_neighbor_table(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47556,7 +49994,12 @@ SWIGINTERN PyObject *_wrap_delete_IndexHNSW(PyObject *SWIGUNUSEDPARM(self), PyOb
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47588,7 +50031,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_get_distance_computer(PyObject *SWIGUNUSEDP
       result = (faiss::DistanceComputer *)((faiss::IndexHNSW const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47637,7 +50085,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_add(PyObject *SWIGUNUSEDPARM(self), PyObjec
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47686,7 +50139,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_train(PyObject *SWIGUNUSEDPARM(self), PyObj
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47762,7 +50220,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_search(PyObject *SWIGUNUSEDPARM(self), PyOb
       ((faiss::IndexHNSW const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47811,7 +50274,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_reconstruct(PyObject *SWIGUNUSEDPARM(self),
       ((faiss::IndexHNSW const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47842,7 +50310,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_reset(PyObject *SWIGUNUSEDPARM(self), PyObj
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47882,7 +50355,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_shrink_level_0_neighbors(PyObject *SWIGUNUS
       (arg1)->shrink_level_0_neighbors(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -47994,7 +50472,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_search_level_0__SWIG_0(PyObject *SWIGUNUSED
       ((faiss::IndexHNSW const *)arg1)->search_level_0(arg2,(float const *)arg3,arg4,(faiss::IndexHNSW::storage_idx_t const *)arg5,(float const *)arg6,arg7,arg8,arg9,arg10);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48097,7 +50580,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_search_level_0__SWIG_1(PyObject *SWIGUNUSED
       ((faiss::IndexHNSW const *)arg1)->search_level_0(arg2,(float const *)arg3,arg4,(faiss::IndexHNSW::storage_idx_t const *)arg5,(float const *)arg6,arg7,arg8,arg9);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48191,7 +50679,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_search_level_0__SWIG_2(PyObject *SWIGUNUSED
       ((faiss::IndexHNSW const *)arg1)->search_level_0(arg2,(float const *)arg3,arg4,(faiss::IndexHNSW::storage_idx_t const *)arg5,(float const *)arg6,arg7,arg8);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48428,7 +50921,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_init_level_0_from_knngraph(PyObject *SWIGUN
       (arg1)->init_level_0_from_knngraph(arg2,(float const *)arg3,(faiss::Index::idx_t const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48486,7 +50984,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_init_level_0_from_entry_points(PyObject *SW
       (arg1)->init_level_0_from_entry_points(arg2,(faiss::IndexHNSW::storage_idx_t const *)arg3,(faiss::IndexHNSW::storage_idx_t const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48517,7 +51020,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_reorder_links(PyObject *SWIGUNUSEDPARM(self
       (arg1)->reorder_links();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48548,7 +51056,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW_link_singletons(PyObject *SWIGUNUSEDPARM(se
       (arg1)->link_singletons();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48578,7 +51091,12 @@ SWIGINTERN PyObject *_wrap_new_IndexHNSWFlat__SWIG_0(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::IndexHNSWFlat *)new faiss::IndexHNSWFlat();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48619,7 +51137,12 @@ SWIGINTERN PyObject *_wrap_new_IndexHNSWFlat__SWIG_1(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::IndexHNSWFlat *)new faiss::IndexHNSWFlat(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48692,7 +51215,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSWFlat_get_distance_computer(PyObject *SWIGUNU
       result = (faiss::DistanceComputer *)((faiss::IndexHNSWFlat const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48743,7 +51271,12 @@ SWIGINTERN PyObject *_wrap_new_IndexHNSWPQ__SWIG_0(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexHNSWPQ *)new faiss::IndexHNSWPQ();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48793,7 +51326,12 @@ SWIGINTERN PyObject *_wrap_new_IndexHNSWPQ__SWIG_1(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexHNSWPQ *)new faiss::IndexHNSWPQ(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48889,7 +51427,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSWPQ_train(PyObject *SWIGUNUSEDPARM(self), PyO
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48921,7 +51464,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSWPQ_get_distance_computer(PyObject *SWIGUNUSE
       result = (faiss::DistanceComputer *)((faiss::IndexHNSWPQ const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -48972,7 +51520,12 @@ SWIGINTERN PyObject *_wrap_new_IndexHNSWSQ__SWIG_0(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexHNSWSQ *)new faiss::IndexHNSWSQ();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49022,7 +51575,12 @@ SWIGINTERN PyObject *_wrap_new_IndexHNSWSQ__SWIG_1(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexHNSWSQ *)new faiss::IndexHNSWSQ(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49101,7 +51659,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSWSQ_get_distance_computer(PyObject *SWIGUNUSE
       result = (faiss::DistanceComputer *)((faiss::IndexHNSWSQ const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49152,7 +51715,12 @@ SWIGINTERN PyObject *_wrap_new_IndexHNSW2Level__SWIG_0(PyObject *SWIGUNUSEDPARM(
       result = (faiss::IndexHNSW2Level *)new faiss::IndexHNSW2Level();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49211,7 +51779,12 @@ SWIGINTERN PyObject *_wrap_new_IndexHNSW2Level__SWIG_1(PyObject *SWIGUNUSEDPARM(
       result = (faiss::IndexHNSW2Level *)new faiss::IndexHNSW2Level(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49295,7 +51868,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW2Level_get_distance_computer(PyObject *SWIGU
       result = (faiss::DistanceComputer *)((faiss::IndexHNSW2Level const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49326,7 +51904,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW2Level_flip_to_ivf(PyObject *SWIGUNUSEDPARM(
       (arg1)->flip_to_ivf();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49402,7 +51985,12 @@ SWIGINTERN PyObject *_wrap_IndexHNSW2Level_search(PyObject *SWIGUNUSEDPARM(self)
       ((faiss::IndexHNSW2Level const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49489,7 +52077,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFFlat__SWIG_0(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::IndexIVFFlat *)new faiss::IndexIVFFlat(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49539,7 +52132,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFFlat__SWIG_1(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::IndexIVFFlat *)new faiss::IndexIVFFlat(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49606,7 +52204,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlat_add_core(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->add_core(arg2,(float const *)arg3,(long const *)arg4,(long const *)arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49664,7 +52267,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlat_add_with_ids(PyObject *SWIGUNUSEDPARM(se
       (arg1)->add_with_ids(arg2,(float const *)arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49731,7 +52339,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlat_encode_vectors(PyObject *SWIGUNUSEDPARM(
       ((faiss::IndexIVFFlat const *)arg1)->encode_vectors(arg2,(float const *)arg3,(faiss::Index::idx_t const *)arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49772,7 +52385,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlat_get_InvertedListScanner(PyObject *SWIGUN
       result = (faiss::InvertedListScanner *)((faiss::IndexIVFFlat const *)arg1)->get_InvertedListScanner(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49830,7 +52448,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlat_update_vectors(PyObject *SWIGUNUSEDPARM(
       (arg1)->update_vectors(arg2,arg3,(float const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49888,7 +52511,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlat_reconstruct_from_offset(PyObject *SWIGUN
       ((faiss::IndexIVFFlat const *)arg1)->reconstruct_from_offset(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -49911,7 +52539,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFFlat__SWIG_2(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::IndexIVFFlat *)new faiss::IndexIVFFlat();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -50132,7 +52765,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFFlatDedup__SWIG_0(PyObject *SWIGUNUSEDPAR
       result = (faiss::IndexIVFFlatDedup *)new faiss::IndexIVFFlatDedup(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -50182,7 +52820,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFFlatDedup__SWIG_1(PyObject *SWIGUNUSEDPAR
       result = (faiss::IndexIVFFlatDedup *)new faiss::IndexIVFFlatDedup(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -50231,7 +52874,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlatDedup_train(PyObject *SWIGUNUSEDPARM(self
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -50289,7 +52937,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlatDedup_add_with_ids(PyObject *SWIGUNUSEDPA
       (arg1)->add_with_ids(arg2,(float const *)arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -50401,7 +53054,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlatDedup_search_preassigned__SWIG_0(PyObject
       ((faiss::IndexIVFFlatDedup const *)arg1)->search_preassigned(arg2,(float const *)arg3,arg4,(faiss::Index::idx_t const *)arg5,(float const *)arg6,arg7,arg8,arg9,(faiss::IVFSearchParameters const *)arg10);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -50504,7 +53162,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlatDedup_search_preassigned__SWIG_1(PyObject
       ((faiss::IndexIVFFlatDedup const *)arg1)->search_preassigned(arg2,(float const *)arg3,arg4,(faiss::Index::idx_t const *)arg5,(float const *)arg6,arg7,arg8,arg9);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -50679,7 +53342,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlatDedup_remove_ids(PyObject *SWIGUNUSEDPARM
       result = (long)(arg1)->remove_ids((faiss::IDSelector const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -50746,7 +53414,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlatDedup_range_search(PyObject *SWIGUNUSEDPA
       ((faiss::IndexIVFFlatDedup const *)arg1)->range_search(arg2,(float const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -50804,7 +53477,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlatDedup_update_vectors(PyObject *SWIGUNUSED
       (arg1)->update_vectors(arg2,arg3,(float const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -50862,7 +53540,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFFlatDedup_reconstruct_from_offset(PyObject *S
       ((faiss::IndexIVFFlatDedup const *)arg1)->reconstruct_from_offset(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -50885,7 +53568,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFFlatDedup__SWIG_2(PyObject *SWIGUNUSEDPAR
       result = (faiss::IndexIVFFlatDedup *)new faiss::IndexIVFFlatDedup();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -51357,7 +54045,12 @@ SWIGINTERN PyObject *_wrap_new_OnDiskInvertedLists__SWIG_0(PyObject *SWIGUNUSEDP
       result = (faiss::OnDiskInvertedLists *)new faiss::OnDiskInvertedLists(arg1,arg2,(char const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -51400,7 +54093,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_list_size(PyObject *SWIGUNUSEDPAR
       result = (size_t)((faiss::OnDiskInvertedLists const *)arg1)->list_size(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -51441,7 +54139,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_get_codes(PyObject *SWIGUNUSEDPAR
       result = (uint8_t *)((faiss::OnDiskInvertedLists const *)arg1)->get_codes(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -51482,7 +54185,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_get_ids(PyObject *SWIGUNUSEDPARM(
       result = (faiss::InvertedLists::idx_t *)((faiss::OnDiskInvertedLists const *)arg1)->get_ids(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -51550,7 +54258,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_add_entries(PyObject *SWIGUNUSEDP
       result = (size_t)(arg1)->add_entries(arg2,arg3,(faiss::InvertedLists::idx_t const *)arg4,(uint8_t const *)arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -51626,7 +54339,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_update_entries(PyObject *SWIGUNUS
       (arg1)->update_entries(arg2,arg3,arg4,(faiss::InvertedLists::idx_t const *)arg5,(uint8_t const *)arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -51675,7 +54393,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_resize(PyObject *SWIGUNUSEDPARM(s
       (arg1)->resize(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -51725,7 +54448,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_merge_from(PyObject *SWIGUNUSEDPA
       result = (size_t)(arg1)->merge_from((faiss::InvertedLists const **)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -51774,7 +54502,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_prefetch_lists(PyObject *SWIGUNUS
       ((faiss::OnDiskInvertedLists const *)arg1)->prefetch_lists((long const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -51805,7 +54538,12 @@ SWIGINTERN PyObject *_wrap_delete_OnDiskInvertedLists(PyObject *SWIGUNUSEDPARM(s
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -51940,7 +54678,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_do_mmap(PyObject *SWIGUNUSEDPARM(
       (arg1)->do_mmap();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -51980,7 +54723,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_update_totsize(PyObject *SWIGUNUS
       (arg1)->update_totsize(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -52029,7 +54777,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_resize_locked(PyObject *SWIGUNUSE
       (arg1)->resize_locked(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -52070,7 +54823,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_allocate_slot(PyObject *SWIGUNUSE
       result = (size_t)(arg1)->allocate_slot(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -52119,7 +54877,12 @@ SWIGINTERN PyObject *_wrap_OnDiskInvertedLists_free_slot(PyObject *SWIGUNUSEDPAR
       (arg1)->free_slot(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -52142,7 +54905,12 @@ SWIGINTERN PyObject *_wrap_new_OnDiskInvertedLists__SWIG_1(PyObject *SWIGUNUSEDP
       result = (faiss::OnDiskInvertedLists *)new faiss::OnDiskInvertedLists();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -52329,7 +55097,12 @@ SWIGINTERN PyObject *_wrap_delete_IVFPQSearchParameters(PyObject *SWIGUNUSEDPARM
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -52871,7 +55644,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFPQ__SWIG_0(PyObject *SWIGUNUSEDPARM(self)
       result = (faiss::IndexIVFPQ *)new faiss::IndexIVFPQ(arg1,arg2,arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -52929,7 +55707,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_add_with_ids__SWIG_0(PyObject *SWIGUNUSEDP
       (arg1)->add_with_ids(arg2,(float const *)arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -52978,7 +55761,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_add_with_ids__SWIG_1(PyObject *SWIGUNUSEDP
       (arg1)->add_with_ids(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53112,7 +55900,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_encode_vectors(PyObject *SWIGUNUSEDPARM(se
       ((faiss::IndexIVFPQ const *)arg1)->encode_vectors(arg2,(float const *)arg3,(faiss::Index::idx_t const *)arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53188,7 +55981,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_add_core_o__SWIG_0(PyObject *SWIGUNUSEDPAR
       (arg1)->add_core_o(arg2,(float const *)arg3,(long const *)arg4,arg5,(long const *)arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53255,7 +56053,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_add_core_o__SWIG_1(PyObject *SWIGUNUSEDPAR
       (arg1)->add_core_o(arg2,(float const *)arg3,(long const *)arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53391,7 +56194,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_train_residual(PyObject *SWIGUNUSEDPARM(se
       (arg1)->train_residual(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53449,7 +56257,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_train_residual_o(PyObject *SWIGUNUSEDPARM(
       (arg1)->train_residual_o(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53507,7 +56320,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_reconstruct_from_offset(PyObject *SWIGUNUS
       ((faiss::IndexIVFPQ const *)arg1)->reconstruct_from_offset(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53557,7 +56375,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_find_duplicates(PyObject *SWIGUNUSEDPARM(s
       result = (size_t)((faiss::IndexIVFPQ const *)arg1)->find_duplicates(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53615,7 +56438,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_encode(PyObject *SWIGUNUSEDPARM(self), PyO
       ((faiss::IndexIVFPQ const *)arg1)->encode(arg2,(float const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53691,7 +56519,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_encode_multiple__SWIG_0(PyObject *SWIGUNUS
       ((faiss::IndexIVFPQ const *)arg1)->encode_multiple(arg2,arg3,(float const *)arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53758,7 +56591,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_encode_multiple__SWIG_1(PyObject *SWIGUNUS
       ((faiss::IndexIVFPQ const *)arg1)->encode_multiple(arg2,arg3,(float const *)arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53913,7 +56751,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_decode_multiple(PyObject *SWIGUNUSEDPARM(s
       ((faiss::IndexIVFPQ const *)arg1)->decode_multiple(arg2,(long const *)arg3,(uint8_t const *)arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53954,7 +56797,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_get_InvertedListScanner(PyObject *SWIGUNUS
       result = (faiss::InvertedListScanner *)((faiss::IndexIVFPQ const *)arg1)->get_InvertedListScanner(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -53985,7 +56833,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQ_precompute_table(PyObject *SWIGUNUSEDPARM(
       (arg1)->precompute_table();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -54008,7 +56861,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFPQ__SWIG_1(PyObject *SWIGUNUSEDPARM(self)
       result = (faiss::IndexIVFPQ *)new faiss::IndexIVFPQ();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -54325,7 +57183,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFPQStats(PyObject *SWIGUNUSEDPARM(self), P
       result = (faiss::IndexIVFPQStats *)new faiss::IndexIVFPQStats();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -54356,7 +57219,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQStats_reset(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -54656,7 +57524,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFPQR__SWIG_0(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexIVFPQR *)new faiss::IndexIVFPQR(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -54687,7 +57560,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQR_reset(PyObject *SWIGUNUSEDPARM(self), PyO
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -54731,7 +57609,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQR_remove_ids(PyObject *SWIGUNUSEDPARM(self)
       result = (long)(arg1)->remove_ids((faiss::IDSelector const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -54780,7 +57663,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQR_train_residual(PyObject *SWIGUNUSEDPARM(s
       (arg1)->train_residual(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -54838,7 +57726,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQR_add_with_ids(PyObject *SWIGUNUSEDPARM(sel
       (arg1)->add_with_ids(arg2,(float const *)arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -54905,7 +57798,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQR_add_core__SWIG_0(PyObject *SWIGUNUSEDPARM
       (arg1)->add_core(arg2,(float const *)arg3,(long const *)arg4,(long const *)arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -54963,7 +57861,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQR_add_core__SWIG_1(PyObject *SWIGUNUSEDPARM
       (arg1)->add_core(arg2,(float const *)arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -55098,7 +58001,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQR_reconstruct_from_offset(PyObject *SWIGUNU
       ((faiss::IndexIVFPQR const *)arg1)->reconstruct_from_offset(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -55150,7 +58058,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQR_merge_from(PyObject *SWIGUNUSEDPARM(self)
       (arg1)->merge_from(*arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -55262,7 +58175,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQR_search_preassigned__SWIG_0(PyObject *SWIG
       ((faiss::IndexIVFPQR const *)arg1)->search_preassigned(arg2,(float const *)arg3,arg4,(faiss::Index::idx_t const *)arg5,(float const *)arg6,arg7,arg8,arg9,(faiss::IVFSearchParameters const *)arg10);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -55365,7 +58283,12 @@ SWIGINTERN PyObject *_wrap_IndexIVFPQR_search_preassigned__SWIG_1(PyObject *SWIG
       ((faiss::IndexIVFPQR const *)arg1)->search_preassigned(arg2,(float const *)arg3,arg4,(faiss::Index::idx_t const *)arg5,(float const *)arg6,arg7,arg8,arg9);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -55519,7 +58442,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIVFPQR__SWIG_1(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexIVFPQR *)new faiss::IndexIVFPQR();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -55988,7 +58916,12 @@ SWIGINTERN PyObject *_wrap_new_Index2Layer__SWIG_0(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::Index2Layer *)new faiss::Index2Layer(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56038,7 +58971,12 @@ SWIGINTERN PyObject *_wrap_new_Index2Layer__SWIG_1(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::Index2Layer *)new faiss::Index2Layer(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56061,7 +58999,12 @@ SWIGINTERN PyObject *_wrap_new_Index2Layer__SWIG_2(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::Index2Layer *)new faiss::Index2Layer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56166,7 +59109,12 @@ SWIGINTERN PyObject *_wrap_delete_Index2Layer(PyObject *SWIGUNUSEDPARM(self), Py
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56215,7 +59163,12 @@ SWIGINTERN PyObject *_wrap_Index2Layer_train(PyObject *SWIGUNUSEDPARM(self), PyO
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56264,7 +59217,12 @@ SWIGINTERN PyObject *_wrap_Index2Layer_add(PyObject *SWIGUNUSEDPARM(self), PyObj
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56340,7 +59298,12 @@ SWIGINTERN PyObject *_wrap_Index2Layer_search(PyObject *SWIGUNUSEDPARM(self), Py
       ((faiss::Index2Layer const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56398,7 +59361,12 @@ SWIGINTERN PyObject *_wrap_Index2Layer_reconstruct_n(PyObject *SWIGUNUSEDPARM(se
       ((faiss::Index2Layer const *)arg1)->reconstruct_n(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56447,7 +59415,12 @@ SWIGINTERN PyObject *_wrap_Index2Layer_reconstruct(PyObject *SWIGUNUSEDPARM(self
       ((faiss::Index2Layer const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56478,7 +59451,12 @@ SWIGINTERN PyObject *_wrap_Index2Layer_reset(PyObject *SWIGUNUSEDPARM(self), PyO
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56521,7 +59499,12 @@ SWIGINTERN PyObject *_wrap_Index2Layer_transfer_to_IVFPQ(PyObject *SWIGUNUSEDPAR
       ((faiss::Index2Layer const *)arg1)->transfer_to_IVFPQ(*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56871,7 +59854,12 @@ SWIGINTERN PyObject *_wrap_delete_IndexBinary(PyObject *SWIGUNUSEDPARM(self), Py
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56920,7 +59908,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_train(PyObject *SWIGUNUSEDPARM(self), PyO
       (arg1)->train(arg2,(uint8_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -56969,7 +59962,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_add(PyObject *SWIGUNUSEDPARM(self), PyObj
       (arg1)->add(arg2,(uint8_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57027,7 +60025,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_add_with_ids(PyObject *SWIGUNUSEDPARM(sel
       (arg1)->add_with_ids(arg2,(uint8_t const *)arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57103,7 +60106,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_search(PyObject *SWIGUNUSEDPARM(self), Py
       ((faiss::IndexBinary const *)arg1)->search(arg2,(uint8_t const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57170,7 +60178,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_range_search(PyObject *SWIGUNUSEDPARM(sel
       ((faiss::IndexBinary const *)arg1)->range_search(arg2,(uint8_t const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57237,7 +60250,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_assign__SWIG_0(PyObject *SWIGUNUSEDPARM(s
       (arg1)->assign(arg2,(uint8_t const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57295,7 +60313,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_assign__SWIG_1(PyObject *SWIGUNUSEDPARM(s
       (arg1)->assign(arg2,(uint8_t const *)arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57404,7 +60427,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_reset(PyObject *SWIGUNUSEDPARM(self), PyO
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57448,7 +60476,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_remove_ids(PyObject *SWIGUNUSEDPARM(self)
       result = (long)(arg1)->remove_ids((faiss::IDSelector const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57497,7 +60530,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_reconstruct(PyObject *SWIGUNUSEDPARM(self
       ((faiss::IndexBinary const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57555,7 +60593,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_reconstruct_n(PyObject *SWIGUNUSEDPARM(se
       ((faiss::IndexBinary const *)arg1)->reconstruct_n(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57640,7 +60683,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_search_and_reconstruct(PyObject *SWIGUNUS
       ((faiss::IndexBinary const *)arg1)->search_and_reconstruct(arg2,(uint8_t const *)arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57671,7 +60719,12 @@ SWIGINTERN PyObject *_wrap_IndexBinary_display(PyObject *SWIGUNUSEDPARM(self), P
       ((faiss::IndexBinary const *)arg1)->display();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57866,7 +60919,12 @@ SWIGINTERN PyObject *_wrap_new_IndexBinaryFlat__SWIG_0(PyObject *SWIGUNUSEDPARM(
       result = (faiss::IndexBinaryFlat *)new faiss::IndexBinaryFlat(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57915,7 +60973,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryFlat_add(PyObject *SWIGUNUSEDPARM(self), P
       (arg1)->add(arg2,(uint8_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -57946,7 +61009,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryFlat_reset(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -58022,7 +61090,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryFlat_search(PyObject *SWIGUNUSEDPARM(self)
       ((faiss::IndexBinaryFlat const *)arg1)->search(arg2,(uint8_t const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -58071,7 +61144,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryFlat_reconstruct(PyObject *SWIGUNUSEDPARM(
       ((faiss::IndexBinaryFlat const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -58115,7 +61193,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryFlat_remove_ids(PyObject *SWIGUNUSEDPARM(s
       result = (long)(arg1)->remove_ids((faiss::IDSelector const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -58138,7 +61221,12 @@ SWIGINTERN PyObject *_wrap_new_IndexBinaryFlat__SWIG_1(PyObject *SWIGUNUSEDPARM(
       result = (faiss::IndexBinaryFlat *)new faiss::IndexBinaryFlat();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -58875,7 +61963,12 @@ SWIGINTERN PyObject *_wrap_new_IndexBinaryIVF__SWIG_0(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::IndexBinaryIVF *)new faiss::IndexBinaryIVF(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -58898,7 +61991,12 @@ SWIGINTERN PyObject *_wrap_new_IndexBinaryIVF__SWIG_1(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::IndexBinaryIVF *)new faiss::IndexBinaryIVF();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -58975,7 +62073,12 @@ SWIGINTERN PyObject *_wrap_delete_IndexBinaryIVF(PyObject *SWIGUNUSEDPARM(self),
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59006,7 +62109,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_reset(PyObject *SWIGUNUSEDPARM(self), 
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59055,7 +62163,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_train(PyObject *SWIGUNUSEDPARM(self), 
       (arg1)->train(arg2,(uint8_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59104,7 +62217,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_add(PyObject *SWIGUNUSEDPARM(self), Py
       (arg1)->add(arg2,(uint8_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59162,7 +62280,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_add_with_ids(PyObject *SWIGUNUSEDPARM(
       (arg1)->add_with_ids(arg2,(uint8_t const *)arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59229,7 +62352,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_add_core(PyObject *SWIGUNUSEDPARM(self
       (arg1)->add_core(arg2,(uint8_t const *)arg3,(long const *)arg4,(long const *)arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59341,7 +62469,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_search_preassigned__SWIG_0(PyObject *S
       ((faiss::IndexBinaryIVF const *)arg1)->search_preassigned(arg2,(uint8_t const *)arg3,arg4,(faiss::IndexBinary::idx_t const *)arg5,(int32_t const *)arg6,arg7,arg8,arg9,(faiss::IVFSearchParameters const *)arg10);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59444,7 +62577,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_search_preassigned__SWIG_1(PyObject *S
       ((faiss::IndexBinaryIVF const *)arg1)->search_preassigned(arg2,(uint8_t const *)arg3,arg4,(faiss::IndexBinary::idx_t const *)arg5,(int32_t const *)arg6,arg7,arg8,arg9);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59616,7 +62754,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_get_InvertedListScanner__SWIG_0(PyObje
       result = (faiss::BinaryInvertedListScanner *)((faiss::IndexBinaryIVF const *)arg1)->get_InvertedListScanner(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59648,7 +62791,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_get_InvertedListScanner__SWIG_1(PyObje
       result = (faiss::BinaryInvertedListScanner *)((faiss::IndexBinaryIVF const *)arg1)->get_InvertedListScanner();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59770,7 +62918,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_search(PyObject *SWIGUNUSEDPARM(self),
       ((faiss::IndexBinaryIVF const *)arg1)->search(arg2,(uint8_t const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59819,7 +62972,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_reconstruct(PyObject *SWIGUNUSEDPARM(s
       ((faiss::IndexBinaryIVF const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59877,7 +63035,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_reconstruct_n(PyObject *SWIGUNUSEDPARM
       ((faiss::IndexBinaryIVF const *)arg1)->reconstruct_n(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -59962,7 +63125,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_search_and_reconstruct(PyObject *SWIGU
       ((faiss::IndexBinaryIVF const *)arg1)->search_and_reconstruct(arg2,(uint8_t const *)arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60020,7 +63188,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_reconstruct_from_offset(PyObject *SWIG
       ((faiss::IndexBinaryIVF const *)arg1)->reconstruct_from_offset(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60064,7 +63237,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_remove_ids(PyObject *SWIGUNUSEDPARM(se
       result = (long)(arg1)->remove_ids((faiss::IDSelector const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60116,7 +63294,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_merge_from(PyObject *SWIGUNUSEDPARM(se
       (arg1)->merge_from(*arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60157,7 +63340,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_get_list_size(PyObject *SWIGUNUSEDPARM
       result = (size_t)((faiss::IndexBinaryIVF const *)arg1)->get_list_size(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60197,7 +63385,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_make_direct_map__SWIG_0(PyObject *SWIG
       (arg1)->make_direct_map(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60228,7 +63421,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_make_direct_map__SWIG_1(PyObject *SWIG
       (arg1)->make_direct_map();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60323,7 +63521,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_replace_invlists__SWIG_0(PyObject *SWI
       (arg1)->replace_invlists(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60363,7 +63566,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryIVF_replace_invlists__SWIG_1(PyObject *SWI
       (arg1)->replace_invlists(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60553,7 +63761,12 @@ SWIGINTERN PyObject *_wrap_new_IndexBinaryFromFloat__SWIG_0(PyObject *SWIGUNUSED
       result = (faiss::IndexBinaryFromFloat *)new faiss::IndexBinaryFromFloat();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60585,7 +63798,12 @@ SWIGINTERN PyObject *_wrap_new_IndexBinaryFromFloat__SWIG_1(PyObject *SWIGUNUSED
       result = (faiss::IndexBinaryFromFloat *)new faiss::IndexBinaryFromFloat(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60650,7 +63868,12 @@ SWIGINTERN PyObject *_wrap_delete_IndexBinaryFromFloat(PyObject *SWIGUNUSEDPARM(
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60699,7 +63922,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryFromFloat_add(PyObject *SWIGUNUSEDPARM(sel
       (arg1)->add(arg2,(uint8_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60730,7 +63958,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryFromFloat_reset(PyObject *SWIGUNUSEDPARM(s
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60806,7 +64039,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryFromFloat_search(PyObject *SWIGUNUSEDPARM(
       ((faiss::IndexBinaryFromFloat const *)arg1)->search(arg2,(uint8_t const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -60855,7 +64093,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryFromFloat_train(PyObject *SWIGUNUSEDPARM(s
       (arg1)->train(arg2,(uint8_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61041,7 +64284,12 @@ SWIGINTERN PyObject *_wrap_new_IndexBinaryHNSW__SWIG_0(PyObject *SWIGUNUSEDPARM(
       result = (faiss::IndexBinaryHNSW *)new faiss::IndexBinaryHNSW();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61082,7 +64330,12 @@ SWIGINTERN PyObject *_wrap_new_IndexBinaryHNSW__SWIG_1(PyObject *SWIGUNUSEDPARM(
       result = (faiss::IndexBinaryHNSW *)new faiss::IndexBinaryHNSW(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61114,7 +64367,12 @@ SWIGINTERN PyObject *_wrap_new_IndexBinaryHNSW__SWIG_2(PyObject *SWIGUNUSEDPARM(
       result = (faiss::IndexBinaryHNSW *)new faiss::IndexBinaryHNSW(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61155,7 +64413,12 @@ SWIGINTERN PyObject *_wrap_new_IndexBinaryHNSW__SWIG_3(PyObject *SWIGUNUSEDPARM(
       result = (faiss::IndexBinaryHNSW *)new faiss::IndexBinaryHNSW(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61187,7 +64450,12 @@ SWIGINTERN PyObject *_wrap_new_IndexBinaryHNSW__SWIG_4(PyObject *SWIGUNUSEDPARM(
       result = (faiss::IndexBinaryHNSW *)new faiss::IndexBinaryHNSW(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61296,7 +64564,12 @@ SWIGINTERN PyObject *_wrap_delete_IndexBinaryHNSW(PyObject *SWIGUNUSEDPARM(self)
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61328,7 +64601,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryHNSW_get_distance_computer(PyObject *SWIGU
       result = (faiss::DistanceComputer *)((faiss::IndexBinaryHNSW const *)arg1)->get_distance_computer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61377,7 +64655,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryHNSW_add(PyObject *SWIGUNUSEDPARM(self), P
       (arg1)->add(arg2,(uint8_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61426,7 +64709,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryHNSW_train(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->train(arg2,(uint8_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61502,7 +64790,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryHNSW_search(PyObject *SWIGUNUSEDPARM(self)
       ((faiss::IndexBinaryHNSW const *)arg1)->search(arg2,(uint8_t const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61551,7 +64844,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryHNSW_reconstruct(PyObject *SWIGUNUSEDPARM(
       ((faiss::IndexBinaryHNSW const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61582,7 +64880,12 @@ SWIGINTERN PyObject *_wrap_IndexBinaryHNSW_reset(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -61603,7 +64906,7 @@ SWIGINTERN PyObject *IndexBinaryHNSW_swigregister(PyObject *SWIGUNUSEDPARM(self)
 
 SWIGINTERN PyObject *_wrap_IndexShards_shard_indexes_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   std::vector< faiss::Index * > *arg2 = (std::vector< faiss::Index * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -61613,11 +64916,11 @@ SWIGINTERN PyObject *_wrap_IndexShards_shard_indexes_set(PyObject *SWIGUNUSEDPAR
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_shard_indexes_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_shard_indexes_set" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_shard_indexes_set" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_std__vectorT_faiss__Index_p_t, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexShards_shard_indexes_set" "', argument " "2"" of type '" "std::vector< faiss::Index * > *""'"); 
@@ -61633,18 +64936,18 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_shard_indexes_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   std::vector< faiss::Index * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_shard_indexes_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_shard_indexes_get" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_shard_indexes_get" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   result = (std::vector< faiss::Index * > *)& ((arg1)->shard_indexes);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_faiss__Index_p_t, 0 |  0 );
   return resultobj;
@@ -61655,7 +64958,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_own_fields_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -61665,11 +64968,11 @@ SWIGINTERN PyObject *_wrap_IndexShards_own_fields_set(PyObject *SWIGUNUSEDPARM(s
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_own_fields_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_own_fields_set" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_own_fields_set" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_bool(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_own_fields_set" "', argument " "2"" of type '" "bool""'");
@@ -61685,18 +64988,18 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_own_fields_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   bool result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_own_fields_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_own_fields_get" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_own_fields_get" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   result = (bool) ((arg1)->own_fields);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -61707,7 +65010,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_threaded_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -61717,11 +65020,11 @@ SWIGINTERN PyObject *_wrap_IndexShards_threaded_set(PyObject *SWIGUNUSEDPARM(sel
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_threaded_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_threaded_set" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_threaded_set" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_bool(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_threaded_set" "', argument " "2"" of type '" "bool""'");
@@ -61737,18 +65040,18 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_threaded_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   bool result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_threaded_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_threaded_get" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_threaded_get" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   result = (bool) ((arg1)->threaded);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -61759,7 +65062,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_successive_ids_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -61769,11 +65072,11 @@ SWIGINTERN PyObject *_wrap_IndexShards_successive_ids_set(PyObject *SWIGUNUSEDPA
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_successive_ids_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_successive_ids_set" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_successive_ids_set" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_bool(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_successive_ids_set" "', argument " "2"" of type '" "bool""'");
@@ -61789,18 +65092,18 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_successive_ids_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   bool result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_successive_ids_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_successive_ids_get" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_successive_ids_get" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   result = (bool) ((arg1)->successive_ids);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -61811,7 +65114,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::Index::idx_t arg1 ;
+  faiss::IndexShardsTemplate< faiss::Index >::idx_t arg1 ;
   bool arg2 ;
   bool arg3 ;
   long val1 ;
@@ -61823,14 +65126,14 @@ SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_0(PyObject *SWIGUNUSEDPARM(self
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  faiss::IndexShards *result = 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:new_IndexShards",&obj0,&obj1,&obj2)) SWIG_fail;
   ecode1 = SWIG_AsVal_long(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexShards" "', argument " "1"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexShards" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::idx_t""'");
   } 
-  arg1 = static_cast< faiss::Index::idx_t >(val1);
+  arg1 = static_cast< faiss::IndexShardsTemplate< faiss::Index >::idx_t >(val1);
   ecode2 = SWIG_AsVal_bool(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_IndexShards" "', argument " "2"" of type '" "bool""'");
@@ -61844,15 +65147,20 @@ SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_0(PyObject *SWIGUNUSEDPARM(self
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (faiss::IndexShards *)new faiss::IndexShards(arg1,arg2,arg3);
+      result = (faiss::IndexShardsTemplate< faiss::Index > *)new faiss::IndexShardsTemplate< faiss::Index >(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShards, SWIG_POINTER_NEW |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -61861,7 +65169,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::Index::idx_t arg1 ;
+  faiss::IndexShardsTemplate< faiss::Index >::idx_t arg1 ;
   bool arg2 ;
   long val1 ;
   int ecode1 = 0 ;
@@ -61869,14 +65177,14 @@ SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_1(PyObject *SWIGUNUSEDPARM(self
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  faiss::IndexShards *result = 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:new_IndexShards",&obj0,&obj1)) SWIG_fail;
   ecode1 = SWIG_AsVal_long(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexShards" "', argument " "1"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexShards" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::idx_t""'");
   } 
-  arg1 = static_cast< faiss::Index::idx_t >(val1);
+  arg1 = static_cast< faiss::IndexShardsTemplate< faiss::Index >::idx_t >(val1);
   ecode2 = SWIG_AsVal_bool(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_IndexShards" "', argument " "2"" of type '" "bool""'");
@@ -61885,15 +65193,20 @@ SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_1(PyObject *SWIGUNUSEDPARM(self
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (faiss::IndexShards *)new faiss::IndexShards(arg1,arg2);
+      result = (faiss::IndexShardsTemplate< faiss::Index > *)new faiss::IndexShardsTemplate< faiss::Index >(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShards, SWIG_POINTER_NEW |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -61902,30 +65215,35 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_IndexShards__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::Index::idx_t arg1 ;
+  faiss::IndexShardsTemplate< faiss::Index >::idx_t arg1 ;
   long val1 ;
   int ecode1 = 0 ;
   PyObject * obj0 = 0 ;
-  faiss::IndexShards *result = 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:new_IndexShards",&obj0)) SWIG_fail;
   ecode1 = SWIG_AsVal_long(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexShards" "', argument " "1"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexShards" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::idx_t""'");
   } 
-  arg1 = static_cast< faiss::Index::idx_t >(val1);
+  arg1 = static_cast< faiss::IndexShardsTemplate< faiss::Index >::idx_t >(val1);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (faiss::IndexShards *)new faiss::IndexShards(arg1);
+      result = (faiss::IndexShardsTemplate< faiss::Index > *)new faiss::IndexShardsTemplate< faiss::Index >(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShards, SWIG_POINTER_NEW |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -61996,16 +65314,16 @@ SWIGINTERN PyObject *_wrap_new_IndexShards(PyObject *self, PyObject *args) {
 fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_IndexShards'.\n"
     "  Possible C/C++ prototypes are:\n"
-    "    faiss::IndexShards::IndexShards(faiss::Index::idx_t,bool,bool)\n"
-    "    faiss::IndexShards::IndexShards(faiss::Index::idx_t,bool)\n"
-    "    faiss::IndexShards::IndexShards(faiss::Index::idx_t)\n");
+    "    faiss::IndexShardsTemplate< faiss::Index >::IndexShardsTemplate(faiss::IndexShardsTemplate< faiss::Index >::idx_t,bool,bool)\n"
+    "    faiss::IndexShardsTemplate< faiss::Index >::IndexShardsTemplate(faiss::IndexShardsTemplate< faiss::Index >::idx_t,bool)\n"
+    "    faiss::IndexShardsTemplate< faiss::Index >::IndexShardsTemplate(faiss::IndexShardsTemplate< faiss::Index >::idx_t)\n");
   return 0;
 }
 
 
 SWIGINTERN PyObject *_wrap_IndexShards_add_shard(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   faiss::Index *arg2 = (faiss::Index *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -62015,11 +65333,11 @@ SWIGINTERN PyObject *_wrap_IndexShards_add_shard(PyObject *SWIGUNUSEDPARM(self),
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_add_shard",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_add_shard" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_add_shard" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__Index, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexShards_add_shard" "', argument " "2"" of type '" "faiss::Index *""'"); 
@@ -62031,7 +65349,12 @@ SWIGINTERN PyObject *_wrap_IndexShards_add_shard(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->add_shard(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62045,24 +65368,29 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_sync_with_shard_indexes(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_sync_with_shard_indexes",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_sync_with_shard_indexes" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_sync_with_shard_indexes" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
       (arg1)->sync_with_shard_indexes();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62076,7 +65404,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_at(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -62087,11 +65415,11 @@ SWIGINTERN PyObject *_wrap_IndexShards_at(PyObject *SWIGUNUSEDPARM(self), PyObje
   faiss::Index *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:IndexShards_at",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_at" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_at" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_at" "', argument " "2"" of type '" "int""'");
@@ -62103,7 +65431,12 @@ SWIGINTERN PyObject *_wrap_IndexShards_at(PyObject *SWIGUNUSEDPARM(self), PyObje
       result = (faiss::Index *)(arg1)->at(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62117,9 +65450,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_add(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index >::idx_t arg2 ;
+  faiss::IndexShardsTemplate< faiss::Index >::component_t *arg3 = (faiss::IndexShardsTemplate< faiss::Index >::component_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   long val2 ;
@@ -62131,28 +65464,33 @@ SWIGINTERN PyObject *_wrap_IndexShards_add(PyObject *SWIGUNUSEDPARM(self), PyObj
   PyObject * obj2 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:IndexShards_add",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_add" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_add" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_add" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_add" "', argument " "2"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::idx_t""'");
   } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  arg2 = static_cast< faiss::IndexShardsTemplate< faiss::Index >::idx_t >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_add" "', argument " "3"" of type '" "float const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_add" "', argument " "3"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::component_t const *""'"); 
   }
-  arg3 = reinterpret_cast< float * >(argp3);
+  arg3 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index >::component_t * >(argp3);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      (arg1)->add(arg2,(float const *)arg3);
+      (arg1)->add(arg2,(faiss::IndexShardsTemplate< faiss::Index >::component_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62166,10 +65504,10 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_add_with_ids(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  long *arg4 = (long *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index >::idx_t arg2 ;
+  faiss::IndexShardsTemplate< faiss::Index >::component_t *arg3 = (faiss::IndexShardsTemplate< faiss::Index >::component_t *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index >::idx_t *arg4 = (faiss::IndexShardsTemplate< faiss::Index >::idx_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   long val2 ;
@@ -62184,33 +65522,38 @@ SWIGINTERN PyObject *_wrap_IndexShards_add_with_ids(PyObject *SWIGUNUSEDPARM(sel
   PyObject * obj3 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:IndexShards_add_with_ids",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_add_with_ids" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_add_with_ids" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_add_with_ids" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_add_with_ids" "', argument " "2"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::idx_t""'");
   } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  arg2 = static_cast< faiss::IndexShardsTemplate< faiss::Index >::idx_t >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_add_with_ids" "', argument " "3"" of type '" "float const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_add_with_ids" "', argument " "3"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::component_t const *""'"); 
   }
-  arg3 = reinterpret_cast< float * >(argp3);
+  arg3 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index >::component_t * >(argp3);
   res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_long, 0 |  0 );
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "IndexShards_add_with_ids" "', argument " "4"" of type '" "long const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "IndexShards_add_with_ids" "', argument " "4"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::idx_t const *""'"); 
   }
-  arg4 = reinterpret_cast< long * >(argp4);
+  arg4 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index >::idx_t * >(argp4);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      (arg1)->add_with_ids(arg2,(float const *)arg3,(long const *)arg4);
+      (arg1)->add_with_ids(arg2,(faiss::IndexShardsTemplate< faiss::Index >::component_t const *)arg3,(faiss::IndexShardsTemplate< faiss::Index >::idx_t const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62224,12 +65567,12 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  faiss::Index::idx_t arg4 ;
-  float *arg5 = (float *) 0 ;
-  faiss::Index::idx_t *arg6 = (faiss::Index::idx_t *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index >::idx_t arg2 ;
+  faiss::IndexShardsTemplate< faiss::Index >::component_t *arg3 = (faiss::IndexShardsTemplate< faiss::Index >::component_t *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index >::idx_t arg4 ;
+  faiss::IndexShardsTemplate< faiss::Index >::distance_t *arg5 = (faiss::IndexShardsTemplate< faiss::Index >::distance_t *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index >::idx_t *arg6 = (faiss::IndexShardsTemplate< faiss::Index >::idx_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   long val2 ;
@@ -62250,43 +65593,48 @@ SWIGINTERN PyObject *_wrap_IndexShards_search(PyObject *SWIGUNUSEDPARM(self), Py
   PyObject * obj5 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOOO:IndexShards_search",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_search" "', argument " "1"" of type '" "faiss::IndexShards const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_search" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > const *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_search" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_search" "', argument " "2"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::idx_t""'");
   } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  arg2 = static_cast< faiss::IndexShardsTemplate< faiss::Index >::idx_t >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_search" "', argument " "3"" of type '" "float const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_search" "', argument " "3"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::component_t const *""'"); 
   }
-  arg3 = reinterpret_cast< float * >(argp3);
+  arg3 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index >::component_t * >(argp3);
   ecode4 = SWIG_AsVal_long(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexShards_search" "', argument " "4"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexShards_search" "', argument " "4"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::idx_t""'");
   } 
-  arg4 = static_cast< faiss::Index::idx_t >(val4);
+  arg4 = static_cast< faiss::IndexShardsTemplate< faiss::Index >::idx_t >(val4);
   res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_float, 0 |  0 );
   if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexShards_search" "', argument " "5"" of type '" "float *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexShards_search" "', argument " "5"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::distance_t *""'"); 
   }
-  arg5 = reinterpret_cast< float * >(argp5);
+  arg5 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index >::distance_t * >(argp5);
   res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_long, 0 |  0 );
   if (!SWIG_IsOK(res6)) {
-    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "IndexShards_search" "', argument " "6"" of type '" "faiss::Index::idx_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "IndexShards_search" "', argument " "6"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::idx_t *""'"); 
   }
-  arg6 = reinterpret_cast< faiss::Index::idx_t * >(argp6);
+  arg6 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index >::idx_t * >(argp6);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      ((faiss::IndexShards const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
+      ((faiss::IndexShardsTemplate< faiss::Index > const *)arg1)->search(arg2,(faiss::IndexShardsTemplate< faiss::Index >::component_t const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62300,9 +65648,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_train(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index >::idx_t arg2 ;
+  faiss::IndexShardsTemplate< faiss::Index >::component_t *arg3 = (faiss::IndexShardsTemplate< faiss::Index >::component_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   long val2 ;
@@ -62314,28 +65662,33 @@ SWIGINTERN PyObject *_wrap_IndexShards_train(PyObject *SWIGUNUSEDPARM(self), PyO
   PyObject * obj2 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:IndexShards_train",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_train" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_train" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_train" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexShards_train" "', argument " "2"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::idx_t""'");
   } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  arg2 = static_cast< faiss::IndexShardsTemplate< faiss::Index >::idx_t >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_train" "', argument " "3"" of type '" "float const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexShards_train" "', argument " "3"" of type '" "faiss::IndexShardsTemplate< faiss::Index >::component_t const *""'"); 
   }
-  arg3 = reinterpret_cast< float * >(argp3);
+  arg3 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index >::component_t * >(argp3);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      (arg1)->train(arg2,(float const *)arg3);
+      (arg1)->train(arg2,(faiss::IndexShardsTemplate< faiss::Index >::component_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62349,24 +65702,29 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexShards_reset(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexShards_reset",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_reset" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexShards_reset" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62380,24 +65738,29 @@ fail:
 
 SWIGINTERN PyObject *_wrap_delete_IndexShards(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexShards *arg1 = (faiss::IndexShards *) 0 ;
+  faiss::IndexShardsTemplate< faiss::Index > *arg1 = (faiss::IndexShardsTemplate< faiss::Index > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:delete_IndexShards",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShards, SWIG_POINTER_DISOWN |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IndexShards" "', argument " "1"" of type '" "faiss::IndexShards *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IndexShards" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexShards * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::Index > * >(argp1);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62412,27 +65775,907 @@ fail:
 SWIGINTERN PyObject *IndexShards_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__IndexShards, SWIG_NewClientData(obj));
+  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_shard_indexes_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  std::vector< faiss::IndexBinary * > *arg2 = (std::vector< faiss::IndexBinary * > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexBinaryShards_shard_indexes_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_shard_indexes_set" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_std__vectorT_faiss__IndexBinary_p_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexBinaryShards_shard_indexes_set" "', argument " "2"" of type '" "std::vector< faiss::IndexBinary * > *""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< faiss::IndexBinary * > * >(argp2);
+  if (arg1) (arg1)->shard_indexes = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_shard_indexes_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  std::vector< faiss::IndexBinary * > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexBinaryShards_shard_indexes_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_shard_indexes_get" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  result = (std::vector< faiss::IndexBinary * > *)& ((arg1)->shard_indexes);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_faiss__IndexBinary_p_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_own_fields_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexBinaryShards_own_fields_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_own_fields_set" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryShards_own_fields_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->own_fields = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_own_fields_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexBinaryShards_own_fields_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_own_fields_get" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  result = (bool) ((arg1)->own_fields);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_threaded_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexBinaryShards_threaded_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_threaded_set" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryShards_threaded_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->threaded = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_threaded_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexBinaryShards_threaded_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_threaded_get" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  result = (bool) ((arg1)->threaded);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_successive_ids_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexBinaryShards_successive_ids_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_successive_ids_set" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryShards_successive_ids_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->successive_ids = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_successive_ids_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexBinaryShards_successive_ids_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_successive_ids_get" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  result = (bool) ((arg1)->successive_ids);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IndexBinaryShards__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t arg1 ;
+  bool arg2 ;
+  bool arg3 ;
+  long val1 ;
+  int ecode1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  bool val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:new_IndexBinaryShards",&obj0,&obj1,&obj2)) SWIG_fail;
+  ecode1 = SWIG_AsVal_long(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexBinaryShards" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg1 = static_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t >(val1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_IndexBinaryShards" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  ecode3 = SWIG_AsVal_bool(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_IndexBinaryShards" "', argument " "3"" of type '" "bool""'");
+  } 
+  arg3 = static_cast< bool >(val3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::IndexShardsTemplate< faiss::IndexBinary > *)new faiss::IndexShardsTemplate< faiss::IndexBinary >(arg1,arg2,arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IndexBinaryShards__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t arg1 ;
+  bool arg2 ;
+  long val1 ;
+  int ecode1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_IndexBinaryShards",&obj0,&obj1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_long(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexBinaryShards" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg1 = static_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t >(val1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_IndexBinaryShards" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::IndexShardsTemplate< faiss::IndexBinary > *)new faiss::IndexShardsTemplate< faiss::IndexBinary >(arg1,arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IndexBinaryShards__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t arg1 ;
+  long val1 ;
+  int ecode1 = 0 ;
+  PyObject * obj0 = 0 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_IndexBinaryShards",&obj0)) SWIG_fail;
+  ecode1 = SWIG_AsVal_long(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IndexBinaryShards" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg1 = static_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t >(val1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::IndexShardsTemplate< faiss::IndexBinary > *)new faiss::IndexShardsTemplate< faiss::IndexBinary >(arg1);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IndexBinaryShards(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 1) {
+    int _v;
+    {
+      int res = SWIG_AsVal_long(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      return _wrap_new_IndexBinaryShards__SWIG_2(self, args);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      int res = SWIG_AsVal_long(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      {
+        int res = SWIG_AsVal_bool(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_new_IndexBinaryShards__SWIG_1(self, args);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      int res = SWIG_AsVal_long(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      {
+        int res = SWIG_AsVal_bool(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_bool(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_new_IndexBinaryShards__SWIG_0(self, args);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_IndexBinaryShards'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    faiss::IndexShardsTemplate< faiss::IndexBinary >::IndexShardsTemplate(faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t,bool,bool)\n"
+    "    faiss::IndexShardsTemplate< faiss::IndexBinary >::IndexShardsTemplate(faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t,bool)\n"
+    "    faiss::IndexShardsTemplate< faiss::IndexBinary >::IndexShardsTemplate(faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_add_shard(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  faiss::IndexBinary *arg2 = (faiss::IndexBinary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexBinaryShards_add_shard",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_add_shard" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__IndexBinary, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexBinaryShards_add_shard" "', argument " "2"" of type '" "faiss::IndexBinary *""'"); 
+  }
+  arg2 = reinterpret_cast< faiss::IndexBinary * >(argp2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->add_shard(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_sync_with_shard_indexes(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexBinaryShards_sync_with_shard_indexes",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_sync_with_shard_indexes" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->sync_with_shard_indexes();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_at(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::IndexBinary *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexBinaryShards_at",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_at" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryShards_at" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::IndexBinary *)(arg1)->at(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexBinary, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_add(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t arg2 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t *arg3 = (faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexBinaryShards_add",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_add" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryShards_add" "', argument " "2"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexBinaryShards_add" "', argument " "3"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t const *""'"); 
+  }
+  arg3 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t * >(argp3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->add(arg2,(faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t const *)arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_add_with_ids(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t arg2 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t *arg3 = (faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t *) 0 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t *arg4 = (faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:IndexBinaryShards_add_with_ids",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_add_with_ids" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryShards_add_with_ids" "', argument " "2"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexBinaryShards_add_with_ids" "', argument " "3"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t const *""'"); 
+  }
+  arg3 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t * >(argp3);
+  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_long, 0 |  0 );
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "IndexBinaryShards_add_with_ids" "', argument " "4"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t const *""'"); 
+  }
+  arg4 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t * >(argp4);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->add_with_ids(arg2,(faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t const *)arg3,(faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t const *)arg4);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t arg2 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t *arg3 = (faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t *) 0 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t arg4 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::distance_t *arg5 = (faiss::IndexShardsTemplate< faiss::IndexBinary >::distance_t *) 0 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t *arg6 = (faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  long val4 ;
+  int ecode4 = 0 ;
+  void *argp5 = 0 ;
+  int res5 = 0 ;
+  void *argp6 = 0 ;
+  int res6 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:IndexBinaryShards_search",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_search" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryShards_search" "', argument " "2"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexBinaryShards_search" "', argument " "3"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t const *""'"); 
+  }
+  arg3 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t * >(argp3);
+  ecode4 = SWIG_AsVal_long(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexBinaryShards_search" "', argument " "4"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg4 = static_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t >(val4);
+  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_int, 0 |  0 );
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexBinaryShards_search" "', argument " "5"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::distance_t *""'"); 
+  }
+  arg5 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::distance_t * >(argp5);
+  res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_long, 0 |  0 );
+  if (!SWIG_IsOK(res6)) {
+    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "IndexBinaryShards_search" "', argument " "6"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t *""'"); 
+  }
+  arg6 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t * >(argp6);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      ((faiss::IndexShardsTemplate< faiss::IndexBinary > const *)arg1)->search(arg2,(faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t const *)arg3,arg4,arg5,arg6);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_train(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t arg2 ;
+  faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t *arg3 = (faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexBinaryShards_train",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_train" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryShards_train" "', argument " "2"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexBinaryShards_train" "', argument " "3"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t const *""'"); 
+  }
+  arg3 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t * >(argp3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->train(arg2,(faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t const *)arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryShards_reset(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexBinaryShards_reset",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryShards_reset" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->reset();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_IndexBinaryShards(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexShardsTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexShardsTemplate< faiss::IndexBinary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_IndexBinaryShards",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IndexBinaryShards" "', argument " "1"" of type '" "faiss::IndexShardsTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexShardsTemplate< faiss::IndexBinary > * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      delete arg1;
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *IndexBinaryShards_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
 SWIGINTERN PyObject *_wrap_new_IndexReplicas(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *result = 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)":new_IndexReplicas")) SWIG_fail;
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (faiss::IndexReplicas *)new faiss::IndexReplicas();
+      result = (faiss::IndexReplicasTemplate< faiss::Index > *)new faiss::IndexReplicasTemplate< faiss::Index >();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexReplicas, SWIG_POINTER_NEW |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -62441,24 +66684,29 @@ fail:
 
 SWIGINTERN PyObject *_wrap_delete_IndexReplicas(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:delete_IndexReplicas",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, SWIG_POINTER_DISOWN |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IndexReplicas" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IndexReplicas" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62472,7 +66720,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexReplicas_addIndex(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
   faiss::Index *arg2 = (faiss::Index *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -62482,11 +66730,11 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_addIndex(PyObject *SWIGUNUSEDPARM(self)
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:IndexReplicas_addIndex",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_addIndex" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_addIndex" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__Index, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexReplicas_addIndex" "', argument " "2"" of type '" "faiss::Index *""'"); 
@@ -62498,7 +66746,12 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_addIndex(PyObject *SWIGUNUSEDPARM(self)
       (arg1)->addIndex(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62512,7 +66765,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexReplicas_removeIndex(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
   faiss::Index *arg2 = (faiss::Index *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -62522,11 +66775,11 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_removeIndex(PyObject *SWIGUNUSEDPARM(se
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:IndexReplicas_removeIndex",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_removeIndex" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_removeIndex" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__Index, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexReplicas_removeIndex" "', argument " "2"" of type '" "faiss::Index *""'"); 
@@ -62538,7 +66791,12 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_removeIndex(PyObject *SWIGUNUSEDPARM(se
       (arg1)->removeIndex(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62552,7 +66810,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexReplicas_runOnIndex(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
   SwigValueWrapper< std::function< void (faiss::Index *) > > arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -62562,11 +66820,11 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_runOnIndex(PyObject *SWIGUNUSEDPARM(sel
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:IndexReplicas_runOnIndex",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_runOnIndex" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_runOnIndex" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   {
     res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__functionT_void_ffaiss__Index_pF_t,  0  | 0);
     if (!SWIG_IsOK(res2)) {
@@ -62586,7 +66844,12 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_runOnIndex(PyObject *SWIGUNUSEDPARM(sel
       (arg1)->runOnIndex(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62600,24 +66863,29 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexReplicas_reset(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexReplicas_reset",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_reset" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_reset" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62631,9 +66899,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexReplicas_train(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index >::idx_t arg2 ;
+  faiss::IndexReplicasTemplate< faiss::Index >::component_t *arg3 = (faiss::IndexReplicasTemplate< faiss::Index >::component_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   long val2 ;
@@ -62645,28 +66913,33 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_train(PyObject *SWIGUNUSEDPARM(self), P
   PyObject * obj2 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:IndexReplicas_train",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_train" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_train" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_train" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_train" "', argument " "2"" of type '" "faiss::IndexReplicasTemplate< faiss::Index >::idx_t""'");
   } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  arg2 = static_cast< faiss::IndexReplicasTemplate< faiss::Index >::idx_t >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexReplicas_train" "', argument " "3"" of type '" "float const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexReplicas_train" "', argument " "3"" of type '" "faiss::IndexReplicasTemplate< faiss::Index >::component_t const *""'"); 
   }
-  arg3 = reinterpret_cast< float * >(argp3);
+  arg3 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index >::component_t * >(argp3);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      (arg1)->train(arg2,(float const *)arg3);
+      (arg1)->train(arg2,(faiss::IndexReplicasTemplate< faiss::Index >::component_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62680,9 +66953,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexReplicas_add(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index >::idx_t arg2 ;
+  faiss::IndexReplicasTemplate< faiss::Index >::component_t *arg3 = (faiss::IndexReplicasTemplate< faiss::Index >::component_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   long val2 ;
@@ -62694,28 +66967,33 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_add(PyObject *SWIGUNUSEDPARM(self), PyO
   PyObject * obj2 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:IndexReplicas_add",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_add" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_add" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_add" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_add" "', argument " "2"" of type '" "faiss::IndexReplicasTemplate< faiss::Index >::idx_t""'");
   } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  arg2 = static_cast< faiss::IndexReplicasTemplate< faiss::Index >::idx_t >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexReplicas_add" "', argument " "3"" of type '" "float const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexReplicas_add" "', argument " "3"" of type '" "faiss::IndexReplicasTemplate< faiss::Index >::component_t const *""'"); 
   }
-  arg3 = reinterpret_cast< float * >(argp3);
+  arg3 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index >::component_t * >(argp3);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      (arg1)->add(arg2,(float const *)arg3);
+      (arg1)->add(arg2,(faiss::IndexReplicasTemplate< faiss::Index >::component_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62729,12 +67007,12 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexReplicas_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
-  faiss::Index::idx_t arg4 ;
-  float *arg5 = (float *) 0 ;
-  faiss::Index::idx_t *arg6 = (faiss::Index::idx_t *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index >::idx_t arg2 ;
+  faiss::IndexReplicasTemplate< faiss::Index >::component_t *arg3 = (faiss::IndexReplicasTemplate< faiss::Index >::component_t *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index >::idx_t arg4 ;
+  faiss::IndexReplicasTemplate< faiss::Index >::distance_t *arg5 = (faiss::IndexReplicasTemplate< faiss::Index >::distance_t *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index >::idx_t *arg6 = (faiss::IndexReplicasTemplate< faiss::Index >::idx_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   long val2 ;
@@ -62755,43 +67033,48 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_search(PyObject *SWIGUNUSEDPARM(self), 
   PyObject * obj5 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOOO:IndexReplicas_search",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_search" "', argument " "1"" of type '" "faiss::IndexReplicas const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_search" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > const *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_search" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_search" "', argument " "2"" of type '" "faiss::IndexReplicasTemplate< faiss::Index >::idx_t""'");
   } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  arg2 = static_cast< faiss::IndexReplicasTemplate< faiss::Index >::idx_t >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexReplicas_search" "', argument " "3"" of type '" "float const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexReplicas_search" "', argument " "3"" of type '" "faiss::IndexReplicasTemplate< faiss::Index >::component_t const *""'"); 
   }
-  arg3 = reinterpret_cast< float * >(argp3);
+  arg3 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index >::component_t * >(argp3);
   ecode4 = SWIG_AsVal_long(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexReplicas_search" "', argument " "4"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexReplicas_search" "', argument " "4"" of type '" "faiss::IndexReplicasTemplate< faiss::Index >::idx_t""'");
   } 
-  arg4 = static_cast< faiss::Index::idx_t >(val4);
+  arg4 = static_cast< faiss::IndexReplicasTemplate< faiss::Index >::idx_t >(val4);
   res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_float, 0 |  0 );
   if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexReplicas_search" "', argument " "5"" of type '" "float *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexReplicas_search" "', argument " "5"" of type '" "faiss::IndexReplicasTemplate< faiss::Index >::distance_t *""'"); 
   }
-  arg5 = reinterpret_cast< float * >(argp5);
+  arg5 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index >::distance_t * >(argp5);
   res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_long, 0 |  0 );
   if (!SWIG_IsOK(res6)) {
-    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "IndexReplicas_search" "', argument " "6"" of type '" "faiss::Index::idx_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "IndexReplicas_search" "', argument " "6"" of type '" "faiss::IndexReplicasTemplate< faiss::Index >::idx_t *""'"); 
   }
-  arg6 = reinterpret_cast< faiss::Index::idx_t * >(argp6);
+  arg6 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index >::idx_t * >(argp6);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      ((faiss::IndexReplicas const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
+      ((faiss::IndexReplicasTemplate< faiss::Index > const *)arg1)->search(arg2,(faiss::IndexReplicasTemplate< faiss::Index >::component_t const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62805,9 +67088,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexReplicas_reconstruct(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
-  faiss::Index::idx_t arg2 ;
-  float *arg3 = (float *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index >::idx_t arg2 ;
+  faiss::IndexReplicasTemplate< faiss::Index >::component_t *arg3 = (faiss::IndexReplicasTemplate< faiss::Index >::component_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   long val2 ;
@@ -62819,28 +67102,33 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_reconstruct(PyObject *SWIGUNUSEDPARM(se
   PyObject * obj2 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:IndexReplicas_reconstruct",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_reconstruct" "', argument " "1"" of type '" "faiss::IndexReplicas const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_reconstruct" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > const *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_reconstruct" "', argument " "2"" of type '" "faiss::Index::idx_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_reconstruct" "', argument " "2"" of type '" "faiss::IndexReplicasTemplate< faiss::Index >::idx_t""'");
   } 
-  arg2 = static_cast< faiss::Index::idx_t >(val2);
+  arg2 = static_cast< faiss::IndexReplicasTemplate< faiss::Index >::idx_t >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexReplicas_reconstruct" "', argument " "3"" of type '" "float *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexReplicas_reconstruct" "', argument " "3"" of type '" "faiss::IndexReplicasTemplate< faiss::Index >::component_t *""'"); 
   }
-  arg3 = reinterpret_cast< float * >(argp3);
+  arg3 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index >::component_t * >(argp3);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      ((faiss::IndexReplicas const *)arg1)->reconstruct(arg2,arg3);
+      ((faiss::IndexReplicasTemplate< faiss::Index > const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62854,7 +67142,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexReplicas_own_fields_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -62864,11 +67152,11 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_own_fields_set(PyObject *SWIGUNUSEDPARM
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:IndexReplicas_own_fields_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_own_fields_set" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_own_fields_set" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_bool(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_own_fields_set" "', argument " "2"" of type '" "bool""'");
@@ -62884,18 +67172,18 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexReplicas_own_fields_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   bool result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexReplicas_own_fields_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_own_fields_get" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_own_fields_get" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   result = (bool) ((arg1)->own_fields);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -62906,25 +67194,30 @@ fail:
 
 SWIGINTERN PyObject *_wrap_IndexReplicas_count(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   int result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:IndexReplicas_count",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_count" "', argument " "1"" of type '" "faiss::IndexReplicas const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_count" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > const *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   {
     Py_BEGIN_ALLOW_THREADS
     try {
-      result = (int)((faiss::IndexReplicas const *)arg1)->count();
+      result = (int)((faiss::IndexReplicasTemplate< faiss::Index > const *)arg1)->count();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62936,9 +67229,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_IndexReplicas_at(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_IndexReplicas_at__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  faiss::IndexReplicas *arg1 = (faiss::IndexReplicas *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -62949,11 +67242,11 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_at(PyObject *SWIGUNUSEDPARM(self), PyOb
   faiss::Index *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:IndexReplicas_at",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicas, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_at" "', argument " "1"" of type '" "faiss::IndexReplicas *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_at" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > *""'"); 
   }
-  arg1 = reinterpret_cast< faiss::IndexReplicas * >(argp1);
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_at" "', argument " "2"" of type '" "int""'");
@@ -62965,7 +67258,12 @@ SWIGINTERN PyObject *_wrap_IndexReplicas_at(PyObject *SWIGUNUSEDPARM(self), PyOb
       result = (faiss::Index *)(arg1)->at(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -62977,10 +67275,834 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_IndexReplicas_at__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::Index > *arg1 = (faiss::IndexReplicasTemplate< faiss::Index > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::Index *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexReplicas_at",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexReplicas_at" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::Index > const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::Index > * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexReplicas_at" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::Index *)((faiss::IndexReplicasTemplate< faiss::Index > const *)arg1)->at(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__Index, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexReplicas_at(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_IndexReplicas_at__SWIG_0(self, args);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_IndexReplicas_at__SWIG_1(self, args);
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'IndexReplicas_at'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    faiss::IndexReplicasTemplate< faiss::Index >::at(int)\n"
+    "    faiss::IndexReplicasTemplate< faiss::Index >::at(int) const\n");
+  return 0;
+}
+
+
 SWIGINTERN PyObject *IndexReplicas_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__IndexReplicas, SWIG_NewClientData(obj));
+  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_new_IndexBinaryReplicas(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_IndexBinaryReplicas")) SWIG_fail;
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *)new faiss::IndexReplicasTemplate< faiss::IndexBinary >();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_IndexBinaryReplicas(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_IndexBinaryReplicas",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IndexBinaryReplicas" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      delete arg1;
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_addIndex(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  faiss::IndexBinary *arg2 = (faiss::IndexBinary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexBinaryReplicas_addIndex",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_addIndex" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__IndexBinary, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexBinaryReplicas_addIndex" "', argument " "2"" of type '" "faiss::IndexBinary *""'"); 
+  }
+  arg2 = reinterpret_cast< faiss::IndexBinary * >(argp2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->addIndex(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_removeIndex(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  faiss::IndexBinary *arg2 = (faiss::IndexBinary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexBinaryReplicas_removeIndex",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_removeIndex" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_faiss__IndexBinary, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexBinaryReplicas_removeIndex" "', argument " "2"" of type '" "faiss::IndexBinary *""'"); 
+  }
+  arg2 = reinterpret_cast< faiss::IndexBinary * >(argp2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->removeIndex(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_runOnIndex(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  SwigValueWrapper< std::function< void (faiss::IndexBinary *) > > arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexBinaryReplicas_runOnIndex",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_runOnIndex" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__functionT_void_ffaiss__IndexBinary_pF_t,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IndexBinaryReplicas_runOnIndex" "', argument " "2"" of type '" "std::function< void (faiss::IndexBinary *) >""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "IndexBinaryReplicas_runOnIndex" "', argument " "2"" of type '" "std::function< void (faiss::IndexBinary *) >""'");
+    } else {
+      std::function< void (faiss::IndexBinary *) > * temp = reinterpret_cast< std::function< void (faiss::IndexBinary *) > * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->runOnIndex(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_reset(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexBinaryReplicas_reset",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_reset" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->reset();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_train(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t arg2 ;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t *arg3 = (faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexBinaryReplicas_train",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_train" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryReplicas_train" "', argument " "2"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexBinaryReplicas_train" "', argument " "3"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t const *""'"); 
+  }
+  arg3 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t * >(argp3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->train(arg2,(faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t const *)arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_add(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t arg2 ;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t *arg3 = (faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexBinaryReplicas_add",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_add" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryReplicas_add" "', argument " "2"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexBinaryReplicas_add" "', argument " "3"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t const *""'"); 
+  }
+  arg3 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t * >(argp3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      (arg1)->add(arg2,(faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t const *)arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_search(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t arg2 ;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t *arg3 = (faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t arg4 ;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary >::distance_t *arg5 = (faiss::IndexReplicasTemplate< faiss::IndexBinary >::distance_t *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t *arg6 = (faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  long val4 ;
+  int ecode4 = 0 ;
+  void *argp5 = 0 ;
+  int res5 = 0 ;
+  void *argp6 = 0 ;
+  int res6 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:IndexBinaryReplicas_search",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_search" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryReplicas_search" "', argument " "2"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexBinaryReplicas_search" "', argument " "3"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t const *""'"); 
+  }
+  arg3 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t * >(argp3);
+  ecode4 = SWIG_AsVal_long(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "IndexBinaryReplicas_search" "', argument " "4"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg4 = static_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t >(val4);
+  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_int, 0 |  0 );
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "IndexBinaryReplicas_search" "', argument " "5"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary >::distance_t *""'"); 
+  }
+  arg5 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary >::distance_t * >(argp5);
+  res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_long, 0 |  0 );
+  if (!SWIG_IsOK(res6)) {
+    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "IndexBinaryReplicas_search" "', argument " "6"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t *""'"); 
+  }
+  arg6 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t * >(argp6);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      ((faiss::IndexReplicasTemplate< faiss::IndexBinary > const *)arg1)->search(arg2,(faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t const *)arg3,arg4,arg5,arg6);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_reconstruct(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t arg2 ;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t *arg3 = (faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:IndexBinaryReplicas_reconstruct",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_reconstruct" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryReplicas_reconstruct" "', argument " "2"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t""'");
+  } 
+  arg2 = static_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "IndexBinaryReplicas_reconstruct" "', argument " "3"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t *""'"); 
+  }
+  arg3 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t * >(argp3);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      ((faiss::IndexReplicasTemplate< faiss::IndexBinary > const *)arg1)->reconstruct(arg2,arg3);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_own_fields_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexBinaryReplicas_own_fields_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_own_fields_set" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryReplicas_own_fields_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->own_fields = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_own_fields_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexBinaryReplicas_own_fields_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_own_fields_get" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  result = (bool) ((arg1)->own_fields);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_count(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IndexBinaryReplicas_count",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_count" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (int)((faiss::IndexReplicasTemplate< faiss::IndexBinary > const *)arg1)->count();
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_at__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::IndexBinary *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexBinaryReplicas_at",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_at" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryReplicas_at" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::IndexBinary *)(arg1)->at(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexBinary, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_at__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::IndexReplicasTemplate< faiss::IndexBinary > *arg1 = (faiss::IndexReplicasTemplate< faiss::IndexBinary > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  faiss::IndexBinary *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IndexBinaryReplicas_at",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IndexBinaryReplicas_at" "', argument " "1"" of type '" "faiss::IndexReplicasTemplate< faiss::IndexBinary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::IndexReplicasTemplate< faiss::IndexBinary > * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IndexBinaryReplicas_at" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+      result = (faiss::IndexBinary *)((faiss::IndexReplicasTemplate< faiss::IndexBinary > const *)arg1)->at(arg2);
+    } catch(faiss::FaissException & e) {
+      PyEval_RestoreThread(_save);
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
+      SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_faiss__IndexBinary, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IndexBinaryReplicas_at(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_IndexBinaryReplicas_at__SWIG_0(self, args);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_IndexBinaryReplicas_at__SWIG_1(self, args);
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'IndexBinaryReplicas_at'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    faiss::IndexReplicasTemplate< faiss::IndexBinary >::at(int)\n"
+    "    faiss::IndexReplicasTemplate< faiss::IndexBinary >::at(int) const\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *IndexBinaryReplicas_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
@@ -63160,7 +68282,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIDMap__SWIG_0(PyObject *SWIGUNUSEDPARM(self)
       result = (faiss::IndexIDMap *)new faiss::IndexIDMap(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63218,7 +68345,12 @@ SWIGINTERN PyObject *_wrap_IndexIDMap_add_with_ids(PyObject *SWIGUNUSEDPARM(self
       (arg1)->add_with_ids(arg2,(float const *)arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63267,7 +68399,12 @@ SWIGINTERN PyObject *_wrap_IndexIDMap_add(PyObject *SWIGUNUSEDPARM(self), PyObje
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63343,7 +68480,12 @@ SWIGINTERN PyObject *_wrap_IndexIDMap_search(PyObject *SWIGUNUSEDPARM(self), PyO
       ((faiss::IndexIDMap const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63392,7 +68534,12 @@ SWIGINTERN PyObject *_wrap_IndexIDMap_train(PyObject *SWIGUNUSEDPARM(self), PyOb
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63423,7 +68570,12 @@ SWIGINTERN PyObject *_wrap_IndexIDMap_reset(PyObject *SWIGUNUSEDPARM(self), PyOb
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63467,7 +68619,12 @@ SWIGINTERN PyObject *_wrap_IndexIDMap_remove_ids(PyObject *SWIGUNUSEDPARM(self),
       result = (long)(arg1)->remove_ids((faiss::IDSelector const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63534,7 +68691,12 @@ SWIGINTERN PyObject *_wrap_IndexIDMap_range_search(PyObject *SWIGUNUSEDPARM(self
       ((faiss::IndexIDMap const *)arg1)->range_search(arg2,(float const *)arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63565,7 +68727,12 @@ SWIGINTERN PyObject *_wrap_delete_IndexIDMap(PyObject *SWIGUNUSEDPARM(self), PyO
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63588,7 +68755,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIDMap__SWIG_1(PyObject *SWIGUNUSEDPARM(self)
       result = (faiss::IndexIDMap *)new faiss::IndexIDMap();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63721,7 +68893,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIDMap2__SWIG_0(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexIDMap2 *)new faiss::IndexIDMap2(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63752,7 +68929,12 @@ SWIGINTERN PyObject *_wrap_IndexIDMap2_construct_rev_map(PyObject *SWIGUNUSEDPAR
       (arg1)->construct_rev_map();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63810,7 +68992,12 @@ SWIGINTERN PyObject *_wrap_IndexIDMap2_add_with_ids(PyObject *SWIGUNUSEDPARM(sel
       (arg1)->add_with_ids(arg2,(float const *)arg3,(long const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63854,7 +69041,12 @@ SWIGINTERN PyObject *_wrap_IndexIDMap2_remove_ids(PyObject *SWIGUNUSEDPARM(self)
       result = (long)(arg1)->remove_ids((faiss::IDSelector const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63903,7 +69095,12 @@ SWIGINTERN PyObject *_wrap_IndexIDMap2_reconstruct(PyObject *SWIGUNUSEDPARM(self
       ((faiss::IndexIDMap2 const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63934,7 +69131,12 @@ SWIGINTERN PyObject *_wrap_delete_IndexIDMap2(PyObject *SWIGUNUSEDPARM(self), Py
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -63957,7 +69159,12 @@ SWIGINTERN PyObject *_wrap_new_IndexIDMap2__SWIG_1(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::IndexIDMap2 *)new faiss::IndexIDMap2();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -64247,7 +69454,12 @@ SWIGINTERN PyObject *_wrap_new_IndexSplitVectors__SWIG_0(PyObject *SWIGUNUSEDPAR
       result = (faiss::IndexSplitVectors *)new faiss::IndexSplitVectors(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -64279,7 +69491,12 @@ SWIGINTERN PyObject *_wrap_new_IndexSplitVectors__SWIG_1(PyObject *SWIGUNUSEDPAR
       result = (faiss::IndexSplitVectors *)new faiss::IndexSplitVectors(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -64367,7 +69584,12 @@ SWIGINTERN PyObject *_wrap_IndexSplitVectors_add_sub_index(PyObject *SWIGUNUSEDP
       (arg1)->add_sub_index(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -64398,7 +69620,12 @@ SWIGINTERN PyObject *_wrap_IndexSplitVectors_sync_with_sub_indexes(PyObject *SWI
       (arg1)->sync_with_sub_indexes();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -64447,7 +69674,12 @@ SWIGINTERN PyObject *_wrap_IndexSplitVectors_add(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -64523,7 +69755,12 @@ SWIGINTERN PyObject *_wrap_IndexSplitVectors_search(PyObject *SWIGUNUSEDPARM(sel
       ((faiss::IndexSplitVectors const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -64572,7 +69809,12 @@ SWIGINTERN PyObject *_wrap_IndexSplitVectors_train(PyObject *SWIGUNUSEDPARM(self
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -64603,7 +69845,12 @@ SWIGINTERN PyObject *_wrap_IndexSplitVectors_reset(PyObject *SWIGUNUSEDPARM(self
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -64634,7 +69881,12 @@ SWIGINTERN PyObject *_wrap_delete_IndexSplitVectors(PyObject *SWIGUNUSEDPARM(sel
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -64664,7 +69916,12 @@ SWIGINTERN PyObject *_wrap_new_GpuClonerOptions(PyObject *SWIGUNUSEDPARM(self), 
       result = (faiss::gpu::GpuClonerOptions *)new faiss::gpu::GpuClonerOptions();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -65079,7 +70336,12 @@ SWIGINTERN PyObject *_wrap_new_GpuMultipleClonerOptions(PyObject *SWIGUNUSEDPARM
       result = (faiss::gpu::GpuMultipleClonerOptions *)new faiss::gpu::GpuMultipleClonerOptions();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -65260,7 +70522,12 @@ SWIGINTERN PyObject *_wrap_allocMemorySpaceV(PyObject *SWIGUNUSEDPARM(self), PyO
       faiss::gpu::allocMemorySpaceV(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -65298,7 +70565,12 @@ SWIGINTERN PyObject *_wrap_freeMemorySpace(PyObject *SWIGUNUSEDPARM(self), PyObj
       faiss::gpu::freeMemorySpace(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -65321,7 +70593,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexConfig(PyObject *SWIGUNUSEDPARM(self), Py
       result = (faiss::gpu::GpuIndexConfig *)new faiss::gpu::GpuIndexConfig();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -65485,7 +70762,12 @@ SWIGINTERN PyObject *_wrap_GpuIndex_getDevice(PyObject *SWIGUNUSEDPARM(self), Py
       result = (int)((faiss::gpu::GpuIndex const *)arg1)->getDevice();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -65517,7 +70799,12 @@ SWIGINTERN PyObject *_wrap_GpuIndex_getResources(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::gpu::GpuResources *)(arg1)->getResources();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -65557,7 +70844,12 @@ SWIGINTERN PyObject *_wrap_GpuIndex_setMinPagingSize(PyObject *SWIGUNUSEDPARM(se
       (arg1)->setMinPagingSize(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -65589,7 +70881,12 @@ SWIGINTERN PyObject *_wrap_GpuIndex_getMinPagingSize(PyObject *SWIGUNUSEDPARM(se
       result = (size_t)((faiss::gpu::GpuIndex const *)arg1)->getMinPagingSize();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -65638,7 +70935,12 @@ SWIGINTERN PyObject *_wrap_GpuIndex_add(PyObject *SWIGUNUSEDPARM(self), PyObject
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -65696,7 +70998,12 @@ SWIGINTERN PyObject *_wrap_GpuIndex_add_with_ids(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->add_with_ids(arg2,(float const *)arg3,(faiss::Index::idx_t const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -65772,7 +71079,12 @@ SWIGINTERN PyObject *_wrap_GpuIndex_search(PyObject *SWIGUNUSEDPARM(self), PyObj
       ((faiss::gpu::GpuIndex const *)arg1)->search(arg2,(float const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -65823,7 +71135,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatConfig(PyObject *SWIGUNUSEDPARM(self)
       result = (faiss::gpu::GpuIndexFlatConfig *)new faiss::gpu::GpuIndexFlatConfig();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66065,7 +71382,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlat__SWIG_0(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::gpu::GpuIndexFlat *)new faiss::gpu::GpuIndexFlat(arg1,(faiss::IndexFlat const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66106,7 +71428,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlat__SWIG_1(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::gpu::GpuIndexFlat *)new faiss::gpu::GpuIndexFlat(arg1,(faiss::IndexFlat const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66173,7 +71500,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlat__SWIG_2(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::gpu::GpuIndexFlat *)new faiss::gpu::GpuIndexFlat(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66223,7 +71555,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlat__SWIG_3(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::gpu::GpuIndexFlat *)new faiss::gpu::GpuIndexFlat(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66356,7 +71693,12 @@ SWIGINTERN PyObject *_wrap_delete_GpuIndexFlat(PyObject *SWIGUNUSEDPARM(self), P
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66396,7 +71738,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlat_copyFrom(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->copyFrom((faiss::IndexFlat const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66436,7 +71783,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlat_copyTo(PyObject *SWIGUNUSEDPARM(self), P
       ((faiss::gpu::GpuIndexFlat const *)arg1)->copyTo(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66468,7 +71820,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlat_getNumVecs(PyObject *SWIGUNUSEDPARM(self
       result = (size_t)((faiss::gpu::GpuIndexFlat const *)arg1)->getNumVecs();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66499,7 +71856,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlat_reset(PyObject *SWIGUNUSEDPARM(self), Py
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66548,7 +71910,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlat_train(PyObject *SWIGUNUSEDPARM(self), Py
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66597,7 +71964,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlat_add(PyObject *SWIGUNUSEDPARM(self), PyOb
       (arg1)->add(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66646,7 +72018,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlat_reconstruct(PyObject *SWIGUNUSEDPARM(sel
       ((faiss::gpu::GpuIndexFlat const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66704,7 +72081,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlat_reconstruct_n(PyObject *SWIGUNUSEDPARM(s
       ((faiss::gpu::GpuIndexFlat const *)arg1)->reconstruct_n(arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66736,7 +72118,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlat_getGpuData(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::gpu::FlatIndex *)(arg1)->getGpuData();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66801,7 +72188,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2__SWIG_0(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::gpu::GpuIndexFlatL2 *)new faiss::gpu::GpuIndexFlatL2(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66842,7 +72234,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2__SWIG_1(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::gpu::GpuIndexFlatL2 *)new faiss::gpu::GpuIndexFlatL2(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66900,7 +72297,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2__SWIG_2(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::gpu::GpuIndexFlatL2 *)new faiss::gpu::GpuIndexFlatL2(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -66941,7 +72343,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatL2__SWIG_3(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::gpu::GpuIndexFlatL2 *)new faiss::gpu::GpuIndexFlatL2(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67071,7 +72478,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlatL2_copyFrom(PyObject *SWIGUNUSEDPARM(self
       (arg1)->copyFrom(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67111,7 +72523,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlatL2_copyTo(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->copyTo(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67197,7 +72614,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP__SWIG_0(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::gpu::GpuIndexFlatIP *)new faiss::gpu::GpuIndexFlatIP(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67238,7 +72660,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP__SWIG_1(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::gpu::GpuIndexFlatIP *)new faiss::gpu::GpuIndexFlatIP(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67296,7 +72723,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP__SWIG_2(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::gpu::GpuIndexFlatIP *)new faiss::gpu::GpuIndexFlatIP(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67337,7 +72769,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexFlatIP__SWIG_3(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::gpu::GpuIndexFlatIP *)new faiss::gpu::GpuIndexFlatIP(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67467,7 +72904,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlatIP_copyFrom(PyObject *SWIGUNUSEDPARM(self
       (arg1)->copyFrom(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67507,7 +72949,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexFlatIP_copyTo(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->copyTo(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67558,7 +73005,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexIVFConfig(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::gpu::GpuIndexIVFConfig *)new faiss::gpu::GpuIndexIVFConfig();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67721,7 +73173,12 @@ SWIGINTERN PyObject *_wrap_delete_GpuIndexIVF(PyObject *SWIGUNUSEDPARM(self), Py
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67761,7 +73218,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVF_copyFrom(PyObject *SWIGUNUSEDPARM(self), 
       (arg1)->copyFrom((faiss::IndexIVF const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67801,7 +73263,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVF_copyTo(PyObject *SWIGUNUSEDPARM(self), Py
       ((faiss::gpu::GpuIndexIVF const *)arg1)->copyTo(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67833,7 +73300,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVF_getNumLists(PyObject *SWIGUNUSEDPARM(self
       result = (int)((faiss::gpu::GpuIndexIVF const *)arg1)->getNumLists();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67865,7 +73337,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVF_getQuantizer(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::gpu::GpuIndexFlat *)(arg1)->getQuantizer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67905,7 +73382,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVF_setNumProbes(PyObject *SWIGUNUSEDPARM(sel
       (arg1)->setNumProbes(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -67937,7 +73419,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVF_getNumProbes(PyObject *SWIGUNUSEDPARM(sel
       result = (int)((faiss::gpu::GpuIndexIVF const *)arg1)->getNumProbes();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68019,7 +73506,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexIVFPQConfig(PyObject *SWIGUNUSEDPARM(self
       result = (faiss::gpu::GpuIndexIVFPQConfig *)new faiss::gpu::GpuIndexIVFPQConfig();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68209,7 +73701,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexIVFPQ__SWIG_0(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::gpu::GpuIndexIVFPQ *)new faiss::gpu::GpuIndexIVFPQ(arg1,(faiss::IndexIVFPQ const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68250,7 +73747,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexIVFPQ__SWIG_1(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::gpu::GpuIndexIVFPQ *)new faiss::gpu::GpuIndexIVFPQ(arg1,(faiss::IndexIVFPQ const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68344,7 +73846,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexIVFPQ__SWIG_2(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::gpu::GpuIndexIVFPQ *)new faiss::gpu::GpuIndexIVFPQ(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68421,7 +73928,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexIVFPQ__SWIG_3(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::gpu::GpuIndexIVFPQ *)new faiss::gpu::GpuIndexIVFPQ(arg1,arg2,arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68590,7 +74102,12 @@ SWIGINTERN PyObject *_wrap_delete_GpuIndexIVFPQ(PyObject *SWIGUNUSEDPARM(self), 
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68630,7 +74147,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_copyFrom(PyObject *SWIGUNUSEDPARM(self)
       (arg1)->copyFrom((faiss::IndexIVFPQ const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68670,7 +74192,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_copyTo(PyObject *SWIGUNUSEDPARM(self), 
       ((faiss::gpu::GpuIndexIVFPQ const *)arg1)->copyTo(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68710,7 +74237,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_reserveMemory(PyObject *SWIGUNUSEDPARM(
       (arg1)->reserveMemory(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68750,7 +74282,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_setPrecomputedCodes(PyObject *SWIGUNUSE
       (arg1)->setPrecomputedCodes(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68782,7 +74319,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_getPrecomputedCodes(PyObject *SWIGUNUSE
       result = (bool)((faiss::gpu::GpuIndexIVFPQ const *)arg1)->getPrecomputedCodes();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68814,7 +74356,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_getNumSubQuantizers(PyObject *SWIGUNUSE
       result = (int)((faiss::gpu::GpuIndexIVFPQ const *)arg1)->getNumSubQuantizers();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68846,7 +74393,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_getBitsPerCode(PyObject *SWIGUNUSEDPARM
       result = (int)((faiss::gpu::GpuIndexIVFPQ const *)arg1)->getBitsPerCode();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68878,7 +74430,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_getCentroidsPerSubQuantizer(PyObject *S
       result = (int)((faiss::gpu::GpuIndexIVFPQ const *)arg1)->getCentroidsPerSubQuantizer();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68910,7 +74467,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_reclaimMemory(PyObject *SWIGUNUSEDPARM(
       result = (size_t)(arg1)->reclaimMemory();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68941,7 +74503,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_reset(PyObject *SWIGUNUSEDPARM(self), P
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -68990,7 +74557,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_train(PyObject *SWIGUNUSEDPARM(self), P
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69031,7 +74603,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_getListLength(PyObject *SWIGUNUSEDPARM(
       result = (int)((faiss::gpu::GpuIndexIVFPQ const *)arg1)->getListLength(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69072,7 +74649,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_getListCodes(PyObject *SWIGUNUSEDPARM(s
       result = ((faiss::gpu::GpuIndexIVFPQ const *)arg1)->getListCodes(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69113,7 +74695,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFPQ_getListIndices(PyObject *SWIGUNUSEDPARM
       result = ((faiss::gpu::GpuIndexIVFPQ const *)arg1)->getListIndices(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69143,7 +74730,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexIVFFlatConfig(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::gpu::GpuIndexIVFFlatConfig *)new faiss::gpu::GpuIndexIVFFlatConfig();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69281,7 +74873,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexIVFFlat__SWIG_0(PyObject *SWIGUNUSEDPARM(
       result = (faiss::gpu::GpuIndexIVFFlat *)new faiss::gpu::GpuIndexIVFFlat(arg1,(faiss::IndexIVFFlat const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69322,7 +74919,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexIVFFlat__SWIG_1(PyObject *SWIGUNUSEDPARM(
       result = (faiss::gpu::GpuIndexIVFFlat *)new faiss::gpu::GpuIndexIVFFlat(arg1,(faiss::IndexIVFFlat const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69398,7 +75000,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexIVFFlat__SWIG_2(PyObject *SWIGUNUSEDPARM(
       result = (faiss::gpu::GpuIndexIVFFlat *)new faiss::gpu::GpuIndexIVFFlat(arg1,arg2,arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69457,7 +75064,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexIVFFlat__SWIG_3(PyObject *SWIGUNUSEDPARM(
       result = (faiss::gpu::GpuIndexIVFFlat *)new faiss::gpu::GpuIndexIVFFlat(arg1,arg2,arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69602,7 +75214,12 @@ SWIGINTERN PyObject *_wrap_delete_GpuIndexIVFFlat(PyObject *SWIGUNUSEDPARM(self)
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69642,7 +75259,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFFlat_reserveMemory(PyObject *SWIGUNUSEDPAR
       (arg1)->reserveMemory(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69682,7 +75304,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFFlat_copyFrom(PyObject *SWIGUNUSEDPARM(sel
       (arg1)->copyFrom((faiss::IndexIVFFlat const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69722,7 +75349,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFFlat_copyTo(PyObject *SWIGUNUSEDPARM(self)
       ((faiss::gpu::GpuIndexIVFFlat const *)arg1)->copyTo(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69754,7 +75386,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFFlat_reclaimMemory(PyObject *SWIGUNUSEDPAR
       result = (size_t)(arg1)->reclaimMemory();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69785,7 +75422,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFFlat_reset(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69834,7 +75476,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexIVFFlat_train(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->train(arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69940,7 +75587,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexBinaryFlat__SWIG_0(PyObject *SWIGUNUSEDPA
       result = (faiss::gpu::GpuIndexBinaryFlat *)new faiss::gpu::GpuIndexBinaryFlat(arg1,(faiss::IndexBinaryFlat const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -69981,7 +75633,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexBinaryFlat__SWIG_1(PyObject *SWIGUNUSEDPA
       result = (faiss::gpu::GpuIndexBinaryFlat *)new faiss::gpu::GpuIndexBinaryFlat(arg1,(faiss::IndexBinaryFlat const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -70039,7 +75696,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexBinaryFlat__SWIG_2(PyObject *SWIGUNUSEDPA
       result = (faiss::gpu::GpuIndexBinaryFlat *)new faiss::gpu::GpuIndexBinaryFlat(arg1,arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -70080,7 +75742,12 @@ SWIGINTERN PyObject *_wrap_new_GpuIndexBinaryFlat__SWIG_3(PyObject *SWIGUNUSEDPA
       result = (faiss::gpu::GpuIndexBinaryFlat *)new faiss::gpu::GpuIndexBinaryFlat(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -70201,7 +75868,12 @@ SWIGINTERN PyObject *_wrap_delete_GpuIndexBinaryFlat(PyObject *SWIGUNUSEDPARM(se
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -70241,7 +75913,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexBinaryFlat_copyFrom(PyObject *SWIGUNUSEDPARM(
       (arg1)->copyFrom((faiss::IndexBinaryFlat const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -70281,7 +75958,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexBinaryFlat_copyTo(PyObject *SWIGUNUSEDPARM(se
       ((faiss::gpu::GpuIndexBinaryFlat const *)arg1)->copyTo(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -70330,7 +76012,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexBinaryFlat_add(PyObject *SWIGUNUSEDPARM(self)
       (arg1)->add(arg2,(uint8_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -70361,7 +76048,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexBinaryFlat_reset(PyObject *SWIGUNUSEDPARM(sel
       (arg1)->reset();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -70437,7 +76129,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexBinaryFlat_search(PyObject *SWIGUNUSEDPARM(se
       ((faiss::gpu::GpuIndexBinaryFlat const *)arg1)->search(arg2,(uint8_t const *)arg3,arg4,arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -70486,7 +76183,12 @@ SWIGINTERN PyObject *_wrap_GpuIndexBinaryFlat_reconstruct(PyObject *SWIGUNUSEDPA
       ((faiss::gpu::GpuIndexBinaryFlat const *)arg1)->reconstruct(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -70605,7 +76307,12 @@ SWIGINTERN PyObject *_wrap_bruteForceKnn(PyObject *SWIGUNUSEDPARM(self), PyObjec
       faiss::gpu::bruteForceKnn(arg1,arg2,(float const *)arg3,arg4,(float const *)arg5,arg6,arg7,arg8,arg9,arg10);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -70637,131 +76344,136 @@ SWIGINTERN PyObject *_wrap_downcast_index(PyObject *SWIGUNUSEDPARM(self), PyObje
       result = (faiss::Index *)downcast_index(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,0);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,0);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,0);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,0);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,0);
     } else
@@ -70804,48 +76516,53 @@ SWIGINTERN PyObject *_wrap_downcast_VectorTransform(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::VectorTransform *)downcast_VectorTransform(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::RemapDimensionsTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__RemapDimensionsTransform,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::OPQMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__OPQMatrix,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::PCAMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__PCAMatrix,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::RandomRotationMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__RandomRotationMatrix,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::LinearTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__LinearTransform,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::NormalizationTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__NormalizationTransform,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::CenteringTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__CenteringTransform,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::VectorTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__VectorTransform,0);
     } else
@@ -70883,41 +76600,51 @@ SWIGINTERN PyObject *_wrap_downcast_IndexBinary(PyObject *SWIGUNUSEDPARM(self), 
       result = (faiss::IndexBinary *)downcast_IndexBinary(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
+    if (dynamic_cast<faiss::IndexBinaryReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t,0);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,0);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,0);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,0);
     } else
@@ -70969,7 +76696,12 @@ SWIGINTERN PyObject *_wrap_write_index__SWIG_0(PyObject *SWIGUNUSEDPARM(self), P
       faiss::write_index((faiss::Index const *)arg1,(char const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -71011,7 +76743,12 @@ SWIGINTERN PyObject *_wrap_write_index__SWIG_1(PyObject *SWIGUNUSEDPARM(self), P
       faiss::write_index((faiss::Index const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -71051,7 +76788,12 @@ SWIGINTERN PyObject *_wrap_write_index__SWIG_2(PyObject *SWIGUNUSEDPARM(self), P
       faiss::write_index((faiss::Index const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -71156,7 +76898,12 @@ SWIGINTERN PyObject *_wrap_write_index_binary__SWIG_0(PyObject *SWIGUNUSEDPARM(s
       faiss::write_index_binary((faiss::IndexBinary const *)arg1,(char const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -71198,7 +76945,12 @@ SWIGINTERN PyObject *_wrap_write_index_binary__SWIG_1(PyObject *SWIGUNUSEDPARM(s
       faiss::write_index_binary((faiss::IndexBinary const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -71238,7 +76990,12 @@ SWIGINTERN PyObject *_wrap_write_index_binary__SWIG_2(PyObject *SWIGUNUSEDPARM(s
       faiss::write_index_binary((faiss::IndexBinary const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -71386,131 +77143,136 @@ SWIGINTERN PyObject *_wrap_read_index__SWIG_0(PyObject *SWIGUNUSEDPARM(self), Py
       result = (faiss::Index *)faiss::read_index((char const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -71556,131 +77318,136 @@ SWIGINTERN PyObject *_wrap_read_index__SWIG_1(PyObject *SWIGUNUSEDPARM(self), Py
       result = (faiss::Index *)faiss::read_index((char const *)arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -71734,131 +77501,136 @@ SWIGINTERN PyObject *_wrap_read_index__SWIG_2(PyObject *SWIGUNUSEDPARM(self), Py
       result = (faiss::Index *)faiss::read_index(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -71901,131 +77673,136 @@ SWIGINTERN PyObject *_wrap_read_index__SWIG_3(PyObject *SWIGUNUSEDPARM(self), Py
       result = (faiss::Index *)faiss::read_index(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -72077,131 +77854,136 @@ SWIGINTERN PyObject *_wrap_read_index__SWIG_4(PyObject *SWIGUNUSEDPARM(self), Py
       result = (faiss::Index *)faiss::read_index(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -72244,131 +78026,136 @@ SWIGINTERN PyObject *_wrap_read_index__SWIG_5(PyObject *SWIGUNUSEDPARM(self), Py
       result = (faiss::Index *)faiss::read_index(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -72517,41 +78304,51 @@ SWIGINTERN PyObject *_wrap_read_index_binary__SWIG_0(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::IndexBinary *)faiss::read_index_binary((char const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
+    if (dynamic_cast<faiss::IndexBinaryReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -72597,41 +78394,51 @@ SWIGINTERN PyObject *_wrap_read_index_binary__SWIG_1(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::IndexBinary *)faiss::read_index_binary((char const *)arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
+    if (dynamic_cast<faiss::IndexBinaryReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -72685,41 +78492,51 @@ SWIGINTERN PyObject *_wrap_read_index_binary__SWIG_2(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::IndexBinary *)faiss::read_index_binary(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
+    if (dynamic_cast<faiss::IndexBinaryReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -72762,41 +78579,51 @@ SWIGINTERN PyObject *_wrap_read_index_binary__SWIG_3(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::IndexBinary *)faiss::read_index_binary(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
+    if (dynamic_cast<faiss::IndexBinaryReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -72848,41 +78675,51 @@ SWIGINTERN PyObject *_wrap_read_index_binary__SWIG_4(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::IndexBinary *)faiss::read_index_binary(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
+    if (dynamic_cast<faiss::IndexBinaryReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -72925,41 +78762,51 @@ SWIGINTERN PyObject *_wrap_read_index_binary__SWIG_5(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::IndexBinary *)faiss::read_index_binary(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
+    if (dynamic_cast<faiss::IndexBinaryReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -73107,7 +78954,12 @@ SWIGINTERN PyObject *_wrap_write_VectorTransform(PyObject *SWIGUNUSEDPARM(self),
       faiss::write_VectorTransform((faiss::VectorTransform const *)arg1,(char const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -73142,48 +78994,53 @@ SWIGINTERN PyObject *_wrap_read_VectorTransform(PyObject *SWIGUNUSEDPARM(self), 
       result = (faiss::VectorTransform *)faiss::read_VectorTransform((char const *)arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::RemapDimensionsTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__RemapDimensionsTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::OPQMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__OPQMatrix,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::PCAMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__PCAMatrix,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::RandomRotationMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__RandomRotationMatrix,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::LinearTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__LinearTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::NormalizationTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__NormalizationTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::CenteringTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__CenteringTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::VectorTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__VectorTransform,SWIG_POINTER_OWN);
     } else
@@ -73224,7 +79081,12 @@ SWIGINTERN PyObject *_wrap_read_ProductQuantizer__SWIG_0(PyObject *SWIGUNUSEDPAR
       result = (faiss::ProductQuantizer *)faiss::read_ProductQuantizer((char const *)arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -73258,7 +79120,12 @@ SWIGINTERN PyObject *_wrap_read_ProductQuantizer__SWIG_1(PyObject *SWIGUNUSEDPAR
       result = (faiss::ProductQuantizer *)faiss::read_ProductQuantizer(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -73338,7 +79205,12 @@ SWIGINTERN PyObject *_wrap_write_ProductQuantizer__SWIG_0(PyObject *SWIGUNUSEDPA
       faiss::write_ProductQuantizer((faiss::ProductQuantizer const *)arg1,(char const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -73380,7 +79252,12 @@ SWIGINTERN PyObject *_wrap_write_ProductQuantizer__SWIG_1(PyObject *SWIGUNUSEDPA
       faiss::write_ProductQuantizer((faiss::ProductQuantizer const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -73469,7 +79346,12 @@ SWIGINTERN PyObject *_wrap_write_InvertedLists(PyObject *SWIGUNUSEDPARM(self), P
       faiss::write_InvertedLists((faiss::InvertedLists const *)arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -73510,7 +79392,12 @@ SWIGINTERN PyObject *_wrap_read_InvertedLists__SWIG_0(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::InvertedLists *)faiss::read_InvertedLists(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -73542,7 +79429,12 @@ SWIGINTERN PyObject *_wrap_read_InvertedLists__SWIG_1(PyObject *SWIGUNUSEDPARM(s
       result = (faiss::InvertedLists *)faiss::read_InvertedLists(arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -73620,131 +79512,136 @@ SWIGINTERN PyObject *_wrap_clone_index(PyObject *SWIGUNUSEDPARM(self), PyObject 
       result = (faiss::Index *)faiss::clone_index((faiss::Index const *)arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -73796,48 +79693,53 @@ SWIGINTERN PyObject *_wrap_Cloner_clone_VectorTransform(PyObject *SWIGUNUSEDPARM
       result = (faiss::VectorTransform *)(arg1)->clone_VectorTransform((faiss::VectorTransform const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::RemapDimensionsTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__RemapDimensionsTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::OPQMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__OPQMatrix,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::PCAMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__PCAMatrix,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::RandomRotationMatrix *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__RandomRotationMatrix,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::LinearTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__LinearTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::NormalizationTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__NormalizationTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::CenteringTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__CenteringTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::VectorTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__VectorTransform,SWIG_POINTER_OWN);
     } else
@@ -73884,131 +79786,136 @@ SWIGINTERN PyObject *_wrap_Cloner_clone_Index(PyObject *SWIGUNUSEDPARM(self), Py
       result = (faiss::Index *)(arg1)->clone_Index((faiss::Index const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,0);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,0);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,0);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,0);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,0);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,0);
     } else
@@ -74060,7 +79967,12 @@ SWIGINTERN PyObject *_wrap_Cloner_clone_IndexIVF(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::IndexIVF *)(arg1)->clone_IndexIVF((faiss::IndexIVF const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -74091,7 +80003,12 @@ SWIGINTERN PyObject *_wrap_delete_Cloner(PyObject *SWIGUNUSEDPARM(self), PyObjec
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -74429,7 +80346,12 @@ SWIGINTERN PyObject *_wrap_AutoTuneCriterion_set_groundtruth(PyObject *SWIGUNUSE
       (arg1)->set_groundtruth(arg2,(float const *)arg3,(faiss::AutoTuneCriterion::idx_t const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -74479,7 +80401,12 @@ SWIGINTERN PyObject *_wrap_AutoTuneCriterion_evaluate(PyObject *SWIGUNUSEDPARM(s
       result = (double)((faiss::AutoTuneCriterion const *)arg1)->evaluate((float const *)arg2,(faiss::AutoTuneCriterion::idx_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -74510,7 +80437,12 @@ SWIGINTERN PyObject *_wrap_delete_AutoTuneCriterion(PyObject *SWIGUNUSEDPARM(sel
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -74610,7 +80542,12 @@ SWIGINTERN PyObject *_wrap_new_OneRecallAtRCriterion(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::OneRecallAtRCriterion *)new faiss::OneRecallAtRCriterion(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -74660,7 +80597,12 @@ SWIGINTERN PyObject *_wrap_OneRecallAtRCriterion_evaluate(PyObject *SWIGUNUSEDPA
       result = (double)((faiss::OneRecallAtRCriterion const *)arg1)->evaluate((float const *)arg2,(faiss::AutoTuneCriterion::idx_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -74691,7 +80633,12 @@ SWIGINTERN PyObject *_wrap_delete_OneRecallAtRCriterion(PyObject *SWIGUNUSEDPARM
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -74791,7 +80738,12 @@ SWIGINTERN PyObject *_wrap_new_IntersectionCriterion(PyObject *SWIGUNUSEDPARM(se
       result = (faiss::IntersectionCriterion *)new faiss::IntersectionCriterion(arg1,arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -74841,7 +80793,12 @@ SWIGINTERN PyObject *_wrap_IntersectionCriterion_evaluate(PyObject *SWIGUNUSEDPA
       result = (double)((faiss::IntersectionCriterion const *)arg1)->evaluate((float const *)arg2,(faiss::AutoTuneCriterion::idx_t const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -74872,7 +80829,12 @@ SWIGINTERN PyObject *_wrap_delete_IntersectionCriterion(PyObject *SWIGUNUSEDPARM
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -75262,7 +81224,12 @@ SWIGINTERN PyObject *_wrap_new_OperatingPoints(PyObject *SWIGUNUSEDPARM(self), P
       result = (faiss::OperatingPoints *)new faiss::OperatingPoints();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -75320,7 +81287,12 @@ SWIGINTERN PyObject *_wrap_OperatingPoints_merge_with__SWIG_0(PyObject *SWIGUNUS
       result = (int)(arg1)->merge_with((faiss::OperatingPoints const &)*arg2,(std::string const &)*arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -75366,7 +81338,12 @@ SWIGINTERN PyObject *_wrap_OperatingPoints_merge_with__SWIG_1(PyObject *SWIGUNUS
       result = (int)(arg1)->merge_with((faiss::OperatingPoints const &)*arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -75449,7 +81426,12 @@ SWIGINTERN PyObject *_wrap_OperatingPoints_clear(PyObject *SWIGUNUSEDPARM(self),
       (arg1)->clear();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -75522,7 +81504,12 @@ SWIGINTERN PyObject *_wrap_OperatingPoints_add__SWIG_0(PyObject *SWIGUNUSEDPARM(
       result = (bool)(arg1)->add(arg2,arg3,(std::string const &)*arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -75588,7 +81575,12 @@ SWIGINTERN PyObject *_wrap_OperatingPoints_add__SWIG_1(PyObject *SWIGUNUSEDPARM(
       result = (bool)(arg1)->add(arg2,arg3,(std::string const &)*arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -75709,7 +81701,12 @@ SWIGINTERN PyObject *_wrap_OperatingPoints_t_for_perf(PyObject *SWIGUNUSEDPARM(s
       result = (double)((faiss::OperatingPoints const *)arg1)->t_for_perf(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -75749,7 +81746,12 @@ SWIGINTERN PyObject *_wrap_OperatingPoints_display__SWIG_0(PyObject *SWIGUNUSEDP
       ((faiss::OperatingPoints const *)arg1)->display(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -75780,7 +81782,12 @@ SWIGINTERN PyObject *_wrap_OperatingPoints_display__SWIG_1(PyObject *SWIGUNUSEDP
       ((faiss::OperatingPoints const *)arg1)->display();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -75867,7 +81874,12 @@ SWIGINTERN PyObject *_wrap_OperatingPoints_all_to_gnuplot(PyObject *SWIGUNUSEDPA
       ((faiss::OperatingPoints const *)arg1)->all_to_gnuplot((char const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -75910,7 +81922,12 @@ SWIGINTERN PyObject *_wrap_OperatingPoints_optimal_to_gnuplot(PyObject *SWIGUNUS
       ((faiss::OperatingPoints const *)arg1)->optimal_to_gnuplot((char const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -76427,7 +82444,12 @@ SWIGINTERN PyObject *_wrap_new_ParameterSpace(PyObject *SWIGUNUSEDPARM(self), Py
       result = (faiss::ParameterSpace *)new faiss::ParameterSpace();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -76459,7 +82481,12 @@ SWIGINTERN PyObject *_wrap_ParameterSpace_n_combinations(PyObject *SWIGUNUSEDPAR
       result = (size_t)((faiss::ParameterSpace const *)arg1)->n_combinations();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -76509,7 +82536,12 @@ SWIGINTERN PyObject *_wrap_ParameterSpace_combination_ge(PyObject *SWIGUNUSEDPAR
       result = (bool)((faiss::ParameterSpace const *)arg1)->combination_ge(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -76550,7 +82582,12 @@ SWIGINTERN PyObject *_wrap_ParameterSpace_combination_name(PyObject *SWIGUNUSEDP
       result = ((faiss::ParameterSpace const *)arg1)->combination_name(arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -76581,7 +82618,12 @@ SWIGINTERN PyObject *_wrap_ParameterSpace_display(PyObject *SWIGUNUSEDPARM(self)
       ((faiss::ParameterSpace const *)arg1)->display();
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -76623,7 +82665,12 @@ SWIGINTERN PyObject *_wrap_ParameterSpace_add_range(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::ParameterRange *) &(arg1)->add_range((char const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -76665,7 +82712,12 @@ SWIGINTERN PyObject *_wrap_ParameterSpace_initialize(PyObject *SWIGUNUSEDPARM(se
       (arg1)->initialize((faiss::Index const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -76714,7 +82766,12 @@ SWIGINTERN PyObject *_wrap_ParameterSpace_set_index_parameters__SWIG_0(PyObject 
       ((faiss::ParameterSpace const *)arg1)->set_index_parameters(arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -76764,7 +82821,12 @@ SWIGINTERN PyObject *_wrap_ParameterSpace_set_index_parameters__SWIG_1(PyObject 
       ((faiss::ParameterSpace const *)arg1)->set_index_parameters(arg2,(char const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -76889,7 +82951,12 @@ SWIGINTERN PyObject *_wrap_ParameterSpace_set_index_parameter(PyObject *SWIGUNUS
       ((faiss::ParameterSpace const *)arg1)->set_index_parameter(arg2,(std::string const &)*arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -76961,7 +83028,12 @@ SWIGINTERN PyObject *_wrap_ParameterSpace_update_bounds(PyObject *SWIGUNUSEDPARM
       ((faiss::ParameterSpace const *)arg1)->update_bounds(arg2,(faiss::OperatingPoint const &)*arg3,arg4,arg5);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -77040,7 +83112,12 @@ SWIGINTERN PyObject *_wrap_ParameterSpace_explore(PyObject *SWIGUNUSEDPARM(self)
       ((faiss::ParameterSpace const *)arg1)->explore(arg2,arg3,(float const *)arg4,(faiss::AutoTuneCriterion const &)*arg5,arg6);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -77071,7 +83148,12 @@ SWIGINTERN PyObject *_wrap_delete_ParameterSpace(PyObject *SWIGUNUSEDPARM(self),
       delete arg1;
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -77129,131 +83211,136 @@ SWIGINTERN PyObject *_wrap_index_factory__SWIG_0(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::Index *)faiss::index_factory(arg1,(char const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -77308,131 +83395,136 @@ SWIGINTERN PyObject *_wrap_index_factory__SWIG_1(PyObject *SWIGUNUSEDPARM(self),
       result = (faiss::Index *)faiss::index_factory(arg1,(char const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -77543,41 +83635,51 @@ SWIGINTERN PyObject *_wrap_index_binary_factory(PyObject *SWIGUNUSEDPARM(self), 
       result = (faiss::IndexBinary *)faiss::index_binary_factory(arg1,(char const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
+    if (dynamic_cast<faiss::IndexBinaryReplicas *> (result)) {
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t,SWIG_POINTER_OWN);
+    } else
+    /*@SWIG@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryFromFloat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryFromFloat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinaryHNSW *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinaryHNSW,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexBinaryFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexBinaryFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexBinary *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexBinary,SWIG_POINTER_OWN);
     } else
@@ -77640,7 +83742,12 @@ SWIGINTERN PyObject *_wrap_new_MatrixStats(PyObject *SWIGUNUSEDPARM(self), PyObj
       result = (faiss::MatrixStats *)new faiss::MatrixStats(arg1,arg2,(float const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -78322,7 +84429,12 @@ SWIGINTERN PyObject *_wrap_MatrixStats_do_comment__varargs__(PyObject *SWIGUNUSE
       (arg1)->do_comment((char const *)arg2,arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -78398,131 +84510,136 @@ SWIGINTERN PyObject *_wrap_index_gpu_to_cpu(PyObject *SWIGUNUSEDPARM(self), PyOb
       result = (faiss::Index *)faiss::gpu::index_gpu_to_cpu((faiss::Index const *)arg1);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -78592,131 +84709,136 @@ SWIGINTERN PyObject *_wrap_index_cpu_to_gpu__SWIG_0(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::Index *)faiss::gpu::index_cpu_to_gpu(arg1,arg2,(faiss::Index const *)arg3,(faiss::gpu::GpuClonerOptions const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -78777,131 +84899,136 @@ SWIGINTERN PyObject *_wrap_index_cpu_to_gpu__SWIG_1(PyObject *SWIGUNUSEDPARM(sel
       result = (faiss::Index *)faiss::gpu::index_cpu_to_gpu(arg1,arg2,(faiss::Index const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -79044,131 +85171,136 @@ SWIGINTERN PyObject *_wrap_index_cpu_to_gpu_multiple__SWIG_0(PyObject *SWIGUNUSE
       result = (faiss::Index *)faiss::gpu::index_cpu_to_gpu_multiple(*arg1,*arg2,(faiss::Index const *)arg3,(faiss::gpu::GpuMultipleClonerOptions const *)arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -79235,131 +85367,136 @@ SWIGINTERN PyObject *_wrap_index_cpu_to_gpu_multiple__SWIG_1(PyObject *SWIGUNUSE
       result = (faiss::Index *)faiss::gpu::index_cpu_to_gpu_multiple(*arg1,*arg2,(faiss::Index const *)arg3);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
   }
   {
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIDMap *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIDMap,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexShards *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShards,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexShardsTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,465,DOWNCAST2@*/
     if (dynamic_cast<faiss::IndexReplicas *> (result)) {
-      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicas,SWIG_POINTER_OWN);
+      resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexReplicasTemplateT_faiss__Index_t,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQR *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQR,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlatDedup *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlatDedup,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexIVF *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexIVF,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexScalarQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexScalarQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexLSH *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexLSH,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexPreTransform *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexPreTransform,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::MultiIndexQuantizer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__MultiIndexQuantizer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSWSQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSWSQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::IndexHNSW2Level *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__IndexHNSW2Level,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index2Layer *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index2Layer,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFPQ *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFPQ,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexIVFFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexIVFFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
-    /*@SWIG:swigfaiss.swig,446,DOWNCAST_GPU@*/
+    /*@SWIG:swigfaiss.swig,471,DOWNCAST_GPU@*/
     if (dynamic_cast<faiss::gpu::GpuIndexFlat *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__gpu__GpuIndexFlat,SWIG_POINTER_OWN);
     } else
     /*@SWIG@*/
     
     // default for non-recognized classes
-    /*@SWIG:swigfaiss.swig,440,DOWNCAST@*/
+    /*@SWIG:swigfaiss.swig,459,DOWNCAST@*/
     if (dynamic_cast<faiss::Index *> (result)) {
       resultobj = SWIG_NewPointerObj(result,SWIGTYPE_p_faiss__Index,SWIG_POINTER_OWN);
     } else
@@ -79475,7 +85612,12 @@ SWIGINTERN PyObject *_wrap_GpuParameterSpace_initialize(PyObject *SWIGUNUSEDPARM
       (arg1)->initialize((faiss::Index const *)arg2);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -79538,7 +85680,12 @@ SWIGINTERN PyObject *_wrap_GpuParameterSpace_set_index_parameter(PyObject *SWIGU
       ((faiss::gpu::GpuParameterSpace const *)arg1)->set_index_parameter(arg2,(std::string const &)*arg3,arg4);
     } catch(faiss::FaissException & e) {
       PyEval_RestoreThread(_save);
-      PyErr_SetString(PyExc_RuntimeError, e.what());
+      
+      if (PyErr_Occurred()) {
+        // some previous code already set the error type.
+      } else {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+      }
       SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -87345,6 +93492,103 @@ SWIGINTERN PyObject *DistanceComputer_swigregister(PyObject *SWIGUNUSEDPARM(self
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_InterruptCallback_want_interrupt(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::InterruptCallback *arg1 = (faiss::InterruptCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:InterruptCallback_want_interrupt",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__InterruptCallback, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "InterruptCallback_want_interrupt" "', argument " "1"" of type '" "faiss::InterruptCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::InterruptCallback * >(argp1);
+  result = (bool)(arg1)->want_interrupt();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_InterruptCallback(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  faiss::InterruptCallback *arg1 = (faiss::InterruptCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_InterruptCallback",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_faiss__InterruptCallback, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_InterruptCallback" "', argument " "1"" of type '" "faiss::InterruptCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< faiss::InterruptCallback * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_InterruptCallback_check(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  
+  if (!PyArg_ParseTuple(args,(char *)":InterruptCallback_check")) SWIG_fail;
+  faiss::InterruptCallback::check();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_InterruptCallback_is_interrupted(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)":InterruptCallback_is_interrupted")) SWIG_fail;
+  result = (bool)faiss::InterruptCallback::is_interrupted();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_InterruptCallback_get_period_hint(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  size_t arg1 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:InterruptCallback_get_period_hint",&obj0)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InterruptCallback_get_period_hint" "', argument " "1"" of type '" "size_t""'");
+  } 
+  arg1 = static_cast< size_t >(val1);
+  result = (size_t)faiss::InterruptCallback::get_period_hint(arg1);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *InterruptCallback_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_faiss__InterruptCallback, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 SWIGINTERN PyObject *_wrap_ignore_SIGTTIN(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   
@@ -88989,6 +95233,25 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexShards_reset", _wrap_IndexShards_reset, METH_VARARGS, NULL},
 	 { (char *)"delete_IndexShards", _wrap_delete_IndexShards, METH_VARARGS, NULL},
 	 { (char *)"IndexShards_swigregister", IndexShards_swigregister, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_shard_indexes_set", _wrap_IndexBinaryShards_shard_indexes_set, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_shard_indexes_get", _wrap_IndexBinaryShards_shard_indexes_get, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_own_fields_set", _wrap_IndexBinaryShards_own_fields_set, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_own_fields_get", _wrap_IndexBinaryShards_own_fields_get, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_threaded_set", _wrap_IndexBinaryShards_threaded_set, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_threaded_get", _wrap_IndexBinaryShards_threaded_get, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_successive_ids_set", _wrap_IndexBinaryShards_successive_ids_set, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_successive_ids_get", _wrap_IndexBinaryShards_successive_ids_get, METH_VARARGS, NULL},
+	 { (char *)"new_IndexBinaryShards", _wrap_new_IndexBinaryShards, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_add_shard", _wrap_IndexBinaryShards_add_shard, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_sync_with_shard_indexes", _wrap_IndexBinaryShards_sync_with_shard_indexes, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_at", _wrap_IndexBinaryShards_at, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_add", _wrap_IndexBinaryShards_add, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_add_with_ids", _wrap_IndexBinaryShards_add_with_ids, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_search", _wrap_IndexBinaryShards_search, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_train", _wrap_IndexBinaryShards_train, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_reset", _wrap_IndexBinaryShards_reset, METH_VARARGS, NULL},
+	 { (char *)"delete_IndexBinaryShards", _wrap_delete_IndexBinaryShards, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryShards_swigregister", IndexBinaryShards_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_IndexReplicas", _wrap_new_IndexReplicas, METH_VARARGS, NULL},
 	 { (char *)"delete_IndexReplicas", _wrap_delete_IndexReplicas, METH_VARARGS, NULL},
 	 { (char *)"IndexReplicas_addIndex", _wrap_IndexReplicas_addIndex, METH_VARARGS, NULL},
@@ -89004,6 +95267,21 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IndexReplicas_count", _wrap_IndexReplicas_count, METH_VARARGS, NULL},
 	 { (char *)"IndexReplicas_at", _wrap_IndexReplicas_at, METH_VARARGS, NULL},
 	 { (char *)"IndexReplicas_swigregister", IndexReplicas_swigregister, METH_VARARGS, NULL},
+	 { (char *)"new_IndexBinaryReplicas", _wrap_new_IndexBinaryReplicas, METH_VARARGS, NULL},
+	 { (char *)"delete_IndexBinaryReplicas", _wrap_delete_IndexBinaryReplicas, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_addIndex", _wrap_IndexBinaryReplicas_addIndex, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_removeIndex", _wrap_IndexBinaryReplicas_removeIndex, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_runOnIndex", _wrap_IndexBinaryReplicas_runOnIndex, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_reset", _wrap_IndexBinaryReplicas_reset, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_train", _wrap_IndexBinaryReplicas_train, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_add", _wrap_IndexBinaryReplicas_add, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_search", _wrap_IndexBinaryReplicas_search, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_reconstruct", _wrap_IndexBinaryReplicas_reconstruct, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_own_fields_set", _wrap_IndexBinaryReplicas_own_fields_set, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_own_fields_get", _wrap_IndexBinaryReplicas_own_fields_get, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_count", _wrap_IndexBinaryReplicas_count, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_at", _wrap_IndexBinaryReplicas_at, METH_VARARGS, NULL},
+	 { (char *)"IndexBinaryReplicas_swigregister", IndexBinaryReplicas_swigregister, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_index_set", _wrap_IndexIDMap_index_set, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_index_get", _wrap_IndexIDMap_index_get, METH_VARARGS, NULL},
 	 { (char *)"IndexIDMap_own_fields_set", _wrap_IndexIDMap_own_fields_set, METH_VARARGS, NULL},
@@ -89505,6 +95783,12 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"DistanceComputer_symmetric_dis", _wrap_DistanceComputer_symmetric_dis, METH_VARARGS, NULL},
 	 { (char *)"delete_DistanceComputer", _wrap_delete_DistanceComputer, METH_VARARGS, NULL},
 	 { (char *)"DistanceComputer_swigregister", DistanceComputer_swigregister, METH_VARARGS, NULL},
+	 { (char *)"InterruptCallback_want_interrupt", _wrap_InterruptCallback_want_interrupt, METH_VARARGS, NULL},
+	 { (char *)"delete_InterruptCallback", _wrap_delete_InterruptCallback, METH_VARARGS, NULL},
+	 { (char *)"InterruptCallback_check", _wrap_InterruptCallback_check, METH_VARARGS, NULL},
+	 { (char *)"InterruptCallback_is_interrupted", _wrap_InterruptCallback_is_interrupted, METH_VARARGS, NULL},
+	 { (char *)"InterruptCallback_get_period_hint", _wrap_InterruptCallback_get_period_hint, METH_VARARGS, NULL},
+	 { (char *)"InterruptCallback_swigregister", InterruptCallback_swigregister, METH_VARARGS, NULL},
 	 { (char *)"ignore_SIGTTIN", _wrap_ignore_SIGTTIN, METH_VARARGS, NULL},
 	 { (char *)"MapLong2Long_map_set", _wrap_MapLong2Long_map_set, METH_VARARGS, NULL},
 	 { (char *)"MapLong2Long_map_get", _wrap_MapLong2Long_map_get, METH_VARARGS, NULL},
@@ -89736,9 +96020,6 @@ static void *_p_p_faiss__IndexPreTransformTo_p_p_faiss__Index(void *x, int *SWIG
 static void *_p_p_faiss__IndexSplitVectorsTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index **)  ((faiss::IndexSplitVectors **) x));
 }
-static void *_p_p_faiss__IndexReplicasTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((faiss::Index **)  ((faiss::IndexReplicas **) x));
-}
 static void *_p_p_faiss__IndexIDMap2To_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index **) (faiss::IndexIDMap *) ((faiss::IndexIDMap2 **) x));
 }
@@ -89826,11 +96107,14 @@ static void *_p_p_faiss__gpu__GpuIndexIVFTo_p_p_faiss__Index(void *x, int *SWIGU
 static void *_p_p_faiss__IndexIVFTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index **)  ((faiss::IndexIVF **) x));
 }
+static void *_p_p_faiss__IndexReplicasTemplateT_faiss__Index_tTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((faiss::Index **)  ((faiss::IndexReplicasTemplate< faiss::Index > **) x));
+}
+static void *_p_p_faiss__IndexShardsTemplateT_faiss__Index_tTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((faiss::Index **)  ((faiss::IndexShardsTemplate< faiss::Index > **) x));
+}
 static void *_p_p_faiss__MultiIndexQuantizer2To_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index **) (faiss::MultiIndexQuantizer *) ((faiss::MultiIndexQuantizer2 **) x));
-}
-static void *_p_p_faiss__IndexShardsTo_p_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((faiss::Index **)  ((faiss::IndexShards **) x));
 }
 static void *_p_faiss__IndexPQTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index *)  ((faiss::IndexPQ *) x));
@@ -89843,9 +96127,6 @@ static void *_p_faiss__IndexPreTransformTo_p_faiss__Index(void *x, int *SWIGUNUS
 }
 static void *_p_faiss__IndexSplitVectorsTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index *)  ((faiss::IndexSplitVectors *) x));
-}
-static void *_p_faiss__IndexReplicasTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((faiss::Index *)  ((faiss::IndexReplicas *) x));
 }
 static void *_p_faiss__IndexIDMap2To_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index *) (faiss::IndexIDMap *) ((faiss::IndexIDMap2 *) x));
@@ -89934,11 +96215,14 @@ static void *_p_faiss__gpu__GpuIndexIVFTo_p_faiss__Index(void *x, int *SWIGUNUSE
 static void *_p_faiss__IndexIVFTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index *)  ((faiss::IndexIVF *) x));
 }
+static void *_p_faiss__IndexReplicasTemplateT_faiss__Index_tTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((faiss::Index *)  ((faiss::IndexReplicasTemplate< faiss::Index > *) x));
+}
+static void *_p_faiss__IndexShardsTemplateT_faiss__Index_tTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((faiss::Index *)  ((faiss::IndexShardsTemplate< faiss::Index > *) x));
+}
 static void *_p_faiss__MultiIndexQuantizer2To_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::Index *) (faiss::MultiIndexQuantizer *) ((faiss::MultiIndexQuantizer2 *) x));
-}
-static void *_p_faiss__IndexShardsTo_p_faiss__Index(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((faiss::Index *)  ((faiss::IndexShards *) x));
 }
 static void *_p_faiss__gpu__GpuParameterSpaceTo_p_faiss__ParameterSpace(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::ParameterSpace *)  ((faiss::gpu::GpuParameterSpace *) x));
@@ -89948,6 +96232,12 @@ static void *_p_faiss__IndexBinaryFlatTo_p_faiss__IndexBinary(void *x, int *SWIG
 }
 static void *_p_faiss__gpu__GpuIndexBinaryFlatTo_p_faiss__IndexBinary(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::IndexBinary *)  ((faiss::gpu::GpuIndexBinaryFlat *) x));
+}
+static void *_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_tTo_p_faiss__IndexBinary(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((faiss::IndexBinary *)  ((faiss::IndexShardsTemplate< faiss::IndexBinary > *) x));
+}
+static void *_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_tTo_p_faiss__IndexBinary(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((faiss::IndexBinary *)  ((faiss::IndexReplicasTemplate< faiss::IndexBinary > *) x));
 }
 static void *_p_faiss__IndexBinaryHNSWTo_p_faiss__IndexBinary(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((faiss::IndexBinary *)  ((faiss::IndexBinaryHNSW *) x));
@@ -90001,8 +96291,10 @@ static swig_type_info _swigt__p_Node = {"_p_Node", "Node *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_T = {"_p_T", "T *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_TI = {"_p_TI", "TI *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_component_t = {"_p_component_t", "component_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_cublasHandle_t = {"_p_cublasHandle_t", "cublasHandle_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_cudaStream_t = {"_p_cudaStream_t", "cudaStream_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_distance_t = {"_p_distance_t", "distance_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_double = {"_p_double", "double *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__ArrayInvertedLists = {"_p_faiss__ArrayInvertedLists", "faiss::ArrayInvertedLists *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__AutoTuneCriterion = {"_p_faiss__AutoTuneCriterion", "faiss::AutoTuneCriterion *", 0, 0, (void*)0, 0};
@@ -90073,10 +96365,13 @@ static swig_type_info _swigt__p_faiss__IndexPQ = {"_p_faiss__IndexPQ", "faiss::I
 static swig_type_info _swigt__p_faiss__IndexPQStats = {"_p_faiss__IndexPQStats", "faiss::IndexPQStats *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__IndexPreTransform = {"_p_faiss__IndexPreTransform", "faiss::IndexPreTransform *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__IndexRefineFlat = {"_p_faiss__IndexRefineFlat", "faiss::IndexRefineFlat *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_faiss__IndexReplicas = {"_p_faiss__IndexReplicas", "faiss::IndexReplicas *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t = {"_p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t", "faiss::IndexBinaryReplicas *|faiss::IndexReplicasTemplate< faiss::IndexBinary > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_faiss__IndexReplicasTemplateT_faiss__Index_t = {"_p_faiss__IndexReplicasTemplateT_faiss__Index_t", "faiss::IndexReplicas *|faiss::IndexReplicasTemplate< faiss::Index > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__IndexScalarQuantizer = {"_p_faiss__IndexScalarQuantizer", "faiss::IndexScalarQuantizer *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_faiss__IndexShards = {"_p_faiss__IndexShards", "faiss::IndexShards *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t = {"_p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t", "faiss::IndexBinaryShards *|faiss::IndexShardsTemplate< faiss::IndexBinary > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_faiss__IndexShardsTemplateT_faiss__Index_t = {"_p_faiss__IndexShardsTemplateT_faiss__Index_t", "faiss::IndexShards *|faiss::IndexShardsTemplate< faiss::Index > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__IndexSplitVectors = {"_p_faiss__IndexSplitVectors", "faiss::IndexSplitVectors *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_faiss__InterruptCallback = {"_p_faiss__InterruptCallback", "faiss::InterruptCallback *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__IntersectionCriterion = {"_p_faiss__IntersectionCriterion", "faiss::IntersectionCriterion *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__InvertedListScanner = {"_p_faiss__InvertedListScanner", "faiss::InvertedListScanner *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__InvertedLists = {"_p_faiss__InvertedLists", "faiss::InvertedLists *", 0, 0, (void*)0, 0};
@@ -90136,17 +96431,16 @@ static swig_type_info _swigt__p_faiss__gpu__GpuParameterSpace = {"_p_faiss__gpu_
 static swig_type_info _swigt__p_faiss__gpu__GpuResources = {"_p_faiss__gpu__GpuResources", "faiss::gpu::GpuResources *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__gpu__StandardGpuResources = {"_p_faiss__gpu__StandardGpuResources", "faiss::gpu::StandardGpuResources *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_faiss__ivflib__SlidingIndexWindow = {"_p_faiss__ivflib__SlidingIndexWindow", "faiss::ivflib::SlidingIndexWindow *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_float = {"_p_float", "float *|faiss::HeapArray< faiss::CMin< float,long > >::T *|faiss::HeapArray< faiss::CMax< float,long > >::T *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_float = {"_p_float", "faiss::IndexShardsTemplate< faiss::Index >::distance_t *|faiss::IndexShardsTemplate< faiss::Index >::component_t *|float *|faiss::IndexReplicasTemplate< faiss::Index >::distance_t *|faiss::HeapArray< faiss::CMin< float,long > >::T *|faiss::HeapArray< faiss::CMax< float,long > >::T *|faiss::IndexReplicasTemplate< faiss::Index >::component_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_idx_t = {"_p_idx_t", "idx_t *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_int = {"_p_int", "int *|int32_t *|hamdis_t *|faiss::HeapArray< faiss::CMin< int,long > >::T *|faiss::HeapArray< faiss::CMax< int,long > >::T *|faiss::IndexHNSW::storage_idx_t *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_long = {"_p_long", "faiss::HeapArray< faiss::CMax< float,long > >::TI *|faiss::HeapArray< faiss::CMin< float,long > >::TI *|faiss::BufferList::idx_t *|faiss::IDSelector::idx_t *|faiss::RangeSearchResult::idx_t *|faiss::Index::idx_t *|faiss::InvertedLists::idx_t *|faiss::ivflib::idx_t *|faiss::HNSW::idx_t *|faiss::ReconstructFromNeighbors::idx_t *|faiss::IndexBinary::idx_t *|faiss::AutoTuneCriterion::idx_t *|faiss::HeapArray< faiss::CMin< int,long > >::TI *|faiss::HeapArray< faiss::CMax< int,long > >::TI *|long *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_int = {"_p_int", "faiss::IndexShardsTemplate< faiss::IndexBinary >::distance_t *|int *|int32_t *|faiss::IndexReplicasTemplate< faiss::IndexBinary >::distance_t *|hamdis_t *|faiss::HeapArray< faiss::CMin< int,long > >::T *|faiss::HeapArray< faiss::CMax< int,long > >::T *|faiss::IndexHNSW::storage_idx_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_long = {"_p_long", "faiss::IndexReplicasTemplate< faiss::Index >::idx_t *|faiss::IndexShardsTemplate< faiss::Index >::idx_t *|faiss::IndexShardsTemplate< faiss::IndexBinary >::idx_t *|faiss::HeapArray< faiss::CMax< float,long > >::TI *|faiss::HeapArray< faiss::CMin< float,long > >::TI *|faiss::IndexReplicasTemplate< faiss::IndexBinary >::idx_t *|faiss::RangeSearchResult::idx_t *|faiss::AutoTuneCriterion::idx_t *|faiss::Index::idx_t *|faiss::InvertedLists::idx_t *|faiss::ivflib::idx_t *|faiss::HNSW::idx_t *|faiss::ReconstructFromNeighbors::idx_t *|faiss::IndexBinary::idx_t *|faiss::IDSelector::idx_t *|faiss::BufferList::idx_t *|faiss::HeapArray< faiss::CMin< int,long > >::TI *|faiss::HeapArray< faiss::CMax< int,long > >::TI *|long *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_omp_lock_t = {"_p_omp_lock_t", "omp_lock_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_faiss__Index = {"_p_p_faiss__Index", "faiss::Index **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexPQ = {"_p_p_faiss__IndexPQ", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexIVFFlatDedup = {"_p_p_faiss__IndexIVFFlatDedup", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexPreTransform = {"_p_p_faiss__IndexPreTransform", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexSplitVectors = {"_p_p_faiss__IndexSplitVectors", 0, 0, 0, 0, 0};
-static swig_type_info _swigt__p_p_faiss__IndexReplicas = {"_p_p_faiss__IndexReplicas", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexIDMap2 = {"_p_p_faiss__IndexIDMap2", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexIVFFlat = {"_p_p_faiss__IndexIVFFlat", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__gpu__GpuIndexIVFFlat = {"_p_p_faiss__gpu__GpuIndexIVFFlat", 0, 0, 0, 0, 0};
@@ -90154,8 +96448,8 @@ static swig_type_info _swigt__p_p_faiss__MultiIndexQuantizer = {"_p_p_faiss__Mul
 static swig_type_info _swigt__p_p_faiss__IndexScalarQuantizer = {"_p_p_faiss__IndexScalarQuantizer", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexIVFScalarQuantizer = {"_p_p_faiss__IndexIVFScalarQuantizer", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexRefineFlat = {"_p_p_faiss__IndexRefineFlat", 0, 0, 0, 0, 0};
-static swig_type_info _swigt__p_p_faiss__IndexIVFPQ = {"_p_p_faiss__IndexIVFPQ", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__gpu__GpuIndexIVFPQ = {"_p_p_faiss__gpu__GpuIndexIVFPQ", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_p_faiss__IndexIVFPQ = {"_p_p_faiss__IndexIVFPQ", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexLSH = {"_p_p_faiss__IndexLSH", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexHNSWSQ = {"_p_p_faiss__IndexHNSWSQ", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__gpu__GpuIndex = {"_p_p_faiss__gpu__GpuIndex", 0, 0, 0, 0, 0};
@@ -90177,7 +96471,8 @@ static swig_type_info _swigt__p_p_faiss__IndexFlatL2BaseShift = {"_p_p_faiss__In
 static swig_type_info _swigt__p_p_faiss__gpu__GpuIndexIVF = {"_p_p_faiss__gpu__GpuIndexIVF", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__IndexIVF = {"_p_p_faiss__IndexIVF", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__MultiIndexQuantizer2 = {"_p_p_faiss__MultiIndexQuantizer2", 0, 0, 0, 0, 0};
-static swig_type_info _swigt__p_p_faiss__IndexShards = {"_p_p_faiss__IndexShards", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_p_faiss__IndexReplicasTemplateT_faiss__Index_t = {"_p_p_faiss__IndexReplicasTemplateT_faiss__Index_t", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_p_faiss__IndexShardsTemplateT_faiss__Index_t = {"_p_p_faiss__IndexShardsTemplateT_faiss__Index_t", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__InvertedLists = {"_p_p_faiss__InvertedLists", "faiss::InvertedLists **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_faiss__ArrayInvertedLists = {"_p_p_faiss__ArrayInvertedLists", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_faiss__ConcatenatedInvertedLists = {"_p_p_faiss__ConcatenatedInvertedLists", 0, 0, 0, 0, 0};
@@ -90193,6 +96488,7 @@ static swig_type_info _swigt__p_p_faiss__CenteringTransform = {"_p_p_faiss__Cent
 static swig_type_info _swigt__p_p_faiss__gpu__GpuResources = {"_p_p_faiss__gpu__GpuResources", "faiss::gpu::GpuResources **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_faiss__gpu__StandardGpuResources = {"_p_p_faiss__gpu__StandardGpuResources", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_p_void = {"_p_p_void", "void **", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__functionT_void_ffaiss__IndexBinary_pF_t = {"_p_std__functionT_void_ffaiss__IndexBinary_pF_t", "std::function< void (faiss::IndexBinary *) > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__functionT_void_ffaiss__Index_pF_t = {"_p_std__functionT_void_ffaiss__Index_pF_t", "std::function< void (faiss::Index *) > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__listT_faiss__OnDiskInvertedLists__Slot_t = {"_p_std__listT_faiss__OnDiskInvertedLists__Slot_t", "std::list< faiss::OnDiskInvertedLists::Slot > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__mt19937 = {"_p_std__mt19937", "std::mt19937 *", 0, 0, (void*)0, 0};
@@ -90208,6 +96504,7 @@ static swig_type_info _swigt__p_std__vectorT_cudaStream_t_t = {"_p_std__vectorT_
 static swig_type_info _swigt__p_std__vectorT_double_t = {"_p_std__vectorT_double_t", "std::vector< double > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_faiss__BufferList__Buffer_t = {"_p_std__vectorT_faiss__BufferList__Buffer_t", "std::vector< faiss::BufferList::Buffer > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_faiss__HNSW__NodeDistFarther_t = {"_p_std__vectorT_faiss__HNSW__NodeDistFarther_t", "std::vector< faiss::HNSW::NodeDistFarther > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_faiss__IndexBinary_p_t = {"_p_std__vectorT_faiss__IndexBinary_p_t", "std::vector< faiss::IndexBinary * > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_faiss__Index_p_t = {"_p_std__vectorT_faiss__Index_p_t", "std::vector< faiss::Index * > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_faiss__InvertedLists_const_p_t = {"_p_std__vectorT_faiss__InvertedLists_const_p_t", "std::vector< faiss::InvertedLists const * > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_faiss__InvertedLists_p_t = {"_p_std__vectorT_faiss__InvertedLists_p_t", "std::vector< faiss::InvertedLists * > *", 0, 0, (void*)0, 0};
@@ -90230,7 +96527,7 @@ static swig_type_info _swigt__p_std__vectorT_unsigned_char_t = {"_p_std__vectorT
 static swig_type_info _swigt__p_std__vectorT_unsigned_long_t = {"_p_std__vectorT_unsigned_long_t", "std::vector< unsigned long > *|std::vector< size_t > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_storage_idx_t = {"_p_storage_idx_t", "storage_idx_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_uint32_t = {"_p_uint32_t", "uint32_t *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned char *|uint8_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "faiss::IndexShardsTemplate< faiss::IndexBinary >::component_t *|unsigned char *|faiss::IndexReplicasTemplate< faiss::IndexBinary >::component_t *|uint8_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_long = {"_p_unsigned_long", "uint64_t *|size_t *|unsigned long *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_void = {"_p_void", "void *", 0, 0, (void*)0, 0};
 
@@ -90242,8 +96539,10 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_T,
   &_swigt__p_TI,
   &_swigt__p_char,
+  &_swigt__p_component_t,
   &_swigt__p_cublasHandle_t,
   &_swigt__p_cudaStream_t,
+  &_swigt__p_distance_t,
   &_swigt__p_double,
   &_swigt__p_faiss__ArrayInvertedLists,
   &_swigt__p_faiss__AutoTuneCriterion,
@@ -90314,10 +96613,13 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_faiss__IndexPQStats,
   &_swigt__p_faiss__IndexPreTransform,
   &_swigt__p_faiss__IndexRefineFlat,
-  &_swigt__p_faiss__IndexReplicas,
+  &_swigt__p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t,
+  &_swigt__p_faiss__IndexReplicasTemplateT_faiss__Index_t,
   &_swigt__p_faiss__IndexScalarQuantizer,
-  &_swigt__p_faiss__IndexShards,
+  &_swigt__p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t,
+  &_swigt__p_faiss__IndexShardsTemplateT_faiss__Index_t,
   &_swigt__p_faiss__IndexSplitVectors,
+  &_swigt__p_faiss__InterruptCallback,
   &_swigt__p_faiss__IntersectionCriterion,
   &_swigt__p_faiss__InvertedListScanner,
   &_swigt__p_faiss__InvertedLists,
@@ -90409,9 +96711,9 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_p_faiss__IndexPQ,
   &_swigt__p_p_faiss__IndexPreTransform,
   &_swigt__p_p_faiss__IndexRefineFlat,
-  &_swigt__p_p_faiss__IndexReplicas,
+  &_swigt__p_p_faiss__IndexReplicasTemplateT_faiss__Index_t,
   &_swigt__p_p_faiss__IndexScalarQuantizer,
-  &_swigt__p_p_faiss__IndexShards,
+  &_swigt__p_p_faiss__IndexShardsTemplateT_faiss__Index_t,
   &_swigt__p_p_faiss__IndexSplitVectors,
   &_swigt__p_p_faiss__InvertedLists,
   &_swigt__p_p_faiss__LinearTransform,
@@ -90434,6 +96736,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_p_faiss__gpu__GpuResources,
   &_swigt__p_p_faiss__gpu__StandardGpuResources,
   &_swigt__p_p_void,
+  &_swigt__p_std__functionT_void_ffaiss__IndexBinary_pF_t,
   &_swigt__p_std__functionT_void_ffaiss__Index_pF_t,
   &_swigt__p_std__listT_faiss__OnDiskInvertedLists__Slot_t,
   &_swigt__p_std__mt19937,
@@ -90449,6 +96752,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_std__vectorT_double_t,
   &_swigt__p_std__vectorT_faiss__BufferList__Buffer_t,
   &_swigt__p_std__vectorT_faiss__HNSW__NodeDistFarther_t,
+  &_swigt__p_std__vectorT_faiss__IndexBinary_p_t,
   &_swigt__p_std__vectorT_faiss__Index_p_t,
   &_swigt__p_std__vectorT_faiss__InvertedLists_const_p_t,
   &_swigt__p_std__vectorT_faiss__InvertedLists_p_t,
@@ -90483,8 +96787,10 @@ static swig_cast_info _swigc__p_Node[] = {  {&_swigt__p_Node, 0, 0, 0},{0, 0, 0,
 static swig_cast_info _swigc__p_T[] = {  {&_swigt__p_T, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_TI[] = {  {&_swigt__p_TI, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_component_t[] = {  {&_swigt__p_component_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_cublasHandle_t[] = {  {&_swigt__p_cublasHandle_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_cudaStream_t[] = {  {&_swigt__p_cudaStream_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_distance_t[] = {  {&_swigt__p_distance_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_double[] = {  {&_swigt__p_double, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__ArrayInvertedLists[] = {  {&_swigt__p_faiss__ArrayInvertedLists, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__AutoTuneCriterion[] = {  {&_swigt__p_faiss__AutoTuneCriterion, 0, 0, 0},  {&_swigt__p_faiss__OneRecallAtRCriterion, _p_faiss__OneRecallAtRCriterionTo_p_faiss__AutoTuneCriterion, 0, 0},  {&_swigt__p_faiss__IntersectionCriterion, _p_faiss__IntersectionCriterionTo_p_faiss__AutoTuneCriterion, 0, 0},{0, 0, 0, 0}};
@@ -90523,9 +96829,9 @@ static swig_cast_info _swigc__p_faiss__IOReader[] = {  {&_swigt__p_faiss__IORead
 static swig_cast_info _swigc__p_faiss__IOWriter[] = {  {&_swigt__p_faiss__IOWriter, 0, 0, 0},  {&_swigt__p_faiss__VectorIOWriter, _p_faiss__VectorIOWriterTo_p_faiss__IOWriter, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IVFPQSearchParameters[] = {  {&_swigt__p_faiss__IVFPQSearchParameters, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IVFSearchParameters[] = {  {&_swigt__p_faiss__IVFSearchParameters, 0, 0, 0},  {&_swigt__p_faiss__IVFPQSearchParameters, _p_faiss__IVFPQSearchParametersTo_p_faiss__IVFSearchParameters, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_faiss__Index[] = {  {&_swigt__p_faiss__IndexPQ, _p_faiss__IndexPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFFlatDedup, _p_faiss__IndexIVFFlatDedupTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexPreTransform, _p_faiss__IndexPreTransformTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__Index, 0, 0, 0},  {&_swigt__p_faiss__IndexSplitVectors, _p_faiss__IndexSplitVectorsTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexReplicas, _p_faiss__IndexReplicasTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIDMap2, _p_faiss__IndexIDMap2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFFlat, _p_faiss__IndexIVFFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVFFlat, _p_faiss__gpu__GpuIndexIVFFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__MultiIndexQuantizer, _p_faiss__MultiIndexQuantizerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexScalarQuantizer, _p_faiss__IndexScalarQuantizerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFScalarQuantizer, _p_faiss__IndexIVFScalarQuantizerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexRefineFlat, _p_faiss__IndexRefineFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFPQ, _p_faiss__IndexIVFPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVFPQ, _p_faiss__gpu__GpuIndexIVFPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexLSH, _p_faiss__IndexLSHTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSWSQ, _p_faiss__IndexHNSWSQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndex, _p_faiss__gpu__GpuIndexTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIDMap, _p_faiss__IndexIDMapTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSW2Level, _p_faiss__IndexHNSW2LevelTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__Index2Layer, _p_faiss__Index2LayerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlatL2, _p_faiss__IndexFlatL2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlatL2, _p_faiss__gpu__GpuIndexFlatL2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSWFlat, _p_faiss__IndexHNSWFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFPQR, _p_faiss__IndexIVFPQRTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlat1D, _p_faiss__IndexFlat1DTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlat, _p_faiss__IndexFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlat, _p_faiss__gpu__GpuIndexFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlatIP, _p_faiss__IndexFlatIPTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlatIP, _p_faiss__gpu__GpuIndexFlatIPTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSW, _p_faiss__IndexHNSWTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSWPQ, _p_faiss__IndexHNSWPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlatL2BaseShift, _p_faiss__IndexFlatL2BaseShiftTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVF, _p_faiss__gpu__GpuIndexIVFTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVF, _p_faiss__IndexIVFTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__MultiIndexQuantizer2, _p_faiss__MultiIndexQuantizer2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexShards, _p_faiss__IndexShardsTo_p_faiss__Index, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__Index[] = {  {&_swigt__p_faiss__IndexPQ, _p_faiss__IndexPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFFlatDedup, _p_faiss__IndexIVFFlatDedupTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexPreTransform, _p_faiss__IndexPreTransformTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__Index, 0, 0, 0},  {&_swigt__p_faiss__IndexSplitVectors, _p_faiss__IndexSplitVectorsTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIDMap2, _p_faiss__IndexIDMap2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFFlat, _p_faiss__IndexIVFFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVFFlat, _p_faiss__gpu__GpuIndexIVFFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__MultiIndexQuantizer, _p_faiss__MultiIndexQuantizerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexScalarQuantizer, _p_faiss__IndexScalarQuantizerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFScalarQuantizer, _p_faiss__IndexIVFScalarQuantizerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexRefineFlat, _p_faiss__IndexRefineFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFPQ, _p_faiss__IndexIVFPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVFPQ, _p_faiss__gpu__GpuIndexIVFPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexLSH, _p_faiss__IndexLSHTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSWSQ, _p_faiss__IndexHNSWSQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndex, _p_faiss__gpu__GpuIndexTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIDMap, _p_faiss__IndexIDMapTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSW2Level, _p_faiss__IndexHNSW2LevelTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__Index2Layer, _p_faiss__Index2LayerTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlatL2, _p_faiss__IndexFlatL2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlatL2, _p_faiss__gpu__GpuIndexFlatL2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSWFlat, _p_faiss__IndexHNSWFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVFPQR, _p_faiss__IndexIVFPQRTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlat1D, _p_faiss__IndexFlat1DTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlat, _p_faiss__IndexFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlat, _p_faiss__gpu__GpuIndexFlatTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlatIP, _p_faiss__IndexFlatIPTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexFlatIP, _p_faiss__gpu__GpuIndexFlatIPTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSW, _p_faiss__IndexHNSWTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexHNSWPQ, _p_faiss__IndexHNSWPQTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexFlatL2BaseShift, _p_faiss__IndexFlatL2BaseShiftTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexIVF, _p_faiss__gpu__GpuIndexIVFTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexIVF, _p_faiss__IndexIVFTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__MultiIndexQuantizer2, _p_faiss__MultiIndexQuantizer2To_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexReplicasTemplateT_faiss__Index_t, _p_faiss__IndexReplicasTemplateT_faiss__Index_tTo_p_faiss__Index, 0, 0},  {&_swigt__p_faiss__IndexShardsTemplateT_faiss__Index_t, _p_faiss__IndexShardsTemplateT_faiss__Index_tTo_p_faiss__Index, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__Index2Layer[] = {  {&_swigt__p_faiss__Index2Layer, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_faiss__IndexBinary[] = {  {&_swigt__p_faiss__IndexBinaryFlat, _p_faiss__IndexBinaryFlatTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexBinaryFlat, _p_faiss__gpu__GpuIndexBinaryFlatTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__IndexBinary, 0, 0, 0},  {&_swigt__p_faiss__IndexBinaryHNSW, _p_faiss__IndexBinaryHNSWTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__IndexBinaryIVF, _p_faiss__IndexBinaryIVFTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__IndexBinaryFromFloat, _p_faiss__IndexBinaryFromFloatTo_p_faiss__IndexBinary, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__IndexBinary[] = {  {&_swigt__p_faiss__IndexBinaryFlat, _p_faiss__IndexBinaryFlatTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__gpu__GpuIndexBinaryFlat, _p_faiss__gpu__GpuIndexBinaryFlatTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__IndexBinary, 0, 0, 0},  {&_swigt__p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, _p_faiss__IndexShardsTemplateT_faiss__IndexBinary_tTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, _p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_tTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__IndexBinaryHNSW, _p_faiss__IndexBinaryHNSWTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__IndexBinaryIVF, _p_faiss__IndexBinaryIVFTo_p_faiss__IndexBinary, 0, 0},  {&_swigt__p_faiss__IndexBinaryFromFloat, _p_faiss__IndexBinaryFromFloatTo_p_faiss__IndexBinary, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexBinaryFlat[] = {  {&_swigt__p_faiss__IndexBinaryFlat, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexBinaryFromFloat[] = {  {&_swigt__p_faiss__IndexBinaryFromFloat, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexBinaryHNSW[] = {  {&_swigt__p_faiss__IndexBinaryHNSW, 0, 0, 0},{0, 0, 0, 0}};
@@ -90555,10 +96861,13 @@ static swig_cast_info _swigc__p_faiss__IndexPQ[] = {  {&_swigt__p_faiss__IndexPQ
 static swig_cast_info _swigc__p_faiss__IndexPQStats[] = {  {&_swigt__p_faiss__IndexPQStats, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexPreTransform[] = {  {&_swigt__p_faiss__IndexPreTransform, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexRefineFlat[] = {  {&_swigt__p_faiss__IndexRefineFlat, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_faiss__IndexReplicas[] = {  {&_swigt__p_faiss__IndexReplicas, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t[] = {  {&_swigt__p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__IndexReplicasTemplateT_faiss__Index_t[] = {  {&_swigt__p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexScalarQuantizer[] = {  {&_swigt__p_faiss__IndexScalarQuantizer, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_faiss__IndexShards[] = {  {&_swigt__p_faiss__IndexShards, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t[] = {  {&_swigt__p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__IndexShardsTemplateT_faiss__Index_t[] = {  {&_swigt__p_faiss__IndexShardsTemplateT_faiss__Index_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IndexSplitVectors[] = {  {&_swigt__p_faiss__IndexSplitVectors, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_faiss__InterruptCallback[] = {  {&_swigt__p_faiss__InterruptCallback, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__IntersectionCriterion[] = {  {&_swigt__p_faiss__IntersectionCriterion, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__InvertedListScanner[] = {  {&_swigt__p_faiss__InvertedListScanner, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_faiss__InvertedLists[] = {  {&_swigt__p_faiss__InvertedLists, 0, 0, 0},  {&_swigt__p_faiss__ArrayInvertedLists, _p_faiss__ArrayInvertedListsTo_p_faiss__InvertedLists, 0, 0},  {&_swigt__p_faiss__ConcatenatedInvertedLists, _p_faiss__ConcatenatedInvertedListsTo_p_faiss__InvertedLists, 0, 0},  {&_swigt__p_faiss__OnDiskInvertedLists, _p_faiss__OnDiskInvertedListsTo_p_faiss__InvertedLists, 0, 0},{0, 0, 0, 0}};
@@ -90627,7 +96936,6 @@ static swig_cast_info _swigc__p_p_faiss__IndexPQ[] = {{&_swigt__p_p_faiss__Index
 static swig_cast_info _swigc__p_p_faiss__IndexIVFFlatDedup[] = {{&_swigt__p_p_faiss__IndexIVFFlatDedup, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexPreTransform[] = {{&_swigt__p_p_faiss__IndexPreTransform, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexSplitVectors[] = {{&_swigt__p_p_faiss__IndexSplitVectors, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_p_faiss__IndexReplicas[] = {{&_swigt__p_p_faiss__IndexReplicas, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexIDMap2[] = {{&_swigt__p_p_faiss__IndexIDMap2, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexIVFFlat[] = {{&_swigt__p_p_faiss__IndexIVFFlat, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__gpu__GpuIndexIVFFlat[] = {{&_swigt__p_p_faiss__gpu__GpuIndexIVFFlat, 0, 0, 0},{0, 0, 0, 0}};
@@ -90635,8 +96943,8 @@ static swig_cast_info _swigc__p_p_faiss__MultiIndexQuantizer[] = {{&_swigt__p_p_
 static swig_cast_info _swigc__p_p_faiss__IndexScalarQuantizer[] = {{&_swigt__p_p_faiss__IndexScalarQuantizer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexIVFScalarQuantizer[] = {{&_swigt__p_p_faiss__IndexIVFScalarQuantizer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexRefineFlat[] = {{&_swigt__p_p_faiss__IndexRefineFlat, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_p_faiss__IndexIVFPQ[] = {{&_swigt__p_p_faiss__IndexIVFPQ, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__gpu__GpuIndexIVFPQ[] = {{&_swigt__p_p_faiss__gpu__GpuIndexIVFPQ, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_faiss__IndexIVFPQ[] = {{&_swigt__p_p_faiss__IndexIVFPQ, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexLSH[] = {{&_swigt__p_p_faiss__IndexLSH, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexHNSWSQ[] = {{&_swigt__p_p_faiss__IndexHNSWSQ, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__gpu__GpuIndex[] = {{&_swigt__p_p_faiss__gpu__GpuIndex, 0, 0, 0},{0, 0, 0, 0}};
@@ -90658,8 +96966,9 @@ static swig_cast_info _swigc__p_p_faiss__IndexFlatL2BaseShift[] = {{&_swigt__p_p
 static swig_cast_info _swigc__p_p_faiss__gpu__GpuIndexIVF[] = {{&_swigt__p_p_faiss__gpu__GpuIndexIVF, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__IndexIVF[] = {{&_swigt__p_p_faiss__IndexIVF, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__MultiIndexQuantizer2[] = {{&_swigt__p_p_faiss__MultiIndexQuantizer2, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_p_faiss__IndexShards[] = {{&_swigt__p_p_faiss__IndexShards, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_p_faiss__Index[] = {  {&_swigt__p_p_faiss__IndexPQ, _p_p_faiss__IndexPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFFlatDedup, _p_p_faiss__IndexIVFFlatDedupTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexPreTransform, _p_p_faiss__IndexPreTransformTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__Index, 0, 0, 0},  {&_swigt__p_p_faiss__IndexSplitVectors, _p_p_faiss__IndexSplitVectorsTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexReplicas, _p_p_faiss__IndexReplicasTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIDMap2, _p_p_faiss__IndexIDMap2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFFlat, _p_p_faiss__IndexIVFFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexIVFFlat, _p_p_faiss__gpu__GpuIndexIVFFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__MultiIndexQuantizer, _p_p_faiss__MultiIndexQuantizerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexScalarQuantizer, _p_p_faiss__IndexScalarQuantizerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFScalarQuantizer, _p_p_faiss__IndexIVFScalarQuantizerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexRefineFlat, _p_p_faiss__IndexRefineFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFPQ, _p_p_faiss__IndexIVFPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexIVFPQ, _p_p_faiss__gpu__GpuIndexIVFPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexLSH, _p_p_faiss__IndexLSHTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSWSQ, _p_p_faiss__IndexHNSWSQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndex, _p_p_faiss__gpu__GpuIndexTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIDMap, _p_p_faiss__IndexIDMapTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSW2Level, _p_p_faiss__IndexHNSW2LevelTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__Index2Layer, _p_p_faiss__Index2LayerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexFlatL2, _p_p_faiss__gpu__GpuIndexFlatL2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlatL2, _p_p_faiss__IndexFlatL2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSWFlat, _p_p_faiss__IndexHNSWFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFPQR, _p_p_faiss__IndexIVFPQRTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlat1D, _p_p_faiss__IndexFlat1DTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexFlat, _p_p_faiss__gpu__GpuIndexFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlat, _p_p_faiss__IndexFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexFlatIP, _p_p_faiss__gpu__GpuIndexFlatIPTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlatIP, _p_p_faiss__IndexFlatIPTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSW, _p_p_faiss__IndexHNSWTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSWPQ, _p_p_faiss__IndexHNSWPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlatL2BaseShift, _p_p_faiss__IndexFlatL2BaseShiftTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexIVF, _p_p_faiss__gpu__GpuIndexIVFTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVF, _p_p_faiss__IndexIVFTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__MultiIndexQuantizer2, _p_p_faiss__MultiIndexQuantizer2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexShards, _p_p_faiss__IndexShardsTo_p_p_faiss__Index, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_faiss__IndexReplicasTemplateT_faiss__Index_t[] = {{&_swigt__p_p_faiss__IndexReplicasTemplateT_faiss__Index_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_faiss__IndexShardsTemplateT_faiss__Index_t[] = {{&_swigt__p_p_faiss__IndexShardsTemplateT_faiss__Index_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_faiss__Index[] = {  {&_swigt__p_p_faiss__IndexPQ, _p_p_faiss__IndexPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFFlatDedup, _p_p_faiss__IndexIVFFlatDedupTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexPreTransform, _p_p_faiss__IndexPreTransformTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__Index, 0, 0, 0},  {&_swigt__p_p_faiss__IndexSplitVectors, _p_p_faiss__IndexSplitVectorsTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIDMap2, _p_p_faiss__IndexIDMap2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFFlat, _p_p_faiss__IndexIVFFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexIVFFlat, _p_p_faiss__gpu__GpuIndexIVFFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__MultiIndexQuantizer, _p_p_faiss__MultiIndexQuantizerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexScalarQuantizer, _p_p_faiss__IndexScalarQuantizerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFScalarQuantizer, _p_p_faiss__IndexIVFScalarQuantizerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexRefineFlat, _p_p_faiss__IndexRefineFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexIVFPQ, _p_p_faiss__gpu__GpuIndexIVFPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFPQ, _p_p_faiss__IndexIVFPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexLSH, _p_p_faiss__IndexLSHTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSWSQ, _p_p_faiss__IndexHNSWSQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndex, _p_p_faiss__gpu__GpuIndexTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIDMap, _p_p_faiss__IndexIDMapTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSW2Level, _p_p_faiss__IndexHNSW2LevelTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__Index2Layer, _p_p_faiss__Index2LayerTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexFlatL2, _p_p_faiss__gpu__GpuIndexFlatL2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlatL2, _p_p_faiss__IndexFlatL2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSWFlat, _p_p_faiss__IndexHNSWFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVFPQR, _p_p_faiss__IndexIVFPQRTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlat1D, _p_p_faiss__IndexFlat1DTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexFlat, _p_p_faiss__gpu__GpuIndexFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlat, _p_p_faiss__IndexFlatTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexFlatIP, _p_p_faiss__gpu__GpuIndexFlatIPTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlatIP, _p_p_faiss__IndexFlatIPTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSW, _p_p_faiss__IndexHNSWTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexHNSWPQ, _p_p_faiss__IndexHNSWPQTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexFlatL2BaseShift, _p_p_faiss__IndexFlatL2BaseShiftTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__gpu__GpuIndexIVF, _p_p_faiss__gpu__GpuIndexIVFTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexIVF, _p_p_faiss__IndexIVFTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__MultiIndexQuantizer2, _p_p_faiss__MultiIndexQuantizer2To_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexReplicasTemplateT_faiss__Index_t, _p_p_faiss__IndexReplicasTemplateT_faiss__Index_tTo_p_p_faiss__Index, 0, 0},  {&_swigt__p_p_faiss__IndexShardsTemplateT_faiss__Index_t, _p_p_faiss__IndexShardsTemplateT_faiss__Index_tTo_p_p_faiss__Index, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__ArrayInvertedLists[] = {{&_swigt__p_p_faiss__ArrayInvertedLists, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__ConcatenatedInvertedLists[] = {{&_swigt__p_p_faiss__ConcatenatedInvertedLists, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__OnDiskInvertedLists[] = {{&_swigt__p_p_faiss__OnDiskInvertedLists, 0, 0, 0},{0, 0, 0, 0}};
@@ -90675,6 +96984,7 @@ static swig_cast_info _swigc__p_p_faiss__VectorTransform[] = {  {&_swigt__p_p_fa
 static swig_cast_info _swigc__p_p_faiss__gpu__StandardGpuResources[] = {{&_swigt__p_p_faiss__gpu__StandardGpuResources, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_faiss__gpu__GpuResources[] = {  {&_swigt__p_p_faiss__gpu__GpuResources, 0, 0, 0},  {&_swigt__p_p_faiss__gpu__StandardGpuResources, _p_p_faiss__gpu__StandardGpuResourcesTo_p_p_faiss__gpu__GpuResources, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_void[] = {  {&_swigt__p_p_void, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__functionT_void_ffaiss__IndexBinary_pF_t[] = {  {&_swigt__p_std__functionT_void_ffaiss__IndexBinary_pF_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__functionT_void_ffaiss__Index_pF_t[] = {  {&_swigt__p_std__functionT_void_ffaiss__Index_pF_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__listT_faiss__OnDiskInvertedLists__Slot_t[] = {  {&_swigt__p_std__listT_faiss__OnDiskInvertedLists__Slot_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__mt19937[] = {  {&_swigt__p_std__mt19937, 0, 0, 0},{0, 0, 0, 0}};
@@ -90690,6 +97000,7 @@ static swig_cast_info _swigc__p_std__vectorT_cudaStream_t_t[] = {  {&_swigt__p_s
 static swig_cast_info _swigc__p_std__vectorT_double_t[] = {  {&_swigt__p_std__vectorT_double_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_faiss__BufferList__Buffer_t[] = {  {&_swigt__p_std__vectorT_faiss__BufferList__Buffer_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_faiss__HNSW__NodeDistFarther_t[] = {  {&_swigt__p_std__vectorT_faiss__HNSW__NodeDistFarther_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_faiss__IndexBinary_p_t[] = {  {&_swigt__p_std__vectorT_faiss__IndexBinary_p_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_faiss__Index_p_t[] = {  {&_swigt__p_std__vectorT_faiss__Index_p_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_faiss__InvertedLists_const_p_t[] = {  {&_swigt__p_std__vectorT_faiss__InvertedLists_const_p_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_faiss__InvertedLists_p_t[] = {  {&_swigt__p_std__vectorT_faiss__InvertedLists_p_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -90724,8 +97035,10 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_T,
   _swigc__p_TI,
   _swigc__p_char,
+  _swigc__p_component_t,
   _swigc__p_cublasHandle_t,
   _swigc__p_cudaStream_t,
+  _swigc__p_distance_t,
   _swigc__p_double,
   _swigc__p_faiss__ArrayInvertedLists,
   _swigc__p_faiss__AutoTuneCriterion,
@@ -90796,10 +97109,13 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_faiss__IndexPQStats,
   _swigc__p_faiss__IndexPreTransform,
   _swigc__p_faiss__IndexRefineFlat,
-  _swigc__p_faiss__IndexReplicas,
+  _swigc__p_faiss__IndexReplicasTemplateT_faiss__IndexBinary_t,
+  _swigc__p_faiss__IndexReplicasTemplateT_faiss__Index_t,
   _swigc__p_faiss__IndexScalarQuantizer,
-  _swigc__p_faiss__IndexShards,
+  _swigc__p_faiss__IndexShardsTemplateT_faiss__IndexBinary_t,
+  _swigc__p_faiss__IndexShardsTemplateT_faiss__Index_t,
   _swigc__p_faiss__IndexSplitVectors,
+  _swigc__p_faiss__InterruptCallback,
   _swigc__p_faiss__IntersectionCriterion,
   _swigc__p_faiss__InvertedListScanner,
   _swigc__p_faiss__InvertedLists,
@@ -90891,9 +97207,9 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_p_faiss__IndexPQ,
   _swigc__p_p_faiss__IndexPreTransform,
   _swigc__p_p_faiss__IndexRefineFlat,
-  _swigc__p_p_faiss__IndexReplicas,
+  _swigc__p_p_faiss__IndexReplicasTemplateT_faiss__Index_t,
   _swigc__p_p_faiss__IndexScalarQuantizer,
-  _swigc__p_p_faiss__IndexShards,
+  _swigc__p_p_faiss__IndexShardsTemplateT_faiss__Index_t,
   _swigc__p_p_faiss__IndexSplitVectors,
   _swigc__p_p_faiss__InvertedLists,
   _swigc__p_p_faiss__LinearTransform,
@@ -90916,6 +97232,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_p_faiss__gpu__GpuResources,
   _swigc__p_p_faiss__gpu__StandardGpuResources,
   _swigc__p_p_void,
+  _swigc__p_std__functionT_void_ffaiss__IndexBinary_pF_t,
   _swigc__p_std__functionT_void_ffaiss__Index_pF_t,
   _swigc__p_std__listT_faiss__OnDiskInvertedLists__Slot_t,
   _swigc__p_std__mt19937,
@@ -90931,6 +97248,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_std__vectorT_double_t,
   _swigc__p_std__vectorT_faiss__BufferList__Buffer_t,
   _swigc__p_std__vectorT_faiss__HNSW__NodeDistFarther_t,
+  _swigc__p_std__vectorT_faiss__IndexBinary_p_t,
   _swigc__p_std__vectorT_faiss__Index_p_t,
   _swigc__p_std__vectorT_faiss__InvertedLists_const_p_t,
   _swigc__p_std__vectorT_faiss__InvertedLists_p_t,
@@ -91696,6 +98014,9 @@ SWIG_init(void) {
   
   /* needed, else crash at runtime */
   import_array();
+  
+  faiss::InterruptCallback::instance.reset(new PythonInterruptCallback());
+  
   
 #if PY_VERSION_HEX >= 0x03000000
   return m;
