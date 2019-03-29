@@ -35,7 +35,9 @@ struct RangeSearchResult;
  * vectors.
  */
 struct IndexBinary {
-  typedef long idx_t;    ///< all indices are this type
+  using idx_t = Index::idx_t;    ///< all indices are this type
+  using component_t = uint8_t;
+  using distance_t = int32_t;
 
   int d;                 ///< vector dimension
   int code_size;   ///< number of bytes per vector ( = d / 8 )

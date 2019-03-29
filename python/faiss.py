@@ -386,11 +386,14 @@ add_ref_in_constructor(IndexIVFScalarQuantizer, 0)
 add_ref_in_constructor(IndexIDMap, 0)
 add_ref_in_constructor(IndexIDMap2, 0)
 add_ref_in_method(IndexShards, 'add_shard', 0)
+add_ref_in_method(IndexBinaryShards, 'add_shard', 0)
 add_ref_in_constructor(IndexRefineFlat, 0)
 add_ref_in_constructor(IndexBinaryIVF, 0)
 add_ref_in_constructor(IndexBinaryFromFloat, 0)
 
 add_ref_in_method(IndexReplicas, 'addIndex', 0)
+add_ref_in_method(IndexBinaryReplicas, 'addIndex', 0)
+
 # seems really marginal...
 # remove_ref_from_method(IndexReplicas, 'removeIndex', 0)
 

@@ -13,33 +13,8 @@
 #include <future>
 #include <deque>
 #include <thread>
-#include <pthread.h>
 
 namespace faiss {
-
-template<class Job>
-struct Thread {
-  Job job;
-  pthread_t thread;
-
-  Thread () {}
-
-  explicit Thread (const Job & job): job(job) {}
-
-  void start () {
-    pthread_create (&thread, nullptr, run, this);
-  }
-
-  void wait () {
-    pthread_join (thread, nullptr);
-  }
-
-  static void * run (void *arg) {
-    static_cast<Thread*> (arg)->job.run();
-    return nullptr;
-  }
-};
-
 
 class WorkerThread {
  public:

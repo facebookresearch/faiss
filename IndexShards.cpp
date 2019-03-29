@@ -11,6 +11,7 @@
 #include "IndexShards.h"
 
 #include <cstdio>
+#include <functional>
 
 #include "FaissAssert.h"
 #include "Heap.h"
@@ -23,79 +24,13 @@ namespace {
 
 typedef Index::idx_t idx_t;
 
-/// callback + thread management to train 1 shard
-struct TrainJob {
-    IndexShards *index;    // the relevant index
-    int no;                // shard number
-    idx_t n;               // train points
-    const float *x;
-
-    void run ()
-    {
-        if (index->verbose)
-            printf ("begin train shard %d on %ld points\n", no, n);
-        index->shard_indexes [no]->train(n, x);
-        if (index->verbose)
-            printf ("end train shard %d\n", no);
-    }
-
-};
-
-struct AddJob {
-    IndexShards *index;    // the relevant index
-    int no;                // shard number
-
-    idx_t n;
-    const float *x;
-    const idx_t *ids;
-
-    void run ()
-    {
-        if (index->verbose)
-            printf ("begin add shard %d on %ld points\n", no, n);
-        if (ids)
-            index->shard_indexes[no]->add_with_ids (n, x, ids);
-        else
-            index->shard_indexes[no]->add (n, x);
-        if (index->verbose)
-            printf ("end add shard %d on %ld points\n", no, n);
-    }
-};
-
-
-
-/// callback + thread management to query in 1 shard
-struct QueryJob {
-    const IndexShards *index;    // the relevant index
-    int no;                // shard number
-
-    // query params
-    idx_t n;
-    const float *x;
-    idx_t k;
-    float *distances;
-    idx_t *labels;
-
-
-    void run ()
-    {
-        if (index->verbose)
-            printf ("begin query shard %d on %ld points\n", no, n);
-        index->shard_indexes [no]->search (n, x, k,
-                                           distances, labels);
-        if (index->verbose)
-            printf ("end query shard %d\n", no);
-    }
-
-
-};
 
 // add translation to all valid labels
 void translate_labels (long n, idx_t *labels, long translation)
 {
     if (translation == 0) return;
     for (long i = 0; i < n; i++) {
-        if(labels[i] < 0) return;
+        if(labels[i] < 0) continue;
         labels[i] += translation;
     }
 }
@@ -107,16 +42,18 @@ void translate_labels (long n, idx_t *labels, long translation)
  * @param translartions  label translations to apply, size nshard
  */
 
-template <class C>
+template <class IndexClass, class C>
 void merge_tables (long n, long k, long nshard,
-                   float *distances, idx_t *labels,
-                   const float *all_distances,
+                   typename IndexClass::distance_t *distances,
+                   idx_t *labels,
+                   const typename IndexClass::distance_t *all_distances,
                    idx_t *all_labels,
                    const long *translations)
 {
     if(k == 0) {
         return;
     }
+    using distance_t = typename IndexClass::distance_t;
 
     long stride = n * k;
 #pragma omp parallel
@@ -124,13 +61,13 @@ void merge_tables (long n, long k, long nshard,
         std::vector<int> buf (2 * nshard);
         int * pointer = buf.data();
         int * shard_ids = pointer + nshard;
-        std::vector<float> buf2 (nshard);
-        float * heap_vals = buf2.data();
+        std::vector<distance_t> buf2 (nshard);
+        distance_t * heap_vals = buf2.data();
 #pragma omp for
         for (long i = 0; i < n; i++) {
             // the heap maps values to the shard where they are
             // produced.
-            const float *D_in = all_distances + i * k;
+            const distance_t *D_in = all_distances + i * k;
             const idx_t *I_in = all_labels + i * k;
             int heap_size = 0;
 
@@ -141,7 +78,7 @@ void merge_tables (long n, long k, long nshard,
                                  D_in[stride * s], s);
             }
 
-            float *D = distances + i * k;
+            distance_t *D = distances + i * k;
             idx_t *I = labels + i * k;
 
             for (int j = 0; j < k; j++) {
@@ -166,70 +103,103 @@ void merge_tables (long n, long k, long nshard,
     }
 }
 
+template<class IndexClass>
+void runOnIndexes(bool threaded,
+                  std::function<void(int no, IndexClass*)> f,
+                  std::vector<IndexClass *> indexes)
+{
+    FAISS_THROW_IF_NOT_MSG(!indexes.empty(), "no shards in index");
+
+    if (!threaded) {
+        for (int no = 0; no < indexes.size(); no++) {
+            IndexClass *index = indexes[no];
+            f(no, index);
+        }
+    } else {
+        std::vector<std::unique_ptr<WorkerThread> > threads;
+        std::vector<std::future<bool>> v;
+
+        for (int no = 0; no < indexes.size(); no++) {
+            IndexClass *index = indexes[no];
+            threads.emplace_back(new WorkerThread());
+            WorkerThread *wt = threads.back().get();
+            v.emplace_back(wt->add([no, index, f](){ f(no, index); }));
+        }
+
+        // Blocking wait for completion
+        for (auto& func : v) {
+            func.get();
+        }
+    }
 
 };
 
+} // anonymous namespace
 
-IndexShards::IndexShards (idx_t d, bool threaded, bool successive_ids):
-    Index (d), own_fields (false),
+
+template<class IndexClass>
+IndexShardsTemplate<IndexClass>::IndexShardsTemplate (idx_t d, bool threaded, bool successive_ids):
+    IndexClass (d), own_fields (false),
     threaded (threaded), successive_ids (successive_ids)
 {
 
+
 }
 
-void IndexShards::add_shard (Index *idx)
+
+template<class IndexClass>
+void IndexShardsTemplate<IndexClass>::add_shard (IndexClass *idx)
 {
     shard_indexes.push_back (idx);
     sync_with_shard_indexes ();
 }
 
-void IndexShards::sync_with_shard_indexes ()
+template<class IndexClass>
+void IndexShardsTemplate<IndexClass>::sync_with_shard_indexes ()
 {
     if (shard_indexes.empty()) return;
-    Index * index0 = shard_indexes[0];
-    d = index0->d;
-    metric_type = index0->metric_type;
-    is_trained = index0->is_trained;
-    ntotal = index0->ntotal;
+    IndexClass * index0 = shard_indexes[0];
+    this->d = index0->d;
+    this->metric_type = index0->metric_type;
+    this->is_trained = index0->is_trained;
+    this->ntotal = index0->ntotal;
     for (int i = 1; i < shard_indexes.size(); i++) {
-        Index * index = shard_indexes[i];
-        FAISS_THROW_IF_NOT (metric_type == index->metric_type);
-        FAISS_THROW_IF_NOT (d == index->d);
-        ntotal += index->ntotal;
+        IndexClass * index = shard_indexes[i];
+        FAISS_THROW_IF_NOT (this->metric_type == index->metric_type);
+        FAISS_THROW_IF_NOT (this->d == index->d);
+        this->ntotal += index->ntotal;
     }
 }
 
 
-void IndexShards::train (idx_t n, const float *x)
-{
 
-    // pre-alloc because we don't want reallocs
-    std::vector<Thread<TrainJob > > tss (shard_indexes.size());
-    int nt = 0;
-    for (int i = 0; i < shard_indexes.size(); i++) {
-        if(!shard_indexes[i]->is_trained) {
-            TrainJob ts = {this, i, n, x};
-            if (threaded) {
-                tss[nt] = Thread<TrainJob> (ts);
-                tss[nt++].start();
-            } else {
-                ts.run();
-            }
-        }
-    }
-    for (int i = 0; i < nt; i++) {
-        tss[i].wait();
-    }
+
+
+
+template<class IndexClass>
+void IndexShardsTemplate<IndexClass>::train (idx_t n, const component_t *x)
+{
+    auto train_func = [n, x](int no, IndexClass *index)
+    {
+        if (index->verbose)
+            printf ("begin train shard %d on %ld points\n", no, n);
+        index->train(n, x);
+        if (index->verbose)
+            printf ("end train shard %d\n", no);
+    };
+
+    runOnIndexes<IndexClass> (threaded, train_func, shard_indexes);
     sync_with_shard_indexes ();
 }
 
-void IndexShards::add (idx_t n, const float *x)
+template<class IndexClass>
+void IndexShardsTemplate<IndexClass>::add (idx_t n, const component_t *x)
 {
     add_with_ids (n, x, nullptr);
 }
 
-
-void IndexShards::add_with_ids (idx_t n, const float * x, const long *xids)
+template<class IndexClass>
+void IndexShardsTemplate<IndexClass>::add_with_ids (idx_t n, const component_t * x, const idx_t *xids)
 {
 
     FAISS_THROW_IF_NOT_MSG(!(successive_ids && xids),
@@ -237,52 +207,56 @@ void IndexShards::add_with_ids (idx_t n, const float * x, const long *xids)
                    "request them to be shifted");
 
     if (successive_ids) {
-      FAISS_THROW_IF_NOT_MSG(!xids,
+        FAISS_THROW_IF_NOT_MSG(!xids,
                        "It makes no sense to pass in ids and "
                        "request them to be shifted");
-      FAISS_THROW_IF_NOT_MSG(ntotal == 0,
+        FAISS_THROW_IF_NOT_MSG(this->ntotal == 0,
                        "when adding to IndexShards with sucessive_ids, "
                        "only add() in a single pass is supported");
     }
 
     long nshard = shard_indexes.size();
-    const long *ids = xids;
-    ScopeDeleter<long> del;
+    const idx_t *ids = xids;
+    ScopeDeleter<idx_t> del;
     if (!ids && !successive_ids) {
-        long *aids = new long[n];
-        for (long i = 0; i < n; i++)
-            aids[i] = ntotal + i;
+        idx_t *aids = new idx_t[n];
+        for (idx_t i = 0; i < n; i++)
+            aids[i] = this->ntotal + i;
         ids = aids;
         del.set (ids);
     }
 
-    std::vector<Thread<AddJob > > asa (shard_indexes.size());
-    int nt = 0;
-    for (int i = 0; i < nshard; i++) {
-        long i0 = i * n / nshard;
-        long i1 = (i + 1) * n / nshard;
+    size_t components_per_vec =
+        sizeof(component_t) == 1 ? (this->d + 7) / 8 : this->d;
 
-        AddJob as = {this, i,
-                       i1 - i0, x + i0 * d,
-                       ids ? ids + i0 : nullptr};
-        if (threaded) {
-            asa[nt] = Thread<AddJob>(as);
-            asa[nt++].start();
-        } else {
-            as.run();
+    auto add_func = [n, ids, x, nshard, components_per_vec]
+        (int no, IndexClass *index) {
+
+        idx_t i0 = no * n / nshard;
+        idx_t i1 = (no + 1) * n / nshard;
+
+        auto x0 = x + i0 * components_per_vec;
+
+        if (index->verbose) {
+            printf ("begin add shard %d on %ld points\n", no, n);
         }
-    }
-    for (int i = 0; i < nt; i++) {
-        asa[i].wait();
-    }
-    ntotal += n;
+        if (ids) {
+            index->add_with_ids (i1 - i0, x0, ids + i0);
+        } else {
+            index->add (i1 - i0, x0);
+        }
+        if (index->verbose) {
+            printf ("end add shard %d on %ld points\n", no, i1 - i0);
+        }
+    };
+
+    runOnIndexes<IndexClass> (threaded, add_func, shard_indexes);
+
+    this->ntotal += n;
 }
 
-
-
-
-
-void IndexShards::reset ()
+template<class IndexClass>
+void IndexShardsTemplate<IndexClass>::reset ()
 {
     for (int i = 0; i < shard_indexes.size(); i++) {
         shard_indexes[i]->reset ();
@@ -290,64 +264,33 @@ void IndexShards::reset ()
     sync_with_shard_indexes ();
 }
 
-void IndexShards::search (
-           idx_t n, const float *x, idx_t k,
-           float *distances, idx_t *labels) const
+template<class IndexClass>
+void IndexShardsTemplate<IndexClass>::search (
+           idx_t n, const component_t *x, idx_t k,
+           distance_t *distances, idx_t *labels) const
 {
     long nshard = shard_indexes.size();
-    float *all_distances = new float [nshard * k * n];
+    distance_t *all_distances = new distance_t [nshard * k * n];
     idx_t *all_labels = new idx_t [nshard * k * n];
-    ScopeDeleter<float> del (all_distances);
+    ScopeDeleter<distance_t> del (all_distances);
     ScopeDeleter<idx_t> del2 (all_labels);
 
-#if 1
+    auto query_func = [n, k, x, all_distances, all_labels]
+        (int no, IndexClass *index) {
 
-    // pre-alloc because we don't want reallocs
-    std::vector<Thread<QueryJob> > qss (nshard);
-    for (int i = 0; i < nshard; i++) {
-        QueryJob qs = {
-            this, i, n, x, k,
-            all_distances + i * k * n,
-            all_labels + i * k * n
-        };
-        if (threaded) {
-            qss[i] = Thread<QueryJob> (qs);
-            qss[i].start();
-        } else {
-            qs.run();
+        if (index->verbose) {
+            printf ("begin query shard %d on %ld points\n", no, n);
         }
-    }
-
-    if (threaded) {
-        for (int i = 0; i < qss.size(); i++) {
-            qss[i].wait();
+        index->search (n, x, k,
+                       all_distances + no * k * n,
+                       all_labels + no * k * n);
+        if (index->verbose) {
+            printf ("end query shard %d\n", no);
         }
-    }
-#else
+    };
 
-    // pre-alloc because we don't want reallocs
-    std::vector<QueryJob> qss (nshard);
-    for (int i = 0; i < nshard; i++) {
-        QueryJob qs = {
-            this, i, n, x, k,
-            all_distances + i * k * n,
-            all_labels + i * k * n
-        };
-        if (threaded) {
-            qss[i] = qs;
-        } else {
-            qs.run();
-        }
-    }
+    runOnIndexes<IndexClass> (threaded, query_func, shard_indexes);
 
-    if (threaded) {
-#pragma omp parallel for
-        for (int i = 0; i < qss.size(); i++) {
-            qss[i].run();
-        }
-    }
-
-#endif
     std::vector<long> translations (nshard, 0);
     if (successive_ids) {
         translations[0] = 0;
@@ -356,12 +299,12 @@ void IndexShards::search (
                 shard_indexes [s]->ntotal;
     }
 
-    if (metric_type == METRIC_L2) {
-        merge_tables< CMin<float, int> > (
+    if (this->metric_type == METRIC_L2) {
+        merge_tables<IndexClass, CMin<distance_t, int> > (
              n, k, nshard, distances, labels,
              all_distances, all_labels, translations.data ());
     } else {
-        merge_tables< CMax<float, int> > (
+        merge_tables<IndexClass, CMax<distance_t, int> > (
              n, k, nshard, distances, labels,
              all_distances, all_labels, translations.data ());
     }
@@ -369,14 +312,19 @@ void IndexShards::search (
 }
 
 
-
-IndexShards::~IndexShards ()
+template<class IndexClass>
+IndexShardsTemplate<IndexClass>::~IndexShardsTemplate ()
 {
     if (own_fields) {
         for (int s = 0; s < shard_indexes.size(); s++)
             delete shard_indexes [s];
     }
 }
+
+// explicit instanciations
+template struct IndexShardsTemplate<Index>;
+template struct IndexShardsTemplate<IndexBinary>;
+
 
 
 } // namespace faiss

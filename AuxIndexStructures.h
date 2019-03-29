@@ -18,6 +18,7 @@
 
 #include <vector>
 #include <unordered_set>
+#include <memory>
 
 
 #include "Index.h"
@@ -225,6 +226,35 @@ struct VectorIOWriter:IOWriter {
 
      virtual ~DistanceComputer() {}
  };
+
+/***********************************************************
+ * Interrupt callback
+ ***********************************************************/
+
+struct InterruptCallback {
+    virtual bool want_interrupt () = 0;
+    virtual ~InterruptCallback() {}
+
+    static std::unique_ptr<InterruptCallback> instance;
+
+    /** check if:
+     * - an interrupt callback is set
+     * - the callback retuns true
+     * if this is the case, then throw an exception
+     */
+    static void check ();
+
+    /// same as check() but return true if is interrupted instead of
+    /// throwing
+    static bool is_interrupted ();
+
+    /** assuming each iteration takes a certain number of flops, what
+     * is a reasonable interval to check for interrupts?
+     */
+    static size_t get_period_hint (size_t flops);
+
+};
+
 
 
 }; // namespace faiss

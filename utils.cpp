@@ -421,27 +421,33 @@ static void knn_inner_product_sse (const float * x,
                         float_minheap_array_t * res)
 {
     size_t k = res->k;
+    size_t check_period = InterruptCallback::get_period_hint (ny * d);
+
+    for (size_t i0 = 0; i0 < nx; i0 += check_period) {
+        size_t i1 = std::min(i0 + check_period, nx);
 
 #pragma omp parallel for
-    for (size_t i = 0; i < nx; i++) {
-        const float * x_i = x + i * d;
-        const float * y_j = y;
+        for (size_t i = i0; i < i1; i++) {
+            const float * x_i = x + i * d;
+            const float * y_j = y;
 
-        float * __restrict simi = res->get_val(i);
-        long * __restrict idxi = res->get_ids (i);
+            float * __restrict simi = res->get_val(i);
+            long * __restrict idxi = res->get_ids (i);
 
-        minheap_heapify (k, simi, idxi);
+            minheap_heapify (k, simi, idxi);
 
-        for (size_t j = 0; j < ny; j++) {
-            float ip = fvec_inner_product (x_i, y_j, d);
+            for (size_t j = 0; j < ny; j++) {
+                float ip = fvec_inner_product (x_i, y_j, d);
 
-            if (ip > simi[0]) {
-                minheap_pop (k, simi, idxi);
-                minheap_push (k, simi, idxi, ip, j);
+                if (ip > simi[0]) {
+                    minheap_pop (k, simi, idxi);
+                    minheap_push (k, simi, idxi, ip, j);
+                }
+                y_j += d;
             }
-            y_j += d;
+            minheap_reorder (k, simi, idxi);
         }
-        minheap_reorder (k, simi, idxi);
+        InterruptCallback::check ();
     }
 
 }
@@ -454,25 +460,32 @@ static void knn_L2sqr_sse (
 {
     size_t k = res->k;
 
+    size_t check_period = InterruptCallback::get_period_hint (ny * d);
+
+    for (size_t i0 = 0; i0 < nx; i0 += check_period) {
+        size_t i1 = std::min(i0 + check_period, nx);
+
 #pragma omp parallel for
-    for (size_t i = 0; i < nx; i++) {
-        const float * x_i = x + i * d;
-        const float * y_j = y;
-        size_t j;
-        float * __restrict simi = res->get_val(i);
-        long * __restrict idxi = res->get_ids (i);
+        for (size_t i = i0; i < i1; i++) {
+            const float * x_i = x + i * d;
+            const float * y_j = y;
+            size_t j;
+            float * simi = res->get_val(i);
+            long * idxi = res->get_ids (i);
 
-        maxheap_heapify (k, simi, idxi);
-        for (j = 0; j < ny; j++) {
-            float disij = fvec_L2sqr (x_i, y_j, d);
+            maxheap_heapify (k, simi, idxi);
+            for (j = 0; j < ny; j++) {
+                float disij = fvec_L2sqr (x_i, y_j, d);
 
-            if (disij < simi[0]) {
-                maxheap_pop (k, simi, idxi);
-                maxheap_push (k, simi, idxi, disij, j);
+                if (disij < simi[0]) {
+                    maxheap_pop (k, simi, idxi);
+                    maxheap_push (k, simi, idxi, disij, j);
+                }
+                y_j += d;
             }
-            y_j += d;
+            maxheap_reorder (k, simi, idxi);
         }
-        maxheap_reorder (k, simi, idxi);
+        InterruptCallback::check ();
     }
 
 }
@@ -493,7 +506,7 @@ static void knn_inner_product_blas (
     /* block sizes */
     const size_t bs_x = 4096, bs_y = 1024;
     // const size_t bs_x = 16, bs_y = 16;
-    float *ip_block = new float[bs_x * bs_y];
+    std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
 
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
         size_t i1 = i0 + bs_x;
@@ -509,14 +522,14 @@ static void knn_inner_product_blas (
                 sgemm_ ("Transpose", "Not transpose", &nyi, &nxi, &di, &one,
                         y + j0 * d, &di,
                         x + i0 * d, &di, &zero,
-                        ip_block, &nyi);
+                        ip_block.get(), &nyi);
             }
 
             /* collect maxima */
-            res->addn (j1 - j0, ip_block, j0, i0, i1 - i0);
+            res->addn (j1 - j0, ip_block.get(), j0, i0, i1 - i0);
         }
+        InterruptCallback::check ();
     }
-    delete [] ip_block;
     res->reorder ();
 }
 
@@ -540,12 +553,13 @@ static void knn_L2sqr_blas (const float * x,
     const size_t bs_x = 4096, bs_y = 1024;
     // const size_t bs_x = 16, bs_y = 16;
     float *ip_block = new float[bs_x * bs_y];
-
     float *x_norms = new float[nx];
-    fvec_norms_L2sqr (x_norms, x, d, nx);
-
     float *y_norms = new float[ny];
+    ScopeDeleter<float> del1(ip_block), del3(x_norms), del2(y_norms);
+
+    fvec_norms_L2sqr (x_norms, x, d, nx);
     fvec_norms_L2sqr (y_norms, y, d, ny);
+
 
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
         size_t i1 = i0 + bs_x;
@@ -588,12 +602,10 @@ static void knn_L2sqr_blas (const float * x,
                 }
             }
         }
+        InterruptCallback::check ();
     }
     res->reorder ();
 
-    delete [] ip_block;
-    delete [] x_norms;
-    delete [] y_norms;
 }
 
 
@@ -801,13 +813,17 @@ static void range_search_blas (
     const size_t bs_x = 4096, bs_y = 1024;
     // const size_t bs_x = 16, bs_y = 16;
     float *ip_block = new float[bs_x * bs_y];
+    ScopeDeleter<float> del0(ip_block);
 
     float *x_norms = nullptr, *y_norms = nullptr;
-
+    ScopeDeleter<float> del1, del2;
     if (compute_l2) {
         x_norms = new float[nx];
+        del1.set (x_norms);
         fvec_norms_L2sqr (x_norms, x, d, nx);
+
         y_norms = new float[ny];
+        del2.set (y_norms);
         fvec_norms_L2sqr (y_norms, y, d, ny);
     }
 
@@ -854,11 +870,8 @@ static void range_search_blas (
                 }
             }
         }
-
+        InterruptCallback::check ();
     }
-    delete [] ip_block;
-    delete [] x_norms;
-    delete [] y_norms;
 
     { // merge the partial results
         int npres = partial_results.size();
@@ -891,35 +904,55 @@ static void range_search_sse (const float * x,
 {
     FAISS_THROW_IF_NOT (d % 4 == 0);
 
+    size_t check_period = InterruptCallback::get_period_hint (ny * d);
+    bool interrupted = false;
+
 #pragma omp parallel
     {
         RangeSearchPartialResult pres (res);
 
+        for (size_t i0 = 0; i0 < nx; i0 += check_period) {
+            size_t i1 = std::min(i0 + check_period, nx);
+
 #pragma omp for
-        for (size_t i = 0; i < nx; i++) {
-            const float * x_ = x + i * d;
-            const float * y_ = y;
-            size_t j;
+            for (size_t i = i0; i < i1; i++) {
+                const float * x_ = x + i * d;
+                const float * y_ = y;
+                size_t j;
 
-            RangeQueryResult & qres = pres.new_result (i);
+                RangeQueryResult & qres = pres.new_result (i);
 
-            for (j = 0; j < ny; j++) {
-                if (compute_l2) {
-                    float disij = fvec_L2sqr (x_, y_, d);
-                    if (disij < radius) {
-                        qres.add (disij, j);
+                for (j = 0; j < ny; j++) {
+                    if (compute_l2) {
+                        float disij = fvec_L2sqr (x_, y_, d);
+                        if (disij < radius) {
+                            qres.add (disij, j);
+                        }
+                    } else {
+                        float ip = fvec_inner_product (x_, y_, d);
+                        if (ip > radius) {
+                            qres.add (ip, j);
+                        }
                     }
-                } else {
-                    float ip = fvec_inner_product (x_, y_, d);
-                    if (ip > radius) {
-                        qres.add (ip, j);
-                    }
+                    y_ += d;
                 }
-                y_ += d;
+
             }
 
+            if (InterruptCallback::is_interrupted ()) {
+                interrupted = true;
+            }
+
+#pragma omp barrier
+            if (interrupted) {
+                break;
+            }
         }
         pres.finalize ();
+    }
+
+    if (interrupted) {
+        FAISS_THROW_MSG ("computation interrupted");
     }
 }
 

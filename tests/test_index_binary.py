@@ -13,7 +13,7 @@ import unittest
 import faiss
 
 
-def make_binary_dataset(d, nb, nt, nq):
+def make_binary_dataset(d, nt, nb, nq):
     assert d % 8 == 0
     rs = np.random.RandomState(123)
     x = rs.randint(256, size=(nb + nq + nt, int(d / 8))).astype('uint8')
@@ -39,7 +39,7 @@ class TestBinaryPQ(unittest.TestCase):
         nt = 256
         nb = 1500
         nq = 500
-        (xt, xb, xq) = make_binary_dataset(d, nb, nt, nq)
+        (xt, xb, xq) = make_binary_dataset(d, nt, nb, nq)
         pq = faiss.ProductQuantizer(d, int(d / 8), 8)
 
         centroids = binary_to_float(
@@ -96,7 +96,7 @@ class TestBinaryFlat(unittest.TestCase):
         nb = 1500
         nq = 500
 
-        (_, self.xb, self.xq) = make_binary_dataset(d, nb, nt, nq)
+        (_, self.xb, self.xq) = make_binary_dataset(d, nt, nb, nq)
 
     def test_flat(self):
         d = self.xq.shape[1] * 8
@@ -136,7 +136,7 @@ class TestBinaryIVF(unittest.TestCase):
         nb = 1500
         nq = 500
 
-        (self.xt, self.xb, self.xq) = make_binary_dataset(d, nb, nt, nq)
+        (self.xt, self.xb, self.xq) = make_binary_dataset(d, nt, nb, nq)
         index = faiss.IndexBinaryFlat(d)
         index.add(self.xb)
         Dref, Iref = index.search(self.xq, 10)
@@ -190,7 +190,7 @@ class TestHNSW(unittest.TestCase):
         nb = 1500
         nq = 500
 
-        (_, self.xb, self.xq) = make_binary_dataset(d, nb, nt, nq)
+        (_, self.xb, self.xq) = make_binary_dataset(d, nt, nb, nq)
 
     def test_hnsw_exact_distances(self):
         d = self.xq.shape[1] * 8
@@ -226,6 +226,99 @@ class TestHNSW(unittest.TestCase):
         Dbin, Ibin = index_hnsw_bin.search(self.xq, 3)
 
         self.assertTrue((Dref == Dbin).all())
+
+
+def compare_binary_result_lists(D1, I1, D2, I2):
+    """comparing result lists is difficult because there are many
+    ties. Here we sort by (distance, index) pairs and ignore the largest
+    distance of each result. Compatible result lists should pass this."""
+    assert D1.shape == I1.shape == D2.shape == I2.shape
+    n, k = D1.shape
+    ndiff = (D1 != D2).sum()
+    assert ndiff == 0, '%d differences in distance matrix %s' % (
+        ndiff, D1.shape)
+
+    def normalize_DI(D, I):
+        norm = I.max() + 1.0
+        Dr = D.astype('float64') + I / norm
+        # ignore -1s and elements on last column
+        Dr[I1 == -1] = 1e20
+        Dr[D == D[:, -1:]] = 1e20
+        Dr.sort(axis=1)
+        return Dr
+    ndiff = (normalize_DI(D1, I1) != normalize_DI(D2, I2)).sum()
+    assert ndiff == 0, '%d differences in normalized D matrix' % ndiff
+
+
+class TestReplicasAndShards(unittest.TestCase):
+
+    def test_replicas(self):
+        d = 32
+        nq = 100
+        nb = 200
+
+        (_, xb, xq) = make_binary_dataset(d, 0, nb, nq)
+
+        index_ref = faiss.IndexBinaryFlat(d)
+        index_ref.add(xb)
+
+        Dref, Iref = index_ref.search(xq, 10)
+
+        nrep = 5
+        index = faiss.IndexBinaryReplicas()
+        for i in range(nrep):
+            sub_idx = faiss.IndexBinaryFlat(d)
+            sub_idx.add(xb)
+            index.addIndex(sub_idx)
+
+        D, I = index.search(xq, 10)
+
+        self.assertTrue((Dref == D).all())
+        self.assertTrue((Iref == I).all())
+
+        index2 = faiss.IndexBinaryReplicas()
+        for i in range(nrep):
+            sub_idx = faiss.IndexBinaryFlat(d)
+            index2.addIndex(sub_idx)
+
+        index2.add(xb)
+        D2, I2 = index2.search(xq, 10)
+
+        self.assertTrue((Dref == D2).all())
+        self.assertTrue((Iref == I2).all())
+
+    def test_shards(self):
+        d = 32
+        nq = 100
+        nb = 200
+
+        (_, xb, xq) = make_binary_dataset(d, 0, nb, nq)
+
+        index_ref = faiss.IndexBinaryFlat(d)
+        index_ref.add(xb)
+
+        Dref, Iref = index_ref.search(xq, 10)
+
+        nrep = 5
+        index = faiss.IndexBinaryShards(d)
+        for i in range(nrep):
+            sub_idx = faiss.IndexBinaryFlat(d)
+            sub_idx.add(xb[i * nb // nrep : (i + 1) * nb // nrep])
+            index.add_shard(sub_idx)
+
+        D, I = index.search(xq, 10)
+
+        compare_binary_result_lists(Dref, Iref, D, I)
+
+        index2 = faiss.IndexBinaryShards(d)
+        for i in range(nrep):
+            sub_idx = faiss.IndexBinaryFlat(d)
+            index2.add_shard(sub_idx)
+
+        index2.add(xb)
+        D2, I2 = index2.search(xq, 10)
+
+        compare_binary_result_lists(Dref, Iref, D2, I2)
 
 
 if __name__ == '__main__':

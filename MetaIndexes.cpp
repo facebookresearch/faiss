@@ -220,44 +220,6 @@ void IndexSplitVectors::add(idx_t /*n*/, const float* /*x*/) {
   FAISS_THROW_MSG("not implemented");
 }
 
-namespace {
-
-/// callback + thread management to query in 1 shard
-struct SplitQueryJob {
-    const IndexSplitVectors *index;    // the relevant index
-    int no;                // shard number
-
-    // query params
-    idx_t n;
-    const float *x;
-    idx_t k;
-    float *distances;
-    idx_t *labels;
-
-
-    void run ()
-    {
-        if (index->verbose)
-            printf ("begin query shard %d on %ld points\n", no, n);
-        const Index * sub_index = index->sub_indexes[no];
-        long sub_d = sub_index->d, d = index->d;
-        idx_t ofs = 0;
-        for (int i = 0; i < no; i++) ofs += index->sub_indexes[i]->d;
-        float *sub_x = new float [sub_d * n];
-        ScopeDeleter<float> del (sub_x);
-        for (idx_t i = 0; i < n; i++)
-            memcpy (sub_x + i * sub_d, x + ofs + i * d, sub_d * sizeof (sub_x));
-        sub_index->search (n, sub_x, k, distances, labels);
-        if (index->verbose)
-            printf ("end query shard %d\n", no);
-    }
-
-};
-
-
-
-}
-
 
 
 void IndexSplitVectors::search (
@@ -275,25 +237,43 @@ void IndexSplitVectors::search (
     ScopeDeleter<float> del (all_distances);
     ScopeDeleter<idx_t> del2 (all_labels);
 
-    // pre-alloc because we don't want reallocs
-    std::vector<Thread<SplitQueryJob> > qss (nshard);
-    for (int i = 0; i < nshard; i++) {
-        SplitQueryJob qs = {
-            this, i, n, x, k,
-            i == 0 ? distances : all_distances + i * k * n,
-            i == 0 ? labels : all_labels + i * k * n
-        };
-        if (threaded) {
-            qss[i] = Thread<SplitQueryJob> (qs);
-            qss[i].start();
-        } else {
-            qs.run();
-        }
-    }
+    auto query_func = [n, x, k, distances, labels, all_distances, all_labels, this]
+        (int no) {
+        const IndexSplitVectors *index = this;
+        float *distances1 = no == 0 ? distances : all_distances + no * k * n;
+        idx_t *labels1 = no == 0 ? labels : all_labels + no * k * n;
+        if (index->verbose)
+            printf ("begin query shard %d on %ld points\n", no, n);
+        const Index * sub_index = index->sub_indexes[no];
+        long sub_d = sub_index->d, d = index->d;
+        idx_t ofs = 0;
+        for (int i = 0; i < no; i++) ofs += index->sub_indexes[i]->d;
+        float *sub_x = new float [sub_d * n];
+        ScopeDeleter<float> del1 (sub_x);
+        for (idx_t i = 0; i < n; i++)
+            memcpy (sub_x + i * sub_d, x + ofs + i * d, sub_d * sizeof (sub_x));
+        sub_index->search (n, sub_x, k, distances1, labels1);
+        if (index->verbose)
+            printf ("end query shard %d\n", no);
+    };
 
-    if (threaded) {
-        for (int i = 0; i < qss.size(); i++) {
-            qss[i].wait();
+    if (!threaded) {
+        for (int i = 0; i < nshard; i++) {
+            query_func(i);
+        }
+    } else {
+        std::vector<std::unique_ptr<WorkerThread> > threads;
+        std::vector<std::future<bool>> v;
+
+        for (int i = 0; i < nshard; i++) {
+            threads.emplace_back(new WorkerThread());
+            WorkerThread *wt = threads.back().get();
+            v.emplace_back(wt->add([i, query_func](){query_func(i); }));
+        }
+
+        // Blocking wait for completion
+        for (auto& func : v) {
+            func.get();
         }
     }
 

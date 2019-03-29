@@ -124,6 +124,10 @@ void hnsw_add_vertices(IndexHNSW &index_hnsw,
         }
     }
 
+
+    idx_t check_period = InterruptCallback::get_period_hint
+        (max_level * index_hnsw.d * hnsw.efConstruction);
+
     { // perform add
         RandomGenerator rng2(789);
 
@@ -141,18 +145,26 @@ void hnsw_add_vertices(IndexHNSW &index_hnsw,
             for (int j = i0; j < i1; j++)
                 std::swap(order[j], order[j + rng2.rand_int(i1 - j)]);
 
-#pragma omp parallel if(n > 1)
+            bool interrupt = false;
+
+#pragma omp parallel if(i1 > i0 + 100)
             {
                 VisitedTable vt (ntotal);
 
                 DistanceComputer *dis = index_hnsw.get_distance_computer();
                 ScopeDeleter1<DistanceComputer> del(dis);
                 int prev_display = verbose && omp_get_thread_num() == 0 ? 0 : -1;
+                size_t counter = 0;
 
 #pragma omp  for schedule(dynamic)
                 for (int i = i0; i < i1; i++) {
                     storage_idx_t pt_id = order[i];
                     dis->set_query (x + (pt_id - n0) * d);
+
+                    // cannot break
+                    if (interrupt) {
+                        continue;
+                    }
 
                     hnsw.add_with_locks(*dis, pt_level, pt_id, locks, vt);
 
@@ -161,7 +173,21 @@ void hnsw_add_vertices(IndexHNSW &index_hnsw,
                         printf("  %d / %d\r", i - i0, i1 - i0);
                         fflush(stdout);
                     }
+
+                    if (counter % check_period == 0) {
+#pragma omp critical
+                        {
+                            if (InterruptCallback::is_interrupted ()) {
+                                interrupt = true;
+                            }
+                        }
+                    }
+                    counter++;
                 }
+
+            }
+            if (interrupt) {
+                FAISS_THROW_MSG ("computation interrupted");
             }
             i1 = i0;
         }
@@ -219,45 +245,50 @@ void IndexHNSW::search (idx_t n, const float *x, idx_t k,
                         float *distances, idx_t *labels) const
 
 {
+    size_t nreorder = 0;
 
-#pragma omp parallel
-    {
-        VisitedTable vt (ntotal);
-        DistanceComputer *dis = get_distance_computer();
-        ScopeDeleter1<DistanceComputer> del(dis);
-        size_t nreorder = 0;
+    idx_t check_period = InterruptCallback::get_period_hint (
+          hnsw.max_level * d * hnsw.efSearch);
+
+    for (idx_t i0 = 0; i0 < n; i0 += check_period) {
+        idx_t i1 = std::min(i0 + check_period, n);
+
+#pragma omp parallel reduction(+ : nreorder)
+        {
+            VisitedTable vt (ntotal);
+            DistanceComputer *dis = get_distance_computer();
+            ScopeDeleter1<DistanceComputer> del(dis);
 
 #pragma omp for
-        for(idx_t i = 0; i < n; i++) {
-            idx_t * idxi = labels + i * k;
-            float * simi = distances + i * k;
-            dis->set_query(x + i * d);
+            for(idx_t i = i0; i < i1; i++) {
+                idx_t * idxi = labels + i * k;
+                float * simi = distances + i * k;
+                dis->set_query(x + i * d);
 
-            maxheap_heapify (k, simi, idxi);
-            hnsw.search(*dis, k, idxi, simi, vt);
+                maxheap_heapify (k, simi, idxi);
+                hnsw.search(*dis, k, idxi, simi, vt);
 
-            maxheap_reorder (k, simi, idxi);
+                maxheap_reorder (k, simi, idxi);
 
-            if (reconstruct_from_neighbors &&
-                reconstruct_from_neighbors->k_reorder != 0) {
-                int k_reorder = reconstruct_from_neighbors->k_reorder;
-                if (k_reorder == -1 || k_reorder > k) k_reorder = k;
+                if (reconstruct_from_neighbors &&
+                    reconstruct_from_neighbors->k_reorder != 0) {
+                    int k_reorder = reconstruct_from_neighbors->k_reorder;
+                    if (k_reorder == -1 || k_reorder > k) k_reorder = k;
 
-                nreorder += reconstruct_from_neighbors->compute_distances(
-                       k_reorder, idxi, x + i * d, simi);
+                    nreorder += reconstruct_from_neighbors->compute_distances(
+                             k_reorder, idxi, x + i * d, simi);
 
-                // sort top k_reorder
-                maxheap_heapify (k_reorder, simi, idxi, simi, idxi, k_reorder);
-                maxheap_reorder (k_reorder, simi, idxi);
+                    // sort top k_reorder
+                    maxheap_heapify (k_reorder, simi, idxi, simi, idxi, k_reorder);
+                    maxheap_reorder (k_reorder, simi, idxi);
+                }
+
             }
+
         }
-#pragma omp critical
-        {
-            hnsw_stats.nreorder += nreorder;
-        }
+        InterruptCallback::check ();
     }
-
-
+    hnsw_stats.nreorder += nreorder;
 }
 
 

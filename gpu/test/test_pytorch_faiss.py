@@ -143,6 +143,9 @@ class PytorchFaissInterop(unittest.TestCase):
         # resource object, can be re-used over calls
         res = faiss.StandardGpuResources()
 
+        # put on same stream as pytorch to avoid synchronizing streams
+        res.setDefaultNullStreamAllDevices()
+
         D, I = search_raw_array_pytorch(res, xb_t, xq_t, k)
 
         # back to CPU for verification

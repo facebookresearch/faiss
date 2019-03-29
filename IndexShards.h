@@ -10,18 +10,23 @@
 #pragma once
 
 #include <vector>
-#include <unordered_map>
 
 #include "Index.h"
+#include "IndexBinary.h"
 
 namespace faiss {
 
 /** Index that concatenates the results from several sub-indexes
  *
  */
-struct IndexShards : Index {
+template<class IndexClass>
+struct IndexShardsTemplate : IndexClass {
 
-    std::vector<Index*> shard_indexes;
+    using idx_t = typename IndexClass::idx_t;
+    using component_t = typename IndexClass::component_t;
+    using distance_t = typename IndexClass::distance_t;
+
+    std::vector<IndexClass*> shard_indexes;
     bool own_fields;      /// should the sub-indexes be deleted along with this?
     bool threaded;
     bool successive_ids;
@@ -33,19 +38,19 @@ struct IndexShards : Index {
      *                     the size of each sub-index or return them
      *                     as they are?
      */
-    explicit IndexShards (idx_t d, bool threaded = false,
-                         bool successive_ids = true);
+    explicit IndexShardsTemplate (idx_t d, bool threaded = false,
+                                  bool successive_ids = true);
 
-    void add_shard (Index *);
+    void add_shard (IndexClass *);
 
     // update metric_type and ntotal. Call if you changes something in
     // the shard indexes.
     void sync_with_shard_indexes ();
 
-    Index *at(int i) {return shard_indexes[i]; }
+    IndexClass *at(int i) {return shard_indexes[i]; }
 
     /// supported only for sub-indices that implement add_with_ids
-    void add(idx_t n, const float* x) override;
+    void add(idx_t n, const component_t* x) override;
 
     /**
      * Cases (successive_ids, xids):
@@ -58,20 +63,21 @@ struct IndexShards : Index {
      * - false, NULL          OK: will call add_with_ids on each sub-index,
      *                        starting at ntotal
      */
-    void add_with_ids(idx_t n, const float* x, const long* xids) override;
+    void add_with_ids(idx_t n, const component_t* x, const idx_t* xids) override;
 
     void search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const override;
+        idx_t n, const component_t* x, idx_t k,
+        distance_t* distances, idx_t* labels) const override;
 
-    void train(idx_t n, const float* x) override;
+    void train(idx_t n, const component_t* x) override;
 
     void reset() override;
 
-    ~IndexShards() override;
+    ~IndexShardsTemplate() override;
 };
+
+using IndexShards = IndexShardsTemplate<Index>;
+using IndexBinaryShards = IndexShardsTemplate<IndexBinary>;
+
 
 } // namespace faiss

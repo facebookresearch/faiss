@@ -9,6 +9,7 @@
 // -*- c++ -*-
 
 #include "Clustering.h"
+#include "AuxIndexStructures.h"
 
 
 #include <cmath>
@@ -190,6 +191,7 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
         for (int i = 0; i < niter; i++) {
             double t0s = getmillisecs();
             index.search (nx, x, 1, dis, assign);
+            InterruptCallback::check();
             t_search_tot += getmillisecs() - t0s;
 
             err = 0;
@@ -219,6 +221,7 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
 
             assert (index.ntotal == 0);
             index.add (k, centroids.data());
+            InterruptCallback::check ();
         }
         if (verbose) printf("\n");
         if (nredo > 1) {

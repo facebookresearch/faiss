@@ -12,19 +12,21 @@
 
 namespace faiss {
 
-IndexReplicas::IndexReplicas()
+template<class IndexClass>
+IndexReplicasTemplate<IndexClass>::IndexReplicasTemplate()
     : own_fields(false) {
 }
 
-IndexReplicas::~IndexReplicas() {
+template<class IndexClass>
+IndexReplicasTemplate<IndexClass>::~IndexReplicasTemplate() {
   if (own_fields) {
-    for (auto& index : indices_)
+    for (auto& index : this->indices_)
       delete index.first;
   }
 }
 
-void
-IndexReplicas::addIndex(faiss::Index* index) {
+template<class IndexClass>
+void IndexReplicasTemplate<IndexClass>::addIndex(IndexClass* index) {
   // Make sure that the parameters are the same for all prior indices
   if (!indices_.empty()) {
     auto& existing = indices_.front().first;
@@ -54,21 +56,21 @@ IndexReplicas::addIndex(faiss::Index* index) {
     this->metric_type = index->metric_type;
   }
 
-  indices_.emplace_back(
+  this->indices_.emplace_back(
     std::make_pair(index,
                    std::unique_ptr<WorkerThread>(new WorkerThread)));
 }
 
-void
-IndexReplicas::removeIndex(faiss::Index* index) {
-  for (auto it = indices_.begin(); it != indices_.end(); ++it) {
+template<class IndexClass>
+void IndexReplicasTemplate<IndexClass>::removeIndex(IndexClass* index) {
+  for (auto it = this->indices_.begin(); it != indices_.end(); ++it) {
     if (it->first == index) {
       // This is our index; stop the worker thread before removing it,
       // to ensure that it has finished before function exit
       it->second->stop();
       it->second->waitForThreadExit();
 
-      indices_.erase(it);
+      this->indices_.erase(it);
       return;
     }
   }
@@ -77,13 +79,13 @@ IndexReplicas::removeIndex(faiss::Index* index) {
   FAISS_THROW_MSG("IndexReplicas::removeIndex: index not found");
 }
 
-void
-IndexReplicas::runOnIndex(std::function<void(faiss::Index*)> f) {
+template<class IndexClass>
+void IndexReplicasTemplate<IndexClass>::runOnIndex(std::function<void(IndexClass*)> f) {
   FAISS_THROW_IF_NOT_MSG(!indices_.empty(), "no replicas in index");
 
   std::vector<std::future<bool>> v;
 
-  for (auto& index : indices_) {
+  for (auto& index : this->indices_) {
     auto indexPtr = index.first;
     v.emplace_back(index.second->add([indexPtr, f](){ f(indexPtr); }));
   }
@@ -94,35 +96,36 @@ IndexReplicas::runOnIndex(std::function<void(faiss::Index*)> f) {
   }
 }
 
-void
-IndexReplicas::reset() {
-  runOnIndex([](faiss::Index* index){ index->reset(); });
-  ntotal = 0;
+template<class IndexClass>
+void IndexReplicasTemplate<IndexClass>::reset() {
+  runOnIndex([](IndexClass* index){ index->reset(); });
+  this->ntotal = 0;
 }
 
-void
-IndexReplicas::train(Index::idx_t n, const float* x) {
-  runOnIndex([n, x](faiss::Index* index){ index->train(n, x); });
+template<class IndexClass>
+void IndexReplicasTemplate<IndexClass>::train(idx_t n, const component_t* x) {
+  runOnIndex([n, x](IndexClass* index){ index->train(n, x); });
 }
 
-void
-IndexReplicas::add(Index::idx_t n, const float* x) {
-  runOnIndex([n, x](faiss::Index* index){ index->add(n, x); });
-  ntotal += n;
+template<class IndexClass>
+void IndexReplicasTemplate<IndexClass>::add(idx_t n, const component_t* x) {
+  runOnIndex([n, x](IndexClass* index){ index->add(n, x); });
+  this->ntotal += n;
 }
 
-void
-IndexReplicas::reconstruct(Index::idx_t n, float* x) const {
+template<class IndexClass>
+void IndexReplicasTemplate<IndexClass>::reconstruct(idx_t n, component_t* x) const {
   FAISS_THROW_IF_NOT_MSG(!indices_.empty(), "no replicas in index");
   indices_[0].first->reconstruct (n, x);
 }
 
-void
-IndexReplicas::search(faiss::Index::idx_t n,
-                      const float* x,
-                      faiss::Index::idx_t k,
-                      float* distances,
-                      faiss::Index::idx_t* labels) const {
+template<class IndexClass>
+void IndexReplicasTemplate<IndexClass>::search(
+              idx_t n,
+              const component_t* x,
+              idx_t k,
+              distance_t* distances,
+              idx_t* labels) const {
   FAISS_THROW_IF_NOT_MSG(!indices_.empty(), "no replicas in index");
 
   if (n == 0) {
@@ -145,7 +148,8 @@ IndexReplicas::search(faiss::Index::idx_t n,
     }
 
     auto numForIndex = std::min(queriesPerIndex, n - base);
-    auto queryStart = x + base * dim;
+    size_t components_per_vec = sizeof(component_t) == 1 ? (dim + 7) / 8 : dim;
+    auto queryStart = x + base * components_per_vec;
     auto distancesStart = distances + base * k;
     auto labelsStart = labels + base * k;
 
@@ -164,5 +168,10 @@ IndexReplicas::search(faiss::Index::idx_t n,
     f.get();
   }
 }
+
+// explicit instanciations
+template struct IndexReplicasTemplate<Index>;
+template struct IndexReplicasTemplate<IndexBinary>;
+
 
 } // namespace

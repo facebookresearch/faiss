@@ -27,6 +27,8 @@
 #pragma SWIG nowarn=325
 #pragma SWIG nowarn=389
 #pragma SWIG nowarn=341
+#pragma SWIG nowarn=512
+
 
 typedef unsigned long uint64_t;
 typedef uint64_t size_t;
@@ -160,7 +162,7 @@ namespace std {
 
 %include <std_string.i>
 
- // produces an error on the Mac
+// produces an error on the Mac
 %ignore faiss::hamming;
 
 
@@ -179,7 +181,12 @@ namespace std {
         $action
     } catch(faiss::FaissException & e) {
         PyEval_RestoreThread(_save);
-        PyErr_SetString(PyExc_RuntimeError, e.what());
+
+        if (PyErr_Occurred()) {
+            // some previous code already set the error type.
+        } else {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+        }
         SWIG_fail;
     }
     Py_END_ALLOW_THREADS
@@ -292,12 +299,18 @@ int get_num_gpus()
 
 
 
-%ignore faiss::IndexReplicas::at(int) const;
+ // %ignore faiss::IndexReplicas::at(int) const;
 
 %include "IndexShards.h"
-%include "IndexReplicas.h"
-%include "MetaIndexes.h"
+%template(IndexShards) faiss::IndexShardsTemplate<faiss::Index>;
+%template(IndexBinaryShards) faiss::IndexShardsTemplate<faiss::IndexBinary>;
 
+%include "IndexReplicas.h"
+%template(IndexReplicas) faiss::IndexReplicasTemplate<faiss::Index>;
+%template(IndexBinaryReplicas) faiss::IndexReplicasTemplate<faiss::IndexBinary>;
+
+
+%include "MetaIndexes.h"
 
 #ifdef GPU_WRAPPER
 
@@ -422,13 +435,19 @@ struct AsyncIndexSearchC {
 
 %define DOWNCAST(subclass)
     if (dynamic_cast<faiss::subclass *> ($1)) {
-      SWIG_NewPointerObj(L,$1,SWIGTYPE_p_faiss__ ## subclass,$owner);
+      SWIG_NewPointerObj(L,$1,SWIGTYPE_p_faiss__ ## subclass, $owner);
+    } else
+%enddef
+
+%define DOWNCAST2(subclass, longname)
+    if (dynamic_cast<faiss::subclass *> ($1)) {
+      SWIG_NewPointerObj(L,$1,SWIGTYPE_p_faiss__ ## longname, $owner);
     } else
 %enddef
 
 %define DOWNCAST_GPU(subclass)
     if (dynamic_cast<faiss::gpu::subclass *> ($1)) {
-      SWIG_NewPointerObj(L,$1,SWIGTYPE_p_faiss__gpu__ ## subclass,$owner);
+      SWIG_NewPointerObj(L,$1,SWIGTYPE_p_faiss__gpu__ ## subclass, $owner);
     } else
 %enddef
 
@@ -440,6 +459,12 @@ struct AsyncIndexSearchC {
 %define DOWNCAST(subclass)
     if (dynamic_cast<faiss::subclass *> ($1)) {
       $result = SWIG_NewPointerObj($1,SWIGTYPE_p_faiss__ ## subclass,$owner);
+    } else
+%enddef
+
+%define DOWNCAST2(subclass, longname)
+    if (dynamic_cast<faiss::subclass *> ($1)) {
+      $result = SWIG_NewPointerObj($1,SWIGTYPE_p_faiss__ ## longname,$owner);
     } else
 %enddef
 
@@ -461,8 +486,8 @@ struct AsyncIndexSearchC {
 // Subclasses should appear before their parent
 %typemap(out) faiss::Index * {
     DOWNCAST ( IndexIDMap )
-    DOWNCAST ( IndexShards )
-    DOWNCAST ( IndexReplicas )
+    DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
+    DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
     DOWNCAST ( IndexIVFScalarQuantizer )
@@ -502,6 +527,7 @@ struct AsyncIndexSearchC {
 }
 
 %typemap(out) faiss::IndexBinary * {
+    DOWNCAST2 ( IndexBinaryReplicas, IndexReplicasTemplateT_faiss__IndexBinary_t )
     DOWNCAST ( IndexBinaryIVF )
     DOWNCAST ( IndexBinaryFlat )
     DOWNCAST ( IndexBinaryFromFloat )
@@ -634,12 +660,31 @@ PyObject *swig_ptr (PyObject *a)
 }
 
 
+struct PythonInterruptCallback: faiss::InterruptCallback {
+
+    bool want_interrupt () override {
+        int err;
+        {
+            PyGILState_STATE gstate;
+            gstate = PyGILState_Ensure();
+            err = PyErr_CheckSignals();
+            PyGILState_Release(gstate);
+        }
+        return err == -1;
+    }
+
+};
+
+
 %}
 
 
 %init %{
     /* needed, else crash at runtime */
     import_array();
+
+    faiss::InterruptCallback::instance.reset(new PythonInterruptCallback());
+
 %}
 
 // return a pointer usable as input for functions that expect pointers
@@ -778,6 +823,7 @@ int * cast_integer_to_int_ptr (long x) {
 %ignore faiss::IDSelectorBatch::set;
 %ignore faiss::IDSelectorBatch::bloom;
 
+%ignore faiss::InterruptCallback::instance;
 %include "AuxIndexStructures.h"
 
 %{
