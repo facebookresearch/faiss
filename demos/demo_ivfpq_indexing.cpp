@@ -97,7 +97,7 @@ int main ()
         index.add (nb, database.data());
 
         printf ("[%.3f s] imbalance factor: %g\n",
-                elapsed() - t0, index.imbalance_factor ());
+                elapsed() - t0, index.invlists->imbalance_factor());
 
         // remember a few elements from the database as queries
         int i0 = 1234;
