@@ -15,8 +15,8 @@ all: $(DEMOS)
 clean:
 	rm -f $(DEMOS)
 
-%: %.cpp ../libfaiss.a
-	$(CXX) -o $@ $(CXXFLAGS) $^ $(LDFLAGS) $(LIBS)
+%: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS) -lfaiss
 
 
 .PHONY: all clean

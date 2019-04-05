@@ -15,11 +15,7 @@
 // SWIGPYTHON: Python-specific code
 // GPU_WRAPPER: also compile interfaces for GPU.
 
-#ifdef GPU_WRAPPER
-%module swigfaiss_gpu;
-#else
 %module swigfaiss;
-#endif
 
 // fbode SWIG fails on warnings, so make them non fatal
 #pragma SWIG nowarn=321
@@ -327,16 +323,6 @@ int get_num_gpus()
 %include "gpu/GpuIndexIVFFlat.h"
 %include "gpu/GpuIndexBinaryFlat.h"
 %include "gpu/GpuDistance.h"
-
-#ifdef SWIGLUA
-
-/// in Lua, swigfaiss_gpu is known as swigfaiss
-%luacode {
-local swigfaiss = swigfaiss_gpu
-}
-
-#endif
-
 
 #endif
 

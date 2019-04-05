@@ -16,16 +16,7 @@ import pdb
 
 
 # we import * so that the symbol X can be accessed as faiss.X
-
-try:
-    from swigfaiss_gpu import *
-except ImportError as e:
-
-    if 'No module named' not in e.args[0]:
-        # swigfaiss_gpu is there but failed to load: Warn user about it.
-        sys.stderr.write("Failed to load GPU Faiss: %s\n" % e.args[0])
-        sys.stderr.write("Faiss falling back to CPU-only.\n")
-    from swigfaiss import *
+from .swigfaiss import *
 
 __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
                             FAISS_VERSION_MINOR,
