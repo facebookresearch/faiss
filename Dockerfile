@@ -21,10 +21,9 @@ COPY . /opt/faiss
 WORKDIR /opt/faiss
 
 # --with-cuda=/usr/local/cuda-8.0 
-RUN ./configure --without-cuda
+RUN ./configure --prefix=/usr --libdir=/usr/lib64 --without-cuda
 RUN make -j $(nproc)
 RUN make -C python
 RUN make test
 RUN make install
-RUN make -C demos demo_ivfpq_indexing && \
-    LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH ./demos/demo_ivfpq_indexing
+RUN make -C demos demo_ivfpq_indexing && ./demos/demo_ivfpq_indexing
