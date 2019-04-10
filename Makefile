@@ -1,146 +1,112 @@
-
 # Copyright (c) 2015-present, Facebook, Inc.
 # All rights reserved.
 #
-# This source code is licensed under the CC-by-NC license found in the
+# This source code is licensed under the BSD+Patents license found in the
 # LICENSE file in the root directory of this source tree.
 
-.SUFFIXES: .cpp .o
+-include makefile.inc
+
+HEADERS     = $(wildcard *.h)
+SRC         = $(wildcard *.cpp)
+OBJ         = $(SRC:.cpp=.o)
+INSTALLDIRS = $(DESTDIR)$(libdir) $(DESTDIR)$(includedir)/faiss
+
+GPU_HEADERS = $(wildcard gpu/*.h gpu/impl/*.h gpu/utils/*.h)
+GPU_CPPSRC  = $(wildcard gpu/*.cpp gpu/impl/*.cpp gpu/utils/*.cpp)
+GPU_CUSRC   = $(wildcard gpu/*.cu gpu/impl/*.cu gpu/utils/*.cu \
+gpu/utils/nvidia/*.cu gpu/utils/blockselect/*.cu gpu/utils/warpselect/*.cu)
+GPU_SRC     = $(GPU_CPPSRC) $(GPU_CUSRC)
+GPU_CPPOBJ  = $(GPU_CPPSRC:.cpp=.o)
+GPU_CUOBJ   = $(GPU_CUSRC:.cu=.o)
+GPU_OBJ     = $(GPU_CPPOBJ) $(GPU_CUOBJ)
+
+ifneq ($(strip $(NVCC)),)
+	OBJ         += $(GPU_OBJ)
+	HEADERS     += $(GPU_HEADERS)
+endif
 
 
-MAKEFILE_INC=makefile.inc
+############################
+# Building
 
--include $(MAKEFILE_INC)
+all: libfaiss.a libfaiss.$(SHAREDEXT)
 
-LIBNAME=libfaiss
+libfaiss.a: $(OBJ)
+	$(AR) r $@ $^
 
-all: .env_ok $(LIBNAME).a tests/demo_ivfpq_indexing
+libfaiss.$(SHAREDEXT): $(OBJ)
+	$(CXX) $(SHAREDFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-py: _swigfaiss.so
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -c $< -o $@
 
+%.o: %.cu
+	$(NVCC) $(NVCCFLAGS) -g -O3 -c $< -o $@
 
-
-#############################
-# Various
-
-
-LIBOBJ=hamming.o  utils.o \
-       IndexFlat.o IndexIVF.o IndexLSH.o IndexPQ.o  \
-       IndexIVFPQ.o   \
-       Clustering.o Heap.o VectorTransform.o index_io.o \
-       PolysemousTraining.o MetaIndexes.o Index.o \
-       ProductQuantizer.o AutoTune.o AuxIndexStructures.o
+clean:
+	rm -f libfaiss.a libfaiss.$(SHAREDEXT)
+	rm -f $(OBJ)
 
 
-$(LIBNAME).a: $(LIBOBJ)
-	ar r $(LIBNAME).a $^
+############################
+# Installing
 
-$(LIBNAME).$(SHAREDEXT): $(LIBOBJ)
-	$(CC) $(LDFLAGS) $(FAISSSHAREDFLAGS) -o $(LIBNAME).$(SHAREDEXT) $^ $(BLASLDFLAGS)
+install: libfaiss.a libfaiss.$(SHAREDEXT) installdirs
+	cp libfaiss.a libfaiss.$(SHAREDEXT) $(DESTDIR)$(libdir)
+	tar cf - $(HEADERS) | tar xf - -C $(DESTDIR)$(includedir)/faiss/
 
-.cpp.o:
-	$(CC) $(CFLAGS) -c $< -o $@ $(FLAGS) $(EXTRAFLAGS)
+installdirs:
+	$(MKDIR_P) $(INSTALLDIRS)
 
-utils.o:             EXTRAFLAGS=$(BLASCFLAGS)
-VectorTransform.o:   EXTRAFLAGS=$(BLASCFLAGS)
-ProductQuantizer.o:  EXTRAFLAGS=$(BLASCFLAGS)
+uninstall:
+	rm -f $(DESTDIR)$(libdir)/libfaiss.a \
+	      $(DESTDIR)$(libdir)/libfaiss.$(SHAREDEXT)
+	rm -rf $(DESTDIR)$(includedir)/faiss
 
-# for MKL, the flags when generating a dynamic lib are different from
-# the ones when making an executable, but by default they are the same
-
-BLASLDFLAGSSO ?= $(BLASLDFLAGS)
-
-
-#############################
-# pure C++ test in the test directory
-
-tests/test_blas: tests/test_blas.cpp
-	$(CC) $(CFLAGS) $< -o $@ $(BLASLDFLAGS) $(BLASCFLAGS)
-
-
-tests/demo_ivfpq_indexing: tests/demo_ivfpq_indexing.cpp $(LIBNAME).a
-	$(CC) -o $@ $(CFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
-
-tests/demo_sift1M: tests/demo_sift1M.cpp $(LIBNAME).a
-	$(CC) -o $@ $(CFLAGS) $< $(LIBNAME).a $(LDFLAGS) $(BLASLDFLAGS)
-
-
-#############################
-# SWIG interfaces
-
-HFILES = IndexFlat.h Index.h IndexLSH.h IndexPQ.h IndexIVF.h \
-    IndexIVFPQ.h VectorTransform.h index_io.h utils.h \
-    PolysemousTraining.h Heap.h MetaIndexes.h AuxIndexStructures.h \
-    Clustering.h hamming.h AutoTune.h
-
-# also silently generates python/swigfaiss.py
-python/swigfaiss_wrap.cxx: swigfaiss.swig $(HFILES)
-	$(SWIGEXEC) -python -c++ -Doverride= -o $@ $<
-
-
-# extension is .so even on the mac
-python/_swigfaiss.so: python/swigfaiss_wrap.cxx $(LIBNAME).a
-	$(CC) -I. $(CFLAGS) $(LDFLAGS) $(PYTHONCFLAGS) $(SHAREDFLAGS) \
-	-o $@ $^ $(BLASLDFLAGSSO)
-
-_swigfaiss.so: python/_swigfaiss.so
-	cp python/_swigfaiss.so python/swigfaiss.py .
 
 #############################
 # Dependencies
 
-# for i in *.cpp ; do gcc -I.. -MM $i -msse4; done
-AutoTune.o: AutoTune.cpp AutoTune.h Index.h FaissAssert.h utils.h Heap.h \
- IndexFlat.h VectorTransform.h IndexLSH.h IndexPQ.h ProductQuantizer.h \
- Clustering.h PolysemousTraining.h IndexIVF.h IndexIVFPQ.h MetaIndexes.h
-AuxIndexStructures.o: AuxIndexStructures.cpp AuxIndexStructures.h Index.h
-Clustering.o: Clustering.cpp Clustering.h Index.h utils.h Heap.h \
- FaissAssert.h IndexFlat.h
-hamming.o: hamming.cpp hamming.h Heap.h FaissAssert.h
-Heap.o: Heap.cpp Heap.h
-Index.o: Index.cpp IndexFlat.h Index.h FaissAssert.h
-IndexFlat.o: IndexFlat.cpp IndexFlat.h Index.h utils.h Heap.h \
- FaissAssert.h
-index_io.o: index_io.cpp index_io.h FaissAssert.h IndexFlat.h Index.h \
- VectorTransform.h IndexLSH.h IndexPQ.h ProductQuantizer.h Clustering.h \
- Heap.h PolysemousTraining.h IndexIVF.h IndexIVFPQ.h MetaIndexes.h
-IndexIVF.o: IndexIVF.cpp IndexIVF.h Index.h Clustering.h Heap.h utils.h \
- hamming.h FaissAssert.h IndexFlat.h AuxIndexStructures.h
-IndexIVFPQ.o: IndexIVFPQ.cpp IndexIVFPQ.h IndexIVF.h Index.h Clustering.h \
- Heap.h IndexPQ.h ProductQuantizer.h PolysemousTraining.h utils.h \
- IndexFlat.h hamming.h FaissAssert.h AuxIndexStructures.h
-IndexLSH.o: IndexLSH.cpp IndexLSH.h Index.h VectorTransform.h utils.h \
- Heap.h hamming.h FaissAssert.h
-IndexPQ.o: IndexPQ.cpp IndexPQ.h Index.h ProductQuantizer.h Clustering.h \
- Heap.h PolysemousTraining.h FaissAssert.h hamming.h
-MetaIndexes.o: MetaIndexes.cpp MetaIndexes.h Index.h FaissAssert.h Heap.h
-PolysemousTraining.o: PolysemousTraining.cpp PolysemousTraining.h \
- ProductQuantizer.h Clustering.h Index.h Heap.h utils.h hamming.h \
- FaissAssert.h
-ProductQuantizer.o: ProductQuantizer.cpp ProductQuantizer.h Clustering.h \
- Index.h Heap.h FaissAssert.h VectorTransform.h IndexFlat.h utils.h
-utils.o: utils.cpp utils.h Heap.h AuxIndexStructures.h Index.h \
- FaissAssert.h
-VectorTransform.o: VectorTransform.cpp VectorTransform.h Index.h utils.h \
- Heap.h FaissAssert.h IndexPQ.h ProductQuantizer.h Clustering.h \
- PolysemousTraining.h
+-include depend
+
+depend: $(SRC) $(GPU_SRC)
+	for i in $^; do \
+		$(CXXCPP) $(CPPFLAGS) -x c++ -MM $$i; \
+	done > depend
 
 
-clean:
-	rm -f $(LIBNAME).a $(LIBNAME).$(SHAREDEXT)* *.o \
-	   	lua/swigfaiss.so lua/swigfaiss_wrap.cxx \
-		python/_swigfaiss.so python/swigfaiss_wrap.cxx \
-		python/swigfaiss.py _swigfaiss.so swigfaiss.py
+#############################
+# Python
 
-.env_ok:
-ifeq ($(wildcard $(MAKEFILE_INC)),)
-	$(error Cannot find $(MAKEFILE_INC). Did you forget to copy the relevant file from ./example_makefiles?)
-endif
-ifeq ($(shell command -v $(CC) 2>/dev/null),)
-	$(error Cannot find $(CC), please refer to $(CURDIR)/makefile.inc to set up your environment)
-endif
+py: libfaiss.a
+	$(MAKE) -C python
 
-.swig_ok: .env_ok
-ifeq ($(shell command -v $(SWIGEXEC) 2>/dev/null),)
-	$(error Cannot find $(SWIGEXEC), please refer to $(CURDIR)/makefile.inc to set up your environment)
-endif
+
+#############################
+# Tests
+
+test: libfaiss.a py
+	$(MAKE) -C tests run
+	PYTHONPATH=./python/build/`ls python/build | grep lib` \
+	$(PYTHON) -m unittest discover tests/ -v
+
+test_gpu: libfaiss.a
+	$(MAKE) -C gpu/test run
+	PYTHONPATH=./python/build/`ls python/build | grep lib` \
+	$(PYTHON) -m unittest discover gpu/test/ -v
+
+#############################
+# Demos
+
+demos: libfaiss.a
+	$(MAKE) -C demos
+
+
+#############################
+# Misc
+
+misc/test_blas: misc/test_blas.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+
+.PHONY: all clean demos install installdirs py test gpu_test uninstall

@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "IVFPQ.cuh"
 #include "../GpuResources.h"
@@ -39,11 +37,13 @@ IVFPQ::IVFPQ(GpuResources* resources,
              int bitsPerSubQuantizer,
              float* pqCentroidData,
              IndicesOptions indicesOptions,
-             bool useFloat16LookupTables) :
+             bool useFloat16LookupTables,
+             MemorySpace space) :
     IVFBase(resources,
             quantizer,
             numSubQuantizers,
-            indicesOptions),
+            indicesOptions,
+            space),
     numSubQuantizers_(numSubQuantizers),
     bitsPerSubQuantizer_(bitsPerSubQuantizer),
     numSubQuantizerCodes_(utils::pow2(bitsPerSubQuantizer_)),
@@ -194,10 +194,7 @@ IVFPQ::classifyAndAddVectors(Tensor<float, 2, true>& vecs,
                   closestSubQDistanceView,
                   closestSubQIndexView,
                   // We don't care about distances
-                  true,
-                  // Much larger tile size, since these vectors are a
-                  // lot smaller than query vectors
-                  1024);
+                  true);
   }
 
   // Now, we have the nearest sub-q centroid for each slice of the
@@ -520,9 +517,9 @@ IVFPQ::query(Tensor<float, 2, true>& queries,
              int k,
              Tensor<float, 2, true>& outDistances,
              Tensor<long, 2, true>& outIndices) {
-  // Validate these at a top level
-  FAISS_ASSERT(nprobe <= 1024);
-  FAISS_ASSERT(k <= 1024);
+  // These are caught at a higher level
+  FAISS_ASSERT(nprobe <= GPU_MAX_SELECTION_K);
+  FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
 
   auto& mem = resources_->getMemoryManagerCurrentDevice();
   auto stream = resources_->getDefaultStreamCurrentDevice();

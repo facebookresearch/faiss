@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved
 // -*- c++ -*-
 
 #ifndef FAISS_INDEX_H
@@ -19,6 +17,9 @@
 #include <string>
 #include <sstream>
 
+#define FAISS_VERSION_MAJOR 1
+#define FAISS_VERSION_MINOR 5
+#define FAISS_VERSION_PATCH 1
 
 /**
  * @namespace faiss
@@ -40,7 +41,7 @@
 namespace faiss {
 
 
-/// Some algorithms support both an inner product vetsion and a L2 search version.
+/// Some algorithms support both an inner product version and a L2 search version.
 enum MetricType {
     METRIC_INNER_PRODUCT = 0,
     METRIC_L2 = 1,
@@ -59,9 +60,9 @@ struct RangeSearchResult;
  * database-to-database queries are not implemented.
  */
 struct Index {
-    std::string index_typename;
-
-    typedef long idx_t;    ///< all indices are this type
+    using idx_t = long;    ///< all indices are this type
+    using component_t = float;
+    using distance_t = float;
 
     int d;                 ///< vector dimension
     idx_t ntotal;          ///< total nb of indexed vectors
@@ -73,15 +74,14 @@ struct Index {
     /// type of metric this index uses for search
     MetricType metric_type;
 
-    explicit Index (idx_t d = 0, MetricType metric = METRIC_INNER_PRODUCT):
-                    index_typename ("Undefined Index typename"),
+    explicit Index (idx_t d = 0, MetricType metric = METRIC_L2):
                     d(d),
                     ntotal(0),
                     verbose(false),
                     is_trained(true),
                     metric_type (metric) {}
 
-    virtual ~Index () {  }
+    virtual ~Index ();
 
 
     /** Perform training on a representative set of vectors
@@ -89,9 +89,7 @@ struct Index {
      * @param n      nb of training vectors
      * @param x      training vecors, size n * d
      */
-    virtual void train (idx_t n, const float *x) {
-        // does nothing by default
-    }
+    virtual void train(idx_t n, const float* x);
 
     /** Add n vectors of dimension d to the index.
      *
@@ -167,6 +165,17 @@ struct Index {
      */
     virtual void reconstruct_n (idx_t i0, idx_t ni, float *recons) const;
 
+    /** Similar to search, but also reconstructs the stored vectors (or an
+     * approximation in the case of lossy coding) for the search results.
+     *
+     * If there are not enough results for a query, the resulting arrays
+     * is padded with -1s.
+     *
+     * @param recons      reconstructed vectors size (n, k, d)
+     **/
+    virtual void search_and_reconstruct (idx_t n, const float *x, idx_t k,
+                                         float *distances, idx_t *labels,
+                                         float *recons) const;
 
     /** Computes a residual vector after indexing encoding.
      *
@@ -184,11 +193,6 @@ struct Index {
     /** Display the actual class name and some more info */
     void display () const;
 
-    /** Return the typeName of the index (which includes main parameters */
-    virtual std::string get_typename () const {
-        return index_typename; }
-
-    virtual void set_typename () = 0 ;
 
 
 };

@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "InvertedListAppend.cuh"
 #include "../../FaissAssert.h"
@@ -58,6 +56,8 @@ runUpdateListPointers(Tensor<int, 1, true>& listIds,
     listLengths.data().get(),
     listCodes.data().get(),
     listIndices.data().get());
+
+  CUDA_TEST_ERROR();
 }
 
 template <IndicesOptions Opt>
@@ -137,6 +137,8 @@ runIVFPQInvertedListAppend(Tensor<int, 1, true>& listIds,
     // unknown index storage type
     FAISS_ASSERT(false);
   }
+
+  CUDA_TEST_ERROR();
 
 #undef RUN_APPEND
 }
@@ -260,6 +262,8 @@ runIVFFlatInvertedListAppend(Tensor<int, 1, true>& listIds,
       RUN_APPEND(false, false);
     }
   }
+
+  CUDA_TEST_ERROR();
 
 #undef RUN_APPEND
 #undef RUN_APPEND_OPT

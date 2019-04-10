@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
 #ifndef FAISS_PRODUCT_QUANTIZER_H
@@ -24,6 +22,8 @@ namespace faiss {
 
 /** Product Quantizer. Implemented only for METRIC_L2 */
 struct ProductQuantizer {
+
+    using idx_t = Index::idx_t;
 
     size_t d;              ///< size of the input vectors
     size_t M;              ///< number of subquantizers
@@ -48,6 +48,10 @@ struct ProductQuantizer {
     train_type_t train_type;
 
     ClusteringParameters cp; ///< parameters used during clustering
+
+    /// if non-NULL, use this index for assignment (should be of size
+    /// d / M)
+    Index *assign_index;
 
     /// Centroid table, size M * ksub * dsub
     std::vector<float> centroids;
@@ -83,6 +87,13 @@ struct ProductQuantizer {
     void compute_codes (const float * x,
                         uint8_t * codes,
                         size_t n) const ;
+
+    /// speed up code assignment using assign_index
+    /// (non-const because the index is changed)
+    void compute_codes_with_assign_index (
+                const float * x,
+                uint8_t * codes,
+                size_t n);
 
     /// decode a vector from a given code (or n vectors if third argument)
     void decode (const uint8_t *code, float *x) const;
@@ -166,7 +177,6 @@ struct ProductQuantizer {
                      bool init_finalize_heap = true) const;
 
 };
-
 
 
 } // namespace faiss

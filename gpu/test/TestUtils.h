@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #pragma once
 
@@ -55,9 +53,24 @@ T randSelect(std::initializer_list<T> vals) {
 }
 
 /// Generates a collection of random vectors in the range [0, 1]
-std::vector<float> randVecs(int num, int dim);
+std::vector<float> randVecs(size_t num, size_t dim);
 
-/// Compare two indices via query for similarity
+/// Generates a collection of random bit vectors
+std::vector<unsigned char> randBinaryVecs(size_t num, size_t dim);
+
+/// Compare two indices via query for similarity, with a user-specified set of
+/// query vectors
+void compareIndices(const std::vector<float>& queryVecs,
+                    faiss::Index& refIndex,
+                    faiss::Index& testIndex,
+                    int numQuery, int dim, int k,
+                    const std::string& configMsg,
+                    float maxRelativeError = 6e-5f,
+                    float pctMaxDiff1 = 0.1f,
+                    float pctMaxDiffN = 0.005f);
+
+/// Compare two indices via query for similarity, generating random query
+/// vectors
 void compareIndices(faiss::Index& refIndex,
                     faiss::Index& testIndex,
                     int numQuery, int dim, int k,

@@ -1,14 +1,14 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-/* Copyright 2004-present Facebook. All Rights Reserved.
- *
+// -*- c++ -*-
+
+/*
  * C++ support for heaps. The set of functions is tailored for
  * efficient similarity search.
  *
@@ -30,7 +30,6 @@
 #include <cstdio>
 
 #include <limits>
-
 
 
 namespace faiss {
@@ -180,7 +179,7 @@ void maxheap_push (size_t k, T * bh_val, long * bh_ids, T val, long ids)
  * Heap initialization
  *******************************************************************/
 
-/* Initialization phase for the heap (with inconditionnal pushes).
+/* Initialization phase for the heap (with unconditionnal pushes).
  * Store k0 elements in a heap containing up to k values. Note that
  * (bh_val, bh_ids) can be the same as (x, ids) */
 template <class C> inline
@@ -489,8 +488,6 @@ void indirect_heap_push (size_t k,
     }
     bh_ids[i] = id;
 }
-
-
 
 
 } // namespace faiss

@@ -1,18 +1,19 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved
 // -*- c++ -*-
+
+#include <cstring>
 
 #include "AuxIndexStructures.h"
 
-#include <cstring>
+#include "FaissAssert.h"
+
 
 namespace faiss {
 
@@ -21,9 +22,13 @@ namespace faiss {
  * RangeSearchResult
  ***********************************************************************/
 
-RangeSearchResult::RangeSearchResult (size_t nq): nq (nq) {
-    lims = new size_t [nq + 1];
-    memset (lims, 0, sizeof(*lims) * (nq + 1));
+RangeSearchResult::RangeSearchResult (idx_t nq, bool alloc_lims): nq (nq) {
+    if (alloc_lims) {
+        lims = new size_t [nq + 1];
+        memset (lims, 0, sizeof(*lims) * (nq + 1));
+    } else {
+        lims = nullptr;
+    }
     labels = nullptr;
     distances = nullptr;
     buffer_size = 1024 * 256;
@@ -68,13 +73,22 @@ BufferList::~BufferList ()
     }
 }
 
+void BufferList::add (idx_t id, float dis) {
+    if (wp == buffer_size) { // need new buffer
+        append_buffer();
+    }
+    Buffer & buf = buffers.back();
+    buf.ids [wp] = id;
+    buf.dis [wp] = dis;
+    wp++;
+}
 
 
 void BufferList::append_buffer ()
 {
-        Buffer buf = {new idx_t [buffer_size], new float [buffer_size]};
-        buffers.push_back (buf);
-        wp = 0;
+    Buffer buf = {new idx_t [buffer_size], new float [buffer_size]};
+    buffers.push_back (buf);
+    wp = 0;
 }
 
 /// copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to
@@ -93,7 +107,7 @@ void BufferList::copy_range (size_t ofs, size_t n,
         dest_dis += ncopy;
         ofs = 0;
         bno ++;
-            n -= ncopy;
+        n -= ncopy;
     }
 }
 
@@ -101,6 +115,12 @@ void BufferList::copy_range (size_t ofs, size_t n,
 /***********************************************************************
  * RangeSearchPartialResult
  ***********************************************************************/
+
+void RangeQueryResult::add (float dis, idx_t id) {
+    nres++;
+    pres->add (id, dis);
+}
+
 
 
 RangeSearchPartialResult::RangeSearchPartialResult (RangeSearchResult * res_in):
@@ -110,10 +130,10 @@ RangeSearchPartialResult::RangeSearchPartialResult (RangeSearchResult * res_in):
 
 
 /// begin a new result
-RangeSearchPartialResult::QueryResult &
+RangeQueryResult &
     RangeSearchPartialResult::new_result (idx_t qno)
 {
-    QueryResult qres = {qno, 0, this};
+    RangeQueryResult qres = {qno, 0, this};
     queries.push_back (qres);
     return queries.back();
 }
@@ -136,7 +156,7 @@ void RangeSearchPartialResult::finalize ()
 void RangeSearchPartialResult::set_lims ()
 {
     for (int i = 0; i < queries.size(); i++) {
-        QueryResult & qres = queries[i];
+        RangeQueryResult & qres = queries[i];
         res->lims[qres.qno] = qres.nres;
     }
 }
@@ -146,7 +166,7 @@ void RangeSearchPartialResult::set_result (bool incremental)
 {
     size_t ofs = 0;
     for (int i = 0; i < queries.size(); i++) {
-        QueryResult & qres = queries[i];
+        RangeQueryResult & qres = queries[i];
 
         copy_range (ofs, qres.nres,
                     res->labels + res->lims[qres.qno],
@@ -159,6 +179,10 @@ void RangeSearchPartialResult::set_result (bool incremental)
 }
 
 
+/***********************************************************************
+ * IDSelectorRange
+ ***********************************************************************/
+
 IDSelectorRange::IDSelectorRange (idx_t imin, idx_t imax):
     imin (imin), imax (imax)
 {
@@ -170,6 +194,9 @@ bool IDSelectorRange::is_member (idx_t id) const
 }
 
 
+/***********************************************************************
+ * IDSelectorBatch
+ ***********************************************************************/
 
 IDSelectorBatch::IDSelectorBatch (long n, const idx_t *indices)
 {
@@ -198,9 +225,76 @@ bool IDSelectorBatch::is_member (idx_t i) const
 }
 
 
+/***********************************************************************
+ * IO functions
+ ***********************************************************************/
 
 
-
-
-
+int IOReader::fileno ()
+{
+    FAISS_THROW_MSG ("IOReader does not support memory mapping");
 }
+
+int IOWriter::fileno ()
+{
+    FAISS_THROW_MSG ("IOWriter does not support memory mapping");
+}
+
+
+size_t VectorIOWriter::operator()(
+                const void *ptr, size_t size, size_t nitems)
+{
+    size_t o = data.size();
+    data.resize(o + size * nitems);
+    memcpy (&data[o], ptr, size * nitems);
+    return nitems;
+}
+
+size_t VectorIOReader::operator()(
+                  void *ptr, size_t size, size_t nitems)
+{
+    if (rp >= data.size()) return 0;
+    size_t nremain = (data.size() - rp) / size;
+    if (nremain < nitems) nitems = nremain;
+    memcpy (ptr, &data[rp], size * nitems);
+    rp += size * nitems;
+    return nitems;
+}
+
+
+/***********************************************************
+ * Interrupt callback
+ ***********************************************************/
+
+
+std::unique_ptr<InterruptCallback> InterruptCallback::instance;
+
+void InterruptCallback::check () {
+    if (!instance.get()) {
+        return;
+    }
+    if (instance->want_interrupt ()) {
+        FAISS_THROW_MSG ("computation interrupted");
+    }
+}
+
+bool InterruptCallback::is_interrupted () {
+    if (!instance.get()) {
+        return false;
+    }
+    return instance->want_interrupt();
+}
+
+
+size_t InterruptCallback::get_period_hint (size_t flops) {
+    if (!instance.get()) {
+        return 1L << 30; // never check
+    }
+    // for 10M flops, it is reasonable to check once every 10 iterations
+    return std::max((size_t)10 * 10 * 1000 * 1000 / (flops + 1), (size_t)1);
+}
+
+
+
+
+} // namespace faiss

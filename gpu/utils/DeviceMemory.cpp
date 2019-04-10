@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "DeviceMemory.h"
 #include "DeviceUtils.h"
@@ -37,10 +35,6 @@ DeviceMemoryReservation::DeviceMemoryReservation(DeviceMemory* state,
 
 DeviceMemoryReservation::DeviceMemoryReservation(
   DeviceMemoryReservation&& m) noexcept {
-  if (data_) {
-    FAISS_ASSERT(state_);
-    state_->returnAllocation(*this);
-  }
 
   state_ = m.state_;
   device_ = m.device_;

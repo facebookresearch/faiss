@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #pragma once
 
@@ -23,7 +21,8 @@ class IVFFlat : public IVFBase {
           FlatIndex* quantizer,
           bool l2Distance,
           bool useFloat16,
-          IndicesOptions indicesOptions);
+          IndicesOptions indicesOptions,
+          MemorySpace space);
 
   ~IVFFlat() override;
 

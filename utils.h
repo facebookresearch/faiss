@@ -1,15 +1,14 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-/** Copyright 2004-present Facebook. All Rights Reserved
- * -*- c++ -*-
- *
+// -*- c++ -*-
+
+/*
  *  A few utilitary functions for similarity search:
  * - random generators
  * - optimized exhaustive distance and knn search functions
@@ -19,9 +18,9 @@
 #ifndef FAISS_utils_h
 #define FAISS_utils_h
 
+#include <random>
+
 #include <stdint.h>
-// for the random data struct
-#include <cstdlib>
 
 #include "Heap.h"
 
@@ -48,34 +47,23 @@ size_t get_mem_usage_kb ();
 /// random generator that can be used in multithreaded contexts
 struct RandomGenerator {
 
-#ifdef __linux__
-    char rand_state [8];
-    struct random_data rand_data;
-#elif __APPLE__
-    unsigned rand_state;
-#endif
+    std::mt19937 mt;
 
-    /// random 31-bit positive integer
+    /// random positive integer
     int rand_int ();
 
-    /// random long < 2 ^ 62
+    /// random long
     long rand_long ();
 
-    /// generate random number between 0 and max-1
+    /// generate random integer between 0 and max-1
     int rand_int (int max);
 
     /// between 0 and 1
     float rand_float ();
 
-
     double rand_double ();
 
-    /// initialize
     explicit RandomGenerator (long seed = 1234);
-
-    /// default copy constructor messes up pointer in rand_data
-    RandomGenerator (const RandomGenerator & other);
-
 };
 
 /* Generate an array of uniform random floats / multi-threaded implementation */
@@ -196,6 +184,8 @@ void fvec_L2sqr_by_idx (
  * KNN functions
  ***************************************************************************/
 
+// threshold on nx above which we switch to BLAS to compute distances
+extern int distance_compute_blas_threshold;
 
 /** Return the k nearest neighors of each of the nx vectors x among the ny
  *  vector y, w.r.t to max inner product
@@ -229,11 +219,13 @@ void knn_L2sqr_base_shift (
          float_maxheap_array_t * res,
          const float *base_shift);
 
-
+/* Find the nearest neighbors for nx queries in a set of ny vectors
+ * indexed by ids. May be useful for re-ranking a pre-selected vector list
+ */
 void knn_inner_products_by_idx (
         const float * x,
         const float * y,
-        const long * __restrict ids,
+        const long *  ids,
         size_t d, size_t nx, size_t ny,
         float_minheap_array_t * res);
 
@@ -306,12 +298,20 @@ int fvec_madd_and_argmin (size_t n, const float *a,
 void reflection (const float * u, float * x, size_t n, size_t d, size_t nu);
 
 
-/** For k-means: update stage. Returns nb of split clusters. */
+/** For k-means: update stage.
+ *
+ * @param x          training vectors, size n * d
+ * @param centroids  centroid vectors, size k * d
+ * @param assign     nearest centroid for each training vector, size n
+ * @param k_frozen   do not update the k_frozen first centroids
+ * @return           nb of spliting operations to fight empty clusters
+ */
 int km_update_centroids (
         const float * x,
         float * centroids,
         long * assign,
-        size_t d, size_t k, size_t n);
+        size_t d, size_t k, size_t n,
+        size_t k_frozen);
 
 /** compute the Q of the QR decomposition for m > n
  * @param a   size n * m: input matrix and output Q
@@ -326,6 +326,21 @@ void ranklist_handle_ties (int k, long *idx, const float *dis);
  */
 size_t ranklist_intersection_size (size_t k1, const long *v1,
                                    size_t k2, const long *v2);
+
+/** merge a result table into another one
+ *
+ * @param I0, D0       first result table, size (n, k)
+ * @param I1, D1       second result table, size (n, k)
+ * @param keep_min     if true, keep min values, otherwise keep max
+ * @param translation  add this value to all I1's indexes
+ * @return             nb of values that were taken from the second table
+ */
+size_t merge_result_table_with (size_t n, size_t k,
+                                long *I0, float *D0,
+                                const long *I1, const float *D1,
+                                bool keep_min = true,
+                                long translation = 0);
+
 
 
 void fvec_argsort (size_t n, const float *vals,
@@ -362,6 +377,30 @@ size_t ivec_checksum (size_t n, const int *a);
 const float *fvecs_maybe_subsample (
        size_t d, size_t *n, size_t nmax, const float *x,
        bool verbose = false, long seed = 1234);
+
+/** Convert binary vector to +1/-1 valued float vector.
+ *
+ * @param d      dimension of the vector (multiple of 8)
+ * @param x_in   input binary vector (uint8_t table of size d / 8)
+ * @param x_out  output float vector (float table of size d)
+ */
+void binary_to_real(size_t d, const uint8_t *x_in, float *x_out);
+
+/** Convert float vector to binary vector. Components > 0 are converted to 1,
+ * others to 0.
+ *
+ * @param d      dimension of the vector (multiple of 8)
+ * @param x_in   input float vector (float table of size d)
+ * @param x_out  output binary vector (uint8_t table of size d / 8)
+ */
+void real_to_binary(size_t d, const float *x_in, uint8_t *x_out);
+
+
+/** A reasonable hashing function */
+uint64_t hash_bytes (const uint8_t *bytes, long n);
+
+/** Whether OpenMP annotations were respected. */
+bool check_openmp();
 
 } // namspace faiss
 

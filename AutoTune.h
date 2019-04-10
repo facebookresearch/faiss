@@ -1,21 +1,21 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
 #ifndef FAISS_AUTO_TUNE_H
 #define FAISS_AUTO_TUNE_H
 
 #include <vector>
+#include <unordered_map>
 
 #include "Index.h"
+#include "IndexBinary.h"
 
 namespace faiss {
 
@@ -61,9 +61,9 @@ struct OneRecallAtRCriterion: AutoTuneCriterion {
 
     OneRecallAtRCriterion (idx_t nq, idx_t R);
 
-    virtual double evaluate (const float *D, const idx_t *I) const override;
+    double evaluate(const float* D, const idx_t* I) const override;
 
-    virtual ~OneRecallAtRCriterion () {}
+    ~OneRecallAtRCriterion() override {}
 };
 
 
@@ -73,9 +73,9 @@ struct IntersectionCriterion: AutoTuneCriterion {
 
     IntersectionCriterion (idx_t nq, idx_t R);
 
-    virtual double evaluate (const float *D, const idx_t *I) const override;
+    double evaluate(const float* D, const idx_t* I) const override;
 
-    virtual ~IntersectionCriterion () {}
+    ~IntersectionCriterion() override {}
 };
 
 /**
@@ -149,6 +149,10 @@ struct ParameterSpace {
     /// independent single-searches)
     bool thread_over_batches;
 
+    /// run tests several times until they reach at least this
+    /// duration (to avoid jittering in MT mode)
+    double min_test_duration;
+
     ParameterSpace ();
 
     /// nb of combinations, = product of values sizes
@@ -163,7 +167,7 @@ struct ParameterSpace {
     /// print a description on stdout
     void display () const;
 
-    /// add a new parameter
+    /// add a new parameter (or return it if it exists)
     ParameterRange &add_range(const char * name);
 
     /// initialize with reasonable parameters for the index
@@ -203,6 +207,50 @@ struct ParameterSpace {
  *  the string. */
 Index *index_factory (int d, const char *description,
                       MetricType metric = METRIC_L2);
+
+IndexBinary *index_binary_factory (int d, const char *description);
+
+
+/** Reports some statistics on a dataset and comments on them.
+ *
+ * It is a class rather than a function so that all stats can also be
+ * accessed from code */
+
+struct MatrixStats {
+    MatrixStats (size_t n, size_t d, const float *x);
+    std::string comments;
+
+    // raw statistics
+    size_t n, d;
+    size_t n_collision, n_valid, n0;
+    double min_norm2, max_norm2;
+
+    struct PerDimStats {
+        size_t n, n_nan, n_inf, n0;
+
+        float min, max;
+        double sum, sum2;
+
+        size_t n_valid;
+        double mean, stddev;
+
+        PerDimStats();
+        void add (float x);
+        void compute_mean_std ();
+    };
+
+    std::vector<PerDimStats> per_dim_stats;
+    struct Occurrence {
+        size_t first;
+        size_t count;
+    };
+    std::unordered_map<uint64_t, Occurrence> occurrences;
+
+    char *buf;
+    size_t nbuf;
+    void do_comment (const char *fmt, ...);
+
+};
 
 
 

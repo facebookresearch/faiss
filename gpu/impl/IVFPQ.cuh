@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #pragma once
 
@@ -26,7 +24,8 @@ class IVFPQ : public IVFBase {
         int bitsPerSubQuantizer,
         float* pqCentroidData,
         IndicesOptions indicesOptions,
-        bool useFloat16LookupTables);
+        bool useFloat16LookupTables,
+        MemorySpace space);
 
   /// Returns true if we support PQ in this size
   static bool isSupportedPQCodeLength(int size);

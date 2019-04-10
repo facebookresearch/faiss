@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
 #ifndef FAISS_VECTOR_TRANSFORM_H
@@ -38,7 +36,7 @@ struct VectorTransform {
     {}
 
 
-    /// set if the LinearTransform does not require training, or if
+    /// set if the VectorTransform does not require training, or if
     /// training is done already
     bool is_trained;
 
@@ -77,8 +75,10 @@ struct VectorTransform {
  */
 struct LinearTransform: VectorTransform {
 
-
     bool have_bias; ///! whether to use the bias term
+
+    /// check if matrix A is orthonormal (enables reverse_transform)
+    bool is_orthonormal;
 
     /// Transformation matrix, size d_out * d_in
     std::vector<float> A;
@@ -86,25 +86,28 @@ struct LinearTransform: VectorTransform {
      /// bias vector, size d_out
     std::vector<float> b;
 
-
     /// both d_in > d_out and d_out < d_in are supported
     explicit LinearTransform (int d_in = 0, int d_out = 0,
                               bool have_bias = false);
 
     /// same as apply, but result is pre-allocated
-    virtual void apply_noalloc (idx_t n, const float * x,
-                                float *xt) const;
+    void apply_noalloc(idx_t n, const float* x, float* xt) const override;
 
     /// compute x = A^T * (x - b)
     /// is reverse transform if A has orthonormal lines
     void transform_transpose (idx_t n, const float * y,
                               float *x) const;
 
+    /// works only if is_orthonormal
+    void reverse_transform (idx_t n, const float * xt,
+                            float *x) const override;
+
+    /// compute A^T * A to set the is_orthonormal flag
+    void set_is_orthonormal ();
+
     bool verbose;
 
-    virtual ~LinearTransform () {}
-
-
+    ~LinearTransform() override {}
 };
 
 
@@ -119,8 +122,8 @@ struct RandomRotationMatrix: LinearTransform {
      /// must be called before the transform is used
      void init(int seed);
 
-     virtual void reverse_transform (idx_t n, const float * xt,
-                                     float *x) const override;
+     // intializes with an arbitrary seed
+     void train(Index::idx_t n, const float* x) override;
 
      RandomRotationMatrix () {}
 };
@@ -134,7 +137,7 @@ struct PCAMatrix: LinearTransform {
      * eigenvalues^eigen_power
      *
      * =0: no whitening
-     * =-2: full whitening
+     * =-0.5: full whitening
      */
     float eigen_power;
 
@@ -160,10 +163,9 @@ struct PCAMatrix: LinearTransform {
     explicit PCAMatrix (int d_in = 0, int d_out = 0,
                         float eigen_power = 0, bool random_rotation = false);
 
-    virtual void train (Index::idx_t n, const float *x) override;
-
-    virtual void reverse_transform (idx_t n, const float * xt,
-                                    float *x) const override;
+    /// train on n vectors. If n < d_in then the eigenvector matrix
+    /// will be completed with 0s
+    void train(Index::idx_t n, const float* x) override;
 
     /// copy pre-trained PCA matrix
     void copy_from (const PCAMatrix & other);
@@ -174,6 +176,7 @@ struct PCAMatrix: LinearTransform {
 };
 
 
+struct ProductQuantizer;
 
 /** Applies a rotation to align the dimensions with a PQ to minimize
  *  the reconstruction error. Can be used before an IndexPQ or an
@@ -194,13 +197,14 @@ struct OPQMatrix: LinearTransform {
     size_t max_train_points;
     bool verbose;
 
+    /// if non-NULL, use this product quantizer for training
+    /// should be constructed with (d_out, M, _)
+    ProductQuantizer * pq;
+
     /// if d2 != -1, output vectors of this dimension
     explicit OPQMatrix (int d = 0, int M = 1, int d2 = -1);
 
-    virtual void train (Index::idx_t n, const float *x) override;
-
-    virtual void reverse_transform (idx_t n, const float * xt,
-                                    float *x) const override;
+    void train(Index::idx_t n, const float* x) override;
 };
 
 
@@ -208,7 +212,6 @@ struct OPQMatrix: LinearTransform {
  * strictly speaking this is also a linear transform but we don't want
  * to compute it with matrix multiplies */
 struct RemapDimensionsTransform: VectorTransform {
-
 
     /// map from output dimension to input, size d_out
     /// -1 -> set output to 0
@@ -221,14 +224,46 @@ struct RemapDimensionsTransform: VectorTransform {
     /// otherwise just take the d_out first ones.
     RemapDimensionsTransform (int d_in, int d_out, bool uniform = true);
 
-    virtual void apply_noalloc (idx_t n, const float * x,
-                                float *xt) const override;
+    void apply_noalloc(idx_t n, const float* x, float* xt) const override;
 
     /// reverse transform correct only when the mapping is a permuation
-    virtual void reverse_transform (idx_t n, const float * xt,
-                                    float *x) const override;
+    void reverse_transform(idx_t n, const float* xt, float* x) const override;
 
     RemapDimensionsTransform () {}
+};
+
+
+/** per-vector normalization */
+struct NormalizationTransform: VectorTransform {
+    float norm;
+
+    explicit NormalizationTransform (int d, float norm = 2.0);
+    NormalizationTransform ();
+
+    void apply_noalloc(idx_t n, const float* x, float* xt) const override;
+
+    /// Identity transform since norm is not revertible
+    void reverse_transform(idx_t n, const float* xt, float* x) const override;
+};
+
+/** Subtract the mean of each component from the vectors. */
+struct CenteringTransform: VectorTransform {
+
+    /// Mean, size d_in = d_out
+    std::vector<float> mean;
+
+    explicit CenteringTransform (int d = 0);
+
+    /// train on n vectors.
+    void train(Index::idx_t n, const float* x) override;
+
+    /// subtract the mean
+    void apply_noalloc(idx_t n, const float* x, float* xt) const override;
+
+    /// add the mean
+    void reverse_transform (idx_t n, const float * xt,
+                            float *x) const override;
+
 };
 
 
@@ -250,41 +285,53 @@ struct IndexPreTransform: Index {
 
     void prepend_transform (VectorTransform * ltrans);
 
-    virtual void set_typename () override;
+    void train(idx_t n, const float* x) override;
 
-    virtual void train (idx_t n, const float *x) override;
+    void add(idx_t n, const float* x) override;
 
-    virtual void add (idx_t n, const float *x) override;
+    void add_with_ids(idx_t n, const float* x, const long* xids) override;
 
-    virtual void add_with_ids (idx_t n, const float * x, const long *xids)
-        override;
-
-
-    virtual void reset () override;
+    void reset() override;
 
     /** removes IDs from the index. Not supported by all indexes.
      */
-    virtual long remove_ids (const IDSelector & sel) override;
+    long remove_ids(const IDSelector& sel) override;
 
-    virtual void search (
-            idx_t n, const float *x, idx_t k,
-            float *distances, idx_t *labels) const override;
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
+
+
+    /* range search, no attempt is done to change the radius */
+    void range_search (idx_t n, const float* x, float radius,
+                       RangeSearchResult* result) const override;
+
+
+    void reconstruct (idx_t key, float * recons) const override;
 
     void reconstruct_n (idx_t i0, idx_t ni, float *recons)
         const override;
+
+    void search_and_reconstruct (idx_t n, const float *x, idx_t k,
+                                 float *distances, idx_t *labels,
+                                 float *recons) const override;
 
     /// apply the transforms in the chain. The returned float * may be
     /// equal to x, otherwise it should be deallocated.
     const float * apply_chain (idx_t n, const float *x) const;
 
-    virtual ~IndexPreTransform ();
+    /// Reverse the transforms in the chain. May not be implemented for
+    /// all transforms in the chain or may return approximate results.
+    void reverse_chain (idx_t n, const float* xt, float* x) const;
 
+    ~IndexPreTransform() override;
 };
 
 
-
 } // namespace faiss
-
 
 
 #endif

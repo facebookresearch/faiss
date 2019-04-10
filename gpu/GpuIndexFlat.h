@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #pragma once
 
@@ -25,15 +23,27 @@ namespace faiss { namespace gpu {
 
 struct FlatIndex;
 
-struct GpuIndexFlatConfig {
+struct GpuIndexFlatConfig : public GpuIndexConfig {
   inline GpuIndexFlatConfig()
-      : device(0),
-        useFloat16(false),
+      : useFloat16(false),
+        useFloat16Accumulator(false),
         storeTransposed(false) {
   }
 
-  int device;
+  /// Whether or not data is stored as float16
   bool useFloat16;
+
+  /// Whether or not all math is performed in float16, if useFloat16 is
+  /// specified. If true, we use cublasHgemm, supported only on CC
+  /// 5.3+. Otherwise, we use cublasSgemmEx.
+  bool useFloat16Accumulator;
+
+  /// Whether or not data is stored (transparently) in a transposed
+  /// layout, enabling use of the NN GEMM call, which is ~10% faster.
+  /// This will improve the speed of the flat index, but will
+  /// substantially slow down any add() calls made, as all data must
+  /// be transposed, and will increase storage requirements (we store
+  /// data in both transposed and non-transposed layouts).
   bool storeTransposed;
 };
 
@@ -56,16 +66,6 @@ class GpuIndexFlat : public GpuIndex {
 
   ~GpuIndexFlat() override;
 
-  /// Set the minimum data size for searches (in MiB) for which we use
-  /// CPU -> GPU paging
-  void setMinPagingSize(size_t size);
-
-  /// Returns the current minimum data size for paged searches
-  size_t getMinPagingSize() const;
-
-  /// Do we store vectors and perform math in float16?
-  bool getUseFloat16() const;
-
   /// Initialize ourselves from the given CPU index; will overwrite
   /// all data in ourselves
   void copyFrom(const faiss::IndexFlat* index);
@@ -83,54 +83,48 @@ class GpuIndexFlat : public GpuIndex {
   /// This index is not trained, so this does nothing
   void train(Index::idx_t n, const float* x) override;
 
-  /// `x` can be resident on the CPU or any GPU; the proper copies are
-  /// performed
-  void add(Index::idx_t n, const float* x) override;
-
-  /// `x`, `distances` and `labels` can be resident on the CPU or any
-  /// GPU; copies are performed as needed
-  void search(faiss::Index::idx_t n,
-              const float* x,
-              faiss::Index::idx_t k,
-              float* distances,
-              faiss::Index::idx_t* labels) const override;
+  /// Overrides to avoid excessive copies
+  void add(faiss::Index::idx_t, const float* x) override;
 
   /// Reconstruction methods; prefer the batch reconstruct as it will
   /// be more efficient
   void reconstruct(faiss::Index::idx_t key, float* out) const override;
 
   /// Batch reconstruction method
-  void reconstruct_n(faiss::Index::idx_t i0,
-                     faiss::Index::idx_t num,
-                     float* out) const override;
-
-  void set_typename() override;
+  void reconstruct_n(
+      faiss::Index::idx_t i0,
+      faiss::Index::idx_t num,
+      float* out) const override;
 
   /// For internal access
   inline FlatIndex* getGpuData() { return data_; }
 
  protected:
-  /// Called from search when the input data is on the CPU;
-  /// potentially allows for pinned memory usage
-  void searchFromCpuPaged_(int n,
-                           const float* x,
-                           int k,
-                           float* outDistancesData,
-                           int* outIndicesData) const;
+  /// Flat index does not require IDs as there is no storage available for them
+  bool addImplRequiresIDs_() const override;
 
-  void searchNonPaged_(int n,
-                       const float* x,
-                       int k,
-                       float* outDistancesData,
-                       int* outIndicesData) const;
+  /// Called from GpuIndex for add
+  void addImpl_(int n,
+                const float* x,
+                const Index::idx_t* ids) override;
+
+  /// Called from GpuIndex for search
+  void searchImpl_(int n,
+                   const float* x,
+                   int k,
+                   float* distances,
+                   faiss::Index::idx_t* labels) const override;
+
+ private:
+  /// Checks user settings for consistency
+  void verifySettings_() const;
 
  protected:
-  /// Size above which we page copies from the CPU to GPU
-  size_t minPagedSize_;
-
+  /// Our config object
   const GpuIndexFlatConfig config_;
 
-  /// Holds our GPU data containing the list of vectors
+  /// Holds our GPU data containing the list of vectors; is managed via raw
+  /// pointer so as to allow non-CUDA compilers to see this header
   FlatIndex* data_;
 };
 

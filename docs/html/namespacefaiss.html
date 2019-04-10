@@ -121,9 +121,24 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1RangeSearchPartialResult.html">RangeSearchPartialResult</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">the entries in the buffers are split per query  <a href="structfaiss_1_1RangeSearchPartialResult.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IOReader.html">IOReader</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IOWriter.html">IOWriter</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1VectorIOReader.html">VectorIOReader</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1VectorIOWriter.html">VectorIOWriter</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ClusteringParameters.html">ClusteringParameters</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Clustering.html">Clustering</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1FaissException.html">FaissException</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for Faiss exceptions.  <a href="classfaiss_1_1FaissException.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ScopeDeleter.html">ScopeDeleter</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ScopeDeleter1.html">ScopeDeleter1</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HammingComputer4.html">HammingComputer4</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,6 +151,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HammingComputer32.html">HammingComputer32</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HammingComputer64.html">HammingComputer64</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HammingComputerDefault.html">HammingComputerDefault</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HammingComputerM8.html">HammingComputerM8</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,15 +168,38 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1GenHammingComputerM8.html">GenHammingComputerM8</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HCounterState.html">HCounterState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1CMax.html">CMax</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1CMin.html">CMin</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HeapArray.html">HeapArray</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSW.html">HNSW</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1VisitedTable.html">VisitedTable</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">set implementation optimized for fast access.  <a href="structfaiss_1_1VisitedTable.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1HNSWStats.html">HNSWStats</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html">Index</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ScopeFileCloser.html">ScopeFileCloser</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Cloner.html">Cloner</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexBinary.html">IndexBinary</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexBinaryFlat.html">IndexBinaryFlat</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexBinaryFromFloat.html">IndexBinaryFromFloat</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexBinaryHNSW.html">IndexBinaryHNSW</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexBinaryIVF.html">IndexBinaryIVF</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1BinaryInvertedListScanner.html">BinaryInvertedListScanner</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexFlat.html">IndexFlat</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,11 +214,35 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexFlat1D.html">IndexFlat1D</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">optimized version for 1D "vectors"  <a href="structfaiss_1_1IndexFlat1D.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ReconstructFromNeighbors.html">ReconstructFromNeighbors</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexHNSW.html">IndexHNSW</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexHNSWFlat.html">IndexHNSWFlat</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexHNSWPQ.html">IndexHNSWPQ</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexHNSWSQ.html">IndexHNSWSQ</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexHNSW2Level.html">IndexHNSW2Level</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Level1Quantizer.html">Level1Quantizer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IVFSearchParameters.html">IVFSearchParameters</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html">IndexIVF</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1InvertedListScanner.html">InvertedListScanner</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFStats.html">IndexIVFStats</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFFlat.html">IndexIVFFlat</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFFlatDedup.html">IndexIVFFlatDedup</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1CodeCmp.html">CodeCmp</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IVFPQSearchParameters.html">IVFPQSearchParameters</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFPQ.html">IndexIVFPQ</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -186,17 +250,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFPQR.html">IndexIVFPQR</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFPQCompact.html">IndexIVFPQCompact</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index2Layer.html">Index2Layer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexLSH.html">IndexLSH</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ArgSort.html">ArgSort</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1SortedArray.html">SortedArray</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1SemiSortedArray.html">SemiSortedArray</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1MinSumK.html">MinSumK</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPQ.html">IndexPQ</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,11 +260,32 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1MultiIndexQuantizer.html">MultiIndexQuantizer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1MultiIndexQuantizer2.html">MultiIndexQuantizer2</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ScalarQuantizer.html">ScalarQuantizer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexScalarQuantizer.html">IndexScalarQuantizer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html">IndexIVFScalarQuantizer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1InvertedLists.html">InvertedLists</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ArrayInvertedLists.html">ArrayInvertedLists</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">simple (default) implementation as an array of inverted lists  <a href="structfaiss_1_1ArrayInvertedLists.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ConcatenatedInvertedLists.html">ConcatenatedInvertedLists</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIDMap.html">IndexIDMap</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIDMap2.html">IndexIDMap2</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexShards.html">IndexShards</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexSplitVectors.html">IndexSplitVectors</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1LockLevels.html">LockLevels</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1OnDiskInvertedLists.html">OnDiskInvertedLists</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Score3Computer.html">Score3Computer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -252,6 +329,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1RemapDimensionsTransform.html">RemapDimensionsTransform</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1NormalizationTransform.html">NormalizationTransform</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexPreTransform.html">IndexPreTransform</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -273,19 +352,54 @@ long &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>float_maxhe
 typedef <a class="el" href="structfaiss_1_1HeapArray.html">HeapArray</a>&lt; <a class="el" href="structfaiss_1_1CMax.html">CMax</a>&lt; int, <br class="typebreak"/>
 long &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>int_maxheap_array_t</b></td></tr>
 <tr class="separator:aca6dab2ebae3c66f1bc2bfe5c194a7ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae883ece8e4f356e208b60710888fe368"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae883ece8e4f356e208b60710888fe368"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>idx_t</b> = <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a></td></tr>
+<tr class="separator:ae883ece8e4f356e208b60710888fe368"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9943b63c4a64e23879d13109d8f8a464"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9943b63c4a64e23879d13109d8f8a464"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>DistanceComputer</b> = <a class="el" href="structfaiss_1_1HNSW_1_1DistanceComputer.html">HNSW::DistanceComputer</a></td></tr>
+<tr class="separator:a9943b63c4a64e23879d13109d8f8a464"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab77cd53e8b9a9c08155eef2b8ea03c1b"><td class="memTemplParams" colspan="2"><a class="anchor" id="ab77cd53e8b9a9c08155eef2b8ea03c1b"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ab77cd53e8b9a9c08155eef2b8ea03c1b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>MaxHeap</b> = std::priority_queue&lt; T, std::vector&lt; T &gt;, std::less&lt; T &gt;&gt;</td></tr>
+<tr class="separator:ab77cd53e8b9a9c08155eef2b8ea03c1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46f430f423998747bf573eebc72a5e48"><td class="memTemplParams" colspan="2"><a class="anchor" id="a46f430f423998747bf573eebc72a5e48"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a46f430f423998747bf573eebc72a5e48"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>MinHeap</b> = std::priority_queue&lt; T, std::vector&lt; T &gt;, std::greater&lt; T &gt;&gt;</td></tr>
+<tr class="separator:a46f430f423998747bf573eebc72a5e48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ce33e659fbac0b9228586f25fddb425"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2ce33e659fbac0b9228586f25fddb425"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>MinimaxHeap</b> = <a class="el" href="structfaiss_1_1HNSW_1_1MinimaxHeap.html">HNSW::MinimaxHeap</a></td></tr>
+<tr class="separator:a2ce33e659fbac0b9228586f25fddb425"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57c1913dbfdb987e248e65e463893cae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a57c1913dbfdb987e248e65e463893cae"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>storage_idx_t</b> = <a class="el" href="structfaiss_1_1HNSW.html#ae1342fc2f07c325598a73b733e88ee74">HNSW::storage_idx_t</a></td></tr>
+<tr class="separator:a57c1913dbfdb987e248e65e463893cae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade1a2cf238eb66402368dfceb7a9e856"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ade1a2cf238eb66402368dfceb7a9e856"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>NodeDistCloser</b> = <a class="el" href="structfaiss_1_1HNSW_1_1NodeDistCloser.html">HNSW::NodeDistCloser</a></td></tr>
+<tr class="separator:ade1a2cf238eb66402368dfceb7a9e856"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c7221ab68306665eb415c9ed81f40d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8c7221ab68306665eb415c9ed81f40d2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>NodeDistFarther</b> = <a class="el" href="structfaiss_1_1HNSW_1_1NodeDistFarther.html">HNSW::NodeDistFarther</a></td></tr>
+<tr class="separator:a8c7221ab68306665eb415c9ed81f40d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95be93c94ec2348cb4c90d35312f2a00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95be93c94ec2348cb4c90d35312f2a00"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ScopedIds</b> = <a class="el" href="structfaiss_1_1InvertedLists_1_1ScopedIds.html">InvertedLists::ScopedIds</a></td></tr>
+<tr class="separator:a95be93c94ec2348cb4c90d35312f2a00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a4cb2bd87f256fcc0b430d19a12216f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6a4cb2bd87f256fcc0b430d19a12216f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ScopedCodes</b> = <a class="el" href="structfaiss_1_1InvertedLists_1_1ScopedCodes.html">InvertedLists::ScopedCodes</a></td></tr>
+<tr class="separator:a6a4cb2bd87f256fcc0b430d19a12216f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:afd12191c638da74760ff397cf319752c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">MetricType</a> { <b>METRIC_INNER_PRODUCT</b> = 0, 
 <b>METRIC_L2</b> = 1
  }</td></tr>
-<tr class="memdesc:afd12191c638da74760ff397cf319752c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Some algorithms support both an inner product vetsion and a L2 search version. <br/></td></tr>
+<tr class="memdesc:afd12191c638da74760ff397cf319752c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Some algorithms support both an inner product version and a L2 search version. <br/></td></tr>
 <tr class="separator:afd12191c638da74760ff397cf319752c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a0c95ec47726f2ce3fb668dcb1f9a3317"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structfaiss_1_1Index.html">Index</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a0c95ec47726f2ce3fb668dcb1f9a3317">index_factory</a> (int d, const char *description_in, <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">MetricType</a> metric)</td></tr>
 <tr class="separator:a0c95ec47726f2ce3fb668dcb1f9a3317"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb54e49cab9467f117b131f803c583b6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adb54e49cab9467f117b131f803c583b6"></a>
+<a class="el" href="structfaiss_1_1IndexBinary.html">IndexBinary</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>index_binary_factory</b> (int d, const char *description)</td></tr>
+<tr class="separator:adb54e49cab9467f117b131f803c583b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38bd0dde8a1b229201a5fcb64d05daa6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a38bd0dde8a1b229201a5fcb64d05daa6">kmeans_clustering</a> (size_t d, size_t n, size_t k, const float *x, float *centroids)</td></tr>
 <tr class="separator:a38bd0dde8a1b229201a5fcb64d05daa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ae1b2a404a4f618609a5b87eecc344b"><td class="memTemplParams" colspan="2"><a class="anchor" id="a6ae1b2a404a4f618609a5b87eecc344b"></a>
@@ -342,11 +456,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>bitvec_print</b> (con
 <tr class="memitem:a9962e3db5bf5e276950685a587b37a94"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9962e3db5bf5e276950685a587b37a94"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>hammings</b> (const uint8_t *a, const uint8_t *b, size_t na, size_t nb, size_t ncodes, hamdis_t *__restrict dis)</td></tr>
 <tr class="separator:a9962e3db5bf5e276950685a587b37a94"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57fbe98f92f64f97dc13a34f76290eea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a57fbe98f92f64f97dc13a34f76290eea"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>hammings_knn_core</b> (<a class="el" href="structfaiss_1_1HeapArray.html">int_maxheap_array_t</a> *ha, const uint8_t *a, const uint8_t *b, size_t nb, size_t ncodes)</td></tr>
-<tr class="separator:a57fbe98f92f64f97dc13a34f76290eea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0b4dc73a8470d61f510396dc460ca18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#ac0b4dc73a8470d61f510396dc460ca18">hammings_knn</a> (<a class="el" href="structfaiss_1_1HeapArray.html">int_maxheap_array_t</a> *ha, const uint8_t *a, const uint8_t *b, size_t nb, size_t ncodes, int order)</td></tr>
+<tr class="memitem:ac0b4dc73a8470d61f510396dc460ca18"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac0b4dc73a8470d61f510396dc460ca18"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>hammings_knn</b> (<a class="el" href="structfaiss_1_1HeapArray.html">int_maxheap_array_t</a> *ha, const uint8_t *a, const uint8_t *b, size_t nb, size_t ncodes, int order)</td></tr>
 <tr class="separator:ac0b4dc73a8470d61f510396dc460ca18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef2e95991f435b0103db0efe07edff81"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#aef2e95991f435b0103db0efe07edff81">hammings_knn_hc</a> (<a class="el" href="structfaiss_1_1HeapArray.html">int_maxheap_array_t</a> *ha, const uint8_t *a, const uint8_t *b, size_t nb, size_t ncodes, int order)</td></tr>
+<tr class="separator:aef2e95991f435b0103db0efe07edff81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9ac586642ba474949a007546ab05592"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#aa9ac586642ba474949a007546ab05592">hammings_knn_mc</a> (const uint8_t *a, const uint8_t *b, size_t na, size_t nb, size_t k, size_t ncodes, int32_t *distances, long *labels)</td></tr>
+<tr class="separator:aa9ac586642ba474949a007546ab05592"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac713458e556afa5bd612b88944292d65"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac713458e556afa5bd612b88944292d65"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>hamming_count_thres</b> (const uint8_t *bs1, const uint8_t *bs2, size_t n1, size_t n2, hamdis_t ht, size_t ncodes, size_t *nptr)</td></tr>
 <tr class="separator:ac713458e556afa5bd612b88944292d65"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -356,8 +472,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>crosshamming_count_th
 <tr class="memitem:a9569826dd5f45d9bbf4933877862a9fd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9569826dd5f45d9bbf4933877862a9fd"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>match_hamming_thres</b> (const uint8_t *bs1, const uint8_t *bs2, size_t n1, size_t n2, hamdis_t ht, size_t ncodes, long *idx, hamdis_t *dis)</td></tr>
 <tr class="separator:a9569826dd5f45d9bbf4933877862a9fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae81da42f6f40356f7525917b3acb54c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#ae81da42f6f40356f7525917b3acb54c8">generalized_hammings_knn</a> (<a class="el" href="structfaiss_1_1HeapArray.html">int_maxheap_array_t</a> *ha, const uint8_t *a, const uint8_t *b, size_t nb, size_t code_size, int ordered)</td></tr>
-<tr class="separator:ae81da42f6f40356f7525917b3acb54c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c1131631ad4314ba716372fe0d1dea6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a9c1131631ad4314ba716372fe0d1dea6">generalized_hammings_knn_hc</a> (<a class="el" href="structfaiss_1_1HeapArray.html">int_maxheap_array_t</a> *ha, const uint8_t *a, const uint8_t *b, size_t nb, size_t code_size, int ordered)</td></tr>
+<tr class="separator:a9c1131631ad4314ba716372fe0d1dea6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d2125afc95e3417b270cb9428f8e0ef"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d2125afc95e3417b270cb9428f8e0ef"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>popcount64</b> (uint64_t x)</td></tr>
 <tr class="separator:a7d2125afc95e3417b270cb9428f8e0ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -450,12 +566,21 @@ template&lt;class C &gt; </td></tr>
 template&lt;class C &gt; </td></tr>
 <tr class="memitem:a8ecaf37c77256e02a946e1572b992ed5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>indirect_heap_push</b> (size_t k, const typename C::T *bh_val, typename C::TI *bh_ids, typename C::TI id)</td></tr>
 <tr class="separator:a8ecaf37c77256e02a946e1572b992ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab39977a9b0d876f912d6d7b09f9f3d18"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab39977a9b0d876f912d6d7b09f9f3d18"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>write_VectorTransform</b> (const <a class="el" href="structfaiss_1_1VectorTransform.html">VectorTransform</a> *vt, FILE *f)</td></tr>
-<tr class="separator:ab39977a9b0d876f912d6d7b09f9f3d18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af06ee18cec9686419b641298e3a0667e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af06ee18cec9686419b641298e3a0667e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>write_VectorTransform</b> (const <a class="el" href="structfaiss_1_1VectorTransform.html">VectorTransform</a> *vt, <a class="el" href="structfaiss_1_1IOWriter.html">IOWriter</a> *f)</td></tr>
+<tr class="separator:af06ee18cec9686419b641298e3a0667e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbd20721104c8523bbc53d82f839b03c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adbd20721104c8523bbc53d82f839b03c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>write_ProductQuantizer</b> (const <a class="el" href="structfaiss_1_1ProductQuantizer.html">ProductQuantizer</a> *pq, <a class="el" href="structfaiss_1_1IOWriter.html">IOWriter</a> *f)</td></tr>
+<tr class="separator:adbd20721104c8523bbc53d82f839b03c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aceed566acb3d5edfa90c70198ba5d962"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aceed566acb3d5edfa90c70198ba5d962"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>write_InvertedLists</b> (const <a class="el" href="structfaiss_1_1InvertedLists.html">InvertedLists</a> *ils, <a class="el" href="structfaiss_1_1IOWriter.html">IOWriter</a> *f)</td></tr>
+<tr class="separator:aceed566acb3d5edfa90c70198ba5d962"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeecb2752b0d13ace2d17ebc0189e9ea3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeecb2752b0d13ace2d17ebc0189e9ea3"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>write_ProductQuantizer</b> (const <a class="el" href="structfaiss_1_1ProductQuantizer.html">ProductQuantizer</a> *pq, const char *fname)</td></tr>
 <tr class="separator:aeecb2752b0d13ace2d17ebc0189e9ea3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e27aa8cea95d11002d8c452d6b85ff2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e27aa8cea95d11002d8c452d6b85ff2"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>write_index</b> (const <a class="el" href="structfaiss_1_1Index.html">Index</a> *idx, <a class="el" href="structfaiss_1_1IOWriter.html">IOWriter</a> *f)</td></tr>
+<tr class="separator:a6e27aa8cea95d11002d8c452d6b85ff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add675e330da6a82b27101862206de6c2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="add675e330da6a82b27101862206de6c2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>write_index</b> (const <a class="el" href="structfaiss_1_1Index.html">Index</a> *idx, FILE *f)</td></tr>
 <tr class="separator:add675e330da6a82b27101862206de6c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -465,26 +590,51 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>write_index</b> (cons
 <tr class="memitem:ad72efd9404a8058159f1ae48225a2d94"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad72efd9404a8058159f1ae48225a2d94"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>write_VectorTransform</b> (const <a class="el" href="structfaiss_1_1VectorTransform.html">VectorTransform</a> *vt, const char *fname)</td></tr>
 <tr class="separator:ad72efd9404a8058159f1ae48225a2d94"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a303b95b7a7eb474965f65f59f87626a3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a303b95b7a7eb474965f65f59f87626a3"></a>
-<a class="el" href="structfaiss_1_1VectorTransform.html">VectorTransform</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_VectorTransform</b> (FILE *f)</td></tr>
-<tr class="separator:a303b95b7a7eb474965f65f59f87626a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7947aa6ec50a5232008dae4c932c6aa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa7947aa6ec50a5232008dae4c932c6aa"></a>
+<a class="el" href="structfaiss_1_1VectorTransform.html">VectorTransform</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_VectorTransform</b> (<a class="el" href="structfaiss_1_1IOReader.html">IOReader</a> *f)</td></tr>
+<tr class="separator:aa7947aa6ec50a5232008dae4c932c6aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78fdb63ab9c1307446f3ee6e2733d7c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a78fdb63ab9c1307446f3ee6e2733d7c8"></a>
+<a class="el" href="structfaiss_1_1InvertedLists.html">InvertedLists</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_InvertedLists</b> (<a class="el" href="structfaiss_1_1IOReader.html">IOReader</a> *f, int io_flags)</td></tr>
+<tr class="separator:a78fdb63ab9c1307446f3ee6e2733d7c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a818fa626e2368301ccf872b7ba65383a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a818fa626e2368301ccf872b7ba65383a"></a>
 <a class="el" href="structfaiss_1_1ProductQuantizer.html">ProductQuantizer</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_ProductQuantizer</b> (const char *fname)</td></tr>
 <tr class="separator:a818fa626e2368301ccf872b7ba65383a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa46fe38a858ecfde7e0fc0744939d5ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structfaiss_1_1Index.html">Index</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#aa46fe38a858ecfde7e0fc0744939d5ad">read_index</a> (FILE *f, bool try_mmap)</td></tr>
-<tr class="separator:aa46fe38a858ecfde7e0fc0744939d5ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70cfb0fb5ec10bfef6f3ae0ec7c13ee7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a70cfb0fb5ec10bfef6f3ae0ec7c13ee7"></a>
-<a class="el" href="structfaiss_1_1Index.html">Index</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_index</b> (const char *fname, bool try_mmap)</td></tr>
-<tr class="separator:a70cfb0fb5ec10bfef6f3ae0ec7c13ee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39b1ff6a5c7baacea4002473dde1f8d3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39b1ff6a5c7baacea4002473dde1f8d3"></a>
+<a class="el" href="structfaiss_1_1ProductQuantizer.html">ProductQuantizer</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_ProductQuantizer</b> (<a class="el" href="structfaiss_1_1IOReader.html">IOReader</a> *reader)</td></tr>
+<tr class="separator:a39b1ff6a5c7baacea4002473dde1f8d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa794e3ac29ed3100f41963b7f38c24b8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa794e3ac29ed3100f41963b7f38c24b8"></a>
+<a class="el" href="structfaiss_1_1Index.html">Index</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_index</b> (<a class="el" href="structfaiss_1_1IOReader.html">IOReader</a> *f, int io_flags)</td></tr>
+<tr class="separator:aa794e3ac29ed3100f41963b7f38c24b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea4c3e2c0e8b3f706ba46771b815526d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aea4c3e2c0e8b3f706ba46771b815526d"></a>
+<a class="el" href="structfaiss_1_1Index.html">Index</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_index</b> (FILE *f, int io_flags)</td></tr>
+<tr class="separator:aea4c3e2c0e8b3f706ba46771b815526d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac705f6f8d4ed7edc9bf3a130ef176780"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac705f6f8d4ed7edc9bf3a130ef176780"></a>
+<a class="el" href="structfaiss_1_1Index.html">Index</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_index</b> (const char *fname, int io_flags)</td></tr>
+<tr class="separator:ac705f6f8d4ed7edc9bf3a130ef176780"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73e97b42d11f03a68bfda4ad5c569dd1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a73e97b42d11f03a68bfda4ad5c569dd1"></a>
 <a class="el" href="structfaiss_1_1VectorTransform.html">VectorTransform</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_VectorTransform</b> (const char *fname)</td></tr>
 <tr class="separator:a73e97b42d11f03a68bfda4ad5c569dd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3143984f302f56032b80948ddebc62af"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3143984f302f56032b80948ddebc62af"></a>
 <a class="el" href="structfaiss_1_1Index.html">Index</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>clone_index</b> (const <a class="el" href="structfaiss_1_1Index.html">Index</a> *index)</td></tr>
 <tr class="separator:a3143984f302f56032b80948ddebc62af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c5553442c8b9342a0ad449e2b67f275"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
-<tr class="memitem:a7c5553442c8b9342a0ad449e2b67f275"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a7c5553442c8b9342a0ad449e2b67f275">partial_sort</a> (int k, int n, const typename C::T *vals, typename C::TI *perm)</td></tr>
-<tr class="separator:a7c5553442c8b9342a0ad449e2b67f275"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9b6f26873e5201efe840b4f57934c33"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa9b6f26873e5201efe840b4f57934c33"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>write_index_binary</b> (const <a class="el" href="structfaiss_1_1IndexBinary.html">IndexBinary</a> *idx, <a class="el" href="structfaiss_1_1IOWriter.html">IOWriter</a> *f)</td></tr>
+<tr class="separator:aa9b6f26873e5201efe840b4f57934c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ac354e079e69777c2a3f4ce205372ce"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2ac354e079e69777c2a3f4ce205372ce"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>write_index_binary</b> (const <a class="el" href="structfaiss_1_1IndexBinary.html">IndexBinary</a> *idx, FILE *f)</td></tr>
+<tr class="separator:a2ac354e079e69777c2a3f4ce205372ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61da4238a64561284de20324b93314bb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a61da4238a64561284de20324b93314bb"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>write_index_binary</b> (const <a class="el" href="structfaiss_1_1IndexBinary.html">IndexBinary</a> *idx, const char *fname)</td></tr>
+<tr class="separator:a61da4238a64561284de20324b93314bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0682cfae8900b191290b48d23aa10feb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0682cfae8900b191290b48d23aa10feb"></a>
+<a class="el" href="structfaiss_1_1IndexBinary.html">IndexBinary</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_index_binary</b> (<a class="el" href="structfaiss_1_1IOReader.html">IOReader</a> *f, int io_flags)</td></tr>
+<tr class="separator:a0682cfae8900b191290b48d23aa10feb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fe48429c4094e94f8d073f5a7c6e141"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2fe48429c4094e94f8d073f5a7c6e141"></a>
+<a class="el" href="structfaiss_1_1IndexBinary.html">IndexBinary</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_index_binary</b> (FILE *f, int io_flags)</td></tr>
+<tr class="separator:a2fe48429c4094e94f8d073f5a7c6e141"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a07c538774dcca086d988845b37c494"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8a07c538774dcca086d988845b37c494"></a>
+<a class="el" href="structfaiss_1_1IndexBinary.html">IndexBinary</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>read_index_binary</b> (const char *fname, int io_flags)</td></tr>
+<tr class="separator:a8a07c538774dcca086d988845b37c494"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1224ccbe0087fd6634d59b3008251b6"><td class="memTemplParams" colspan="2"><a class="anchor" id="ad1224ccbe0087fd6634d59b3008251b6"></a>
 template&lt;typename CT , class C &gt; </td></tr>
 <tr class="memitem:ad1224ccbe0087fd6634d59b3008251b6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>pq_estimators_from_tables_Mmul4</b> (int M, const CT *codes, size_t ncodes, const float *__restrict dis_table, size_t ksub, size_t k, float *heap_dis, long *heap_ids)</td></tr>
@@ -518,30 +668,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reflection</b> (const
 <tr class="memitem:a34ed95d839d548e34fdd03f83676b633"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a34ed95d839d548e34fdd03f83676b633"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reflection_ref</b> (const float *u, float *x, size_t n, size_t d, size_t nu)</td></tr>
 <tr class="separator:a34ed95d839d548e34fdd03f83676b633"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7466bd32de31640860393a701eaac5ad"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7466bd32de31640860393a701eaac5ad"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">fvec_L2sqr</a> (const float *x, const float *y, size_t d)</td></tr>
-<tr class="memdesc:a7466bd32de31640860393a701eaac5ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Squared L2 distance between two vectors. <br/></td></tr>
-<tr class="separator:a7466bd32de31640860393a701eaac5ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83eae4ad08f3d1f3e7af467853d74d7b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a83eae4ad08f3d1f3e7af467853d74d7b"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_L2sqr_ref</b> (const float *x, const float *y, size_t d)</td></tr>
-<tr class="separator:a83eae4ad08f3d1f3e7af467853d74d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6490f0d832462623e19a96481daeef5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af6490f0d832462623e19a96481daeef5"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_inner_product</b> (const float *x, const float *y, size_t d)</td></tr>
-<tr class="separator:af6490f0d832462623e19a96481daeef5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28a3cb6cd969528a0745764696f701c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a28a3cb6cd969528a0745764696f701c8"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_inner_product_ref</b> (const float *x, const float *y, size_t d)</td></tr>
-<tr class="separator:a28a3cb6cd969528a0745764696f701c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a49180ebf10e643217bbce5862c7f84"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">fvec_norm_L2sqr</a> (const float *x, size_t d)</td></tr>
-<tr class="separator:a7a49180ebf10e643217bbce5862c7f84"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab048727c2b9d7a55e19cf94339a182d6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab048727c2b9d7a55e19cf94339a182d6"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_norm_L2sqr_ref</b> (const float *__restrict x, size_t d)</td></tr>
-<tr class="separator:ab048727c2b9d7a55e19cf94339a182d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02b3f0bedbd7590d60c01c3ee42d00ee"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a02b3f0bedbd7590d60c01c3ee42d00ee"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_inner_products_ny</b> (float *__restrict ip, const float *x, const float *y, size_t d, size_t ny)</td></tr>
-<tr class="separator:a02b3f0bedbd7590d60c01c3ee42d00ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a052456d4db25ce5de406794939fd0537"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a052456d4db25ce5de406794939fd0537"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_L2sqr_ny</b> (float *__restrict dis, const float *x, const float *y, size_t d, size_t ny)</td></tr>
-<tr class="separator:a052456d4db25ce5de406794939fd0537"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f0c0270de04cc395edd3d2823d0128d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f0c0270de04cc395edd3d2823d0128d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_inner_products_ny</b> (float *ip, const float *x, const float *y, size_t d, size_t ny)</td></tr>
+<tr class="separator:a1f0c0270de04cc395edd3d2823d0128d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ee963ae53a231071a04335b6419a34a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8ee963ae53a231071a04335b6419a34a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_norms_L2</b> (float *__restrict nr, const float *__restrict x, size_t d, size_t nx)</td></tr>
 <tr class="separator:a8ee963ae53a231071a04335b6419a34a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -563,9 +692,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_inner_products_b
 <tr class="memitem:acad70536e37674f21dc4f47fc130e03b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acad70536e37674f21dc4f47fc130e03b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_L2sqr_by_idx</b> (float *__restrict dis, const float *x, const float *y, const long *__restrict ids, size_t d, size_t nx, size_t ny)</td></tr>
 <tr class="separator:acad70536e37674f21dc4f47fc130e03b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04eafd0d8f57e413587661c6bf6eb5be"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a04eafd0d8f57e413587661c6bf6eb5be"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>knn_inner_products_by_idx</b> (const float *x, const float *y, const long *__restrict ids, size_t d, size_t nx, size_t ny, <a class="el" href="structfaiss_1_1HeapArray.html">float_minheap_array_t</a> *res)</td></tr>
-<tr class="separator:a04eafd0d8f57e413587661c6bf6eb5be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cede63f44a39f09ae574f98c02d71db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4cede63f44a39f09ae574f98c02d71db"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>knn_inner_products_by_idx</b> (const float *x, const float *y, const long *ids, size_t d, size_t nx, size_t ny, <a class="el" href="structfaiss_1_1HeapArray.html">float_minheap_array_t</a> *res)</td></tr>
+<tr class="separator:a4cede63f44a39f09ae574f98c02d71db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a705dcfc6ae950690bc14ccf3dae591b8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a705dcfc6ae950690bc14ccf3dae591b8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>knn_L2sqr_by_idx</b> (const float *x, const float *y, const long *__restrict ids, size_t d, size_t nx, size_t ny, <a class="el" href="structfaiss_1_1HeapArray.html">float_maxheap_array_t</a> *res)</td></tr>
 <tr class="separator:a705dcfc6ae950690bc14ccf3dae591b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -582,10 +711,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>inner_product_to_L2sq
 <tr class="separator:afb68fe89ad5e948974da1b70d7b4157c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d9c7db82d43c1f0ab1d28b92bc9fe57"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a3d9c7db82d43c1f0ab1d28b92bc9fe57">pairwise_L2sqr</a> (long d, long nq, const float *xq, long nb, const float *xb, float *dis, long ldq, long ldb, long ldd)</td></tr>
 <tr class="separator:a3d9c7db82d43c1f0ab1d28b92bc9fe57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1cfbe51f2d77dc5094e0140f5955165"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#ad1cfbe51f2d77dc5094e0140f5955165">km_update_centroids</a> (const float *x, float *centroids, long *assign, size_t d, size_t k, size_t n)</td></tr>
-<tr class="separator:ad1cfbe51f2d77dc5094e0140f5955165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2c6a9e87a64bba8e8014e14f70bde21"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#aa2c6a9e87a64bba8e8014e14f70bde21">km_update_centroids</a> (const float *x, float *centroids, long *assign, size_t d, size_t k, size_t n, size_t k_frozen)</td></tr>
+<tr class="separator:aa2c6a9e87a64bba8e8014e14f70bde21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0ee1b6fbd3d6da0f1a3550a780ca24c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#ae0ee1b6fbd3d6da0f1a3550a780ca24c">ranklist_handle_ties</a> (int k, long *idx, const float *dis)</td></tr>
 <tr class="separator:ae0ee1b6fbd3d6da0f1a3550a780ca24c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb7b33f6892678ba79aaf5e71777837c"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#afb7b33f6892678ba79aaf5e71777837c">merge_result_table_with</a> (size_t n, size_t k, long *I0, float *D0, const long *I1, const float *D1, bool keep_min, long translation)</td></tr>
+<tr class="separator:afb7b33f6892678ba79aaf5e71777837c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8dbc652ba48d41f126b8815004899448"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a8dbc652ba48d41f126b8815004899448">ranklist_intersection_size</a> (size_t k1, const long *v1, size_t k2, const long *v2_in)</td></tr>
 <tr class="separator:a8dbc652ba48d41f126b8815004899448"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94c1d99ac39d22e362aa27ce7c7ff714"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a94c1d99ac39d22e362aa27ce7c7ff714"></a>
@@ -612,19 +743,28 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_argsort</b> (siz
 <tr class="memitem:a0e967dd8492dc074a7d6950d437e53a2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0e967dd8492dc074a7d6950d437e53a2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_argsort_parallel</b> (size_t n, const float *vals, size_t *perm)</td></tr>
 <tr class="separator:a0e967dd8492dc074a7d6950d437e53a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40328c31abd0bbba5bd95d7de951e847"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a40328c31abd0bbba5bd95d7de951e847">fvec_madd</a> (size_t n, const float *a, float bf, const float *b, float *c)</td></tr>
-<tr class="separator:a40328c31abd0bbba5bd95d7de951e847"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9da63b8bb84460f5e8ccf8e17622cc7a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a9da63b8bb84460f5e8ccf8e17622cc7a">fvec_madd_and_argmin</a> (size_t n, const float *a, float bf, const float *b, float *c)</td></tr>
-<tr class="separator:a9da63b8bb84460f5e8ccf8e17622cc7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14884d253128c7af5891a65082ad7dc6"><td class="memItemLeft" align="right" valign="top">const float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a14884d253128c7af5891a65082ad7dc6">fvecs_maybe_subsample</a> (size_t d, size_t *n, size_t nmax, const float *x, bool verbose, long seed)</td></tr>
 <tr class="separator:a14884d253128c7af5891a65082ad7dc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8260e10cfeed08a4344b85845773e16"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#ac8260e10cfeed08a4344b85845773e16">binary_to_real</a> (size_t d, const uint8_t *x_in, float *x_out)</td></tr>
+<tr class="separator:ac8260e10cfeed08a4344b85845773e16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab491c9e2f77a750c9f0324bfe00e3e57"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#ab491c9e2f77a750c9f0324bfe00e3e57">real_to_binary</a> (size_t d, const float *x_in, uint8_t *x_out)</td></tr>
+<tr class="separator:ab491c9e2f77a750c9f0324bfe00e3e57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3af5769b0b649f112332a874c64d361"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa3af5769b0b649f112332a874c64d361"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#aa3af5769b0b649f112332a874c64d361">get_mem_usage_kb</a> ()</td></tr>
 <tr class="memdesc:aa3af5769b0b649f112332a874c64d361"><td class="mdescLeft">&#160;</td><td class="mdescRight">get current RSS usage in kB <br/></td></tr>
 <tr class="separator:aa3af5769b0b649f112332a874c64d361"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f0c0270de04cc395edd3d2823d0128d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f0c0270de04cc395edd3d2823d0128d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_inner_products_ny</b> (float *ip, const float *x, const float *y, size_t d, size_t ny)</td></tr>
-<tr class="separator:a1f0c0270de04cc395edd3d2823d0128d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7466bd32de31640860393a701eaac5ad"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7466bd32de31640860393a701eaac5ad"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a7466bd32de31640860393a701eaac5ad">fvec_L2sqr</a> (const float *x, const float *y, size_t d)</td></tr>
+<tr class="memdesc:a7466bd32de31640860393a701eaac5ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Squared L2 distance between two vectors. <br/></td></tr>
+<tr class="separator:a7466bd32de31640860393a701eaac5ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6490f0d832462623e19a96481daeef5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af6490f0d832462623e19a96481daeef5"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_inner_product</b> (const float *x, const float *y, size_t d)</td></tr>
+<tr class="separator:af6490f0d832462623e19a96481daeef5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a052456d4db25ce5de406794939fd0537"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a052456d4db25ce5de406794939fd0537"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_L2sqr_ny</b> (float *__restrict dis, const float *x, const float *y, size_t d, size_t ny)</td></tr>
+<tr class="separator:a052456d4db25ce5de406794939fd0537"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a49180ebf10e643217bbce5862c7f84"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a7a49180ebf10e643217bbce5862c7f84">fvec_norm_L2sqr</a> (const float *x, size_t d)</td></tr>
+<tr class="separator:a7a49180ebf10e643217bbce5862c7f84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40265aa2cbbe57e5b223c2c7dafac31f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a40265aa2cbbe57e5b223c2c7dafac31f">fvec_norms_L2</a> (float *ip, const float *x, size_t d, size_t nx)</td></tr>
 <tr class="separator:a40265aa2cbbe57e5b223c2c7dafac31f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abce90e9d55d6838c7a37422285192d54"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abce90e9d55d6838c7a37422285192d54"></a>
@@ -634,43 +774,117 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:a1d81952ec447e6886d2fd3b930fdc096"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1d81952ec447e6886d2fd3b930fdc096"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_renorm_L2</b> (size_t d, size_t nx, float *x)</td></tr>
 <tr class="separator:a1d81952ec447e6886d2fd3b930fdc096"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40328c31abd0bbba5bd95d7de951e847"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a40328c31abd0bbba5bd95d7de951e847">fvec_madd</a> (size_t n, const float *a, float bf, const float *b, float *c)</td></tr>
+<tr class="separator:a40328c31abd0bbba5bd95d7de951e847"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9da63b8bb84460f5e8ccf8e17622cc7a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefaiss.html#a9da63b8bb84460f5e8ccf8e17622cc7a">fvec_madd_and_argmin</a> (size_t n, const float *a, float bf, const float *b, float *c)</td></tr>
+<tr class="separator:a9da63b8bb84460f5e8ccf8e17622cc7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7c6da3d6915a010d5d3074d93878ce9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab7c6da3d6915a010d5d3074d93878ce9"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reflection</b> (const float *u, float *x, size_t n, size_t d, size_t nu)</td></tr>
 <tr class="separator:ab7c6da3d6915a010d5d3074d93878ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83eae4ad08f3d1f3e7af467853d74d7b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a83eae4ad08f3d1f3e7af467853d74d7b"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_L2sqr_ref</b> (const float *x, const float *y, size_t d)</td></tr>
+<tr class="separator:a83eae4ad08f3d1f3e7af467853d74d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28a3cb6cd969528a0745764696f701c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a28a3cb6cd969528a0745764696f701c8"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_inner_product_ref</b> (const float *x, const float *y, size_t d)</td></tr>
+<tr class="separator:a28a3cb6cd969528a0745764696f701c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6068ba732628f61f4138d2610c2eaf3b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6068ba732628f61f4138d2610c2eaf3b"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_norm_L2sqr_ref</b> (const float *x, size_t d)</td></tr>
+<tr class="separator:a6068ba732628f61f4138d2610c2eaf3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c4320937e1f2c38c8a1923bd5fb3068"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2c4320937e1f2c38c8a1923bd5fb3068"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_L2sqr_ny_ref</b> (float *dis, const float *x, const float *y, size_t d, size_t ny)</td></tr>
+<tr class="separator:a2c4320937e1f2c38c8a1923bd5fb3068"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ca22849311a991b72676be10315e2af"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4ca22849311a991b72676be10315e2af"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>fvec_L2sqr_ny</b> (float *dis, const float *x, const float *y, size_t d, size_t ny)</td></tr>
+<tr class="separator:a4ca22849311a991b72676be10315e2af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
+<tr class="memitem:a4b9270ee589d75780566bc35bb543ddc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4b9270ee589d75780566bc35bb543ddc"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>hamming_batch_size</b> = 65536</td></tr>
+<tr class="separator:a4b9270ee589d75780566bc35bb543ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af64bbc47e010c9adc82dcfbcfdb00e17"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af64bbc47e010c9adc82dcfbcfdb00e17"></a>
+<a class="el" href="structfaiss_1_1HNSWStats.html">HNSWStats</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hnsw_stats</b></td></tr>
+<tr class="separator:af64bbc47e010c9adc82dcfbcfdb00e17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cd23fc7d944b9cfe8b498a4b35bc558"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8cd23fc7d944b9cfe8b498a4b35bc558"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> = 0</td></tr>
 <tr class="separator:a8cd23fc7d944b9cfe8b498a4b35bc558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff97660fb0994bea32b9c4714e324fa0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aff97660fb0994bea32b9c4714e324fa0"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>IO_FLAG_MMAP</b> = 1</td></tr>
+<tr class="separator:aff97660fb0994bea32b9c4714e324fa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa75d478d14ec1ffd7b0718adf0dab26b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa75d478d14ec1ffd7b0718adf0dab26b"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>IO_FLAG_READ_ONLY</b> = 2</td></tr>
+<tr class="separator:aa75d478d14ec1ffd7b0718adf0dab26b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaacf7373287db7858299cede6cb8b7c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaacf7373287db7858299cede6cb8b7c7"></a>
+<a class="el" href="structfaiss_1_1IndexIVFStats.html">IndexIVFStats</a>&#160;</td><td class="memItemRight" valign="bottom"><b>indexIVF_stats</b></td></tr>
+<tr class="separator:aaacf7373287db7858299cede6cb8b7c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d6b069b2590a195d078d696cba14284"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2d6b069b2590a195d078d696cba14284"></a>
 <a class="el" href="structfaiss_1_1IndexIVFPQStats.html">IndexIVFPQStats</a>&#160;</td><td class="memItemRight" valign="bottom"><b>indexIVFPQ_stats</b></td></tr>
 <tr class="separator:a2d6b069b2590a195d078d696cba14284"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefa127b38407a74770a4b7cfb50ca87d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aefa127b38407a74770a4b7cfb50ca87d"></a>
 <a class="el" href="structfaiss_1_1IndexPQStats.html">IndexPQStats</a>&#160;</td><td class="memItemRight" valign="bottom"><b>indexPQ_stats</b></td></tr>
 <tr class="separator:aefa127b38407a74770a4b7cfb50ca87d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0192f28806f1f86d6f6ee831d739d809"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0192f28806f1f86d6f6ee831d739d809"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>distance_compute_blas_threshold</b> = 20</td></tr>
+<tr class="separator:a0192f28806f1f86d6f6ee831d739d809"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Copyright (c) 2015-present, Facebook, Inc. All rights reserved.</p>
-<p>This source code is licensed under the CC-by-NC license found in the LICENSE file in the root directory of this source tree.</p>
+<p>This source code is licensed under the BSD+Patents license found in the LICENSE file in the root directory of this source tree.</p>
 <p>Copyright (c) 2015-present, Facebook, Inc. All rights reserved.</p>
-<p>This source code is licensed under the CC-by-NC license found in the LICENSE file in the root directory of this source tree.Multi-dimensional array class for CUDA device and host usage. Originally from Facebook's fbcunn, since added to the Torch GPU library cutorch as well.</p>
-<p>Copyright (c) 2015-present, Facebook, Inc. All rights reserved.</p>
-<p>This source code is licensed under the CC-by-NC license found in the LICENSE file in the root directory of this source tree.</p>
+<p>This source code is licensed under the BSD+Patents license found in the LICENSE file in the root directory of this source tree.Multi-dimensional array class for CUDA device and host usage. Originally from Facebook's fbcunn, since added to the Torch GPU library cutorch as well.</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
 <p>x[ i * d + j ]</p>
 <p>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</p>
 <p>Copyright (c) 2015-present, Facebook, Inc. All rights reserved.</p>
-<p>This source code is licensed under the CC-by-NC license found in the LICENSE file in the root directory of this source tree. Copyright 2004-present Facebook. All Rights Reserved -*- c++ -*-</p>
-<p>A few utilitary functions for similarity search:</p>
-<ul>
-<li>random generators</li>
-<li>optimized exhaustive distance and knn search functions</li>
-<li>some functions reimplemented from torch for speed</li>
-</ul>
+<p>This source code is licensed under the BSD+Patents license found in the LICENSE file in the root directory of this source tree. Definition of inverted lists + a few common classes that implement the interface.</p>
 <p>Copyright (c) 2015-present, Facebook, Inc. All rights reserved.</p>
-<p>This source code is licensed under the CC-by-NC license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
+<p>This source code is licensed under the BSD+Patents license found in the LICENSE file in the root directory of this source tree. Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <a class="el" href="structfaiss_1_1IndexPreTransform.html">IndexPreTransform</a>.</p>
+<p>Copyright (c) 2015-present, Facebook, Inc. All rights reserved.</p>
+<p>This source code is licensed under the BSD+Patents license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ac8260e10cfeed08a4344b85845773e16"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::binary_to_real </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>x_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>x_out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Convert binary vector to +1/-1 valued float vector.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">d</td><td>dimension of the vector (multiple of 8) </td></tr>
+    <tr><td class="paramname">x_in</td><td>input binary vector (uint8_t table of size d / 8) </td></tr>
+    <tr><td class="paramname">x_out</td><td>output float vector (float table of size d) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01552">1552</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a154a47857ed321b9db91122770a16e09"></a>
 <div class="memitem">
 <div class="memproto">
@@ -715,7 +929,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01467">1467</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01314">1314</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -771,7 +985,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01707">1707</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils__simd_8cpp_source.html#l00589">589</a> of file <a class="el" href="utils__simd_8cpp_source.html">utils_simd.cpp</a>.</p>
 
 </div>
 </div>
@@ -819,7 +1033,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 <p>same as fvec_madd, also return index of the min of the result table </p>
 <dl class="section return"><dt>Returns</dt><dd>index of the min of table c </dd></dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01781">1781</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils__simd_8cpp_source.html#l00676">676</a> of file <a class="el" href="utils__simd_8cpp_source.html">utils_simd.cpp</a>.</p>
 
 </div>
 </div>
@@ -848,7 +1062,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 </div><div class="memdoc">
 <p>squared norm of a vector </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00511">511</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils__simd_8cpp_source.html#l00516">516</a> of file <a class="el" href="utils__simd_8cpp_source.html">utils_simd.cpp</a>.</p>
 
 </div>
 </div>
@@ -958,16 +1172,16 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>x or an array allocated with new [] with *n vectors </dd></dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01793">1793</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01528">1528</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ae81da42f6f40356f7525917b3acb54c8"></a>
+<a class="anchor" id="a9c1131631ad4314ba716372fe0d1dea6"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void faiss::generalized_hammings_knn </td>
+          <td class="memname">void faiss::generalized_hammings_knn_hc </td>
           <td>(</td>
           <td class="paramtype">int_maxheap_array_t *&#160;</td>
           <td class="paramname"><em>ha</em>, </td>
@@ -1011,7 +1225,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 </div><div class="memdoc">
 <p>generalized Hamming distances (= count number of code bytes that are the same) </p>
 
-<p>Definition at line <a class="el" href="hamming_8cpp_source.html#l00635">635</a> of file <a class="el" href="hamming_8cpp_source.html">hamming.cpp</a>.</p>
+<p>Definition at line <a class="el" href="hamming_8cpp_source.html#l00729">729</a> of file <a class="el" href="hamming_8cpp_source.html">hamming.cpp</a>.</p>
 
 </div>
 </div>
@@ -1075,12 +1289,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
 
 </div>
 </div>
-<a class="anchor" id="ac0b4dc73a8470d61f510396dc460ca18"></a>
+<a class="anchor" id="aef2e95991f435b0103db0efe07edff81"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void faiss::hammings_knn </td>
+          <td class="memname">void faiss::hammings_knn_hc </td>
           <td>(</td>
           <td class="paramtype">int_maxheap_array_t *&#160;</td>
           <td class="paramname"><em>ha</em>, </td>
@@ -1122,7 +1336,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Return the k smallest Hamming distances for a set of binary query vectors </p>
+<p>Return the k smallest Hamming distances for a set of binary query vectors, using a max heap. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">a</td><td>queries, size ha-&gt;nh * ncodes </td></tr>
@@ -1134,7 +1348,85 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>read_old_fmt_hack</b> 
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="hamming_8cpp_source.html#l00475">475</a> of file <a class="el" href="hamming_8cpp_source.html">hamming.cpp</a>.</p>
+<p>Definition at line <a class="el" href="hamming_8cpp_source.html#l00518">518</a> of file <a class="el" href="hamming_8cpp_source.html">hamming.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa9ac586642ba474949a007546ab05592"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::hammings_knn_mc </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>na</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>nb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>ncodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t *&#160;</td>
+          <td class="paramname"><em>distances</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long *&#160;</td>
+          <td class="paramname"><em>labels</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Return the k smallest Hamming distances for a set of binary query vectors, using counting max. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>queries, size na * ncodes </td></tr>
+    <tr><td class="paramname">b</td><td>database, size nb * ncodes </td></tr>
+    <tr><td class="paramname">na</td><td>number of query vectors </td></tr>
+    <tr><td class="paramname">nb</td><td>number of database vectors </td></tr>
+    <tr><td class="paramname">k</td><td>number of vectors/distances to return </td></tr>
+    <tr><td class="paramname">ncodes</td><td>size of the binary codes (bytes) </td></tr>
+    <tr><td class="paramname">distances</td><td>output distances from each query vector to its k nearest neighbors </td></tr>
+    <tr><td class="paramname">labels</td><td>output ids of the k nearest neighbors to each query vector </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="hamming_8cpp_source.html#l00556">556</a> of file <a class="el" href="hamming_8cpp_source.html">hamming.cpp</a>.</p>
 
 </div>
 </div>
@@ -1179,7 +1471,7 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>Pops the top element from the heap defined by bh_val[0..k-1] and bh_ids[0..k-1]. on output the element at k-1 is undefined. </p>
 
-<p>Definition at line <a class="el" href="Heap_8h_source.html#l00091">91</a> of file <a class="el" href="Heap_8h_source.html">Heap.h</a>.</p>
+<p>Definition at line <a class="el" href="Heap_8h_source.html#l00090">90</a> of file <a class="el" href="Heap_8h_source.html">Heap.h</a>.</p>
 
 </div>
 </div>
@@ -1236,7 +1528,7 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>Pushes the element (val, ids) into the heap bh_val[0..k-2] and bh_ids[0..k-2]. on output the element at k-1 is defined. </p>
 
-<p>Definition at line <a class="el" href="Heap_8h_source.html#l00127">127</a> of file <a class="el" href="Heap_8h_source.html">Heap.h</a>.</p>
+<p>Definition at line <a class="el" href="Heap_8h_source.html#l00126">126</a> of file <a class="el" href="Heap_8h_source.html">Heap.h</a>.</p>
 
 </div>
 </div>
@@ -1271,11 +1563,11 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>Build and index with the sequence of processing steps described in the string. </p>
 
-<p>Definition at line <a class="el" href="AutoTune_8cpp_source.html#l00623">623</a> of file <a class="el" href="AutoTune_8cpp_source.html">AutoTune.cpp</a>.</p>
+<p>Definition at line <a class="el" href="AutoTune_8cpp_source.html#l00722">722</a> of file <a class="el" href="AutoTune_8cpp_source.html">AutoTune.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ad1cfbe51f2d77dc5094e0140f5955165"></a>
+<a class="anchor" id="aa2c6a9e87a64bba8e8014e14f70bde21"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1313,7 +1605,13 @@ template&lt;class C &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>n</em>&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k_frozen</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1322,9 +1620,19 @@ template&lt;class C &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>For k-means: update stage. Returns nb of split clusters. </p>
+<p>For k-means: update stage.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>training vectors, size n * d </td></tr>
+    <tr><td class="paramname">centroids</td><td>centroid vectors, size k * d </td></tr>
+    <tr><td class="paramname">assign</td><td>nearest centroid for each training vector, size n </td></tr>
+    <tr><td class="paramname">k_frozen</td><td>do not update the k_frozen first centroids </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>nb of spliting operations to fight empty clusters </dd></dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01286">1286</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01066">1066</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1382,7 +1690,7 @@ template&lt;class C &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>final quantization error </dd></dl>
 
-<p>Definition at line <a class="el" href="Clustering_8cpp_source.html#l00204">204</a> of file <a class="el" href="Clustering_8cpp_source.html">Clustering.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Clustering_8cpp_source.html#l00238">238</a> of file <a class="el" href="Clustering_8cpp_source.html">Clustering.cpp</a>.</p>
 
 </div>
 </div>
@@ -1443,7 +1751,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00830">830</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00613">613</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1496,7 +1804,7 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>Same as knn_inner_product, for the L2 distance </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00850">850</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00633">633</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1561,7 +1869,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00870">870</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00653">653</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1602,7 +1910,82 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01206">1206</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00987">987</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afb7b33f6892678ba79aaf5e71777837c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t faiss::merge_result_table_with </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long *&#160;</td>
+          <td class="paramname"><em>I0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>D0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const long *&#160;</td>
+          <td class="paramname"><em>I1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>D1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>keep_min</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>translation</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>merge a result table into another one</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">I0,D0</td><td>first result table, size (n, k) </td></tr>
+    <tr><td class="paramname">I1,D1</td><td>second result table, size (n, k) </td></tr>
+    <tr><td class="paramname">keep_min</td><td>if true, keep min values, otherwise keep max </td></tr>
+    <tr><td class="paramname">translation</td><td>add this value to all I1's indexes </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>nb of values that were taken from the second table </dd></dl>
+
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01176">1176</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1685,50 +2068,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01228">1228</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a7c5553442c8b9342a0ad449e2b67f275"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class C &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void faiss::partial_sort </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>k</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const typename C::T *&#160;</td>
-          <td class="paramname"><em>vals</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">typename C::TI *&#160;</td>
-          <td class="paramname"><em>perm</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Array has n values. Sort the k first ones and copy the other ones into elements k..n-1 </p>
-
-<p>Definition at line <a class="el" href="IndexPQ_8cpp_source.html#l00528">528</a> of file <a class="el" href="IndexPQ_8cpp_source.html">IndexPQ.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01009">1009</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1796,7 +2136,7 @@ template&lt;class C &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01151">1151</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l00932">932</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1831,7 +2171,7 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>distances are supposed to be sorted. Sorts indices with same distance </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01378">1378</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01160">1160</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1872,25 +2212,31 @@ template&lt;class C &gt; </div>
 </div><div class="memdoc">
 <p>count the number of comon elements between v1 and v2 algorithm = sorting + bissection to avoid double-counting duplicates </p>
 
-<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01394">1394</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01241">1241</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aa46fe38a858ecfde7e0fc0744939d5ad"></a>
+<a class="anchor" id="ab491c9e2f77a750c9f0324bfe00e3e57"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structfaiss_1_1Index.html">Index</a> * faiss::read_index </td>
+          <td class="memname">void faiss::real_to_binary </td>
           <td>(</td>
-          <td class="paramtype">FILE *&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>try_mmap</em> = <code>false</code>&#160;</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>x_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>x_out</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1899,9 +2245,17 @@ template&lt;class C &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>mmap'ing currently works only for <a class="el" href="structfaiss_1_1IndexIVFPQCompact.html">IndexIVFPQCompact</a>, the <a class="el" href="structfaiss_1_1IndexIVFPQCompact.html">IndexIVFPQCompact</a> destructor will unmap the file. </p>
+<p>Convert float vector to binary vector. Components &gt; 0 are converted to 1, others to 0.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">d</td><td>dimension of the vector (multiple of 8) </td></tr>
+    <tr><td class="paramname">x_in</td><td>input float vector (float table of size d) </td></tr>
+    <tr><td class="paramname">x_out</td><td>output binary vector (uint8_t table of size d / 8) </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="index__io_8cpp_source.html#l00492">492</a> of file <a class="el" href="index__io_8cpp_source.html">index_io.cpp</a>.</p>
+<p>Definition at line <a class="el" href="utils_8cpp_source.html#l01558">1558</a> of file <a class="el" href="utils_8cpp_source.html">utils.cpp</a>.</p>
 
 </div>
 </div>

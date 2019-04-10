@@ -1,17 +1,16 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #pragma once
 
 #include <cuda.h>
+#include "../../Index.h"
 #include "Float16.cuh"
 
 namespace faiss { namespace gpu {
@@ -19,6 +18,12 @@ namespace faiss { namespace gpu {
 //
 // Conversion utilities
 //
+
+struct IntToIdxType {
+  inline __device__ faiss::Index::idx_t operator()(int v) const {
+    return (faiss::Index::idx_t) v;
+  }
+};
 
 template <typename T>
 struct ConvertTo {

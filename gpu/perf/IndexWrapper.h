@@ -1,17 +1,15 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #pragma once
 
-#include "../IndexProxy.h"
+#include "../../IndexReplicas.h"
 #include "../StandardGpuResources.h"
 #include <functional>
 #include <memory>
@@ -26,7 +24,7 @@ template <typename GpuIndex>
 struct IndexWrapper {
   std::vector<std::unique_ptr<faiss::gpu::StandardGpuResources>> resources;
   std::vector<std::unique_ptr<GpuIndex>> subIndex;
-  std::unique_ptr<faiss::gpu::IndexProxy> proxyIndex;
+  std::unique_ptr<faiss::IndexReplicas> replicaIndex;
 
   IndexWrapper(
     int numGpus,

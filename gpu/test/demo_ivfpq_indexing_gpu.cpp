@@ -1,9 +1,8 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -60,13 +59,11 @@ int main ()
     // the coarse quantizer should not be dealloced before the index
     // 4 = nb of bytes per code (d must be a multiple of this)
     // 8 = nb of bits per sub-code (almost always 8)
-    faiss::gpu::GpuIndexIVFPQ index (
-         &resources, dev_no, d,
-         ncentroids, 4, 8, true,
-         faiss::gpu::INDICES_64_BIT,
-         false,
-         faiss::METRIC_L2);
+    faiss::gpu::GpuIndexIVFPQConfig config;
+    config.device = dev_no;
 
+    faiss::gpu::GpuIndexIVFPQ index (
+      &resources, d, ncentroids, 4, 8, faiss::METRIC_L2, config);
 
     { // training
         printf ("[%.3f s] Generating %ld vectors in %dD for training\n",

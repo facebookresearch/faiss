@@ -1,81 +1,68 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "GpuIndexIVFPQ.h"
+#include "../IndexFlat.h"
+#include "../IndexIVFPQ.h"
 #include "../ProductQuantizer.h"
 #include "GpuIndexFlat.h"
 #include "GpuResources.h"
 #include "impl/IVFPQ.cuh"
 #include "utils/CopyUtils.cuh"
 #include "utils/DeviceUtils.h"
-#include "../IndexFlat.h"
-#include "../IndexIVFPQ.h"
 
 #include <limits>
 
 namespace faiss { namespace gpu {
 
 GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResources* resources,
-                             int device,
-                             IndicesOptions indicesOptions,
-                             bool useFloat16LookupTables,
-                             const faiss::IndexIVFPQ* index) :
+                             const faiss::IndexIVFPQ* index,
+                             GpuIndexIVFPQConfig config) :
     GpuIndexIVF(resources,
-                device,
-                indicesOptions,
-                false, // FIXME: float 16 coarse quantizer
                 index->d,
                 index->metric_type,
-                index->nlist),
-    useFloat16LookupTables_(useFloat16LookupTables),
+                index->nlist,
+                config),
+    ivfpqConfig_(config),
     subQuantizers_(0),
     bitsPerCode_(0),
-    usePrecomputed_(false),
     reserveMemoryVecs_(0),
     index_(nullptr) {
 #ifndef FAISS_USE_FLOAT16
-  FAISS_ASSERT(!useFloat16LookupTables_);
+  FAISS_ASSERT(!ivfpqConfig_.useFloat16LookupTables);
 #endif
 
   copyFrom(index);
 }
 
 GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResources* resources,
-                             int device,
                              int dims,
                              int nlist,
                              int subQuantizers,
                              int bitsPerCode,
-                             bool usePrecomputed,
-                             IndicesOptions indicesOptions,
-                             bool useFloat16LookupTables,
-                             faiss::MetricType metric) :
+                             faiss::MetricType metric,
+                             GpuIndexIVFPQConfig config) :
     GpuIndexIVF(resources,
-                device,
-                indicesOptions,
-                false, // FIXME: float 16 coarse quantizer
                 dims,
                 metric,
-                nlist),
-    useFloat16LookupTables_(useFloat16LookupTables),
+                nlist,
+                config),
+    ivfpqConfig_(config),
     subQuantizers_(subQuantizers),
     bitsPerCode_(bitsPerCode),
-    usePrecomputed_(usePrecomputed),
     reserveMemoryVecs_(0),
     index_(nullptr) {
 #ifndef FAISS_USE_FLOAT16
-  FAISS_ASSERT(!useFloat16LookupTables_);
+  FAISS_ASSERT(!config.useFloat16LookupTables);
 #endif
 
-  assertSettings_();
+  verifySettings_();
 
   // FIXME make IP work fully
   FAISS_ASSERT(this->metric_type == faiss::METRIC_L2);
@@ -93,7 +80,8 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
   DeviceScope scope(device_);
 
   // FIXME: support this
-  FAISS_ASSERT(index->metric_type == faiss::METRIC_L2);
+  FAISS_THROW_IF_NOT_MSG(index->metric_type == faiss::METRIC_L2,
+                     "inner product unsupported");
   GpuIndexIVF::copyFrom(index);
 
   // Clear out our old data
@@ -107,9 +95,8 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
   FAISS_ASSERT(index->pq.byte_per_idx == 1);
   FAISS_ASSERT(index->by_residual);
   FAISS_ASSERT(index->polysemous_ht == 0);
-  usePrecomputed_ = index->use_precomputed_table;
 
-  assertSettings_();
+  verifySettings_();
 
   // The other index might not be trained
   if (!index->is_trained) {
@@ -127,21 +114,28 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
                      subQuantizers_,
                      bitsPerCode_,
                      (float*) index->pq.centroids.data(),
-                     indicesOptions_,
-                     useFloat16LookupTables_);
+                     ivfpqConfig_.indicesOptions,
+                     ivfpqConfig_.useFloat16LookupTables,
+                     memorySpace_);
   // Doesn't make sense to reserve memory here
-  index_->setPrecomputedCodes(usePrecomputed_);
+  index_->setPrecomputedCodes(ivfpqConfig_.usePrecomputedTables);
 
   // Copy database vectors, if any
-  for (size_t i = 0; i < index->codes.size(); ++i) {
-    auto& codes = index->codes[i];
-    auto& indices = index->ids[i];
+  const InvertedLists *ivf = index->invlists;
+  size_t nlist = ivf ? ivf->nlist : 0;
+  for (size_t i = 0; i < nlist; ++i) {
+    size_t list_size = ivf->list_size(i);
 
-    FAISS_ASSERT(indices.size() * subQuantizers_ == codes.size());
-    index_->addCodeVectorsFromCpu(i,
-                                  codes.data(),
-                                  indices.data(),
-                                  indices.size());
+    // GPU index can only support max int entries per list
+    FAISS_THROW_IF_NOT_FMT(list_size <=
+                       (size_t) std::numeric_limits<int>::max(),
+                       "GPU inverted list can only support "
+                       "%zu entries; %zu found",
+                       (size_t) std::numeric_limits<int>::max(),
+                       list_size);
+
+    index_->addCodeVectorsFromCpu(
+                       i, ivf->get_codes(i), ivf->get_ids(i), list_size);
   }
 }
 
@@ -150,7 +144,9 @@ GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
   DeviceScope scope(device_);
 
   // We must have the indices in order to copy to ourselves
-  FAISS_ASSERT(indicesOptions_ != INDICES_IVF);
+  FAISS_THROW_IF_NOT_MSG(ivfpqConfig_.indicesOptions != INDICES_IVF,
+                     "Cannot copy to CPU as GPU index doesn't retain "
+                     "indices (INDICES_IVF)");
 
   GpuIndexIVF::copyTo(index);
 
@@ -168,15 +164,19 @@ GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
   index->scan_table_threshold = 0;
   index->max_codes = 0;
   index->polysemous_ht = 0;
-  index->codes.clear();
-  index->codes.resize(nlist_);
   index->precomputed_table.clear();
+
+  InvertedLists *ivf = new ArrayInvertedLists(
+      nlist_, index->code_size);
+
+  index->replace_invlists(ivf, true);
 
   if (index_) {
     // Copy the inverted lists
     for (int i = 0; i < nlist_; ++i) {
-      index->ids[i] = getListIndices(i);
-      index->codes[i] = getListCodes(i);
+      auto ids = getListIndices(i);
+      auto codes = getListCodes(i);
+      index->invlists->add_entries (i, ids.size(), ids.data(), codes.data());
     }
 
     // Copy PQ centroids
@@ -187,7 +187,7 @@ GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
                          index->pq.centroids.data(),
                          resources_->getDefaultStream(device_));
 
-    if (usePrecomputed_) {
+    if (ivfpqConfig_.usePrecomputedTables) {
       index->precompute_table();
     }
   }
@@ -204,23 +204,18 @@ GpuIndexIVFPQ::reserveMemory(size_t numVecs) {
 
 void
 GpuIndexIVFPQ::setPrecomputedCodes(bool enable) {
-  usePrecomputed_ = enable;
+  ivfpqConfig_.usePrecomputedTables = enable;
   if (index_) {
     DeviceScope scope(device_);
     index_->setPrecomputedCodes(enable);
   }
 
-  assertSettings_();
+  verifySettings_();
 }
 
 bool
 GpuIndexIVFPQ::getPrecomputedCodes() const {
-  return usePrecomputed_;
-}
-
-bool
-GpuIndexIVFPQ::getFloat16LookupTables() const {
-  return useFloat16LookupTables_;
+  return ivfpqConfig_.usePrecomputedTables;
 }
 
 int
@@ -294,13 +289,14 @@ GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
                      subQuantizers_,
                      bitsPerCode_,
                      pq.centroids.data(),
-                     indicesOptions_,
-                     useFloat16LookupTables_);
+                     ivfpqConfig_.indicesOptions,
+                     ivfpqConfig_.useFloat16LookupTables,
+                     memorySpace_);
   if (reserveMemoryVecs_) {
     index_->reserveMemory(reserveMemoryVecs_);
   }
 
-  index_->setPrecomputedCodes(usePrecomputed_);
+  index_->setPrecomputedCodes(ivfpqConfig_.usePrecomputedTables);
 }
 
 void
@@ -319,95 +315,51 @@ GpuIndexIVFPQ::train(Index::idx_t n, const float* x) {
   trainQuantizer_(n, x);
   trainResidualQuantizer_(n, x);
 
+  FAISS_ASSERT(index_);
+
   this->is_trained = true;
 }
 
 void
-GpuIndexIVFPQ::add_with_ids(Index::idx_t n,
-                            const float* x,
-                            const Index::idx_t* xids) {
-  FAISS_ASSERT(this->is_trained);
+GpuIndexIVFPQ::addImpl_(int n,
+                        const float* x,
+                        const Index::idx_t* xids) {
+  // Device is already set in GpuIndex::add
   FAISS_ASSERT(index_);
+  FAISS_ASSERT(n > 0);
 
-  if (n == 0) {
-    return;
-  }
+  // Data is already resident on the GPU
+  Tensor<float, 2, true> data(const_cast<float*>(x), {n, (int) this->d});
 
-  DeviceScope scope(device_);
-  auto stream = resources_->getDefaultStreamCurrentDevice();
+  static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
+  Tensor<long, 1, true> labels(const_cast<long*>(xids), {n});
 
-  auto deviceVecs =
-    toDevice<float, 2>(resources_,
-                       device_,
-                       const_cast<float*>(x),
-                       stream,
-                       {(int) n, index_->getDim()});
+  // Not all vectors may be able to be added (some may contain NaNs etc)
+  index_->classifyAndAddVectors(data, labels);
 
-  auto deviceIndices =
-    toDevice<Index::idx_t, 1>(resources_,
-                              device_,
-                              const_cast<Index::idx_t*>(xids),
-                              stream,
-                              {(int) n});
-
-  // Not all vectors may be able to be added (some may contain NaNs
-  // etc)
-  ntotal += index_->classifyAndAddVectors(deviceVecs, deviceIndices);
+  // but keep the ntotal based on the total number of vectors that we attempted
+  // to add
+  ntotal += n;
 }
 
 void
-GpuIndexIVFPQ::search(faiss::Index::idx_t n,
-                      const float* x,
-                      faiss::Index::idx_t k,
-                      float* distances,
-                      faiss::Index::idx_t* labels) const {
-  FAISS_ASSERT(this->is_trained);
+GpuIndexIVFPQ::searchImpl_(int n,
+                           const float* x,
+                           int k,
+                           float* distances,
+                           Index::idx_t* labels) const {
+  // Device is already set in GpuIndex::search
   FAISS_ASSERT(index_);
+  FAISS_ASSERT(n > 0);
 
-  if (n == 0) {
-    return;
-  }
+  // Data is already resident on the GPU
+  Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int) this->d});
+  Tensor<float, 2, true> outDistances(distances, {n, k});
 
-  DeviceScope scope(device_);
+  static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
+  Tensor<long, 2, true> outLabels(const_cast<long*>(labels), {n, k});
 
-  // Make sure arguments are on the device we desire; use temporary
-  // memory allocations to move it if necessary
-  auto devX =
-    toDevice<float, 2>(resources_,
-                       device_,
-                       const_cast<float*>(x),
-                       resources_->getDefaultStream(device_),
-                       {(int) n, index_->getDim()});
-  auto devDistances =
-    toDevice<float, 2>(resources_,
-                       device_,
-                       distances,
-                       resources_->getDefaultStream(device_),
-                       {(int) n, (int) k});
-  auto devLabels =
-    toDevice<faiss::Index::idx_t, 2>(resources_,
-                                     device_,
-                                     labels,
-                                     resources_->getDefaultStream(device_),
-                                     {(int) n, (int) k});
-
-  index_->query(devX,
-                nprobe_,
-                (int) k,
-                devDistances,
-                devLabels);
-
-  // Copy back if necessary
-  fromDevice<float, 2>(
-    devDistances, distances, resources_->getDefaultStream(device_));
-  fromDevice<faiss::Index::idx_t, 2>(
-    devLabels, labels, resources_->getDefaultStream(device_));
-}
-
-void
-GpuIndexIVFPQ::set_typename() {
-  // FIXME: implement
-  FAISS_ASSERT(false);
+  index_->query(queries, nprobe_, k, outDistances, outLabels);
 }
 
 int
@@ -433,43 +385,69 @@ GpuIndexIVFPQ::getListIndices(int listId) const {
 }
 
 void
-GpuIndexIVFPQ::assertSettings_() const {
+GpuIndexIVFPQ::verifySettings_() const {
   // Our implementation has these restrictions:
 
   // Must have some number of lists
-  FAISS_ASSERT(nlist_ > 0);
+  FAISS_THROW_IF_NOT_MSG(nlist_ > 0, "nlist must be >0");
 
   // up to a single byte per code
-  FAISS_ASSERT(bitsPerCode_ <= 8);
+  FAISS_THROW_IF_NOT_FMT(bitsPerCode_ <= 8,
+                     "Bits per code must be <= 8 (passed %d)", bitsPerCode_);
 
   // Sub-quantizers must evenly divide dimensions available
-  FAISS_ASSERT(this->d % subQuantizers_ == 0);
+  FAISS_THROW_IF_NOT_FMT(this->d % subQuantizers_ == 0,
+                     "Number of sub-quantizers (%d) must be an "
+                     "even divisor of the number of dimensions (%d)",
+                     subQuantizers_, this->d);
 
   // The number of bytes per encoded vector must be one we support
-  FAISS_ASSERT(IVFPQ::isSupportedPQCodeLength(subQuantizers_));
+  FAISS_THROW_IF_NOT_FMT(IVFPQ::isSupportedPQCodeLength(subQuantizers_),
+                     "Number of bytes per encoded vector / sub-quantizers (%d) "
+                     "is not supported",
+                     subQuantizers_);
 
   // We must have enough shared memory on the current device to store
   // our lookup distances
   int lookupTableSize = sizeof(float);
 #ifdef FAISS_USE_FLOAT16
-  if (useFloat16LookupTables_) {
+  if (ivfpqConfig_.useFloat16LookupTables) {
     lookupTableSize = sizeof(half);
   }
 #endif
 
   // 64 bytes per code is only supported with usage of float16, at 2^8
   // codes per subquantizer
-  FAISS_ASSERT(lookupTableSize * subQuantizers_ * utils::pow2(bitsPerCode_)
-               <= getMaxSharedMemPerBlock(device_));
+  size_t requiredSmemSize =
+    lookupTableSize * subQuantizers_ * utils::pow2(bitsPerCode_);
+  size_t smemPerBlock = getMaxSharedMemPerBlock(device_);
+
+  FAISS_THROW_IF_NOT_FMT(requiredSmemSize
+                     <= getMaxSharedMemPerBlock(device_),
+                     "Device %d has %zu bytes of shared memory, while "
+                     "%d bits per code and %d sub-quantizers requires %zu "
+                     "bytes. Consider useFloat16LookupTables and/or "
+                     "reduce parameters",
+                     device_, smemPerBlock, bitsPerCode_, subQuantizers_,
+                     requiredSmemSize);
 
   // If precomputed codes are disabled, we have an extra limitation in
   // terms of the number of dimensions per subquantizer
-  FAISS_ASSERT(usePrecomputed_ ||
-               IVFPQ::isSupportedNoPrecomputedSubDimSize(
-                 this->d / subQuantizers_));
+  FAISS_THROW_IF_NOT_FMT(ivfpqConfig_.usePrecomputedTables ||
+                     IVFPQ::isSupportedNoPrecomputedSubDimSize(
+                       this->d / subQuantizers_),
+                     "Number of dimensions per sub-quantizer (%d) "
+                     "is not currently supported without precomputed codes. "
+                     "Only 1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32 dims "
+                     "per sub-quantizer are currently supported with no "
+                     "precomputed codes. "
+                     "Precomputed codes supports any number of dimensions, but "
+                     "will involve memory overheads.",
+                     this->d / subQuantizers_);
 
   // TODO: fully implement METRIC_INNER_PRODUCT
-  FAISS_ASSERT(this->metric_type == faiss::METRIC_L2);
+  FAISS_THROW_IF_NOT_MSG(this->metric_type == faiss::METRIC_L2,
+                     "METRIC_INNER_PRODUCT is currently unsupported");
 }
 
 } } // namespace

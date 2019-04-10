@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "../../FaissAssert.h"
 
@@ -28,11 +26,11 @@ IndexWrapper<GpuIndex>::IndexWrapper(
 
   if (numGpus > 1) {
     // create proxy
-    proxyIndex =
-      std::unique_ptr<faiss::gpu::IndexProxy>(new faiss::gpu::IndexProxy);
+    replicaIndex =
+      std::unique_ptr<faiss::IndexReplicas>(new faiss::IndexReplicas);
 
     for (auto& index : subIndex) {
-      proxyIndex->addIndex(index.get());
+      replicaIndex->addIndex(index.get());
     }
   }
 }
@@ -40,8 +38,8 @@ IndexWrapper<GpuIndex>::IndexWrapper(
 template <typename GpuIndex>
 faiss::Index*
 IndexWrapper<GpuIndex>::getIndex() {
-  if ((bool) proxyIndex) {
-    return proxyIndex.get();
+  if ((bool) replicaIndex) {
+    return replicaIndex.get();
   } else {
     FAISS_ASSERT(!subIndex.empty());
     return subIndex.front().get();
@@ -52,8 +50,8 @@ template <typename GpuIndex>
 void
 IndexWrapper<GpuIndex>::runOnIndices(std::function<void(GpuIndex*)> f) {
 
-  if ((bool) proxyIndex) {
-    proxyIndex->runOnIndex(
+  if ((bool) replicaIndex) {
+    replicaIndex->runOnIndex(
       [f](faiss::Index* index) {
         f(dynamic_cast<GpuIndex*>(index));
       });

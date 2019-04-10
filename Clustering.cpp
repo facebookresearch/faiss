@@ -1,18 +1,15 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-/* Copyright 2004-present Facebook. All Rights Reserved.
-   kmeans clustering routines
-*/
+// -*- c++ -*-
 
 #include "Clustering.h"
-
+#include "AuxIndexStructures.h"
 
 
 #include <cmath>
@@ -28,8 +25,11 @@ namespace faiss {
 ClusteringParameters::ClusteringParameters ():
     niter(25),
     nredo(1),
-    verbose(false), spherical(false),
+    verbose(false),
+    spherical(false),
+    int_centroids(false),
     update_index(false),
+    frozen_centroids(false),
     min_points_per_centroid(39),
     max_points_per_centroid(256),
     seed(1234)
@@ -61,36 +61,49 @@ static double imbalance_factor (int n, int k, long *assign) {
     return uf;
 }
 
+void Clustering::post_process_centroids ()
+{
 
+    if (spherical) {
+        fvec_renorm_L2 (d, k, centroids.data());
+    }
+
+    if (int_centroids) {
+        for (size_t i = 0; i < centroids.size(); i++)
+            centroids[i] = roundf (centroids[i]);
+    }
+}
 
 
 void Clustering::train (idx_t nx, const float *x_in, Index & index) {
-    FAISS_ASSERT (nx >= k ||
-                  !"need at least as many training points as clusters");
+    FAISS_THROW_IF_NOT_FMT (nx >= k,
+             "Number of training points (%ld) should be at least "
+             "as large as number of clusters (%ld)", nx, k);
 
     double t0 = getmillisecs();
 
     // yes it is the user's responsibility, but it may spare us some
     // hard-to-debug reports.
     for (size_t i = 0; i < nx * d; i++) {
-        FAISS_ASSERT (finite (x_in[i]) ||
-                      !"input contains NaN's or Inf's");
+      FAISS_THROW_IF_NOT_MSG (finite (x_in[i]),
+                        "input contains NaN's or Inf's");
     }
 
     const float *x = x_in;
+    ScopeDeleter<float> del1;
 
     if (nx > k * max_points_per_centroid) {
         if (verbose)
             printf("Sampling a subset of %ld / %ld for training\n",
                    k * max_points_per_centroid, nx);
-        int *perm = new int[nx];
-        rand_perm (perm, nx, seed);
+        std::vector<int> perm (nx);
+        rand_perm (perm.data (), nx, seed);
         nx = k * max_points_per_centroid;
         float * x_new = new float [nx * d];
         for (idx_t i = 0; i < nx; i++)
             memcpy (x_new + i * d, x + perm[i] * d, sizeof(x_new[0]) * d);
-        delete [] perm;
         x = x_new;
+        del1.set (x);
     } else if (nx < k * min_points_per_centroid) {
         fprintf (stderr,
                  "WARNING clustering %ld points to %ld centroids: "
@@ -98,62 +111,87 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
                  nx, k, idx_t(k) * min_points_per_centroid);
     }
 
+
+    if (nx == k) {
+        if (verbose) {
+            printf("Number of training points (%ld) same as number of "
+                   "clusters, just copying\n", nx);
+        }
+        // this is a corner case, just copy training set to clusters
+        centroids.resize (d * k);
+        memcpy (centroids.data(), x_in, sizeof (*x_in) * d * k);
+        index.reset();
+        index.add(k, x_in);
+        return;
+    }
+
+
     if (verbose)
         printf("Clustering %d points in %ldD to %ld clusters, "
                "redo %d times, %d iterations\n",
                int(nx), d, k, nredo, niter);
 
-
     idx_t * assign = new idx_t[nx];
+    ScopeDeleter<idx_t> del (assign);
     float * dis = new float[nx];
+    ScopeDeleter<float> del2(dis);
 
-    float best_err = 1e50;
+    // for redo
+    float best_err = HUGE_VALF;
+    std::vector<float> best_obj;
+    std::vector<float> best_centroids;
+
+    // support input centroids
+
+    FAISS_THROW_IF_NOT_MSG (
+       centroids.size() % d == 0,
+       "size of provided input centroids not a multiple of dimension");
+
+    size_t n_input_centroids = centroids.size() / d;
+
+    if (verbose && n_input_centroids > 0) {
+        printf ("  Using %zd centroids provided as input (%sfrozen)\n",
+                n_input_centroids, frozen_centroids ? "" : "not ");
+    }
+
     double t_search_tot = 0;
     if (verbose) {
         printf("  Preprocessing in %.2f s\n",
-               (getmillisecs() - t0)/1000.);
+               (getmillisecs() - t0) / 1000.);
     }
     t0 = getmillisecs();
 
     for (int redo = 0; redo < nredo; redo++) {
 
-        std::vector<float> buf_centroids;
-
-        std::vector<float> &cur_centroids =
-            nredo == 1 ? centroids : buf_centroids;
-
         if (verbose && nredo > 1) {
             printf("Outer iteration %d / %d\n", redo, nredo);
         }
 
-        if (cur_centroids.size() == 0) {
-            // initialize centroids with random points from the dataset
-            cur_centroids.resize (d * k);
-            int *perm = new int[nx];
-            rand_perm (perm, nx, seed + 1 + redo * 15486557L);
-#pragma omp parallel for
-            for (int i = 0; i < k ; i++)
-                memcpy (&cur_centroids[i * d], x + perm[i] * d,
-                        d * sizeof (float));
-            delete [] perm;
-        } else { // assume user provides some meaningful initialization
-            FAISS_ASSERT (cur_centroids.size() == d * k);
-            FAISS_ASSERT (nredo == 1 ||
-                          !"will redo with same initialization");
+        // initialize remaining centroids with random points from the dataset
+        centroids.resize (d * k);
+        std::vector<int> perm (nx);
+
+        rand_perm (perm.data(), nx, seed + 1 + redo * 15486557L);
+        for (int i = n_input_centroids; i < k ; i++)
+            memcpy (&centroids[i * d], x + perm[i] * d,
+                    d * sizeof (float));
+
+        post_process_centroids ();
+
+        if (index.ntotal != 0) {
+            index.reset();
         }
 
-        if (spherical)
-            fvec_renorm_L2 (d, k, cur_centroids.data());
+        if (!index.is_trained) {
+            index.train (k, centroids.data());
+        }
 
-        if (!index.is_trained)
-            index.train (k, cur_centroids.data());
-
-        FAISS_ASSERT (index.ntotal == 0);
-        index.add (k, cur_centroids.data());
+        index.add (k, centroids.data());
         float err = 0;
         for (int i = 0; i < niter; i++) {
             double t0s = getmillisecs();
             index.search (nx, x, 1, dis, assign);
+            InterruptCallback::check();
             t_search_tot += getmillisecs() - t0s;
 
             err = 0;
@@ -161,8 +199,9 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
                 err += dis[j];
             obj.push_back (err);
 
-            int nsplit = km_update_centroids (x, cur_centroids.data(),
-                                              assign, d, k, nx);
+            int nsplit = km_update_centroids (
+                  x, centroids.data(),
+                  assign, d, k, nx, frozen_centroids ? n_input_centroids : 0);
 
             if (verbose) {
                 printf ("  Iteration %d (%.2f s, search %.2f s): "
@@ -174,31 +213,35 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
                 fflush (stdout);
             }
 
-            if (spherical)
-                fvec_renorm_L2 (d, k, cur_centroids.data());
+            post_process_centroids ();
 
             index.reset ();
             if (update_index)
-                index.train (k, cur_centroids.data());
+                index.train (k, centroids.data());
 
             assert (index.ntotal == 0);
-            index.add (k, cur_centroids.data());
+            index.add (k, centroids.data());
+            InterruptCallback::check ();
         }
         if (verbose) printf("\n");
         if (nredo > 1) {
             if (err < best_err) {
                 if (verbose)
                     printf ("Objective improved: keep new clusters\n");
-                centroids = buf_centroids;
+                best_centroids = centroids;
+                best_obj = obj;
                 best_err = err;
             }
             index.reset ();
         }
     }
+    if (nredo > 1) {
+        centroids = best_centroids;
+        obj = best_obj;
+        index.reset();
+        index.add(k, best_centroids.data());
+    }
 
-    delete [] assign;
-    delete [] dis;
-    if (x_in != x) delete [] x;
 }
 
 float kmeans_clustering (size_t d, size_t n, size_t k,

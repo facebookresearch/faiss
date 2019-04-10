@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "IVFFlat.cuh"
 #include "../GpuResources.h"
@@ -31,7 +29,8 @@ IVFFlat::IVFFlat(GpuResources* resources,
                  FlatIndex* quantizer,
                  bool l2Distance,
                  bool useFloat16,
-                 IndicesOptions indicesOptions) :
+                 IndicesOptions indicesOptions,
+                 MemorySpace space) :
     IVFBase(resources,
             quantizer,
 #ifdef FAISS_USE_FLOAT16
@@ -41,13 +40,10 @@ IVFFlat::IVFFlat(GpuResources* resources,
 #else
             sizeof(float) * quantizer->getDim(),
 #endif
-            indicesOptions),
+            indicesOptions,
+            space),
     l2Distance_(l2Distance),
     useFloat16_(useFloat16) {
-#ifndef FAISS_USE_FLOAT16
-  FAISS_ASSERT(!useFloat16 | !"float16 unsupported");
-  useFloat16_ = false;
-#endif
 }
 
 IVFFlat::~IVFFlat() {
@@ -94,6 +90,9 @@ IVFFlat::addCodeVectorsFromCpu(int listId,
                      lengthInBytes,
                      stream,
                      true /* exact reserved size */);
+#else
+    // we are not compiling with float16 support
+    FAISS_ASSERT(false);
 #endif
   } else {
     listData->append((unsigned char*) vecs,
@@ -292,9 +291,9 @@ IVFFlat::query(Tensor<float, 2, true>& queries,
   auto& mem = resources_->getMemoryManagerCurrentDevice();
   auto stream = resources_->getDefaultStreamCurrentDevice();
 
-  // Validate these at a top level
-  FAISS_ASSERT(nprobe <= 1024);
-  FAISS_ASSERT(k <= 1024);
+  // These are caught at a higher level
+  FAISS_ASSERT(nprobe <= GPU_MAX_SELECTION_K);
+  FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
   nprobe = std::min(nprobe, quantizer_->getSize());
 
   FAISS_ASSERT(queries.getSize(1) == dim_);

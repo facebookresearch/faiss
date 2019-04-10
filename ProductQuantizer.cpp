@@ -1,15 +1,12 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-/* Copyright 2004-present Facebook. All Rights Reserved.
-   Index based on product quantiztion.
-*/
+// -*- c++ -*-
 
 #include "ProductQuantizer.h"
 
@@ -39,8 +36,6 @@ int sgemm_ (const char *transa, const char *transb, FINTEGER *m, FINTEGER *
 
 
 namespace faiss {
-
-
 
 
 /* compute an estimator using look-up tables for typical values of M */
@@ -151,13 +146,13 @@ static inline void pq_estimators_from_tables (const ProductQuantizer * pq,
 
 
 ProductQuantizer::ProductQuantizer (size_t d, size_t M, size_t nbits):
-    d(d), M(M),  nbits(nbits)
+    d(d), M(M), nbits(nbits), assign_index(nullptr)
 {
     set_derived_values ();
 }
 
 ProductQuantizer::ProductQuantizer ():
-    d(0), M(1),  nbits(0)
+    d(0), M(1), nbits(0), assign_index(nullptr)
 {
     set_derived_values ();
 }
@@ -166,7 +161,7 @@ ProductQuantizer::ProductQuantizer ():
 
 void ProductQuantizer::set_derived_values () {
     // quite a few derived values
-    FAISS_ASSERT (d % M == 0);
+    FAISS_THROW_IF_NOT (d % M == 0);
     dsub = d / M;
     byte_per_idx = (nbits + 7) / 8;
     code_size = byte_per_idx * M;
@@ -249,6 +244,7 @@ void ProductQuantizer::train (int n, const float * x)
         }
 
         float * xslice = new float[n * dsub];
+        ScopeDeleter<float> del (xslice);
         for (int m = 0; m < M; m++) {
             for (int j = 0; j < n; j++)
                 memcpy (xslice + j * dsub,
@@ -284,10 +280,10 @@ void ProductQuantizer::train (int n, const float * x)
                 printf ("Training PQ slice %d/%zd\n", m, M);
             }
             IndexFlatL2 index (dsub);
-            clus.train (n, xslice, index);
+            clus.train (n, xslice, assign_index ? *assign_index : index);
             set_params (clus.centroids.data(), m);
         }
-        delete [] xslice;
+
 
     } else {
 
@@ -299,7 +295,8 @@ void ProductQuantizer::train (int n, const float * x)
         }
 
         IndexFlatL2 index (dsub);
-        clus.train (n * M, x, index);
+
+        clus.train (n * M, x, assign_index ? *assign_index : index);
         for (int m = 0; m < M; m++) {
             set_params (clus.centroids.data(), m);
         }
@@ -355,7 +352,7 @@ void ProductQuantizer::decode (const uint8_t *code, float *x) const
 void ProductQuantizer::decode (const uint8_t *code, float *x, size_t n) const
 {
     for (size_t i = 0; i < n; i++) {
-        this->decode (code + M * i, x + d * i);
+        this->decode (code + code_size * i, x + d * i);
     }
 }
 
@@ -382,10 +379,74 @@ void ProductQuantizer::compute_code_from_distance_table (const float *tab,
     }
 }
 
+void ProductQuantizer::compute_codes_with_assign_index (
+                const float * x,
+                uint8_t * codes,
+                size_t n)
+{
+    FAISS_THROW_IF_NOT (assign_index && assign_index->d == dsub);
+
+    for (size_t m = 0; m < M; m++) {
+        assign_index->reset ();
+        assign_index->add (ksub, get_centroids (m, 0));
+        size_t bs = 65536;
+        float * xslice = new float[bs * dsub];
+        ScopeDeleter<float> del (xslice);
+        idx_t *assign = new idx_t[bs];
+        ScopeDeleter<idx_t> del2 (assign);
+
+        for (size_t i0 = 0; i0 < n; i0 += bs) {
+            size_t i1 = std::min(i0 + bs, n);
+
+            for (size_t i = i0; i < i1; i++) {
+                memcpy (xslice + (i - i0) * dsub,
+                        x + i * d + m * dsub,
+                        dsub * sizeof(float));
+            }
+
+            assign_index->assign (i1 - i0, xslice, assign);
+
+            switch (byte_per_idx) {
+            case 1:
+                {
+                    uint8_t *c = codes + code_size * i0 + m;
+                    for (size_t i = i0; i < i1; i++) {
+                        *c = assign[i - i0];
+                        c += M;
+                    }
+                }
+                break;
+           case 2:
+               {
+                   uint16_t *c = (uint16_t*)(codes + code_size * i0 + m * 2);
+                   for (size_t i = i0; i < i1; i++) {
+                       *c = assign[i - i0];
+                       c += M;
+                   }
+               }
+               break;
+            }
+
+        }
+    }
+
+}
+
 void ProductQuantizer::compute_codes (const float * x,
                                       uint8_t * codes,
                                       size_t n)  const
 {
+
+    // process by blocks to avoid using too much RAM
+    size_t bs = 256 * 1024;
+    if (n > bs) {
+        for (size_t i0 = 0; i0 < n; i0 += bs) {
+            size_t i1 = std::min(i0 + bs, n);
+            compute_codes (x + d * i0, codes + code_size * i0, i1 - i0);
+        }
+        return;
+    }
+
     if (dsub < 16) { // simple direct computation
 
 #pragma omp parallel for
@@ -394,6 +455,7 @@ void ProductQuantizer::compute_codes (const float * x,
 
     } else { // worthwile to use BLAS
         float *dis_tables = new float [n * ksub * M];
+        ScopeDeleter<float> del (dis_tables);
         compute_distance_tables (n, x, dis_tables);
 
 #pragma omp parallel for
@@ -402,7 +464,6 @@ void ProductQuantizer::compute_codes (const float * x,
             const float * tab = dis_tables + i * ksub * M;
             compute_code_from_distance_table (tab, code);
         }
-        delete [] dis_tables;
     }
 }
 
@@ -528,15 +589,6 @@ static void pq_knn_search_with_tables (
     }
 }
 
-    /*
-static inline void pq_estimators_from_tables (const ProductQuantizer * pq,
-                                              const CT * codes,
-                                              size_t ncodes,
-                                              const float * dis_table,
-                                              size_t k,
-                                              float * heap_dis,
-                                              long * heap_ids)
-    */
 void ProductQuantizer::search (const float * __restrict x,
                                size_t nx,
                                const uint8_t * codes,
@@ -544,9 +596,10 @@ void ProductQuantizer::search (const float * __restrict x,
                                float_maxheap_array_t * res,
                                bool init_finalize_heap) const
 {
+    FAISS_THROW_IF_NOT (nx == res->nh);
     float * dis_tables = new float [nx * ksub * M];
+    ScopeDeleter<float> del(dis_tables);
     compute_distance_tables (nx, x, dis_tables);
-    FAISS_ASSERT(nx == res->nh);
 
     if (byte_per_idx == 1) {
 
@@ -558,7 +611,7 @@ void ProductQuantizer::search (const float * __restrict x,
              this, dis_tables, codes, ncodes, res, init_finalize_heap);
 
     }
-    delete [] dis_tables;
+
 }
 
 void ProductQuantizer::search_ip (const float * __restrict x,
@@ -568,9 +621,10 @@ void ProductQuantizer::search_ip (const float * __restrict x,
                                float_minheap_array_t * res,
                                bool init_finalize_heap) const
 {
+    FAISS_THROW_IF_NOT (nx == res->nh);
     float * dis_tables = new float [nx * ksub * M];
+    ScopeDeleter<float> del(dis_tables);
     compute_inner_prod_tables (nx, x, dis_tables);
-    FAISS_ASSERT(nx == res->nh);
 
     if (byte_per_idx == 1) {
 
@@ -581,7 +635,7 @@ void ProductQuantizer::search_ip (const float * __restrict x,
         pq_knn_search_with_tables<uint16_t, CMin<float, long> > (
              this, dis_tables, codes, ncodes, res, init_finalize_heap);
     }
-    delete [] dis_tables;
+
 }
 
 
@@ -620,10 +674,10 @@ void ProductQuantizer::search_sdc (const uint8_t * qcodes,
                      float_maxheap_array_t * res,
                      bool init_finalize_heap) const
 {
-    FAISS_ASSERT (sdc_table.size() == M * ksub * ksub);
+    FAISS_THROW_IF_NOT (sdc_table.size() == M * ksub * ksub);
+    FAISS_THROW_IF_NOT (byte_per_idx == 1);
     size_t k = res->k;
 
-    FAISS_ASSERT (byte_per_idx == 1);
 
 #pragma omp parallel for
     for (size_t i = 0; i < nq; i++) {
@@ -656,10 +710,6 @@ void ProductQuantizer::search_sdc (const uint8_t * qcodes,
     }
 
 }
-
-
-
-
 
 
 } // namespace faiss

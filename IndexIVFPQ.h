@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
 #ifndef FAISS_INDEX_IVFPQ_H
@@ -22,6 +20,13 @@
 
 namespace faiss {
 
+struct IVFPQSearchParameters: IVFSearchParameters {
+    size_t scan_table_threshold;   ///< use table computation or on-the-fly?
+    int polysemous_ht;             ///< Hamming thresh for polysemous filtering
+    ~IVFPQSearchParameters () {}
+};
+
+
 
 
 /** Inverted file with Product Quantizer encoding. Each residual
@@ -29,8 +34,7 @@ namespace faiss {
  */
 struct IndexIVFPQ: IndexIVF {
     bool by_residual;              ///< Encode residual or plain vector?
-    int use_precomputed_table;     ///< if by_residual, build precompute tables
-    size_t code_size;              ///< code size per vector in bytes
+
     ProductQuantizer pq;           ///< produces the codes
 
     bool do_polysemous_training;   ///< reorder PQ centroids after training?
@@ -38,10 +42,18 @@ struct IndexIVFPQ: IndexIVF {
 
     // search-time parameters
     size_t scan_table_threshold;   ///< use table computation or on-the-fly?
-    size_t max_codes;              ///< max nb of codes to visit to do a query
     int polysemous_ht;             ///< Hamming thresh for polysemous filtering
 
-    std::vector < std::vector<uint8_t> > codes; // binary codes, size nlist
+    /** Precompute table that speed up query preprocessing at some
+     * memory cost
+     * =-1: force disable
+     * =0: decide heuristically (default: use tables only if they are
+     *     < precomputed_tables_max_bytes)
+     * =1: tables that work for all quantizers (size 256 * nlist * M)
+     * =2: specific version for MultiIndexQuantizer (much more compact)
+     */
+    int use_precomputed_table;     ///< if by_residual, build precompute tables
+    static size_t precomputed_table_max_bytes;
 
     /// if use_precompute_table
     /// size nlist * pq.M * pq.ksub
@@ -51,11 +63,12 @@ struct IndexIVFPQ: IndexIVF {
             Index * quantizer, size_t d, size_t nlist,
             size_t M, size_t nbits_per_idx);
 
-    virtual void set_typename () override;
+    void add_with_ids(idx_t n, const float* x, const long* xids = nullptr)
+        override;
 
-    virtual void add_with_ids (
-            idx_t n, const float *x,
-            const long *xids = nullptr) override;
+    void encode_vectors(idx_t n, const float* x,
+                        const idx_t *list_nos,
+                        uint8_t * codes) const override;
 
     /// same as add_core, also:
     /// - output 2nd level residuals if residuals_2 != NULL
@@ -64,32 +77,14 @@ struct IndexIVFPQ: IndexIVF {
                      const long *xids, float *residuals_2,
                      const long *precomputed_idx = nullptr);
 
-    virtual void search (
-            idx_t n, const float *x, idx_t k,
-            float *distances, idx_t *labels) const override;
-
-    virtual void reset () override;
-
-    virtual long remove_ids (const IDSelector & sel) override;
-
     /// trains the product quantizer
-    virtual void train_residual(idx_t n, const float *x) override;
+    void train_residual(idx_t n, const float* x) override;
 
     /// same as train_residual, also output 2nd level residuals
     void train_residual_o (idx_t n, const float *x, float *residuals_2);
 
-
-    /** Reconstruct a subset of the indexed vectors
-     *
-     * @param i0     first vector to reconstruct
-     * @param ni     nb of vectors to reconstruct
-     * @param recons output array of reconstructed vectors, size ni * d
-     */
-    virtual void reconstruct_n (idx_t i0, idx_t ni, float *recons)
-        const override;
-
-    virtual void reconstruct (idx_t key, float * recons)
-        const override;
+    void reconstruct_from_offset (long list_no, long offset,
+                                  float* recons) const override;
 
     /** Find exact duplicates in the dataset.
      *
@@ -107,46 +102,28 @@ struct IndexIVFPQ: IndexIVF {
     // map a vector to a binary code knowning the index
     void encode (long key, const float * x, uint8_t * code) const;
 
-    /// same as encode, for multiple points at once
-    void encode_multiple (size_t n, const long *keys,
-                          const float * x, uint8_t * codes) const;
-
-    /** search a set of vectors, that are pre-quantized by the IVF
-     *  quantizer. Fill in the corresponding heaps with the query
-     *  results.
+    /** Encode multiple vectors
      *
-     * @param nx     nb of vectors to query
-     * @param qx     query vectors, size nx * d
-     * @param keys   coarse quantization indices, size nx * nprobe
-     * @param coarse_dis
-     *               distances to coarse centroids, size nx * nprobe
-     * @param res    heaps for all the results, gives the nprobe
-     * @param store_pairs store inv list index + inv list offset
-     *                     instead in upper/lower 32 bit of result,
-     *                     instead of ids (used for reranking).
+     * @param n       nb vectors to encode
+     * @param keys    posting list ids for those vectors (size n)
+     * @param x       vectors (size n * d)
+     * @param codes   output codes (size n * code_size)
+     * @param compute_keys  if false, assume keys are precomputed,
+     *                      otherwise compute them
      */
-    virtual void search_knn_with_key (
-            size_t nx,
-            const float * qx,
-            const long * keys,
-            const float * coarse_dis,
-            float_maxheap_array_t* res,
-            bool store_pairs = false) const;
+    void encode_multiple (size_t n, long *keys,
+                          const float * x, uint8_t * codes,
+                          bool compute_keys = false) const;
+
+    /// inverse of encode_multiple
+    void decode_multiple (size_t n, const long *keys,
+                          const uint8_t * xcodes, float * x) const;
+
+    InvertedListScanner *get_InvertedListScanner (bool store_pairs)
+        const override;
 
     /// build precomputed table
     void precompute_table ();
-
-    /// used to implement merging
-    virtual void merge_from_residuals (IndexIVF &other) override;
-
-
-    /** copy a subset of the entries index to the other index
-     *
-     * if subset_type == 0: copies ids in [a1, a2)
-     * if subset_type == 1: copies ids if id % a1 == a2
-     */
-    void copy_subset_to (IndexIVFPQ & other, int subset_type,
-                         long a1, long a2) const;
 
     IndexIVFPQ ();
 
@@ -154,11 +131,8 @@ struct IndexIVFPQ: IndexIVF {
 
 
 /// statistics are robust to internal threading, but not if
-/// IndexIVFPQ::search is called by multiple threads
+/// IndexIVFPQ::search_preassigned is called by multiple threads
 struct IndexIVFPQStats {
-    size_t nq;       // nb of queries run
-    size_t nlist;    // nb of inverted lists scanned
-    size_t ncode;    // nb of codes visited
     size_t nrefine;  // nb of refines (IVFPQR)
 
     size_t n_hamming_pass;
@@ -166,15 +140,8 @@ struct IndexIVFPQStats {
 
     // timings measured with the CPU RTC
     // on all threads
-    size_t assign_cycles;
     size_t search_cycles;
     size_t refine_cycles; // only for IVFPQR
-
-    // single thread (double-counted with search_cycles)
-    size_t init_query_cycles;
-    size_t init_list_cycles;
-    size_t scan_cycles;
-    size_t heap_cycles;
 
     IndexIVFPQStats () {reset (); }
     void reset ();
@@ -198,87 +165,93 @@ struct IndexIVFPQR: IndexIVFPQ {
             size_t M, size_t nbits_per_idx,
             size_t M_refine, size_t nbits_per_idx_refine);
 
-    virtual void set_typename () override;
+    void reset() override;
 
-    virtual void reset() override;
-
-    virtual long remove_ids (const IDSelector & sel) override;
+    long remove_ids(const IDSelector& sel) override;
 
     /// trains the two product quantizers
-    virtual void train_residual (idx_t n, const float *x) override;
+    void train_residual(idx_t n, const float* x) override;
 
-    virtual void add_with_ids (idx_t n, const float *x, const long *xids)
-        override;
+    void add_with_ids(idx_t n, const float* x, const long* xids) override;
 
     /// same as add_with_ids, but optionally use the precomputed list ids
     void add_core (idx_t n, const float *x, const long *xids,
                      const long *precomputed_idx = nullptr);
 
+    void reconstruct_from_offset (long list_no, long offset,
+                                  float* recons) const override;
 
-    virtual void reconstruct_n (idx_t i0, idx_t ni, float *recons)
-        const override;
+    void merge_from (IndexIVF &other, idx_t add_id) override;
 
-    virtual void search (
-            idx_t n, const float *x, idx_t k,
-            float *distances, idx_t *labels) const override;
 
-    virtual void merge_from_residuals (IndexIVF &other) override;
+    void search_preassigned (idx_t n, const float *x, idx_t k,
+                             const idx_t *assign,
+                             const float *centroid_dis,
+                             float *distances, idx_t *labels,
+                             bool store_pairs,
+                             const IVFSearchParameters *params=nullptr
+                             ) const override;
 
     IndexIVFPQR();
 };
 
 
-/** Index with 32-bit ids and flat tables. Must be constructed from an
- *  exisiting IndexIVFPQ. Cannot be copy-constructed/assigned. The
- *  actual data is stored in the compact_* tables, the ids and codes
- *  tables are not used.  */
-struct IndexIVFPQCompact: IndexIVFPQ {
 
-    explicit IndexIVFPQCompact (const IndexIVFPQ &other);
+/** Same as an IndexIVFPQ without the inverted lists: codes are stored sequentially
+ *
+ * The class is mainly inteded to store encoded vectors that can be
+ * accessed randomly, the search function is not implemented.
+ */
+struct Index2Layer: Index {
+    /// first level quantizer
+    Level1Quantizer q1;
 
-    /// how were the compact tables allocated?
-    enum Alloc_type_t {
-        Alloc_type_none,     ///< alloc from outside
-        Alloc_type_new,      ///< was allocated with new
-        Alloc_type_mmap      ///< was mmapped
-    };
+    /// second level quantizer is always a PQ
+    ProductQuantizer pq;
 
-    Alloc_type_t alloc_type;
+    /// Codes. Size ntotal * code_size.
+    std::vector<uint8_t> codes;
 
-    uint32_t *limits;        ///< size nlist + 1
-    uint32_t *compact_ids;   ///< size ntotal
-    uint8_t *compact_codes;  ///< size ntotal * code_size
+    /// size of the code for the first level (ceil(log8(q1.nlist)))
+    size_t code_size_1;
 
-    // file and buffer this was mmapped (will be unmapped when object
-    // is deleted)
-    char * mmap_buffer;
-    long mmap_length;
+    /// size of the code for the second level
+    size_t code_size_2;
 
-    virtual void search_knn_with_key (
-            size_t nx,
-            const float * qx,
-            const long * keys,
-            const float * coarse_dis,
-            float_maxheap_array_t * res,
-            bool store_pairs = false) const override;
+    /// code_size_1 + code_size_2
+    size_t code_size;
 
-    /// the three following functions will fail at runtime
-    virtual void add (idx_t, const float *) override;
-    virtual void reset () override;
-    virtual void train (idx_t, const float *) override;
+    Index2Layer (Index * quantizer, size_t nlist,
+                 int M, MetricType metric = METRIC_L2);
 
-    virtual ~IndexIVFPQCompact ();
+    Index2Layer ();
+    ~Index2Layer ();
 
-    IndexIVFPQCompact ();
+    void train(idx_t n, const float* x) override;
+
+    void add(idx_t n, const float* x) override;
+
+    /// not implemented
+    void search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const override;
+
+    void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
+
+    void reconstruct(idx_t key, float* recons) const override;
+
+    void reset() override;
+
+    /// transfer the flat codes to an IVFPQ index
+    void transfer_to_IVFPQ(IndexIVFPQ & other) const;
 
 };
 
 
-
 } // namespace faiss
-
-
-
 
 
 #endif

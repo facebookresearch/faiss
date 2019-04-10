@@ -126,10 +126,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <h3><a class="anchor" id="index_u"></a>- u -</h3><ul>
 <li>upcastInner()
-: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a70308137b566362d4cc37d3e71b3ae98">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#aee5cf46d16344e2a055cf63adb07d24a">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
 <li>upcastOuter()
-: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#ad6df1805b76f74018bc94fffab8987ac">faiss::gpu::Tensor&lt; T, Dim, Contig, IndexT, PtrTraits &gt;</a>
+: <a class="el" href="classfaiss_1_1gpu_1_1Tensor.html#a309eb97e9c6dbfdecf383343c072d38c">faiss::gpu::Tensor&lt; T, Dim, InnerContig, IndexT, PtrTraits &gt;</a>
 </li>
 <li>update_bounds()
 : <a class="el" href="structfaiss_1_1ParameterSpace.html#ab7039882ec68aabc6c52cff883f75c28">faiss::ParameterSpace</a>
@@ -138,7 +138,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structfaiss_1_1Score3Computer.html#acf371848bac76ba275ceb5e10f805d33">faiss::Score3Computer&lt; Ttab, Taccu &gt;</a>
 </li>
 <li>update_index
-: <a class="el" href="structfaiss_1_1ClusteringParameters.html#a27d6192097920fa981cff0acedfaac91">faiss::ClusteringParameters</a>
+: <a class="el" href="structFaissClusteringParameters.html#a1764fa98f759b20fde75abbb2616f844">FaissClusteringParameters</a>
+, <a class="el" href="structfaiss_1_1ClusteringParameters.html#a27d6192097920fa981cff0acedfaac91">faiss::ClusteringParameters</a>
 </li>
 <li>update_j_line()
 : <a class="el" href="structfaiss_1_1Score3Computer.html#a98da6005edbb5ec26311bc947866122d">faiss::Score3Computer&lt; Ttab, Taccu &gt;</a>
@@ -149,23 +150,44 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>update_permutation()
 : <a class="el" href="structfaiss_1_1IndexFlat1D.html#ac7466c6c9b1e9e81ea19b846ddb8209e">faiss::IndexFlat1D</a>
 </li>
+<li>update_vectors()
+: <a class="el" href="structfaiss_1_1IndexIVFFlat.html#a2adc0b0002c32ddc01aec4ab96dd659f">faiss::IndexIVFFlat</a>
+, <a class="el" href="structfaiss_1_1IndexIVFFlatDedup.html#a0782b04472858d993ad4c0ffc81b1844">faiss::IndexIVFFlatDedup</a>
+</li>
 <li>updateDeviceListInfo_()
 : <a class="el" href="classfaiss_1_1gpu_1_1IVFBase.html#acc695610c9513952b8d234dc0db78e5c">faiss::gpu::IVFBase</a>
+</li>
+<li>upper_beam
+: <a class="el" href="structfaiss_1_1HNSW.html#a857bef0db2dc0000f312cc8a95f857b2">faiss::HNSW</a>
+</li>
+<li>use_heap
+: <a class="el" href="structfaiss_1_1IndexBinaryIVF.html#abcab702ebe1814ff432401bfd39df492">faiss::IndexBinaryIVF</a>
+, <a class="el" href="structfaiss_1_1IndexBinaryFlat.html#a9fa80e22a4accee4da0ee152a4910c1b">faiss::IndexBinaryFlat</a>
 </li>
 <li>use_precomputed_table
 : <a class="el" href="structfaiss_1_1IndexIVFPQ.html#a1c66ff073c18a1edbe8444c24d870583">faiss::IndexIVFPQ</a>
 </li>
 <li>useFloat16
 : <a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#ac7cc57d6091d6a79ea6020bf8d1fbe27">faiss::gpu::GpuClonerOptions</a>
+, <a class="el" href="structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html#afd694186c87751937a646f3db2c8ba3d">faiss::gpu::GpuIndexFlatConfig</a>
+</li>
+<li>useFloat16Accumulator
+: <a class="el" href="structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html#a5a2d8737f4277e55fc1a99ef4fc4c630">faiss::gpu::GpuIndexFlatConfig</a>
 </li>
 <li>useFloat16CoarseQuantizer
 : <a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#a85f3093908b6e9a503c24bb226b17b1b">faiss::gpu::GpuClonerOptions</a>
 </li>
-<li>useFloat16CoarseQuantizer_
-: <a class="el" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html#a571ba3623dd0f23ae11e5300eb6baf61">faiss::gpu::GpuIndexIVF</a>
+<li>useFloat16IVFStorage
+: <a class="el" href="structfaiss_1_1gpu_1_1GpuIndexIVFFlatConfig.html#ab98ac354bcd5632976f7edc2deda6e57">faiss::gpu::GpuIndexIVFFlatConfig</a>
+</li>
+<li>useFloat16LookupTables
+: <a class="el" href="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig.html#a9dbbec78d77d90b7b150f543e477cc49">faiss::gpu::GpuIndexIVFPQConfig</a>
 </li>
 <li>usePrecomputed
 : <a class="el" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html#abc9c607f2dfc9f23942a523fb49c63fe">faiss::gpu::GpuClonerOptions</a>
+</li>
+<li>usePrecomputedTables
+: <a class="el" href="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig.html#ae5b5c7acc06743e5bcca197bc33c30ec">faiss::gpu::GpuIndexIVFPQConfig</a>
 </li>
 </ul>
 </div><!-- contents -->

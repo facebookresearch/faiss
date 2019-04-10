@@ -1,15 +1,14 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
+// -*- c++ -*-
 
-/* Copyright 2004-present Facebook. All Rights Reserved.
- *
+/*
  * Hamming distances. The binary vector dimensionality should be a multiple
  * of 64, as the elementary operations operate on words. If you really need
  * other sizes, just pad with 0s (this is done by function fvecs2bitvecs).
@@ -38,6 +37,9 @@
 typedef int32_t hamdis_t;
 
 namespace faiss {
+
+
+extern size_t hamming_batch_size;
 
 inline int popcount64(uint64_t x) {
     return __builtin_popcountl(x);
@@ -79,14 +81,15 @@ void fvec2bitvec (const float * x, uint8_t * b, size_t d);
 
 
 
-/** Return the k smallest Hamming distances for a set of binary query vectors
+/** Return the k smallest Hamming distances for a set of binary query vectors,
+ * using a max heap.
  * @param a       queries, size ha->nh * ncodes
  * @param b       database, size nb * ncodes
  * @param nb      number of database vectors
  * @param ncodes  size of the binary codes (bytes)
  * @param ordered if != 0: order the results by decreasing distance
  *                (may be bottleneck for k/n > 0.01) */
-void hammings_knn (
+void hammings_knn_hc (
         int_maxheap_array_t * ha,
         const uint8_t * a,
         const uint8_t * b,
@@ -94,14 +97,36 @@ void hammings_knn (
         size_t ncodes,
         int ordered);
 
-/* The core function, without initialization and no re-ordering */
-void hammings_knn_core (
-        int_maxheap_array_t * ha,
-        const uint8_t * a,
-        const uint8_t * b,
-        size_t nb,
-        size_t ncodes);
+/* Legacy alias to hammings_knn_hc. */
+void hammings_knn (
+  int_maxheap_array_t * ha,
+  const uint8_t * a,
+  const uint8_t * b,
+  size_t nb,
+  size_t ncodes,
+  int ordered);
 
+/** Return the k smallest Hamming distances for a set of binary query vectors,
+ * using counting max.
+ * @param a       queries, size na * ncodes
+ * @param b       database, size nb * ncodes
+ * @param na      number of query vectors
+ * @param nb      number of database vectors
+ * @param k       number of vectors/distances to return
+ * @param ncodes  size of the binary codes (bytes)
+ * @param distances output distances from each query vector to its k nearest
+ *                neighbors
+ * @param labels  output ids of the k nearest neighbors to each query vector
+ */
+void hammings_knn_mc (
+  const uint8_t * a,
+  const uint8_t * b,
+  size_t na,
+  size_t nb,
+  size_t k,
+  size_t ncodes,
+  int32_t *distances,
+  long *labels);
 
 /* Counting the number of matches or of cross-matches (without returning them)
    For use with function that assume pre-allocated memory */
@@ -156,7 +181,13 @@ hamdis_t hamming (
 struct HammingComputer4 {
     uint32_t a0;
 
+    HammingComputer4 () {}
+
     HammingComputer4 (const uint8_t *a, int code_size) {
+        set (a, code_size);
+    }
+
+    void set (const uint8_t *a, int code_size) {
         assert (code_size == 4);
         a0 = *(uint32_t *)a;
     }
@@ -170,7 +201,13 @@ struct HammingComputer4 {
 struct HammingComputer8 {
     uint64_t a0;
 
+    HammingComputer8 () {}
+
     HammingComputer8 (const uint8_t *a, int code_size) {
+        set (a, code_size);
+    }
+
+    void set (const uint8_t *a, int code_size) {
         assert (code_size == 8);
         a0 = *(uint64_t *)a;
     }
@@ -184,7 +221,14 @@ struct HammingComputer8 {
 
 struct HammingComputer16 {
     uint64_t a0, a1;
+
+    HammingComputer16 () {}
+
     HammingComputer16 (const uint8_t *a8, int code_size) {
+        set (a8, code_size);
+    }
+
+    void set (const uint8_t *a8, int code_size) {
         assert (code_size == 16);
         const uint64_t *a = (uint64_t *)a8;
         a0 = a[0]; a1 = a[1];
@@ -203,7 +247,13 @@ struct HammingComputer20 {
     uint64_t a0, a1;
     uint32_t a2;
 
+    HammingComputer20 () {}
+
     HammingComputer20 (const uint8_t *a8, int code_size) {
+        set (a8, code_size);
+    }
+
+    void set (const uint8_t *a8, int code_size) {
         assert (code_size == 20);
         const uint64_t *a = (uint64_t *)a8;
         a0 = a[0]; a1 = a[1]; a2 = a[2];
@@ -219,7 +269,13 @@ struct HammingComputer20 {
 struct HammingComputer32 {
     uint64_t a0, a1, a2, a3;
 
+    HammingComputer32 () {}
+
     HammingComputer32 (const uint8_t *a8, int code_size) {
+        set (a8, code_size);
+    }
+
+    void set (const uint8_t *a8, int code_size) {
         assert (code_size == 32);
         const uint64_t *a = (uint64_t *)a8;
         a0 = a[0]; a1 = a[1]; a2 = a[2]; a3 = a[3];
@@ -236,7 +292,13 @@ struct HammingComputer32 {
 struct HammingComputer64 {
     uint64_t a0, a1, a2, a3, a4, a5, a6, a7;
 
+    HammingComputer64 () {}
+
     HammingComputer64 (const uint8_t *a8, int code_size) {
+        set (a8, code_size);
+    }
+
+    void set (const uint8_t *a8, int code_size) {
         assert (code_size == 64);
         const uint64_t *a = (uint64_t *)a8;
         a0 = a[0]; a1 = a[1]; a2 = a[2]; a3 = a[3];
@@ -253,11 +315,43 @@ struct HammingComputer64 {
 
 };
 
+// very inefficient...
+struct HammingComputerDefault {
+    const uint8_t *a;
+    int n;
+
+    HammingComputerDefault () {}
+
+    HammingComputerDefault (const uint8_t *a8, int code_size) {
+        set (a8, code_size);
+    }
+
+    void set (const uint8_t *a8, int code_size) {
+        a =  a8;
+        n = code_size;
+    }
+
+    int hamming (const uint8_t *b8) const {
+        int accu = 0;
+        for (int i = 0; i < n; i++)
+            accu += popcount64 (a[i] ^ b8[i]);
+        return accu;
+    }
+
+};
+
+
 struct HammingComputerM8 {
     const uint64_t *a;
     int n;
 
+    HammingComputerM8 () {}
+
     HammingComputerM8 (const uint8_t *a8, int code_size) {
+        set (a8, code_size);
+    }
+
+    void set (const uint8_t *a8, int code_size) {
         assert (code_size % 8 == 0);
         a =  (uint64_t *)a8;
         n = code_size / 8;
@@ -273,16 +367,23 @@ struct HammingComputerM8 {
 
 };
 
-// very inefficient...
+// even more inefficient!
 struct HammingComputerM4 {
     const uint32_t *a;
     int n;
 
+    HammingComputerM4 () {}
+
     HammingComputerM4 (const uint8_t *a4, int code_size) {
+        set (a4, code_size);
+    }
+
+    void set (const uint8_t *a4, int code_size) {
         assert (code_size % 4 == 0);
         a =  (uint32_t *)a4;
         n = code_size / 4;
     }
+
     int hamming (const uint8_t *b8) const {
         const uint32_t *b = (uint32_t *)b8;
         int accu = 0;
@@ -409,7 +510,7 @@ struct GenHammingComputerM8 {
 
 /** generalized Hamming distances (= count number of code bytes that
     are the same) */
-void generalized_hammings_knn (
+void generalized_hammings_knn_hc (
         int_maxheap_array_t * ha,
         const uint8_t * a,
         const uint8_t * b,
@@ -419,10 +520,56 @@ void generalized_hammings_knn (
 
 
 
+/** This class maintains a list of best distances seen so far.
+ *
+ * Since the distances are in a limited range (0 to nbit), the
+ * object maintains one list per possible distance, and fills
+ * in only the n-first lists, such that the sum of sizes of the
+ * n lists is below k.
+ */
+template<class HammingComputer>
+struct HCounterState {
+  int *counters;
+  long *ids_per_dis;
+
+  HammingComputer hc;
+  int thres;
+  int count_lt;
+  int count_eq;
+  int k;
+
+ HCounterState(int *counters, long *ids_per_dis,
+               const uint8_t *x, int d, int k)
+ : counters(counters),
+        ids_per_dis(ids_per_dis),
+        hc(x, d / 8),
+        thres(d + 1),
+        count_lt(0),
+        count_eq(0),
+        k(k) {}
+
+  void update_counter(const uint8_t *y, size_t j) {
+    int32_t dis = hc.hamming(y);
+
+    if (dis <= thres) {
+      if (dis < thres) {
+        ids_per_dis[dis * k + counters[dis]++] = j;
+        ++count_lt;
+        while (count_lt == k && thres > 0) {
+          --thres;
+          count_eq = counters[thres];
+          count_lt -= count_eq;
+        }
+      } else if (count_eq < k) {
+        ids_per_dis[dis * k + count_eq++] = j;
+        counters[dis] = count_eq;
+      }
+    }
+  }
+};
+
 
 } // namespace faiss
-
-
 
 
 #endif /* FAISS_hamming_h */

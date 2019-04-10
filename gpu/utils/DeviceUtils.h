@@ -1,16 +1,15 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #pragma once
 
+#include "../../FaissAssert.h"
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 #include <vector>
@@ -31,7 +30,10 @@ int getNumDevices();
 void synchronizeAllDevices();
 
 /// Returns a cached cudaDeviceProp for the given device
-cudaDeviceProp& getDeviceProperties(int device);
+const cudaDeviceProp& getDeviceProperties(int device);
+
+/// Returns the cached cudaDeviceProp for the current device
+const cudaDeviceProp& getCurrentDeviceProperties();
 
 /// Returns the maximum number of threads available for the given GPU
 /// device
@@ -49,6 +51,18 @@ size_t getMaxSharedMemPerBlockCurrentDevice();
 /// For a given pointer, returns whether or not it is located on
 /// a device (deviceId >= 0) or the host (-1).
 int getDeviceForAddress(const void* p);
+
+/// Does the given device support full unified memory sharing host
+/// memory?
+bool getFullUnifiedMemSupport(int device);
+
+/// Equivalent to getFullUnifiedMemSupport(getCurrentDevice())
+bool getFullUnifiedMemSupportCurrentDevice();
+
+/// Returns the maximum k-selection value supported based on the CUDA SDK that
+/// we were compiled with. .cu files can use DeviceDefs.cuh, but this is for
+/// non-CUDA files
+int getMaxKSelection();
 
 /// RAII object to set the current device, and restore the previous
 /// device upon destruction
@@ -98,14 +112,26 @@ class CudaEvent {
 };
 
 /// Wrapper to test return status of CUDA functions
-#if DEBUG
-#define CUDA_VERIFY(X)                          \
+#define CUDA_VERIFY(X)                                                  \
+  do {                                                                  \
+    auto err__ = (X);                                                   \
+    FAISS_ASSERT_FMT(err__ == cudaSuccess, "CUDA error %d %s",          \
+                     (int) err__, cudaGetErrorString(err__));           \
+  } while (0)
+
+/// Wrapper to synchronously probe for CUDA errors
+// #define FAISS_GPU_SYNC_ERROR 1
+
+#ifdef FAISS_GPU_SYNC_ERROR
+#define CUDA_TEST_ERROR()                       \
   do {                                          \
-    auto err = (X);                             \
-    FAISS_ASSERT(err == cudaSuccess);           \
+    CUDA_VERIFY(cudaDeviceSynchronize());       \
   } while (0)
 #else
-#define CUDA_VERIFY(X) do { (X); } while (0)
+#define CUDA_TEST_ERROR()                       \
+  do {                                          \
+    CUDA_VERIFY(cudaGetLastError());            \
+  } while (0)
 #endif
 
 /// Call for a collection of streams to wait on

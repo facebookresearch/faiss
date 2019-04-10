@@ -1,19 +1,18 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #pragma once
 
 #include "../GpuIndicesOptions.h"
 #include "../utils/DeviceVector.cuh"
 #include "../utils/DeviceTensor.cuh"
+#include "../utils/MemorySpace.h"
 #include <memory>
 #include <thrust/device_vector.h>
 #include <vector>
@@ -30,7 +29,8 @@ class IVFBase {
           /// We do not own this reference
           FlatIndex* quantizer,
           int bytesPerVector,
-          IndicesOptions indicesOptions);
+          IndicesOptions indicesOptions,
+          MemorySpace space);
 
   virtual ~IVFBase();
 
@@ -94,6 +94,9 @@ class IVFBase {
 
   /// How are user indices stored on the GPU?
   const IndicesOptions indicesOptions_;
+
+  /// What memory space our inverted list storage is in
+  const MemorySpace space_;
 
   /// Device representation of all inverted list data
   /// id -> data

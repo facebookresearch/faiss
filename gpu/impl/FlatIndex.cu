@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "FlatIndex.cuh"
 #include "Distance.cuh"
@@ -22,13 +20,18 @@ FlatIndex::FlatIndex(GpuResources* res,
                      int dim,
                      bool l2Distance,
                      bool useFloat16,
-                     bool storeTransposed) :
+                     bool useFloat16Accumulator,
+                     bool storeTransposed,
+                     MemorySpace space) :
     resources_(res),
     dim_(dim),
     useFloat16_(useFloat16),
+    useFloat16Accumulator_(useFloat16Accumulator),
     storeTransposed_(storeTransposed),
     l2Distance_(l2Distance),
-    num_(0) {
+    space_(space),
+    num_(0),
+    rawData_(space) {
 #ifndef FAISS_USE_FLOAT16
   FAISS_ASSERT(!useFloat16_);
 #endif
@@ -60,6 +63,17 @@ int FlatIndex::getDim() const {
   return vectors_.getSize(1);
 }
 
+void
+FlatIndex::reserve(size_t numVecs, cudaStream_t stream) {
+  if (useFloat16_) {
+#ifdef FAISS_USE_FLOAT16
+    rawData_.reserve(numVecs * dim_ * sizeof(half), stream);
+#endif
+  } else {
+    rawData_.reserve(numVecs * dim_ * sizeof(float), stream);
+  }
+}
+
 Tensor<float, 2, true>&
 FlatIndex::getVectorsFloat32Ref() {
   return vectors_;
@@ -79,7 +93,7 @@ FlatIndex::getVectorsFloat32Copy(cudaStream_t stream) {
 
 DeviceTensor<float, 2, true>
 FlatIndex::getVectorsFloat32Copy(int from, int num, cudaStream_t stream) {
-  DeviceTensor<float, 2, true> vecFloat32({num, dim_});
+  DeviceTensor<float, 2, true> vecFloat32({num, dim_}, space_);
 
   if (useFloat16_) {
 #ifdef FAISS_USE_FLOAT16
@@ -99,8 +113,7 @@ FlatIndex::query(Tensor<float, 2, true>& input,
                  int k,
                  Tensor<float, 2, true>& outDistances,
                  Tensor<int, 2, true>& outIndices,
-                 bool exactDistance,
-                 int tileSize) {
+                 bool exactDistance) {
   auto stream = resources_->getDefaultStreamCurrentDevice();
   auto& mem = resources_->getMemoryManagerCurrentDevice();
 
@@ -112,7 +125,7 @@ FlatIndex::query(Tensor<float, 2, true>& input,
     DeviceTensor<half, 2, true> outDistancesHalf(
       mem, {outDistances.getSize(0), outDistances.getSize(1)}, stream);
 
-    query(inputHalf, k, outDistancesHalf, outIndices, exactDistance, tileSize);
+    query(inputHalf, k, outDistancesHalf, outIndices, exactDistance);
 
     if (exactDistance) {
       // Convert outDistances back
@@ -130,8 +143,7 @@ FlatIndex::query(Tensor<float, 2, true>& input,
                     outDistances,
                     outIndices,
                     // FIXME
-                    !exactDistance,
-                    tileSize);
+                    !exactDistance);
     } else {
       runIPDistance(resources_,
                     vectors_,
@@ -139,8 +151,7 @@ FlatIndex::query(Tensor<float, 2, true>& input,
                     input,
                     k,
                     outDistances,
-                    outIndices,
-                    tileSize);
+                    outIndices);
     }
   }
 }
@@ -151,8 +162,7 @@ FlatIndex::query(Tensor<half, 2, true>& input,
                  int k,
                  Tensor<half, 2, true>& outDistances,
                  Tensor<int, 2, true>& outIndices,
-                 bool exactDistance,
-                 int tileSize) {
+                 bool exactDistance) {
   FAISS_ASSERT(useFloat16_);
 
   if (l2Distance_) {
@@ -164,9 +174,9 @@ FlatIndex::query(Tensor<half, 2, true>& input,
                   k,
                   outDistances,
                   outIndices,
+                  useFloat16Accumulator_,
                   // FIXME
-                  !exactDistance,
-                  tileSize);
+                  !exactDistance);
   } else {
     runIPDistance(resources_,
                   vectorsHalf_,
@@ -175,7 +185,7 @@ FlatIndex::query(Tensor<half, 2, true>& input,
                   k,
                   outDistances,
                   outIndices,
-                  tileSize);
+                  useFloat16Accumulator_);
   }
 }
 #endif
@@ -200,12 +210,14 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
 
     rawData_.append((char*) devDataHalf.data(),
                     devDataHalf.getSizeInBytes(),
-                    stream);
+                    stream,
+                    true /* reserve exactly */);
 #endif
   } else {
     rawData_.append((char*) data,
                     (size_t) dim_ * numVecs * sizeof(float),
-                    stream);
+                    stream,
+                    true /* reserve exactly */);
   }
 
   num_ += numVecs;
@@ -213,12 +225,12 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
   if (useFloat16_) {
 #ifdef FAISS_USE_FLOAT16
     DeviceTensor<half, 2, true> vectorsHalf(
-      (half*) rawData_.data(), {(int) num_, dim_});
+      (half*) rawData_.data(), {(int) num_, dim_}, space_);
     vectorsHalf_ = std::move(vectorsHalf);
 #endif
   } else {
     DeviceTensor<float, 2, true> vectors(
-    (float*) rawData_.data(), {(int) num_, dim_});
+      (float*) rawData_.data(), {(int) num_, dim_}, space_);
     vectors_ = std::move(vectors);
   }
 
@@ -226,12 +238,12 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
     if (useFloat16_) {
 #ifdef FAISS_USE_FLOAT16
       vectorsHalfTransposed_ =
-        std::move(DeviceTensor<half, 2, true>({dim_, (int) num_}));
+        std::move(DeviceTensor<half, 2, true>({dim_, (int) num_}, space_));
       runTransposeAny(vectorsHalf_, 0, 1, vectorsHalfTransposed_, stream);
 #endif
     } else {
       vectorsTransposed_ =
-        std::move(DeviceTensor<float, 2, true>({dim_, (int) num_}));
+        std::move(DeviceTensor<float, 2, true>({dim_, (int) num_}, space_));
       runTransposeAny(vectors_, 0, 1, vectorsTransposed_, stream);
     }
   }
@@ -240,12 +252,12 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
     // Precompute L2 norms of our database
     if (useFloat16_) {
 #ifdef FAISS_USE_FLOAT16
-      DeviceTensor<half, 1, true> normsHalf({(int) num_});
+      DeviceTensor<half, 1, true> normsHalf({(int) num_}, space_);
       runL2Norm(vectorsHalf_, normsHalf, true, stream);
       normsHalf_ = std::move(normsHalf);
 #endif
     } else {
-      DeviceTensor<float, 1, true> norms({(int) num_});
+      DeviceTensor<float, 1, true> norms({(int) num_}, space_);
       runL2Norm(vectors_, norms, true, stream);
       norms_ = std::move(norms);
     }

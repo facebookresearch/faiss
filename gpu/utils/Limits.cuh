@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #pragma once
 
@@ -25,11 +23,12 @@ struct Limits {
 // constexpr constructor for half
 // FIXME: faiss CPU uses +/-FLT_MAX instead of +/-infinity
 constexpr float kFloatMax = std::numeric_limits<float>::max();
+constexpr float kFloatMin = std::numeric_limits<float>::lowest();
 
 template <>
 struct Limits<float> {
   static __device__ __host__ inline float getMin() {
-    return -kFloatMax;
+    return kFloatMin;
   }
   static __device__ __host__ inline float getMax() {
     return kFloatMax;
@@ -39,9 +38,15 @@ struct Limits<float> {
 #ifdef FAISS_USE_FLOAT16
 
 inline __device__ __host__ half kGetHalf(unsigned short v) {
+#if CUDA_VERSION >= 9000
+  __half_raw h;
+  h.x = v;
+  return __half(h);
+#else
   half h;
   h.x = v;
   return h;
+#endif
 }
 
 template <>
@@ -56,8 +61,8 @@ struct Limits<half> {
 
 #endif // FAISS_USE_FLOAT16
 
-constexpr int kIntMin = std::numeric_limits<int>::min();
 constexpr int kIntMax = std::numeric_limits<int>::max();
+constexpr int kIntMin = std::numeric_limits<int>::lowest();
 
 template <>
 struct Limits<int> {

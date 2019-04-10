@@ -1,7 +1,7 @@
 var searchData=
 [
   ['kerneltimer',['KernelTimer',['../classfaiss_1_1gpu_1_1KernelTimer.html#af533a5a8734243263032960c2445d233',1,'faiss::gpu::KernelTimer']]],
-  ['km_5fupdate_5fcentroids',['km_update_centroids',['../namespacefaiss.html#ad1cfbe51f2d77dc5094e0140f5955165',1,'faiss']]],
+  ['km_5fupdate_5fcentroids',['km_update_centroids',['../namespacefaiss.html#aa2c6a9e87a64bba8e8014e14f70bde21',1,'faiss']]],
   ['kmeans_5fclustering',['kmeans_clustering',['../namespacefaiss.html#a38bd0dde8a1b229201a5fcb64d05daa6',1,'faiss']]],
   ['knn_5finner_5fproduct',['knn_inner_product',['../namespacefaiss.html#a880c7318971f866267a86945aaa61b17',1,'faiss']]],
   ['knn_5fl2sqr',['knn_L2sqr',['../namespacefaiss.html#a2f803e3d3b07cfab63699c89de161237',1,'faiss']]],

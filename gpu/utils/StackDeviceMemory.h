@@ -1,13 +1,11 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the CC-by-NC license found in the
+ * This source code is licensed under the BSD+Patents license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 
 #pragma once
 
@@ -30,6 +28,10 @@ class StackDeviceMemory : public DeviceMemory {
   StackDeviceMemory(int device, void* p, size_t size, bool isOwner);
 
   ~StackDeviceMemory() override;
+
+  /// Enable or disable the warning about not having enough temporary memory
+  /// when cudaMalloc gets called
+  void setCudaMallocWarning(bool b);
 
   int getDevice() const override;
 
@@ -113,6 +115,9 @@ class StackDeviceMemory : public DeviceMemory {
     /// What's the high water mark in terms of memory allocated via
     /// cudaMalloc?
     size_t highWaterMalloc_;
+
+    /// Whether or not a warning upon cudaMalloc is generated
+    bool cudaMallocWarning_;
   };
 
   /// Our device
