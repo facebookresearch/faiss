@@ -44,7 +44,7 @@ libfaiss.$(SHAREDEXT): $(OBJ)
 	$(NVCC) $(NVCCFLAGS) -g -O3 -c $< -o $@
 
 clean:
-	rm -f libfaiss.{a,$(SHAREDEXT)}
+	rm -f libfaiss.a libfaiss.$(SHAREDEXT)
 	rm -f $(OBJ)
 
 
