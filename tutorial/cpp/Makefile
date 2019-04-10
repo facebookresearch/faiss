@@ -21,7 +21,7 @@ $(CPU_TARGETS): %: %.cpp ../../libfaiss.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) -I../../.. $(LIBS)
 
 $(GPU_TARGETS): %: %.cpp ../../libfaiss.a
-	$(CXX) $(CXXFLAGS) $(CUDACFLAGS) -o $@ $^ $(LDFLAGS) -I../../.. $(LIBS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) -I../../.. $(LIBS)
 
 clean:
 	rm -f $(CPU_TARGETS) $(GPU_TARGETS)
