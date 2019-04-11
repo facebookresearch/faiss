@@ -17,11 +17,8 @@ cpu: $(CPU_TARGETS)
 
 gpu: $(GPU_TARGETS)
 
-$(CPU_TARGETS): %: %.cpp ../../libfaiss.a
+%: %.cpp ../../libfaiss.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) -I../../.. $(LIBS)
-
-$(GPU_TARGETS): %: %.cpp ../../libfaiss.a ../../gpu/libgpufaiss.a
-	$(NVCC) $(NVCCFLAGS) -o $@ $^ $(NVCCLDFLAGS) -I../../.. $(NVCCLIBS)
 
 clean:
 	rm -f $(CPU_TARGETS) $(GPU_TARGETS)
