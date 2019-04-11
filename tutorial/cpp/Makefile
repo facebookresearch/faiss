@@ -17,10 +17,7 @@ cpu: $(CPU_TARGETS)
 
 gpu: $(GPU_TARGETS)
 
-$(CPU_TARGETS): %: %.cpp ../../libfaiss.a
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) -I../../.. $(LIBS)
-
-$(GPU_TARGETS): %: %.cpp ../../libfaiss.a
+%: %.cpp ../../libfaiss.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) -I../../.. $(LIBS)
 
 clean:
