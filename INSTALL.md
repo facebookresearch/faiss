@@ -55,6 +55,7 @@ the cudatoolkit.
 - `./configure --with-cuda-arch="-gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_72,code=sm_72"` for specifying which GPU architectures to build against.
 - `./configure --with-python=/path/to/python3.7` in order to build a python
 interface for a different python than the default one.
+- `LDFLAGS=-L/path_to_mkl/lib/ ./configure` so that configure detects the MKL BLAS imeplementation. Note that this may require to set the LD_LIBRARY_PATH at runtime.
 
 2. `make`
 
