@@ -173,7 +173,7 @@ void HNSW::fill_with_random_links(size_t n)
   int max_level = prepare_level_tab(n);
   RandomGenerator rng2(456);
 
-  for (int level = max_level - 1; level >= 0; level++) {
+  for (int level = max_level - 1; level >= 0; --level) {
     std::vector<int> elts;
     for (int i = 0; i < n; i++) {
       if (levels[i] > level) {
