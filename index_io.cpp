@@ -866,14 +866,16 @@ static IndexIVFPQ *read_ivfpq (IOReader *f, uint32_t h, int io_flags)
         read_InvertedLists (ivpq, f, io_flags);
     }
 
-    // precomputed table not stored. It is cheaper to recompute it
-    ivpq->use_precomputed_table = 0;
-    if (ivpq->by_residual)
-        ivpq->precompute_table ();
-    if (ivfpqr) {
-        read_ProductQuantizer (&ivfpqr->refine_pq, f);
-        READVECTOR (ivfpqr->refine_codes);
-        READ1 (ivfpqr->k_factor);
+    if (ivpq->is_trained) {
+        // precomputed table not stored. It is cheaper to recompute it
+        ivpq->use_precomputed_table = 0;
+        if (ivpq->by_residual)
+            ivpq->precompute_table();
+        if (ivfpqr) {
+            read_ProductQuantizer(&ivfpqr->refine_pq, f);
+            READVECTOR (ivfpqr->refine_codes);
+            READ1 (ivfpqr->k_factor);
+        }
     }
     return ivpq;
 }
