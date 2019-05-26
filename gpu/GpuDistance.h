@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -29,21 +28,25 @@ class GpuResources;
 /// nearest neighbors with respect to the given metric
 void bruteForceKnn(GpuResources* resources,
                    faiss::MetricType metric,
-                   // A region of memory size numVectors x dims, with dims
-                   // innermost
+                   // If vectorsRowMajor is true, this is
+                   // numVectors x dims, with dims innermost; otherwise,
+                   // dims x numVectors, with numVectors innermost
                    const float* vectors,
+                   bool vectorsRowMajor,
                    int numVectors,
-                   // A region of memory size numQueries x dims, with dims
-                   // innermost
+                   // If queriesRowMajor is true, this is
+                   // numQueries x dims, with dims innermost; otherwise,
+                   // dims x numQueries, with numQueries innermost
                    const float* queries,
+                   bool queriesRowMajor,
                    int numQueries,
                    int dims,
                    int k,
                    // A region of memory size numQueries x k, with k
-                   // innermost
+                   // innermost (row major)
                    float* outDistances,
                    // A region of memory size numQueries x k, with k
-                   // innermost
+                   // innermost (row major)
                    faiss::Index::idx_t* outIndices);
 
 } } // namespace

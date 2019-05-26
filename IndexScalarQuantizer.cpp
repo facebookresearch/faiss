@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -132,6 +131,67 @@ struct Codec4bit {
     }
 #endif
 };
+
+struct Codec6bit {
+
+    static void encode_component (float x, uint8_t *code, int i) {
+        int bits = (int)(x * 63.0);
+        code += (i >> 2) * 3;
+        switch(i & 3) {
+        case 0:
+            code[0] |= bits;
+            break;
+        case 1:
+            code[0] |= bits << 6;
+            code[1] |= bits >> 2;
+            break;
+        case 2:
+            code[1] |= bits << 4;
+            code[2] |= bits >> 4;
+            break;
+        case 3:
+            code[2] |= bits << 2;
+            break;
+        }
+    }
+
+    static float decode_component (const uint8_t *code, int i) {
+        uint8_t bits;
+        code += (i >> 2) * 3;
+        switch(i & 3) {
+        case 0:
+            bits = code[0] & 0x3f;
+            break;
+        case 1:
+            bits = code[0] >> 6;
+            bits |= (code[1] & 0xf) << 2;
+            break;
+        case 2:
+            bits = code[1] >> 4;
+            bits |= (code[2] & 3) << 4;
+            break;
+        case 3:
+            bits = code[2] >> 2;
+            break;
+        }
+        return (bits + 0.5f) / 63.0f;
+    }
+
+#ifdef USE_AVX
+    static __m256 decode_8_components (const uint8_t *code, int i) {
+        return _mm256_set_ps
+            (decode_component(code, i + 7),
+             decode_component(code, i + 6),
+             decode_component(code, i + 5),
+             decode_component(code, i + 4),
+             decode_component(code, i + 3),
+             decode_component(code, i + 2),
+             decode_component(code, i + 1),
+             decode_component(code, i + 0));
+    }
+#endif
+};
+
 
 
 #ifdef USE_AVX
@@ -496,6 +556,8 @@ Quantizer *select_quantizer (
     switch(qtype) {
     case ScalarQuantizer::QT_8bit:
         return new QuantizerTemplate<Codec8bit, false, SIMDWIDTH>(d, trained);
+    case ScalarQuantizer::QT_6bit:
+        return new QuantizerTemplate<Codec6bit, false, SIMDWIDTH>(d, trained);
     case ScalarQuantizer::QT_4bit:
         return new QuantizerTemplate<Codec4bit, false, SIMDWIDTH>(d, trained);
     case ScalarQuantizer::QT_8bit_uniform:
@@ -1125,6 +1187,10 @@ SQDistanceComputer *select_distance_computer (
         return new DCTemplate<QuantizerTemplate<Codec8bit, false, SIMDWIDTH>,
                               Sim, SIMDWIDTH>(d, trained);
 
+    case ScalarQuantizer::QT_6bit:
+        return new DCTemplate<QuantizerTemplate<Codec6bit, false, SIMDWIDTH>,
+                              Sim, SIMDWIDTH>(d, trained);
+
     case ScalarQuantizer::QT_4bit:
         return new DCTemplate<QuantizerTemplate<Codec4bit, false, SIMDWIDTH>,
                               Sim, SIMDWIDTH>(d, trained);
@@ -1169,6 +1235,9 @@ ScalarQuantizer::ScalarQuantizer
     case QT_4bit_uniform:
         code_size = (d + 1) / 2;
         break;
+    case QT_6bit:
+        code_size = (d * 6 + 7) / 8;
+        break;
     case QT_fp16:
         code_size = d * 2;
         break;
@@ -1186,6 +1255,7 @@ void ScalarQuantizer::train (size_t n, const float *x)
     int bit_per_dim =
         qtype == QT_4bit_uniform ? 4 :
         qtype == QT_4bit ? 4 :
+        qtype == QT_6bit ? 6 :
         qtype == QT_8bit_uniform ? 8 :
         qtype == QT_8bit ? 8 : -1;
 
@@ -1194,7 +1264,7 @@ void ScalarQuantizer::train (size_t n, const float *x)
         train_Uniform (rangestat, rangestat_arg,
                        n * d, 1 << bit_per_dim, x, trained);
         break;
-    case QT_4bit: case QT_8bit:
+    case QT_4bit: case QT_8bit: case QT_6bit:
         train_NonUniform (rangestat, rangestat_arg,
                           n, d, 1 << bit_per_dim, x, trained);
         break;
@@ -1263,10 +1333,10 @@ ScalarQuantizer::get_distance_computer (MetricType metric) const
 namespace {
 
 
-template<bool store_pairs, class DCClass>
+template<class DCClass>
 struct IVFSQScannerIP: InvertedListScanner {
     DCClass dc;
-    bool by_residual;
+    bool store_pairs, by_residual;
 
     size_t code_size;
 
@@ -1274,8 +1344,10 @@ struct IVFSQScannerIP: InvertedListScanner {
     float accu0;    /// added to all distances
 
     IVFSQScannerIP(int d, const std::vector<float> & trained,
-                   size_t code_size, bool by_residual=false):
-        dc(d, trained), by_residual(by_residual),
+                   size_t code_size, bool store_pairs,
+                   bool by_residual):
+        dc(d, trained), store_pairs(store_pairs),
+        by_residual(by_residual),
         code_size(code_size), list_no(0), accu0(0)
     {}
 
@@ -1336,12 +1408,12 @@ struct IVFSQScannerIP: InvertedListScanner {
 };
 
 
-template<bool store_pairs, class DCClass>
+template<class DCClass>
 struct IVFSQScannerL2: InvertedListScanner {
 
     DCClass dc;
 
-    bool by_residual;
+    bool store_pairs, by_residual;
     size_t code_size;
     const Index *quantizer;
     idx_t list_no;    /// current inverted list
@@ -1351,8 +1423,8 @@ struct IVFSQScannerL2: InvertedListScanner {
 
     IVFSQScannerL2(int d, const std::vector<float> & trained,
                    size_t code_size, const Index *quantizer,
-                   bool by_residual):
-        dc(d, trained), by_residual(by_residual),
+                   bool store_pairs, bool by_residual):
+        dc(d, trained), store_pairs(store_pairs), by_residual(by_residual),
         code_size(code_size), quantizer(quantizer),
         list_no (0), x (nullptr), tmp (d)
     {
@@ -1429,21 +1501,11 @@ InvertedListScanner* sel2_InvertedListScanner
        const Index *quantizer, bool store_pairs, bool r)
 {
     if (DCClass::Sim::metric_type == METRIC_L2) {
-        if (store_pairs) {
-            return new IVFSQScannerL2<true, DCClass>
-                (sq->d, sq->trained, sq->code_size, quantizer, r);
-        } else {
-            return new IVFSQScannerL2<false, DCClass>
-                (sq->d, sq->trained, sq->code_size, quantizer, r);
-        }
+        return new IVFSQScannerL2<DCClass>(sq->d, sq->trained, sq->code_size,
+                                           quantizer, store_pairs, r);
     } else {
-        if (store_pairs) {
-            return new IVFSQScannerIP<true, DCClass>
-                (sq->d, sq->trained, sq->code_size, r);
-        } else {
-            return new IVFSQScannerIP<false, DCClass>
-                (sq->d, sq->trained, sq->code_size, r);
-        }
+        return new IVFSQScannerIP<DCClass>(sq->d, sq->trained, sq->code_size,
+                                           store_pairs, r);
     }
 }
 
@@ -1479,6 +1541,9 @@ InvertedListScanner* sel1_InvertedListScanner
     case ScalarQuantizer::QT_4bit:
         return sel12_InvertedListScanner
             <Similarity, Codec4bit, false>(sq, quantizer, store_pairs, r);
+    case ScalarQuantizer::QT_6bit:
+        return sel12_InvertedListScanner
+            <Similarity, Codec6bit, false>(sq, quantizer, store_pairs, r);
     case ScalarQuantizer::QT_fp16:
         return sel2_InvertedListScanner
             <DCTemplate<QuantizerFP16<SIMDWIDTH>, Similarity, SIMDWIDTH> >
@@ -1720,8 +1785,6 @@ void IndexIVFScalarQuantizer::encode_vectors(idx_t n, const float* x,
                     xi = residual.data ();
                 }
                 squant->encode_vector (xi, codes + i * code_size);
-            } else {
-                memset (codes + i * code_size, 0, code_size);
             }
         }
     }

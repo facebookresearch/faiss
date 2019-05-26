@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -14,6 +13,7 @@
 #include <cstddef>
 #include <cstring>
 #include <cstdio>
+#include <memory>
 
 #include <algorithm>
 
@@ -97,7 +97,7 @@ void pq_estimators_from_tables_M4 (const CT * codes,
 
 
 template <typename CT, class C>
-static inline void pq_estimators_from_tables (const ProductQuantizer * pq,
+static inline void pq_estimators_from_tables (const ProductQuantizer& pq,
                                               const CT * codes,
                                               size_t ncodes,
                                               const float * dis_table,
@@ -106,24 +106,24 @@ static inline void pq_estimators_from_tables (const ProductQuantizer * pq,
                                               long * heap_ids)
 {
 
-    if (pq->M == 4)  {
+    if (pq.M == 4)  {
 
         pq_estimators_from_tables_M4<CT, C> (codes, ncodes,
-                                         dis_table, pq->ksub, k,
-                                         heap_dis, heap_ids);
+                                             dis_table, pq.ksub, k,
+                                             heap_dis, heap_ids);
         return;
     }
 
-    if (pq->M % 4 == 0) {
-        pq_estimators_from_tables_Mmul4<CT, C> (pq->M, codes, ncodes,
-                                            dis_table, pq->ksub, k,
-                                            heap_dis, heap_ids);
+    if (pq.M % 4 == 0) {
+        pq_estimators_from_tables_Mmul4<CT, C> (pq.M, codes, ncodes,
+                                                dis_table, pq.ksub, k,
+                                                heap_dis, heap_ids);
         return;
     }
 
     /* Default is relatively slow */
-    const size_t M = pq->M;
-    const size_t ksub = pq->ksub;
+    const size_t M = pq.M;
+    const size_t ksub = pq.ksub;
     for (size_t j = 0; j < ncodes; j++) {
         float dis = 0;
         const float * __restrict dt = dis_table;
@@ -138,6 +138,36 @@ static inline void pq_estimators_from_tables (const ProductQuantizer * pq,
     }
 }
 
+template <class C>
+static inline void pq_estimators_from_tables_generic(const ProductQuantizer& pq,
+                                                     size_t nbits,
+                                                     const uint8_t *codes,
+                                                     size_t ncodes,
+                                                     const float *dis_table,
+                                                     size_t k,
+                                                     float *heap_dis,
+                                                     long *heap_ids)
+{
+  const size_t M = pq.M;
+  const size_t ksub = pq.ksub;
+  for (size_t j = 0; j < ncodes; ++j) {
+    faiss::ProductQuantizer::PQDecoderGeneric decoder(
+      codes + j * pq.code_size, nbits
+    );
+    float dis = 0;
+    const float * __restrict dt = dis_table;
+    for (size_t m = 0; m < M; m++) {
+      uint64_t c = decoder.decode();
+      dis += dt[c];
+      dt += ksub;
+    }
+
+    if (C::cmp(heap_dis[0], dis)) {
+      heap_pop<C>(k, heap_dis, heap_ids);
+      heap_push<C>(k, heap_dis, heap_ids, dis, j);
+    }
+  }
+}
 
 /*********************************************
  * PQ implementation
@@ -151,26 +181,19 @@ ProductQuantizer::ProductQuantizer (size_t d, size_t M, size_t nbits):
     set_derived_values ();
 }
 
-ProductQuantizer::ProductQuantizer ():
-    d(0), M(1), nbits(0), assign_index(nullptr)
-{
-    set_derived_values ();
-}
-
-
+ProductQuantizer::ProductQuantizer ()
+    : ProductQuantizer(0, 1, 0) {}
 
 void ProductQuantizer::set_derived_values () {
     // quite a few derived values
     FAISS_THROW_IF_NOT (d % M == 0);
     dsub = d / M;
-    byte_per_idx = (nbits + 7) / 8;
-    code_size = byte_per_idx * M;
+    code_size = (nbits * M + 7) / 8;
     ksub = 1 << nbits;
     centroids.resize (d * ksub);
     verbose = false;
     train_type = Train_default;
 }
-
 
 void ProductQuantizer::set_params (const float * centroids_, int m)
 {
@@ -304,48 +327,71 @@ void ProductQuantizer::train (int n, const float * x)
     }
 }
 
+template<class PQEncoder>
+void compute_code(const ProductQuantizer& pq, const float *x, uint8_t *code) {
+  float distances [pq.ksub];
+  PQEncoder encoder(code, pq.nbits);
+  for (size_t m = 0; m < pq.M; m++) {
+    float mindis = 1e20;
+    uint64_t idxm = 0;
+    const float * xsub = x + m * pq.dsub;
 
-void ProductQuantizer::compute_code (const float * x, uint8_t * code)  const
-{
-    float distances [ksub];
-    for (size_t m = 0; m < M; m++) {
-        float mindis = 1e20;
-        int idxm = -1;
-        const float * xsub = x + m * dsub;
+    fvec_L2sqr_ny(distances, xsub, pq.get_centroids(m, 0), pq.dsub, pq.ksub);
 
-        fvec_L2sqr_ny (distances, xsub, get_centroids(m, 0), dsub, ksub);
-
-        /* Find best centroid */
-        size_t i;
-        for (i = 0; i < ksub; i++) {
-            float dis = distances [i];
-            if (dis < mindis) {
-                mindis = dis;
-                idxm = i;
-            }
-        }
-        switch (byte_per_idx) {
-          case 1:  code[m] = (uint8_t) idxm;  break;
-          case 2:  ((uint16_t *) code)[m] = (uint16_t) idxm;  break;
-        }
+    /* Find best centroid */
+    for (size_t i = 0; i < pq.ksub; i++) {
+      float dis = distances[i];
+      if (dis < mindis) {
+        mindis = dis;
+        idxm = i;
+      }
     }
 
+    encoder.encode(idxm);
+  }
+}
+
+void ProductQuantizer::compute_code(const float * x, uint8_t * code) const {
+  switch (nbits) {
+    case 8:
+      faiss::compute_code<PQEncoder8>(*this, x, code);
+      break;
+
+    case 16:
+      faiss::compute_code<PQEncoder16>(*this, x, code);
+      break;
+
+    default:
+      faiss::compute_code<PQEncoderGeneric>(*this, x, code);
+      break;
+  }
+}
+
+template<class PQDecoder>
+void decode(const ProductQuantizer& pq, const uint8_t *code, float *x)
+{
+  PQDecoder decoder(code, pq.nbits);
+  for (size_t m = 0; m < pq.M; m++) {
+    uint64_t c = decoder.decode();
+    memcpy(x + m * pq.dsub, pq.get_centroids(m, c), sizeof(float) * pq.dsub);
+  }
 }
 
 void ProductQuantizer::decode (const uint8_t *code, float *x) const
 {
-    if (byte_per_idx == 1) {
-        for (size_t m = 0; m < M; m++) {
-            memcpy (x + m * dsub, get_centroids(m, code[m]),
-                    sizeof(float) * dsub);
-        }
-    } else {
-        const uint16_t *c = (const uint16_t*) code;
-        for (size_t m = 0; m < M; m++) {
-            memcpy (x + m * dsub, get_centroids(m, c[m]),
-                    sizeof(float) * dsub);
-        }
-    }
+  switch (nbits) {
+    case 8:
+      faiss::decode<PQDecoder8>(*this, code, x);
+      break;
+
+    case 16:
+      faiss::decode<PQDecoder16>(*this, code, x);
+      break;
+
+    default:
+      faiss::decode<PQDecoderGeneric>(*this, code, x);
+      break;
+  }
 }
 
 
@@ -360,23 +406,22 @@ void ProductQuantizer::decode (const uint8_t *code, float *x, size_t n) const
 void ProductQuantizer::compute_code_from_distance_table (const float *tab,
                                                          uint8_t *code) const
 {
-    for (size_t m = 0; m < M; m++) {
-        float mindis = 1e20;
-        int idxm = -1;
+  PQEncoderGeneric encoder(code, nbits);
+  for (size_t m = 0; m < M; m++) {
+    float mindis = 1e20;
+    uint64_t idxm = 0;
 
-        /* Find best centroid */
-        for (size_t j = 0; j < ksub; j++) {
-            float dis = *tab++;
-            if (dis < mindis) {
-                mindis = dis;
-                idxm = j;
-            }
-        }
-        switch (byte_per_idx) {
-        case 1:  code[m] = (uint8_t) idxm;  break;
-        case 2:  ((uint16_t *) code)[m] = (uint16_t) idxm;  break;
-        }
+    /* Find best centroid */
+    for (size_t j = 0; j < ksub; j++) {
+      float dis = *tab++;
+      if (dis < mindis) {
+        mindis = dis;
+        idxm = j;
+      }
     }
+
+    encoder.encode(idxm);
+  }
 }
 
 void ProductQuantizer::compute_codes_with_assign_index (
@@ -406,25 +451,27 @@ void ProductQuantizer::compute_codes_with_assign_index (
 
             assign_index->assign (i1 - i0, xslice, assign);
 
-            switch (byte_per_idx) {
-            case 1:
-                {
-                    uint8_t *c = codes + code_size * i0 + m;
-                    for (size_t i = i0; i < i1; i++) {
-                        *c = assign[i - i0];
-                        c += M;
-                    }
-                }
-                break;
-           case 2:
-               {
-                   uint16_t *c = (uint16_t*)(codes + code_size * i0 + m * 2);
-                   for (size_t i = i0; i < i1; i++) {
-                       *c = assign[i - i0];
-                       c += M;
-                   }
-               }
-               break;
+            if (nbits == 8) {
+              uint8_t *c = codes + code_size * i0 + m;
+              for (size_t i = i0; i < i1; i++) {
+                *c = assign[i - i0];
+                c += M;
+              }
+            } else if (nbits == 16) {
+              uint16_t *c = (uint16_t*)(codes + code_size * i0 + m * 2);
+              for (size_t i = i0; i < i1; i++) {
+                *c = assign[i - i0];
+                c += M;
+              }
+            } else {
+              for (size_t i = i0; i < i1; ++i) {
+                uint8_t *c = codes + code_size * i + ((m * nbits) / 8);
+                uint8_t offset = (m * nbits) % 8;
+                uint64_t ass = assign[i - i0];
+
+                PQEncoderGeneric encoder(c, nbits, offset);
+                encoder.encode(ass);
+              }
             }
 
         }
@@ -436,8 +483,7 @@ void ProductQuantizer::compute_codes (const float * x,
                                       uint8_t * codes,
                                       size_t n)  const
 {
-
-    // process by blocks to avoid using too much RAM
+  // process by blocks to avoid using too much RAM
     size_t bs = 256 * 1024;
     if (n > bs) {
         for (size_t i0 = 0; i0 < n; i0 += bs) {
@@ -553,9 +599,10 @@ void ProductQuantizer::compute_inner_prod_tables (
     }
 }
 
-template <typename CT, class C>
+template <class C>
 static void pq_knn_search_with_tables (
-      const ProductQuantizer * pq,
+      const ProductQuantizer& pq,
+      size_t nbits,
       const float *dis_tables,
       const uint8_t * codes,
       const size_t ncodes,
@@ -563,7 +610,7 @@ static void pq_knn_search_with_tables (
       bool init_finalize_heap)
 {
     size_t k = res->k, nx = res->nh;
-    size_t ksub = pq->ksub, M = pq->M;
+    size_t ksub = pq.ksub, M = pq.M;
 
 
 #pragma omp parallel for
@@ -579,10 +626,30 @@ static void pq_knn_search_with_tables (
             heap_heapify<C> (k, heap_dis, heap_ids);
         }
 
-        pq_estimators_from_tables<CT, C> (pq,
-                                          (CT*)codes, ncodes,
-                                          dis_table,
-                                          k, heap_dis, heap_ids);
+        switch (nbits) {
+          case 8:
+              pq_estimators_from_tables<uint8_t, C> (pq,
+                                                     codes, ncodes,
+                                                     dis_table,
+                                                     k, heap_dis, heap_ids);
+              break;
+
+          case 16:
+              pq_estimators_from_tables<uint16_t, C> (pq,
+                                                      (uint16_t*)codes, ncodes,
+                                                      dis_table,
+                                                      k, heap_dis, heap_ids);
+              break;
+
+          default:
+              pq_estimators_from_tables_generic<C> (pq,
+                                                    nbits,
+                                                    codes, ncodes,
+                                                    dis_table,
+                                                    k, heap_dis, heap_ids);
+              break;
+        }
+
         if (init_finalize_heap) {
             heap_reorder<C> (k, heap_dis, heap_ids);
         }
@@ -597,21 +664,11 @@ void ProductQuantizer::search (const float * __restrict x,
                                bool init_finalize_heap) const
 {
     FAISS_THROW_IF_NOT (nx == res->nh);
-    float * dis_tables = new float [nx * ksub * M];
-    ScopeDeleter<float> del(dis_tables);
-    compute_distance_tables (nx, x, dis_tables);
+    std::unique_ptr<float[]> dis_tables(new float [nx * ksub * M]);
+    compute_distance_tables (nx, x, dis_tables.get());
 
-    if (byte_per_idx == 1) {
-
-        pq_knn_search_with_tables<uint8_t, CMax<float, long> > (
-             this, dis_tables, codes, ncodes, res, init_finalize_heap);
-
-    } else if (byte_per_idx == 2) {
-        pq_knn_search_with_tables<uint16_t, CMax<float, long> > (
-             this, dis_tables, codes, ncodes, res, init_finalize_heap);
-
-    }
-
+    pq_knn_search_with_tables<CMax<float, long>> (
+      *this, nbits, dis_tables.get(), codes, ncodes, res, init_finalize_heap);
 }
 
 void ProductQuantizer::search_ip (const float * __restrict x,
@@ -622,20 +679,11 @@ void ProductQuantizer::search_ip (const float * __restrict x,
                                bool init_finalize_heap) const
 {
     FAISS_THROW_IF_NOT (nx == res->nh);
-    float * dis_tables = new float [nx * ksub * M];
-    ScopeDeleter<float> del(dis_tables);
-    compute_inner_prod_tables (nx, x, dis_tables);
+    std::unique_ptr<float[]> dis_tables(new float [nx * ksub * M]);
+    compute_inner_prod_tables (nx, x, dis_tables.get());
 
-    if (byte_per_idx == 1) {
-
-        pq_knn_search_with_tables<uint8_t, CMin<float, long> > (
-             this, dis_tables, codes, ncodes, res, init_finalize_heap);
-
-    } else if (byte_per_idx == 2) {
-        pq_knn_search_with_tables<uint16_t, CMin<float, long> > (
-             this, dis_tables, codes, ncodes, res, init_finalize_heap);
-    }
-
+    pq_knn_search_with_tables<CMin<float, long> > (
+      *this, nbits, dis_tables.get(), codes, ncodes, res, init_finalize_heap);
 }
 
 
@@ -675,7 +723,7 @@ void ProductQuantizer::search_sdc (const uint8_t * qcodes,
                      bool init_finalize_heap) const
 {
     FAISS_THROW_IF_NOT (sdc_table.size() == M * ksub * ksub);
-    FAISS_THROW_IF_NOT (byte_per_idx == 1);
+    FAISS_THROW_IF_NOT (nbits == 8);
     size_t k = res->k;
 
 
@@ -712,4 +760,117 @@ void ProductQuantizer::search_sdc (const uint8_t * qcodes,
 }
 
 
-} // namespace faiss
+ProductQuantizer::PQEncoderGeneric::PQEncoderGeneric(uint8_t *code, int nbits,
+                                                     uint8_t offset)
+    : code(code), offset(offset), nbits(nbits), reg(0) {
+  assert(nbits <= 64);
+  if (offset > 0) {
+    reg = (*code & ((1 << offset) - 1));
+  }
+}
+
+void ProductQuantizer::PQEncoderGeneric::encode(uint64_t x) {
+  reg |= (uint8_t)(x << offset);
+  x >>= (8 - offset);
+  if (offset + nbits >= 8) {
+    *code++ = reg;
+
+    for (int i = 0; i < (nbits - (8 - offset)) / 8; ++i) {
+      *code++ = (uint8_t)x;
+      x >>= 8;
+    }
+
+    offset += nbits;
+    offset &= 7;
+    reg = (uint8_t)x;
+  } else {
+    offset += nbits;
+  }
+}
+
+ProductQuantizer::PQEncoderGeneric::~PQEncoderGeneric() {
+  if (offset > 0) {
+    *code = reg;
+  }
+}
+
+
+ProductQuantizer::PQEncoder8::PQEncoder8(uint8_t *code, int nbits)
+    : code(code) {
+  assert(8 == nbits);
+}
+
+void ProductQuantizer::PQEncoder8::encode(uint64_t x) {
+  *code++ = (uint8_t)x;
+}
+
+
+ProductQuantizer::PQEncoder16::PQEncoder16(uint8_t *code, int nbits)
+    : code((uint16_t *)code) {
+  assert(16 == nbits);
+}
+
+void ProductQuantizer::PQEncoder16::encode(uint64_t x) {
+  *code++ = (uint16_t)x;
+}
+
+
+ProductQuantizer::PQDecoderGeneric::PQDecoderGeneric(const uint8_t *code,
+                                                     int nbits)
+    : code(code),
+      offset(0),
+      nbits(nbits),
+      mask((1ull << nbits) - 1),
+      reg(0) {
+  assert(nbits <= 64);
+}
+
+uint64_t ProductQuantizer::PQDecoderGeneric::decode() {
+  if (offset == 0) {
+    reg = *code;
+  }
+  uint64_t c = (reg >> offset);
+
+  if (offset + nbits >= 8) {
+    uint64_t e = 8 - offset;
+    ++code;
+    for (int i = 0; i < (nbits - (8 - offset)) / 8; ++i) {
+      c |= ((uint64_t)(*code++) << e);
+      e += 8;
+    }
+
+    offset += nbits;
+    offset &= 7;
+    if (offset > 0) {
+      reg = *code;
+      c |= ((uint64_t)reg << e);
+    }
+  } else {
+    offset += nbits;
+  }
+
+  return c & mask;
+}
+
+
+ProductQuantizer::PQDecoder8::PQDecoder8(const uint8_t *code, int nbits)
+    : code(code) {
+  assert(8 == nbits);
+}
+
+uint64_t ProductQuantizer::PQDecoder8::decode() {
+  return (uint64_t)(*code++);
+}
+
+
+ProductQuantizer::PQDecoder16::PQDecoder16(const uint8_t *code, int nbits)
+    : code((uint16_t *)code) {
+  assert(16 == nbits);
+}
+
+uint64_t ProductQuantizer::PQDecoder16::decode() {
+  return (uint64_t)(*code++);
+}
+
+
+}  // namespace faiss

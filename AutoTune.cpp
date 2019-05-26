@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -469,9 +468,22 @@ void ParameterSpace::set_index_parameter (
     }
     if (DC (IndexShards)) {
         // call on all sub-indexes
-        for (auto & shard_index : ix->shard_indexes) {
-            set_index_parameter (shard_index, name, val);
-        }
+        auto fn =
+          [this, name, val](int, Index* subIndex) {
+            set_index_parameter(subIndex, name, val);
+          };
+
+        ix->runOnIndex(fn);
+        return;
+    }
+    if (DC (IndexReplicas)) {
+        // call on all sub-indexes
+        auto fn =
+          [this, name, val](int, Index* subIndex) {
+            set_index_parameter(subIndex, name, val);
+          };
+
+        ix->runOnIndex(fn);
         return;
     }
     if (DC (IndexRefineFlat)) {

@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -31,7 +30,6 @@ struct ProductQuantizer {
 
     // values derived from the above
     size_t dsub;           ///< dimensionality of each subvector
-    size_t byte_per_idx;   ///< nb bytes per code component (1 or 2)
     size_t code_size;      ///< byte per indexed vector
     size_t ksub;           ///< number of centroids for each subquantizer
     bool verbose;          ///< verbose during training?
@@ -142,7 +140,7 @@ struct ProductQuantizer {
     /** perform a search (L2 distance)
      * @param x        query vectors, size nx * d
      * @param nx       nb of queries
-     * @param codes    database codes, size ncodes * byte_per_idx
+     * @param codes    database codes, size ncodes * code_size
      * @param ncodes   nb of nb vectors
      * @param res      heap array to store results (nh == nx)
      * @param init_finalize_heap  initialize heap (input) and sort (output)?
@@ -176,10 +174,70 @@ struct ProductQuantizer {
                      float_maxheap_array_t * res,
                      bool init_finalize_heap = true) const;
 
+    struct PQEncoderGeneric {
+        uint8_t *code;   ///< code for this vector
+        uint8_t offset;
+        const int nbits; ///< number of bits per subquantizer index
+
+        uint8_t reg;
+
+        PQEncoderGeneric(uint8_t *code, int nbits, uint8_t offset = 0);
+
+        void encode(uint64_t x);
+
+        ~PQEncoderGeneric();
+    };
+
+
+    struct PQEncoder8 {
+        uint8_t *code;
+
+        PQEncoder8(uint8_t *code, int nbits);
+
+        void encode(uint64_t x);
+    };
+
+    struct PQEncoder16 {
+        uint16_t *code;
+
+        PQEncoder16(uint8_t *code, int nbits);
+
+        void encode(uint64_t x);
+    };
+
+
+    struct PQDecoderGeneric {
+        const uint8_t *code;
+        uint8_t offset;
+        const int nbits;
+        const uint64_t mask;
+        uint8_t reg;
+
+        PQDecoderGeneric(const uint8_t *code, int nbits);
+
+        uint64_t decode();
+    };
+
+    struct PQDecoder8 {
+        const uint8_t *code;
+
+        PQDecoder8(const uint8_t *code, int nbits);
+
+        uint64_t decode();
+    };
+
+    struct PQDecoder16 {
+        const uint16_t *code;
+
+        PQDecoder16(const uint8_t *code, int nbits);
+
+        uint64_t decode();
+    };
+
 };
 
 
-} // namespace faiss
+}  // namespace faiss
 
 
 #endif

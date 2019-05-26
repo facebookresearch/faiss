@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -13,6 +12,8 @@
 
 #include <exception>
 #include <string>
+#include <vector>
+#include <utility>
 
 namespace faiss {
 
@@ -32,6 +33,11 @@ class FaissException : public std::exception {
   std::string msg;
 };
 
+/// Handle multiple exceptions from worker threads, throwing an appropriate
+/// exception that aggregates the information
+/// The pair int is the thread that generated the exception
+void
+handleExceptions(std::vector<std::pair<int, std::exception_ptr>>& exceptions);
 
 /** bare-bones unique_ptr
  * this one deletes with delete [] */
@@ -60,9 +66,6 @@ struct ScopeDeleter1 {
     }
 };
 
-
-
 }
-
 
 #endif

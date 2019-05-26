@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -29,7 +28,12 @@ void setCurrentDevice(int device) {
 
 int getNumDevices() {
   int numDev = -1;
-  CUDA_VERIFY(cudaGetDeviceCount(&numDev));
+  cudaError_t err = cudaGetDeviceCount(&numDev);
+  if (cudaErrorNoDevice == err) {
+    numDev = 0;
+  } else {
+    CUDA_VERIFY(err);
+  }
   FAISS_ASSERT(numDev != -1);
 
   return numDev;

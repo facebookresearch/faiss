@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -53,6 +52,8 @@ struct Tempfilename {
 pthread_mutex_t Tempfilename::mutex = PTHREAD_MUTEX_INITIALIZER;
 
 
+typedef faiss::Index::idx_t idx_t;
+
 // parameters to use for the test
 int d = 64;
 size_t nb = 1000;
@@ -60,8 +61,6 @@ size_t nq = 100;
 int nindex = 4;
 int k = 10;
 int nlist = 40;
-
-typedef faiss::Index::idx_t idx_t;
 
 struct CommonData {
 

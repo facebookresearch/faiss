@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -26,10 +25,12 @@ void bruteForceKnn(GpuResources* resources,
                    // A region of memory size numVectors x dims, with dims
                    // innermost
                    const float* vectors,
+                   bool vectorsRowMajor,
                    int numVectors,
                    // A region of memory size numQueries x dims, with dims
                    // innermost
                    const float* queries,
+                   bool queriesRowMajor,
                    int numQueries,
                    int dims,
                    int k,
@@ -47,12 +48,14 @@ void bruteForceKnn(GpuResources* resources,
                                      device,
                                      const_cast<float*>(vectors),
                                      stream,
-                                     {numVectors, dims});
+                                     {vectorsRowMajor ? numVectors : dims,
+                                      vectorsRowMajor ? dims : numVectors});
   auto tQueries = toDevice<float, 2>(resources,
                                      device,
                                      const_cast<float*>(queries),
                                      stream,
-                                     {numQueries, dims});
+                                     {queriesRowMajor ? numQueries : dims,
+                                      queriesRowMajor ? dims : numQueries});
 
   auto tOutDistances = toDevice<float, 2>(resources,
                                           device,
@@ -68,17 +71,19 @@ void bruteForceKnn(GpuResources* resources,
   if (metric == faiss::MetricType::METRIC_L2) {
     runL2Distance(resources,
                   tVectors,
-                  nullptr,
+                  vectorsRowMajor,
                   nullptr, // compute norms in temp memory
                   tQueries,
+                  queriesRowMajor,
                   k,
                   tOutDistances,
                   tOutIntIndices);
   } else if (metric == faiss::MetricType::METRIC_INNER_PRODUCT) {
     runIPDistance(resources,
                   tVectors,
-                  nullptr,
+                  vectorsRowMajor,
                   tQueries,
+                  queriesRowMajor,
                   k,
                   tOutDistances,
                   tOutIntIndices);

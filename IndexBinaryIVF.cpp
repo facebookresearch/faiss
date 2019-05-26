@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -459,15 +458,16 @@ void search_knn_hamming_heap(const IndexBinaryIVF& ivf,
 
                 size_t list_size = ivf.invlists->list_size(key);
                 InvertedLists::ScopedCodes scodes (ivf.invlists, key);
-                const Index::idx_t * ids = store_pairs ? nullptr :
-                    ivf.invlists->get_ids (key);
+                std::unique_ptr<InvertedLists::ScopedIds> sids;
+                const Index::idx_t * ids = nullptr;
+
+                if (!store_pairs) {
+                    sids.reset (new InvertedLists::ScopedIds (ivf.invlists, key));
+                    ids = sids->get();
+                }
 
                 nheap += scanner->scan_codes (list_size, scodes.get(),
                                               ids, simi, idxi, k);
-
-                if (ids) {
-                    ivf.invlists->release_ids (ids);
-                }
 
                 nscan += list_size;
                 if (max_codes && nscan >= max_codes)
@@ -553,7 +553,7 @@ void search_knn_hamming_count(const IndexBinaryIVF& ivf,
         csi.update_counter(yj, id);
       }
       if (ids)
-        ivf.invlists->release_ids (ids);
+          ivf.invlists->release_ids (key, ids);
 
       nscan += list_size;
       if (max_codes && nscan >= max_codes)

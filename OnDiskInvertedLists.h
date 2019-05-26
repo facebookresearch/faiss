@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -58,6 +57,7 @@ struct OnDiskInvertedLists: InvertedLists {
         List ();
     };
 
+    // size nlist
     std::vector<List> lists;
 
     struct Slot {
@@ -67,6 +67,7 @@ struct OnDiskInvertedLists: InvertedLists {
         Slot ();
     };
 
+    // size whatever space remains
     std::list<Slot> slots;
 
     std::string filename;
@@ -92,9 +93,12 @@ struct OnDiskInvertedLists: InvertedLists {
 
     // copy all inverted lists into *this, in compact form (without
     // allocating slots)
-    size_t merge_from (const InvertedLists **ils, int n_il);
+    size_t merge_from (const InvertedLists **ils, int n_il, bool verbose=false);
 
-    void prefetch_lists (const long *list_nos, int nlist) const override;
+    /// restrict the inverted lists to l0:l1 without touching the mmapped region
+    void crop_invlists(size_t l0, size_t l1);
+
+    void prefetch_lists (const idx_t *list_nos, int nlist) const override;
 
     virtual ~OnDiskInvertedLists ();
 
@@ -105,6 +109,7 @@ struct OnDiskInvertedLists: InvertedLists {
     // encapsulates the threads that are busy prefeteching
     struct OngoingPrefetch;
     OngoingPrefetch *pf;
+    int prefetch_nthread;
 
     void do_mmap ();
     void update_totsize (size_t new_totsize);
