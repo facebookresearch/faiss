@@ -108,4 +108,4 @@ misc/test_blas: misc/test_blas.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 
-.PHONY: all clean demos install installdirs py test gpu_test uninstall
+.PHONY: all clean demos install installdirs py test test_gpu uninstall
