@@ -232,7 +232,8 @@ struct IVFScanner: InvertedListScanner {
 
         if (index->threshold_type ==
             IndexIVFSpectralHash::Thresh_global) {
-            binarize_with_freq (nbit, freq, q.data(), zero.data(), qcode.data());
+            binarize_with_freq
+                (nbit, freq, q.data(), zero.data(), qcode.data());
             hc.set (qcode.data(), code_size);
         }
     }
@@ -310,11 +311,11 @@ InvertedListScanner* IndexIVFSpectralHash::get_InvertedListScanner
         HANDLE_CODE_SIZE(64);
 #undef HANDLE_CODE_SIZE
         default:
-            if (code_size % 8 == 0)
+            if (code_size % 8 == 0) {
                 return new IVFScanner<HammingComputerM8>(this, store_pairs);
-            else if (code_size % 4 == 0)
+            } else if (code_size % 4 == 0) {
                 return new IVFScanner<HammingComputerM4>(this, store_pairs);
-            else {
+            } else {
                 FAISS_THROW_MSG("not supported");
             }
     }

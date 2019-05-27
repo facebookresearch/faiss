@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 #! /usr/bin/env python2
-
+# noqa E741
 # translation of test_knn.lua
 
 import numpy as np
@@ -284,13 +284,16 @@ class TestSQFlavors(unittest.TestCase):
             print('ndiff %d / %d' % (ndiff, ntot))
             assert ndiff < ntot * 0.01
 
-            index.parallel_mode = 1
-            lims4, D4, I4 = index.range_search(xq, radius)
-            print 'sizes', lims[1:] - lims[:-1]
-            for qno in range(len(lims) - 1):
-                Iref = I3[lims[qno]: lims[qno+1]]
-                Inew = I4[lims4[qno]: lims4[qno+1]]
-                assert set(Iref) == set(Inew)
+            for pm in 1, 2:
+                print('parallel_mode=%d' % pm)
+                index.parallel_mode = pm
+                lims4, D4, I4 = index.range_search(xq, radius)
+                print('sizes', lims4[1:] - lims4[:-1])
+                for qno in range(len(lims) - 1):
+                    Iref = I3[lims[qno]: lims[qno+1]]
+                    Inew = I4[lims4[qno]: lims4[qno+1]]
+                    assert set(Iref) == set(Inew), "q %d ref %s new %s" % (
+                        qno, Iref, Inew)
 
 
     def test_SQ_IP(self):
@@ -600,7 +603,6 @@ class TestSpectralHash(unittest.TestCase):
         (128, 'centroid_half', 1): 171,
         (128, 'median', 1): 253,
     }
-
 
     def test_sh(self):
         d = 32

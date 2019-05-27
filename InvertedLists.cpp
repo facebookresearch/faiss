@@ -40,10 +40,10 @@ InvertedLists::idx_t InvertedLists::get_single_id (
 }
 
 
-void InvertedLists::release_codes (size_t list_no, const uint8_t *) const
+void InvertedLists::release_codes (size_t, const uint8_t *) const
 {}
 
-void InvertedLists::release_ids (size_t list_no, const idx_t *) const
+void InvertedLists::release_ids (size_t, const idx_t *) const
 {}
 
 void InvertedLists::prefetch_lists (const idx_t *, int) const
@@ -280,7 +280,7 @@ const uint8_t * HStackInvertedLists::get_single_code (
 }
 
 
-void HStackInvertedLists::release_codes (size_t list_no, const uint8_t *codes) const {
+void HStackInvertedLists::release_codes (size_t, const uint8_t *codes) const {
     delete [] codes;
 }
 
@@ -315,7 +315,7 @@ Index::idx_t HStackInvertedLists::get_single_id (
 }
 
 
-void HStackInvertedLists::release_ids (size_t list_no, const idx_t *ids) const {
+void HStackInvertedLists::release_ids (size_t, const idx_t *ids) const {
     delete [] ids;
 }
 
@@ -346,7 +346,8 @@ namespace {
 
 
 
-SliceInvertedLists::SliceInvertedLists (const InvertedLists *il, idx_t i0, idx_t i1):
+SliceInvertedLists::SliceInvertedLists (
+    const InvertedLists *il, idx_t i0, idx_t i1):
     ReadOnlyInvertedLists (i1 - i0, il->code_size),
     il (il), i0(i0), i1(i1)
 {
@@ -370,7 +371,8 @@ const uint8_t * SliceInvertedLists::get_single_code (
 }
 
 
-void SliceInvertedLists::release_codes (size_t list_no, const uint8_t *codes) const {
+void SliceInvertedLists::release_codes (
+       size_t list_no, const uint8_t *codes) const {
     return il->release_codes (translate_list_no (this, list_no), codes);
 }
 
@@ -478,7 +480,8 @@ const uint8_t * VStackInvertedLists::get_single_code (
 }
 
 
-void VStackInvertedLists::release_codes (size_t list_no, const uint8_t *codes) const {
+void VStackInvertedLists::release_codes (
+          size_t list_no, const uint8_t *codes) const {
     int i = translate_list_no (this, list_no);
     list_no -= cumsz[i];
     return ils[i]->release_codes (list_no, codes);
@@ -506,7 +509,8 @@ void VStackInvertedLists::release_ids (size_t list_no, const idx_t *ids) const {
     return ils[i]->release_ids (list_no, ids);
 }
 
-void VStackInvertedLists::prefetch_lists (const idx_t *list_nos, int nlist) const
+void VStackInvertedLists::prefetch_lists (
+           const idx_t *list_nos, int nlist) const
 {
     std::vector<int> ilno (nlist, -1);
     std::vector<int> n_per_il (ils.size(), 0);
@@ -574,7 +578,8 @@ const idx_t * MaskedInvertedLists::get_ids (size_t list_no) const
     return (sz ? il0 : il1)->get_ids (list_no);
 }
 
-void MaskedInvertedLists::release_codes (size_t list_no, const uint8_t *codes) const
+void MaskedInvertedLists::release_codes (
+      size_t list_no, const uint8_t *codes) const
 {
     size_t sz = il0->list_size (list_no);
     (sz ? il0 : il1)->release_codes (list_no, codes);
@@ -599,7 +604,8 @@ const uint8_t * MaskedInvertedLists::get_single_code (
     return (sz ? il0 : il1)->get_single_code (list_no, offset);
 }
 
-void MaskedInvertedLists::prefetch_lists (const idx_t *list_nos, int nlist) const
+void MaskedInvertedLists::prefetch_lists (
+       const idx_t *list_nos, int nlist) const
 {
     std::vector<idx_t> list0, list1;
     for (int i = 0; i < nlist; i++) {

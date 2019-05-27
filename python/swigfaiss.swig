@@ -567,6 +567,7 @@ struct AsyncIndexSearchC {
     DOWNCAST (OnDiskInvertedLists)
     DOWNCAST (VStackInvertedLists)
     DOWNCAST (HStackInvertedLists)
+    DOWNCAST (MaskedInvertedLists)
     DOWNCAST (InvertedLists)
     {
         assert(false);

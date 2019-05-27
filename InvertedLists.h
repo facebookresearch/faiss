@@ -159,11 +159,12 @@ struct InvertedLists {
         size_t list_no;
 
         ScopedCodes (const InvertedLists *il, size_t list_no):
-        il (il), codes (il->get_codes (list_no)), list_no (list_no)
+            il (il), codes (il->get_codes (list_no)), list_no (list_no)
         {}
 
         ScopedCodes (const InvertedLists *il, size_t list_no, size_t offset):
-        il (il), codes (il->get_single_code (list_no, offset)), list_no (list_no)
+            il (il), codes (il->get_single_code (list_no, offset)),
+            list_no (list_no)
         {}
 
         const uint8_t *get() {return codes; }
@@ -298,7 +299,11 @@ struct VStackInvertedLists: ReadOnlyInvertedLists {
 };
 
 
-/// use the first inverted lists if they are non-empty otherwise use the second
+/** use the first inverted lists if they are non-empty otherwise use the second
+ *
+ * This is useful if il1 has a few inverted lists that are too long,
+ * and that il0 has replacement lists for those, with empty lists for
+ * the others. */
 struct MaskedInvertedLists: ReadOnlyInvertedLists {
 
     const InvertedLists *il0;

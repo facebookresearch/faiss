@@ -100,11 +100,11 @@ struct EncapsulateInvertedLists: InvertedLists {
                                list_size(list_no) * sizeof(idx_t));
     }
 
-    void release_codes (size_t list_no, const uint8_t *codes) const override {
+    void release_codes (size_t, const uint8_t *codes) const override {
         free ((void*)codes);
     }
 
-    void release_ids (size_t list_no, const idx_t *ids) const override {
+    void release_ids (size_t, const idx_t *ids) const override {
         free ((void*)ids);
     }
 

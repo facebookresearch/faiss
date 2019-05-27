@@ -151,7 +151,7 @@ void RangeSearchPartialResult::finalize ()
     res->do_allocation ();
 
 #pragma omp barrier
-    set_result ();
+    copy_result ();
 }
 
 
@@ -165,7 +165,7 @@ void RangeSearchPartialResult::set_lims ()
 }
 
 /// called by range_search after do_allocation
-void RangeSearchPartialResult::set_result (bool incremental)
+void RangeSearchPartialResult::copy_result (bool incremental)
 {
     size_t ofs = 0;
     for (int i = 0; i < queries.size(); i++) {
@@ -200,7 +200,7 @@ void RangeSearchPartialResult::merge (std::vector <RangeSearchPartialResult *> &
     result->do_allocation ();
     for (int j = 0; j < npres; j++) {
         if (!partial_results[j]) continue;
-        partial_results[j]->set_result (true);
+        partial_results[j]->copy_result (true);
         if (do_delete) {
             delete partial_results[j];
             partial_results[j] = nullptr;

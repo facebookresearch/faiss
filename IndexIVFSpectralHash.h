@@ -61,7 +61,7 @@ struct IndexIVFSpectralHash: IndexIVF {
     InvertedListScanner *get_InvertedListScanner (bool store_pairs)
         const override;
 
-    ~IndexIVFSpectralHash ();
+    ~IndexIVFSpectralHash () override;
 
 };
 

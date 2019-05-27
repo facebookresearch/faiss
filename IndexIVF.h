@@ -97,8 +97,12 @@ struct IndexIVF: Index, Level1Quantizer {
     size_t nprobe;            ///< number of probes at query time
     size_t max_codes;         ///< max nb of codes to visit to do a query
 
-    ///  =0: parallelize over queries
-    ///  =1: parallelize over over invlists
+    /** Parallel mode determines how queries are parallelized with OpenMP
+     *
+     * 0 (default): parallelize over queries
+     * 1: parallelize over over inverted lists
+     * 2: parallelize over both
+     */
     int parallel_mode;
 
     /// map for direct access to the elements. Enables reconstruct().

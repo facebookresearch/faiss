@@ -357,18 +357,21 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
                     // loop over probes
                     for (size_t ik = 0; ik < nprobe; ik++) {
 
-                        nscan += scan_one_list
-                            (keys [i * nprobe + ik], coarse_dis[i * nprobe + ik],
-                             simi, idxi);
+                        nscan += scan_one_list (
+                             keys [i * nprobe + ik],
+                             coarse_dis[i * nprobe + ik],
+                             simi, idxi
+                        );
 
-                        if (max_codes && nscan >= max_codes)
+                        if (max_codes && nscan >= max_codes) {
                             break;
+                        }
                     }
 
                     ndis += nscan;
                     reorder_result (simi, idxi);
                 } // parallel for
-            } else {
+            } else if (parallel_mode == 1) {
                 std::vector <idx_t> local_idx (k);
                 std::vector <float> local_dis (k);
 
@@ -378,9 +381,11 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
 
 #pragma omp for schedule(dynamic)
                     for (size_t ik = 0; ik < nprobe; ik++) {
-                        ndis += scan_one_list
-                            (keys [i * nprobe + ik], coarse_dis[i * nprobe + ik],
-                             local_dis.data(), local_idx.data());
+                        ndis += scan_one_list (
+                            keys [i * nprobe + ik],
+                            coarse_dis[i * nprobe + ik],
+                            local_dis.data(), local_idx.data()
+                        );
 
                         // can't do the test on max_codes
                     }
@@ -408,6 +413,9 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
 #pragma omp single
                     reorder_result (simi, idxi);
                 }
+            } else {
+                FAISS_THROW_FMT ("parallel_mode %d not supported\n",
+                                 parallel_mode);
             }
         } // loop over blocks
         InterruptCallback::check ();
@@ -426,29 +434,26 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
 void IndexIVF::range_search (idx_t nx, const float *x, float radius,
                              RangeSearchResult *result) const
 {
-
-    idx_t * keys = new idx_t [nx * nprobe];
-
-    ScopeDeleter<idx_t> del (keys);
-    float * coarse_dis = new float [nx * nprobe];
-    ScopeDeleter<float> del2 (coarse_dis);
+    std::unique_ptr<idx_t[]> keys (new idx_t[nx * nprobe]);
+    std::unique_ptr<float []> coarse_dis (new float[nx * nprobe]);
 
     double t0 = getmillisecs();
-    quantizer->search (nx, x, nprobe, coarse_dis, keys);
+    quantizer->search (nx, x, nprobe, coarse_dis.get (), keys.get ());
     indexIVF_stats.quantization_time += getmillisecs() - t0;
 
     t0 = getmillisecs();
-    invlists->prefetch_lists (keys, nx * nprobe);
+    invlists->prefetch_lists (keys.get(), nx * nprobe);
 
-    range_search_preassigned (nx, x, radius, keys, coarse_dis,
+    range_search_preassigned (nx, x, radius, keys.get (), coarse_dis.get (),
                               result);
 
     indexIVF_stats.search_time += getmillisecs() - t0;
 }
 
-void IndexIVF::range_search_preassigned(idx_t nx, const float *x, float radius,
-                                        const idx_t *keys, const float *coarse_dis,
-                                        RangeSearchResult *result) const
+void IndexIVF::range_search_preassigned (
+         idx_t nx, const float *x, float radius,
+         const idx_t *keys, const float *coarse_dis,
+         RangeSearchResult *result) const
 {
 
     size_t nlistv = 0, ndis = 0;
@@ -459,10 +464,34 @@ void IndexIVF::range_search_preassigned(idx_t nx, const float *x, float radius,
 #pragma omp parallel reduction(+: nlistv, ndis)
     {
         RangeSearchPartialResult pres(result);
-        InvertedListScanner *scanner = get_InvertedListScanner(store_pairs);
-        ScopeDeleter1<InvertedListScanner> del3(scanner);
-
+        std::unique_ptr<InvertedListScanner> scanner
+            (get_InvertedListScanner(store_pairs));
+        FAISS_THROW_IF_NOT (scanner.get ());
         all_pres[omp_get_thread_num()] = &pres;
+
+        // prepare the list scanning function
+
+        auto scan_list_func = [&](size_t i, size_t ik, RangeQueryResult &qres) {
+
+            idx_t key = keys[i * nprobe + ik];  /* select the list  */
+            if (key < 0) return;
+            FAISS_THROW_IF_NOT_FMT (
+                  key < (idx_t) nlist,
+                  "Invalid key=%ld  at ik=%ld nlist=%ld\n",
+                  key, ik, nlist);
+            const size_t list_size = invlists->list_size(key);
+
+            if (list_size == 0) return;
+
+            InvertedLists::ScopedCodes scodes (invlists, key);
+            InvertedLists::ScopedIds ids (invlists, key);
+
+            scanner->set_list (key, coarse_dis[i * nprobe + ik]);
+            nlistv++;
+            ndis += list_size;
+            scanner->scan_codes_range (list_size, scodes.get(),
+                                       ids.get(), radius, qres);
+        };
 
         if (parallel_mode == 0) {
 
@@ -473,29 +502,12 @@ void IndexIVF::range_search_preassigned(idx_t nx, const float *x, float radius,
                 RangeQueryResult & qres = pres.new_result (i);
 
                 for (size_t ik = 0; ik < nprobe; ik++) {
-                    idx_t key = keys[i * nprobe + ik];  /* select the list  */
-                    if (key < 0) continue;
-                    FAISS_THROW_IF_NOT_FMT (key < (idx_t) nlist,
-                                            "Invalid key=%ld  at ik=%ld nlist=%ld\n",
-                                            key, ik, nlist);
-                    const size_t list_size = invlists->list_size(key);
-
-                    if (list_size == 0) continue;
-
-                    InvertedLists::ScopedCodes scodes (invlists, key);
-                    InvertedLists::ScopedIds ids (invlists, key);
-
-                    scanner->set_list (key, coarse_dis[i * nprobe + ik]);
-                    nlistv++;
-                    ndis += list_size;
-                    scanner->scan_codes_range (list_size, scodes.get(),
-                                               ids.get(), radius, qres);
-
+                    scan_list_func (i, ik, qres);
                 }
 
             }
 
-        } else { // parallel_mode != 0
+        } else if (parallel_mode == 1) {
 
             for (size_t i = 0; i < nx; i++) {
                 scanner->set_query (x + i * d);
@@ -504,28 +516,27 @@ void IndexIVF::range_search_preassigned(idx_t nx, const float *x, float radius,
 
 #pragma omp for schedule(dynamic)
                 for (size_t ik = 0; ik < nprobe; ik++) {
-                    idx_t key = keys[i * nprobe + ik];  /* select the list  */
-                    if (key < 0) continue;
-                    FAISS_THROW_IF_NOT_FMT (key < (idx_t) nlist,
-                                            "Invalid key=%ld  at ik=%ld nlist=%ld\n",
-                                            key, ik, nlist);
-                    const size_t list_size = invlists->list_size(key);
-
-                    if (list_size > 0) {
-
-                        InvertedLists::ScopedCodes scodes (invlists, key);
-                        InvertedLists::ScopedIds ids (invlists, key);
-
-                        scanner->set_list (key, coarse_dis[i * nprobe + ik]);
-                        nlistv++;
-                        ndis += list_size;
-                        scanner->scan_codes_range (list_size, scodes.get(),
-                                                   ids.get(), radius, qres);
-                    }
+                    scan_list_func (i, ik, qres);
                 }
             }
-        }
+        } else if (parallel_mode == 2) {
+            std::vector<RangeQueryResult *> all_qres (nx);
+            RangeQueryResult *qres = nullptr;
 
+#pragma omp for schedule(dynamic)
+            for (size_t iik = 0; iik < nx * nprobe; iik++) {
+                size_t i = iik / nprobe;
+                size_t ik = iik % nprobe;
+                if (qres == nullptr || qres->qno != i) {
+                    FAISS_ASSERT (!qres || i > qres->qno);
+                    qres = &pres.new_result (i);
+                    scanner->set_query (x + i * d);
+                }
+                scan_list_func (i, ik, *qres);
+            }
+        } else {
+            FAISS_THROW_FMT ("parallel_mode %d not supported\n", parallel_mode);
+        }
         if (parallel_mode == 0) {
             pres.finalize ();
         } else {

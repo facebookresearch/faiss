@@ -867,6 +867,7 @@ IndexPreTransform::IndexPreTransform (
     index (index), own_fields (false)
 {
     is_trained = index->is_trained;
+    ntotal = index->ntotal;
 }
 
 
@@ -877,6 +878,7 @@ IndexPreTransform::IndexPreTransform (
     index (index), own_fields (false)
 {
     is_trained = index->is_trained;
+    ntotal = index->ntotal;
     prepend_transform (ltrans);
 }
 

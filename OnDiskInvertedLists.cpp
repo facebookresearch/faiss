@@ -186,7 +186,7 @@ struct OnDiskInvertedLists::OngoingPrefetch {
 
     const OnDiskInvertedLists *od;
 
-    OngoingPrefetch (const OnDiskInvertedLists *od): od (od)
+    explicit OngoingPrefetch (const OnDiskInvertedLists *od): od (od)
     {
         pthread_mutex_init (&mutex, nullptr);
         pthread_mutex_init (&list_ids_mutex, nullptr);
@@ -220,8 +220,10 @@ struct OnDiskInvertedLists::OngoingPrefetch {
             pthread_join (th.pth, nullptr);
         }
 
+        threads.resize (0);
         cur_list = 0;
         int nt = std::min (n, od->prefetch_nthread);
+
         if (nt > 0) {
             // prepare tasks
             for (int i = 0; i < n; i++) {
@@ -293,7 +295,7 @@ void OnDiskInvertedLists::update_totsize (size_t new_size)
     // unmap file
     if (ptr != nullptr) {
         int err = munmap (ptr, totsize);
-        FAISS_THROW_IF_NOT_FMT (err == 0, "mumap error: %s",
+        FAISS_THROW_IF_NOT_FMT (err == 0, "munmap error: %s",
                                 strerror(errno));
     }
     if (totsize == 0) {
@@ -383,7 +385,7 @@ OnDiskInvertedLists::~OnDiskInvertedLists ()
     if (ptr != nullptr) {
         int err = munmap (ptr, totsize);
         if (err != 0) {
-            fprintf(stderr, "munmap error: %s",
+            fprintf(stderr, "mumap error: %s",
                     strerror(errno));
         }
     }

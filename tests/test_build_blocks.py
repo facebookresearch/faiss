@@ -419,7 +419,7 @@ class TestScalarQuantizer(unittest.TestCase):
                 for j in range(10):
                     dis = ((y[i] - x2[I[i, j]]) ** 2).sum()
                     print(dis, D[i, j])
-                    assert abs(D[i, j] - dis) / dis  < 1e-5
+                    assert abs(D[i, j] - dis) / dis < 1e-5
 
 
 
