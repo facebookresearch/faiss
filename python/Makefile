@@ -30,7 +30,7 @@ install: build
 	$(PYTHON) setup.py install
 
 clean:
-	rm -f swigfaiss.{cpp,o,py}
+	rm -f swigfaiss.cpp swigfaiss.o swigfaiss.py
 	rm -f _swigfaiss.so
 	rm -rf build/
 
