@@ -2,6 +2,7 @@ var searchData=
 [
   ['scan_5ftable_5fthreshold',['scan_table_threshold',['../structfaiss_1_1IVFPQSearchParameters.html#a5537033b0fe6cf3ef8334a16de7a47d5',1,'faiss::IVFPQSearchParameters::scan_table_threshold()'],['../structfaiss_1_1IndexIVFPQ.html#a7430fc4fa030c96497abced3b68358d4',1,'faiss::IndexIVFPQ::scan_table_threshold()']]],
   ['sdc_5ftable',['sdc_table',['../structfaiss_1_1ProductQuantizer.html#a6bd65fb4407452f73acb7242931d09e4',1,'faiss::ProductQuantizer']]],
+  ['search_5fbounded_5fqueue',['search_bounded_queue',['../structfaiss_1_1HNSW.html#a683738e8ab8e67fcabd823510c30b074',1,'faiss::HNSW']]],
   ['seed',['seed',['../structFaissClusteringParameters.html#a4ce5970d8ccb1c014a2d9ace87d66da6',1,'FaissClusteringParameters::seed()'],['../structfaiss_1_1ClusteringParameters.html#a509c65e2ebe6ecabebd163ecb03c5579',1,'faiss::ClusteringParameters::seed()']]],
   ['shard',['shard',['../structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html#a7c5bd7a840f6641d5d68699f4416d79d',1,'faiss::gpu::GpuMultipleClonerOptions']]],
   ['shard_5ftype',['shard_type',['../structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html#a9548f823297298b0a78109dec7feb45e',1,'faiss::gpu::GpuMultipleClonerOptions']]],

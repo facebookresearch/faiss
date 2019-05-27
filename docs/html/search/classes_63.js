@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['centeringtransform',['CenteringTransform',['../structfaiss_1_1CenteringTransform.html',1,'faiss']]],
   ['cloner',['Cloner',['../structfaiss_1_1Cloner.html',1,'faiss']]],
   ['clustering',['Clustering',['../structfaiss_1_1Clustering.html',1,'faiss']]],
   ['clusteringparameters',['ClusteringParameters',['../structfaiss_1_1ClusteringParameters.html',1,'faiss']]],
@@ -7,7 +8,6 @@ var searchData=
   ['cmin',['CMin',['../structfaiss_1_1CMin.html',1,'faiss']]],
   ['codecmp',['CodeCmp',['../structfaiss_1_1CodeCmp.html',1,'faiss']]],
   ['comparator',['Comparator',['../structfaiss_1_1gpu_1_1Comparator.html',1,'faiss::gpu']]],
-  ['concatenatedinvertedlists',['ConcatenatedInvertedLists',['../structfaiss_1_1ConcatenatedInvertedLists.html',1,'faiss']]],
   ['converter',['Converter',['../structfaiss_1_1gpu_1_1Converter.html',1,'faiss::gpu']]],
   ['converter_3c_20float_20_3e',['Converter&lt; float &gt;',['../structfaiss_1_1gpu_1_1Converter_3_01float_01_4.html',1,'faiss::gpu']]],
   ['convertto',['ConvertTo',['../structfaiss_1_1gpu_1_1ConvertTo.html',1,'faiss::gpu']]],

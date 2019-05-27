@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['parallel_5fmode',['parallel_mode',['../structfaiss_1_1IndexIVF.html#a244ec2067da495ff1493687e0048ae02',1,'faiss::IndexIVF']]],
   ['parameter_5franges',['parameter_ranges',['../structfaiss_1_1ParameterSpace.html#a334c1bb54bc2b70950a4a63950728cbb',1,'faiss::ParameterSpace']]],
   ['pcamat',['PCAMat',['../structfaiss_1_1PCAMatrix.html#aef5c130774e5d4f697a3e1c82647bfd3',1,'faiss::PCAMatrix']]],
   ['perf',['perf',['../structfaiss_1_1OperatingPoint.html#ad218d1641b6e32d043a215542485a457',1,'faiss::OperatingPoint']]],

@@ -13,6 +13,5 @@ var searchData=
   ['devicetensor_3c_20unsigned_20char_2c_202_2c_20true_20_3e',['DeviceTensor&lt; unsigned char, 2, true &gt;',['../classfaiss_1_1gpu_1_1DeviceTensor.html',1,'faiss::gpu']]],
   ['devicevector',['DeviceVector',['../classfaiss_1_1gpu_1_1DeviceVector.html',1,'faiss::gpu']]],
   ['devicevector_3c_20char_20_3e',['DeviceVector&lt; char &gt;',['../classfaiss_1_1gpu_1_1DeviceVector.html',1,'faiss::gpu']]],
-  ['distancecomputer',['DistanceComputer',['../structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html',1,'faiss::ScalarQuantizer']]],
-  ['distancecomputer',['DistanceComputer',['../structfaiss_1_1HNSW_1_1DistanceComputer.html',1,'faiss::HNSW']]]
+  ['distancecomputer',['DistanceComputer',['../structfaiss_1_1DistanceComputer.html',1,'faiss']]]
 ];

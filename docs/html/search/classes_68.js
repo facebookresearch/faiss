@@ -14,5 +14,6 @@ var searchData=
   ['heaparray',['HeapArray',['../structfaiss_1_1HeapArray.html',1,'faiss']]],
   ['hnsw',['HNSW',['../structfaiss_1_1HNSW.html',1,'faiss']]],
   ['hnswstats',['HNSWStats',['../structfaiss_1_1HNSWStats.html',1,'faiss']]],
-  ['hosttensor',['HostTensor',['../classfaiss_1_1gpu_1_1HostTensor.html',1,'faiss::gpu']]]
+  ['hosttensor',['HostTensor',['../classfaiss_1_1gpu_1_1HostTensor.html',1,'faiss::gpu']]],
+  ['hstackinvertedlists',['HStackInvertedLists',['../structfaiss_1_1HStackInvertedLists.html',1,'faiss']]]
 ];

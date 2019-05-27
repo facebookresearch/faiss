@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: /tmp/faiss/gpu/impl/L2Select.cu Source File</title>
+<title>Faiss: /data/users/hoss/faiss/gpu/impl/L2Select.cu Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_af0e5773a0d3761542ab6067d117c294.html">gpu</a></li><li class="navelem"><a class="el" href="dir_ea0860077ce9bde67386df28ec04e682.html">impl</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_5956a3e80a20e8e03eb577bedb92689f.html">gpu</a></li><li class="navelem"><a class="el" href="dir_2be73404b46ec2282840cd36fdb9a907.html">impl</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -88,17 +88,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Copyright (c) 2015-present, Facebook, Inc.</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * All rights reserved.</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * This source code is licensed under the BSD+Patents license found in the</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * LICENSE file in the root directory of this source tree.</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Copyright (c) Facebook, Inc. and its affiliates.</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * This source code is licensed under the MIT license found in the</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * LICENSE file in the root directory of this source tree.</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;L2Select.cuh&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;../../FaissAssert.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;L2Select.cuh&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;../../FaissAssert.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;../utils/DeviceDefs.cuh&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../utils/DeviceUtils.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../utils/MathOperators.cuh&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;../utils/Pair.cuh&quot;</span></div>
@@ -248,96 +248,100 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  }</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;}</div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="comment">// FIXME: no TVec specialization</span></div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="keywordtype">void</span> runL2SelectMin(Tensor&lt;T, 2, true&gt;&amp; productDistances,</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;                    Tensor&lt;T, 1, true&gt;&amp; centroidDistances,</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;                    Tensor&lt;T, 2, true&gt;&amp; outDistances,</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;                    Tensor&lt;int, 2, true&gt;&amp; outIndices,</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;                    <span class="keywordtype">int</span> k,</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;                    cudaStream_t stream) {</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  FAISS_ASSERT(productDistances.getSize(0) == outDistances.getSize(0));</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  FAISS_ASSERT(productDistances.getSize(0) == outIndices.getSize(0));</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  FAISS_ASSERT(centroidDistances.getSize(0) == productDistances.getSize(1));</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  FAISS_ASSERT(outDistances.getSize(1) == k);</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  FAISS_ASSERT(outIndices.getSize(1) == k);</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  FAISS_ASSERT(k &lt;= 1024);</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  <span class="keywordflow">if</span> (k == 1) {</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    constexpr <span class="keywordtype">int</span> kThreadsPerBlock = 256;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    constexpr <span class="keywordtype">int</span> kRowsPerBlock = 8;</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="keyword">auto</span> block = dim3(kThreadsPerBlock);</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    <span class="keyword">auto</span> grid = dim3(utils::divUp(outDistances.getSize(0), kRowsPerBlock));</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    l2SelectMin1&lt;T, kRowsPerBlock, kThreadsPerBlock&gt;</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;      &lt;&lt;&lt;grid, block, 0, stream&gt;&gt;&gt;(productDistances, centroidDistances,</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;                                   outDistances, outIndices);</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    constexpr <span class="keywordtype">int</span> kThreadsPerBlock = 128;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="keyword">auto</span> block = dim3(kThreadsPerBlock);</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <span class="keyword">auto</span> grid = dim3(outDistances.getSize(0));</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="preprocessor">#define RUN_L2_SELECT(NUM_WARP_Q, NUM_THREAD_Q)                         \</span></div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="preprocessor">    do {                                                                \</span></div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="preprocessor">      l2SelectMinK&lt;T, NUM_WARP_Q, NUM_THREAD_Q, kThreadsPerBlock&gt;       \</span></div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="preprocessor">        &lt;&lt;&lt;grid, block, 0, stream&gt;&gt;&gt;(productDistances, centroidDistances, \</span></div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="preprocessor">                                     outDistances, outIndices,          \</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="preprocessor">                                     k, Limits&lt;T&gt;::getMax());           \</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="preprocessor">    } while (0)</span></div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    <span class="keywordflow">if</span> (k &lt;= 32) {</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      RUN_L2_SELECT(32, 2);</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (k &lt;= 64) {</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;      RUN_L2_SELECT(64, 3);</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (k &lt;= 128) {</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      RUN_L2_SELECT(128, 3);</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (k &lt;= 256) {</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;      RUN_L2_SELECT(256, 4);</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (k &lt;= 512) {</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;      RUN_L2_SELECT(512, 8);</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (k &lt;= 1024) {</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;      RUN_L2_SELECT(1024, 8);</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;      FAISS_ASSERT(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    }</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  }</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  CUDA_TEST_ERROR();</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;}</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="keywordtype">void</span> runL2SelectMin(Tensor&lt;float, 2, true&gt;&amp; productDistances,</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;                    Tensor&lt;float, 1, true&gt;&amp; centroidDistances,</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;                    Tensor&lt;float, 2, true&gt;&amp; outDistances,</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;                    Tensor&lt;int, 2, true&gt;&amp; outIndices,</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;                    <span class="keywordtype">int</span> k,</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;                    cudaStream_t stream) {</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  runL2SelectMin&lt;float&gt;(productDistances,</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;                        centroidDistances,</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;                        outDistances,</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;                        outIndices,</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;                        k,</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;                        stream);</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;}</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="preprocessor">#ifdef FAISS_USE_FLOAT16</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="preprocessor"></span><span class="keywordtype">void</span> runL2SelectMin(Tensor&lt;half, 2, true&gt;&amp; productDistances,</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;                    Tensor&lt;half, 1, true&gt;&amp; centroidDistances,</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;                    Tensor&lt;half, 2, true&gt;&amp; outDistances,</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;                    Tensor&lt;int, 2, true&gt;&amp; outIndices,</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;                    <span class="keywordtype">int</span> k,</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;                    cudaStream_t stream) {</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  runL2SelectMin&lt;half&gt;(productDistances,</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;                       centroidDistances,</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;                       outDistances,</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;                       outIndices,</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;                       k,</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;                       stream);</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;}</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;} } <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<span class="keywordtype">void</span> runL2SelectMin(Tensor&lt;T, 2, true&gt;&amp; productDistances,</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                    Tensor&lt;T, 1, true&gt;&amp; centroidDistances,</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;                    Tensor&lt;T, 2, true&gt;&amp; outDistances,</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;                    Tensor&lt;int, 2, true&gt;&amp; outIndices,</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;                    <span class="keywordtype">int</span> k,</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;                    cudaStream_t stream) {</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  FAISS_ASSERT(productDistances.getSize(0) == outDistances.getSize(0));</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  FAISS_ASSERT(productDistances.getSize(0) == outIndices.getSize(0));</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  FAISS_ASSERT(centroidDistances.getSize(0) == productDistances.getSize(1));</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  FAISS_ASSERT(outDistances.getSize(1) == k);</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  FAISS_ASSERT(outIndices.getSize(1) == k);</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  FAISS_ASSERT(k &lt;= GPU_MAX_SELECTION_K);</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <span class="keywordflow">if</span> (k == 1) {</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    constexpr <span class="keywordtype">int</span> kThreadsPerBlock = 256;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    constexpr <span class="keywordtype">int</span> kRowsPerBlock = 8;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    <span class="keyword">auto</span> block = dim3(kThreadsPerBlock);</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="keyword">auto</span> grid = dim3(utils::divUp(outDistances.getSize(0), kRowsPerBlock));</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    l2SelectMin1&lt;T, kRowsPerBlock, kThreadsPerBlock&gt;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;      &lt;&lt;&lt;grid, block, 0, stream&gt;&gt;&gt;(productDistances, centroidDistances,</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;                                   outDistances, outIndices);</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    <span class="keyword">auto</span> grid = dim3(outDistances.getSize(0));</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="preprocessor">#define RUN_L2_SELECT(BLOCK, NUM_WARP_Q, NUM_THREAD_Q)                  \</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="preprocessor">    do {                                                                \</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="preprocessor">      l2SelectMinK&lt;T, NUM_WARP_Q, NUM_THREAD_Q, BLOCK&gt;                  \</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="preprocessor">        &lt;&lt;&lt;grid, BLOCK, 0, stream&gt;&gt;&gt;(productDistances, centroidDistances, \</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="preprocessor">                                     outDistances, outIndices,          \</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="preprocessor">                                     k, Limits&lt;T&gt;::getMax());           \</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="preprocessor">    } while (0)</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    <span class="comment">// block size 128 for everything &lt;= 1024</span></div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="keywordflow">if</span> (k &lt;= 32) {</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;      RUN_L2_SELECT(128, 32, 2);</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (k &lt;= 64) {</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;      RUN_L2_SELECT(128, 64, 3);</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (k &lt;= 128) {</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      RUN_L2_SELECT(128, 128, 3);</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (k &lt;= 256) {</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      RUN_L2_SELECT(128, 256, 4);</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (k &lt;= 512) {</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;      RUN_L2_SELECT(128, 512, 8);</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (k &lt;= 1024) {</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;      RUN_L2_SELECT(128, 1024, 8);</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<span class="preprocessor">#if GPU_MAX_SELECTION_K &gt;= 2048</span></div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="preprocessor"></span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (k &lt;= 2048) {</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;      <span class="comment">// smaller block for less shared memory</span></div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;      RUN_L2_SELECT(64, 2048, 8);</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;      FAISS_ASSERT(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    }</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  }</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  CUDA_TEST_ERROR();</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;}</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="keywordtype">void</span> runL2SelectMin(Tensor&lt;float, 2, true&gt;&amp; productDistances,</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;                    Tensor&lt;float, 1, true&gt;&amp; centroidDistances,</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;                    Tensor&lt;float, 2, true&gt;&amp; outDistances,</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;                    Tensor&lt;int, 2, true&gt;&amp; outIndices,</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;                    <span class="keywordtype">int</span> k,</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;                    cudaStream_t stream) {</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  runL2SelectMin&lt;float&gt;(productDistances,</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;                        centroidDistances,</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;                        outDistances,</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;                        outIndices,</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;                        k,</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;                        stream);</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;}</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="preprocessor">#ifdef FAISS_USE_FLOAT16</span></div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="preprocessor"></span><span class="keywordtype">void</span> runL2SelectMin(Tensor&lt;half, 2, true&gt;&amp; productDistances,</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;                    Tensor&lt;half, 1, true&gt;&amp; centroidDistances,</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;                    Tensor&lt;half, 2, true&gt;&amp; outDistances,</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;                    Tensor&lt;int, 2, true&gt;&amp; outIndices,</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;                    <span class="keywordtype">int</span> k,</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;                    cudaStream_t stream) {</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  runL2SelectMin&lt;half&gt;(productDistances,</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;                       centroidDistances,</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;                       outDistances,</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;                       outIndices,</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;                       k,</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;                       stream);</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;}</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;} } <span class="comment">// namespace</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,8 +1,10 @@
 var searchData=
 [
   ['centroids',['centroids',['../structfaiss_1_1Clustering.html#a64c5ec0b4a7967d8be2872974b455ff1',1,'faiss::Clustering::centroids()'],['../structfaiss_1_1ProductQuantizer.html#aab1109a29ba0544358e274d727b23cae',1,'faiss::ProductQuantizer::centroids()']]],
+  ['check_5frelative_5fdistance',['check_relative_distance',['../structfaiss_1_1HNSW.html#adbf81f0b21102b942182c904892e0858',1,'faiss::HNSW']]],
   ['clustering_5findex',['clustering_index',['../structfaiss_1_1IndexBinaryIVF.html#ae4b4048070a6fc5aa3226a2edf42db5e',1,'faiss::IndexBinaryIVF::clustering_index()'],['../structfaiss_1_1Level1Quantizer.html#a45d29dd6a5c53789c08e5ceb3f63d989',1,'faiss::Level1Quantizer::clustering_index()']]],
   ['cno',['cno',['../structfaiss_1_1OperatingPoint.html#a2c023f1484e4748e3e97681bb1f4b78e',1,'faiss::OperatingPoint']]],
+  ['code',['code',['../structfaiss_1_1ProductQuantizer_1_1PQEncoderGeneric.html#ad0303ebf67310a2abd064e7ff3215057',1,'faiss::ProductQuantizer::PQEncoderGeneric']]],
   ['code_5fsize',['code_size',['../structfaiss_1_1IndexBinary.html#a277c2645b8def11c5d982384098c5380',1,'faiss::IndexBinary::code_size()'],['../structfaiss_1_1IndexIVF.html#a46d1aeddb60643c5b3f096147c3e028f',1,'faiss::IndexIVF::code_size()'],['../structfaiss_1_1Index2Layer.html#a66403863c8ec987ed83b4d7ef4064fe9',1,'faiss::Index2Layer::code_size()'],['../structfaiss_1_1ScalarQuantizer.html#a647b8774e4cd8ca5623a194f5c7f8a33',1,'faiss::ScalarQuantizer::code_size()'],['../structfaiss_1_1InvertedLists.html#ae06049e4259edb47d443ef87bdedc744',1,'faiss::InvertedLists::code_size()'],['../structfaiss_1_1ProductQuantizer.html#aa61330eadb84772b71018b093773a5f9',1,'faiss::ProductQuantizer::code_size()']]],
   ['code_5fsize_5f1',['code_size_1',['../structfaiss_1_1Index2Layer.html#a735b2b6cc50e4186776a8213d2679837',1,'faiss::Index2Layer']]],
   ['code_5fsize_5f2',['code_size_2',['../structfaiss_1_1Index2Layer.html#ad47e3c6493d54c2b83f1120b480d20f3',1,'faiss::Index2Layer']]],

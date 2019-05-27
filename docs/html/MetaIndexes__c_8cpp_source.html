@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: /tmp/faiss/c_api/MetaIndexes_c.cpp Source File</title>
+<title>Faiss: /data/users/hoss/faiss/c_api/MetaIndexes_c.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_5fcc7c5aeda0d349161ae950b251beed.html">c_api</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_64ac8a349821497b9d0a85173173e082.html">c_api</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -105,7 +105,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">using</span> <a class="code" href="structfaiss_1_1Index.html">faiss::Index</a>;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">using</span> <a class="code" href="structfaiss_1_1IndexIDMap.html">faiss::IndexIDMap</a>;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">using</span> <a class="code" href="structfaiss_1_1IndexIDMap2.html">faiss::IndexIDMap2</a>;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">using</span> <a class="code" href="structfaiss_1_1IndexShards.html">faiss::IndexShards</a>;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">using</span> <a class="code" href="structfaiss_1_1IndexShardsTemplate.html">faiss::IndexShards</a>;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;DEFINE_GETTER(<a class="code" href="structfaiss_1_1IndexIDMap.html">IndexIDMap</a>, <span class="keywordtype">int</span>, own_fields)</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;DEFINE_SETTER(<a class="code" href="structfaiss_1_1IndexIDMap.html">IndexIDMap</a>, <span class="keywordtype">int</span>, own_fields)</div>
@@ -138,8 +138,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    } CATCH_AND_HANDLE</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;DEFINE_GETTER(<a class="code" href="structfaiss_1_1IndexShards.html">IndexShards</a>, <span class="keywordtype">int</span>, own_fields)</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;DEFINE_SETTER(<a class="code" href="structfaiss_1_1IndexShards.html">IndexShards</a>, <span class="keywordtype">int</span>, own_fields)</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;DEFINE_GETTER(IndexShards, <span class="keywordtype">int</span>, own_fields)</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;DEFINE_SETTER(IndexShards, <span class="keywordtype">int</span>, own_fields)</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;DEFINE_GETTER(IndexShards, <span class="keywordtype">int</span>, threaded)</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;DEFINE_SETTER(IndexShards, <span class="keywordtype">int</span>, threaded)</div>
@@ -156,7 +156,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keywordtype">int</span> faiss_IndexShards_new_with_options(FaissIndexShards** p_index, idx_t d, <span class="keywordtype">int</span> threaded, <span class="keywordtype">int</span> successive_ids) {</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">try</span> {</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keyword">auto</span> out = <span class="keyword">new</span> <a class="code" href="structfaiss_1_1IndexShards.html">IndexShards</a>(d, static_cast&lt;bool&gt;(threaded), static_cast&lt;bool&gt;(successive_ids));</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keyword">auto</span> out = <span class="keyword">new</span> IndexShards(d, static_cast&lt;bool&gt;(threaded), static_cast&lt;bool&gt;(successive_ids));</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        *p_index = <span class="keyword">reinterpret_cast&lt;</span>FaissIndexShards*<span class="keyword">&gt;</span>(out);</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    } CATCH_AND_HANDLE</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}</div>
@@ -169,7 +169,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment"> * @param p_size  output, the current length of `shard_indexes`.</span></div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="keywordtype">void</span> faiss_IndexShards_shard_indexes(FaissIndexShards* index, FaissIndex** p_shard_indexes, <span class="keywordtype">size_t</span>* p_size) {</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keyword">auto</span> idx = <span class="keyword">reinterpret_cast&lt;</span><a class="code" href="structfaiss_1_1IndexShards.html">IndexShards</a>*<span class="keyword">&gt;</span>(index);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keyword">auto</span> idx = <span class="keyword">reinterpret_cast&lt;</span>IndexShards*<span class="keyword">&gt;</span>(index);</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordflow">if</span> (p_shard_indexes)</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        *p_shard_indexes = <span class="keyword">reinterpret_cast&lt;</span>FaissIndex*<span class="keyword">&gt;</span>(idx-&gt;shard_indexes.data());</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordflow">if</span> (p_size)</div>
@@ -178,25 +178,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keywordtype">int</span> faiss_IndexShards_add_shard(FaissIndexShards* index, FaissIndex* shard) {</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordflow">try</span> {</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keyword">reinterpret_cast&lt;</span><a class="code" href="structfaiss_1_1IndexShards.html">IndexShards</a>*<span class="keyword">&gt;</span>(index)-&gt;add_shard(</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keyword">reinterpret_cast&lt;</span>IndexShards*<span class="keyword">&gt;</span>(index)-&gt;add_shard(</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;            reinterpret_cast&lt;Index*&gt;(shard));</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    } CATCH_AND_HANDLE</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keywordtype">int</span> faiss_IndexShards_sync_with_shard_indexes(FaissIndexShards* index) {</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordflow">try</span> {</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        <span class="keyword">reinterpret_cast&lt;</span><a class="code" href="structfaiss_1_1IndexShards.html">IndexShards</a>*<span class="keyword">&gt;</span>(index)-&gt;sync_with_shard_indexes();</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        <span class="keyword">reinterpret_cast&lt;</span>IndexShards*<span class="keyword">&gt;</span>(index)-&gt;sync_with_shard_indexes();</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    } CATCH_AND_HANDLE</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;FaissIndex* faiss_IndexShards_at(FaissIndexShards* index, <span class="keywordtype">int</span> i) {</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keyword">auto</span> shard = <span class="keyword">reinterpret_cast&lt;</span><a class="code" href="structfaiss_1_1IndexShards.html">IndexShards</a>*<span class="keyword">&gt;</span>(index)-&gt;at(i);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keyword">auto</span> shard = <span class="keyword">reinterpret_cast&lt;</span>IndexShards*<span class="keyword">&gt;</span>(index)-&gt;at(i);</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>FaissIndex*<span class="keyword">&gt;</span>(shard);</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}</div>
-<div class="ttc" id="structfaiss_1_1IndexIDMap2_html"><div class="ttname"><a href="structfaiss_1_1IndexIDMap2.html">faiss::IndexIDMap2</a></div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00062">MetaIndexes.h:62</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIDMap_html"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html">faiss::IndexIDMap</a></div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00025">MetaIndexes.h:25</a></div></div>
-<div class="ttc" id="structfaiss_1_1Index_html"><div class="ttname"><a href="structfaiss_1_1Index.html">faiss::Index</a></div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00062">Index.h:62</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexShards_html"><div class="ttname"><a href="structfaiss_1_1IndexShards.html">faiss::IndexShards</a></div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00085">MetaIndexes.h:85</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIDMap2_html"><div class="ttname"><a href="structfaiss_1_1IndexIDMap2.html">faiss::IndexIDMap2</a></div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00059">MetaIndexes.h:59</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIDMap_html"><div class="ttname"><a href="structfaiss_1_1IndexIDMap.html">faiss::IndexIDMap</a></div><div class="ttdef"><b>Definition:</b> <a href="MetaIndexes_8h_source.html#l00022">MetaIndexes.h:22</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexShardsTemplate_html"><div class="ttname"><a href="structfaiss_1_1IndexShardsTemplate.html">faiss::IndexShardsTemplate</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexShards_8h_source.html#l00020">IndexShards.h:20</a></div></div>
+<div class="ttc" id="structfaiss_1_1Index_html"><div class="ttname"><a href="structfaiss_1_1Index.html">faiss::Index</a></div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00061">Index.h:61</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

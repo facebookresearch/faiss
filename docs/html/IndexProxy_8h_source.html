@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: /tmp/faiss/gpu/IndexProxy.h Source File</title>
+<title>Faiss: /data/users/hoss/faiss/gpu/IndexProxy.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_af0e5773a0d3761542ab6067d117c294.html">gpu</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_5956a3e80a20e8e03eb577bedb92689f.html">gpu</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -136,23 +136,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">  /// faiss::Index API</span></div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">  /// All indices receive the same call</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classfaiss_1_1gpu_1_1IndexProxy.html#aee6fe7e95b02238103a6a2d1f6d2cd00">train</a>(<a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, <span class="keyword">const</span> <span class="keywordtype">float</span>* x) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classfaiss_1_1gpu_1_1IndexProxy.html#aee6fe7e95b02238103a6a2d1f6d2cd00">train</a>(<a class="code" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">Index::idx_t</a> n, <span class="keyword">const</span> <span class="keywordtype">float</span>* x) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">  /// faiss::Index API</span></div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">  /// All indices receive the same call</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classfaiss_1_1gpu_1_1IndexProxy.html#a61319b7ea215bf0ec6709443d8d4ee20">add</a>(<a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, <span class="keyword">const</span> <span class="keywordtype">float</span>* x) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classfaiss_1_1gpu_1_1IndexProxy.html#a61319b7ea215bf0ec6709443d8d4ee20">add</a>(<a class="code" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">Index::idx_t</a> n, <span class="keyword">const</span> <span class="keywordtype">float</span>* x) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">  /// faiss::Index API</span></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">  /// Query is partitioned into a slice for each sub-index</span></div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">  /// split by ceil(n / #indices) for our sub-indices</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classfaiss_1_1gpu_1_1IndexProxy.html#a25ed68079907eeeca9d441cdd4fc0740">search</a>(<a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> n,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classfaiss_1_1gpu_1_1IndexProxy.html#a25ed68079907eeeca9d441cdd4fc0740">search</a>(<a class="code" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">faiss::Index::idx_t</a> n,</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;              <span class="keyword">const</span> <span class="keywordtype">float</span>* x,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;              <a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a> k,</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;              <a class="code" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">faiss::Index::idx_t</a> k,</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;              <span class="keywordtype">float</span>* distances,</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;              <a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a>* labels) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;              <a class="code" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">faiss::Index::idx_t</a>* labels) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">  /// reconstructs from the first index</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classfaiss_1_1gpu_1_1IndexProxy.html#a8bf6d513b4f41fb533f0d023c1e143ba">reconstruct</a>(<a class="code" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>, <span class="keywordtype">float</span> *v) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classfaiss_1_1gpu_1_1IndexProxy.html#a8bf6d513b4f41fb533f0d023c1e143ba">reconstruct</a>(<a class="code" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>, <span class="keywordtype">float</span> *v) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordtype">bool</span> own_fields;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
@@ -195,10 +195,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="classfaiss_1_1gpu_1_1IndexProxy_html_aee6fe7e95b02238103a6a2d1f6d2cd00"><div class="ttname"><a href="classfaiss_1_1gpu_1_1IndexProxy.html#aee6fe7e95b02238103a6a2d1f6d2cd00">faiss::gpu::IndexProxy::train</a></div><div class="ttdeci">void train(Index::idx_t n, const float *x) override</div><div class="ttdef"><b>Definition:</b> <a href="IndexProxy_8cpp_source.html#l00105">IndexProxy.cpp:105</a></div></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1IndexProxy_html_a8bf6d513b4f41fb533f0d023c1e143ba"><div class="ttname"><a href="classfaiss_1_1gpu_1_1IndexProxy.html#a8bf6d513b4f41fb533f0d023c1e143ba">faiss::gpu::IndexProxy::reconstruct</a></div><div class="ttdeci">void reconstruct(idx_t, float *v) const override</div><div class="ttdoc">reconstructs from the first index </div><div class="ttdef"><b>Definition:</b> <a href="IndexProxy_8cpp_source.html#l00116">IndexProxy.cpp:116</a></div></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1IndexProxy_html"><div class="ttname"><a href="classfaiss_1_1gpu_1_1IndexProxy.html">faiss::gpu::IndexProxy</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexProxy_8h_source.html#l00023">IndexProxy.h:23</a></div></div>
-<div class="ttc" id="structfaiss_1_1Index_html_a040c6aed1f224f3ea7bf58eebc0c31a4"><div class="ttname"><a href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">faiss::Index::idx_t</a></div><div class="ttdeci">long idx_t</div><div class="ttdoc">all indices are this type </div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00064">Index.h:64</a></div></div>
+<div class="ttc" id="structfaiss_1_1Index_html_ad3f0d3071f987baabbdd3da4500c87ea"><div class="ttname"><a href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">faiss::Index::idx_t</a></div><div class="ttdeci">long idx_t</div><div class="ttdoc">all indices are this type </div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00062">Index.h:62</a></div></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1IndexProxy_html_af9bb81e75f8d5471094e4d4776a56f63"><div class="ttname"><a href="classfaiss_1_1gpu_1_1IndexProxy.html#af9bb81e75f8d5471094e4d4776a56f63">faiss::gpu::IndexProxy::addIndex</a></div><div class="ttdeci">void addIndex(faiss::Index *index)</div><div class="ttdef"><b>Definition:</b> <a href="IndexProxy_8cpp_source.html#l00031">IndexProxy.cpp:31</a></div></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1IndexProxy_html_a61319b7ea215bf0ec6709443d8d4ee20"><div class="ttname"><a href="classfaiss_1_1gpu_1_1IndexProxy.html#a61319b7ea215bf0ec6709443d8d4ee20">faiss::gpu::IndexProxy::add</a></div><div class="ttdeci">void add(Index::idx_t n, const float *x) override</div><div class="ttdef"><b>Definition:</b> <a href="IndexProxy_8cpp_source.html#l00110">IndexProxy.cpp:110</a></div></div>
-<div class="ttc" id="structfaiss_1_1Index_html"><div class="ttname"><a href="structfaiss_1_1Index.html">faiss::Index</a></div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00062">Index.h:62</a></div></div>
+<div class="ttc" id="structfaiss_1_1Index_html"><div class="ttname"><a href="structfaiss_1_1Index.html">faiss::Index</a></div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00061">Index.h:61</a></div></div>
 <div class="ttc" id="classfaiss_1_1gpu_1_1IndexProxy_html_a25ed68079907eeeca9d441cdd4fc0740"><div class="ttname"><a href="classfaiss_1_1gpu_1_1IndexProxy.html#a25ed68079907eeeca9d441cdd4fc0740">faiss::gpu::IndexProxy::search</a></div><div class="ttdeci">void search(faiss::Index::idx_t n, const float *x, faiss::Index::idx_t k, float *distances, faiss::Index::idx_t *labels) const override</div><div class="ttdef"><b>Definition:</b> <a href="IndexProxy_8cpp_source.html#l00123">IndexProxy.cpp:123</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

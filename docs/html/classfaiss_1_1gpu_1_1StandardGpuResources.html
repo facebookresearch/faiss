@@ -111,8 +111,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6431477a7328ac147797b3b4e3fcf651"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a367102e65b16bfdc7a32770a4f5854a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#a367102e65b16bfdc7a32770a4f5854a6">setTempMemory</a> (size_t size)</td></tr>
 <tr class="separator:a367102e65b16bfdc7a32770a4f5854a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a99ee4e66cb497873de804b9bd9042705"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#a99ee4e66cb497873de804b9bd9042705">setTempMemoryFraction</a> (float fraction)</td></tr>
-<tr class="separator:a99ee4e66cb497873de804b9bd9042705"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9acb23ac323f85fa5dab4ed968ccd51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#af9acb23ac323f85fa5dab4ed968ccd51">setPinnedMemory</a> (size_t size)</td></tr>
 <tr class="separator:af9acb23ac323f85fa5dab4ed968ccd51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5924b424c36dba8300866f1b98c438cb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5924b424c36dba8300866f1b98c438cb"></a>
@@ -123,9 +121,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:a5374f336f1957c266d7a5c185eb962a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3caad981d50370b9f5c121509eb2ed17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#a3caad981d50370b9f5c121509eb2ed17">setCudaMallocWarning</a> (bool b)</td></tr>
 <tr class="separator:a3caad981d50370b9f5c121509eb2ed17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb2729678638ed89f7b8b38470f96056"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adb2729678638ed89f7b8b38470f96056"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#adb2729678638ed89f7b8b38470f96056">initializeForDevice</a> (int device) override</td></tr>
-<tr class="memdesc:adb2729678638ed89f7b8b38470f96056"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal system calls. <br/></td></tr>
+<tr class="memitem:adb2729678638ed89f7b8b38470f96056"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#adb2729678638ed89f7b8b38470f96056">initializeForDevice</a> (int device) override</td></tr>
+<tr class="memdesc:adb2729678638ed89f7b8b38470f96056"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal system calls.  <a href="#adb2729678638ed89f7b8b38470f96056">More...</a><br/></td></tr>
 <tr class="separator:adb2729678638ed89f7b8b38470f96056"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7560435c7f45fd59d94ee947330a58da"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7560435c7f45fd59d94ee947330a58da"></a>
 cublasHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfaiss_1_1gpu_1_1StandardGpuResources.html#a7560435c7f45fd59d94ee947330a58da">getBlasHandle</a> (int device) override</td></tr>
@@ -180,7 +177,7 @@ cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Default implementation of <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html">GpuResources</a> that allocates a cuBLAS stream and 2 streams for use, as well as temporary memory </p>
 
-<p>Definition at line <a class="el" href="StandardGpuResources_8h_source.html#l00022">22</a> of file <a class="el" href="StandardGpuResources_8h_source.html">StandardGpuResources.h</a>.</p>
+<p>Definition at line <a class="el" href="StandardGpuResources_8h_source.html#l00021">21</a> of file <a class="el" href="StandardGpuResources_8h_source.html">StandardGpuResources.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a954f34ef68fd36b8d502ca3a21f7e8a8"></a>
 <div class="memitem">
@@ -207,7 +204,38 @@ cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Implements <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#a6c564198df6ba675920c993e2af34b8c">faiss::gpu::GpuResources</a>.</p>
 
-<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00224">224</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00268">268</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="adb2729678638ed89f7b8b38470f96056"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::gpu::StandardGpuResources::initializeForDevice </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>device</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Internal system calls. </p>
+<p>Initialize resources for this device </p>
+
+<p>Implements <a class="el" href="classfaiss_1_1gpu_1_1GpuResources.html#a1f7f4e220ce279257e1daf929c3b0d4e">faiss::gpu::GpuResources</a>.</p>
+
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00190">190</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
 
 </div>
 </div>
@@ -225,7 +253,7 @@ cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>Disable allocation of temporary memory; all temporary memory requests will call cudaMalloc / cudaFree at the point of use </p>
 
-<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00076">76</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00115">115</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
 
 </div>
 </div>
@@ -244,7 +272,7 @@ cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>Enable or disable the warning about not having enough temporary memory when cudaMalloc gets called </p>
 
-<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00123">123</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00174">174</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
 
 </div>
 </div>
@@ -262,7 +290,7 @@ cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>Called to change the work ordering streams to the null stream for all devices </p>
 
-<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00116">116</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00167">167</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
 
 </div>
 </div>
@@ -281,7 +309,7 @@ cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>Set amount of pinned memory to allocate, for async GPU &lt;-&gt; CPU transfers </p>
 
-<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00095">95</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00146">146</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
 
 </div>
 </div>
@@ -298,34 +326,15 @@ cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Specify that we wish to use a certain fixed size of memory on all devices as temporary memory </p>
+<p>Specify that we wish to use a certain fixed size of memory on all devices as temporary memory. This is the upper bound for the GPU memory that we will reserve. We will never go above 1.5 GiB on any GPU; smaller GPUs (with &lt;= 4 GiB or &lt;= 8 GiB) will use less memory than that. To avoid any temporary memory allocation, pass 0. </p>
 
-<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00082">82</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a99ee4e66cb497873de804b9bd9042705"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void faiss::gpu::StandardGpuResources::setTempMemoryFraction </td>
-          <td>(</td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>fraction</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Specify that we wish to use a certain fraction of memory on all devices as temporary memory </p>
-
-<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00088">88</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StandardGpuResources_8cpp_source.html#l00121">121</a> of file <a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/tmp/faiss/gpu/<a class="el" href="StandardGpuResources_8h_source.html">StandardGpuResources.h</a></li>
-<li>/tmp/faiss/gpu/<a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a></li>
+<li>/data/users/hoss/faiss/gpu/<a class="el" href="StandardGpuResources_8h_source.html">StandardGpuResources.h</a></li>
+<li>/data/users/hoss/faiss/gpu/<a class="el" href="StandardGpuResources_8cpp_source.html">StandardGpuResources.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

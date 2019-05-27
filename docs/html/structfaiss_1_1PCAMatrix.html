@@ -112,7 +112,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0c234bc06b073970af406d8877f67989"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0c234bc06b073970af406d8877f67989"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>PCAMatrix</b> (int d_in=0, int <a class="el" href="structfaiss_1_1VectorTransform.html#a589d612f7b1773614619a0cbecd728a9">d_out</a>=0, float <a class="el" href="structfaiss_1_1PCAMatrix.html#a4e48e801f98ba2cf57c03b0913d6fafc">eigen_power</a>=0, bool <a class="el" href="structfaiss_1_1PCAMatrix.html#af111f055b7571703a3aa270d89e99321">random_rotation</a>=false)</td></tr>
 <tr class="separator:a0c234bc06b073970af406d8877f67989"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f2dd12da8dce3cbeb22da9c5d4ec3e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1PCAMatrix.html#a8f2dd12da8dce3cbeb22da9c5d4ec3e7">train</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a> n, const float *x) override</td></tr>
+<tr class="memitem:a8f2dd12da8dce3cbeb22da9c5d4ec3e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1PCAMatrix.html#a8f2dd12da8dce3cbeb22da9c5d4ec3e7">train</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">Index::idx_t</a> n, const float *x) override</td></tr>
 <tr class="separator:a8f2dd12da8dce3cbeb22da9c5d4ec3e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae586dc89db6c57753c687473417742a6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae586dc89db6c57753c687473417742a6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1PCAMatrix.html#ae586dc89db6c57753c687473417742a6">copy_from</a> (const <a class="el" href="structfaiss_1_1PCAMatrix.html">PCAMatrix</a> &amp;other)</td></tr>
@@ -210,13 +210,13 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_structfaiss_1_1VectorTransform"><td colspan="2" onclick="javascript:toggleInherit('pub_types_structfaiss_1_1VectorTransform')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="structfaiss_1_1VectorTransform.html">faiss::VectorTransform</a></td></tr>
 <tr class="memitem:a410516b4efdae041546d87f6bef2e422 inherit pub_types_structfaiss_1_1VectorTransform"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a410516b4efdae041546d87f6bef2e422"></a>
-typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>idx_t</b></td></tr>
+typedef <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">Index::idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>idx_t</b></td></tr>
 <tr class="separator:a410516b4efdae041546d87f6bef2e422 inherit pub_types_structfaiss_1_1VectorTransform"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Applies a principal component analysis on a set of vectors, with optionally whitening and random rotation. </p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00134">134</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00133">133</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a8f2dd12da8dce3cbeb22da9c5d4ec3e7"></a>
 <div class="memitem">
@@ -228,7 +228,7 @@ typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eeb
         <tr>
           <td class="memname">void PCAMatrix::train </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">Index::idx_t</a>&#160;</td>
           <td class="paramname"><em>n</em>, </td>
         </tr>
         <tr>
@@ -270,13 +270,13 @@ typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eeb
 <p>after transformation the components are multiplied by eigenvalues^eigen_power</p>
 <p>=0: no whitening =-0.5: full whitening </p>
 
-<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00142">142</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
+<p>Definition at line <a class="el" href="VectorTransform_8h_source.html#l00141">141</a> of file <a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li>/tmp/faiss/<a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a></li>
-<li>/tmp/faiss/<a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="VectorTransform_8h_source.html">VectorTransform.h</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="VectorTransform_8cpp_source.html">VectorTransform.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

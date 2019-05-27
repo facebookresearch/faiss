@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['occurrence',['Occurrence',['../structfaiss_1_1MatrixStats_1_1Occurrence.html',1,'faiss::MatrixStats']]],
   ['ondiskinvertedlists',['OnDiskInvertedLists',['../structfaiss_1_1OnDiskInvertedLists.html',1,'faiss']]],
   ['onerecallatrcriterion',['OneRecallAtRCriterion',['../structfaiss_1_1OneRecallAtRCriterion.html',1,'faiss']]],
   ['ongoingprefetch',['OngoingPrefetch',['../structfaiss_1_1OnDiskInvertedLists_1_1OngoingPrefetch.html',1,'faiss::OnDiskInvertedLists']]],

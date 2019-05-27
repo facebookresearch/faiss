@@ -108,9 +108,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afc92bae3be12772f4ff1d92454adad49"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afc92bae3be12772f4ff1d92454adad49"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>OngoingPrefetch</b> (const <a class="el" href="structfaiss_1_1OnDiskInvertedLists.html">OnDiskInvertedLists</a> *od)</td></tr>
 <tr class="separator:afc92bae3be12772f4ff1d92454adad49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85df84fe9f3ef7f6392109cc130e6fcd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a85df84fe9f3ef7f6392109cc130e6fcd"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>prefetch_lists</b> (const long *list_nos, int n)</td></tr>
-<tr class="separator:a85df84fe9f3ef7f6392109cc130e6fcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c4f9cc938e590aa5eb8d0bffeaa9a76"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3c4f9cc938e590aa5eb8d0bffeaa9a76"></a>
+idx_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_next_list</b> ()</td></tr>
+<tr class="separator:a3c4f9cc938e590aa5eb8d0bffeaa9a76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abca3f0a20d03f9b07e502331b545c1e2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abca3f0a20d03f9b07e502331b545c1e2"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>prefetch_lists</b> (const idx_t *list_nos, int n)</td></tr>
+<tr class="separator:abca3f0a20d03f9b07e502331b545c1e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -123,6 +126,15 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a3241ca79c7cabf8a0b0a6a768cbfe098"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3241ca79c7cabf8a0b0a6a768cbfe098"></a>
 std::vector&lt; <a class="el" href="structfaiss_1_1OnDiskInvertedLists_1_1OngoingPrefetch_1_1Thread.html">Thread</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>threads</b></td></tr>
 <tr class="separator:a3241ca79c7cabf8a0b0a6a768cbfe098"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95321e14a12be835316cb0c333b777f0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95321e14a12be835316cb0c333b777f0"></a>
+pthread_mutex_t&#160;</td><td class="memItemRight" valign="bottom"><b>list_ids_mutex</b></td></tr>
+<tr class="separator:a95321e14a12be835316cb0c333b777f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bafbf1bbf726565e831c05a2f845601"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5bafbf1bbf726565e831c05a2f845601"></a>
+std::vector&lt; idx_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>list_ids</b></td></tr>
+<tr class="separator:a5bafbf1bbf726565e831c05a2f845601"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5c31ff015f82e5d3d8ecd80bf94adf6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af5c31ff015f82e5d3d8ecd80bf94adf6"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>cur_list</b></td></tr>
+<tr class="separator:af5c31ff015f82e5d3d8ecd80bf94adf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d6255f9ef88add536bc054b7003954b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d6255f9ef88add536bc054b7003954b"></a>
 pthread_mutex_t&#160;</td><td class="memItemRight" valign="bottom"><b>mutex</b></td></tr>
 <tr class="separator:a7d6255f9ef88add536bc054b7003954b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -140,7 +152,7 @@ static int&#160;</td><td class="memItemRight" valign="bottom"><b>global_cs</b> =
 <div class="textblock">
 <p>Definition at line <a class="el" href="OnDiskInvertedLists_8cpp_source.html#l00143">143</a> of file <a class="el" href="OnDiskInvertedLists_8cpp_source.html">OnDiskInvertedLists.cpp</a>.</p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/tmp/faiss/<a class="el" href="OnDiskInvertedLists_8cpp_source.html">OnDiskInvertedLists.cpp</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="OnDiskInvertedLists_8cpp_source.html">OnDiskInvertedLists.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

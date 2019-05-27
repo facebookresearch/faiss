@@ -3,7 +3,7 @@ var searchData=
   ['n',['n',['../structfaiss_1_1SimulatedAnnealingOptimizer.html#a90edfc401372aa1a2a832b403e26bfd1',1,'faiss::SimulatedAnnealingOptimizer']]],
   ['n_5fexperiments',['n_experiments',['../structfaiss_1_1ParameterSpace.html#a76aeae25b3269fb24a26194fbe013b86',1,'faiss::ParameterSpace']]],
   ['n_5fslice',['n_slice',['../structfaiss_1_1ivflib_1_1SlidingIndexWindow.html#a8defa5121e371e64071c0eb956ad20d1',1,'faiss::ivflib::SlidingIndexWindow']]],
-  ['nbits',['nbits',['../structfaiss_1_1IndexLSH.html#af8c48006f210f0cbbf45ec9972558d20',1,'faiss::IndexLSH::nbits()'],['../structfaiss_1_1ProductQuantizer.html#ac920fea11f02e8407d12cc99a09f5ea5',1,'faiss::ProductQuantizer::nbits()']]],
+  ['nbits',['nbits',['../structfaiss_1_1IndexLSH.html#af8c48006f210f0cbbf45ec9972558d20',1,'faiss::IndexLSH::nbits()'],['../structfaiss_1_1ProductQuantizer.html#ac920fea11f02e8407d12cc99a09f5ea5',1,'faiss::ProductQuantizer::nbits()'],['../structfaiss_1_1ProductQuantizer_1_1PQEncoderGeneric.html#a91b56a2563f5c58bb9492272cacf42f3',1,'faiss::ProductQuantizer::PQEncoderGeneric::nbits()']]],
   ['neighbors',['neighbors',['../structfaiss_1_1HNSW.html#a27bd11ef9a651a94bcefa5291336fc58',1,'faiss::HNSW']]],
   ['nh',['nh',['../structfaiss_1_1HeapArray.html#aad477a3907c3496159eaf4b375be4432',1,'faiss::HeapArray']]],
   ['niter',['niter',['../structFaissClusteringParameters.html#a56185e0e0b9f0c37d35ef64e42aea1a3',1,'FaissClusteringParameters::niter()'],['../structfaiss_1_1ClusteringParameters.html#a5c7c6f05c75e1668befdb3be148fd5f9',1,'faiss::ClusteringParameters::niter()'],['../structfaiss_1_1OPQMatrix.html#a12cb3e05989dee37592b682070c31000',1,'faiss::OPQMatrix::niter()']]],
