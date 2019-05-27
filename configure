@@ -9,9 +9,9 @@
 # This configure script is free software; the Free Software Foundation
 # gives unlimited permission to copy, distribute and modify it.
 #
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
-# This source code is licensed under the BSD+Patents license found in the
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 ## -------------------- ##
 ## M4sh Initialization. ##
@@ -1447,9 +1447,9 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This configure script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it.
 
-Copyright (c) 2015-present, Facebook, Inc.
-All rights reserved.
-This source code is licensed under the BSD+Patents license found in the
+Copyright (c) Facebook, Inc. and its affiliates.
+
+This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 _ACEOF
   exit

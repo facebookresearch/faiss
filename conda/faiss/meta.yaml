@@ -30,7 +30,7 @@ build:
 
 about:
   home: https://github.com/facebookresearch/faiss
-  license: BSD 3-Clause
-  license_family: BSD
+  license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: A library for efficient similarity search and clustering of dense vectors.
