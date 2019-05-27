@@ -16,12 +16,12 @@ CUDA_TESTS_BIN = $(CUDA_TESTS_SRC:.cu=)
 # test_gpu_index.py test_pytorch_faiss.py
 
 run: $(TESTS_BIN) $(CUDA_TESTS_BIN)
-	for t in $(TESTS_BIN) $(CUDA_TESTS_BIN); do ./$$t; done
+	for t in $(TESTS_BIN) $(CUDA_TESTS_BIN); do ./$$t || exit; done
 
-%.o: %.cu gtest
+$(CUDA_TESTS_SRC:.cu=.o): %.o: %.cu gtest
 	$(NVCC) $(NVCCFLAGS) -g -O3 -o $@ -c $< -Igtest/include
 
-%.o: %.cpp gtest
+$(CUDA_TESTS_SRC:.cpp=.o): %.o: %.cpp gtest
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -o $@ -c $< -Igtest/include
 
 %: %.o TestUtils.o ../../libfaiss.a gtest/make/gtest.a
