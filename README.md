@@ -82,5 +82,4 @@ We monitor the [issues page](http://github.com/facebookresearch/faiss/issues) of
 
 ## License
 
-Faiss  is BSD-licensed. We also provide an additional patent grant.
-
+Faiss is MIT-licensed.
