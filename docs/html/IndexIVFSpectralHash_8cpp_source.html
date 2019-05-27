@@ -317,106 +317,107 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;</div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        <span class="keywordflow">if</span> (index-&gt;threshold_type ==</div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;            IndexIVFSpectralHash::Thresh_global) {</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;            binarize_with_freq (nbit, freq, q.data(), zero.data(), qcode.data());</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;            hc.set (qcode.data(), code_size);</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        }</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    }</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    idx_t list_no;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="keywordtype">void</span> set_list (idx_t list_no, <span class="keywordtype">float</span> <span class="comment">/*coarse_dis*/</span>)<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        this-&gt;list_no = list_no;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        <span class="keywordflow">if</span> (index-&gt;threshold_type != IndexIVFSpectralHash::Thresh_global) {</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> *c = index-&gt;trained.data() + list_no * nbit;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;            binarize_with_freq (nbit, freq, q.data(), c, qcode.data());</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;            hc.set (qcode.data(), code_size);</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        }</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    }</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    <span class="keywordtype">float</span> distance_to_code (<span class="keyword">const</span> uint8_t *code) <span class="keyword">const</span> <span class="keyword">final</span> {</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        <span class="keywordflow">return</span> hc.hamming (code);</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    }</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    <span class="keywordtype">size_t</span> scan_codes (<span class="keywordtype">size_t</span> list_size,</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;                       <span class="keyword">const</span> uint8_t *codes,</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;                       <span class="keyword">const</span> idx_t *ids,</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;                       <span class="keywordtype">float</span> *simi, idx_t *idxi,</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;                       <span class="keywordtype">size_t</span> k)<span class="keyword"> const override</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        <span class="keywordtype">size_t</span> nup = 0;</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; list_size; j++) {</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;            <span class="keywordtype">float</span> dis = hc.hamming (codes);</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;            <span class="keywordflow">if</span> (dis &lt; simi [0]) {</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;                maxheap_pop (k, simi, idxi);</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;                <span class="keywordtype">long</span> <span class="keywordtype">id</span> = store_pairs ? (list_no &lt;&lt; 32 | j) : ids[j];</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;                maxheap_push (k, simi, idxi, dis, <span class="keywordtype">id</span>);</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;                nup++;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;            }</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;            codes += code_size;</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;        }</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        <span class="keywordflow">return</span> nup;</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    }</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    <span class="keywordtype">void</span> scan_codes_range (<span class="keywordtype">size_t</span> list_size,</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;                           <span class="keyword">const</span> uint8_t *codes,</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;                           <span class="keyword">const</span> idx_t *ids,</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;                           <span class="keywordtype">float</span> radius,</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;                           RangeQueryResult &amp; res)<span class="keyword"> const override</span></div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; list_size; j++) {</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;            <span class="keywordtype">float</span> dis = hc.hamming (codes);</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;            <span class="keywordflow">if</span> (dis &lt; radius) {</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;                <span class="keywordtype">long</span> <span class="keywordtype">id</span> = store_pairs ? (list_no &lt;&lt; 32 | j) : ids[j];</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;                res.add (dis, <span class="keywordtype">id</span>);</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;            }</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;            codes += code_size;</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        }</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    }</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;            binarize_with_freq</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;                (nbit, freq, q.data(), zero.data(), qcode.data());</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;            hc.set (qcode.data(), code_size);</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;        }</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    }</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    idx_t list_no;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keywordtype">void</span> set_list (idx_t list_no, <span class="keywordtype">float</span> <span class="comment">/*coarse_dis*/</span>)<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        this-&gt;list_no = list_no;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        <span class="keywordflow">if</span> (index-&gt;threshold_type != IndexIVFSpectralHash::Thresh_global) {</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">float</span> *c = index-&gt;trained.data() + list_no * nbit;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;            binarize_with_freq (nbit, freq, q.data(), c, qcode.data());</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            hc.set (qcode.data(), code_size);</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        }</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    }</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    <span class="keywordtype">float</span> distance_to_code (<span class="keyword">const</span> uint8_t *code) <span class="keyword">const</span> <span class="keyword">final</span> {</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        <span class="keywordflow">return</span> hc.hamming (code);</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    }</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keywordtype">size_t</span> scan_codes (<span class="keywordtype">size_t</span> list_size,</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;                       <span class="keyword">const</span> uint8_t *codes,</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;                       <span class="keyword">const</span> idx_t *ids,</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;                       <span class="keywordtype">float</span> *simi, idx_t *idxi,</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;                       <span class="keywordtype">size_t</span> k)<span class="keyword"> const override</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        <span class="keywordtype">size_t</span> nup = 0;</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; list_size; j++) {</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;            <span class="keywordtype">float</span> dis = hc.hamming (codes);</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;            <span class="keywordflow">if</span> (dis &lt; simi [0]) {</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;                maxheap_pop (k, simi, idxi);</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;                <span class="keywordtype">long</span> <span class="keywordtype">id</span> = store_pairs ? (list_no &lt;&lt; 32 | j) : ids[j];</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;                maxheap_push (k, simi, idxi, dis, <span class="keywordtype">id</span>);</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;                nup++;</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;            }</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;            codes += code_size;</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        }</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;        <span class="keywordflow">return</span> nup;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    }</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    <span class="keywordtype">void</span> scan_codes_range (<span class="keywordtype">size_t</span> list_size,</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;                           <span class="keyword">const</span> uint8_t *codes,</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;                           <span class="keyword">const</span> idx_t *ids,</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;                           <span class="keywordtype">float</span> radius,</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;                           RangeQueryResult &amp; res)<span class="keyword"> const override</span></div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; list_size; j++) {</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;            <span class="keywordtype">float</span> dis = hc.hamming (codes);</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;            <span class="keywordflow">if</span> (dis &lt; radius) {</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;                <span class="keywordtype">long</span> <span class="keywordtype">id</span> = store_pairs ? (list_no &lt;&lt; 32 | j) : ids[j];</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;                res.add (dis, <span class="keywordtype">id</span>);</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;            }</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;            codes += code_size;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;        }</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    }</div>
 <div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;};</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;} <span class="comment">// anonymous namespace</span></div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;InvertedListScanner* <a class="code" href="structfaiss_1_1IndexIVFSpectralHash.html#a4d82b242a308783e53a350fc0064e062">IndexIVFSpectralHash::get_InvertedListScanner</a></div>
-<div class="line"><a name="l00299"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIVFSpectralHash.html#a4d82b242a308783e53a350fc0064e062">  299</a></span>&#160;    (<span class="keywordtype">bool</span> store_pairs) <span class="keyword">const</span></div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;{</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    <span class="keywordflow">switch</span> (code_size) {</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="preprocessor">#define HANDLE_CODE_SIZE(cs) \</span></div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="preprocessor">    case cs: \</span></div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;<span class="preprocessor">        return new IVFScanner&lt;HammingComputer ## cs&gt; (this, store_pairs)</span></div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="preprocessor"></span>        HANDLE_CODE_SIZE(4);</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        HANDLE_CODE_SIZE(8);</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        HANDLE_CODE_SIZE(16);</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        HANDLE_CODE_SIZE(20);</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        HANDLE_CODE_SIZE(32);</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        HANDLE_CODE_SIZE(64);</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="preprocessor">#undef HANDLE_CODE_SIZE</span></div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;<span class="preprocessor"></span>        <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;            <span class="keywordflow">if</span> (code_size % 8 == 0)</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">new</span> IVFScanner&lt;HammingComputerM8&gt;(<span class="keyword">this</span>, store_pairs);</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (code_size % 4 == 0)</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">new</span> IVFScanner&lt;HammingComputerM4&gt;(<span class="keyword">this</span>, store_pairs);</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;            <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;                FAISS_THROW_MSG(<span class="stringliteral">&quot;not supported&quot;</span>);</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;            }</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    }</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;}</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;};</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;} <span class="comment">// anonymous namespace</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;InvertedListScanner* <a class="code" href="structfaiss_1_1IndexIVFSpectralHash.html#a4d82b242a308783e53a350fc0064e062">IndexIVFSpectralHash::get_InvertedListScanner</a></div>
+<div class="line"><a name="l00300"></a><span class="lineno"><a class="line" href="structfaiss_1_1IndexIVFSpectralHash.html#a4d82b242a308783e53a350fc0064e062">  300</a></span>&#160;    (<span class="keywordtype">bool</span> store_pairs) <span class="keyword">const</span></div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;{</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    <span class="keywordflow">switch</span> (code_size) {</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="preprocessor">#define HANDLE_CODE_SIZE(cs) \</span></div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;<span class="preprocessor">    case cs: \</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="preprocessor">        return new IVFScanner&lt;HammingComputer ## cs&gt; (this, store_pairs)</span></div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;<span class="preprocessor"></span>        HANDLE_CODE_SIZE(4);</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        HANDLE_CODE_SIZE(8);</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        HANDLE_CODE_SIZE(16);</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        HANDLE_CODE_SIZE(20);</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        HANDLE_CODE_SIZE(32);</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;        HANDLE_CODE_SIZE(64);</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;<span class="preprocessor">#undef HANDLE_CODE_SIZE</span></div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;<span class="preprocessor"></span>        <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;            <span class="keywordflow">if</span> (code_size % 8 == 0) {</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">new</span> IVFScanner&lt;HammingComputerM8&gt;(<span class="keyword">this</span>, store_pairs);</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (code_size % 4 == 0) {</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">new</span> IVFScanner&lt;HammingComputerM4&gt;(<span class="keyword">this</span>, store_pairs);</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;                FAISS_THROW_MSG(<span class="stringliteral">&quot;not supported&quot;</span>);</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;            }</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    }</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;}</div>
 <div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;</div>
 <div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;}  <span class="comment">// namespace faiss</span></div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;}  <span class="comment">// namespace faiss</span></div>
 <div class="ttc" id="structfaiss_1_1HammingComputer_html"><div class="ttname"><a href="structfaiss_1_1HammingComputer.html">faiss::HammingComputer</a></div><div class="ttdef"><b>Definition:</b> <a href="hamming_8h_source.html#l00402">hamming.h:402</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index2Layer_html_a66403863c8ec987ed83b4d7ef4064fe9"><div class="ttname"><a href="structfaiss_1_1Index2Layer.html#a66403863c8ec987ed83b4d7ef4064fe9">faiss::Index2Layer::code_size</a></div><div class="ttdeci">size_t code_size</div><div class="ttdoc">code_size_1 + code_size_2 </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFPQ_8h_source.html#l00221">IndexIVFPQ.h:221</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFSpectralHash_html"><div class="ttname"><a href="structfaiss_1_1IndexIVFSpectralHash.html">faiss::IndexIVFSpectralHash</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFSpectralHash_8h_source.html#l00031">IndexIVFSpectralHash.h:31</a></div></div>
-<div class="ttc" id="structfaiss_1_1IndexIVFSpectralHash_html_a4d82b242a308783e53a350fc0064e062"><div class="ttname"><a href="structfaiss_1_1IndexIVFSpectralHash.html#a4d82b242a308783e53a350fc0064e062">faiss::IndexIVFSpectralHash::get_InvertedListScanner</a></div><div class="ttdeci">InvertedListScanner * get_InvertedListScanner(bool store_pairs) const override</div><div class="ttdoc">get a scanner for this index (store_pairs means ignore labels) </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFSpectralHash_8cpp_source.html#l00299">IndexIVFSpectralHash.cpp:299</a></div></div>
+<div class="ttc" id="structfaiss_1_1IndexIVFSpectralHash_html_a4d82b242a308783e53a350fc0064e062"><div class="ttname"><a href="structfaiss_1_1IndexIVFSpectralHash.html#a4d82b242a308783e53a350fc0064e062">faiss::IndexIVFSpectralHash::get_InvertedListScanner</a></div><div class="ttdeci">InvertedListScanner * get_InvertedListScanner(bool store_pairs) const override</div><div class="ttdoc">get a scanner for this index (store_pairs means ignore labels) </div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFSpectralHash_8cpp_source.html#l00300">IndexIVFSpectralHash.cpp:300</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html_ad3f0d3071f987baabbdd3da4500c87ea"><div class="ttname"><a href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">faiss::Index::idx_t</a></div><div class="ttdeci">long idx_t</div><div class="ttdoc">all indices are this type </div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00062">Index.h:62</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFSpectralHash_html_a47c66c0610e9e7e42e584f5560791707"><div class="ttname"><a href="structfaiss_1_1IndexIVFSpectralHash.html#a47c66c0610e9e7e42e584f5560791707">faiss::IndexIVFSpectralHash::train_residual</a></div><div class="ttdeci">void train_residual(idx_t n, const float *x) override</div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFSpectralHash_8cpp_source.html#l00066">IndexIVFSpectralHash.cpp:66</a></div></div>
 <div class="ttc" id="structfaiss_1_1VectorTransform_html_ab511f1ddf608c00204555881ca28cb02"><div class="ttname"><a href="structfaiss_1_1VectorTransform.html#ab511f1ddf608c00204555881ca28cb02">faiss::VectorTransform::is_trained</a></div><div class="ttdeci">bool is_trained</div><div class="ttdef"><b>Definition:</b> <a href="VectorTransform_8h_source.html#l00040">VectorTransform.h:40</a></div></div>
-<div class="ttc" id="structfaiss_1_1InvertedListScanner_html"><div class="ttname"><a href="structfaiss_1_1InvertedListScanner.html">faiss::InvertedListScanner</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00268">IndexIVF.h:268</a></div></div>
+<div class="ttc" id="structfaiss_1_1InvertedListScanner_html"><div class="ttname"><a href="structfaiss_1_1InvertedListScanner.html">faiss::InvertedListScanner</a></div><div class="ttdef"><b>Definition:</b> <a href="IndexIVF_8h_source.html#l00272">IndexIVF.h:272</a></div></div>
 <div class="ttc" id="structfaiss_1_1VectorTransform_html_a7350d4dd28d60866d55ba4f75d2da84c"><div class="ttname"><a href="structfaiss_1_1VectorTransform.html#a7350d4dd28d60866d55ba4f75d2da84c">faiss::VectorTransform::train</a></div><div class="ttdeci">virtual void train(idx_t n, const float *x)</div><div class="ttdef"><b>Definition:</b> <a href="VectorTransform_8cpp_source.html#l00078">VectorTransform.cpp:78</a></div></div>
 <div class="ttc" id="structfaiss_1_1IndexIVFSpectralHash_html_ab875c25aaf4fb2db0313b763c9294d64"><div class="ttname"><a href="structfaiss_1_1IndexIVFSpectralHash.html#ab875c25aaf4fb2db0313b763c9294d64">faiss::IndexIVFSpectralHash::encode_vectors</a></div><div class="ttdeci">void encode_vectors(idx_t n, const float *x, const idx_t *list_nos, uint8_t *codes) const override</div><div class="ttdef"><b>Definition:</b> <a href="IndexIVFSpectralHash_8cpp_source.html#l00161">IndexIVFSpectralHash.cpp:161</a></div></div>
 <div class="ttc" id="structfaiss_1_1Index_html_a6e92732617c4dbe364e7678dd8773a7f"><div class="ttname"><a href="structfaiss_1_1Index.html#a6e92732617c4dbe364e7678dd8773a7f">faiss::Index::is_trained</a></div><div class="ttdeci">bool is_trained</div><div class="ttdoc">set if the Index does not require training, or if training is done already </div><div class="ttdef"><b>Definition:</b> <a href="Index_8h_source.html#l00071">Index.h:71</a></div></div>

@@ -14,6 +14,7 @@ var searchData=
   ['range_5fsearch_5fl2sqr',['range_search_L2sqr',['../namespacefaiss.html#a1faa7bd079c9b1addf3058ddf882a000',1,'faiss']]],
   ['rangequeryresult',['RangeQueryResult',['../structfaiss_1_1RangeQueryResult.html',1,'faiss']]],
   ['rangesearchpartialresult',['RangeSearchPartialResult',['../structfaiss_1_1RangeSearchPartialResult.html',1,'faiss']]],
+  ['rangesearchpartialresult',['RangeSearchPartialResult',['../structfaiss_1_1RangeSearchPartialResult.html#a41aaed4f59e7a6a99e2a643dfff483f5',1,'faiss::RangeSearchPartialResult']]],
   ['rangesearchresult',['RangeSearchResult',['../structfaiss_1_1RangeSearchResult.html#a56dca2b151bcf16f5d488aff321b9501',1,'faiss::RangeSearchResult']]],
   ['rangesearchresult',['RangeSearchResult',['../structfaiss_1_1RangeSearchResult.html',1,'faiss']]],
   ['rangestat',['RangeStat',['../structfaiss_1_1ScalarQuantizer.html#a867ad0000e4ccfd40bbb1e01e7882d06',1,'faiss::ScalarQuantizer']]],

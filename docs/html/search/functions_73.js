@@ -22,7 +22,6 @@ var searchData=
   ['set_5fnb_5fneighbors',['set_nb_neighbors',['../structfaiss_1_1HNSW.html#afdb5a17487296267efaaa94e6a08996d',1,'faiss::HNSW']]],
   ['set_5fparams',['set_params',['../structfaiss_1_1ProductQuantizer.html#ad291f113c6d44a634ddc1972f9a3c775',1,'faiss::ProductQuantizer']]],
   ['set_5fquery',['set_query',['../structfaiss_1_1DistanceComputer.html#aaa4472453365b786adc2ab21e9cee5ec',1,'faiss::DistanceComputer::set_query()'],['../structfaiss_1_1BinaryInvertedListScanner.html#a22bf6ac0128e4e45768f91b4de58fdb6',1,'faiss::BinaryInvertedListScanner::set_query()'],['../structfaiss_1_1InvertedListScanner.html#a97cab8fbf8203bdda6c42fc4b8f92319',1,'faiss::InvertedListScanner::set_query()']]],
-  ['set_5fresult',['set_result',['../structfaiss_1_1RangeSearchPartialResult.html#aa6639358995ac081f8a931a7790d0caf',1,'faiss::RangeSearchPartialResult']]],
   ['setcudamallocwarning',['setCudaMallocWarning',['../classfaiss_1_1gpu_1_1StandardGpuResources.html#a3caad981d50370b9f5c121509eb2ed17',1,'faiss::gpu::StandardGpuResources::setCudaMallocWarning()'],['../classfaiss_1_1gpu_1_1StackDeviceMemory.html#aadabeef74940ef0cb6a965752bbf6156',1,'faiss::gpu::StackDeviceMemory::setCudaMallocWarning()']]],
   ['setdefaultnullstreamalldevices',['setDefaultNullStreamAllDevices',['../classfaiss_1_1gpu_1_1StandardGpuResources.html#a5374f336f1957c266d7a5c185eb962a1',1,'faiss::gpu::StandardGpuResources']]],
   ['setdefaultstream',['setDefaultStream',['../classfaiss_1_1gpu_1_1StandardGpuResources.html#a5924b424c36dba8300866f1b98c438cb',1,'faiss::gpu::StandardGpuResources']]],
