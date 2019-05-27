@@ -35,7 +35,6 @@ var searchData=
   ['indexpq',['IndexPQ',['../structfaiss_1_1IndexPQ.html',1,'faiss']]],
   ['indexpqstats',['IndexPQStats',['../structfaiss_1_1IndexPQStats.html',1,'faiss']]],
   ['indexpretransform',['IndexPreTransform',['../structfaiss_1_1IndexPreTransform.html',1,'faiss']]],
-  ['indexproxy',['IndexProxy',['../classfaiss_1_1gpu_1_1IndexProxy.html',1,'faiss::gpu']]],
   ['indexrefineflat',['IndexRefineFlat',['../structfaiss_1_1IndexRefineFlat.html',1,'faiss']]],
   ['indexreplicastemplate',['IndexReplicasTemplate',['../classfaiss_1_1IndexReplicasTemplate.html',1,'faiss']]],
   ['indexscalarquantizer',['IndexScalarQuantizer',['../structfaiss_1_1IndexScalarQuantizer.html',1,'faiss']]],
