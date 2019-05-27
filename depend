@@ -100,12 +100,6 @@ StandardGpuResources.o: gpu/StandardGpuResources.cpp \
  gpu/utils/StackDeviceMemory.h gpu/utils/DeviceUtils.h \
  gpu/utils/../../FaissAssert.h gpu/utils/../../FaissException.h \
  gpu/utils/MemorySpace.h gpu/../FaissAssert.h
-IndexProxy.o: gpu/IndexProxy.cpp gpu/IndexProxy.h gpu/../Index.h \
- gpu/utils/WorkerThread.h gpu/../FaissAssert.h gpu/../FaissException.h \
- gpu/../Clustering.h gpu/../Index.h gpu/GpuIndexFlat.h gpu/GpuIndex.h \
- gpu/utils/MemorySpace.h gpu/StandardGpuResources.h gpu/GpuResources.h \
- gpu/utils/DeviceMemory.h gpu/utils/StackDeviceMemory.h \
- gpu/utils/DeviceUtils.h gpu/utils/../../FaissAssert.h
 GpuClonerOptions.o: gpu/GpuClonerOptions.cpp gpu/GpuClonerOptions.h \
  gpu/GpuIndicesOptions.h
 GpuAutoTune.o: gpu/GpuAutoTune.cpp gpu/GpuAutoTune.h gpu/../Index.h \
@@ -130,8 +124,6 @@ RemapIndices.o: gpu/impl/RemapIndices.cpp gpu/impl/RemapIndices.h \
 MemorySpace.o: gpu/utils/MemorySpace.cpp gpu/utils/MemorySpace.h \
  gpu/utils/../../FaissAssert.h gpu/utils/../../FaissException.h
 Timer.o: gpu/utils/Timer.cpp gpu/utils/Timer.h gpu/utils/DeviceUtils.h \
- gpu/utils/../../FaissAssert.h gpu/utils/../../FaissException.h
-WorkerThread.o: gpu/utils/WorkerThread.cpp gpu/utils/WorkerThread.h \
  gpu/utils/../../FaissAssert.h gpu/utils/../../FaissException.h
 StackDeviceMemory.o: gpu/utils/StackDeviceMemory.cpp \
  gpu/utils/StackDeviceMemory.h gpu/utils/DeviceMemory.h \
