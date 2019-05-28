@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>Faiss: /tmp/faiss/AuxIndexStructures.cpp Source File</title>
+<title>Faiss: /data/users/hoss/faiss/AuxIndexStructures.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -80,24 +80,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="header">
   <div class="headertitle">
-<div class="title">/tmp/faiss/AuxIndexStructures.cpp</div>  </div>
+<div class="title">/data/users/hoss/faiss/AuxIndexStructures.cpp</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Copyright (c) 2015-present, Facebook, Inc.</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * All rights reserved.</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * This source code is licensed under the BSD+Patents license found in the</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * LICENSE file in the root directory of this source tree.</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// -*- c++ -*-</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;AuxIndexStructures.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;FaissAssert.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Copyright (c) Facebook, Inc. and its affiliates.</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * This source code is licensed under the MIT license found in the</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * LICENSE file in the root directory of this source tree.</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// -*- c++ -*-</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;AuxIndexStructures.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;FaissAssert.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>faiss {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
@@ -138,219 +138,311 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">delete</span> [] <a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a>;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">/***********************************************************************</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment"> * BufferList</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment"> ***********************************************************************/</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;BufferList::BufferList (<span class="keywordtype">size_t</span> buffer_size):</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    buffer_size (buffer_size)</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;{</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    wp = <a class="code" href="structfaiss_1_1RangeSearchResult.html#a39342ad2e9ad8b90f6e95dafd3287f49">buffer_size</a>;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;BufferList::~BufferList ()</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;{</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; buffers.size(); i++) {</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keyword">delete</span> [] buffers[i].ids;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keyword">delete</span> [] buffers[i].dis;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    }</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keywordtype">void</span> BufferList::append_buffer ()</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;{</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        Buffer buf = {<span class="keyword">new</span> idx_t [buffer_size], <span class="keyword">new</span> <span class="keywordtype">float</span> [buffer_size]};</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        buffers.push_back (buf);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <a class="code" href="structfaiss_1_1BufferList.html#af4d7ddcd77f328a12a7da89d8febe5d9">wp</a> = 0;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;}</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment">/// copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">/// tables dest_ids, dest_dis</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="structfaiss_1_1BufferList.html#a78b70417a9ba5b27553b3134f1190958">   86</a></span>&#160;<span class="comment"></span><span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1BufferList.html#a78b70417a9ba5b27553b3134f1190958">BufferList::copy_range</a> (<span class="keywordtype">size_t</span> ofs, <span class="keywordtype">size_t</span> n,</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                             idx_t * dest_ids, <span class="keywordtype">float</span> *dest_dis)</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;{</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">size_t</span> bno = ofs / buffer_size;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    ofs -= bno * buffer_size;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordflow">while</span> (n &gt; 0) {</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keywordtype">size_t</span> ncopy = ofs + n &lt; buffer_size ? n : buffer_size - ofs;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <a class="code" href="structfaiss_1_1BufferList_1_1Buffer.html">Buffer</a> buf = buffers [bno];</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        memcpy (dest_ids, buf.ids + ofs, ncopy * <span class="keyword">sizeof</span>(*dest_ids));</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        memcpy (dest_dis, buf.dis + ofs, ncopy * <span class="keyword">sizeof</span>(*dest_dis));</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        dest_ids += ncopy;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        dest_dis += ncopy;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        ofs = 0;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        bno ++;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            n -= ncopy;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    }</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="comment">/***********************************************************************</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="comment"> * RangeSearchPartialResult</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="comment"> ***********************************************************************/</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;RangeSearchPartialResult::RangeSearchPartialResult (<a class="code" href="structfaiss_1_1RangeSearchResult.html">RangeSearchResult</a> * res_in):</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <a class="code" href="structfaiss_1_1BufferList.html">BufferList</a>(res_in-&gt;buffer_size),</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    res(res_in)</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;{}</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="comment">/// begin a new result</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="comment"></span>RangeSearchPartialResult::QueryResult &amp;</div>
-<div class="line"><a name="l00118"></a><span class="lineno"><a class="line" href="structfaiss_1_1RangeSearchPartialResult.html#a954c26beebb561a6c2b0f399c48a9db3">  118</a></span>&#160;    <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#a954c26beebb561a6c2b0f399c48a9db3">RangeSearchPartialResult::new_result</a> (idx_t qno)</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;{</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <a class="code" href="structfaiss_1_1RangeSearchPartialResult_1_1QueryResult.html">QueryResult</a> qres = {qno, 0, <span class="keyword">this</span>};</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    queries.push_back (qres);</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="keywordflow">return</span> queries.back();</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;}</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="keywordtype">void</span> RangeSearchPartialResult::finalize ()</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;{</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#ab6a385008493c7b630e4e7bc56e3da74">set_lims</a> ();</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="preprocessor">#pragma omp barrier</span></div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="preprocessor">#pragma omp single</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="preprocessor"></span>    res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#a34c4ba599c0cec45972af19e1f98f22a">do_allocation</a> ();</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">/***********************************************************************</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment"> * BufferList</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment"> ***********************************************************************/</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;BufferList::BufferList (<span class="keywordtype">size_t</span> buffer_size):</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    buffer_size (buffer_size)</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;{</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    wp = <a class="code" href="structfaiss_1_1RangeSearchResult.html#a39342ad2e9ad8b90f6e95dafd3287f49">buffer_size</a>;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;BufferList::~BufferList ()</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;{</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; buffers.size(); i++) {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keyword">delete</span> [] buffers[i].ids;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keyword">delete</span> [] buffers[i].dis;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="structfaiss_1_1BufferList.html#aa17f17a53b45bb39b0724d6493ab33c9">   79</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1BufferList.html#aa17f17a53b45bb39b0724d6493ab33c9">BufferList::add</a> (idx_t <span class="keywordtype">id</span>, <span class="keywordtype">float</span> dis) {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="structfaiss_1_1BufferList.html#af4d7ddcd77f328a12a7da89d8febe5d9">wp</a> == buffer_size) { <span class="comment">// need new buffer</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <a class="code" href="structfaiss_1_1BufferList.html#aa124ff3a7e6a98960e12a8b32bdaec42">append_buffer</a>();</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    }</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <a class="code" href="structfaiss_1_1BufferList_1_1Buffer.html">Buffer</a> &amp; buf = buffers.back();</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    buf.ids [<a class="code" href="structfaiss_1_1BufferList.html#af4d7ddcd77f328a12a7da89d8febe5d9">wp</a>] = id;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    buf.dis [<a class="code" href="structfaiss_1_1BufferList.html#af4d7ddcd77f328a12a7da89d8febe5d9">wp</a>] = dis;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <a class="code" href="structfaiss_1_1BufferList.html#af4d7ddcd77f328a12a7da89d8febe5d9">wp</a>++;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;}</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="structfaiss_1_1BufferList.html#aa124ff3a7e6a98960e12a8b32bdaec42">   90</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1BufferList.html#aa124ff3a7e6a98960e12a8b32bdaec42">BufferList::append_buffer</a> ()</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;{</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <a class="code" href="structfaiss_1_1BufferList_1_1Buffer.html">Buffer</a> buf = {<span class="keyword">new</span> idx_t [buffer_size], <span class="keyword">new</span> <span class="keywordtype">float</span> [buffer_size]};</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    buffers.push_back (buf);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <a class="code" href="structfaiss_1_1BufferList.html#af4d7ddcd77f328a12a7da89d8febe5d9">wp</a> = 0;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">/// copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">/// tables dest_ids, dest_dis</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno"><a class="line" href="structfaiss_1_1BufferList.html#a78b70417a9ba5b27553b3134f1190958">   99</a></span>&#160;<span class="comment"></span><span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1BufferList.html#a78b70417a9ba5b27553b3134f1190958">BufferList::copy_range</a> (<span class="keywordtype">size_t</span> ofs, <span class="keywordtype">size_t</span> n,</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                             idx_t * dest_ids, <span class="keywordtype">float</span> *dest_dis)</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;{</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordtype">size_t</span> bno = ofs / buffer_size;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    ofs -= bno * buffer_size;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordflow">while</span> (n &gt; 0) {</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        <span class="keywordtype">size_t</span> ncopy = ofs + n &lt; buffer_size ? n : buffer_size - ofs;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        <a class="code" href="structfaiss_1_1BufferList_1_1Buffer.html">Buffer</a> buf = buffers [bno];</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        memcpy (dest_ids, buf.ids + ofs, ncopy * <span class="keyword">sizeof</span>(*dest_ids));</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        memcpy (dest_dis, buf.dis + ofs, ncopy * <span class="keyword">sizeof</span>(*dest_dis));</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        dest_ids += ncopy;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        dest_dis += ncopy;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;        ofs = 0;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        bno ++;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        n -= ncopy;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    }</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;}</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="comment">/***********************************************************************</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="comment"> * RangeSearchPartialResult</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="comment"> ***********************************************************************/</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
+<div class="line"><a name="l00122"></a><span class="lineno"><a class="line" href="structfaiss_1_1RangeQueryResult.html#aed669959bc918d9a554f236d40789084">  122</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1RangeQueryResult.html#aed669959bc918d9a554f236d40789084">RangeQueryResult::add</a> (<span class="keywordtype">float</span> dis, idx_t <span class="keywordtype">id</span>) {</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    nres++;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    pres-&gt;<a class="code" href="structfaiss_1_1BufferList.html#aa17f17a53b45bb39b0724d6493ab33c9">add</a> (<span class="keywordtype">id</span>, dis);</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;}</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
+<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="structfaiss_1_1RangeSearchPartialResult.html#a41aaed4f59e7a6a99e2a643dfff483f5">  129</a></span>&#160;<a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#a41aaed4f59e7a6a99e2a643dfff483f5">RangeSearchPartialResult::RangeSearchPartialResult</a> (<a class="code" href="structfaiss_1_1RangeSearchResult.html">RangeSearchResult</a> * res_in):</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <a class="code" href="structfaiss_1_1BufferList.html">BufferList</a>(res_in-&gt;buffer_size),</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    res(res_in)</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;{}</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="preprocessor">#pragma omp barrier</span></div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="preprocessor"></span>    <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#aa6639358995ac081f8a931a7790d0caf">set_result</a> ();</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;}</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="comment">/// called by range_search before do_allocation</span></div>
-<div class="line"><a name="l00140"></a><span class="lineno"><a class="line" href="structfaiss_1_1RangeSearchPartialResult.html#ab6a385008493c7b630e4e7bc56e3da74">  140</a></span>&#160;<span class="comment"></span><span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#ab6a385008493c7b630e4e7bc56e3da74">RangeSearchPartialResult::set_lims</a> ()</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;{</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; queries.size(); i++) {</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        <a class="code" href="structfaiss_1_1RangeSearchPartialResult_1_1QueryResult.html">QueryResult</a> &amp; qres = queries[i];</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a>[qres.qno] = qres.nres;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    }</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;}</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="comment">/// called by range_search after do_allocation</span></div>
-<div class="line"><a name="l00149"></a><span class="lineno"><a class="line" href="structfaiss_1_1RangeSearchPartialResult.html#aa6639358995ac081f8a931a7790d0caf">  149</a></span>&#160;<span class="comment"></span><span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#aa6639358995ac081f8a931a7790d0caf">RangeSearchPartialResult::set_result</a> (<span class="keywordtype">bool</span> incremental)</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;{</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    <span class="keywordtype">size_t</span> ofs = 0;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; queries.size(); i++) {</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        <a class="code" href="structfaiss_1_1RangeSearchPartialResult_1_1QueryResult.html">QueryResult</a> &amp; qres = queries[i];</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        <a class="code" href="structfaiss_1_1BufferList.html#a78b70417a9ba5b27553b3134f1190958">copy_range</a> (ofs, qres.nres,</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;                    res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aa8ff848474a4cc16c5464cc4ec187824">labels</a> + res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a>[qres.qno],</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;                    res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#a944a93aecc7b51d8f9f35444280aa919">distances</a> + res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a>[qres.qno]);</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        <span class="keywordflow">if</span> (incremental) {</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;            res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a>[qres.qno] += qres.nres;</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        }</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        ofs += qres.nres;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    }</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;}</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="comment">/***********************************************************************</span></div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="comment"> * IDSelectorRange</span></div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="comment"> ***********************************************************************/</span></div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;IDSelectorRange::IDSelectorRange (idx_t imin, idx_t imax):</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    imin (imin), imax (imax)</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;{</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;}</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="keywordtype">bool</span> IDSelectorRange::is_member (idx_t <span class="keywordtype">id</span>)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <span class="keywordflow">return</span> <span class="keywordtype">id</span> &gt;= imin &amp;&amp; <span class="keywordtype">id</span> &lt; imax;</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;}</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="comment">/***********************************************************************</span></div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="comment"> * IDSelectorBatch</span></div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="comment"> ***********************************************************************/</span></div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;IDSelectorBatch::IDSelectorBatch (<span class="keywordtype">long</span> n, <span class="keyword">const</span> idx_t *indices)</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="comment">/// begin a new result</span></div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="comment"></span><a class="code" href="structfaiss_1_1RangeQueryResult.html">RangeQueryResult</a> &amp;</div>
+<div class="line"><a name="l00137"></a><span class="lineno"><a class="line" href="structfaiss_1_1RangeSearchPartialResult.html#a0ba199c22ed09aebb0f7238229b516e9">  137</a></span>&#160;    <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#a0ba199c22ed09aebb0f7238229b516e9">RangeSearchPartialResult::new_result</a> (idx_t qno)</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;{</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    <a class="code" href="structfaiss_1_1RangeQueryResult.html">RangeQueryResult</a> qres = {qno, 0, <span class="keyword">this</span>};</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#abd6ae2a92bc18b6528aadf39370d041c">queries</a>.push_back (qres);</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#abd6ae2a92bc18b6528aadf39370d041c">queries</a>.back();</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;}</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="keywordtype">void</span> RangeSearchPartialResult::finalize ()</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;{</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#ab6a385008493c7b630e4e7bc56e3da74">set_lims</a> ();</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="preprocessor">#pragma omp barrier</span></div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="preprocessor">#pragma omp single</span></div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="preprocessor"></span>    res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#a34c4ba599c0cec45972af19e1f98f22a">do_allocation</a> ();</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="preprocessor">#pragma omp barrier</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="preprocessor"></span>    <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#ad323d8ea8914d9071aecff83f69ee8e4">copy_result</a> ();</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;}</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="comment">/// called by range_search before do_allocation</span></div>
+<div class="line"><a name="l00159"></a><span class="lineno"><a class="line" href="structfaiss_1_1RangeSearchPartialResult.html#ab6a385008493c7b630e4e7bc56e3da74">  159</a></span>&#160;<span class="comment"></span><span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#ab6a385008493c7b630e4e7bc56e3da74">RangeSearchPartialResult::set_lims</a> ()</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;{</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#abd6ae2a92bc18b6528aadf39370d041c">queries</a>.size(); i++) {</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        <a class="code" href="structfaiss_1_1RangeQueryResult.html">RangeQueryResult</a> &amp; qres = <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#abd6ae2a92bc18b6528aadf39370d041c">queries</a>[i];</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a>[qres.qno] = qres.nres;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    }</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;}</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="comment">/// called by range_search after do_allocation</span></div>
+<div class="line"><a name="l00168"></a><span class="lineno"><a class="line" href="structfaiss_1_1RangeSearchPartialResult.html#ad323d8ea8914d9071aecff83f69ee8e4">  168</a></span>&#160;<span class="comment"></span><span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#ad323d8ea8914d9071aecff83f69ee8e4">RangeSearchPartialResult::copy_result</a> (<span class="keywordtype">bool</span> incremental)</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;{</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    <span class="keywordtype">size_t</span> ofs = 0;</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#abd6ae2a92bc18b6528aadf39370d041c">queries</a>.size(); i++) {</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        <a class="code" href="structfaiss_1_1RangeQueryResult.html">RangeQueryResult</a> &amp; qres = <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#abd6ae2a92bc18b6528aadf39370d041c">queries</a>[i];</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        <a class="code" href="structfaiss_1_1BufferList.html#a78b70417a9ba5b27553b3134f1190958">copy_range</a> (ofs, qres.nres,</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;                    res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aa8ff848474a4cc16c5464cc4ec187824">labels</a> + res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a>[qres.qno],</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;                    res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#a944a93aecc7b51d8f9f35444280aa919">distances</a> + res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a>[qres.qno]);</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;        <span class="keywordflow">if</span> (incremental) {</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;            res-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a>[qres.qno] += qres.nres;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;        }</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;        ofs += qres.nres;</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    }</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;}</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
+<div class="line"><a name="l00184"></a><span class="lineno"><a class="line" href="structfaiss_1_1RangeSearchPartialResult.html#ac01a679f4fa7a00e8cb0dfe15f50d422">  184</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1RangeSearchPartialResult.html#ac01a679f4fa7a00e8cb0dfe15f50d422">RangeSearchPartialResult::merge</a> (std::vector &lt;RangeSearchPartialResult *&gt; &amp;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;                                      partial_results, <span class="keywordtype">bool</span> do_delete)</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;{</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    nbits = 0;</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="keywordflow">while</span> (n &gt; (1L &lt;&lt; nbits)) nbits++;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    nbits += 5;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="comment">// for n = 1M, nbits = 25 is optimal, see P56659518</span></div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    mask = (1L &lt;&lt; nbits) - 1;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    bloom.resize (1UL &lt;&lt; (nbits - 3), 0);</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; n; i++) {</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        <span class="keywordtype">long</span> <span class="keywordtype">id</span> = indices[i];</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        set.insert(<span class="keywordtype">id</span>);</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        <span class="keywordtype">id</span> &amp;= mask;</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        bloom[<span class="keywordtype">id</span> &gt;&gt; 3] |= 1 &lt;&lt; (<span class="keywordtype">id</span> &amp; 7);</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="keywordtype">int</span> npres = partial_results.size();</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <span class="keywordflow">if</span> (npres == 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <a class="code" href="structfaiss_1_1RangeSearchResult.html">RangeSearchResult</a> *result = partial_results[0]-&gt;res;</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <span class="keywordtype">size_t</span> nx = result-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#a29269b98c33af874d379ca4f62408b90">nq</a>;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    <span class="comment">// count</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; nx; i++) {</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; npres; j++) {</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;            <span class="keywordflow">if</span> (!partial_results[j]) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;            result-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a>[i] += partial_results[j]-&gt;queries[i].nres;</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        }</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    }</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;}</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="keywordtype">bool</span> IDSelectorBatch::is_member (idx_t i)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    <span class="keywordtype">long</span> im = i &amp; mask;</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    <span class="keywordflow">if</span>(!(bloom[im&gt;&gt;3] &amp; (1 &lt;&lt; (im &amp; 7)))) {</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    }</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    <span class="keywordflow">return</span> set.count(i);</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;}</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="comment">/***********************************************************************</span></div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="comment"> * IO functions</span></div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;<span class="comment"> ***********************************************************************/</span></div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    result-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#a34c4ba599c0cec45972af19e1f98f22a">do_allocation</a> ();</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; npres; j++) {</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        <span class="keywordflow">if</span> (!partial_results[j]) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;        partial_results[j]-&gt;copy_result (<span class="keyword">true</span>);</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        <span class="keywordflow">if</span> (do_delete) {</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;            <span class="keyword">delete</span> partial_results[j];</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;            partial_results[j] = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;        }</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    }</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    <span class="comment">// reset the limits</span></div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = nx; i &gt; 0; i--) {</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;        result-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a> [i] = result-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a> [i - 1];</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    }</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    result-&gt;<a class="code" href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">lims</a> [0] = 0;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;}</div>
 <div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="keywordtype">int</span> IOReader::fileno ()</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;{</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;IOReader does not support memory mapping&quot;</span>);</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;}</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="keywordtype">int</span> IOWriter::fileno ()</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="comment">/***********************************************************************</span></div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="comment"> * IDSelectorRange</span></div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="comment"> ***********************************************************************/</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;IDSelectorRange::IDSelectorRange (idx_t imin, idx_t imax):</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    imin (imin), imax (imax)</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;{</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;IOWriter does not support memory mapping&quot;</span>);</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;}</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="keywordtype">size_t</span> VectorIOWriter::operator()(</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">void</span> *ptr, <span class="keywordtype">size_t</span> size, <span class="keywordtype">size_t</span> nitems)</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;{</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="keywordtype">size_t</span> o = data.size();</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    data.resize(o + size * nitems);</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    memcpy (&amp;data[o], ptr, size * nitems);</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="keywordflow">return</span> nitems;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;}</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;<span class="keywordtype">size_t</span> VectorIOReader::operator()(</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;                  <span class="keywordtype">void</span> *ptr, <span class="keywordtype">size_t</span> size, <span class="keywordtype">size_t</span> nitems)</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;{</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    <span class="keywordflow">if</span> (rp &gt;= data.size()) <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="keywordtype">size_t</span> nremain = (data.size() - rp) / size;</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="keywordflow">if</span> (nremain &lt; nitems) nitems = nremain;</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    memcpy (ptr, &amp;data[rp], size * nitems);</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    rp += size * nitems;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="keywordflow">return</span> nitems;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;}</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;} <span class="comment">// namespace faiss</span></div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;}</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="keywordtype">bool</span> IDSelectorRange::is_member (idx_t <span class="keywordtype">id</span>)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    <span class="keywordflow">return</span> <span class="keywordtype">id</span> &gt;= imin &amp;&amp; <span class="keywordtype">id</span> &lt; imax;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;}</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="comment">/***********************************************************************</span></div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="comment"> * IDSelectorBatch</span></div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="comment"> ***********************************************************************/</span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;IDSelectorBatch::IDSelectorBatch (<span class="keywordtype">long</span> n, <span class="keyword">const</span> idx_t *indices)</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;{</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    nbits = 0;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    <span class="keywordflow">while</span> (n &gt; (1L &lt;&lt; nbits)) nbits++;</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    nbits += 5;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="comment">// for n = 1M, nbits = 25 is optimal, see P56659518</span></div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    mask = (1L &lt;&lt; nbits) - 1;</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    bloom.resize (1UL &lt;&lt; (nbits - 3), 0);</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; n; i++) {</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        <span class="keywordtype">long</span> <span class="keywordtype">id</span> = indices[i];</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        set.insert(<span class="keywordtype">id</span>);</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        <span class="keywordtype">id</span> &amp;= mask;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        bloom[<span class="keywordtype">id</span> &gt;&gt; 3] |= 1 &lt;&lt; (<span class="keywordtype">id</span> &amp; 7);</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    }</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;}</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="keywordtype">bool</span> IDSelectorBatch::is_member (idx_t i)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    <span class="keywordtype">long</span> im = i &amp; mask;</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keywordflow">if</span>(!(bloom[im&gt;&gt;3] &amp; (1 &lt;&lt; (im &amp; 7)))) {</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    }</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <span class="keywordflow">return</span> set.count(i);</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;}</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="comment">/***********************************************************************</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="comment"> * IO functions</span></div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="comment"> ***********************************************************************/</span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="keywordtype">int</span> IOReader::fileno ()</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;{</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;IOReader does not support memory mapping&quot;</span>);</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;}</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;<span class="keywordtype">int</span> IOWriter::fileno ()</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;{</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    FAISS_THROW_MSG (<span class="stringliteral">&quot;IOWriter does not support memory mapping&quot;</span>);</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;}</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;<span class="keywordtype">size_t</span> VectorIOWriter::operator()(</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">void</span> *ptr, <span class="keywordtype">size_t</span> size, <span class="keywordtype">size_t</span> nitems)</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;{</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    <span class="keywordtype">size_t</span> o = data.size();</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    data.resize(o + size * nitems);</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    memcpy (&amp;data[o], ptr, size * nitems);</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    <span class="keywordflow">return</span> nitems;</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;}</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;<span class="keywordtype">size_t</span> VectorIOReader::operator()(</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;                  <span class="keywordtype">void</span> *ptr, <span class="keywordtype">size_t</span> size, <span class="keywordtype">size_t</span> nitems)</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;{</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    <span class="keywordflow">if</span> (rp &gt;= data.size()) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    <span class="keywordtype">size_t</span> nremain = (data.size() - rp) / size;</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="keywordflow">if</span> (nremain &lt; nitems) nitems = nremain;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    memcpy (ptr, &amp;data[rp], size * nitems);</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    rp += size * nitems;</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <span class="keywordflow">return</span> nitems;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;}</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<span class="comment">/***********************************************************</span></div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="comment"> * Interrupt callback</span></div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="comment"> ***********************************************************/</span></div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;std::unique_ptr&lt;InterruptCallback&gt; InterruptCallback::instance;</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;</div>
+<div class="line"><a name="l00307"></a><span class="lineno"><a class="line" href="structfaiss_1_1InterruptCallback.html#a6b7b2569b2d3a88daea65b469a24e378">  307</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="structfaiss_1_1InterruptCallback.html#a6b7b2569b2d3a88daea65b469a24e378">InterruptCallback::check</a> () {</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    <span class="keywordflow">if</span> (!instance.get()) {</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    }</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    <span class="keywordflow">if</span> (instance-&gt;want_interrupt ()) {</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;        FAISS_THROW_MSG (<span class="stringliteral">&quot;computation interrupted&quot;</span>);</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    }</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;}</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;</div>
+<div class="line"><a name="l00316"></a><span class="lineno"><a class="line" href="structfaiss_1_1InterruptCallback.html#adb241fbde51ecd1003cefb8295cd1e0d">  316</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="structfaiss_1_1InterruptCallback.html#adb241fbde51ecd1003cefb8295cd1e0d">InterruptCallback::is_interrupted</a> () {</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    <span class="keywordflow">if</span> (!instance.get()) {</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    }</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keywordflow">return</span> instance-&gt;want_interrupt();</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;}</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;</div>
+<div class="line"><a name="l00324"></a><span class="lineno"><a class="line" href="structfaiss_1_1InterruptCallback.html#a1e4134a6b41f93d2405e030527573728">  324</a></span>&#160;<span class="keywordtype">size_t</span> <a class="code" href="structfaiss_1_1InterruptCallback.html#a1e4134a6b41f93d2405e030527573728">InterruptCallback::get_period_hint</a> (<span class="keywordtype">size_t</span> flops) {</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    <span class="keywordflow">if</span> (!instance.get()) {</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;        <span class="keywordflow">return</span> 1L &lt;&lt; 30; <span class="comment">// never check</span></div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    }</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    <span class="comment">// for 10M flops, it is reasonable to check once every 10 iterations</span></div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    <span class="keywordflow">return</span> std::max((<span class="keywordtype">size_t</span>)10 * 10 * 1000 * 1000 / (flops + 1), (<span class="keywordtype">size_t</span>)1);</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;}</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;} <span class="comment">// namespace faiss</span></div>
+<div class="ttc" id="structfaiss_1_1RangeSearchPartialResult_html_abd6ae2a92bc18b6528aadf39370d041c"><div class="ttname"><a href="structfaiss_1_1RangeSearchPartialResult.html#abd6ae2a92bc18b6528aadf39370d041c">faiss::RangeSearchPartialResult::queries</a></div><div class="ttdeci">std::vector&lt; RangeQueryResult &gt; queries</div><div class="ttdoc">query ids + nb of results per query. </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00156">AuxIndexStructures.h:156</a></div></div>
 <div class="ttc" id="structfaiss_1_1RangeSearchResult_html_a29269b98c33af874d379ca4f62408b90"><div class="ttname"><a href="structfaiss_1_1RangeSearchResult.html#a29269b98c33af874d379ca4f62408b90">faiss::RangeSearchResult::nq</a></div><div class="ttdeci">size_t nq</div><div class="ttdoc">nb of queries </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00032">AuxIndexStructures.h:32</a></div></div>
-<div class="ttc" id="structfaiss_1_1RangeSearchPartialResult_1_1QueryResult_html"><div class="ttname"><a href="structfaiss_1_1RangeSearchPartialResult_1_1QueryResult.html">faiss::RangeSearchPartialResult::QueryResult</a></div><div class="ttdoc">result structure for a single query </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00147">AuxIndexStructures.h:147</a></div></div>
-<div class="ttc" id="structfaiss_1_1BufferList_html_a78b70417a9ba5b27553b3134f1190958"><div class="ttname"><a href="structfaiss_1_1BufferList.html#a78b70417a9ba5b27553b3134f1190958">faiss::BufferList::copy_range</a></div><div class="ttdeci">void copy_range(size_t ofs, size_t n, idx_t *dest_ids, float *dest_dis)</div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00086">AuxIndexStructures.cpp:86</a></div></div>
-<div class="ttc" id="structfaiss_1_1RangeSearchPartialResult_html_aa6639358995ac081f8a931a7790d0caf"><div class="ttname"><a href="structfaiss_1_1RangeSearchPartialResult.html#aa6639358995ac081f8a931a7790d0caf">faiss::RangeSearchPartialResult::set_result</a></div><div class="ttdeci">void set_result(bool incremental=false)</div><div class="ttdoc">called by range_search after do_allocation </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00149">AuxIndexStructures.cpp:149</a></div></div>
-<div class="ttc" id="structfaiss_1_1RangeSearchPartialResult_html_ab6a385008493c7b630e4e7bc56e3da74"><div class="ttname"><a href="structfaiss_1_1RangeSearchPartialResult.html#ab6a385008493c7b630e4e7bc56e3da74">faiss::RangeSearchPartialResult::set_lims</a></div><div class="ttdeci">void set_lims()</div><div class="ttdoc">called by range_search before do_allocation </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00140">AuxIndexStructures.cpp:140</a></div></div>
+<div class="ttc" id="structfaiss_1_1RangeQueryResult_html"><div class="ttname"><a href="structfaiss_1_1RangeQueryResult.html">faiss::RangeQueryResult</a></div><div class="ttdoc">result structure for a single query </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00138">AuxIndexStructures.h:138</a></div></div>
+<div class="ttc" id="structfaiss_1_1BufferList_html_aa124ff3a7e6a98960e12a8b32bdaec42"><div class="ttname"><a href="structfaiss_1_1BufferList.html#aa124ff3a7e6a98960e12a8b32bdaec42">faiss::BufferList::append_buffer</a></div><div class="ttdeci">void append_buffer()</div><div class="ttdoc">create a new buffer </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00090">AuxIndexStructures.cpp:90</a></div></div>
+<div class="ttc" id="structfaiss_1_1BufferList_html_a78b70417a9ba5b27553b3134f1190958"><div class="ttname"><a href="structfaiss_1_1BufferList.html#a78b70417a9ba5b27553b3134f1190958">faiss::BufferList::copy_range</a></div><div class="ttdeci">void copy_range(size_t ofs, size_t n, idx_t *dest_ids, float *dest_dis)</div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00099">AuxIndexStructures.cpp:99</a></div></div>
+<div class="ttc" id="structfaiss_1_1RangeSearchPartialResult_html_ab6a385008493c7b630e4e7bc56e3da74"><div class="ttname"><a href="structfaiss_1_1RangeSearchPartialResult.html#ab6a385008493c7b630e4e7bc56e3da74">faiss::RangeSearchPartialResult::set_lims</a></div><div class="ttdeci">void set_lims()</div><div class="ttdoc">called by range_search before do_allocation </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00159">AuxIndexStructures.cpp:159</a></div></div>
 <div class="ttc" id="structfaiss_1_1RangeSearchResult_html_a56dca2b151bcf16f5d488aff321b9501"><div class="ttname"><a href="structfaiss_1_1RangeSearchResult.html#a56dca2b151bcf16f5d488aff321b9501">faiss::RangeSearchResult::RangeSearchResult</a></div><div class="ttdeci">RangeSearchResult(idx_t nq, bool alloc_lims=true)</div><div class="ttdoc">lims must be allocated on input to range_search. </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00024">AuxIndexStructures.cpp:24</a></div></div>
-<div class="ttc" id="structfaiss_1_1BufferList_html_af4d7ddcd77f328a12a7da89d8febe5d9"><div class="ttname"><a href="structfaiss_1_1BufferList.html#af4d7ddcd77f328a12a7da89d8febe5d9">faiss::BufferList::wp</a></div><div class="ttdeci">size_t wp</div><div class="ttdoc">write pointer in the last buffer. </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00111">AuxIndexStructures.h:111</a></div></div>
+<div class="ttc" id="structfaiss_1_1InterruptCallback_html_a6b7b2569b2d3a88daea65b469a24e378"><div class="ttname"><a href="structfaiss_1_1InterruptCallback.html#a6b7b2569b2d3a88daea65b469a24e378">faiss::InterruptCallback::check</a></div><div class="ttdeci">static void check()</div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00307">AuxIndexStructures.cpp:307</a></div></div>
+<div class="ttc" id="structfaiss_1_1BufferList_html_af4d7ddcd77f328a12a7da89d8febe5d9"><div class="ttname"><a href="structfaiss_1_1BufferList.html#af4d7ddcd77f328a12a7da89d8febe5d9">faiss::BufferList::wp</a></div><div class="ttdeci">size_t wp</div><div class="ttdoc">write pointer in the last buffer. </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00116">AuxIndexStructures.h:116</a></div></div>
 <div class="ttc" id="structfaiss_1_1RangeSearchResult_html_a944a93aecc7b51d8f9f35444280aa919"><div class="ttname"><a href="structfaiss_1_1RangeSearchResult.html#a944a93aecc7b51d8f9f35444280aa919">faiss::RangeSearchResult::distances</a></div><div class="ttdeci">float * distances</div><div class="ttdoc">corresponding distances (not sorted) </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00038">AuxIndexStructures.h:38</a></div></div>
-<div class="ttc" id="structfaiss_1_1RangeSearchPartialResult_html_a954c26beebb561a6c2b0f399c48a9db3"><div class="ttname"><a href="structfaiss_1_1RangeSearchPartialResult.html#a954c26beebb561a6c2b0f399c48a9db3">faiss::RangeSearchPartialResult::new_result</a></div><div class="ttdeci">QueryResult &amp; new_result(idx_t qno)</div><div class="ttdoc">begin a new result </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00118">AuxIndexStructures.cpp:118</a></div></div>
+<div class="ttc" id="structfaiss_1_1BufferList_html_aa17f17a53b45bb39b0724d6493ab33c9"><div class="ttname"><a href="structfaiss_1_1BufferList.html#aa17f17a53b45bb39b0724d6493ab33c9">faiss::BufferList::add</a></div><div class="ttdeci">void add(idx_t id, float dis)</div><div class="ttdoc">add one result, possibly appending a new buffer if needed </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00079">AuxIndexStructures.cpp:79</a></div></div>
 <div class="ttc" id="structfaiss_1_1RangeSearchResult_html_a34c4ba599c0cec45972af19e1f98f22a"><div class="ttname"><a href="structfaiss_1_1RangeSearchResult.html#a34c4ba599c0cec45972af19e1f98f22a">faiss::RangeSearchResult::do_allocation</a></div><div class="ttdeci">virtual void do_allocation()</div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00038">AuxIndexStructures.cpp:38</a></div></div>
+<div class="ttc" id="structfaiss_1_1InterruptCallback_html_adb241fbde51ecd1003cefb8295cd1e0d"><div class="ttname"><a href="structfaiss_1_1InterruptCallback.html#adb241fbde51ecd1003cefb8295cd1e0d">faiss::InterruptCallback::is_interrupted</a></div><div class="ttdeci">static bool is_interrupted()</div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00316">AuxIndexStructures.cpp:316</a></div></div>
 <div class="ttc" id="structfaiss_1_1RangeSearchResult_html"><div class="ttname"><a href="structfaiss_1_1RangeSearchResult.html">faiss::RangeSearchResult</a></div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00031">AuxIndexStructures.h:31</a></div></div>
-<div class="ttc" id="structfaiss_1_1BufferList_1_1Buffer_html"><div class="ttname"><a href="structfaiss_1_1BufferList_1_1Buffer.html">faiss::BufferList::Buffer</a></div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00105">AuxIndexStructures.h:105</a></div></div>
+<div class="ttc" id="structfaiss_1_1RangeSearchPartialResult_html_ad323d8ea8914d9071aecff83f69ee8e4"><div class="ttname"><a href="structfaiss_1_1RangeSearchPartialResult.html#ad323d8ea8914d9071aecff83f69ee8e4">faiss::RangeSearchPartialResult::copy_result</a></div><div class="ttdeci">void copy_result(bool incremental=false)</div><div class="ttdoc">called by range_search after do_allocation </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00168">AuxIndexStructures.cpp:168</a></div></div>
+<div class="ttc" id="structfaiss_1_1RangeSearchPartialResult_html_ac01a679f4fa7a00e8cb0dfe15f50d422"><div class="ttname"><a href="structfaiss_1_1RangeSearchPartialResult.html#ac01a679f4fa7a00e8cb0dfe15f50d422">faiss::RangeSearchPartialResult::merge</a></div><div class="ttdeci">static void merge(std::vector&lt; RangeSearchPartialResult * &gt; &amp;partial_results, bool do_delete=true)</div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00184">AuxIndexStructures.cpp:184</a></div></div>
+<div class="ttc" id="structfaiss_1_1RangeSearchPartialResult_html_a0ba199c22ed09aebb0f7238229b516e9"><div class="ttname"><a href="structfaiss_1_1RangeSearchPartialResult.html#a0ba199c22ed09aebb0f7238229b516e9">faiss::RangeSearchPartialResult::new_result</a></div><div class="ttdeci">RangeQueryResult &amp; new_result(idx_t qno)</div><div class="ttdoc">begin a new result </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00137">AuxIndexStructures.cpp:137</a></div></div>
+<div class="ttc" id="structfaiss_1_1BufferList_1_1Buffer_html"><div class="ttname"><a href="structfaiss_1_1BufferList_1_1Buffer.html">faiss::BufferList::Buffer</a></div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00110">AuxIndexStructures.h:110</a></div></div>
 <div class="ttc" id="structfaiss_1_1RangeSearchResult_html_a39342ad2e9ad8b90f6e95dafd3287f49"><div class="ttname"><a href="structfaiss_1_1RangeSearchResult.html#a39342ad2e9ad8b90f6e95dafd3287f49">faiss::RangeSearchResult::buffer_size</a></div><div class="ttdeci">size_t buffer_size</div><div class="ttdoc">size of the result buffers used </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00040">AuxIndexStructures.h:40</a></div></div>
+<div class="ttc" id="structfaiss_1_1InterruptCallback_html_a1e4134a6b41f93d2405e030527573728"><div class="ttname"><a href="structfaiss_1_1InterruptCallback.html#a1e4134a6b41f93d2405e030527573728">faiss::InterruptCallback::get_period_hint</a></div><div class="ttdeci">static size_t get_period_hint(size_t flops)</div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00324">AuxIndexStructures.cpp:324</a></div></div>
 <div class="ttc" id="structfaiss_1_1RangeSearchResult_html_aef57f9db99ca470c01bcdce0366cb6ff"><div class="ttname"><a href="structfaiss_1_1RangeSearchResult.html#aef57f9db99ca470c01bcdce0366cb6ff">faiss::RangeSearchResult::lims</a></div><div class="ttdeci">size_t * lims</div><div class="ttdoc">size (nq + 1) </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00033">AuxIndexStructures.h:33</a></div></div>
-<div class="ttc" id="structfaiss_1_1BufferList_html"><div class="ttname"><a href="structfaiss_1_1BufferList.html">faiss::BufferList</a></div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00099">AuxIndexStructures.h:99</a></div></div>
+<div class="ttc" id="structfaiss_1_1RangeQueryResult_html_aed669959bc918d9a554f236d40789084"><div class="ttname"><a href="structfaiss_1_1RangeQueryResult.html#aed669959bc918d9a554f236d40789084">faiss::RangeQueryResult::add</a></div><div class="ttdeci">void add(float dis, idx_t id)</div><div class="ttdoc">called by search function to report a new result </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00122">AuxIndexStructures.cpp:122</a></div></div>
+<div class="ttc" id="structfaiss_1_1BufferList_html"><div class="ttname"><a href="structfaiss_1_1BufferList.html">faiss::BufferList</a></div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00104">AuxIndexStructures.h:104</a></div></div>
 <div class="ttc" id="structfaiss_1_1RangeSearchResult_html_aa8ff848474a4cc16c5464cc4ec187824"><div class="ttname"><a href="structfaiss_1_1RangeSearchResult.html#aa8ff848474a4cc16c5464cc4ec187824">faiss::RangeSearchResult::labels</a></div><div class="ttdeci">idx_t * labels</div><div class="ttdoc">result for query i is labels[lims[i]:lims[i+1]] </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8h_source.html#l00037">AuxIndexStructures.h:37</a></div></div>
+<div class="ttc" id="structfaiss_1_1RangeSearchPartialResult_html_a41aaed4f59e7a6a99e2a643dfff483f5"><div class="ttname"><a href="structfaiss_1_1RangeSearchPartialResult.html#a41aaed4f59e7a6a99e2a643dfff483f5">faiss::RangeSearchPartialResult::RangeSearchPartialResult</a></div><div class="ttdeci">RangeSearchPartialResult(RangeSearchResult *res_in)</div><div class="ttdoc">eventually the result will be stored in res_in </div><div class="ttdef"><b>Definition:</b> <a href="AuxIndexStructures_8cpp_source.html#l00129">AuxIndexStructures.cpp:129</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -33,7 +33,7 @@ setup(
     url='https://github.com/facebookresearch/faiss',
     author='Matthijs Douze, Jeff Johnson, Herve Jegou, Lucas Hosseini',
     author_email='matthijs@fb.com',
-    license='BSD',
+    license='MIT',
     keywords='search nearest neighbors',
 
     install_requires=['numpy'],

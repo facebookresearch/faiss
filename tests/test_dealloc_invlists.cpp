@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -37,13 +36,6 @@ size_t nb = 1000;
 
 // nb of queries
 size_t nq = 200;
-
-
-int total_size = 40;
-int window_size = 10;
-
-
-
 
 
 std::vector<float> make_data(size_t n)
@@ -108,11 +100,11 @@ struct EncapsulateInvertedLists: InvertedLists {
                                list_size(list_no) * sizeof(idx_t));
     }
 
-    void release_codes (const uint8_t *codes) const override {
+    void release_codes (size_t, const uint8_t *codes) const override {
         free ((void*)codes);
     }
 
-    void release_ids (const idx_t *ids) const override {
+    void release_ids (size_t, const idx_t *ids) const override {
         free ((void*)ids);
     }
 

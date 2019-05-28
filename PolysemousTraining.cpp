@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -837,7 +836,7 @@ void PolysemousTraining::optimize_ranking (
 
     pq.compute_codes (x, all_codes.data(), n);
 
-    FAISS_THROW_IF_NOT (pq.byte_per_idx == 1);
+    FAISS_THROW_IF_NOT (pq.nbits == 8);
 
     if (n == 0)
         pq.compute_sdc_table ();

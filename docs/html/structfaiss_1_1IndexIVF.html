@@ -102,11 +102,12 @@ Inheritance diagram for faiss::IndexIVF:</div>
  <div class="center">
   <img src="structfaiss_1_1IndexIVF.png" usemap="#faiss::IndexIVF_map" alt=""/>
   <map id="faiss::IndexIVF_map" name="faiss::IndexIVF_map">
-<area href="structfaiss_1_1Index.html" alt="faiss::Index" shape="rect" coords="98,0,284,24"/>
-<area href="structfaiss_1_1Level1Quantizer.html" alt="faiss::Level1Quantizer" shape="rect" coords="294,0,480,24"/>
+<area href="structfaiss_1_1Index.html" alt="faiss::Index" shape="rect" coords="196,0,382,24"/>
+<area href="structfaiss_1_1Level1Quantizer.html" alt="faiss::Level1Quantizer" shape="rect" coords="392,0,578,24"/>
 <area href="structfaiss_1_1IndexIVFFlat.html" alt="faiss::IndexIVFFlat" shape="rect" coords="0,112,186,136"/>
 <area href="structfaiss_1_1IndexIVFPQ.html" alt="faiss::IndexIVFPQ" shape="rect" coords="196,112,382,136"/>
 <area href="structfaiss_1_1IndexIVFScalarQuantizer.html" alt="faiss::IndexIVFScalarQuantizer" shape="rect" coords="392,112,578,136"/>
+<area href="structfaiss_1_1IndexIVFSpectralHash.html" alt="faiss::IndexIVFSpectralHash" shape="rect" coords="588,112,774,136"/>
 <area href="structfaiss_1_1IndexIVFFlatDedup.html" alt="faiss::IndexIVFFlatDedup" shape="rect" coords="0,168,186,192"/>
 <area href="structfaiss_1_1IndexIVFPQR.html" alt="faiss::IndexIVFPQR" shape="rect" coords="196,168,382,192"/>
 </map>
@@ -121,71 +122,68 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <tr class="memdesc:a47a3b7665e9d2be41c6d3b2e9144b73f"><td class="mdescLeft">&#160;</td><td class="mdescRight">removes all elements from the database. <br/></td></tr>
 <tr class="separator:a47a3b7665e9d2be41c6d3b2e9144b73f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a1d5eec194db0977b2318c6ed6a2b86"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7a1d5eec194db0977b2318c6ed6a2b86"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a7a1d5eec194db0977b2318c6ed6a2b86">train</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x) override</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a7a1d5eec194db0977b2318c6ed6a2b86">train</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> n, const float *x) override</td></tr>
 <tr class="memdesc:a7a1d5eec194db0977b2318c6ed6a2b86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trains the quantizer and calls train_residual to train sub-quantizers. <br/></td></tr>
 <tr class="separator:a7a1d5eec194db0977b2318c6ed6a2b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a821002a9d3a1a74dc8d6f6072eca4075"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a821002a9d3a1a74dc8d6f6072eca4075"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a821002a9d3a1a74dc8d6f6072eca4075">add</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x) override</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a821002a9d3a1a74dc8d6f6072eca4075">add</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> n, const float *x) override</td></tr>
 <tr class="memdesc:a821002a9d3a1a74dc8d6f6072eca4075"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls add_with_ids with NULL ids. <br/></td></tr>
 <tr class="separator:a821002a9d3a1a74dc8d6f6072eca4075"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f16f939a418d8e58ff43f4ee0dc17cc"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a2f16f939a418d8e58ff43f4ee0dc17cc">encode_vectors</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, const <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *list_nos, uint8_t *codes) const =0</td></tr>
+<tr class="memitem:a14e75169bddcd0251134821416b060a1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a14e75169bddcd0251134821416b060a1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a14e75169bddcd0251134821416b060a1">add_with_ids</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> n, const float *x, const <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *xids) override</td></tr>
+<tr class="memdesc:a14e75169bddcd0251134821416b060a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">default implementation that calls encode_vectors <br/></td></tr>
+<tr class="separator:a14e75169bddcd0251134821416b060a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f16f939a418d8e58ff43f4ee0dc17cc"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a2f16f939a418d8e58ff43f4ee0dc17cc">encode_vectors</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> n, const float *x, const <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *list_nos, uint8_t *codes) const =0</td></tr>
 <tr class="separator:a2f16f939a418d8e58ff43f4ee0dc17cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a567ef760fd09d09ce2ee4f4e6c2d7280"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a567ef760fd09d09ce2ee4f4e6c2d7280">train_residual</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x)</td></tr>
+<tr class="memitem:a567ef760fd09d09ce2ee4f4e6c2d7280"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a567ef760fd09d09ce2ee4f4e6c2d7280">train_residual</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> n, const float *x)</td></tr>
 <tr class="separator:a567ef760fd09d09ce2ee4f4e6c2d7280"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cf3a1963394f87d61913420a66eb468"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a7cf3a1963394f87d61913420a66eb468">search_preassigned</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> k, const <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *<a class="el" href="structfaiss_1_1Index.html#a8bc5d8d1cd0dd7b34b3c98a9f76b4a9c">assign</a>, const float *centroid_dis, float *distances, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *labels, bool store_pairs, const <a class="el" href="structfaiss_1_1IVFSearchParameters.html">IVFSearchParameters</a> *params=nullptr) const </td></tr>
+<tr class="memitem:a7cf3a1963394f87d61913420a66eb468"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a7cf3a1963394f87d61913420a66eb468">search_preassigned</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> k, const <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *<a class="el" href="structfaiss_1_1Index.html#a8bc5d8d1cd0dd7b34b3c98a9f76b4a9c">assign</a>, const float *centroid_dis, float *distances, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *labels, bool store_pairs, const <a class="el" href="structfaiss_1_1IVFSearchParameters.html">IVFSearchParameters</a> *params=nullptr) const </td></tr>
 <tr class="separator:a7cf3a1963394f87d61913420a66eb468"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2fd47b7d52603659e269aa8f6abb613"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#ae2fd47b7d52603659e269aa8f6abb613">search</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *labels) const override</td></tr>
+<tr class="memitem:ae2fd47b7d52603659e269aa8f6abb613"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#ae2fd47b7d52603659e269aa8f6abb613">search</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *labels) const override</td></tr>
 <tr class="separator:ae2fd47b7d52603659e269aa8f6abb613"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3fc6ef4f20616dd86323ec1f89e51217"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3fc6ef4f20616dd86323ec1f89e51217"></a>
-virtual <a class="el" href="structfaiss_1_1InvertedListScanner.html">InvertedListScanner</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a3fc6ef4f20616dd86323ec1f89e51217">get_InvertedListScanner</a> (bool store_pairs=false) const </td></tr>
-<tr class="memdesc:a3fc6ef4f20616dd86323ec1f89e51217"><td class="mdescLeft">&#160;</td><td class="mdescRight">get a scanner for this index (store_pairs means ignore labels) <br/></td></tr>
-<tr class="separator:a3fc6ef4f20616dd86323ec1f89e51217"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b3270dcfa248dc30117644382a54e39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a3b3270dcfa248dc30117644382a54e39">reconstruct</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> key, float *recons) const override</td></tr>
+<tr class="memitem:a5b7b4b3dc5ea40f7076a00c81cc83d66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a5b7b4b3dc5ea40f7076a00c81cc83d66">range_search</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> n, const float *x, float radius, <a class="el" href="structfaiss_1_1RangeSearchResult.html">RangeSearchResult</a> *result) const override</td></tr>
+<tr class="separator:a5b7b4b3dc5ea40f7076a00c81cc83d66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20105e3d7c531d6b03bd39b296e39e43"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a20105e3d7c531d6b03bd39b296e39e43"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>range_search_preassigned</b> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> nx, const float *x, float radius, const <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *keys, const float *coarse_dis, <a class="el" href="structfaiss_1_1RangeSearchResult.html">RangeSearchResult</a> *result) const </td></tr>
+<tr class="separator:a20105e3d7c531d6b03bd39b296e39e43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdf74276df83acf76023f105516fe881"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abdf74276df83acf76023f105516fe881"></a>
+virtual <a class="el" href="structfaiss_1_1InvertedListScanner.html">InvertedListScanner</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#abdf74276df83acf76023f105516fe881">get_InvertedListScanner</a> (bool store_pairs=false) const </td></tr>
+<tr class="memdesc:abdf74276df83acf76023f105516fe881"><td class="mdescLeft">&#160;</td><td class="mdescRight">get a scanner for this index (store_pairs means ignore labels) <br/></td></tr>
+<tr class="separator:abdf74276df83acf76023f105516fe881"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b3270dcfa248dc30117644382a54e39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a3b3270dcfa248dc30117644382a54e39">reconstruct</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> key, float *recons) const override</td></tr>
 <tr class="separator:a3b3270dcfa248dc30117644382a54e39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cc286dfbd8bfd43ea4b22173e28231c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a7cc286dfbd8bfd43ea4b22173e28231c">reconstruct_n</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> i0, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> ni, float *recons) const override</td></tr>
+<tr class="memitem:a7cc286dfbd8bfd43ea4b22173e28231c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a7cc286dfbd8bfd43ea4b22173e28231c">reconstruct_n</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> i0, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> ni, float *recons) const override</td></tr>
 <tr class="separator:a7cc286dfbd8bfd43ea4b22173e28231c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77aec24920024a09f7661790d9534c10"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a77aec24920024a09f7661790d9534c10">search_and_reconstruct</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *labels, float *recons) const override</td></tr>
+<tr class="memitem:a77aec24920024a09f7661790d9534c10"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a77aec24920024a09f7661790d9534c10">search_and_reconstruct</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> k, float *distances, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *labels, float *recons) const override</td></tr>
 <tr class="separator:a77aec24920024a09f7661790d9534c10"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac87273dafff2027d4bcf706e1c7d83f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#aac87273dafff2027d4bcf706e1c7d83f">reconstruct_from_offset</a> (long list_no, long offset, float *recons) const </td></tr>
-<tr class="separator:aac87273dafff2027d4bcf706e1c7d83f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a545c275690fac76be8c1a4685b3c7b8e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a545c275690fac76be8c1a4685b3c7b8e"></a>
-long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a545c275690fac76be8c1a4685b3c7b8e">remove_ids</a> (const <a class="el" href="structfaiss_1_1IDSelector.html">IDSelector</a> &amp;sel) override</td></tr>
-<tr class="memdesc:a545c275690fac76be8c1a4685b3c7b8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dataset manipulation functions. <br/></td></tr>
-<tr class="separator:a545c275690fac76be8c1a4685b3c7b8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acaa919a002354a7944266c26f8965170"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#acaa919a002354a7944266c26f8965170">reconstruct_from_offset</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> list_no, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> offset, float *recons) const </td></tr>
+<tr class="separator:acaa919a002354a7944266c26f8965170"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e6f5ea9abc1a014531be989b5dea4b7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4e6f5ea9abc1a014531be989b5dea4b7"></a>
+<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a4e6f5ea9abc1a014531be989b5dea4b7">remove_ids</a> (const <a class="el" href="structfaiss_1_1IDSelector.html">IDSelector</a> &amp;sel) override</td></tr>
+<tr class="memdesc:a4e6f5ea9abc1a014531be989b5dea4b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dataset manipulation functions. <br/></td></tr>
+<tr class="separator:a4e6f5ea9abc1a014531be989b5dea4b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fc8b9a1fff9f3d24cf7055fbc4fed7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a7fc8b9a1fff9f3d24cf7055fbc4fed7b">check_compatible_for_merge</a> (const <a class="el" href="structfaiss_1_1IndexIVF.html">IndexIVF</a> &amp;other) const </td></tr>
 <tr class="separator:a7fc8b9a1fff9f3d24cf7055fbc4fed7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f22cc237c30c935df5b6560aecf8f01"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a0f22cc237c30c935df5b6560aecf8f01">merge_from</a> (<a class="el" href="structfaiss_1_1IndexIVF.html">IndexIVF</a> &amp;other, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> add_id)</td></tr>
+<tr class="memitem:a0f22cc237c30c935df5b6560aecf8f01"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a0f22cc237c30c935df5b6560aecf8f01">merge_from</a> (<a class="el" href="structfaiss_1_1IndexIVF.html">IndexIVF</a> &amp;other, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> add_id)</td></tr>
 <tr class="separator:a0f22cc237c30c935df5b6560aecf8f01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fc63f9bbfe64e05106366465ece2187"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a2fc63f9bbfe64e05106366465ece2187">copy_subset_to</a> (<a class="el" href="structfaiss_1_1IndexIVF.html">IndexIVF</a> &amp;other, int subset_type, long a1, long a2) const </td></tr>
-<tr class="separator:a2fc63f9bbfe64e05106366465ece2187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa64ecc5e7b286e9b0f252796edd4714b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#aa64ecc5e7b286e9b0f252796edd4714b">copy_subset_to</a> (<a class="el" href="structfaiss_1_1IndexIVF.html">IndexIVF</a> &amp;other, int subset_type, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> a1, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> a2) const </td></tr>
+<tr class="separator:aa64ecc5e7b286e9b0f252796edd4714b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0475311f5faee84d024066906bae0bbd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0475311f5faee84d024066906bae0bbd"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_list_size</b> (size_t list_no) const </td></tr>
 <tr class="separator:a0475311f5faee84d024066906bae0bbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c11ce77f459e2ab3e5d9a4c2263ad89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a1c11ce77f459e2ab3e5d9a4c2263ad89">make_direct_map</a> (bool new_maintain_direct_map=true)</td></tr>
 <tr class="separator:a1c11ce77f459e2ab3e5d9a4c2263ad89"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeab84d4edf2cf9747c923e1a8395d9f3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeab84d4edf2cf9747c923e1a8395d9f3"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#aeab84d4edf2cf9747c923e1a8395d9f3">imbalance_factor</a> () const </td></tr>
-<tr class="memdesc:aeab84d4edf2cf9747c923e1a8395d9f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">1= perfectly balanced, &gt;1: imbalanced <br/></td></tr>
-<tr class="separator:aeab84d4edf2cf9747c923e1a8395d9f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a513dfec3a250f08a9fdd18a24178e6bb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a513dfec3a250f08a9fdd18a24178e6bb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a513dfec3a250f08a9fdd18a24178e6bb">print_stats</a> () const </td></tr>
-<tr class="memdesc:a513dfec3a250f08a9fdd18a24178e6bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">display some stats about the inverted lists <br/></td></tr>
-<tr class="separator:a513dfec3a250f08a9fdd18a24178e6bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4eb943aeb7df30d44ad9b665452bfcf7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4eb943aeb7df30d44ad9b665452bfcf7"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a4eb943aeb7df30d44ad9b665452bfcf7">replace_invlists</a> (<a class="el" href="structfaiss_1_1InvertedLists.html">InvertedLists</a> *il, bool own=false)</td></tr>
 <tr class="memdesc:a4eb943aeb7df30d44ad9b665452bfcf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">replace the inverted lists, old one is deallocated if own_invlists <br/></td></tr>
 <tr class="separator:a4eb943aeb7df30d44ad9b665452bfcf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structfaiss_1_1Index"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structfaiss_1_1Index')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structfaiss_1_1Index.html">faiss::Index</a></td></tr>
 <tr class="memitem:a7b8cc435b5619d5d8382010a424bf67e inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b8cc435b5619d5d8382010a424bf67e"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Index</b> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> <a class="el" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>=0, <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">MetricType</a> metric=METRIC_L2)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Index</b> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> <a class="el" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a>=0, <a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">MetricType</a> metric=METRIC_L2)</td></tr>
 <tr class="separator:a7b8cc435b5619d5d8382010a424bf67e inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6931dfe054b33b02c842ff75f7a0c7f inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#aa6931dfe054b33b02c842ff75f7a0c7f">add_with_ids</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, const long *xids)</td></tr>
-<tr class="separator:aa6931dfe054b33b02c842ff75f7a0c7f inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a236897832a58dbb205e2d662c1929fb1 inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a236897832a58dbb205e2d662c1929fb1">range_search</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, float radius, <a class="el" href="structfaiss_1_1RangeSearchResult.html">RangeSearchResult</a> *result) const </td></tr>
-<tr class="separator:a236897832a58dbb205e2d662c1929fb1 inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8bc5d8d1cd0dd7b34b3c98a9f76b4a9c inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a8bc5d8d1cd0dd7b34b3c98a9f76b4a9c">assign</a> (<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *labels, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> k=1)</td></tr>
+<tr class="memitem:a8bc5d8d1cd0dd7b34b3c98a9f76b4a9c inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a8bc5d8d1cd0dd7b34b3c98a9f76b4a9c">assign</a> (<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> n, const float *x, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *labels, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> k=1)</td></tr>
 <tr class="separator:a8bc5d8d1cd0dd7b34b3c98a9f76b4a9c inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaae77608bbda70b1098897e9167a82f9 inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#aaae77608bbda70b1098897e9167a82f9">compute_residual</a> (const float *x, float *residual, <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> key) const </td></tr>
+<tr class="memitem:aaae77608bbda70b1098897e9167a82f9 inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#aaae77608bbda70b1098897e9167a82f9">compute_residual</a> (const float *x, float *residual, <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> key) const </td></tr>
 <tr class="separator:aaae77608bbda70b1098897e9167a82f9 inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a373c30e3d87d1d4e616f450d87152b1a inherit pub_methods_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a373c30e3d87d1d4e616f450d87152b1a">display</a> () const </td></tr>
 <tr class="separator:a373c30e3d87d1d4e616f450d87152b1a inherit pub_methods_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -219,20 +217,22 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a7f2dd34f66f8770acba74a0a591fa4a8">max_codes</a></td></tr>
 <tr class="memdesc:a7f2dd34f66f8770acba74a0a591fa4a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">max nb of codes to visit to do a query <br/></td></tr>
 <tr class="separator:a7f2dd34f66f8770acba74a0a591fa4a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a244ec2067da495ff1493687e0048ae02"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#a244ec2067da495ff1493687e0048ae02">parallel_mode</a></td></tr>
+<tr class="separator:a244ec2067da495ff1493687e0048ae02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aedd0c14b5654295b291638ec7f9f9517"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aedd0c14b5654295b291638ec7f9f9517"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1IndexIVF.html#aedd0c14b5654295b291638ec7f9f9517">maintain_direct_map</a></td></tr>
 <tr class="memdesc:aedd0c14b5654295b291638ec7f9f9517"><td class="mdescLeft">&#160;</td><td class="mdescRight">map for direct access to the elements. Enables <a class="el" href="structfaiss_1_1IndexIVF.html#a3b3270dcfa248dc30117644382a54e39">reconstruct()</a>. <br/></td></tr>
 <tr class="separator:aedd0c14b5654295b291638ec7f9f9517"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59fcfc4625260315c6423adc21d31ce9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a59fcfc4625260315c6423adc21d31ce9"></a>
-std::vector&lt; long &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>direct_map</b></td></tr>
-<tr class="separator:a59fcfc4625260315c6423adc21d31ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a009f1cf185e6468de2c4ec5cb8766469"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a009f1cf185e6468de2c4ec5cb8766469"></a>
+std::vector&lt; <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>direct_map</b></td></tr>
+<tr class="separator:a009f1cf185e6468de2c4ec5cb8766469"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_structfaiss_1_1Index"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structfaiss_1_1Index')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structfaiss_1_1Index.html">faiss::Index</a></td></tr>
 <tr class="memitem:a2a002388d2c081c2dbab8508dcefe73d inherit pub_attribs_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2a002388d2c081c2dbab8508dcefe73d"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a2a002388d2c081c2dbab8508dcefe73d">d</a></td></tr>
 <tr class="memdesc:a2a002388d2c081c2dbab8508dcefe73d inherit pub_attribs_structfaiss_1_1Index"><td class="mdescLeft">&#160;</td><td class="mdescRight">vector dimension <br/></td></tr>
 <tr class="separator:a2a002388d2c081c2dbab8508dcefe73d inherit pub_attribs_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6970683faa021b7a6f1a0865c0d4eccd inherit pub_attribs_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6970683faa021b7a6f1a0865c0d4eccd"></a>
-<a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a6970683faa021b7a6f1a0865c0d4eccd">ntotal</a></td></tr>
+<a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a6970683faa021b7a6f1a0865c0d4eccd">ntotal</a></td></tr>
 <tr class="memdesc:a6970683faa021b7a6f1a0865c0d4eccd inherit pub_attribs_structfaiss_1_1Index"><td class="mdescLeft">&#160;</td><td class="mdescRight">total nb of indexed vectors <br/></td></tr>
 <tr class="separator:a6970683faa021b7a6f1a0865c0d4eccd inherit pub_attribs_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5590d847c5c2b958affd2a05e58a6f23 inherit pub_attribs_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5590d847c5c2b958affd2a05e58a6f23"></a>
@@ -274,10 +274,16 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_structfaiss_1_1Index"><td colspan="2" onclick="javascript:toggleInherit('pub_types_structfaiss_1_1Index')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="structfaiss_1_1Index.html">faiss::Index</a></td></tr>
-<tr class="memitem:a040c6aed1f224f3ea7bf58eebc0c31a4 inherit pub_types_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a040c6aed1f224f3ea7bf58eebc0c31a4"></a>
-typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a></td></tr>
-<tr class="memdesc:a040c6aed1f224f3ea7bf58eebc0c31a4 inherit pub_types_structfaiss_1_1Index"><td class="mdescLeft">&#160;</td><td class="mdescRight">all indices are this type <br/></td></tr>
-<tr class="separator:a040c6aed1f224f3ea7bf58eebc0c31a4 inherit pub_types_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3f0d3071f987baabbdd3da4500c87ea inherit pub_types_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad3f0d3071f987baabbdd3da4500c87ea"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> = long</td></tr>
+<tr class="memdesc:ad3f0d3071f987baabbdd3da4500c87ea inherit pub_types_structfaiss_1_1Index"><td class="mdescLeft">&#160;</td><td class="mdescRight">all indices are this type <br/></td></tr>
+<tr class="separator:ad3f0d3071f987baabbdd3da4500c87ea inherit pub_types_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af317cb1e2ad0bd145f716f2243b693eb inherit pub_types_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af317cb1e2ad0bd145f716f2243b693eb"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>component_t</b> = float</td></tr>
+<tr class="separator:af317cb1e2ad0bd145f716f2243b693eb inherit pub_types_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c60d7a12bf3ad27054963df8cccd93f inherit pub_types_structfaiss_1_1Index"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c60d7a12bf3ad27054963df8cccd93f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>distance_t</b> = float</td></tr>
+<tr class="separator:a1c60d7a12bf3ad27054963df8cccd93f inherit pub_types_structfaiss_1_1Index"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="structfaiss_1_1Index.html">Index</a> based on a inverted file (IVF)</p>
@@ -286,7 +292,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>At search time, the vector to be searched is also quantized, and only the list corresponding to the quantization index is searched. This speeds up the search by making it non-exhaustive. This can be relaxed using multi-probe search: a few (nprobe) quantization indices are selected and several inverted lists are visited.</p>
 <p>Sub-classes implement a post-filtering of the index that refines the distance estimation from the query to databse vectors. </p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8h_source.html#l00091">91</a> of file <a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8h_source.html#l00090">90</a> of file <a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a7077b7e60e250b9a84c49ff38205bbbf"></a>
 <div class="memitem">
@@ -331,7 +337,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>The Inverted file takes a quantizer (an <a class="el" href="structfaiss_1_1Index.html">Index</a>) on input, which implements the function mapping a vector to a list identifier. The pointer is borrowed: the quantizer should not be deleted while the <a class="el" href="structfaiss_1_1IndexIVF.html">IndexIVF</a> is in use. </p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00111">111</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00114">114</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -351,11 +357,11 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00461">461</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00710">710</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a2fc63f9bbfe64e05106366465ece2187"></a>
+<a class="anchor" id="aa64ecc5e7b286e9b0f252796edd4714b"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -377,13 +383,13 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">long&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>a1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">long&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>a2</em>&#160;</td>
         </tr>
         <tr>
@@ -401,7 +407,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>copy a subset of the entries index to the other index</p>
 <p>if subset_type == 0: copies ids in [a1, a2) if subset_type == 1: copies ids if id % a1 == a2 if subset_type == 2: copies inverted lists such that a1 elements are left before and a2 elements are after </p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00499">499</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00748">748</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -415,7 +421,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="memname">virtual void faiss::IndexIVF::encode_vectors </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>n</em>, </td>
         </tr>
         <tr>
@@ -427,7 +433,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *&#160;</td>
+          <td class="paramtype">const <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *&#160;</td>
           <td class="paramname"><em>list_nos</em>, </td>
         </tr>
         <tr>
@@ -457,7 +463,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#a4079709524ca1abf344580b94b223e2a">faiss::IndexIVFScalarQuantizer</a>, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#aaeddd125680a8d5347c0b58565b6b511">faiss::IndexIVFPQ</a>, and <a class="el" href="structfaiss_1_1IndexIVFFlat.html#a2c445db1ccbad852dad17e60e0fac950">faiss::IndexIVFFlat</a>.</p>
+<p>Implemented in <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#a4079709524ca1abf344580b94b223e2a">faiss::IndexIVFScalarQuantizer</a>, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#aaeddd125680a8d5347c0b58565b6b511">faiss::IndexIVFPQ</a>, <a class="el" href="structfaiss_1_1IndexIVFSpectralHash.html#ab875c25aaf4fb2db0313b763c9294d64">faiss::IndexIVFSpectralHash</a>, and <a class="el" href="structfaiss_1_1IndexIVFFlat.html#a2c445db1ccbad852dad17e60e0fac950">faiss::IndexIVFFlat</a>.</p>
 
 </div>
 </div>
@@ -482,7 +488,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00144">144</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00202">202</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -502,7 +508,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>add_id</em>&#160;</td>
         </tr>
         <tr>
@@ -521,7 +527,69 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a31a1fec2a88b410ea96ce5be7d527be9">faiss::IndexIVFPQR</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00472">472</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00721">721</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5b7b4b3dc5ea40f7076a00c81cc83d66"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::IndexIVF::range_search </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1RangeSearchResult.html">RangeSearchResult</a> *&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>query n vectors of dimension d to the index.</p>
+<p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>input vectors to search, size n * d </td></tr>
+    <tr><td class="paramname">radius</td><td>search radius </td></tr>
+    <tr><td class="paramname">result</td><td>result table </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#a236897832a58dbb205e2d662c1929fb1">faiss::Index</a>.</p>
+
+<p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFFlatDedup.html#acb4f1350039546f5001c5fc36ac0fb2d">faiss::IndexIVFFlatDedup</a>.</p>
+
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00434">434</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -535,7 +603,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="memname">void faiss::IndexIVF::reconstruct </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>key</em>, </td>
         </tr>
         <tr>
@@ -568,11 +636,11 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#aaef6f4132b1f390121ebb11058baf190">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00284">284</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00562">562</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aac87273dafff2027d4bcf706e1c7d83f"></a>
+<a class="anchor" id="acaa919a002354a7944266c26f8965170"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -582,13 +650,13 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="memname">void faiss::IndexIVF::reconstruct_from_offset </td>
           <td>(</td>
-          <td class="paramtype">long&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>list_no</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">long&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>offset</em>, </td>
         </tr>
         <tr>
@@ -614,7 +682,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a83aa33ae77eb80f6564992e250abcf41">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#a0320af8f30a0e3491853743b8f6d0faa">faiss::IndexIVFScalarQuantizer</a>, <a class="el" href="structfaiss_1_1IndexIVFFlatDedup.html#adedda3a8e10704acc5639b7f6aa065f7">faiss::IndexIVFFlatDedup</a>, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#a921c6640d3a16bb3608883d8e8948810">faiss::IndexIVFPQ</a>, and <a class="el" href="structfaiss_1_1IndexIVFFlat.html#a1267faf361fc3831ddafe7abc51f0ba2">faiss::IndexIVFFlat</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00353">353</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00633">633</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -628,13 +696,13 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="memname">void faiss::IndexIVF::reconstruct_n </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>i0</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>ni</em>, </td>
         </tr>
         <tr>
@@ -668,7 +736,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#a1936604fffe16b0ef2a3879305950738">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00294">294</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00574">574</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -682,7 +750,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="memname">void faiss::IndexIVF::search </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>n</em>, </td>
         </tr>
         <tr>
@@ -694,7 +762,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>k</em>, </td>
         </tr>
         <tr>
@@ -706,7 +774,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *&#160;</td>
           <td class="paramname"><em>labels</em>&#160;</td>
         </tr>
         <tr>
@@ -725,7 +793,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Implements <a class="el" href="structfaiss_1_1Index.html#aced51b1ebc33c47ab3ae15ea906559a7">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00170">170</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00228">228</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -739,7 +807,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="memname">void faiss::IndexIVF::search_and_reconstruct </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>n</em>, </td>
         </tr>
         <tr>
@@ -751,7 +819,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>k</em>, </td>
         </tr>
         <tr>
@@ -763,7 +831,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *&#160;</td>
           <td class="paramname"><em>labels</em>, </td>
         </tr>
         <tr>
@@ -795,7 +863,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented from <a class="el" href="structfaiss_1_1Index.html#aa5b4e63e1064f9bf9c75625d114b353f">faiss::Index</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00315">315</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00595">595</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -809,7 +877,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="memname">void faiss::IndexIVF::search_preassigned </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>n</em>, </td>
         </tr>
         <tr>
@@ -821,13 +889,13 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>k</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *&#160;</td>
+          <td class="paramtype">const <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *&#160;</td>
           <td class="paramname"><em>assign</em>, </td>
         </tr>
         <tr>
@@ -845,7 +913,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a> *&#160;</td>
           <td class="paramname"><em>labels</em>, </td>
         </tr>
         <tr>
@@ -889,7 +957,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#ab9daed04d3cb3f7f57f32c6b477ac5b3">faiss::IndexIVFPQR</a>, and <a class="el" href="structfaiss_1_1IndexIVFFlatDedup.html#a88f84494a02e8ceab79982bcbcab4fa5">faiss::IndexIVFFlatDedup</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00189">189</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00250">250</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
 
 </div>
 </div>
@@ -903,7 +971,7 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="memname">void faiss::IndexIVF::train_residual </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">idx_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">idx_t</a>&#160;</td>
           <td class="paramname"><em>n</em>, </td>
         </tr>
         <tr>
@@ -926,15 +994,32 @@ typedef long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 <p>Sub-classes that encode the residuals can train their encoders here does nothing by default </p>
 
-<p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a68ed7cae5bec89fcdcb6a1d2addbd5a8">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#ac05d7fbfed59c85d1cf8ae526d279744">faiss::IndexIVFScalarQuantizer</a>, and <a class="el" href="structfaiss_1_1IndexIVFPQ.html#af6565a5d8bab7be3df19c50d235bd662">faiss::IndexIVFPQ</a>.</p>
+<p>Reimplemented in <a class="el" href="structfaiss_1_1IndexIVFPQR.html#a68ed7cae5bec89fcdcb6a1d2addbd5a8">faiss::IndexIVFPQR</a>, <a class="el" href="structfaiss_1_1IndexIVFScalarQuantizer.html#ac05d7fbfed59c85d1cf8ae526d279744">faiss::IndexIVFScalarQuantizer</a>, <a class="el" href="structfaiss_1_1IndexIVFPQ.html#af6565a5d8bab7be3df19c50d235bd662">faiss::IndexIVFPQ</a>, and <a class="el" href="structfaiss_1_1IndexIVFSpectralHash.html#a47c66c0610e9e7e42e584f5560791707">faiss::IndexIVFSpectralHash</a>.</p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00423">423</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00703">703</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a244ec2067da495ff1493687e0048ae02"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int faiss::IndexIVF::parallel_mode</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Parallel mode determines how queries are parallelized with OpenMP</p>
+<p>0 (default): parallelize over queries 1: parallelize over over inverted lists 2: parallelize over both </p>
+
+<p>Definition at line <a class="el" href="IndexIVF_8h_source.html#l00106">106</a> of file <a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li>/tmp/faiss/<a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a></li>
-<li>/tmp/faiss/<a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

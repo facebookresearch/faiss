@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -280,7 +279,7 @@ static size_t polysemous_inner_loop (
 void IndexPQ::search_core_polysemous (idx_t n, const float *x, idx_t k,
                                           float *distances, idx_t *labels) const
 {
-    FAISS_THROW_IF_NOT (pq.byte_per_idx == 1);
+    FAISS_THROW_IF_NOT (pq.nbits == 8);
 
     // PQ distance tables
     float * dis_tables = new float [n * pq.ksub * pq.M];
@@ -415,7 +414,7 @@ void IndexPQ::hamming_distance_histogram (idx_t n, const float *x,
 {
     FAISS_THROW_IF_NOT (metric_type == METRIC_L2);
     FAISS_THROW_IF_NOT (pq.code_size % 8 == 0);
-    FAISS_THROW_IF_NOT (pq.byte_per_idx == 1);
+    FAISS_THROW_IF_NOT (pq.nbits == 8);
 
     // Hamming embedding queries
     uint8_t * q_codes = new uint8_t [n * pq.code_size];

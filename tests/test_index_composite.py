@@ -1,7 +1,6 @@
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
-# This source code is licensed under the BSD+Patents license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 #! /usr/bin/env python2
@@ -494,6 +493,46 @@ class TestRenameOndisk(unittest.TestCase):
 
         finally:
             shutil.rmtree(dirname)
+
+
+class TestInvlistMeta(unittest.TestCase):
+
+    def test_slice_vstack(self):
+        d = 10
+        nb = 1000
+        nq = 100
+        nt = 200
+
+        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFFlat(quantizer, d, 30)
+
+        index.train(xt)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+
+        # faiss.wait()
+
+        il0 = index.invlists
+        ils = []
+        ilv = faiss.InvertedListsPtrVector()
+        for sl in 0, 1, 2:
+            il = faiss.SliceInvertedLists(il0, sl * 10, sl * 10 + 10)
+            ils.append(il)
+            ilv.push_back(il)
+
+        il2 = faiss.VStackInvertedLists(ilv.size(), ilv.data())
+
+        index2 = faiss.IndexIVFFlat(quantizer, d, 30)
+        index2.replace_invlists(il2)
+        index2.ntotal = index.ntotal
+
+        D, I = index2.search(xq, 10)
+        assert np.all(D == Dref)
+        assert np.all(I == Iref)
+
+
 
 
 if __name__ == '__main__':

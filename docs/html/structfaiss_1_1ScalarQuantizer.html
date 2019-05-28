@@ -87,7 +87,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
@@ -96,14 +95,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">faiss::ScalarQuantizer Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;<a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html">DistanceComputer</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a1201dbd1611fa5c10782ade5d0e4952e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ScalarQuantizer.html#a1201dbd1611fa5c10782ade5d0e4952e">QuantizerType</a> { <br/>
@@ -112,7 +104,9 @@ Public Types</h2></td></tr>
 <a class="el" href="structfaiss_1_1ScalarQuantizer.html#a1201dbd1611fa5c10782ade5d0e4952ea029f07a15ea64e7e73daaf9633ac429a">QT_8bit_uniform</a>, 
 <b>QT_4bit_uniform</b>, 
 <br/>
-&#160;&#160;<b>QT_fp16</b>
+&#160;&#160;<b>QT_fp16</b>, 
+<b>QT_8bit_direct</b>, 
+<a class="el" href="structfaiss_1_1ScalarQuantizer.html#a1201dbd1611fa5c10782ade5d0e4952eaf654ce120baf92b9ac3c43592744fbf8">QT_6bit</a>
 <br/>
  }</td></tr>
 <tr class="separator:a1201dbd1611fa5c10782ade5d0e4952e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,9 +133,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ScalarQuantizer.html#a7ab9e9158da1777d45e6f9bf73bfd489">decode</a> (const uint8_t *code, float *x, size_t n) const </td></tr>
 <tr class="memdesc:a7ab9e9158da1777d45e6f9bf73bfd489"><td class="mdescLeft">&#160;</td><td class="mdescRight">decode a vector from a given code (or n vectors if third argument) <br/></td></tr>
 <tr class="separator:a7ab9e9158da1777d45e6f9bf73bfd489"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55399b762c9cc6169ee19d293470c6cd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a55399b762c9cc6169ee19d293470c6cd"></a>
-<a class="el" href="structfaiss_1_1ScalarQuantizer_1_1DistanceComputer.html">DistanceComputer</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>get_distance_computer</b> (<a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">MetricType</a> metric=METRIC_L2) const </td></tr>
-<tr class="separator:a55399b762c9cc6169ee19d293470c6cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73f4b04b339c67c72b9590ead779c3e2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a73f4b04b339c67c72b9590ead779c3e2"></a>
+<a class="el" href="structfaiss_1_1SQDistanceComputer.html">SQDistanceComputer</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>get_distance_computer</b> (<a class="el" href="namespacefaiss.html#afd12191c638da74760ff397cf319752c">MetricType</a> metric=METRIC_L2) const </td></tr>
+<tr class="separator:a73f4b04b339c67c72b9590ead779c3e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -168,8 +162,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 <tr class="separator:a30b411b10780a74079bbbfaff678c86f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The uniform quantizer has a range [vmin, vmax]. The range can be the same for all dimensions (uniform) or specific per dimension (default). </p>
-
+<div class="textblock">
 <p>Definition at line <a class="el" href="IndexScalarQuantizer_8h_source.html#l00032">32</a> of file <a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a>.</p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a class="anchor" id="a1201dbd1611fa5c10782ade5d0e4952e"></a>
@@ -190,6 +183,10 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 </td></tr>
 <tr><td class="fieldname"><em><a class="anchor" id="a1201dbd1611fa5c10782ade5d0e4952ea029f07a15ea64e7e73daaf9633ac429a"></a>QT_8bit_uniform</em>&nbsp;</td><td class="fielddoc">
 <p>same, shared range for all dimensions </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a1201dbd1611fa5c10782ade5d0e4952eaf654ce120baf92b9ac3c43592744fbf8"></a>QT_6bit</em>&nbsp;</td><td class="fielddoc">
+<p>fast indexing of uint8s </p>
+<p>6 bits per component </p>
 </td></tr>
 </table>
 
@@ -222,13 +219,13 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="IndexScalarQuantizer_8h_source.html#l00049">49</a> of file <a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a>.</p>
+<p>Definition at line <a class="el" href="IndexScalarQuantizer_8h_source.html#l00051">51</a> of file <a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li>/tmp/faiss/<a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a></li>
-<li>/tmp/faiss/<a class="el" href="IndexScalarQuantizer_8cpp_source.html">IndexScalarQuantizer.cpp</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="IndexScalarQuantizer_8h_source.html">IndexScalarQuantizer.h</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="IndexScalarQuantizer_8cpp_source.html">IndexScalarQuantizer.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

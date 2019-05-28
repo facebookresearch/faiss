@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -28,6 +27,7 @@
 #include "IndexIVF.h"
 #include "IndexIVFPQ.h"
 #include "IndexIVFFlat.h"
+#include "IndexIVFSpectralHash.h"
 #include "MetaIndexes.h"
 #include "IndexScalarQuantizer.h"
 #include "IndexHNSW.h"
@@ -460,6 +460,17 @@ void write_index (const Index *idx, IOWriter *f) {
         WRITE1 (ivsc->code_size);
         WRITE1 (ivsc->by_residual);
         write_InvertedLists (ivsc->invlists, f);
+    } else if(const IndexIVFSpectralHash *ivsp =
+              dynamic_cast<const IndexIVFSpectralHash *>(idx)) {
+        uint32_t h = fourcc ("IwSh");
+        WRITE1 (h);
+        write_ivf_header (ivsp, f);
+        write_VectorTransform (ivsp->vt, f);
+        WRITE1 (ivsp->nbit);
+        WRITE1 (ivsp->period);
+        WRITE1 (ivsp->threshold_type);
+        WRITEVECTOR (ivsp->trained);
+        write_InvertedLists (ivsp->invlists, f);
     } else if(const IndexIVFPQ * ivpq =
               dynamic_cast<const IndexIVFPQ *> (idx)) {
         const IndexIVFPQR * ivfpqr = dynamic_cast<const IndexIVFPQR *> (idx);
@@ -870,9 +881,9 @@ static IndexIVFPQ *read_ivfpq (IOReader *f, uint32_t h, int io_flags)
         // precomputed table not stored. It is cheaper to recompute it
         ivpq->use_precomputed_table = 0;
         if (ivpq->by_residual)
-            ivpq->precompute_table();
+            ivpq->precompute_table ();
         if (ivfpqr) {
-            read_ProductQuantizer(&ivfpqr->refine_pq, f);
+            read_ProductQuantizer (&ivfpqr->refine_pq, f);
             READVECTOR (ivfpqr->refine_codes);
             READ1 (ivfpqr->k_factor);
         }
@@ -1014,6 +1025,19 @@ Index *read_index (IOReader *f, int io_flags) {
         }
         read_InvertedLists (ivsc, f, io_flags);
         idx = ivsc;
+    } else if(h == fourcc ("IwSh")) {
+        IndexIVFSpectralHash *ivsp = new IndexIVFSpectralHash ();
+        read_ivf_header (ivsp, f);
+        ivsp->vt = read_VectorTransform (f);
+        ivsp->own_fields = true;
+        READ1 (ivsp->nbit);
+        // not stored by write_ivf_header
+        ivsp->code_size = (ivsp->nbit + 7) / 8;
+        READ1 (ivsp->period);
+        READ1 (ivsp->threshold_type);
+        READVECTOR (ivsp->trained);
+        read_InvertedLists (ivsp, f, io_flags);
+        idx = ivsp;
     } else if(h == fourcc ("IvPQ") || h == fourcc ("IvQR") ||
               h == fourcc ("IwPQ") || h == fourcc ("IwQR")) {
 

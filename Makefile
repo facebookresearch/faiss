@@ -1,7 +1,6 @@
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
-# This source code is licensed under the BSD+Patents license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 -include makefile.inc
@@ -109,4 +108,4 @@ misc/test_blas: misc/test_blas.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 
-.PHONY: all clean demos install installdirs py test gpu_test uninstall
+.PHONY: all clean demos install installdirs py test test_gpu uninstall

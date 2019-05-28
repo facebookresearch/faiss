@@ -4,6 +4,8 @@ Faiss is a library for efficient similarity search and clustering of dense vecto
 
 ## NEWS
 
+*NEW: version 1.5.2 (2018-05-27) the license was relaxed to MIT from BSD+Patents. Read LICENSE for details.*
+
 *NEW: version 1.5.0 (2018-12-19) GPU binary flat index and binary HNSW index*
 
 *NEW: version 1.4.0 (2018-08-30) no more crashes in pure Python code*
@@ -80,5 +82,4 @@ We monitor the [issues page](http://github.com/facebookresearch/faiss/issues) of
 
 ## License
 
-Faiss  is BSD-licensed. We also provide an additional patent grant.
-
+Faiss is MIT-licensed.

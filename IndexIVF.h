@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -98,9 +97,17 @@ struct IndexIVF: Index, Level1Quantizer {
     size_t nprobe;            ///< number of probes at query time
     size_t max_codes;         ///< max nb of codes to visit to do a query
 
+    /** Parallel mode determines how queries are parallelized with OpenMP
+     *
+     * 0 (default): parallelize over queries
+     * 1: parallelize over over inverted lists
+     * 2: parallelize over both
+     */
+    int parallel_mode;
+
     /// map for direct access to the elements. Enables reconstruct().
     bool maintain_direct_map;
-    std::vector <long> direct_map;
+    std::vector <idx_t> direct_map;
 
     /** The Inverted file takes a quantizer (an Index) on input,
      * which implements the function mapping a vector to a list
@@ -118,6 +125,9 @@ struct IndexIVF: Index, Level1Quantizer {
 
     /// Calls add_with_ids with NULL ids
     void add(idx_t n, const float* x) override;
+
+    /// default implementation that calls encode_vectors
+    void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
 
     /** Encodes a set of vectors as they would appear in the inverted lists
      *
@@ -166,6 +176,10 @@ struct IndexIVF: Index, Level1Quantizer {
     void range_search (idx_t n, const float* x, float radius,
                        RangeSearchResult* result) const override;
 
+    void range_search_preassigned(idx_t nx, const float *x, float radius,
+                                  const idx_t *keys, const float *coarse_dis,
+                                  RangeSearchResult *result) const;
+
     /// get a scanner for this index (store_pairs means ignore labels)
     virtual InvertedListScanner *get_InvertedListScanner (
         bool store_pairs=false) const;
@@ -203,13 +217,13 @@ struct IndexIVF: Index, Level1Quantizer {
      * the inv list offset is computed by search_preassigned() with
      * `store_pairs` set.
      */
-    virtual void reconstruct_from_offset (long list_no, long offset,
+    virtual void reconstruct_from_offset (idx_t list_no, idx_t offset,
                                           float* recons) const;
 
 
     /// Dataset manipulation functions
 
-    long remove_ids(const IDSelector& sel) override;
+    idx_t remove_ids(const IDSelector& sel) override;
 
     /** check that the two indexes are compatible (ie, they are
      * trained in the same way and have the same
@@ -229,7 +243,7 @@ struct IndexIVF: Index, Level1Quantizer {
      *                      elements are left before and a2 elements are after
      */
     virtual void copy_subset_to (IndexIVF & other, int subset_type,
-                                 long a1, long a2) const;
+                                 idx_t a1, idx_t a2) const;
 
     ~IndexIVF() override;
 
@@ -249,7 +263,7 @@ struct IndexIVF: Index, Level1Quantizer {
     IndexIVF ();
 };
 
-class RangeQueryResult;
+struct RangeQueryResult;
 
 /** Object that handles a query. The inverted lists to scan are
  * provided externally. The object has a lot of state, but

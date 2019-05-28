@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -19,6 +18,7 @@
 #include <sys/types.h>
 
 #include "FaissAssert.h"
+#include "utils.h"
 
 
 namespace faiss {
@@ -144,12 +144,41 @@ struct OnDiskInvertedLists::OngoingPrefetch {
 
     struct Thread {
         pthread_t pth;
-        const OnDiskInvertedLists *od;
-        int64_t list_no;
+        OngoingPrefetch *pf;
+
+        bool one_list () {
+            idx_t list_no = pf->get_next_list();
+            if(list_no == -1) return false;
+            const OnDiskInvertedLists *od = pf->od;
+            od->locks->lock_1 (list_no);
+            size_t n = od->list_size (list_no);
+            const Index::idx_t *idx = od->get_ids (list_no);
+            const uint8_t *codes = od->get_codes (list_no);
+            int cs = 0;
+            for (size_t i = 0; i < n;i++) {
+                cs += idx[i];
+            }
+            const idx_t *codes8 = (const idx_t*)codes;
+            idx_t n8 = n * od->code_size / 8;
+
+            for (size_t i = 0; i < n8;i++) {
+                cs += codes8[i];
+            }
+            od->locks->unlock_1(list_no);
+
+            global_cs += cs & 1;
+            return true;
+        }
+
     };
 
     std::vector<Thread> threads;
 
+    pthread_mutex_t list_ids_mutex;
+    std::vector<idx_t> list_ids;
+    int cur_list;
+
+    // mutex for the list of tasks
     pthread_mutex_t mutex;
 
     // pretext to avoid code below to be optimized out
@@ -157,50 +186,57 @@ struct OnDiskInvertedLists::OngoingPrefetch {
 
     const OnDiskInvertedLists *od;
 
-    OngoingPrefetch (const OnDiskInvertedLists *od): od (od)
+    explicit OngoingPrefetch (const OnDiskInvertedLists *od): od (od)
     {
         pthread_mutex_init (&mutex, nullptr);
+        pthread_mutex_init (&list_ids_mutex, nullptr);
+        cur_list = 0;
     }
 
     static void* prefetch_list (void * arg) {
         Thread *th = static_cast<Thread*>(arg);
 
-        th->od->locks->lock_1(th->list_no);
-        size_t n = th->od->list_size(th->list_no);
-        const Index::idx_t *idx = th->od->get_ids(th->list_no);
-        const uint8_t *codes = th->od->get_codes(th->list_no);
-        int cs = 0;
-        for (size_t i = 0; i < n;i++) {
-            cs += idx[i];
-        }
-        const long *codes8 = (const long*)codes;
-        long n8 = n * th->od->code_size / 8;
+        while (th->one_list()) ;
 
-        for (size_t i = 0; i < n8;i++) {
-            cs += codes8[i];
-        }
-        th->od->locks->unlock_1(th->list_no);
-        global_cs += cs & 1;
         return nullptr;
     }
 
-    void prefetch_lists (const long *list_nos, int n) {
-        pthread_mutex_lock (&mutex);
-        for (auto &th: threads) {
-            if (th.list_no != -1) {
-                pthread_join (th.pth, nullptr);
-            }
+    idx_t get_next_list () {
+        idx_t list_no = -1;
+        pthread_mutex_lock (&list_ids_mutex);
+        if (cur_list >= 0 && cur_list < list_ids.size()) {
+            list_no = list_ids[cur_list++];
         }
-        threads.resize (n);
-        for (int i = 0; i < n; i++) {
-            long list_no = list_nos[i];
-            Thread & th = threads[i];
-            if (list_no >= 0 && od->list_size(list_no) > 0) {
-                th.list_no = list_no;
-                th.od = od;
+        pthread_mutex_unlock (&list_ids_mutex);
+        return list_no;
+    }
+
+    void prefetch_lists (const idx_t *list_nos, int n) {
+        pthread_mutex_lock (&mutex);
+        pthread_mutex_lock (&list_ids_mutex);
+        list_ids.clear ();
+        pthread_mutex_unlock (&list_ids_mutex);
+        for (auto &th: threads) {
+            pthread_join (th.pth, nullptr);
+        }
+
+        threads.resize (0);
+        cur_list = 0;
+        int nt = std::min (n, od->prefetch_nthread);
+
+        if (nt > 0) {
+            // prepare tasks
+            for (int i = 0; i < n; i++) {
+                idx_t list_no = list_nos[i];
+                if (list_no >= 0 && od->list_size(list_no) > 0) {
+                    list_ids.push_back (list_no);
+                }
+            }
+            // prepare threads
+            threads.resize (nt);
+            for (Thread &th: threads) {
+                th.pf = this;
                 pthread_create (&th.pth, nullptr, prefetch_list, &th);
-            } else {
-                th.list_no = -1;
             }
         }
         pthread_mutex_unlock (&mutex);
@@ -209,12 +245,11 @@ struct OnDiskInvertedLists::OngoingPrefetch {
     ~OngoingPrefetch () {
         pthread_mutex_lock (&mutex);
         for (auto &th: threads) {
-            if (th.list_no != -1) {
-                pthread_join (th.pth, nullptr);
-            }
+            pthread_join (th.pth, nullptr);
         }
         pthread_mutex_unlock (&mutex);
         pthread_mutex_destroy (&mutex);
+        pthread_mutex_destroy (&list_ids_mutex);
     }
 
 };
@@ -222,7 +257,7 @@ struct OnDiskInvertedLists::OngoingPrefetch {
 int OnDiskInvertedLists::OngoingPrefetch::global_cs = 0;
 
 
-void OnDiskInvertedLists::prefetch_lists (const long *list_nos, int n) const
+void OnDiskInvertedLists::prefetch_lists (const idx_t *list_nos, int n) const
 {
     pf->prefetch_lists (list_nos, n);
 }
@@ -260,7 +295,7 @@ void OnDiskInvertedLists::update_totsize (size_t new_size)
     // unmap file
     if (ptr != nullptr) {
         int err = munmap (ptr, totsize);
-        FAISS_THROW_IF_NOT_FMT (err == 0, "mumap error: %s",
+        FAISS_THROW_IF_NOT_FMT (err == 0, "munmap error: %s",
                                 strerror(errno));
     }
     if (totsize == 0) {
@@ -329,7 +364,8 @@ OnDiskInvertedLists::OnDiskInvertedLists (
     ptr (nullptr),
     read_only (false),
     locks (new LockLevels ()),
-    pf (new OngoingPrefetch (this))
+    pf (new OngoingPrefetch (this)),
+    prefetch_nthread (32)
 {
     lists.resize (nlist);
 
@@ -337,12 +373,7 @@ OnDiskInvertedLists::OnDiskInvertedLists (
 }
 
 OnDiskInvertedLists::OnDiskInvertedLists ():
-    InvertedLists (0, 0),
-    totsize (0),
-    ptr (nullptr),
-    read_only (false),
-    locks (new LockLevels ()),
-    pf (new OngoingPrefetch (this))
+    OnDiskInvertedLists (0, 0, "")
 {
 }
 
@@ -353,9 +384,10 @@ OnDiskInvertedLists::~OnDiskInvertedLists ()
     // unmap all lists
     if (ptr != nullptr) {
         int err = munmap (ptr, totsize);
-        FAISS_THROW_IF_NOT_FMT (err == 0,
-                                "mumap error: %s",
-                                strerror(errno));
+        if (err != 0) {
+            fprintf(stderr, "mumap error: %s",
+                    strerror(errno));
+        }
     }
     delete locks;
 }
@@ -559,7 +591,8 @@ void OnDiskInvertedLists::free_slot (size_t offset, size_t capacity) {
  * Compact form
  *****************************************/
 
-size_t OnDiskInvertedLists::merge_from (const InvertedLists **ils, int n_il)
+size_t OnDiskInvertedLists::merge_from (const InvertedLists **ils, int n_il,
+                                        bool verbose)
 {
     FAISS_THROW_IF_NOT_MSG (totsize == 0, "works only on an empty InvertedLists");
 
@@ -585,6 +618,10 @@ size_t OnDiskInvertedLists::merge_from (const InvertedLists **ils, int n_il)
 
     update_totsize (cums);
 
+
+    size_t nmerged = 0;
+    double t0 = getmillisecs(), last_t = t0;
+
 #pragma omp parallel for
     for (size_t j = 0; j < nlist; j++) {
         List & l = lists[j];
@@ -593,14 +630,45 @@ size_t OnDiskInvertedLists::merge_from (const InvertedLists **ils, int n_il)
             size_t n_entry = il->list_size(j);
             l.size += n_entry;
             update_entries (j, l.size - n_entry, n_entry,
-                            il->get_ids(j),
-                            il->get_codes(j));
+                            ScopedIds(il, j).get(),
+                            ScopedCodes(il, j).get());
         }
         assert (l.size == l.capacity);
+        if (verbose) {
+#pragma omp critical
+            {
+                nmerged++;
+                double t1 = getmillisecs();
+                if (t1 - last_t > 500) {
+                    printf("merged %ld lists in %.3f s\r",
+                           nmerged, (t1 - t0) / 1000.0);
+                    fflush(stdout);
+                    last_t = t1;
+                }
+            }
+        }
+    }
+    if(verbose) {
+        printf("\n");
     }
 
     return ntotal;
 }
+
+
+void OnDiskInvertedLists::crop_invlists(size_t l0, size_t l1)
+{
+    FAISS_THROW_IF_NOT(0 <= l0 && l0 <= l1 && l1 <= nlist);
+
+    std::vector<List> new_lists (l1 - l0);
+    memcpy (new_lists.data(), &lists[l0], (l1 - l0) * sizeof(List));
+
+    lists.swap(new_lists);
+
+    nlist = l1 - l0;
+}
+
+
 
 
 } // namespace faiss

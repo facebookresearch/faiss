@@ -4,7 +4,7 @@ var searchData=
   ['upcastouter',['upcastOuter',['../classfaiss_1_1gpu_1_1Tensor.html#a309eb97e9c6dbfdecf383343c072d38c',1,'faiss::gpu::Tensor']]],
   ['update_5fbounds',['update_bounds',['../structfaiss_1_1ParameterSpace.html#ab7039882ec68aabc6c52cff883f75c28',1,'faiss::ParameterSpace']]],
   ['update_5fi_5fcross',['update_i_cross',['../structfaiss_1_1Score3Computer.html#acf371848bac76ba275ceb5e10f805d33',1,'faiss::Score3Computer']]],
-  ['update_5findex',['update_index',['../structFaissClusteringParameters.html#a1764fa98f759b20fde75abbb2616f844',1,'FaissClusteringParameters::update_index()'],['../structfaiss_1_1ClusteringParameters.html#a27d6192097920fa981cff0acedfaac91',1,'faiss::ClusteringParameters::update_index()']]],
+  ['update_5findex',['update_index',['../structfaiss_1_1ClusteringParameters.html#a27d6192097920fa981cff0acedfaac91',1,'faiss::ClusteringParameters']]],
   ['update_5fj_5fline',['update_j_line',['../structfaiss_1_1Score3Computer.html#a98da6005edbb5ec26311bc947866122d',1,'faiss::Score3Computer']]],
   ['update_5fk',['update_k',['../structfaiss_1_1Score3Computer.html#a227601c3dc8779bb13747ba04934e0c8',1,'faiss::Score3Computer']]],
   ['update_5fpermutation',['update_permutation',['../structfaiss_1_1IndexFlat1D.html#ac7466c6c9b1e9e81ea19b846ddb8209e',1,'faiss::IndexFlat1D']]],

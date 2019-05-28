@@ -1,11 +1,10 @@
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
-# This source code is licensed under the BSD+Patents license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 #! /usr/bin/env python2
-
+# noqa E741
 # translation of test_knn.lua
 
 import numpy as np
@@ -47,10 +46,18 @@ class IndexAccuracy(unittest.TestCase):
     def test_ivf_kmeans(self):
         ivfk = faiss.IndexIVFFlat(faiss.IndexFlatL2(d), d, ncentroids)
         ivfk.nprobe = kprobe
-        res = ev.launch('IVF K-means', ivfk)
+        res = ev.launch('IndexIVFFlat', ivfk)
         e = ev.evalres(res)
         # should give 0.260  0.260  0.260
         assert e[1] > 0.2
+
+        # test parallel mode
+        Dref, Iref = ivfk.search(ev.xq, 100)
+        ivfk.parallel_mode = 1
+        Dnew, Inew = ivfk.search(ev.xq, 100)
+        print((Iref != Inew).sum(), Iref.size)
+        assert (Iref != Inew).sum() < Iref.size / 5000.0
+        assert np.all(Dref == Dnew)
 
     def test_indexLSH(self):
         q = faiss.IndexLSH(d, nbits)
@@ -277,6 +284,17 @@ class TestSQFlavors(unittest.TestCase):
             print('ndiff %d / %d' % (ndiff, ntot))
             assert ndiff < ntot * 0.01
 
+            for pm in 1, 2:
+                print('parallel_mode=%d' % pm)
+                index.parallel_mode = pm
+                lims4, D4, I4 = index.range_search(xq, radius)
+                print('sizes', lims4[1:] - lims4[:-1])
+                for qno in range(len(lims) - 1):
+                    Iref = I3[lims[qno]: lims[qno+1]]
+                    Inew = I4[lims4[qno]: lims4[qno+1]]
+                    assert set(Iref) == set(Inew), "q %d ref %s new %s" % (
+                        qno, Iref, Inew)
+
 
     def test_SQ_IP(self):
         self.subtest(faiss.METRIC_INNER_PRODUCT)
@@ -413,6 +431,31 @@ class TestPQFlavors(unittest.TestCase):
                 assert (ninter >= self.ref_results[
                     mt, by_residual, index.polysemous_ht] - 4)
 
+            # also test range search
+
+            if mt == faiss.METRIC_INNER_PRODUCT:
+                radius = float(D[:, -1].max())
+            else:
+                radius = float(D[:, -1].min())
+            print('radius', radius)
+
+            lims, D3, I3 = index.range_search(xq, radius)
+            ntot = ndiff = 0
+            for i in range(len(xq)):
+                l0, l1 = lims[i], lims[i + 1]
+                Inew = set(I3[l0:l1])
+                if mt == faiss.METRIC_INNER_PRODUCT:
+                    mask = D2[i] > radius
+                else:
+                    mask = D2[i] < radius
+                Iref = set(I2[i, mask])
+                ndiff += len(Inew ^ Iref)
+                ntot += len(Iref)
+            print('ndiff %d / %d' % (ndiff, ntot))
+            assert ndiff < ntot * 0.02
+
+
+
 
 class TestFlat1D(unittest.TestCase):
 
@@ -530,6 +573,76 @@ class TestRoundoff(unittest.TestCase):
         # this works
         assert np.all(I.ravel() == np.arange(nq))
 
+
+class TestSpectralHash(unittest.TestCase):
+
+    # run on 2019-04-02
+    ref_results = {
+        (32, 'global', 10): 505,
+        (32, 'centroid', 10): 524,
+        (32, 'centroid_half', 10): 21,
+        (32, 'median', 10): 510,
+        (32, 'global', 1): 8,
+        (32, 'centroid', 1): 20,
+        (32, 'centroid_half', 1): 26,
+        (32, 'median', 1): 14,
+        (64, 'global', 10): 768,
+        (64, 'centroid', 10): 767,
+        (64, 'centroid_half', 10): 21,
+        (64, 'median', 10): 765,
+        (64, 'global', 1): 28,
+        (64, 'centroid', 1): 21,
+        (64, 'centroid_half', 1): 20,
+        (64, 'median', 1): 29,
+        (128, 'global', 10): 968,
+        (128, 'centroid', 10): 945,
+        (128, 'centroid_half', 10): 21,
+        (128, 'median', 10): 958,
+        (128, 'global', 1): 271,
+        (128, 'centroid', 1): 279,
+        (128, 'centroid_half', 1): 171,
+        (128, 'median', 1): 253,
+    }
+
+    def test_sh(self):
+        d = 32
+        xt, xb, xq = get_dataset_2(d, 1000, 2000, 200)
+        nlist, nprobe = 1, 1
+
+        gt_index = faiss.IndexFlatL2(d)
+        gt_index.add(xb)
+        gt_D, gt_I = gt_index.search(xq, 10)
+
+        for nbit in 32, 64, 128:
+            quantizer = faiss.IndexFlatL2(d)
+
+            index_lsh = faiss.IndexLSH(d, nbit, True)
+            index_lsh.add(xb)
+            D, I = index_lsh.search(xq, 10)
+            ninter = faiss.eval_intersection(I, gt_I)
+
+            print('LSH baseline: %d' % ninter)
+
+            for period in 10.0, 1.0:
+
+                for tt in 'global centroid centroid_half median'.split():
+                    index = faiss.IndexIVFSpectralHash(quantizer, d, nlist,
+                                                       nbit, period)
+                    index.nprobe = nprobe
+                    index.threshold_type = getattr(
+                        faiss.IndexIVFSpectralHash,
+                        'Thresh_' + tt
+                    )
+
+                    index.train(xt)
+                    index.add(xb)
+                    D, I = index.search(xq, 10)
+
+                    ninter = faiss.eval_intersection(I, gt_I)
+                    key = (nbit, tt, period)
+
+                    print('(%d, %s, %g): %d, ' % (nbit, repr(tt), period, ninter))
+                    assert abs(ninter - self.ref_results[key]) <= 4
 
 
 if __name__ == '__main__':

@@ -100,7 +100,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a3839ad3afde506ac3cc7abdd69051759"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3839ad3afde506ac3cc7abdd69051759"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>idx_t</b> = <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a></td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>idx_t</b> = <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">Index::idx_t</a></td></tr>
 <tr class="separator:a3839ad3afde506ac3cc7abdd69051759"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -119,11 +119,13 @@ virtual float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <tr class="separator:ade9518f1b0ee00c2a43a2eb2ae350ae1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a218aeaf7cc45bf0bf27c3a8bfa44e303"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1InvertedListScanner.html#a218aeaf7cc45bf0bf27c3a8bfa44e303">scan_codes</a> (size_t n, const uint8_t *codes, const idx_t *ids, float *distances, idx_t *labels, size_t k) const =0</td></tr>
 <tr class="separator:a218aeaf7cc45bf0bf27c3a8bfa44e303"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57b6dcddab11cc801ce6288e065e1fa1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1InvertedListScanner.html#a57b6dcddab11cc801ce6288e065e1fa1">scan_codes_range</a> (size_t n, const uint8_t *codes, const idx_t *ids, float radius, <a class="el" href="structfaiss_1_1RangeQueryResult.html">RangeQueryResult</a> &amp;result) const </td></tr>
+<tr class="separator:a57b6dcddab11cc801ce6288e065e1fa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Object that handles a query. The inverted lists to scan are provided externally. The object has a lot of state, but distance_to_code and scan_codes can be called in multiple threads </p>
 
-<p>Definition at line <a class="el" href="IndexIVF_8h_source.html#l00261">261</a> of file <a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a>.</p>
+<p>Definition at line <a class="el" href="IndexIVF_8h_source.html#l00272">272</a> of file <a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a218aeaf7cc45bf0bf27c3a8bfa44e303"></a>
 <div class="memitem">
@@ -180,7 +182,7 @@ virtual float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
   </tr>
 </table>
 </div><div class="memdoc">
-<p>compute the distances to codes. (distances, labels) should be organized ad a min- or max-heap</p>
+<p>scan a set of codes, compute distances to current query and update heap of results if necessary.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">n</td><td>number of codes to scan </td></tr>
@@ -192,11 +194,69 @@ virtual float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>number of heap updates performed </dd></dl>
 
 </div>
 </div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/tmp/faiss/<a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a></li>
+<a class="anchor" id="a57b6dcddab11cc801ce6288e065e1fa1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::InvertedListScanner::scan_codes_range </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>codes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const idx_t *&#160;</td>
+          <td class="paramname"><em>ids</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structfaiss_1_1RangeQueryResult.html">RangeQueryResult</a> &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>scan a set of codes, compute distances to current query and update results if distances are below radius</p>
+<p>(default implementation fails) </p>
+
+<p>Definition at line <a class="el" href="IndexIVF_8cpp_source.html#l00830">830</a> of file <a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following files:<ul>
+<li>/data/users/hoss/faiss/<a class="el" href="IndexIVF_8h_source.html">IndexIVF.h</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="IndexIVF_8cpp_source.html">IndexIVF.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

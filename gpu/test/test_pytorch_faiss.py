@@ -1,7 +1,6 @@
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
-# This source code is licensed under the BSD+Patents license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 #! /usr/bin/env python2
@@ -10,7 +9,6 @@ import numpy as np
 import unittest
 import faiss
 import torch
-
 
 def swig_ptr_from_FloatTensor(x):
     assert x.is_contiguous()
@@ -23,6 +21,7 @@ def swig_ptr_from_LongTensor(x):
     assert x.dtype == torch.int64, 'dtype=%s' % x.dtype
     return faiss.cast_integer_to_long_ptr(
         x.storage().data_ptr() + x.storage_offset() * 8)
+
 
 
 def search_index_pytorch(index, x, k, D=None, I=None):
@@ -55,12 +54,27 @@ def search_raw_array_pytorch(res, xb, xq, k, D=None, I=None,
                              metric=faiss.METRIC_L2):
     assert xb.device == xq.device
 
-    xq_ptr = swig_ptr_from_FloatTensor(xq)
     nq, d = xq.size()
+    if xq.is_contiguous():
+        xq_row_major = True
+    elif xq.t().is_contiguous():
+        xq = xq.t()    # I initially wrote xq:t(), Lua is still haunting me :-)
+        xq_row_major = False
+    else:
+        raise TypeError('matrix should be row or column-major')
 
-    xb_ptr = swig_ptr_from_FloatTensor(xb)
+    xq_ptr = swig_ptr_from_FloatTensor(xq)
+
     nb, d2 = xb.size()
     assert d2 == d
+    if xb.is_contiguous():
+        xb_row_major = True
+    elif xb.t().is_contiguous():
+        xb = xb.t()
+        xb_row_major = False
+    else:
+        raise TypeError('matrix should be row or column-major')
+    xb_ptr = swig_ptr_from_FloatTensor(xb)
 
     if D is None:
         D = torch.empty(nq, k, device=xb.device, dtype=torch.float32)
@@ -78,8 +92,8 @@ def search_raw_array_pytorch(res, xb, xq, k, D=None, I=None,
     I_ptr = swig_ptr_from_LongTensor(I)
 
     faiss.bruteForceKnn(res, metric,
-                        xb_ptr, nb,
-                        xq_ptr, nq,
+                        xb_ptr, xb_row_major, nb,
+                        xq_ptr, xq_row_major, nq,
                         d, k, D_ptr, I_ptr)
 
     return D, I
@@ -138,34 +152,57 @@ class PytorchFaissInterop(unittest.TestCase):
         index.add(xb)
         gt_D, gt_I = index.search(xq, k)
 
-        # move to pytorch & GPU
-        xq_t = torch.from_numpy(xq).cuda()
-        xb_t = torch.from_numpy(xb).cuda()
-
         # resource object, can be re-used over calls
         res = faiss.StandardGpuResources()
-
         # put on same stream as pytorch to avoid synchronizing streams
         res.setDefaultNullStreamAllDevices()
 
-        D, I = search_raw_array_pytorch(res, xb_t, xq_t, k)
+        for xq_row_major in True, False:
+            for xb_row_major in True, False:
 
-        # back to CPU for verification
-        D = D.cpu().numpy()
-        I = I.cpu().numpy()
+                # move to pytorch & GPU
+                xq_t = torch.from_numpy(xq).cuda()
+                xb_t = torch.from_numpy(xb).cuda()
 
-        assert np.all(I == gt_I)
-        assert np.all(np.abs(D - gt_D).max() < 1e-4)
+                if not xq_row_major:
+                    xq_t = xq_t.t().clone().t()
+                    assert not xq_t.is_contiguous()
 
-        # test on subset
-        D, I = search_raw_array_pytorch(res, xb_t, xq_t[60:80], k)
+                if not xb_row_major:
+                    xb_t = xb_t.t().clone().t()
+                    assert not xb_t.is_contiguous()
 
-        # back to CPU for verification
-        D = D.cpu().numpy()
-        I = I.cpu().numpy()
+                D, I = search_raw_array_pytorch(res, xb_t, xq_t, k)
 
-        assert np.all(I == gt_I[60:80])
-        assert np.all(np.abs(D - gt_D[60:80]).max() < 1e-4)
+                # back to CPU for verification
+                D = D.cpu().numpy()
+                I = I.cpu().numpy()
+
+                assert np.all(I == gt_I)
+                assert np.all(np.abs(D - gt_D).max() < 1e-4)
+
+
+
+                # test on subset
+                try:
+                    D, I = search_raw_array_pytorch(res, xb_t, xq_t[60:80], k)
+                except TypeError:
+                    if not xq_row_major:
+                        # then it is expected
+                        continue
+                    # otherwise it is an error
+                    raise
+
+                # back to CPU for verification
+                D = D.cpu().numpy()
+                I = I.cpu().numpy()
+
+                assert np.all(I == gt_I[60:80])
+                assert np.all(np.abs(D - gt_D[60:80]).max() < 1e-4)
+
+
+
+
 
 
 if __name__ == '__main__':

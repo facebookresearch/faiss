@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['update_5findex',['update_index',['../structFaissClusteringParameters.html#a1764fa98f759b20fde75abbb2616f844',1,'FaissClusteringParameters::update_index()'],['../structfaiss_1_1ClusteringParameters.html#a27d6192097920fa981cff0acedfaac91',1,'faiss::ClusteringParameters::update_index()']]],
+  ['update_5findex',['update_index',['../structfaiss_1_1ClusteringParameters.html#a27d6192097920fa981cff0acedfaac91',1,'faiss::ClusteringParameters']]],
   ['upper_5fbeam',['upper_beam',['../structfaiss_1_1HNSW.html#a857bef0db2dc0000f312cc8a95f857b2',1,'faiss::HNSW']]],
   ['use_5fheap',['use_heap',['../structfaiss_1_1IndexBinaryFlat.html#a9fa80e22a4accee4da0ee152a4910c1b',1,'faiss::IndexBinaryFlat::use_heap()'],['../structfaiss_1_1IndexBinaryIVF.html#abcab702ebe1814ff432401bfd39df492',1,'faiss::IndexBinaryIVF::use_heap()']]],
   ['use_5fprecomputed_5ftable',['use_precomputed_table',['../structfaiss_1_1IndexIVFPQ.html#a1c66ff073c18a1edbe8444c24d870583',1,'faiss::IndexIVFPQ']]],

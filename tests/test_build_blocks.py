@@ -1,7 +1,6 @@
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
-# This source code is licensed under the BSD+Patents license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 #! /usr/bin/env python2
@@ -112,12 +111,12 @@ class TestProductQuantizer(unittest.TestCase):
         x2 = pq.decode(codes)
         diff = ((x - x2)**2).sum()
 
-        # print("diff=", diff)
+        # print "diff=", diff
         # diff= 4418.0562
         self.assertGreater(5000, diff)
 
         pq10 = faiss.ProductQuantizer(d, cs, 10)
-        assert pq10.code_size == cs * 2
+        assert pq10.code_size == 5
         pq10.verbose = True
         pq10.cp.verbose = True
         pq10.train(x)
@@ -153,15 +152,12 @@ class TestProductQuantizer(unittest.TestCase):
         codes2 = np.empty((100, pq.code_size), dtype='uint8')
         pq.compute_codes_with_assign_index(
             faiss.swig_ptr(x), faiss.swig_ptr(codes2), 100)
-
         assert np.all(codes == codes2)
 
     def test_codec(self):
-        self.do_test_codec(6)
-        self.do_test_codec(10)
-        # self.do_test_codec(16)
-
-
+        for i in range(16):
+            print("Testing nbits=%d" % (i + 1))
+            self.do_test_codec(i + 1)
 
 
 class TestRevSwigPtr(unittest.TestCase):
@@ -320,7 +316,7 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         m[5:10] = 0
         comments = faiss.MatrixStats(m).comments
-        print(comments)
+        print comments
         assert 'has 5 copies' in comments
         assert '5 null vectors' in comments
 
@@ -329,7 +325,7 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         m[::2] = m[1::2]
         comments = faiss.MatrixStats(m).comments
-        print(comments)
+        print comments
         assert '20 vectors are distinct' in comments
 
     def test_dead_dims(self):
@@ -337,7 +333,7 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         m[:, 5:10] = 0
         comments = faiss.MatrixStats(m).comments
-        print(comments)
+        print comments
         assert '5 dimensions are constant' in comments
 
     def test_rogue_means(self):
@@ -345,7 +341,7 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         m[:, 5:10] += 12345
         comments = faiss.MatrixStats(m).comments
-        print(comments)
+        print comments
         assert '5 dimensions are too large wrt. their variance' in comments
 
     def test_normalized(self):
@@ -353,7 +349,7 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         faiss.normalize_L2(m)
         comments = faiss.MatrixStats(m).comments
-        print(comments)
+        print comments
         assert 'vectors are normalized' in comments
 
 
@@ -373,7 +369,8 @@ class TestScalarQuantizer(unittest.TestCase):
                 x[2, 1] = 255
                 x[3, 1] = 0
 
-                ref_index = faiss.IndexScalarQuantizer(d, faiss.ScalarQuantizer.QT_8bit)
+                ref_index = faiss.IndexScalarQuantizer(
+                    d, faiss.ScalarQuantizer.QT_8bit)
                 ref_index.train(x[:2])
                 ref_index.add(x[2:3])
 
@@ -393,6 +390,37 @@ class TestScalarQuantizer(unittest.TestCase):
                 # assert D[0, 0] == Dref[0, 0]
                 print(D[0, 0], ((x[3] - x[2]) ** 2).sum())
                 assert D[0, 0] == ((x[3] - x[2]) ** 2).sum()
+
+    def test_6bit_equiv(self):
+        rs = np.random.RandomState(123)
+        for d in 3, 6, 8, 16, 36:
+            trainset = np.zeros((2, d), dtype='float32')
+            trainset[0, :] = 0
+            trainset[0, :] = 63
+
+            index = faiss.IndexScalarQuantizer(
+                d, faiss.ScalarQuantizer.QT_6bit)
+            index.train(trainset)
+
+            print('cs=', index.code_size)
+
+            x = rs.randint(64, size=(100, d)).astype('float32')
+
+            # verify encoder / decoder
+            index.add(x)
+            x2 = index.reconstruct_n(0, x.shape[0])
+            assert np.all(x == x2 - 0.5)
+
+            # verify AVX decoder (used only for search)
+            y = 63 * rs.rand(20, d).astype('float32')
+
+            D, I = index.search(y, 10)
+            for i in range(20):
+                for j in range(10):
+                    dis = ((y[i] - x2[I[i, j]]) ** 2).sum()
+                    print(dis, D[i, j])
+                    assert abs(D[i, j] - dis) / dis < 1e-5
+
 
 
 

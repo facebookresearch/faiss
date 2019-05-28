@@ -1,11 +1,11 @@
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
-# This source code is licensed under the BSD+Patents license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 #! /usr/bin/env python2
 
+from __future__ import print_function
 import numpy as np
 import faiss
 import time
@@ -27,9 +27,9 @@ np.random.seed(1234)
 
 faiss.omp_set_num_threads(1)
 
-print 'xd=%d yd=%d' % (xd, yd)
+print('xd=%d yd=%d' % (xd, yd))
 
-print 'Running inner products test..'
+print('Running inner products test..')
 for d in 3, 4, 12, 36, 64:
 
     x = faiss.rand(xd * d).reshape(xd, d)
@@ -54,10 +54,10 @@ for d in 3, 4, 12, 36, 64:
         num += abs(distances[xi, yi] - np.dot(x[xi], y[yi]))
         denom += abs(distances[xi, yi])
 
-    print 'd=%d t=%.3f s diff=%g' % (d, t1 - t0, num / denom)
+    print('d=%d t=%.3f s diff=%g' % (d, t1 - t0, num / denom))
 
 
-print 'Running L2sqr test..'
+print('Running L2sqr test..')
 for d in 3, 4, 12, 36, 64:
 
     x = faiss.rand(xd * d).reshape(xd, d)
@@ -82,4 +82,4 @@ for d in 3, 4, 12, 36, 64:
         num += abs(distances[xi, yi] - np.sum((x[xi] - y[yi]) ** 2))
         denom += abs(distances[xi, yi])
 
-    print 'd=%d t=%.3f s diff=%g' % (d, t1 - t0, num / denom)
+    print('d=%d t=%.3f s diff=%g' % (d, t1 - t0, num / denom))

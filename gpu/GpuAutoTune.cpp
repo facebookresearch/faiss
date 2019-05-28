@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -72,11 +71,11 @@ struct ToCPUCloner: Cloner {
             // (inverse op of ToGpuClonerMultiple)
 
         } else if(auto ish = dynamic_cast<const IndexShards *>(index)) {
-            int nshard = ish->shard_indexes.size();
+            int nshard = ish->count();
             FAISS_ASSERT(nshard > 0);
-            Index *res = clone_Index(ish->shard_indexes[0]);
-            for(int i = 1; i < ish->shard_indexes.size(); i++) {
-                Index *res_i = clone_Index(ish->shard_indexes[i]);
+            Index *res = clone_Index(ish->at(0));
+            for(int i = 1; i < ish->count(); i++) {
+                Index *res_i = clone_Index(ish->at(i));
                 merge_index(res, res_i, ish->successive_ids);
                 delete res_i;
             }
@@ -371,9 +370,9 @@ void GpuParameterSpace::initialize (const Index * index)
         if (ix->count() == 0) return;
         index = ix->at(0);
     }
-    if (DC (faiss::IndexShards)) {
-        if (ix->shard_indexes.size() == 0) return;
-        index = ix->shard_indexes[0];
+    if (DC (IndexShards)) {
+        if (ix->count() == 0) return;
+        index = ix->at(0);
     }
     if (DC (GpuIndexIVF)) {
         ParameterRange & pr = add_range("nprobe");

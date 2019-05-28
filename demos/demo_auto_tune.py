@@ -1,11 +1,11 @@
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
-# This source code is licensed under the BSD+Patents license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 #!/usr/bin/env python2
 
+from __future__ import print_function
 import os
 import time
 import numpy as np
@@ -54,7 +54,7 @@ def plot_OperatingPoints(ops, nq, **kwargs):
 
 t0 = time.time()
 
-print "load data"
+print("load data")
 
 xt = fvecs_read("sift1M/sift_learn.fvecs")
 xb = fvecs_read("sift1M/sift_base.fvecs")
@@ -62,13 +62,13 @@ xq = fvecs_read("sift1M/sift_query.fvecs")
 
 d = xt.shape[1]
 
-print "load GT"
+print("load GT")
 
 gt = ivecs_read("sift1M/sift_groundtruth.ivecs")
 gt = gt.astype('int64')
 k = gt.shape[1]
 
-print "prepare criterion"
+print("prepare criterion")
 
 # criterion = 1-recall at 1
 crit = faiss.OneRecallAtRCriterion(xq.shape[0], 1)
@@ -122,7 +122,7 @@ op = faiss.OperatingPoints()
 
 for index_key in keys_to_test:
 
-    print "============ key", index_key
+    print("============ key", index_key)
 
     # make the index described by the key
     index = faiss.index_factory(d, index_key)
@@ -137,17 +137,17 @@ for index_key in keys_to_test:
 
     params.initialize(index)
 
-    print "[%.3f s] train & add" % (time.time() - t0)
+    print("[%.3f s] train & add" % (time.time() - t0))
 
     index.train(xt)
     index.add(xb)
 
-    print "[%.3f s] explore op points" % (time.time() - t0)
+    print("[%.3f s] explore op points" % (time.time() - t0))
 
     # find operating points for this index
     opi = params.explore(index, xq, crit)
 
-    print "[%.3f s] result operating points:" % (time.time() - t0)
+    print("[%.3f s] result operating points:" % (time.time() - t0))
     opi.display()
 
     # update best operating points so far
@@ -170,6 +170,6 @@ for index_key in keys_to_test:
         fig.savefig('tmp/demo_auto_tune.png')
 
 
-print "[%.3f s] final result:" % (time.time() - t0)
+print("[%.3f s] final result:" % (time.time() - t0))
 
 op.display()
