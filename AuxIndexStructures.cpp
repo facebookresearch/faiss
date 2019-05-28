@@ -191,10 +191,10 @@ void RangeSearchPartialResult::merge (std::vector <RangeSearchPartialResult *> &
     size_t nx = result->nq;
 
     // count
-    for (size_t i = 0; i < nx; i++) {
-        for (int j = 0; j < npres; j++) {
-            if (!partial_results[j]) continue;
-            result->lims[i] += partial_results[j]->queries[i].nres;
+    for (const RangeSearchPartialResult * pres : partial_results) {
+        if (!pres) continue;
+        for (const RangeQueryResult &qres : pres->queries) {
+            result->lims[qres.qno] += qres.nres;
         }
     }
     result->do_allocation ();
