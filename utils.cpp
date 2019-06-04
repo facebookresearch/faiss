@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -873,25 +872,7 @@ static void range_search_blas (
         InterruptCallback::check ();
     }
 
-    { // merge the partial results
-        int npres = partial_results.size();
-        // count
-        for (size_t i = 0; i < nx; i++) {
-            for (int j = 0; j < npres; j++)
-                result->lims[i] += partial_results[j]->queries[i].nres;
-        }
-        result->do_allocation ();
-        for (int j = 0; j < npres; j++) {
-            partial_results[j]->set_result (true);
-            delete partial_results[j];
-        }
-
-        // reset the limits
-        for (size_t i = nx; i > 0; i--) {
-            result->lims [i] = result->lims [i - 1];
-        }
-        result->lims [0] = 0;
-    }
+    RangeSearchPartialResult::merge (partial_results);
 }
 
 

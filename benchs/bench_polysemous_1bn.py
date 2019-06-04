@@ -1,11 +1,11 @@
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
-# This source code is licensed under the BSD+Patents license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 #!/usr/bin/env python2
 
+from __future__ import print_function
 import os
 import sys
 import time
@@ -13,20 +13,8 @@ import numpy as np
 import re
 import faiss
 from multiprocessing.dummy import Pool as ThreadPool
+from datasets import ivecs_read
 
-#################################################################
-# I/O functions
-#################################################################
-
-
-def ivecs_read(fname):
-    a = np.fromfile(fname, dtype='int32')
-    d = a[0]
-    return a.reshape(-1, d + 1)[:, 1:].copy()
-
-
-def fvecs_read(fname):
-    return ivecs_read(fname).view('float32')
 
 # we mem-map the biggest files to avoid having them in memory all at
 # once
@@ -57,7 +45,7 @@ parametersets = sys.argv[3:]
 tmpdir = '/tmp/bench_polysemous'
 
 if not os.path.isdir(tmpdir):
-    print "%s does not exist, creating it" % tmpdir
+    print("%s does not exist, creating it" % tmpdir)
     os.mkdir(tmpdir)
 
 
@@ -66,7 +54,7 @@ if not os.path.isdir(tmpdir):
 #################################################################
 
 
-print "Preparing dataset", dbname
+print("Preparing dataset", dbname)
 
 if dbname.startswith('SIFT'):
     # SIFT1M to SIFT1000M
@@ -89,12 +77,12 @@ elif dbname == 'Deep1B':
     gt = ivecs_read('deep1b/deep1B_groundtruth.ivecs')
 
 else:
-    print >> sys.stderr, 'unknown dataset', dbname
+    print('unknown dataset', dbname, file=sys.stderr)
     sys.exit(1)
 
 
-print "sizes: B %s Q %s T %s gt %s" % (
-    xb.shape, xq.shape, xt.shape, gt.shape)
+print("sizes: B %s Q %s T %s gt %s" % (
+    xb.shape, xq.shape, xt.shape, gt.shape))
 
 nq, d = xq.shape
 nb, d = xb.shape
@@ -132,7 +120,7 @@ def get_trained_index():
         n_train = choose_train_size(index_key)
 
         xtsub = xt[:n_train]
-        print "Keeping %d train vectors" % xtsub.shape[0]
+        print("Keeping %d train vectors" % xtsub.shape[0])
         # make sure the data is actually in RAM and in float
         xtsub = xtsub.astype('float32').copy()
         index.verbose = True
@@ -140,11 +128,11 @@ def get_trained_index():
         t0 = time.time()
         index.train(xtsub)
         index.verbose = False
-        print "train done in %.3f s" % (time.time() - t0)
-        print "storing", filename
+        print("train done in %.3f s" % (time.time() - t0))
+        print("storing", filename)
         faiss.write_index(index, filename)
     else:
-        print "loading", filename
+        print("loading", filename)
         index = faiss.read_index(filename)
     return index
 
@@ -187,16 +175,16 @@ def get_populated_index():
         t0 = time.time()
         for xs in matrix_slice_iterator(xb, 100000):
             i1 = i0 + xs.shape[0]
-            print '\radd %d:%d, %.3f s' % (i0, i1, time.time() - t0),
+            print('\radd %d:%d, %.3f s' % (i0, i1, time.time() - t0), end=' ')
             sys.stdout.flush()
             index.add(xs)
             i0 = i1
-        print
-        print "Add done in %.3f s" % (time.time() - t0)
-        print "storing", filename
+        print()
+        print("Add done in %.3f s" % (time.time() - t0))
+        print("storing", filename)
         faiss.write_index(index, filename)
     else:
-        print "loading", filename
+        print("loading", filename)
         index = faiss.read_index(filename)
     return index
 
@@ -229,28 +217,28 @@ if parametersets == ['autotune'] or parametersets == ['autotuneMT']:
     crit.set_groundtruth(None, gt.astype('int64'))
 
     # then we let Faiss find the optimal parameters by itself
-    print "exploring operating points"
+    print("exploring operating points")
 
     t0 = time.time()
     op = ps.explore(index, xq, crit)
-    print "Done in %.3f s, available OPs:" % (time.time() - t0)
+    print("Done in %.3f s, available OPs:" % (time.time() - t0))
 
     # opv is a C++ vector, so it cannot be accessed like a Python array
     opv = op.optimal_pts
-    print "%-40s  1-R@1     time" % "Parameters"
+    print("%-40s  1-R@1     time" % "Parameters")
     for i in range(opv.size()):
         opt = opv.at(i)
-        print "%-40s  %.4f  %7.3f" % (opt.key, opt.perf, opt.t)
+        print("%-40s  %.4f  %7.3f" % (opt.key, opt.perf, opt.t))
 
 else:
 
     # we do queries in a single thread
     faiss.omp_set_num_threads(1)
 
-    print ' ' * len(parametersets[0]), '\t', 'R@1    R@10   R@100     time    %pass'
+    print(' ' * len(parametersets[0]), '\t', 'R@1    R@10   R@100     time    %pass')
 
     for param in parametersets:
-        print param, '\t',
+        print(param, '\t', end=' ')
         sys.stdout.flush()
         ps.set_index_parameters(index, param)
         t0 = time.time()
@@ -259,6 +247,6 @@ else:
         t1 = time.time()
         for rank in 1, 10, 100:
             n_ok = (I[:, :rank] == gt[:, :1]).sum()
-            print "%.4f" % (n_ok / float(nq)),
-        print "%8.3f  " % ((t1 - t0) * 1000.0 / nq),
-        print "%5.2f" % (ivfpq_stats.n_hamming_pass * 100.0 / ivfpq_stats.ncode)
+            print("%.4f" % (n_ok / float(nq)), end=' ')
+        print("%8.3f  " % ((t1 - t0) * 1000.0 / nq), end=' ')
+        print("%5.2f" % (ivfpq_stats.n_hamming_pass * 100.0 / ivfpq_stats.ncode))

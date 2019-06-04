@@ -1,11 +1,11 @@
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
-# This source code is licensed under the BSD+Patents license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 #!/usr/bin/env python2
 
+from __future__ import print_function
 import os
 import numpy as np
 import faiss
@@ -41,14 +41,14 @@ aa('--eval_freq', default=100, type=int)
 
 args = parser.parse_args()
 
-print "args:", args
+print("args:", args)
 
 os.system('echo -n "nb processors "; '
           'cat /proc/cpuinfo | grep ^processor | wc -l; '
           'cat /proc/cpuinfo | grep ^"model name" | tail -1')
 
 ngpu = faiss.get_num_gpus()
-print "nb GPUs:", ngpu
+print("nb GPUs:", ngpu)
 
 ######################################################
 # Load dataset
@@ -71,7 +71,7 @@ xb = xb[:args.nb]
 d = xb.shape[1]
 
 if args.pcadim != -1:
-    print "training PCA: %d -> %d" % (d, args.pcadim)
+    print("training PCA: %d -> %d" % (d, args.pcadim))
     pca = faiss.PCAMatrix(d, args.pcadim)
     pca.train(sanitize(xt_pca))
     xt = pca.apply_py(sanitize(xt))
@@ -87,7 +87,7 @@ if args.pcadim != -1:
 index = faiss.IndexFlatL2(d)
 
 if ngpu > 0:
-    print "moving index to GPU"
+    print("moving index to GPU")
     index = faiss.index_cpu_to_all_gpus(index)
 
 
@@ -115,4 +115,4 @@ for iter0 in range(0, args.niter, args.eval_freq):
 
     error = ((xb - centroids[I.ravel()]) ** 2).sum()
 
-    print "iter1=%d quantization error on test: %.4f" % (iter1, error)
+    print("iter1=%d quantization error on test: %.4f" % (iter1, error))

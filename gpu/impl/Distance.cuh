@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -20,11 +19,12 @@ class GpuResources;
 /// `queries`, returning the k closest results seen
 void runL2Distance(GpuResources* resources,
                    Tensor<float, 2, true>& vectors,
-                   Tensor<float, 2, true>* vectorsTransposed,
+                   bool vectorsRowMajor,
                    // can be optionally pre-computed; nullptr if we
                    // have to compute it upon the call
                    Tensor<float, 1, true>* vectorNorms,
                    Tensor<float, 2, true>& queries,
+                   bool queriesRowMajor,
                    int k,
                    Tensor<float, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices,
@@ -36,8 +36,9 @@ void runL2Distance(GpuResources* resources,
 /// and `queries`, returning the k closest results seen
 void runIPDistance(GpuResources* resources,
                    Tensor<float, 2, true>& vectors,
-                   Tensor<float, 2, true>* vectorsTransposed,
+                   bool vectorsRowMajor,
                    Tensor<float, 2, true>& queries,
+                   bool queriesRowMajor,
                    int k,
                    Tensor<float, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices);
@@ -45,8 +46,9 @@ void runIPDistance(GpuResources* resources,
 #ifdef FAISS_USE_FLOAT16
 void runIPDistance(GpuResources* resources,
                    Tensor<half, 2, true>& vectors,
-                   Tensor<half, 2, true>* vectorsTransposed,
+                   bool vectorsRowMajor,
                    Tensor<half, 2, true>& queries,
+                   bool queriesRowMajor,
                    int k,
                    Tensor<half, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices,
@@ -54,9 +56,10 @@ void runIPDistance(GpuResources* resources,
 
 void runL2Distance(GpuResources* resources,
                    Tensor<half, 2, true>& vectors,
-                   Tensor<half, 2, true>* vectorsTransposed,
+                   bool vectorsRowMajor,
                    Tensor<half, 1, true>* vectorNorms,
                    Tensor<half, 2, true>& queries,
+                   bool queriesRowMajor,
                    int k,
                    Tensor<half, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices,

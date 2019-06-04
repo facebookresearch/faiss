@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -222,6 +221,7 @@ void RandomRotationMatrix::init (int seed)
         float_randn(q, d_out * d_in, seed);
         matrix_qr(d_in, d_out, q);
     } else {
+        // use tight-frame transformation
         A.resize (d_out * d_out);
         float *q = A.data();
         float_randn(q, d_out * d_out, seed);
@@ -867,6 +867,7 @@ IndexPreTransform::IndexPreTransform (
     index (index), own_fields (false)
 {
     is_trained = index->is_trained;
+    ntotal = index->ntotal;
 }
 
 
@@ -877,6 +878,7 @@ IndexPreTransform::IndexPreTransform (
     index (index), own_fields (false)
 {
     is_trained = index->is_trained;
+    ntotal = index->ntotal;
     prepend_transform (ltrans);
 }
 

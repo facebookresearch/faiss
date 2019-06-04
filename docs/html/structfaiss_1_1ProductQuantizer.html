@@ -87,6 +87,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
@@ -98,6 +99,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p><code>#include &lt;<a class="el" href="ProductQuantizer_8h_source.html">ProductQuantizer.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer_1_1PQDecoder16.html">PQDecoder16</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer_1_1PQDecoder8.html">PQDecoder8</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer_1_1PQDecoderGeneric.html">PQDecoderGeneric</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer_1_1PQEncoder16.html">PQEncoder16</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer_1_1PQEncoder8.html">PQEncoder8</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer_1_1PQEncoderGeneric.html">PQEncoderGeneric</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a3a41c6286095e731be744548d9535a35"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer.html#a3a41c6286095e731be744548d9535a35">train_type_t</a> { <br/>
@@ -111,6 +127,9 @@ Public Types</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a3a41c6286095e731be744548d9535a35"><td class="mdescLeft">&#160;</td><td class="mdescRight">initialization  <a href="structfaiss_1_1ProductQuantizer.html#a3a41c6286095e731be744548d9535a35">More...</a><br/></td></tr>
 <tr class="separator:a3a41c6286095e731be744548d9535a35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb18ebfbb52f3b73bf2d90e64e951285"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afb18ebfbb52f3b73bf2d90e64e951285"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>idx_t</b> = <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">Index::idx_t</a></td></tr>
+<tr class="separator:afb18ebfbb52f3b73bf2d90e64e951285"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -143,6 +162,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer.html#ae5a340ee5a4b1d35a565b167de2a2ef1">compute_codes</a> (const float *x, uint8_t *codes, size_t n) const </td></tr>
 <tr class="memdesc:ae5a340ee5a4b1d35a565b167de2a2ef1"><td class="mdescLeft">&#160;</td><td class="mdescRight">same as compute_code for several vectors <br/></td></tr>
 <tr class="separator:ae5a340ee5a4b1d35a565b167de2a2ef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecd05d180799f3956065b0c5c54fd406"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer.html#aecd05d180799f3956065b0c5c54fd406">compute_codes_with_assign_index</a> (const float *x, uint8_t *codes, size_t n)</td></tr>
+<tr class="separator:aecd05d180799f3956065b0c5c54fd406"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7afbf9d96276f021981e99f064254208"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7afbf9d96276f021981e99f064254208"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer.html#a7afbf9d96276f021981e99f064254208">decode</a> (const uint8_t *code, float *x) const </td></tr>
 <tr class="memdesc:a7afbf9d96276f021981e99f064254208"><td class="mdescLeft">&#160;</td><td class="mdescRight">decode a vector from a given code (or n vectors if third argument) <br/></td></tr>
@@ -191,10 +212,6 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer.html#a467b451ca203544e42c250e4be65b983">dsub</a></td></tr>
 <tr class="memdesc:a467b451ca203544e42c250e4be65b983"><td class="mdescLeft">&#160;</td><td class="mdescRight">dimensionality of each subvector <br/></td></tr>
 <tr class="separator:a467b451ca203544e42c250e4be65b983"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13bf69a0dc7b4e45792d10f458e4a92d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a13bf69a0dc7b4e45792d10f458e4a92d"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer.html#a13bf69a0dc7b4e45792d10f458e4a92d">byte_per_idx</a></td></tr>
-<tr class="memdesc:a13bf69a0dc7b4e45792d10f458e4a92d"><td class="mdescLeft">&#160;</td><td class="mdescRight">nb bytes per code component (1 or 2) <br/></td></tr>
-<tr class="separator:a13bf69a0dc7b4e45792d10f458e4a92d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa61330eadb84772b71018b093773a5f9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa61330eadb84772b71018b093773a5f9"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ProductQuantizer.html#aa61330eadb84772b71018b093773a5f9">code_size</a></td></tr>
 <tr class="memdesc:aa61330eadb84772b71018b093773a5f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">byte per indexed vector <br/></td></tr>
@@ -228,7 +245,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Product Quantizer. Implemented only for METRIC_L2 </p>
 
-<p>Definition at line <a class="el" href="ProductQuantizer_8h_source.html#l00024">24</a> of file <a class="el" href="ProductQuantizer_8h_source.html">ProductQuantizer.h</a>.</p>
+<p>Definition at line <a class="el" href="ProductQuantizer_8h_source.html#l00023">23</a> of file <a class="el" href="ProductQuantizer_8h_source.html">ProductQuantizer.h</a>.</p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a class="anchor" id="a3a41c6286095e731be744548d9535a35"></a>
 <div class="memitem">
@@ -286,7 +303,42 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 </div><div class="memdoc">
 <p>If we happen to have the distance tables precomputed, this is more efficient to compute the codes. </p>
 
-<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00360">360</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00406">406</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aecd05d180799f3956065b0c5c54fd406"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::ProductQuantizer::compute_codes_with_assign_index </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>codes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>speed up code assignment using assign_index (non-const because the index is changed) </p>
+
+<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00427">427</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -325,7 +377,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00407">407</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00517">517</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -368,7 +420,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00436">436</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00546">546</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -424,7 +476,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
   <table class="params">
     <tr><td class="paramname">x</td><td>query vectors, size nx * d </td></tr>
     <tr><td class="paramname">nx</td><td>nb of queries </td></tr>
-    <tr><td class="paramname">codes</td><td>database codes, size ncodes * byte_per_idx </td></tr>
+    <tr><td class="paramname">codes</td><td>database codes, size ncodes * code_size </td></tr>
     <tr><td class="paramname">ncodes</td><td>nb of nb vectors </td></tr>
     <tr><td class="paramname">res</td><td>heap array to store results (nh == nx) </td></tr>
     <tr><td class="paramname">init_finalize_heap</td><td>initialize heap (input) and sort (output)? </td></tr>
@@ -432,7 +484,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00537">537</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00659">659</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -485,7 +537,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 </div><div class="memdoc">
 <p>same as search, but with inner product similarity </p>
 
-<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00562">562</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ProductQuantizer_8cpp_source.html#l00674">674</a> of file <a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -506,8 +558,8 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li>/tmp/faiss/<a class="el" href="ProductQuantizer_8h_source.html">ProductQuantizer.h</a></li>
-<li>/tmp/faiss/<a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="ProductQuantizer_8h_source.html">ProductQuantizer.h</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="ProductQuantizer_8cpp_source.html">ProductQuantizer.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

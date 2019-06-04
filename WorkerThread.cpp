@@ -1,16 +1,31 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 
 #include "WorkerThread.h"
 #include "FaissAssert.h"
+#include <exception>
 
 namespace faiss {
+
+namespace {
+
+// Captures any exceptions thrown by the lambda and returns them via the promise
+void runCallback(std::function<void()>& fn,
+                 std::promise<bool>& promise) {
+  try {
+    fn();
+    promise.set_value(true);
+  } catch (...) {
+    promise.set_exception(std::current_exception());
+  }
+}
+
+} // namespace
 
 WorkerThread::WorkerThread() :
     wantStop_(false) {
@@ -70,9 +85,9 @@ WorkerThread::threadMain() {
   // Call all pending tasks
   FAISS_ASSERT(wantStop_);
 
+  // flush all pending operations
   for (auto& f : queue_) {
-    f.first();
-    f.second.set_value(true);
+    runCallback(f.first, f.second);
   }
 }
 
@@ -96,8 +111,7 @@ WorkerThread::threadLoop() {
       queue_.pop_front();
     }
 
-    data.first();
-    data.second.set_value(true);
+    runCallback(data.first, data.second);
   }
 }
 

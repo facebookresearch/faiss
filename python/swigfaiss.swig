@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -80,6 +79,8 @@ extern "C" {
 #include "IndexIVFPQ.h"
 #include "IndexIVFFlat.h"
 #include "IndexScalarQuantizer.h"
+#include "IndexIVFSpectralHash.h"
+#include "ThreadedIndex.h"
 #include "IndexShards.h"
 #include "IndexReplicas.h"
 #include "HNSW.h"
@@ -279,6 +280,7 @@ int get_num_gpus()
 %warnfilter(509) extract_index_ivf;
 %include "IVFlib.h"
 %include "IndexScalarQuantizer.h"
+%include "IndexIVFSpectralHash.h"
 %include "HNSW.h"
 %include "IndexHNSW.h"
 %include "IndexIVFFlat.h"
@@ -296,6 +298,10 @@ int get_num_gpus()
 
 
  // %ignore faiss::IndexReplicas::at(int) const;
+
+%include "ThreadedIndex.h"
+%template(ThreadedIndexBase) faiss::ThreadedIndex<faiss::Index>;
+%template(ThreadedIndexBaseBinary) faiss::ThreadedIndex<faiss::IndexBinary>;
 
 %include "IndexShards.h"
 %template(IndexShards) faiss::IndexShardsTemplate<faiss::Index>;
@@ -323,6 +329,7 @@ int get_num_gpus()
 %include "gpu/GpuIndexIVFFlat.h"
 %include "gpu/GpuIndexBinaryFlat.h"
 %include "gpu/GpuDistance.h"
+
 
 #endif
 
@@ -476,6 +483,7 @@ struct AsyncIndexSearchC {
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
+    DOWNCAST ( IndexIVFSpectralHash )
     DOWNCAST ( IndexIVFScalarQuantizer )
     DOWNCAST ( IndexIVFFlatDedup )
     DOWNCAST ( IndexIVFFlat )
@@ -554,6 +562,21 @@ struct AsyncIndexSearchC {
 #endif
 }
 
+%typemap(out) faiss::InvertedLists * {
+    DOWNCAST (ArrayInvertedLists)
+    DOWNCAST (OnDiskInvertedLists)
+    DOWNCAST (VStackInvertedLists)
+    DOWNCAST (HStackInvertedLists)
+    DOWNCAST (MaskedInvertedLists)
+    DOWNCAST (InvertedLists)
+    {
+        assert(false);
+    }
+#ifdef SWIGLUA
+    SWIG_arg++;
+#endif
+}
+
 // just to downcast pointers that come from elsewhere (eg. direct
 // access to object fields)
 %inline %{
@@ -568,6 +591,10 @@ faiss::VectorTransform * downcast_VectorTransform (faiss::VectorTransform *vt)
 faiss::IndexBinary * downcast_IndexBinary (faiss::IndexBinary *index)
 {
     return index;
+}
+faiss::InvertedLists * downcast_InvertedLists (faiss::InvertedLists *il)
+{
+    return il;
 }
 %}
 
@@ -855,5 +882,14 @@ struct MapLong2Long {
 };
 
 %}
+
+%inline %{
+
+    void wait() {
+        // in gdb
+        // set variable i = 1
+        for(int i = 0; i == 0; i += 0);
+    }
+ %}
 
 // End of file...

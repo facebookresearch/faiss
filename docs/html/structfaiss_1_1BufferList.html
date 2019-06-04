@@ -116,7 +116,7 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a34f881c3691b14b7ed936374f4665d93"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a34f881c3691b14b7ed936374f4665d93"></a>
-typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>idx_t</b></td></tr>
+typedef <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">Index::idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>idx_t</b></td></tr>
 <tr class="separator:a34f881c3691b14b7ed936374f4665d93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -125,10 +125,12 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>BufferList</b> (size_t buffer_size)</td></tr>
 <tr class="separator:a84f9e430297d10b693a7d0abbec20b9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa124ff3a7e6a98960e12a8b32bdaec42"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa124ff3a7e6a98960e12a8b32bdaec42"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>append_buffer</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1BufferList.html#aa124ff3a7e6a98960e12a8b32bdaec42">append_buffer</a> ()</td></tr>
+<tr class="memdesc:aa124ff3a7e6a98960e12a8b32bdaec42"><td class="mdescLeft">&#160;</td><td class="mdescRight">create a new buffer <br/></td></tr>
 <tr class="separator:aa124ff3a7e6a98960e12a8b32bdaec42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa17f17a53b45bb39b0724d6493ab33c9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa17f17a53b45bb39b0724d6493ab33c9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (idx_t id, float dis)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1BufferList.html#aa17f17a53b45bb39b0724d6493ab33c9">add</a> (idx_t id, float dis)</td></tr>
+<tr class="memdesc:aa17f17a53b45bb39b0724d6493ab33c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">add one result, possibly appending a new buffer if needed <br/></td></tr>
 <tr class="separator:aa17f17a53b45bb39b0724d6493ab33c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78b70417a9ba5b27553b3134f1190958"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1BufferList.html#a78b70417a9ba5b27553b3134f1190958">copy_range</a> (size_t ofs, size_t n, idx_t *dest_ids, float *dest_dis)</td></tr>
 <tr class="separator:a78b70417a9ba5b27553b3134f1190958"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,7 +151,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>List of temporary buffers used to store results before they are copied to the <a class="el" href="structfaiss_1_1RangeSearchResult.html">RangeSearchResult</a> object. </p>
 
-<p>Definition at line <a class="el" href="AuxIndexStructures_8h_source.html#l00099">99</a> of file <a class="el" href="AuxIndexStructures_8h_source.html">AuxIndexStructures.h</a>.</p>
+<p>Definition at line <a class="el" href="AuxIndexStructures_8h_source.html#l00104">104</a> of file <a class="el" href="AuxIndexStructures_8h_source.html">AuxIndexStructures.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a78b70417a9ba5b27553b3134f1190958"></a>
 <div class="memitem">
@@ -188,13 +190,13 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 </div><div class="memdoc">
 <p>copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to tables dest_ids, dest_dis </p>
 
-<p>Definition at line <a class="el" href="AuxIndexStructures_8cpp_source.html#l00086">86</a> of file <a class="el" href="AuxIndexStructures_8cpp_source.html">AuxIndexStructures.cpp</a>.</p>
+<p>Definition at line <a class="el" href="AuxIndexStructures_8cpp_source.html#l00099">99</a> of file <a class="el" href="AuxIndexStructures_8cpp_source.html">AuxIndexStructures.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li>/tmp/faiss/<a class="el" href="AuxIndexStructures_8h_source.html">AuxIndexStructures.h</a></li>
-<li>/tmp/faiss/<a class="el" href="AuxIndexStructures_8cpp_source.html">AuxIndexStructures.cpp</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="AuxIndexStructures_8h_source.html">AuxIndexStructures.h</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="AuxIndexStructures_8cpp_source.html">AuxIndexStructures.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

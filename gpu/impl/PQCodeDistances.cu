@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -305,7 +304,7 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
         topQueryToCentroid.getSize(1),
         pqCentroids.getSize(1)});
 
-  runL2Norm(residualView2, residualNorms, true, stream);
+  runL2Norm(residualView2, true, residualNorms, true, stream);
 
   // Perform a batch MM:
   // (sub q) x {(q * c)(sub dim) x (sub dim)(code)} =>
@@ -386,7 +385,7 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
     {pqCentroids.getSize(0) * pqCentroids.getSize(2)},
     stream);
 
-  runL2Norm(pqCentroidsTransposeView, pqCentroidsNorm, true, stream);
+  runL2Norm(pqCentroidsTransposeView, true, pqCentroidsNorm, true, stream);
 
   // View output as (q * c)(sub q * code), and add centroid norm to
   // each row

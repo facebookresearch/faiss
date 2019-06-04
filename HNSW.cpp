@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -173,7 +172,7 @@ void HNSW::fill_with_random_links(size_t n)
   int max_level = prepare_level_tab(n);
   RandomGenerator rng2(456);
 
-  for (int level = max_level - 1; level >= 0; level++) {
+  for (int level = max_level - 1; level >= 0; --level) {
     std::vector<int> elts;
     for (int i = 0; i < n; i++) {
       if (levels[i] > level) {

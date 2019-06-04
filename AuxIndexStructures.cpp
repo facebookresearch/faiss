@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -53,6 +52,10 @@ RangeSearchResult::~RangeSearchResult () {
     delete [] distances;
     delete [] lims;
 }
+
+
+
+
 
 /***********************************************************************
  * BufferList
@@ -148,7 +151,7 @@ void RangeSearchPartialResult::finalize ()
     res->do_allocation ();
 
 #pragma omp barrier
-    set_result ();
+    copy_result ();
 }
 
 
@@ -162,7 +165,7 @@ void RangeSearchPartialResult::set_lims ()
 }
 
 /// called by range_search after do_allocation
-void RangeSearchPartialResult::set_result (bool incremental)
+void RangeSearchPartialResult::copy_result (bool incremental)
 {
     size_t ofs = 0;
     for (int i = 0; i < queries.size(); i++) {
@@ -178,6 +181,38 @@ void RangeSearchPartialResult::set_result (bool incremental)
     }
 }
 
+void RangeSearchPartialResult::merge (std::vector <RangeSearchPartialResult *> &
+                                      partial_results, bool do_delete)
+{
+
+    int npres = partial_results.size();
+    if (npres == 0) return;
+    RangeSearchResult *result = partial_results[0]->res;
+    size_t nx = result->nq;
+
+    // count
+    for (const RangeSearchPartialResult * pres : partial_results) {
+        if (!pres) continue;
+        for (const RangeQueryResult &qres : pres->queries) {
+            result->lims[qres.qno] += qres.nres;
+        }
+    }
+    result->do_allocation ();
+    for (int j = 0; j < npres; j++) {
+        if (!partial_results[j]) continue;
+        partial_results[j]->copy_result (true);
+        if (do_delete) {
+            delete partial_results[j];
+            partial_results[j] = nullptr;
+        }
+    }
+
+    // reset the limits
+    for (size_t i = nx; i > 0; i--) {
+        result->lims [i] = result->lims [i - 1];
+    }
+    result->lims [0] = 0;
+}
 
 /***********************************************************************
  * IDSelectorRange

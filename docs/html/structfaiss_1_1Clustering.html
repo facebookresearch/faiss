@@ -110,7 +110,7 @@ Inheritance diagram for faiss::Clustering:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:ad61a631598a1ac0975c091bda9072da7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad61a631598a1ac0975c091bda9072da7"></a>
-typedef <a class="el" href="structfaiss_1_1Index.html#a040c6aed1f224f3ea7bf58eebc0c31a4">Index::idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>idx_t</b></td></tr>
+typedef <a class="el" href="structfaiss_1_1Index.html#ad3f0d3071f987baabbdd3da4500c87ea">Index::idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>idx_t</b></td></tr>
 <tr class="separator:ad61a631598a1ac0975c091bda9072da7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -126,6 +126,8 @@ Public Member Functions</h2></td></tr>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Clustering.html#a839f210abb11c7a1c7162e336e0ff9cf">train</a> (idx_t n, const float *x, <a class="el" href="structfaiss_1_1Index.html">faiss::Index</a> &amp;index)</td></tr>
 <tr class="memdesc:a839f210abb11c7a1c7162e336e0ff9cf"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structfaiss_1_1Index.html">Index</a> is used during the assignment stage. <br/></td></tr>
 <tr class="separator:a839f210abb11c7a1c7162e336e0ff9cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcb47440a792267bb9218c10378cf1a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1Clustering.html#adcb47440a792267bb9218c10378cf1a8">post_process_centroids</a> ()</td></tr>
+<tr class="separator:adcb47440a792267bb9218c10378cf1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structfaiss_1_1ClusteringParameters"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structfaiss_1_1ClusteringParameters')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structfaiss_1_1ClusteringParameters.html">faiss::ClusteringParameters</a></td></tr>
 <tr class="memitem:a86c8802261041f5d49b1a0d296da60be inherit pub_methods_structfaiss_1_1ClusteringParameters"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a86c8802261041f5d49b1a0d296da60be"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ClusteringParameters.html#a86c8802261041f5d49b1a0d296da60be">ClusteringParameters</a> ()</td></tr>
@@ -164,6 +166,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>verbose</b></td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ClusteringParameters.html#ad997fb511f574f7ddc69938c21612f8d">spherical</a></td></tr>
 <tr class="memdesc:ad997fb511f574f7ddc69938c21612f8d inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="mdescLeft">&#160;</td><td class="mdescRight">do we want normalized centroids? <br/></td></tr>
 <tr class="separator:ad997fb511f574f7ddc69938c21612f8d inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae01573d8d4cbff7c3d6eaded883537a4 inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae01573d8d4cbff7c3d6eaded883537a4"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ClusteringParameters.html#ae01573d8d4cbff7c3d6eaded883537a4">int_centroids</a></td></tr>
+<tr class="memdesc:ae01573d8d4cbff7c3d6eaded883537a4 inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="mdescLeft">&#160;</td><td class="mdescRight">round centroids coordinates to integer <br/></td></tr>
+<tr class="separator:ae01573d8d4cbff7c3d6eaded883537a4 inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27d6192097920fa981cff0acedfaac91 inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27d6192097920fa981cff0acedfaac91"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structfaiss_1_1ClusteringParameters.html#a27d6192097920fa981cff0acedfaac91">update_index</a></td></tr>
 <tr class="memdesc:a27d6192097920fa981cff0acedfaac91 inherit pub_attribs_structfaiss_1_1ClusteringParameters"><td class="mdescLeft">&#160;</td><td class="mdescRight">update index after each iteration? <br/></td></tr>
@@ -192,7 +198,26 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 <p>To do several clusterings, just call <a class="el" href="structfaiss_1_1Clustering.html#a839f210abb11c7a1c7162e336e0ff9cf" title="Index is used during the assignment stage. ">train()</a> several times on different training sets, clearing the centroid table in between. </p>
 
 <p>Definition at line <a class="el" href="Clustering_8h_source.html#l00056">56</a> of file <a class="el" href="Clustering_8h_source.html">Clustering.h</a>.</p>
-</div><h2 class="groupheader">Member Data Documentation</h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="adcb47440a792267bb9218c10378cf1a8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void faiss::Clustering::post_process_centroids </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Post-process the centroids after each centroid update. includes optional L2 normalization and nearest integer rounding </p>
+
+<p>Definition at line <a class="el" href="Clustering_8cpp_source.html#l00063">63</a> of file <a class="el" href="Clustering_8cpp_source.html">Clustering.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
 <a class="anchor" id="a91e32da946477bb751706a68c5cd3327"></a>
 <div class="memitem">
 <div class="memproto">
@@ -209,8 +234,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li>/tmp/faiss/<a class="el" href="Clustering_8h_source.html">Clustering.h</a></li>
-<li>/tmp/faiss/<a class="el" href="Clustering_8cpp_source.html">Clustering.cpp</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="Clustering_8h_source.html">Clustering.h</a></li>
+<li>/data/users/hoss/faiss/<a class="el" href="Clustering_8cpp_source.html">Clustering.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

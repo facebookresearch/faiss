@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -135,20 +134,21 @@ FlatIndex::query(Tensor<float, 2, true>& input,
   } else {
     if (l2Distance_) {
       runL2Distance(resources_,
-                    vectors_,
-                    storeTransposed_ ? &vectorsTransposed_ : nullptr,
+                    storeTransposed_ ? vectorsTransposed_ : vectors_,
+                    !storeTransposed_, // is vectors row major?
                     &norms_,
                     input,
+                    true, // input is row major
                     k,
                     outDistances,
                     outIndices,
-                    // FIXME
                     !exactDistance);
     } else {
       runIPDistance(resources_,
-                    vectors_,
-                    storeTransposed_ ? &vectorsTransposed_ : nullptr,
+                    storeTransposed_ ? vectorsTransposed_ : vectors_,
+                    !storeTransposed_, // is vectors row major?
                     input,
+                    true, // input is row major
                     k,
                     outDistances,
                     outIndices);
@@ -167,10 +167,11 @@ FlatIndex::query(Tensor<half, 2, true>& input,
 
   if (l2Distance_) {
     runL2Distance(resources_,
-                  vectorsHalf_,
-                  storeTransposed_ ? &vectorsHalfTransposed_ : nullptr,
+                  storeTransposed_ ? vectorsHalfTransposed_ : vectorsHalf_,
+                  !storeTransposed_, // is vectors row major?
                   &normsHalf_,
                   input,
+                  true, // input is row major
                   k,
                   outDistances,
                   outIndices,
@@ -179,9 +180,10 @@ FlatIndex::query(Tensor<half, 2, true>& input,
                   !exactDistance);
   } else {
     runIPDistance(resources_,
-                  vectorsHalf_,
-                  storeTransposed_ ? &vectorsHalfTransposed_ : nullptr,
+                  storeTransposed_ ? vectorsHalfTransposed_ : vectorsHalf_,
+                  !storeTransposed_, // is vectors row major?
                   input,
+                  true, // input is row major
                   k,
                   outDistances,
                   outIndices,
@@ -253,12 +255,12 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
     if (useFloat16_) {
 #ifdef FAISS_USE_FLOAT16
       DeviceTensor<half, 1, true> normsHalf({(int) num_}, space_);
-      runL2Norm(vectorsHalf_, normsHalf, true, stream);
+      runL2Norm(vectorsHalf_, true, normsHalf, true, stream);
       normsHalf_ = std::move(normsHalf);
 #endif
     } else {
       DeviceTensor<float, 1, true> norms({(int) num_}, space_);
-      runL2Norm(vectors_, norms, true, stream);
+      runL2Norm(vectors_, true, norms, true, stream);
       norms_ = std::move(norms);
     }
   }
