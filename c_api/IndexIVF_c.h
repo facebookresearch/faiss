@@ -106,10 +106,13 @@ size_t faiss_IndexIVF_get_list_size(const FaissIndexIVF* index,
 int faiss_IndexIVF_make_direct_map(FaissIndexIVF* index,
     int new_maintain_direct_map);
 
-/// 1= perfectly balanced, >1: imbalanced
+/** Check the inverted lists' imbalance factor.
+ *
+ * 1= perfectly balanced, >1: imbalanced
+ */
 double faiss_IndexIVF_imbalance_factor (const FaissIndexIVF* index);
 
-/// display some stats about the inverted lists
+/// display some stats about the inverted lists of the index
 void faiss_IndexIVF_print_stats (const FaissIndexIVF* index);
 
 
