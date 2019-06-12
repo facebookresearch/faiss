@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -103,6 +102,15 @@ int faiss_BufferList_copy_range(
 /// the entries in the buffers are split per query
 FAISS_DECLARE_CLASS(RangeSearchPartialResult)
 
+/// result structure for a single query
+FAISS_DECLARE_CLASS(RangeQueryResult)
+FAISS_DECLARE_GETTER(RangeQueryResult, idx_t, qno)
+FAISS_DECLARE_GETTER(RangeQueryResult, size_t, nres)
+FAISS_DECLARE_GETTER(RangeQueryResult, FaissRangeSearchPartialResult*, pres)
+
+int faiss_RangeQueryResult_add(FaissRangeQueryResult* qr, float dis, idx_t id);
+
+
 FAISS_DECLARE_GETTER(RangeSearchPartialResult, FaissRangeSearchResult*, res)
 
 int faiss_RangeSearchPartialResult_new(
@@ -115,20 +123,8 @@ int faiss_RangeSearchPartialResult_finalize(
 int faiss_RangeSearchPartialResult_set_lims(
     FaissRangeSearchPartialResult* res);
 
-/// called by range_search after do_allocation
-int faiss_RangeSearchPartialResult_set_result(
-    FaissRangeSearchPartialResult* res, int incremental);
-
-/// result structure for a single query
-FAISS_DECLARE_CLASS(QueryResult)
-FAISS_DECLARE_GETTER(QueryResult, idx_t, qno)
-FAISS_DECLARE_GETTER(QueryResult, size_t, nres)
-FAISS_DECLARE_GETTER(QueryResult, FaissRangeSearchPartialResult*, pres)
-
 int faiss_RangeSearchPartialResult_new_result(
-    FaissRangeSearchPartialResult* res, idx_t qno, FaissQueryResult** qr);
-
-int faiss_QueryResult_add(FaissQueryResult* qr, float dis, idx_t id);
+    FaissRangeSearchPartialResult* res, idx_t qno, FaissRangeQueryResult** qr);
 
 #ifdef __cplusplus
 }

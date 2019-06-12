@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -33,12 +32,6 @@ int faiss_StandardGpuResources_noTempMemory(FaissStandardGpuResources* res) {
 int faiss_StandardGpuResources_setTempMemory(FaissStandardGpuResources* res, size_t size) {
     try {
         reinterpret_cast<StandardGpuResources*>(res)->setTempMemory(size);
-    } CATCH_AND_HANDLE
-}
-
-int faiss_StandardGpuResources_setTempMemoryFraction(FaissStandardGpuResources* res, float fraction) {
-    try {
-        reinterpret_cast<StandardGpuResources*>(res)->setTempMemoryFraction(fraction);
     } CATCH_AND_HANDLE
 }
 

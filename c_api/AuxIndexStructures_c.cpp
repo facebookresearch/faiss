@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -14,14 +13,13 @@
 #include "macros_impl.h"
 #include <iostream>
 
-extern "C" {
-
 using faiss::BufferList;
 using faiss::IDSelector;
 using faiss::IDSelectorBatch;
 using faiss::IDSelectorRange;
 using faiss::RangeSearchResult;
 using faiss::RangeSearchPartialResult;
+using faiss::RangeQueryResult;
 
 DEFINE_GETTER(RangeSearchResult, size_t, nq)
 
@@ -140,6 +138,17 @@ int faiss_BufferList_copy_range(
     } CATCH_AND_HANDLE
 }
 
+DEFINE_GETTER(RangeQueryResult, idx_t, qno)
+DEFINE_GETTER(RangeQueryResult, size_t, nres)
+DEFINE_GETTER_PERMISSIVE(RangeQueryResult, FaissRangeSearchPartialResult*, pres)
+
+int faiss_RangeQueryResult_add(FaissRangeQueryResult* qr, float dis, idx_t id) {
+    try {
+        reinterpret_cast<RangeQueryResult*>(qr)->add(dis, id);
+        return 0;
+    } CATCH_AND_HANDLE
+}
+
 DEFINE_GETTER_PERMISSIVE(RangeSearchPartialResult, FaissRangeSearchResult*, res)
 
 int faiss_RangeSearchPartialResult_new(
@@ -170,38 +179,15 @@ int faiss_RangeSearchPartialResult_set_lims(
     } CATCH_AND_HANDLE
 }
 
-/// called by range_search after do_allocation
-int faiss_RangeSearchPartialResult_set_result(
-    FaissRangeSearchPartialResult* res, int incremental) {
-    try {
-        reinterpret_cast<RangeSearchPartialResult*>(res)->set_result(
-            static_cast<bool>(incremental));
-        return 0;
-    } CATCH_AND_HANDLE
-}
-
-DEFINE_GETTER_SUBCLASS(QueryResult, RangeSearchPartialResult, idx_t, qno)
-DEFINE_GETTER_SUBCLASS(QueryResult, RangeSearchPartialResult, size_t, nres)
-DEFINE_GETTER_SUBCLASS_PERMISSIVE(QueryResult, RangeSearchPartialResult, FaissRangeSearchPartialResult*, pres)
-
 int faiss_RangeSearchPartialResult_new_result(
-    FaissRangeSearchPartialResult* res, idx_t qno, FaissQueryResult** qr) {
+    FaissRangeSearchPartialResult* res, idx_t qno, FaissRangeQueryResult** qr) {
 
     try {
-        RangeSearchPartialResult::QueryResult* q = 
+        auto q = 
             &reinterpret_cast<RangeSearchPartialResult*>(res)->new_result(qno);
         if (qr) {
-            *qr = reinterpret_cast<FaissQueryResult*>(q);
+            *qr = reinterpret_cast<FaissRangeQueryResult*>(&q);
         }
         return 0;
     } CATCH_AND_HANDLE
-}
-
-int faiss_QueryResult_add(FaissQueryResult* qr, float dis, idx_t id) {
-    try {
-        reinterpret_cast<RangeSearchPartialResult::QueryResult*>(qr)->add(dis, id);
-        return 0;
-    } CATCH_AND_HANDLE
-}
-
 }

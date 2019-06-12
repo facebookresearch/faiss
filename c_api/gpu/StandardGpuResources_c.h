@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD+Patents license found in the
+ * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
@@ -36,10 +35,6 @@ int faiss_StandardGpuResources_noTempMemory(FaissStandardGpuResources*);
 /// Specify that we wish to use a certain fixed size of memory on
 /// all devices as temporary memory
 int faiss_StandardGpuResources_setTempMemory(FaissStandardGpuResources*, size_t size);
-
-/// Specify that we wish to use a certain fraction of memory on
-/// all devices as temporary memory
-int faiss_StandardGpuResources_setTempMemoryFraction(FaissStandardGpuResources*, float fraction);
 
 /// Set amount of pinned memory to allocate, for async GPU <-> CPU
 /// transfers

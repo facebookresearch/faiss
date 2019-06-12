@@ -1,7 +1,6 @@
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
-# This source code is licensed under the BSD+Patents license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 .SUFFIXES: .cpp .o
@@ -13,8 +12,9 @@ DEBUGFLAG=-DNDEBUG # no debugging
 
 LIBNAME=libfaiss
 CLIBNAME=libfaiss_c
-LIBCOBJ=error_impl.o Index_c.o IndexFlat_c.o Clustering_c.o AuxIndexStructures_c.o \
-	AutoTune_c.o IndexIVF_c.o IndexIVFFlat_c.o IndexLSH_c.o index_io_c.o MetaIndexes_c.o
+LIBCOBJ=error_impl.o Index_c.o IndexFlat_c.o Clustering_c.o AutoTune_c.o \
+	AuxIndexStructures_c.o IndexIVF_c.o IndexIVFFlat_c.o IndexLSH_c.o \
+	index_io_c.o MetaIndexes_c.o IndexShards_c.o
 
 # Build static and shared object files by default
 all: $(CLIBNAME).a $(CLIBNAME).$(SHAREDEXT)
@@ -58,6 +58,9 @@ IndexIVFFlat_c.o: IndexIVFFlat_c.cpp IndexIVFFlat_c.h ../IndexIVFFlat.h macros_i
 
 IndexLSH_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 IndexLSH_c.o: IndexLSH_c.cpp IndexLSH_c.h ../IndexLSH.h macros_impl.h
+
+IndexShards_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
+IndexShards_c.o: IndexShards_c.cpp IndexShards_c.h ../Index.h ../IndexShards.h macros_impl.h
 
 Clustering_c.o: CXXFLAGS += -I.. $(DEBUGFLAG)
 Clustering_c.o: Clustering_c.cpp Clustering_c.h ../Clustering.h macros_impl.h
