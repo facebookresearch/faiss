@@ -36,12 +36,6 @@ int faiss_StandardGpuResources_setTempMemory(FaissStandardGpuResources* res, siz
     } CATCH_AND_HANDLE
 }
 
-int faiss_StandardGpuResources_setTempMemoryFraction(FaissStandardGpuResources* res, float fraction) {
-    try {
-        reinterpret_cast<StandardGpuResources*>(res)->setTempMemoryFraction(fraction);
-    } CATCH_AND_HANDLE
-}
-
 int faiss_StandardGpuResources_setPinnedMemory(FaissStandardGpuResources* res, size_t size) {
     try {
         reinterpret_cast<StandardGpuResources*>(res)->setPinnedMemory(size);

@@ -37,10 +37,6 @@ int faiss_StandardGpuResources_noTempMemory(FaissStandardGpuResources*);
 /// all devices as temporary memory
 int faiss_StandardGpuResources_setTempMemory(FaissStandardGpuResources*, size_t size);
 
-/// Specify that we wish to use a certain fraction of memory on
-/// all devices as temporary memory
-int faiss_StandardGpuResources_setTempMemoryFraction(FaissStandardGpuResources*, float fraction);
-
 /// Set amount of pinned memory to allocate, for async GPU <-> CPU
 /// transfers
 int faiss_StandardGpuResources_setPinnedMemory(FaissStandardGpuResources*, size_t size);
