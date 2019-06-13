@@ -89,6 +89,20 @@ float fvec_L1_ref (const float * x,
     return res;
 }
 
+float fvec_Linf_ref (const float * x,
+                     const float * y,
+                     size_t d)
+{
+  float res = 0;
+  for (size_t i = 0; i < d; i++) {
+    const float tmp = fabs(x[i] - y[i]);
+    if (tmp > res) {
+      res = tmp;
+    }
+  }
+  return res;
+}
+
 float fvec_inner_product_ref (const float * x,
                              const float * y,
                              size_t d)
