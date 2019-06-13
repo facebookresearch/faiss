@@ -27,6 +27,7 @@
 
 #include <cassert>
 #include <cstdio>
+#include <stdint.h>
 
 #include <limits>
 

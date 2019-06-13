@@ -12,6 +12,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cassert>
+#include <stdint.h>
 
 #include <algorithm>
 

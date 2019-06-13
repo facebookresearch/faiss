@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <stdint.h>
 
 #include "Index.h"
 #include "IndexBinary.h"

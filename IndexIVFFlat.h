@@ -11,6 +11,7 @@
 #define FAISS_INDEX_IVF_FLAT_H
 
 #include <unordered_map>
+#include <stdint.h>
 
 #include "IndexIVF.h"
 

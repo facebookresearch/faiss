@@ -12,6 +12,7 @@
 
 #include <memory>
 #include <algorithm>
+#include <stdint.h>
 
 #include "hamming.h"
 #include "utils.h"

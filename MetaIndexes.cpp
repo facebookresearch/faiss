@@ -10,6 +10,7 @@
 #include "MetaIndexes.h"
 
 #include <cstdio>
+#include <stdint.h>
 
 #include "FaissAssert.h"
 #include "Heap.h"

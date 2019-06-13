@@ -15,6 +15,7 @@
  */
 
 #include <vector>
+#include <stdint.h>
 
 #include "Index.h"
 
