@@ -237,6 +237,8 @@ void IndexIVFPQ::add_core_o (idx_t n, const float * x, const long *xids,
         return;
     }
 
+    InterruptCallback::check();
+
     FAISS_THROW_IF_NOT (is_trained);
     double t0 = getmillisecs ();
     const long * idx;
@@ -1363,7 +1365,7 @@ void IndexIVFPQR::merge_from (IndexIVF &other_in, idx_t add_id)
     other->refine_codes.clear();
 }
 
-long IndexIVFPQR::remove_ids(const IDSelector& /*sel*/) {
+size_t IndexIVFPQR::remove_ids(const IDSelector& /*sel*/) {
   FAISS_THROW_MSG("not implemented");
   return 0;
 }
@@ -1546,6 +1548,163 @@ void Index2Layer::reset()
 {
     ntotal = 0;
     codes.clear ();
+}
+
+
+namespace {
+
+
+struct Distance2Level : DistanceComputer {
+    size_t d;
+    const Index2Layer& storage;
+    std::vector<float> buf;
+    const float *q;
+
+    const float *pq_l1_tab, *pq_l2_tab;
+
+    explicit Distance2Level(const Index2Layer& storage)
+        : storage(storage) {
+        d = storage.d;
+        FAISS_ASSERT(storage.pq.dsub == 4);
+        pq_l2_tab = storage.pq.centroids.data();
+        buf.resize(2 * d);
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        storage.reconstruct(i, buf.data());
+        storage.reconstruct(j, buf.data() + d);
+        return fvec_L2sqr(buf.data() + d, buf.data(), d);
+    }
+
+    void set_query(const float *x) override {
+        q = x;
+    }
+};
+
+// well optimized for xNN+PQNN
+struct DistanceXPQ4 : Distance2Level {
+
+    int M, k;
+
+    explicit DistanceXPQ4(const Index2Layer& storage)
+        : Distance2Level (storage) {
+        const IndexFlat *quantizer =
+            dynamic_cast<IndexFlat*> (storage.q1.quantizer);
+
+        FAISS_ASSERT(quantizer);
+        M = storage.pq.M;
+        pq_l1_tab = quantizer->xb.data();
+    }
+
+    float operator () (idx_t i) override {
+#ifdef __SSE__
+        const uint8_t *code = storage.codes.data() + i * storage.code_size;
+        long key = 0;
+        memcpy (&key, code, storage.code_size_1);
+        code += storage.code_size_1;
+
+        // walking pointers
+        const float *qa = q;
+        const __m128 *l1_t = (const __m128 *)(pq_l1_tab + d * key);
+        const __m128 *pq_l2_t = (const __m128 *)pq_l2_tab;
+        __m128 accu = _mm_setzero_ps();
+
+        for (int m = 0; m < M; m++) {
+            __m128 qi = _mm_loadu_ps(qa);
+            __m128 recons = l1_t[m] + pq_l2_t[*code++];
+            __m128 diff = qi - recons;
+            accu += diff * diff;
+            pq_l2_t += 256;
+            qa += 4;
+        }
+
+        accu = _mm_hadd_ps (accu, accu);
+        accu = _mm_hadd_ps (accu, accu);
+        return  _mm_cvtss_f32 (accu);
+#else
+        FAISS_THROW_MSG("not implemented for non-x64 platforms");
+#endif
+    }
+
+};
+
+// well optimized for 2xNN+PQNN
+struct Distance2xXPQ4 : Distance2Level {
+
+    int M_2, mi_nbits;
+
+    explicit Distance2xXPQ4(const Index2Layer& storage)
+        : Distance2Level(storage) {
+        const MultiIndexQuantizer *mi =
+            dynamic_cast<MultiIndexQuantizer*> (storage.q1.quantizer);
+
+        FAISS_ASSERT(mi);
+        FAISS_ASSERT(storage.pq.M % 2 == 0);
+        M_2 = storage.pq.M / 2;
+        mi_nbits = mi->pq.nbits;
+        pq_l1_tab = mi->pq.centroids.data();
+    }
+
+    float operator () (idx_t i) override {
+        const uint8_t *code = storage.codes.data() + i * storage.code_size;
+        long key01 = 0;
+        memcpy (&key01, code, storage.code_size_1);
+        code += storage.code_size_1;
+#ifdef __SSE__
+
+        // walking pointers
+        const float *qa = q;
+        const __m128 *pq_l1_t = (const __m128 *)pq_l1_tab;
+        const __m128 *pq_l2_t = (const __m128 *)pq_l2_tab;
+        __m128 accu = _mm_setzero_ps();
+
+        for (int mi_m = 0; mi_m < 2; mi_m++) {
+            long l1_idx = key01 & ((1L << mi_nbits) - 1);
+            const __m128 * pq_l1 = pq_l1_t + M_2 * l1_idx;
+
+            for (int m = 0; m < M_2; m++) {
+                __m128 qi = _mm_loadu_ps(qa);
+                __m128 recons = pq_l1[m] + pq_l2_t[*code++];
+                __m128 diff = qi - recons;
+                accu += diff * diff;
+                pq_l2_t += 256;
+                qa += 4;
+            }
+            pq_l1_t += M_2 << mi_nbits;
+            key01 >>= mi_nbits;
+        }
+        accu = _mm_hadd_ps (accu, accu);
+        accu = _mm_hadd_ps (accu, accu);
+        return  _mm_cvtss_f32 (accu);
+#else
+        FAISS_THROW_MSG("not implemented for non-x64 platforms");
+#endif
+    }
+
+};
+
+
+}  // namespace
+
+
+DistanceComputer * Index2Layer::get_distance_computer() const {
+#ifdef __SSE__
+    const MultiIndexQuantizer *mi =
+        dynamic_cast<MultiIndexQuantizer*> (q1.quantizer);
+
+    if (mi && pq.M % 2 == 0 && pq.dsub == 4) {
+        return new Distance2xXPQ4(*this);
+    }
+
+    const IndexFlat *fl =
+        dynamic_cast<IndexFlat*> (q1.quantizer);
+
+    if (fl && pq.dsub == 4) {
+        return new DistanceXPQ4(*this);
+    }
+#endif
+
+    return Index::get_distance_computer();
 }
 
 

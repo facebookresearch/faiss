@@ -74,6 +74,15 @@ class TestClustering(unittest.TestCase):
 
         self.assertGreater(obj1[-1], obj10[-1])
 
+    def test_1ptpercluster(self):
+        # https://github.com/facebookresearch/faiss/issues/842
+        X = np.random.randint(0, 1, (5, 10)).astype('float32')
+        k = 5
+        niter = 10
+        verbose = True
+        kmeans = faiss.Kmeans(X.shape[1], k, niter=niter, verbose=verbose)
+        kmeans.train(X)
+        l2_distances, I = kmeans.index.search(X, 1)
 
 
 class TestPCA(unittest.TestCase):
@@ -420,10 +429,6 @@ class TestScalarQuantizer(unittest.TestCase):
                     dis = ((y[i] - x2[I[i, j]]) ** 2).sum()
                     print(dis, D[i, j])
                     assert abs(D[i, j] - dis) / dis < 1e-5
-
-
-
-
 
 
 if __name__ == '__main__':

@@ -87,7 +87,7 @@ struct OperatingPoint {
     double perf;     ///< performance measure (output of a Criterion)
     double t;        ///< corresponding execution time (ms)
     std::string key; ///< key that identifies this op pt
-    long cno;        ///< integer identifer
+    int64_t cno;        ///< integer identifer
 };
 
 struct OperatingPoints {

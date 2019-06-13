@@ -55,7 +55,7 @@ void IndexBinaryFlat::search(idx_t n, const uint8_t *x, idx_t k,
   }
 }
 
-long IndexBinaryFlat::remove_ids(const IDSelector& sel) {
+size_t IndexBinaryFlat::remove_ids(const IDSelector& sel) {
   idx_t j = 0;
   for (idx_t i = 0; i < ntotal; i++) {
     if (sel.is_member(i)) {

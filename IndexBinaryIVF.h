@@ -151,8 +151,7 @@ struct IndexBinaryIVF : IndexBinary {
 
 
     /// Dataset manipulation functions
-
-    long remove_ids(const IDSelector& sel) override;
+    size_t remove_ids(const IDSelector& sel) override;
 
     /** moves the entries from another dataset to self. On output,
      * other is empty. add_id is added to all moved ids (for

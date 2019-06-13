@@ -123,7 +123,7 @@ struct IndexBinary {
 
   /** Removes IDs from the index. Not supported by all indexes.
    */
-  virtual long remove_ids(const IDSelector& sel);
+  virtual size_t remove_ids(const IDSelector& sel);
 
   /** Reconstruct a stored vector.
    *

@@ -166,7 +166,7 @@ struct IndexIVFPQR: IndexIVFPQ {
 
     void reset() override;
 
-    long remove_ids(const IDSelector& sel) override;
+    size_t remove_ids(const IDSelector& sel) override;
 
     /// trains the two product quantizers
     void train_residual(idx_t n, const float* x) override;
@@ -243,6 +243,8 @@ struct Index2Layer: Index {
     void reconstruct(idx_t key, float* recons) const override;
 
     void reset() override;
+
+    DistanceComputer * get_distance_computer() const override;
 
     /// transfer the flat codes to an IVFPQ index
     void transfer_to_IVFPQ(IndexIVFPQ & other) const;

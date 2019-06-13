@@ -214,7 +214,7 @@ void IndexBinaryIVF::reset() {
   ntotal = 0;
 }
 
-long IndexBinaryIVF::remove_ids(const IDSelector& sel) {
+size_t IndexBinaryIVF::remove_ids(const IDSelector& sel) {
   FAISS_THROW_IF_NOT_MSG(!maintain_direct_map,
                          "direct map remove not implemented");
 

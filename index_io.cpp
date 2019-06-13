@@ -210,6 +210,9 @@ static void write_index_header (const Index *idx, IOWriter *f) {
     WRITE1 (dummy);
     WRITE1 (idx->is_trained);
     WRITE1 (idx->metric_type);
+    if (idx->metric_type > 1) {
+        WRITE1 (idx->metric_arg);
+    }
 }
 
 void write_VectorTransform (const VectorTransform *vt, IOWriter *f) {
@@ -567,6 +570,9 @@ static void read_index_header (Index *idx, IOReader *f) {
     READ1 (dummy);
     READ1 (idx->is_trained);
     READ1 (idx->metric_type);
+    if (idx->metric_type > 1) {
+        READ1 (idx->metric_arg);
+    }
     idx->verbose = false;
 }
 
@@ -1268,6 +1274,16 @@ void write_index_binary (const IndexBinary *idx, IOWriter *f) {
         write_index_binary_header (idxhnsw, f);
         write_HNSW (&idxhnsw->hnsw, f);
         write_index_binary (idxhnsw->storage, f);
+    } else if(const IndexBinaryIDMap * idxmap =
+              dynamic_cast<const IndexBinaryIDMap *> (idx)) {
+        uint32_t h =
+            dynamic_cast<const IndexBinaryIDMap2 *> (idx) ? fourcc ("IBM2") :
+            fourcc ("IBMp");
+        // no need to store additional info for IndexIDMap2
+        WRITE1 (h);
+        write_index_binary_header (idxmap, f);
+        write_index_binary (idxmap->index, f);
+        WRITEVECTOR (idxmap->id_map);
     } else {
         FAISS_THROW_MSG ("don't know how to serialize this type of index");
     }
@@ -1339,6 +1355,18 @@ IndexBinary *read_index_binary (IOReader *f, int io_flags) {
         idxhnsw->storage = read_index_binary (f, io_flags);
         idxhnsw->own_fields = true;
         idx = idxhnsw;
+    } else if(h == fourcc ("IBMp") || h == fourcc ("IBM2")) {
+        bool is_map2 = h == fourcc ("IBM2");
+        IndexBinaryIDMap * idxmap = is_map2 ?
+            new IndexBinaryIDMap2 () : new IndexBinaryIDMap ();
+        read_index_binary_header (idxmap, f);
+        idxmap->index = read_index_binary (f, io_flags);
+        idxmap->own_fields = true;
+        READVECTOR (idxmap->id_map);
+        if (is_map2) {
+            static_cast<IndexBinaryIDMap2*>(idxmap)->construct_rev_map ();
+        }
+        idx = idxmap;
     } else {
         FAISS_THROW_FMT("Index type 0x%08x not supported\n", h);
         idx = nullptr;

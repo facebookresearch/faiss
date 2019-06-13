@@ -114,6 +114,38 @@ class TestRemove(unittest.TestCase):
             else:
                 assert searchres[0] == idx[i]
 
+    def test_remove_id_map_binary(self):
+        sub_index = faiss.IndexBinaryFlat(40)
+        xb = np.zeros((10, 5), dtype='uint8')
+        xb[:, 0] = np.arange(10) + 100
+        index = faiss.IndexBinaryIDMap2(sub_index)
+        index.add_with_ids(xb, np.arange(10) + 1000)
+        assert index.reconstruct(1004)[0] == 104
+        index.remove_ids(np.array([1003]))
+        assert index.reconstruct(1004)[0] == 104
+        try:
+            index.reconstruct(1003)
+        except:
+            pass
+        else:
+            assert False, 'should have raised an exception'
+
+        # while we are there, let's test I/O as well...
+        _, tmpnam = tempfile.mkstemp()
+        try:
+            faiss.write_index_binary(index, tmpnam)
+            index = faiss.read_index_binary(tmpnam)
+        finally:
+            os.remove(tmpnam)
+
+        assert index.reconstruct(1004)[0] == 104
+        try:
+            index.reconstruct(1003)
+        except:
+            pass
+        else:
+            assert False, 'should have raised an exception'
+
 
 
 class TestRangeSearch(unittest.TestCase):
@@ -487,7 +519,8 @@ class TestRenameOndisk(unittest.TestCase):
                 assert False
 
             # read it with magic flag
-            index2 = faiss.read_index(dirname + '/1/aa.ivf', faiss.IO_FLAG_ONDISK_SAME_DIR)
+            index2 = faiss.read_index(dirname + '/1/aa.ivf',
+                                      faiss.IO_FLAG_ONDISK_SAME_DIR)
             D2, I2 = index2.search(xq, 10)
             assert np.all(I1 == I2)
 

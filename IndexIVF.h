@@ -223,7 +223,7 @@ struct IndexIVF: Index, Level1Quantizer {
 
     /// Dataset manipulation functions
 
-    idx_t remove_ids(const IDSelector& sel) override;
+    size_t remove_ids(const IDSelector& sel) override;
 
     /** check that the two indexes are compatible (ie, they are
      * trained in the same way and have the same

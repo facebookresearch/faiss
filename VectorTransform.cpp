@@ -1037,8 +1037,8 @@ void IndexPreTransform::reset () {
     ntotal = 0;
 }
 
-long IndexPreTransform::remove_ids (const IDSelector & sel) {
-    long nremove = index->remove_ids (sel);
+size_t IndexPreTransform::remove_ids (const IDSelector & sel) {
+    size_t nremove = index->remove_ids (sel);
     ntotal = index->ntotal;
     return nremove;
 }

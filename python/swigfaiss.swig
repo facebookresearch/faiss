@@ -14,7 +14,11 @@
 // SWIGPYTHON: Python-specific code
 // GPU_WRAPPER: also compile interfaces for GPU.
 
+#ifdef GPU_WRAPPER
+%module swigfaiss_gpu;
+#else
 %module swigfaiss;
+#endif
 
 // fbode SWIG fails on warnings, so make them non fatal
 #pragma SWIG nowarn=321
@@ -27,6 +31,7 @@
 
 typedef unsigned long uint64_t;
 typedef uint64_t size_t;
+typedef long int64_t ;
 typedef int int32_t;
 typedef unsigned char uint8_t;
 
@@ -97,6 +102,7 @@ extern "C" {
 
 #include "IVFlib.h"
 #include "utils.h"
+#include "distances.h"
 #include "Heap.h"
 #include "AuxIndexStructures.h"
 #include "OnDiskInvertedLists.h"
@@ -109,7 +115,53 @@ extern "C" {
 
 
 
- %}
+%}
+
+/********************************************************
+ * GIL manipulation and exception handling
+ ********************************************************/
+
+#ifdef SWIGPYTHON
+// %catches(faiss::FaissException);
+
+
+// Python-specific: release GIL by default for all functions
+%exception {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+        $action
+    } catch(faiss::FaissException & e) {
+        PyEval_RestoreThread(_save);
+
+        if (PyErr_Occurred()) {
+            // some previous code already set the error type.
+        } else {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+        }
+        SWIG_fail;
+    } catch(std::bad_alloc & ba) {
+        PyEval_RestoreThread(_save);
+        PyErr_SetString(PyExc_MemoryError, "std::bad_alloc");
+        SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+}
+
+#endif
+
+#ifdef SWIGLUA
+
+%exception {
+    try {
+        $action
+    } catch(faiss::FaissException & e) {
+        SWIG_Lua_pushferrstring(L, "C++ exception: %s", e.what());       \
+        goto fail;
+    }
+}
+
+#endif
+
 
 /*******************************************************************
  * Types of vectors we want to manipulate at the scripting language
@@ -151,8 +203,6 @@ namespace std {
 %template(ByteVectorVector) std::vector<std::vector<unsigned char> >;
 %template(LongVectorVector) std::vector<std::vector<long> >;
 
-
-
 #ifdef GPU_WRAPPER
 %template(GpuResourcesVector) std::vector<faiss::gpu::GpuResources*>;
 #endif
@@ -162,48 +212,9 @@ namespace std {
 // produces an error on the Mac
 %ignore faiss::hamming;
 
-
 /*******************************************************************
  * Parse headers
  *******************************************************************/
-
-#ifdef SWIGPYTHON
-// %catches(faiss::FaissException);
-
-
-// Python-specific: release GIL by default for all functions
-%exception {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-        $action
-    } catch(faiss::FaissException & e) {
-        PyEval_RestoreThread(_save);
-
-        if (PyErr_Occurred()) {
-            // some previous code already set the error type.
-        } else {
-            PyErr_SetString(PyExc_RuntimeError, e.what());
-        }
-        SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-}
-
-#endif
-
-#ifdef SWIGLUA
-
-%exception {
-    try {
-        $action
-    } catch(faiss::FaissException & e) {
-        SWIG_Lua_pushferrstring(L, "C++ exception: %s", e.what());       \
-        goto fail;
-    }
-}
-
-#endif
-
 
 
 %ignore *::cmp;
@@ -262,6 +273,8 @@ int get_num_gpus()
 %include "Index.h"
 %include "Clustering.h"
 
+%include "distances.h"
+
 %ignore faiss::ProductQuantizer::get_centroids(size_t,size_t) const;
 
 %include "ProductQuantizer.h"
@@ -313,6 +326,10 @@ int get_num_gpus()
 
 
 %include "MetaIndexes.h"
+%template(IndexIDMap) faiss::IndexIDMapTemplate<faiss::Index>;
+%template(IndexBinaryIDMap) faiss::IndexIDMapTemplate<faiss::IndexBinary>;
+%template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
+%template(IndexBinaryIDMap2) faiss::IndexIDMap2Template<faiss::IndexBinary>;
 
 #ifdef GPU_WRAPPER
 
@@ -329,6 +346,15 @@ int get_num_gpus()
 %include "gpu/GpuIndexIVFFlat.h"
 %include "gpu/GpuIndexBinaryFlat.h"
 %include "gpu/GpuDistance.h"
+
+#ifdef SWIGLUA
+
+/// in Lua, swigfaiss_gpu is known as swigfaiss
+%luacode {
+local swigfaiss = swigfaiss_gpu
+}
+
+#endif
 
 
 #endif
@@ -478,7 +504,8 @@ struct AsyncIndexSearchC {
 
 // Subclasses should appear before their parent
 %typemap(out) faiss::Index * {
-    DOWNCAST ( IndexIDMap )
+    DOWNCAST2 ( IndexIDMap, IndexIDMapTemplateT_faiss__Index_t )
+    DOWNCAST2 ( IndexIDMap2, IndexIDMap2TemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
     DOWNCAST ( IndexIVFPQR )
@@ -522,6 +549,8 @@ struct AsyncIndexSearchC {
 
 %typemap(out) faiss::IndexBinary * {
     DOWNCAST2 ( IndexBinaryReplicas, IndexReplicasTemplateT_faiss__IndexBinary_t )
+    DOWNCAST2 ( IndexBinaryIDMap, IndexIDMapTemplateT_faiss__IndexBinary_t )
+    DOWNCAST2 ( IndexBinaryIDMap2, IndexIDMap2TemplateT_faiss__IndexBinary_t )
     DOWNCAST ( IndexBinaryIVF )
     DOWNCAST ( IndexBinaryFlat )
     DOWNCAST ( IndexBinaryFromFloat )
@@ -837,6 +866,7 @@ int * cast_integer_to_int_ptr (long x) {
 %ignore faiss::IDSelectorBatch::bloom;
 
 %ignore faiss::InterruptCallback::instance;
+%ignore faiss::InterruptCallback::lock;
 %include "AuxIndexStructures.h"
 
 %{
@@ -884,10 +914,8 @@ struct MapLong2Long {
 %}
 
 %inline %{
-
     void wait() {
-        // in gdb
-        // set variable i = 1
+        // in gdb, use return to get out of this function
         for(int i = 0; i == 0; i += 0);
     }
  %}

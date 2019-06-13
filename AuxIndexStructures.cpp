@@ -233,7 +233,7 @@ bool IDSelectorRange::is_member (idx_t id) const
  * IDSelectorBatch
  ***********************************************************************/
 
-IDSelectorBatch::IDSelectorBatch (long n, const idx_t *indices)
+IDSelectorBatch::IDSelectorBatch (size_t n, const idx_t *indices)
 {
     nbits = 0;
     while (n > (1L << nbits)) nbits++;
@@ -243,7 +243,7 @@ IDSelectorBatch::IDSelectorBatch (long n, const idx_t *indices)
     mask = (1L << nbits) - 1;
     bloom.resize (1UL << (nbits - 3), 0);
     for (long i = 0; i < n; i++) {
-        long id = indices[i];
+        Index::idx_t id = indices[i];
         set.insert(id);
         id &= mask;
         bloom[id >> 3] |= 1 << (id & 7);
@@ -304,6 +304,12 @@ size_t VectorIOReader::operator()(
 
 std::unique_ptr<InterruptCallback> InterruptCallback::instance;
 
+std::mutex InterruptCallback::lock;
+
+void InterruptCallback::clear_instance () {
+    delete instance.release ();
+}
+
 void InterruptCallback::check () {
     if (!instance.get()) {
         return;
@@ -317,6 +323,7 @@ bool InterruptCallback::is_interrupted () {
     if (!instance.get()) {
         return false;
     }
+    std::lock_guard<std::mutex> guard(lock);
     return instance->want_interrupt();
 }
 

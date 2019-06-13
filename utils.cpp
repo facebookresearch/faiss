@@ -20,8 +20,6 @@
 
 #include <omp.h>
 
-#include <immintrin.h>
-
 #include <algorithm>
 #include <vector>
 
@@ -108,7 +106,7 @@ size_t get_mem_usage_kb ()
  * Random data generation functions
  **************************************************/
 
-RandomGenerator::RandomGenerator (long seed)
+RandomGenerator::RandomGenerator (int64_t seed)
     : mt((unsigned int)seed) {}
 
 int RandomGenerator::rand_int ()
@@ -116,9 +114,9 @@ int RandomGenerator::rand_int ()
     return mt() & 0x7fffffff;
 }
 
-long RandomGenerator::rand_long ()
+int64_t RandomGenerator::rand_int64 ()
 {
-    return long(rand_int()) | long(rand_int()) << 31;
+    return int64_t(rand_int()) | int64_t(rand_int()) << 31;
 }
 
 int RandomGenerator::rand_int (int max)
@@ -145,7 +143,7 @@ double RandomGenerator::rand_double ()
 
 /* Generate a set of random floating point values such that x[i] in [0,1]
    multi-threading. For this reason, we rely on re-entreant functions.  */
-void float_rand (float * x, size_t n, long seed)
+void float_rand (float * x, size_t n, int64_t seed)
 {
     // only try to parallelize on large enough arrays
     const size_t nblock = n < 1024 ? 1 : 1024;
@@ -167,7 +165,7 @@ void float_rand (float * x, size_t n, long seed)
 }
 
 
-void float_randn (float * x, size_t n, long seed)
+void float_randn (float * x, size_t n, int64_t seed)
 {
     // only try to parallelize on large enough arrays
     const size_t nblock = n < 1024 ? 1 : 1024;
@@ -204,7 +202,7 @@ void float_randn (float * x, size_t n, long seed)
 
 
 /* Integer versions */
-void long_rand (long * x, size_t n, long seed)
+void int64_rand (int64_t * x, size_t n, int64_t seed)
 {
     // only try to parallelize on large enough arrays
     const size_t nblock = n < 1024 ? 1 : 1024;
@@ -220,13 +218,13 @@ void long_rand (long * x, size_t n, long seed)
         const size_t istart = j * n / nblock;
         const size_t iend = (j + 1) * n / nblock;
         for (size_t i = istart; i < iend; i++)
-            x[i] = rng.rand_long ();
+            x[i] = rng.rand_int64 ();
     }
 }
 
 
 
-void rand_perm (int *perm, size_t n, long seed)
+void rand_perm (int *perm, size_t n, int64_t seed)
 {
     for (size_t i = 0; i < n; i++) perm[i] = i;
 
@@ -241,7 +239,7 @@ void rand_perm (int *perm, size_t n, long seed)
 
 
 
-void byte_rand (uint8_t * x, size_t n, long seed)
+void byte_rand (uint8_t * x, size_t n, int64_t seed)
 {
     // only try to parallelize on large enough arrays
     const size_t nblock = n < 1024 ? 1 : 1024;
@@ -259,7 +257,7 @@ void byte_rand (uint8_t * x, size_t n, long seed)
 
         size_t i;
         for (i = istart; i < iend; i++)
-            x[i] = rng.rand_long ();
+            x[i] = rng.rand_int64 ();
     }
 }
 
@@ -402,11 +400,6 @@ void fvec_renorm_L2 (size_t d, size_t nx, float * __restrict x)
 
 
 
-
-
-
-
-
 /***************************************************************************
  * KNN functions
  ***************************************************************************/
@@ -422,6 +415,8 @@ static void knn_inner_product_sse (const float * x,
     size_t k = res->k;
     size_t check_period = InterruptCallback::get_period_hint (ny * d);
 
+    check_period *= omp_get_max_threads();
+
     for (size_t i0 = 0; i0 < nx; i0 += check_period) {
         size_t i1 = std::min(i0 + check_period, nx);
 
@@ -431,7 +426,7 @@ static void knn_inner_product_sse (const float * x,
             const float * y_j = y;
 
             float * __restrict simi = res->get_val(i);
-            long * __restrict idxi = res->get_ids (i);
+            int64_t * __restrict idxi = res->get_ids (i);
 
             minheap_heapify (k, simi, idxi);
 
@@ -460,6 +455,7 @@ static void knn_L2sqr_sse (
     size_t k = res->k;
 
     size_t check_period = InterruptCallback::get_period_hint (ny * d);
+    check_period *= omp_get_max_threads();
 
     for (size_t i0 = 0; i0 < nx; i0 += check_period) {
         size_t i1 = std::min(i0 + check_period, nx);
@@ -470,7 +466,7 @@ static void knn_L2sqr_sse (
             const float * y_j = y;
             size_t j;
             float * simi = res->get_val(i);
-            long * idxi = res->get_ids (i);
+            int64_t * idxi = res->get_ids (i);
 
             maxheap_heapify (k, simi, idxi);
             for (j = 0; j < ny; j++) {
@@ -581,7 +577,7 @@ static void knn_L2sqr_blas (const float * x,
 #pragma omp parallel for
             for (size_t i = i0; i < i1; i++) {
                 float * __restrict simi = res->get_val(i);
-                long * __restrict idxi = res->get_ids (i);
+                int64_t * __restrict idxi = res->get_ids (i);
                 const float *ip_line = ip_block + (i - i0) * (j1 - j0);
 
                 for (size_t j = j0; j < j1; j++) {
@@ -683,12 +679,12 @@ void knn_L2sqr_base_shift (
 void fvec_inner_products_by_idx (float * __restrict ip,
                                  const float * x,
                                  const float * y,
-                                 const long * __restrict ids, /* for y vecs */
+                                 const int64_t * __restrict ids, /* for y vecs */
                                  size_t d, size_t nx, size_t ny)
 {
 #pragma omp parallel for
     for (size_t j = 0; j < nx; j++) {
-        const long * __restrict idsj = ids + j * ny;
+        const int64_t * __restrict idsj = ids + j * ny;
         const float * xj = x + j * d;
         float * __restrict ipj = ip + j * ny;
         for (size_t i = 0; i < ny; i++) {
@@ -704,12 +700,12 @@ void fvec_inner_products_by_idx (float * __restrict ip,
 void fvec_L2sqr_by_idx (float * __restrict dis,
                         const float * x,
                         const float * y,
-                        const long * __restrict ids, /* ids of y vecs */
+                        const int64_t * __restrict ids, /* ids of y vecs */
                         size_t d, size_t nx, size_t ny)
 {
 #pragma omp parallel for
     for (size_t j = 0; j < nx; j++) {
-        const long * __restrict idsj = ids + j * ny;
+        const int64_t * __restrict idsj = ids + j * ny;
         const float * xj = x + j * d;
         float * __restrict disj = dis + j * ny;
         for (size_t i = 0; i < ny; i++) {
@@ -728,7 +724,7 @@ void fvec_L2sqr_by_idx (float * __restrict dis,
    indexed by ids. May be useful for re-ranking a pre-selected vector list */
 void knn_inner_products_by_idx (const float * x,
                                 const float * y,
-                                const long * ids,
+                                const int64_t * ids,
                                 size_t d, size_t nx, size_t ny,
                                 float_minheap_array_t * res)
 {
@@ -737,10 +733,10 @@ void knn_inner_products_by_idx (const float * x,
 #pragma omp parallel for
     for (size_t i = 0; i < nx; i++) {
         const float * x_ = x + i * d;
-        const long * idsi = ids + i * ny;
+        const int64_t * idsi = ids + i * ny;
         size_t j;
         float * __restrict simi = res->get_val(i);
-        long * __restrict idxi = res->get_ids (i);
+        int64_t * __restrict idxi = res->get_ids (i);
         minheap_heapify (k, simi, idxi);
 
         for (j = 0; j < ny; j++) {
@@ -759,7 +755,7 @@ void knn_inner_products_by_idx (const float * x,
 
 void knn_L2sqr_by_idx (const float * x,
                        const float * y,
-                       const long * __restrict ids,
+                       const int64_t * __restrict ids,
                        size_t d, size_t nx, size_t ny,
                        float_maxheap_array_t * res)
 {
@@ -768,9 +764,9 @@ void knn_L2sqr_by_idx (const float * x,
 #pragma omp parallel for
     for (size_t i = 0; i < nx; i++) {
         const float * x_ = x + i * d;
-        const long * __restrict idsi = ids + i * ny;
+        const int64_t * __restrict idsi = ids + i * ny;
         float * __restrict simi = res->get_val(i);
-        long * __restrict idxi = res->get_ids (i);
+        int64_t * __restrict idxi = res->get_ids (i);
         maxheap_heapify (res->k, simi, idxi);
         for (size_t j = 0; j < ny; j++) {
             float disij = fvec_L2sqr (x_, y + d * idsi[j], d);
@@ -885,56 +881,40 @@ static void range_search_sse (const float * x,
 {
     FAISS_THROW_IF_NOT (d % 4 == 0);
 
-    size_t check_period = InterruptCallback::get_period_hint (ny * d);
-    bool interrupted = false;
-
 #pragma omp parallel
     {
         RangeSearchPartialResult pres (res);
 
-        for (size_t i0 = 0; i0 < nx; i0 += check_period) {
-            size_t i1 = std::min(i0 + check_period, nx);
-
 #pragma omp for
-            for (size_t i = i0; i < i1; i++) {
-                const float * x_ = x + i * d;
-                const float * y_ = y;
-                size_t j;
+        for (size_t i = 0; i < nx; i++) {
+            const float * x_ = x + i * d;
+            const float * y_ = y;
+            size_t j;
 
-                RangeQueryResult & qres = pres.new_result (i);
+            RangeQueryResult & qres = pres.new_result (i);
 
-                for (j = 0; j < ny; j++) {
-                    if (compute_l2) {
-                        float disij = fvec_L2sqr (x_, y_, d);
-                        if (disij < radius) {
-                            qres.add (disij, j);
-                        }
-                    } else {
-                        float ip = fvec_inner_product (x_, y_, d);
-                        if (ip > radius) {
-                            qres.add (ip, j);
-                        }
+            for (j = 0; j < ny; j++) {
+                if (compute_l2) {
+                    float disij = fvec_L2sqr (x_, y_, d);
+                    if (disij < radius) {
+                        qres.add (disij, j);
                     }
-                    y_ += d;
+                } else {
+                    float ip = fvec_inner_product (x_, y_, d);
+                    if (ip > radius) {
+                        qres.add (ip, j);
+                    }
                 }
-
+                y_ += d;
             }
 
-            if (InterruptCallback::is_interrupted ()) {
-                interrupted = true;
-            }
-
-#pragma omp barrier
-            if (interrupted) {
-                break;
-            }
         }
         pres.finalize ();
     }
 
-    if (interrupted) {
-        FAISS_THROW_MSG ("computation interrupted");
-    }
+    // check just at the end because the use case is typically just
+    // when the nb of queries is low.
+    InterruptCallback::check();
 }
 
 
@@ -1018,11 +998,11 @@ void matrix_qr (int m, int n, float *a)
 }
 
 
-void pairwise_L2sqr (long d,
-                     long nq, const float *xq,
-                     long nb, const float *xb,
+void pairwise_L2sqr (int64_t d,
+                     int64_t nq, const float *xq,
+                     int64_t nb, const float *xb,
                      float *dis,
-                     long ldq, long ldb, long ldd)
+                     int64_t ldq, int64_t ldb, int64_t ldd)
 {
     if (nq == 0 || nb == 0) return;
     if (ldq == -1) ldq = d;
@@ -1033,19 +1013,19 @@ void pairwise_L2sqr (long d,
     float *b_norms = dis;
 
 #pragma omp parallel for
-    for (long i = 0; i < nb; i++)
+    for (int64_t i = 0; i < nb; i++)
         b_norms [i] = fvec_norm_L2sqr (xb + i * ldb, d);
 
 #pragma omp parallel for
-    for (long i = 1; i < nq; i++) {
+    for (int64_t i = 1; i < nq; i++) {
         float q_norm = fvec_norm_L2sqr (xq + i * ldq, d);
-        for (long j = 0; j < nb; j++)
+        for (int64_t j = 0; j < nb; j++)
             dis[i * ldd + j] = q_norm + b_norms [j];
     }
 
     {
         float q_norm = fvec_norm_L2sqr (xq, d);
-        for (long j = 0; j < nb; j++)
+        for (int64_t j = 0; j < nb; j++)
             dis[j] += q_norm;
     }
 
@@ -1061,10 +1041,7 @@ void pairwise_L2sqr (long d,
                 &one, dis, &lddi);
     }
 
-
 }
-
-
 
 /***************************************************************************
  * Kmeans subroutine
@@ -1077,7 +1054,7 @@ void pairwise_L2sqr (long d,
 /* For k-means, compute centroids given assignment of vectors to centroids */
 int km_update_centroids (const float * x,
                          float * centroids,
-                         long * assign,
+                         int64_t * assign,
                          size_t d, size_t k, size_t n,
                          size_t k_frozen)
 {
@@ -1098,7 +1075,7 @@ int km_update_centroids (const float * x,
         size_t nacc = 0;
 
         for (size_t i = 0; i < n; i++) {
-            long ci = assign[i];
+            int64_t ci = assign[i];
             assert (ci >= 0 && ci < k + k_frozen);
             ci -= k_frozen;
             if (ci >= c0 && ci < c1)  {
@@ -1169,7 +1146,7 @@ int km_update_centroids (const float * x,
  ***************************************************************************/
 
 
-void ranklist_handle_ties (int k, long *idx, const float *dis)
+void ranklist_handle_ties (int k, int64_t *idx, const float *dis)
 {
     float prev_dis = -1e38;
     int prev_i = -1;
@@ -1186,23 +1163,23 @@ void ranklist_handle_ties (int k, long *idx, const float *dis)
 }
 
 size_t merge_result_table_with (size_t n, size_t k,
-                                long *I0, float *D0,
-                                const long *I1, const float *D1,
+                                int64_t *I0, float *D0,
+                                const int64_t *I1, const float *D1,
                                 bool keep_min,
-                                long translation)
+                                int64_t translation)
 {
     size_t n1 = 0;
 
 #pragma omp parallel reduction(+:n1)
     {
-        std::vector<long> tmpI (k);
+        std::vector<int64_t> tmpI (k);
         std::vector<float> tmpD (k);
 
 #pragma omp for
         for (size_t i = 0; i < n; i++) {
-            long *lI0 = I0 + i * k;
+            int64_t *lI0 = I0 + i * k;
             float *lD0 = D0 + i * k;
-            const long *lI1 = I1 + i * k;
+            const int64_t *lI1 = I1 + i * k;
             const float *lD1 = D1 + i * k;
             size_t r0 = 0;
             size_t r1 = 0;
@@ -1250,15 +1227,15 @@ size_t merge_result_table_with (size_t n, size_t k,
 
 
 
-size_t ranklist_intersection_size (size_t k1, const long *v1,
-                                   size_t k2, const long *v2_in)
+size_t ranklist_intersection_size (size_t k1, const int64_t *v1,
+                                   size_t k2, const int64_t *v2_in)
 {
     if (k2 > k1) return ranklist_intersection_size (k2, v2_in, k1, v1);
-    long *v2 = new long [k2];
-    memcpy (v2, v2_in, sizeof (long) * k2);
+    int64_t *v2 = new int64_t [k2];
+    memcpy (v2, v2_in, sizeof (int64_t) * k2);
     std::sort (v2, v2 + k2);
     { // de-dup v2
-        long prev = -1;
+        int64_t prev = -1;
         size_t wp = 0;
         for (size_t i = 0; i < k2; i++) {
             if (v2 [i] != prev) {
@@ -1267,14 +1244,14 @@ size_t ranklist_intersection_size (size_t k1, const long *v1,
         }
         k2 = wp;
     }
-    const long seen_flag = 1L << 60;
+    const int64_t seen_flag = 1L << 60;
     size_t count = 0;
     for (size_t i = 0; i < k1; i++) {
-        long q = v1 [i];
+        int64_t q = v1 [i];
         size_t i0 = 0, i1 = k2;
         while (i0 + 1 < i1) {
             size_t imed = (i1 + i0) / 2;
-            long piv = v2 [imed] & ~seen_flag;
+            int64_t piv = v2 [imed] & ~seen_flag;
             if (piv <= q) i0 = imed;
             else          i1 = imed;
         }
@@ -1301,7 +1278,7 @@ double imbalance_factor (int k, const int *hist) {
 }
 
 
-double imbalance_factor (int n, int k, const long *assign) {
+double imbalance_factor (int n, int k, const int64_t *assign) {
     std::vector<int> hist(k, 0);
     for (int i = 0; i < n; i++) {
         hist[assign[i]]++;
@@ -1539,7 +1516,7 @@ void fvec_argsort_parallel (size_t n, const float *vals,
 
 const float *fvecs_maybe_subsample (
           size_t d, size_t *n, size_t nmax, const float *x,
-          bool verbose, long seed)
+          bool verbose, int64_t seed)
 {
 
     if (*n <= nmax) return x; // nothing to do
@@ -1552,7 +1529,7 @@ const float *fvecs_maybe_subsample (
     std::vector<int> subset (*n);
     rand_perm (subset.data (), *n, seed);
     float *x_subset = new float[n2 * d];
-    for (long i = 0; i < n2; i++)
+    for (int64_t i = 0; i < n2; i++)
         memcpy (&x_subset[i * d],
                 &x[subset[i] * size_t(d)],
                 sizeof (x[0]) * d);
@@ -1581,10 +1558,10 @@ void real_to_binary(size_t d, const float *x_in, uint8_t *x_out) {
 
 
 // from Python's stringobject.c
-uint64_t hash_bytes (const uint8_t *bytes, long n) {
+uint64_t hash_bytes (const uint8_t *bytes, int64_t n) {
     const uint8_t *p = bytes;
     uint64_t x = (uint64_t)(*p) << 7;
-    long len = n;
+    int64_t len = n;
     while (--len >= 0) {
         x = (1000003*x) ^ *p++;
     }
@@ -1594,42 +1571,42 @@ uint64_t hash_bytes (const uint8_t *bytes, long n) {
 
 
 bool check_openmp() {
-  omp_set_num_threads(10);
+    omp_set_num_threads(10);
 
-  if (omp_get_max_threads() != 10) {
-    return false;
-  }
+    if (omp_get_max_threads() != 10) {
+        return false;
+    }
 
-  std::vector<int> nt_per_thread(10);
-  size_t sum = 0;
-  bool in_parallel = true;
+    std::vector<int> nt_per_thread(10);
+    size_t sum = 0;
+    bool in_parallel = true;
 #pragma omp parallel reduction(+: sum)
-  {
-    if (!omp_in_parallel()) {
-      in_parallel = false;
-    }
+    {
+        if (!omp_in_parallel()) {
+            in_parallel = false;
+        }
 
-    int nt = omp_get_num_threads();
-    int rank = omp_get_thread_num();
+        int nt = omp_get_num_threads();
+        int rank = omp_get_thread_num();
 
-    nt_per_thread[rank] = nt;
+        nt_per_thread[rank] = nt;
 #pragma omp for
-    for(int i = 0; i < 1000 * 1000 * 10; i++) {
-      sum += i;
+        for(int i = 0; i < 1000 * 1000 * 10; i++) {
+            sum += i;
+        }
     }
-  }
 
-  if (!in_parallel) {
-    return false;
-  }
-  if (nt_per_thread[0] != 10) {
-    return false;
-  }
-  if (sum == 0) {
-    return false;
-  }
+    if (!in_parallel) {
+        return false;
+    }
+    if (nt_per_thread[0] != 10) {
+        return false;
+    }
+    if (sum == 0) {
+        return false;
+    }
 
-  return true;
+    return true;
 }
 
 } // namespace faiss
