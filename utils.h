@@ -20,7 +20,6 @@
 #include <random>
 #include <stdint.h>
 
-#include "Index.h"
 #include "Heap.h"
 
 
@@ -335,8 +334,8 @@ void ranklist_handle_ties (int k, int64_t *idx, const float *dis);
 /** count the number of comon elements between v1 and v2
  * algorithm = sorting + bissection to avoid double-counting duplicates
  */
-size_t ranklist_intersection_size (size_t k1, const Index::idx_t *v1,
-                                   size_t k2, const Index::idx_t *v2);
+size_t ranklist_intersection_size (size_t k1, const int64_t *v1,
+                                   size_t k2, const int64_t *v2);
 
 /** merge a result table into another one
  *

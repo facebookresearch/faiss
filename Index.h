@@ -69,7 +69,7 @@ struct DistanceComputer;
  * database-to-database queries are not implemented.
  */
 struct Index {
-    using idx_t = long;    ///< all indices are this type
+    using idx_t = int64_t;  ///< all indices are this type
     using component_t = float;
     using distance_t = float;
 
