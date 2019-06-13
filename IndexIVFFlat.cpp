@@ -262,7 +262,7 @@ void IndexIVFFlatDedup::train(idx_t n, const float* x)
 
 
 void IndexIVFFlatDedup::add_with_ids(
-           idx_t na, const float* x, const int64_t* xids)
+           idx_t na, const float* x, const idx_t* xids)
 {
 
     FAISS_THROW_IF_NOT (is_trained);

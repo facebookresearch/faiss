@@ -1800,7 +1800,7 @@ void IndexIVFScalarQuantizer::encode_vectors(idx_t n, const float* x,
 
 
 void IndexIVFScalarQuantizer::add_with_ids
-       (idx_t n, const float * x, const int64_t *xids)
+       (idx_t n, const float * x, const idx_t *xids)
 {
     FAISS_THROW_IF_NOT (is_trained);
     int64_t * idx = new int64_t [n];

@@ -75,7 +75,7 @@ struct IndexIVFFlatDedup: IndexIVFFlat {
     void train(idx_t n, const float* x) override;
 
     /// implemented for all IndexIVF* classes
-    void add_with_ids(idx_t n, const float* x, const int64_t* xids) override;
+    void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
 
     void search_preassigned (idx_t n, const float *x, idx_t k,
                              const idx_t *assign,

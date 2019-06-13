@@ -12,7 +12,7 @@
 
 
 #include <vector>
-
+#include <stdint.h>
 
 #include "Index.h"
 #include "InvertedLists.h"
@@ -217,7 +217,7 @@ struct IndexIVF: Index, Level1Quantizer {
      * the inv list offset is computed by search_preassigned() with
      * `store_pairs` set.
      */
-    virtual void reconstruct_from_offset (idx_t list_no, idx_t offset,
+    virtual void reconstruct_from_offset (int64_t list_no, int64_t offset,
                                           float* recons) const;
 
 

@@ -638,8 +638,8 @@ void IndexIVF::search_and_reconstruct (idx_t n, const float *x, idx_t k,
 }
 
 void IndexIVF::reconstruct_from_offset(
-    idx_t /*list_no*/,
-    idx_t /*offset*/,
+    int64_t /*list_no*/,
+    int64_t /*offset*/,
     float* /*recons*/) const {
   FAISS_THROW_MSG ("reconstruct_from_offset not implemented");
 }

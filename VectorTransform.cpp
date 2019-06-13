@@ -1000,7 +1000,7 @@ void IndexPreTransform::add (idx_t n, const float *x)
 }
 
 void IndexPreTransform::add_with_ids (idx_t n, const float * x,
-                                      const long *xids)
+                                      const idx_t *xids)
 {
     FAISS_THROW_IF_NOT (is_trained);
     const float *xt = apply_chain (n, x);
