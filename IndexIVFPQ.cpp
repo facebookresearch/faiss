@@ -310,7 +310,7 @@ void IndexIVFPQ::add_core_o (idx_t n, const float * x, const long *xids,
 }
 
 
-void IndexIVFPQ::reconstruct_from_offset (long list_no, long offset,
+void IndexIVFPQ::reconstruct_from_offset (int64_t list_no, int64_t offset,
                                           float* recons) const
 {
     const uint8_t* code = invlists->get_single_code (list_no, offset);
@@ -1227,7 +1227,7 @@ void IndexIVFPQR::train_residual (idx_t n, const float *x)
 }
 
 
-void IndexIVFPQR::add_with_ids (idx_t n, const float *x, const long *xids) {
+void IndexIVFPQR::add_with_ids (idx_t n, const float *x, const idx_t *xids) {
     add_core (n, x, xids, nullptr);
 }
 
@@ -1338,7 +1338,7 @@ void IndexIVFPQR::search_preassigned (idx_t n, const float *x, idx_t k,
     indexIVFPQ_stats.refine_cycles += TOC;
 }
 
-void IndexIVFPQR::reconstruct_from_offset (long list_no, long offset,
+void IndexIVFPQR::reconstruct_from_offset (int64_t list_no, int64_t offset,
                                            float* recons) const
 {
     IndexIVFPQ::reconstruct_from_offset (list_no, offset, recons);

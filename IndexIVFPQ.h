@@ -62,7 +62,7 @@ struct IndexIVFPQ: IndexIVF {
             Index * quantizer, size_t d, size_t nlist,
             size_t M, size_t nbits_per_idx);
 
-    void add_with_ids(idx_t n, const float* x, const long* xids = nullptr)
+    void add_with_ids(idx_t n, const float* x, const idx_t* xids = nullptr)
         override;
 
     void encode_vectors(idx_t n, const float* x,
@@ -82,7 +82,7 @@ struct IndexIVFPQ: IndexIVF {
     /// same as train_residual, also output 2nd level residuals
     void train_residual_o (idx_t n, const float *x, float *residuals_2);
 
-    void reconstruct_from_offset (long list_no, long offset,
+    void reconstruct_from_offset (int64_t list_no, int64_t offset,
                                   float* recons) const override;
 
     /** Find exact duplicates in the dataset.
@@ -177,7 +177,7 @@ struct IndexIVFPQR: IndexIVFPQ {
     void add_core (idx_t n, const float *x, const long *xids,
                      const long *precomputed_idx = nullptr);
 
-    void reconstruct_from_offset (long list_no, long offset,
+    void reconstruct_from_offset (int64_t list_no, int64_t offset,
                                   float* recons) const override;
 
     void merge_from (IndexIVF &other, idx_t add_id) override;
