@@ -146,7 +146,7 @@ void IndexIVF::add (idx_t n, const float * x)
 }
 
 
-void IndexIVF::add_with_ids (idx_t n, const float * x, const long *xids)
+void IndexIVF::add_with_ids (idx_t n, const float * x, const idx_t *xids)
 {
     // do some blocking to avoid excessive allocs
     idx_t bs = 65536;

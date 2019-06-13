@@ -33,7 +33,7 @@ struct IndexIVFFlat: IndexIVF {
                    const int64_t *precomputed_idx);
 
     /// implemented for all IndexIVF* classes
-    void add_with_ids(idx_t n, const float* x, const int64_t* xids) override;
+    void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
 
     void encode_vectors(idx_t n, const float* x,
                         const idx_t *list_nos,

@@ -33,7 +33,7 @@ IndexIVFFlat::IndexIVFFlat (Index * quantizer,
 }
 
 
-void IndexIVFFlat::add_with_ids (idx_t n, const float * x, const int64_t *xids)
+void IndexIVFFlat::add_with_ids (idx_t n, const float * x, const idx_t *xids)
 {
     add_core (n, x, xids, nullptr);
 }

@@ -171,7 +171,7 @@ struct IndexIVFPQR: IndexIVFPQ {
     /// trains the two product quantizers
     void train_residual(idx_t n, const float* x) override;
 
-    void add_with_ids(idx_t n, const float* x, const long* xids) override;
+    void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
 
     /// same as add_with_ids, but optionally use the precomputed list ids
     void add_core (idx_t n, const float *x, const long *xids,
