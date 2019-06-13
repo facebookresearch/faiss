@@ -540,7 +540,8 @@ class OPQRelativeAccuracy(unittest.TestCase):
 
         # verify same on OIVFPQ
         for r in 1, 10, 100:
-            assert(e_oivfpq[r] > e_ivfpq[r])
+            print(e_oivfpq[r], e_ivfpq[r])
+            assert(e_oivfpq[r] >= e_ivfpq[r])
 
 
 class TestRoundoff(unittest.TestCase):
