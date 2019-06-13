@@ -1227,8 +1227,8 @@ size_t merge_result_table_with (size_t n, size_t k,
 
 
 
-size_t ranklist_intersection_size (size_t k1, const int64_t *v1,
-                                   size_t k2, const int64_t *v2_in)
+size_t ranklist_intersection_size (size_t k1, const Index::idx_t *v1,
+                                   size_t k2, const Index::idx_t *v2_in)
 {
     if (k2 > k1) return ranklist_intersection_size (k2, v2_in, k1, v1);
     int64_t *v2 = new int64_t [k2];
