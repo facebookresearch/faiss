@@ -168,7 +168,7 @@ void knn_extra_metrics_template (
             const float * y_j = y;
             size_t j;
             float * simi = res->get_val(i);
-            long * idxi = res->get_ids (i);
+            int64_t * idxi = res->get_ids (i);
 
             maxheap_heapify (k, simi, idxi);
             for (j = 0; j < ny; j++) {

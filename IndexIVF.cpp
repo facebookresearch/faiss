@@ -181,9 +181,9 @@ void IndexIVF::add_with_ids (idx_t n, const float * x, const idx_t *xids)
 
         // each thread takes care of a subset of lists
         for (size_t i = 0; i < n; i++) {
-            long list_no = idx [i];
+            idx_t list_no = idx [i];
             if (list_no >= 0 && list_no % nt == rank) {
-                long id = xids ? xids[i] : ntotal + i;
+                idx_t id = xids ? xids[i] : ntotal + i;
                 invlists->add_entry (list_no, id,
                                      flat_codes.get() + i * code_size);
                 nadd++;
@@ -228,19 +228,17 @@ void IndexIVF::make_direct_map (bool new_maintain_direct_map)
 void IndexIVF::search (idx_t n, const float *x, idx_t k,
                          float *distances, idx_t *labels) const
 {
-    long * idx = new long [n * nprobe];
-    ScopeDeleter<long> del (idx);
-    float * coarse_dis = new float [n * nprobe];
-    ScopeDeleter<float> del2 (coarse_dis);
+    std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
+    std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
 
     double t0 = getmillisecs();
-    quantizer->search (n, x, nprobe, coarse_dis, idx);
+    quantizer->search (n, x, nprobe, coarse_dis.get(), idx.get());
     indexIVF_stats.quantization_time += getmillisecs() - t0;
 
     t0 = getmillisecs();
-    invlists->prefetch_lists (idx, n * nprobe);
+    invlists->prefetch_lists (idx.get(), n * nprobe);
 
-    search_preassigned (n, x, k, idx, coarse_dis,
+    search_preassigned (n, x, k, idx.get(), coarse_dis.get(),
                         distances, labels, false);
     indexIVF_stats.search_time += getmillisecs() - t0;
 }

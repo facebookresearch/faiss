@@ -965,15 +965,15 @@ void IndexHNSW2Level::search (idx_t n, const float *x, idx_t k,
 
         int nprobe = index_ivfpq->nprobe;
 
-        long * coarse_assign = new long [n * nprobe];
-        ScopeDeleter<long> del (coarse_assign);
-        float * coarse_dis = new float [n * nprobe];
-        ScopeDeleter<float> del2 (coarse_dis);
+        std::unique_ptr<idx_t[]> coarse_assign(new idx_t[n * nprobe]);
+        std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
 
-        index_ivfpq->quantizer->search (n, x, nprobe, coarse_dis, coarse_assign);
+        index_ivfpq->quantizer->search (n, x, nprobe, coarse_dis.get(),
+                                        coarse_assign.get());
 
-        index_ivfpq->search_preassigned (
-            n, x, k, coarse_assign, coarse_dis, distances, labels, false);
+        index_ivfpq->search_preassigned (n, x, k, coarse_assign.get(),
+                                         coarse_dis.get(), distances, labels,
+                                         false);
 
 #pragma omp parallel
         {
