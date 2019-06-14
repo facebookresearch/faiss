@@ -71,7 +71,7 @@ FAISS_DECLARE_CLASS(IDSelectorBatch)
 FAISS_DECLARE_GETTER(IDSelectorBatch, int, nbits)
 FAISS_DECLARE_GETTER(IDSelectorBatch, idx_t, mask)
 
-int faiss_IDSelectorBatch_new(FaissIDSelectorBatch** p_sel, long n, const idx_t* indices);
+int faiss_IDSelectorBatch_new(FaissIDSelectorBatch** p_sel, size_t n, const idx_t* indices);
 
 // Below are structures used only by Index implementations
 

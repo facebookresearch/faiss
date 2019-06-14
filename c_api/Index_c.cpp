@@ -36,7 +36,7 @@ int faiss_Index_add(FaissIndex* index, idx_t n, const float* x) {
     } CATCH_AND_HANDLE
 }
 
-int faiss_Index_add_with_ids(FaissIndex* index, idx_t n, const float* x, const long* xids) {
+int faiss_Index_add_with_ids(FaissIndex* index, idx_t n, const float* x, const idx_t* xids) {
     try {
         reinterpret_cast<faiss::Index*>(index)->add_with_ids(n, x, xids);
     } CATCH_AND_HANDLE
@@ -69,10 +69,10 @@ int faiss_Index_reset(FaissIndex* index) {
     } CATCH_AND_HANDLE
 }
 
-int faiss_Index_remove_ids(FaissIndex* index, const FaissIDSelector* sel, long* n_removed) {
+int faiss_Index_remove_ids(FaissIndex* index, const FaissIDSelector* sel, size_t* n_removed) {
     try {
-        long n = reinterpret_cast<faiss::Index*>(index)->remove_ids(
-            *reinterpret_cast<const faiss::IDSelector*>(sel));
+        size_t n {reinterpret_cast<faiss::Index*>(index)->remove_ids(
+            *reinterpret_cast<const faiss::IDSelector*>(sel))};
         if (n_removed) {
             *n_removed = n;
         }

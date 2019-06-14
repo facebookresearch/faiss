@@ -37,7 +37,7 @@ int faiss_IndexIVFFlat_new_with_metric(
     FaissMetricType metric);
 
 int faiss_IndexIVFFlat_add_core(FaissIndexIVFFlat* index, idx_t n, 
-    const float * x, const long *xids, const long *precomputed_idx);
+    const float * x, const idx_t *xids, const int64_t *precomputed_idx);
 
 /** Update a subset of vectors.
  *

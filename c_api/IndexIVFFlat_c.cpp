@@ -48,7 +48,7 @@ int faiss_IndexIVFFlat_new_with_metric(
 }
 
 int faiss_IndexIVFFlat_add_core(FaissIndexIVFFlat* index, idx_t n, 
-    const float * x, const long *xids, const long *precomputed_idx)
+    const float * x, const idx_t *xids, const int64_t *precomputed_idx)
 {
     try {
         reinterpret_cast<IndexIVFFlat*>(index)->add_core(n, x, xids, precomputed_idx);

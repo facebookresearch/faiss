@@ -70,8 +70,8 @@ int faiss_IndexIVF_merge_from(
  *                      elements are left before and a2 elements are after
  */
 int faiss_IndexIVF_copy_subset_to(
-    const FaissIndexIVF* index, FaissIndexIVF* other, int subset_type, long a1,
-    long a2);
+    const FaissIndexIVF* index, FaissIndexIVF* other, int subset_type, idx_t a1,
+    idx_t a2);
 
 /** search a set of vectors, that are pre-quantized by the IVF
  *  quantizer. Fill in the corresponding heaps with the query

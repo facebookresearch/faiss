@@ -48,8 +48,8 @@ int faiss_IndexIVF_merge_from(
 }
 
 int faiss_IndexIVF_copy_subset_to(
-    const FaissIndexIVF* index, FaissIndexIVF* other, int subset_type, long a1,
-    long a2) {
+    const FaissIndexIVF* index, FaissIndexIVF* other, int subset_type, idx_t a1,
+    idx_t a2) {
     try {
         reinterpret_cast<const IndexIVF*>(index)->copy_subset_to(
             *reinterpret_cast<IndexIVF*>(other), subset_type, a1, a2);

@@ -32,7 +32,7 @@ int faiss_IndexIDMap_new(FaissIndexIDMap** p_index, FaissIndex* index);
  * @param p_id_map    output, the pointer to the beginning of `id_map`.
  * @param p_size  output, the current length of `id_map`.
  */
-void faiss_IndexIDMap_id_map(FaissIndexIDMap* index, long** p_id_map, size_t* p_size);
+void faiss_IndexIDMap_id_map(FaissIndexIDMap* index, idx_t** p_id_map, size_t* p_size);
 
 /** same as IndexIDMap but also provides an efficient reconstruction
     implementation via a 2-way index */

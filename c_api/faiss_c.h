@@ -13,7 +13,12 @@
 #ifndef FAISS_C_H
 #define FAISS_C_H
 
-typedef long idx_t;    ///< all indices are this type
+#include <stdint.h>
+
+typedef int64_t faiss_idx_t;    ///< all indices are this type
+typedef faiss_idx_t idx_t;
+typedef float faiss_component_t;    ///< all vector components are this type
+typedef float faiss_distance_t;    ///< all distances between vectors are this type
 
 /// Declare an opaque type for a class type `clazz`.
 #define FAISS_DECLARE_CLASS(clazz) \

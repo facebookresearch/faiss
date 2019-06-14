@@ -61,7 +61,7 @@ int main() {
     int k = 5;
 
     {       // sanity check: search 5 first vectors of xb
-        long *I = malloc(k * 5 * sizeof(long));
+        idx_t *I = malloc(k * 5 * sizeof(idx_t));
         float *D = malloc(k * 5 * sizeof(float));
         FAISS_TRY(faiss_Index_search(index, 5, xb, k, D, I));
         printf("I=\n");
@@ -73,7 +73,7 @@ int main() {
         free(D);
     }
     {       // search xq
-        long *I = malloc(k * nq * sizeof(long));
+        idx_t *I = malloc(k * nq * sizeof(idx_t));
         float *D = malloc(k * nq * sizeof(float));
         FAISS_TRY(faiss_Index_search(index, 5, xb, k, D, I));
         printf("I=\n");
