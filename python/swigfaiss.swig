@@ -28,12 +28,7 @@
 #pragma SWIG nowarn=341
 #pragma SWIG nowarn=512
 
-
-typedef unsigned long uint64_t;
-typedef uint64_t size_t;
-typedef long int64_t ;
-typedef int int32_t;
-typedef unsigned char uint8_t;
+#include <stdint.i>
 
 #define __restrict
 

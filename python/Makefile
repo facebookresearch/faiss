@@ -6,7 +6,7 @@
 -include ../makefile.inc
 
 ifneq ($(strip $(NVCC)),)
-	SWIGFLAGS = -DGPU_WRAPPER
+	SWIGFLAGS += -DGPU_WRAPPER
 endif
 
 all: build
