@@ -36,6 +36,9 @@ bin/example_c: example_c.c $(CLIBNAME).$(SHAREDEXT)
 clean:
 	rm -f $(CLIBNAME).a $(CLIBNAME).$(SHAREDEXT)* *.o bin/example_c
 
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -c $< -o $@
+
 # Dependencies
 
 error_impl.o: CXXFLAGS += -I.. $(DEBUGFLAG)

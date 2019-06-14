@@ -40,6 +40,9 @@ bin/example_gpu_c: example_gpu_c.c $(CLIBNAME).$(SHAREDEXT)
 clean:
 	rm -f $(CLIBNAME).a $(CLIBNAME).$(SHAREDEXT)* *.o bin/example_gpu_c
 
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -c $< -o $@
+
 # Dependencies
 
 GpuAutoTune_c.o: CXXFLAGS += -I.. -I../.. $(CUDACFLAGS) $(DEBUGFLAG)
