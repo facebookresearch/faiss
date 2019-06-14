@@ -13,6 +13,9 @@
 #include <cstdio>
 #include <cassert>
 #include <stdint.h>
+#ifdef __SSE__
+#include <immintrin.h>
+#endif
 
 #include <algorithm>
 
