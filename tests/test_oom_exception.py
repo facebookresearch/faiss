@@ -5,6 +5,7 @@
 
 #! /usr/bin/env python2
 
+import sys
 import faiss
 import unittest
 import resource
@@ -12,6 +13,10 @@ import resource
 class TestOOMException(unittest.TestCase):
 
     def test_outrageous_alloc(self):
+        # Disable test on OSX.
+        if sys.platform == "darwin":
+            return
+
         # https://github.com/facebookresearch/faiss/issues/758
         soft_as, hard_as = resource.getrlimit(resource.RLIMIT_AS)
         # make sure that allocing more than 10G will fail
