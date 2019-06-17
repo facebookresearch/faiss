@@ -25,6 +25,7 @@
 #pragma SWIG nowarn=512
 
 %include <stdint.i>
+typedef int64_t size_t;
 
 #define __restrict
 
@@ -746,13 +747,8 @@ PyObject * rev_swig_ptr(ctype *src, size_t size);
 REV_SWIG_PTR(float, NPY_FLOAT32);
 REV_SWIG_PTR(int, NPY_INT32);
 REV_SWIG_PTR(unsigned char, NPY_UINT8);
-#ifdef SWIGWORDSIZE64
-REV_SWIG_PTR(long, NPY_INT64);
-REV_SWIG_PTR(unsigned long, NPY_UINT64);
-#else
-REV_SWIG_PTR(long long, NPY_INT64);
-REV_SWIG_PTR(unsigned long long, NPY_UINT64);
-#endif
+REV_SWIG_PTR(int64_t, NPY_INT64);
+REV_SWIG_PTR(uint64_t, NPY_UINT64);
 
 #endif
 
@@ -890,16 +886,16 @@ void ignore_SIGTTIN();
 // represents not found values as -1 like in the Index implementation
 
 struct MapLong2Long {
-    std::unordered_map<long, long> map;
+    std::unordered_map<int64_t, int64_t> map;
 
-    void add(size_t n, const long *keys, const long *vals) {
+    void add(size_t n, const int64_t *keys, const int64_t *vals) {
         map.reserve(map.size() + n);
         for (size_t i = 0; i < n; i++) {
             map[keys[i]] = vals[i];
         }
     }
 
-    long search(long key) {
+    long search(int64_t key) {
         if (map.count(key) == 0) {
             return -1;
         } else {
@@ -907,7 +903,7 @@ struct MapLong2Long {
         }
     }
 
-    void search_multiple(size_t n, const long *keys, long * vals) {
+    void search_multiple(size_t n, int64_t *keys, int64_t * vals) {
         for (size_t i = 0; i < n; i++) {
             vals[i] = search(keys[i]);
         }
