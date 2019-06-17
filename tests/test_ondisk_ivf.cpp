@@ -83,10 +83,10 @@ TEST(ONDISK, make_invlists) {
     int ntot = 0;
     for (int i = 0; i < nlist; i++) {
         int size = ivf.list_size(i);
-        const long *ids = ivf.get_ids (i);
+        const faiss::Index::idx_t *ids = ivf.get_ids (i);
         const uint8_t *codes = ivf.get_codes (i);
         for (int j = 0; j < size; j++) {
-            long id = ids[j];
+            faiss::Index::idx_t id = ids[j];
             const int * ar = (const int*)&codes[code_size * j];
             EXPECT_EQ (ar[0], id);
             EXPECT_EQ (ar[1], i);
@@ -204,10 +204,10 @@ TEST(ONDISK, make_invlists_threaded) {
     int ntot = 0;
     for (int i = 0; i < nlist; i++) {
         int size = ivf.list_size(i);
-        const long *ids = ivf.get_ids (i);
+        const faiss::Index::idx_t *ids = ivf.get_ids (i);
         const uint8_t *codes = ivf.get_codes (i);
         for (int j = 0; j < size; j++) {
-            long id = ids[j];
+            faiss::Index::idx_t id = ids[j];
             const int * ar = (const int*)&codes[code_size * j];
             EXPECT_EQ (ar[0], id);
             EXPECT_EQ (ar[1], i);

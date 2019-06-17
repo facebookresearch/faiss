@@ -90,7 +90,7 @@ void make_index_slices (const Index* trained_index,
         Index * index = sub_indexes.back().get();
 
         auto xb = make_data(nb * d);
-        std::vector<long> ids (nb);
+        std::vector<faiss::Index::idx_t> ids (nb);
         for (int j = 0; j < nb; j++) {
             ids[j] = lrand48();
         }
