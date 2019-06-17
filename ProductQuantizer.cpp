@@ -667,7 +667,7 @@ void ProductQuantizer::search (const float * __restrict x,
     std::unique_ptr<float[]> dis_tables(new float [nx * ksub * M]);
     compute_distance_tables (nx, x, dis_tables.get());
 
-    pq_knn_search_with_tables<CMax<float, idx_t>> (
+    pq_knn_search_with_tables<CMax<float, int64_t>> (
       *this, nbits, dis_tables.get(), codes, ncodes, res, init_finalize_heap);
 }
 
@@ -682,7 +682,7 @@ void ProductQuantizer::search_ip (const float * __restrict x,
     std::unique_ptr<float[]> dis_tables(new float [nx * ksub * M]);
     compute_inner_prod_tables (nx, x, dis_tables.get());
 
-    pq_knn_search_with_tables<CMin<float, idx_t> > (
+    pq_knn_search_with_tables<CMin<float, int64_t> > (
       *this, nbits, dis_tables.get(), codes, ncodes, res, init_finalize_heap);
 }
 
