@@ -804,16 +804,16 @@ TYPE_CONVERSION (uint8_t, ByteTensor)
 
 // answer: the same as the C++ typedefs, but we still have to redefine them
 
-%template() faiss::CMin<float, long>;
-%template() faiss::CMin<int, long>;
-%template() faiss::CMax<float, long>;
-%template() faiss::CMax<int, long>;
+%template() faiss::CMin<float, int64_t>;
+%template() faiss::CMin<int, int64_t>;
+%template() faiss::CMax<float, int64_t>;
+%template() faiss::CMax<int, int64_t>;
 
-%template(float_minheap_array_t) faiss::HeapArray<faiss::CMin<float, long> >;
-%template(int_minheap_array_t) faiss::HeapArray<faiss::CMin<int, long> >;
+%template(float_minheap_array_t) faiss::HeapArray<faiss::CMin<float, int64_t> >;
+%template(int_minheap_array_t) faiss::HeapArray<faiss::CMin<int, int64_t> >;
 
-%template(float_maxheap_array_t) faiss::HeapArray<faiss::CMax<float, long> >;
-%template(int_maxheap_array_t) faiss::HeapArray<faiss::CMax<int, long> >;
+%template(float_maxheap_array_t) faiss::HeapArray<faiss::CMax<float, int64_t> >;
+%template(int_maxheap_array_t) faiss::HeapArray<faiss::CMax<int, int64_t> >;
 
 
 /*******************************************************************
