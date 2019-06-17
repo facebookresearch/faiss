@@ -24,7 +24,7 @@
 #pragma SWIG nowarn=341
 #pragma SWIG nowarn=512
 
-#include <stdint.i>
+%include <stdint.i>
 
 #define __restrict
 
@@ -683,10 +683,18 @@ PyObject *swig_ptr (PyObject *a)
         return SWIG_NewPointerObj(data, SWIGTYPE_p_char, 0);
     }
     if(PyArray_TYPE(ao) == NPY_UINT64) {
+#ifdef SWIGWORDSIZE64
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long, 0);
+#else
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long_long, 0);
+#endif
     }
     if(PyArray_TYPE(ao) == NPY_INT64) {
+#ifdef SWIGWORDSIZE64
         return SWIG_NewPointerObj(data, SWIGTYPE_p_long, 0);
+#else
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_long_long, 0);
+#endif
     }
     PyErr_SetString(PyExc_ValueError, "did not recognize array type");
     return NULL;
@@ -738,9 +746,13 @@ PyObject * rev_swig_ptr(ctype *src, size_t size);
 REV_SWIG_PTR(float, NPY_FLOAT32);
 REV_SWIG_PTR(int, NPY_INT32);
 REV_SWIG_PTR(unsigned char, NPY_UINT8);
-REV_SWIG_PTR(unsigned long, NPY_UINT64);
+#ifdef SWIGWORDSIZE64
 REV_SWIG_PTR(long, NPY_INT64);
-
+REV_SWIG_PTR(unsigned long, NPY_UINT64);
+#else
+REV_SWIG_PTR(long long, NPY_INT64);
+REV_SWIG_PTR(unsigned long long, NPY_UINT64);
+#endif
 
 #endif
 
