@@ -14,6 +14,7 @@ matrix:
             - libblas-dev
             - liblapack-dev
             - python-numpy
+            - python-scipy
             - python-dev
 #            - swig3.0
       env:
@@ -26,6 +27,7 @@ matrix:
             - libatlas-base-dev
             - liblapack-dev
             - python-numpy
+            - python-scipy
             - python-dev
 #            - swig3.0
       env:
@@ -38,6 +40,7 @@ matrix:
             - libopenblas-dev
             - liblapack-dev
             - python-numpy
+            - python-scipy
             - python-dev
 #            - swig3.0
       env:
@@ -50,6 +53,7 @@ matrix:
             - libopenblas-dev
             - liblapack-dev
             - python-numpy
+            - python-scipy
             - python-dev
 #            - swig3.0
       env:
@@ -58,16 +62,16 @@ matrix:
         - LD_LIBRARY_PATH="/usr/local/clang/lib"
     - os: osx
       env:
-        - MATRIX_EVAL="brew update && brew install gcc@6 numpy swig; brew link --overwrite gcc@6; export CC=gcc-6 CXX=g++-6"
+        - MATRIX_EVAL="brew update && brew install gcc@6 numpy scipy swig; brew link --overwrite gcc@6; export CC=gcc-6 CXX=g++-6"
     - os: osx
       env:
-        - MATRIX_EVAL="brew update && brew install llvm numpy swig; brew link --overwrite llvm; export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++"
+        - MATRIX_EVAL="brew update && brew install llvm numpy scipy swig; brew link --overwrite llvm; export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++"
         - LDFLAGS="-L/usr/local/opt/llvm/lib"
         - CPPFLAGS="-I/usr/local/opt/llvm/include"
   allow_failures:
     - os: osx
       env:
-        - MATRIX_EVAL="brew update && brew install gcc@6 numpy swig; brew link --overwrite gcc@6; export CC=gcc-6 CXX=g++-6"
+        - MATRIX_EVAL="brew update && brew install gcc@6 numpy scipy swig; brew link --overwrite gcc@6; export CC=gcc-6 CXX=g++-6"
 
 before_install:
   - eval "$MATRIX_EVAL"

@@ -127,7 +127,7 @@ struct IndexScalarQuantizer: Index {
 
     void reconstruct(idx_t key, float* recons) const override;
 
-    DistanceComputer *get_distance_computer () const;
+    DistanceComputer *get_distance_computer () const override;
 
 };
 
@@ -154,13 +154,13 @@ struct IndexIVFScalarQuantizer: IndexIVF {
                         const idx_t *list_nos,
                         uint8_t * codes) const override;
 
-    void add_with_ids(idx_t n, const float* x, const long* xids) override;
+    void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
 
     InvertedListScanner *get_InvertedListScanner (bool store_pairs)
         const override;
 
 
-    void reconstruct_from_offset (long list_no, long offset,
+    void reconstruct_from_offset (int64_t list_no, int64_t offset,
                                   float* recons) const override;
 
 };

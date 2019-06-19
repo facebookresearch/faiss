@@ -42,14 +42,24 @@ namespace faiss {
 
 /// Some algorithms support both an inner product version and a L2 search version.
 enum MetricType {
-    METRIC_INNER_PRODUCT = 0,
-    METRIC_L2 = 1,
+    METRIC_INNER_PRODUCT = 0,  ///< maximum inner product search
+    METRIC_L2 = 1,             ///< squared L2 search
+    METRIC_L1,                 ///< L1 (aka cityblock)
+    METRIC_Linf,               ///< infinity distance
+    METRIC_Lp,                 ///< L_p distance, p is given by metric_arg
+
+    /// some additional metrics defined in scipy.spatial.distance
+    METRIC_Canberra = 20,
+    METRIC_BrayCurtis,
+    METRIC_JensenShannon,
+
 };
 
 
 /// Forward declarations see AuxIndexStructures.h
 struct IDSelector;
 struct RangeSearchResult;
+struct DistanceComputer;
 
 /** Abstract structure for an index
  *
@@ -59,7 +69,7 @@ struct RangeSearchResult;
  * database-to-database queries are not implemented.
  */
 struct Index {
-    using idx_t = long;    ///< all indices are this type
+    using idx_t = int64_t;  ///< all indices are this type
     using component_t = float;
     using distance_t = float;
 
@@ -67,18 +77,21 @@ struct Index {
     idx_t ntotal;          ///< total nb of indexed vectors
     bool verbose;          ///< verbosity level
 
-    /// set if the Index does not require training, or if training is done already
+    /// set if the Index does not require training, or if training is
+    /// done already
     bool is_trained;
 
     /// type of metric this index uses for search
     MetricType metric_type;
+    float metric_arg;     ///< argument of the metric type
 
     explicit Index (idx_t d = 0, MetricType metric = METRIC_L2):
                     d(d),
                     ntotal(0),
                     verbose(false),
                     is_trained(true),
-                    metric_type (metric) {}
+                    metric_type (metric),
+                    metric_arg(0) {}
 
     virtual ~Index ();
 
@@ -106,7 +119,7 @@ struct Index {
      *
      * @param xids if non-null, ids to store for the vectors (size n)
      */
-    virtual void add_with_ids (idx_t n, const float * x, const long *xids);
+    virtual void add_with_ids (idx_t n, const float * x, const idx_t *xids);
 
     /** query n vectors of dimension d to the index.
      *
@@ -144,9 +157,10 @@ struct Index {
     /// removes all elements from the database.
     virtual void reset() = 0;
 
-    /** removes IDs from the index. Not supported by all indexes
+    /** removes IDs from the index. Not supported by all
+     * indexes. Returns the number of elements removed.
      */
-    virtual long remove_ids (const IDSelector & sel);
+    virtual size_t remove_ids (const IDSelector & sel);
 
     /** Reconstruct a stored vector (or an approximation if lossy coding)
      *
@@ -155,7 +169,6 @@ struct Index {
      * @param recons      reconstucted vector (size d)
      */
     virtual void reconstruct (idx_t key, float * recons) const;
-
 
     /** Reconstruct vectors i0 to i0 + ni - 1
      *
@@ -192,7 +205,13 @@ struct Index {
     /** Display the actual class name and some more info */
     void display () const;
 
-
+    /** Get a DistanceComputer (defined in AuxIndexStructures) object
+     * for this kind of index.
+     *
+     * DistanceComputer is implemented for indexes that support random
+     * access of their vectors.
+     */
+    virtual DistanceComputer * get_distance_computer() const;
 
 };
 

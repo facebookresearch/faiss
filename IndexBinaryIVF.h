@@ -47,7 +47,7 @@ struct IndexBinaryIVF : IndexBinary {
 
     /// map for direct access to the elements. Enables reconstruct().
     bool maintain_direct_map;
-    std::vector<long> direct_map;
+    std::vector<idx_t> direct_map;
 
     IndexBinary *quantizer;   ///< quantizer that maps vectors to inverted lists
     size_t nlist;             ///< number of possible key values
@@ -75,11 +75,11 @@ struct IndexBinaryIVF : IndexBinary {
 
     void add(idx_t n, const uint8_t *x) override;
 
-    void add_with_ids(idx_t n, const uint8_t *x, const long *xids) override;
+    void add_with_ids(idx_t n, const uint8_t *x, const idx_t *xids) override;
 
     /// same as add_with_ids, with precomputed coarse quantizer
-    void add_core (idx_t n, const uint8_t * x, const long *xids,
-                   const long *precomputed_idx);
+    void add_core (idx_t n, const uint8_t * x, const idx_t *xids,
+                   const idx_t *precomputed_idx);
 
     /** Search a set of vectors, that are pre-quantized by the IVF
      *  quantizer. Fill in the corresponding heaps with the query
@@ -146,13 +146,12 @@ struct IndexBinaryIVF : IndexBinary {
      * the inv list offset is computed by search_preassigned() with
      * `store_pairs` set.
      */
-    virtual void reconstruct_from_offset(long list_no, long offset,
+    virtual void reconstruct_from_offset(idx_t list_no, idx_t offset,
                                          uint8_t* recons) const;
 
 
     /// Dataset manipulation functions
-
-    long remove_ids(const IDSelector& sel) override;
+    size_t remove_ids(const IDSelector& sel) override;
 
     /** moves the entries from another dataset to self. On output,
      * other is empty. add_id is added to all moved ids (for

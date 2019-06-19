@@ -10,6 +10,7 @@
 #include "MetaIndexes.h"
 
 #include <cstdio>
+#include <stdint.h>
 
 #include "FaissAssert.h"
 #include "Heap.h"
@@ -29,49 +30,60 @@ typedef Index::idx_t idx_t;
  * IndexIDMap implementation
  *******************************************************/
 
-IndexIDMap::IndexIDMap (Index *index):
+template <typename IndexT>
+IndexIDMapTemplate<IndexT>::IndexIDMapTemplate (IndexT *index):
     index (index),
     own_fields (false)
 {
     FAISS_THROW_IF_NOT_MSG (index->ntotal == 0, "index must be empty on input");
-    is_trained = index->is_trained;
-    metric_type = index->metric_type;
-    verbose = index->verbose;
-    d = index->d;
+    this->is_trained = index->is_trained;
+    this->metric_type = index->metric_type;
+    this->verbose = index->verbose;
+    this->d = index->d;
 }
 
-void IndexIDMap::add (idx_t, const float *)
+template <typename IndexT>
+void IndexIDMapTemplate<IndexT>::add
+    (idx_t, const typename IndexT::component_t *)
 {
     FAISS_THROW_MSG ("add does not make sense with IndexIDMap, "
                       "use add_with_ids");
 }
 
 
-void IndexIDMap::train (idx_t n, const float *x)
+template <typename IndexT>
+void IndexIDMapTemplate<IndexT>::train
+    (idx_t n, const typename IndexT::component_t *x)
 {
     index->train (n, x);
-    is_trained = index->is_trained;
+    this->is_trained = index->is_trained;
 }
 
-void IndexIDMap::reset ()
+template <typename IndexT>
+void IndexIDMapTemplate<IndexT>::reset ()
 {
     index->reset ();
     id_map.clear();
-    ntotal = 0;
+    this->ntotal = 0;
 }
 
 
-void IndexIDMap::add_with_ids (idx_t n, const float * x, const long *xids)
+template <typename IndexT>
+void IndexIDMapTemplate<IndexT>::add_with_ids
+    (idx_t n, const typename IndexT::component_t * x,
+     const typename IndexT::idx_t *xids)
 {
     index->add (n, x);
     for (idx_t i = 0; i < n; i++)
         id_map.push_back (xids[i]);
-    ntotal = index->ntotal;
+    this->ntotal = index->ntotal;
 }
 
 
-void IndexIDMap::search (idx_t n, const float *x, idx_t k,
-                              float *distances, idx_t *labels) const
+template <typename IndexT>
+void IndexIDMapTemplate<IndexT>::search
+    (idx_t n, const typename IndexT::component_t *x, idx_t k,
+     typename IndexT::distance_t *distances, typename IndexT::idx_t *labels) const
 {
     index->search (n, x, k, distances, labels);
     idx_t *li = labels;
@@ -82,8 +94,10 @@ void IndexIDMap::search (idx_t n, const float *x, idx_t k,
 }
 
 
-void IndexIDMap::range_search (idx_t n, const float *x, float radius,
-                   RangeSearchResult *result) const
+template <typename IndexT>
+void IndexIDMapTemplate<IndexT>::range_search
+    (typename IndexT::idx_t n, const typename IndexT::component_t *x,
+     typename IndexT::distance_t radius, RangeSearchResult *result) const
 {
   index->range_search(n, x, radius, result);
 #pragma omp parallel for
@@ -96,9 +110,9 @@ void IndexIDMap::range_search (idx_t n, const float *x, float radius,
 namespace {
 
 struct IDTranslatedSelector: IDSelector {
-    const std::vector <long> & id_map;
+    const std::vector <int64_t> & id_map;
     const IDSelector & sel;
-    IDTranslatedSelector (const std::vector <long> & id_map,
+    IDTranslatedSelector (const std::vector <int64_t> & id_map,
                           const IDSelector & sel):
         id_map (id_map), sel (sel)
     {}
@@ -109,14 +123,15 @@ struct IDTranslatedSelector: IDSelector {
 
 }
 
-long IndexIDMap::remove_ids (const IDSelector & sel)
+template <typename IndexT>
+size_t IndexIDMapTemplate<IndexT>::remove_ids (const IDSelector & sel)
 {
     // remove in sub-index first
     IDTranslatedSelector sel2 (id_map, sel);
-    long nremove = index->remove_ids (sel2);
+    size_t nremove = index->remove_ids (sel2);
 
-    long j = 0;
-    for (idx_t i = 0; i < ntotal; i++) {
+    int64_t j = 0;
+    for (idx_t i = 0; i < this->ntotal; i++) {
         if (sel.is_member (id_map[i])) {
             // remove
         } else {
@@ -125,60 +140,78 @@ long IndexIDMap::remove_ids (const IDSelector & sel)
         }
     }
     FAISS_ASSERT (j == index->ntotal);
-    ntotal = j;
-    id_map.resize(ntotal);
+    this->ntotal = j;
+    id_map.resize(this->ntotal);
     return nremove;
 }
 
-
-
-
-IndexIDMap::~IndexIDMap ()
+template <typename IndexT>
+IndexIDMapTemplate<IndexT>::~IndexIDMapTemplate ()
 {
     if (own_fields) delete index;
 }
+
+
 
 /*****************************************************
  * IndexIDMap2 implementation
  *******************************************************/
 
-IndexIDMap2::IndexIDMap2 (Index *index): IndexIDMap (index)
+template <typename IndexT>
+IndexIDMap2Template<IndexT>::IndexIDMap2Template (IndexT *index):
+    IndexIDMapTemplate<IndexT> (index)
 {}
 
-void IndexIDMap2::add_with_ids(idx_t n, const float* x, const long* xids)
+template <typename IndexT>
+void IndexIDMap2Template<IndexT>::add_with_ids
+    (idx_t n, const typename IndexT::component_t* x,
+     const typename IndexT::idx_t* xids)
 {
-    size_t prev_ntotal = ntotal;
-    IndexIDMap::add_with_ids (n, x, xids);
-    for (size_t i = prev_ntotal; i < ntotal; i++) {
-        rev_map [id_map [i]] = i;
+    size_t prev_ntotal = this->ntotal;
+    IndexIDMapTemplate<IndexT>::add_with_ids (n, x, xids);
+    for (size_t i = prev_ntotal; i < this->ntotal; i++) {
+        rev_map [this->id_map [i]] = i;
     }
 }
 
-void IndexIDMap2::construct_rev_map ()
+template <typename IndexT>
+void IndexIDMap2Template<IndexT>::construct_rev_map ()
 {
     rev_map.clear ();
-    for (size_t i = 0; i < ntotal; i++) {
-        rev_map [id_map [i]] = i;
+    for (size_t i = 0; i < this->ntotal; i++) {
+        rev_map [this->id_map [i]] = i;
     }
 }
 
 
-long IndexIDMap2::remove_ids(const IDSelector& sel)
+template <typename IndexT>
+size_t IndexIDMap2Template<IndexT>::remove_ids(const IDSelector& sel)
 {
     // This is quite inefficient
-    long nremove = IndexIDMap::remove_ids (sel);
+    size_t nremove = IndexIDMapTemplate<IndexT>::remove_ids (sel);
     construct_rev_map ();
     return nremove;
 }
 
-void IndexIDMap2::reconstruct (idx_t key, float * recons) const
+template <typename IndexT>
+void IndexIDMap2Template<IndexT>::reconstruct
+    (idx_t key, typename IndexT::component_t * recons) const
 {
     try {
-        index->reconstruct (rev_map.at (key), recons);
+        this->index->reconstruct (rev_map.at (key), recons);
     } catch (const std::out_of_range& e) {
         FAISS_THROW_FMT ("key %ld not found", key);
     }
 }
+
+
+// explicit template instantiations
+
+template struct IndexIDMapTemplate<Index>;
+template struct IndexIDMapTemplate<IndexBinary>;
+template struct IndexIDMap2Template<Index>;
+template struct IndexIDMap2Template<IndexBinary>;
+
 
 /*****************************************************
  * IndexSplitVectors implementation
@@ -230,7 +263,7 @@ void IndexSplitVectors::search (
     FAISS_THROW_IF_NOT_MSG (sum_d == d,
                       "not enough indexes compared to # dimensions");
 
-    long nshard = sub_indexes.size();
+    int64_t nshard = sub_indexes.size();
     float *all_distances = new float [nshard * k * n];
     idx_t *all_labels = new idx_t [nshard * k * n];
     ScopeDeleter<float> del (all_distances);
@@ -244,7 +277,7 @@ void IndexSplitVectors::search (
         if (index->verbose)
             printf ("begin query shard %d on %ld points\n", no, n);
         const Index * sub_index = index->sub_indexes[no];
-        long sub_d = sub_index->d, d = index->d;
+        int64_t sub_d = sub_index->d, d = index->d;
         idx_t ofs = 0;
         for (int i = 0; i < no; i++) ofs += index->sub_indexes[i]->d;
         float *sub_x = new float [sub_d * n];
@@ -276,12 +309,12 @@ void IndexSplitVectors::search (
         }
     }
 
-    long factor = 1;
+    int64_t factor = 1;
     for (int i = 0; i < nshard; i++) {
         if (i > 0) { // results of 0 are already in the table
             const float *distances_i = all_distances + i * k * n;
             const idx_t *labels_i = all_labels + i * k * n;
-            for (long j = 0; j < n; j++) {
+            for (int64_t j = 0; j < n; j++) {
                 if (labels[j] >= 0 && labels_i[j] >= 0) {
                     labels[j] += labels_i[j] * factor;
                     distances[j] += distances_i[j];

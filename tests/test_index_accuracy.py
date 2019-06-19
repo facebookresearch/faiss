@@ -511,7 +511,8 @@ class OPQRelativeAccuracy(unittest.TestCase):
         print('e_opq=%s' % e_opq)
 
         # verify that OPQ better than PQ
-        assert(e_opq[10] > e_pq[10])
+        for r in 1, 10, 100:
+            assert(e_opq[r] > e_pq[r])
 
     def test_OIVFPQ(self):
         # Parameters inverted indexes
@@ -527,6 +528,7 @@ class OPQRelativeAccuracy(unittest.TestCase):
         res = ev.launch('IVFPQ', index)
         e_ivfpq = ev.evalres(res)
 
+        quantizer = faiss.IndexFlatL2(d)
         index_ivfpq = faiss.IndexIVFPQ(quantizer, d, ncentroids, M, 8)
         index_ivfpq.nprobe = 5
         opq_matrix = faiss.OPQMatrix(d, M)
@@ -536,9 +538,10 @@ class OPQRelativeAccuracy(unittest.TestCase):
         res = ev.launch('O+IVFPQ', index)
         e_oivfpq = ev.evalres(res)
 
-        # TODO(beauby): Fix and re-enable.
         # verify same on OIVFPQ
-        # assert(e_oivfpq[1] > e_ivfpq[1])
+        for r in 1, 10, 100:
+            print(e_oivfpq[r], e_ivfpq[r])
+            assert(e_oivfpq[r] >= e_ivfpq[r])
 
 
 class TestRoundoff(unittest.TestCase):

@@ -62,8 +62,11 @@ class Randu10kUnbalanced(Randu10k):
         rs = np.random.RandomState(123)
         weights = weights[rs.permutation(self.d)]
         self.xb *= weights
+        self.xb /= np.linalg.norm(self.xb, axis=1)[:, np.newaxis]
         self.xq *= weights
+        self.xq /= np.linalg.norm(self.xq, axis=1)[:, np.newaxis]
         self.xt *= weights
+        self.xt /= np.linalg.norm(self.xt, axis=1)[:, np.newaxis]
 
         dotprods = np.dot(self.xq, self.xb.T)
         self.gt = dotprods.argmax(1)

@@ -83,7 +83,7 @@ struct IndexBinary {
    *
    * @param xids if non-null, ids to store for the vectors (size n)
    */
-  virtual void add_with_ids(idx_t n, const uint8_t *x, const long *xids);
+  virtual void add_with_ids(idx_t n, const uint8_t *x, const idx_t *xids);
 
   /** Query n vectors of dimension d to the index.
    *
@@ -123,7 +123,7 @@ struct IndexBinary {
 
   /** Removes IDs from the index. Not supported by all indexes.
    */
-  virtual long remove_ids(const IDSelector& sel);
+  virtual size_t remove_ids(const IDSelector& sel);
 
   /** Reconstruct a stored vector.
    *

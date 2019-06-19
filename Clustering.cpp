@@ -44,7 +44,7 @@ Clustering::Clustering (int d, int k, const ClusteringParameters &cp):
 
 
 
-static double imbalance_factor (int n, int k, long *assign) {
+static double imbalance_factor (int n, int k, int64_t *assign) {
     std::vector<int> hist(k, 0);
     for (int i = 0; i < n; i++)
         hist[assign[i]]++;

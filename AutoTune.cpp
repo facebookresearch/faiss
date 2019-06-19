@@ -89,7 +89,7 @@ double IntersectionCriterion::evaluate(const float* /*D*/, const idx_t* I)
     FAISS_THROW_IF_NOT_MSG(
       (gt_I.size() == gt_nnn * nq && gt_nnn >= R && nnn >= R),
       "ground truth not initialized");
-    long n_ok = 0;
+    int64_t n_ok = 0;
 #pragma omp parallel for reduction(+: n_ok)
     for (idx_t q = 0; q < nq; q++) {
         n_ok += ranklist_intersection_size (
@@ -121,7 +121,7 @@ void OperatingPoints::clear ()
 bool OperatingPoints::add (double perf, double t, const std::string & key,
                            size_t cno)
 {
-    OperatingPoint op = {perf, t, key, long(cno)};
+    OperatingPoint op = {perf, t, key, int64_t(cno)};
     all_pts.push_back (op);
     if (perf == 0) {
         return false;  // no method for 0 accuracy is faster than doing nothing
@@ -740,6 +740,8 @@ char get_trains_alone(const Index *coarse_quantizer) {
 
 Index *index_factory (int d, const char *description_in, MetricType metric)
 {
+    FAISS_THROW_IF_NOT(metric == METRIC_L2 ||
+                       metric == METRIC_INNER_PRODUCT);
     VTChain vts;
     Index *coarse_quantizer = nullptr;
     Index *index = nullptr;
@@ -801,7 +803,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                    sscanf (tok, "IVF%d", &ncentroids) == 1) {
             if (metric == METRIC_L2) {
                 coarse_quantizer_1 = new IndexFlatL2 (d);
-            } else { // if (metric == METRIC_IP)
+            } else {
                 coarse_quantizer_1 = new IndexFlatIP (d);
             }
         } else if (!coarse_quantizer && sscanf (tok, "IMI2x%d", &nbit) == 1) {
@@ -832,10 +834,11 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                                         "dedup supported only for IVFFlat");
                 index_1 = new IndexFlat (d, metric);
             }
-        } else if (!index && (stok == "SQ8" || stok == "SQ4" ||
+        } else if (!index && (stok == "SQ8" || stok == "SQ4" || stok == "SQ6" ||
                               stok == "SQfp16")) {
             ScalarQuantizer::QuantizerType qt =
                 stok == "SQ8" ? ScalarQuantizer::QT_8bit :
+                stok == "SQ6" ? ScalarQuantizer::QT_6bit :
                 stok == "SQ4" ? ScalarQuantizer::QT_4bit :
                 stok == "SQfp16" ? ScalarQuantizer::QT_fp16 :
                 ScalarQuantizer::QT_4bit;
@@ -999,7 +1002,7 @@ IndexBinary *index_binary_factory(int d, const char *description)
         index = new IndexBinaryFlat(d);
 
     } else {
-        FAISS_THROW_IF_NOT_FMT(index, "descrption %s did not generate an index",
+        FAISS_THROW_IF_NOT_FMT(index, "description %s did not generate an index",
                                description);
     }
 

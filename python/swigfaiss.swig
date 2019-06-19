@@ -24,11 +24,8 @@
 #pragma SWIG nowarn=341
 #pragma SWIG nowarn=512
 
-
-typedef unsigned long uint64_t;
-typedef uint64_t size_t;
-typedef int int32_t;
-typedef unsigned char uint8_t;
+%include <stdint.i>
+typedef int64_t size_t;
 
 #define __restrict
 
@@ -97,6 +94,7 @@ extern "C" {
 
 #include "IVFlib.h"
 #include "utils.h"
+#include "distances.h"
 #include "Heap.h"
 #include "AuxIndexStructures.h"
 #include "OnDiskInvertedLists.h"
@@ -109,7 +107,53 @@ extern "C" {
 
 
 
- %}
+%}
+
+/********************************************************
+ * GIL manipulation and exception handling
+ ********************************************************/
+
+#ifdef SWIGPYTHON
+// %catches(faiss::FaissException);
+
+
+// Python-specific: release GIL by default for all functions
+%exception {
+    Py_BEGIN_ALLOW_THREADS
+    try {
+        $action
+    } catch(faiss::FaissException & e) {
+        PyEval_RestoreThread(_save);
+
+        if (PyErr_Occurred()) {
+            // some previous code already set the error type.
+        } else {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+        }
+        SWIG_fail;
+    } catch(std::bad_alloc & ba) {
+        PyEval_RestoreThread(_save);
+        PyErr_SetString(PyExc_MemoryError, "std::bad_alloc");
+        SWIG_fail;
+    }
+    Py_END_ALLOW_THREADS
+}
+
+#endif
+
+#ifdef SWIGLUA
+
+%exception {
+    try {
+        $action
+    } catch(faiss::FaissException & e) {
+        SWIG_Lua_pushferrstring(L, "C++ exception: %s", e.what());       \
+        goto fail;
+    }
+}
+
+#endif
+
 
 /*******************************************************************
  * Types of vectors we want to manipulate at the scripting language
@@ -151,8 +195,6 @@ namespace std {
 %template(ByteVectorVector) std::vector<std::vector<unsigned char> >;
 %template(LongVectorVector) std::vector<std::vector<long> >;
 
-
-
 #ifdef GPU_WRAPPER
 %template(GpuResourcesVector) std::vector<faiss::gpu::GpuResources*>;
 #endif
@@ -162,48 +204,9 @@ namespace std {
 // produces an error on the Mac
 %ignore faiss::hamming;
 
-
 /*******************************************************************
  * Parse headers
  *******************************************************************/
-
-#ifdef SWIGPYTHON
-// %catches(faiss::FaissException);
-
-
-// Python-specific: release GIL by default for all functions
-%exception {
-    Py_BEGIN_ALLOW_THREADS
-    try {
-        $action
-    } catch(faiss::FaissException & e) {
-        PyEval_RestoreThread(_save);
-
-        if (PyErr_Occurred()) {
-            // some previous code already set the error type.
-        } else {
-            PyErr_SetString(PyExc_RuntimeError, e.what());
-        }
-        SWIG_fail;
-    }
-    Py_END_ALLOW_THREADS
-}
-
-#endif
-
-#ifdef SWIGLUA
-
-%exception {
-    try {
-        $action
-    } catch(faiss::FaissException & e) {
-        SWIG_Lua_pushferrstring(L, "C++ exception: %s", e.what());       \
-        goto fail;
-    }
-}
-
-#endif
-
 
 
 %ignore *::cmp;
@@ -262,6 +265,8 @@ int get_num_gpus()
 %include "Index.h"
 %include "Clustering.h"
 
+%include "distances.h"
+
 %ignore faiss::ProductQuantizer::get_centroids(size_t,size_t) const;
 
 %include "ProductQuantizer.h"
@@ -313,6 +318,10 @@ int get_num_gpus()
 
 
 %include "MetaIndexes.h"
+%template(IndexIDMap) faiss::IndexIDMapTemplate<faiss::Index>;
+%template(IndexBinaryIDMap) faiss::IndexIDMapTemplate<faiss::IndexBinary>;
+%template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
+%template(IndexBinaryIDMap2) faiss::IndexIDMap2Template<faiss::IndexBinary>;
 
 #ifdef GPU_WRAPPER
 
@@ -329,6 +338,15 @@ int get_num_gpus()
 %include "gpu/GpuIndexIVFFlat.h"
 %include "gpu/GpuIndexBinaryFlat.h"
 %include "gpu/GpuDistance.h"
+
+#ifdef SWIGLUA
+
+/// in Lua, swigfaiss_gpu is known as swigfaiss
+%luacode {
+local swigfaiss = swigfaiss_gpu
+}
+
+#endif
 
 
 #endif
@@ -478,7 +496,8 @@ struct AsyncIndexSearchC {
 
 // Subclasses should appear before their parent
 %typemap(out) faiss::Index * {
-    DOWNCAST ( IndexIDMap )
+    DOWNCAST2 ( IndexIDMap, IndexIDMapTemplateT_faiss__Index_t )
+    DOWNCAST2 ( IndexIDMap2, IndexIDMap2TemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
     DOWNCAST ( IndexIVFPQR )
@@ -522,6 +541,8 @@ struct AsyncIndexSearchC {
 
 %typemap(out) faiss::IndexBinary * {
     DOWNCAST2 ( IndexBinaryReplicas, IndexReplicasTemplateT_faiss__IndexBinary_t )
+    DOWNCAST2 ( IndexBinaryIDMap, IndexIDMapTemplateT_faiss__IndexBinary_t )
+    DOWNCAST2 ( IndexBinaryIDMap2, IndexIDMap2TemplateT_faiss__IndexBinary_t )
     DOWNCAST ( IndexBinaryIVF )
     DOWNCAST ( IndexBinaryFlat )
     DOWNCAST ( IndexBinaryFromFloat )
@@ -663,10 +684,18 @@ PyObject *swig_ptr (PyObject *a)
         return SWIG_NewPointerObj(data, SWIGTYPE_p_char, 0);
     }
     if(PyArray_TYPE(ao) == NPY_UINT64) {
+#ifdef SWIGWORDSIZE64
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long, 0);
+#else
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long_long, 0);
+#endif
     }
     if(PyArray_TYPE(ao) == NPY_INT64) {
+#ifdef SWIGWORDSIZE64
         return SWIG_NewPointerObj(data, SWIGTYPE_p_long, 0);
+#else
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_long_long, 0);
+#endif
     }
     PyErr_SetString(PyExc_ValueError, "did not recognize array type");
     return NULL;
@@ -718,9 +747,8 @@ PyObject * rev_swig_ptr(ctype *src, size_t size);
 REV_SWIG_PTR(float, NPY_FLOAT32);
 REV_SWIG_PTR(int, NPY_INT32);
 REV_SWIG_PTR(unsigned char, NPY_UINT8);
-REV_SWIG_PTR(unsigned long, NPY_UINT64);
-REV_SWIG_PTR(long, NPY_INT64);
-
+REV_SWIG_PTR(int64_t, NPY_INT64);
+REV_SWIG_PTR(uint64_t, NPY_UINT64);
 
 #endif
 
@@ -784,16 +812,16 @@ TYPE_CONVERSION (uint8_t, ByteTensor)
 
 // answer: the same as the C++ typedefs, but we still have to redefine them
 
-%template() faiss::CMin<float, long>;
-%template() faiss::CMin<int, long>;
-%template() faiss::CMax<float, long>;
-%template() faiss::CMax<int, long>;
+%template() faiss::CMin<float, int64_t>;
+%template() faiss::CMin<int, int64_t>;
+%template() faiss::CMax<float, int64_t>;
+%template() faiss::CMax<int, int64_t>;
 
-%template(float_minheap_array_t) faiss::HeapArray<faiss::CMin<float, long> >;
-%template(int_minheap_array_t) faiss::HeapArray<faiss::CMin<int, long> >;
+%template(float_minheap_array_t) faiss::HeapArray<faiss::CMin<float, int64_t> >;
+%template(int_minheap_array_t) faiss::HeapArray<faiss::CMin<int, int64_t> >;
 
-%template(float_maxheap_array_t) faiss::HeapArray<faiss::CMax<float, long> >;
-%template(int_maxheap_array_t) faiss::HeapArray<faiss::CMax<int, long> >;
+%template(float_maxheap_array_t) faiss::HeapArray<faiss::CMax<float, int64_t> >;
+%template(int_maxheap_array_t) faiss::HeapArray<faiss::CMax<int, int64_t> >;
 
 
 /*******************************************************************
@@ -837,6 +865,7 @@ int * cast_integer_to_int_ptr (long x) {
 %ignore faiss::IDSelectorBatch::bloom;
 
 %ignore faiss::InterruptCallback::instance;
+%ignore faiss::InterruptCallback::lock;
 %include "AuxIndexStructures.h"
 
 %{
@@ -857,16 +886,16 @@ void ignore_SIGTTIN();
 // represents not found values as -1 like in the Index implementation
 
 struct MapLong2Long {
-    std::unordered_map<long, long> map;
+    std::unordered_map<int64_t, int64_t> map;
 
-    void add(size_t n, const long *keys, const long *vals) {
+    void add(size_t n, const int64_t *keys, const int64_t *vals) {
         map.reserve(map.size() + n);
         for (size_t i = 0; i < n; i++) {
             map[keys[i]] = vals[i];
         }
     }
 
-    long search(long key) {
+    long search(int64_t key) {
         if (map.count(key) == 0) {
             return -1;
         } else {
@@ -874,7 +903,7 @@ struct MapLong2Long {
         }
     }
 
-    void search_multiple(size_t n, const long *keys, long * vals) {
+    void search_multiple(size_t n, int64_t *keys, int64_t * vals) {
         for (size_t i = 0; i < n; i++) {
             vals[i] = search(keys[i]);
         }
@@ -884,10 +913,8 @@ struct MapLong2Long {
 %}
 
 %inline %{
-
     void wait() {
-        // in gdb
-        // set variable i = 1
+        // in gdb, use return to get out of this function
         for(int i = 0; i == 0; i += 0);
     }
  %}

@@ -62,7 +62,7 @@ struct IndexIVFPQ: IndexIVF {
             Index * quantizer, size_t d, size_t nlist,
             size_t M, size_t nbits_per_idx);
 
-    void add_with_ids(idx_t n, const float* x, const long* xids = nullptr)
+    void add_with_ids(idx_t n, const float* x, const idx_t* xids = nullptr)
         override;
 
     void encode_vectors(idx_t n, const float* x,
@@ -73,8 +73,8 @@ struct IndexIVFPQ: IndexIVF {
     /// - output 2nd level residuals if residuals_2 != NULL
     /// - use precomputed list numbers if precomputed_idx != NULL
     void add_core_o (idx_t n, const float *x,
-                     const long *xids, float *residuals_2,
-                     const long *precomputed_idx = nullptr);
+                     const idx_t *xids, float *residuals_2,
+                     const idx_t *precomputed_idx = nullptr);
 
     /// trains the product quantizer
     void train_residual(idx_t n, const float* x) override;
@@ -82,7 +82,7 @@ struct IndexIVFPQ: IndexIVF {
     /// same as train_residual, also output 2nd level residuals
     void train_residual_o (idx_t n, const float *x, float *residuals_2);
 
-    void reconstruct_from_offset (long list_no, long offset,
+    void reconstruct_from_offset (int64_t list_no, int64_t offset,
                                   float* recons) const override;
 
     /** Find exact duplicates in the dataset.
@@ -99,7 +99,7 @@ struct IndexIVFPQ: IndexIVF {
     size_t find_duplicates (idx_t *ids, size_t *lims) const;
 
     // map a vector to a binary code knowning the index
-    void encode (long key, const float * x, uint8_t * code) const;
+    void encode (idx_t key, const float * x, uint8_t * code) const;
 
     /** Encode multiple vectors
      *
@@ -110,12 +110,12 @@ struct IndexIVFPQ: IndexIVF {
      * @param compute_keys  if false, assume keys are precomputed,
      *                      otherwise compute them
      */
-    void encode_multiple (size_t n, long *keys,
+    void encode_multiple (size_t n, idx_t *keys,
                           const float * x, uint8_t * codes,
                           bool compute_keys = false) const;
 
     /// inverse of encode_multiple
-    void decode_multiple (size_t n, const long *keys,
+    void decode_multiple (size_t n, const idx_t *keys,
                           const uint8_t * xcodes, float * x) const;
 
     InvertedListScanner *get_InvertedListScanner (bool store_pairs)
@@ -166,18 +166,18 @@ struct IndexIVFPQR: IndexIVFPQ {
 
     void reset() override;
 
-    long remove_ids(const IDSelector& sel) override;
+    size_t remove_ids(const IDSelector& sel) override;
 
     /// trains the two product quantizers
     void train_residual(idx_t n, const float* x) override;
 
-    void add_with_ids(idx_t n, const float* x, const long* xids) override;
+    void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
 
     /// same as add_with_ids, but optionally use the precomputed list ids
-    void add_core (idx_t n, const float *x, const long *xids,
-                     const long *precomputed_idx = nullptr);
+    void add_core (idx_t n, const float *x, const idx_t *xids,
+                     const idx_t *precomputed_idx = nullptr);
 
-    void reconstruct_from_offset (long list_no, long offset,
+    void reconstruct_from_offset (int64_t list_no, int64_t offset,
                                   float* recons) const override;
 
     void merge_from (IndexIVF &other, idx_t add_id) override;
@@ -243,6 +243,8 @@ struct Index2Layer: Index {
     void reconstruct(idx_t key, float* recons) const override;
 
     void reset() override;
+
+    DistanceComputer * get_distance_computer() const override;
 
     /// transfer the flat codes to an IVFPQ index
     void transfer_to_IVFPQ(IndexIVFPQ & other) const;

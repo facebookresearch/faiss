@@ -12,6 +12,7 @@
 
 #include <memory>
 #include <algorithm>
+#include <stdint.h>
 
 #include "hamming.h"
 #include "utils.h"
@@ -175,7 +176,7 @@ void IndexIVFSpectralHash::encode_vectors(idx_t n, const float* x_in,
         // each thread takes care of a subset of lists
 #pragma omp for
         for (size_t i = 0; i < n; i++) {
-            long list_no = list_nos [i];
+            int64_t list_no = list_nos [i];
 
             if (list_no >= 0) {
                 const float *c;
@@ -266,7 +267,7 @@ struct IVFScanner: InvertedListScanner {
 
             if (dis < simi [0]) {
                 maxheap_pop (k, simi, idxi);
-                long id = store_pairs ? (list_no << 32 | j) : ids[j];
+                int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
                 maxheap_push (k, simi, idxi, dis, id);
                 nup++;
             }
@@ -284,7 +285,7 @@ struct IVFScanner: InvertedListScanner {
         for (size_t j = 0; j < list_size; j++) {
             float dis = hc.hamming (codes);
             if (dis < radius) {
-                long id = store_pairs ? (list_no << 32 | j) : ids[j];
+                int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
                 res.add (dis, id);
             }
             codes += code_size;

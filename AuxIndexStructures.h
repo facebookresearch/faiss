@@ -18,7 +18,7 @@
 #include <vector>
 #include <unordered_set>
 #include <memory>
-
+#include <mutex>
 
 #include "Index.h"
 
@@ -84,7 +84,7 @@ struct IDSelectorBatch: IDSelector {
     int nbits;
     idx_t mask;
 
-    IDSelectorBatch (long n, const idx_t *indices);
+    IDSelectorBatch (size_t n, const idx_t *indices);
     bool is_member(idx_t id) const override;
     ~IDSelectorBatch() override {}
 };
@@ -251,17 +251,23 @@ struct InterruptCallback {
     virtual bool want_interrupt () = 0;
     virtual ~InterruptCallback() {}
 
+    // lock that protects concurrent calls to is_interrupted
+    static std::mutex lock;
+
     static std::unique_ptr<InterruptCallback> instance;
+
+    static void clear_instance ();
 
     /** check if:
      * - an interrupt callback is set
      * - the callback retuns true
-     * if this is the case, then throw an exception
+     * if this is the case, then throw an exception. Should not be called
+     * from multiple threds.
      */
     static void check ();
 
     /// same as check() but return true if is interrupted instead of
-    /// throwing
+    /// throwing. Can be called from multiple threads.
     static bool is_interrupted ();
 
     /** assuming each iteration takes a certain number of flops, what

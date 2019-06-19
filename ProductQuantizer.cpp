@@ -46,7 +46,7 @@ void pq_estimators_from_tables_Mmul4 (int M, const CT * codes,
                                       size_t ksub,
                                       size_t k,
                                       float * heap_dis,
-                                      long * heap_ids)
+                                      int64_t * heap_ids)
 {
 
     for (size_t j = 0; j < ncodes; j++) {
@@ -77,7 +77,7 @@ void pq_estimators_from_tables_M4 (const CT * codes,
                                    size_t ksub,
                                    size_t k,
                                    float * heap_dis,
-                                   long * heap_ids)
+                                   int64_t * heap_ids)
 {
 
     for (size_t j = 0; j < ncodes; j++) {
@@ -103,7 +103,7 @@ static inline void pq_estimators_from_tables (const ProductQuantizer& pq,
                                               const float * dis_table,
                                               size_t k,
                                               float * heap_dis,
-                                              long * heap_ids)
+                                              int64_t * heap_ids)
 {
 
     if (pq.M == 4)  {
@@ -146,7 +146,7 @@ static inline void pq_estimators_from_tables_generic(const ProductQuantizer& pq,
                                                      const float *dis_table,
                                                      size_t k,
                                                      float *heap_dis,
-                                                     long *heap_ids)
+                                                     int64_t *heap_ids)
 {
   const size_t M = pq.M;
   const size_t ksub = pq.ksub;
@@ -619,7 +619,7 @@ static void pq_knn_search_with_tables (
         const float* dis_table = dis_tables + i * ksub * M;
 
         /* Compute distances and keep smallest values */
-        long * __restrict heap_ids = res->ids + i * k;
+        int64_t * __restrict heap_ids = res->ids + i * k;
         float * __restrict heap_dis = res->val + i * k;
 
         if (init_finalize_heap) {
@@ -667,7 +667,7 @@ void ProductQuantizer::search (const float * __restrict x,
     std::unique_ptr<float[]> dis_tables(new float [nx * ksub * M]);
     compute_distance_tables (nx, x, dis_tables.get());
 
-    pq_knn_search_with_tables<CMax<float, long>> (
+    pq_knn_search_with_tables<CMax<float, int64_t>> (
       *this, nbits, dis_tables.get(), codes, ncodes, res, init_finalize_heap);
 }
 
@@ -682,7 +682,7 @@ void ProductQuantizer::search_ip (const float * __restrict x,
     std::unique_ptr<float[]> dis_tables(new float [nx * ksub * M]);
     compute_inner_prod_tables (nx, x, dis_tables.get());
 
-    pq_knn_search_with_tables<CMin<float, long> > (
+    pq_knn_search_with_tables<CMin<float, int64_t> > (
       *this, nbits, dis_tables.get(), codes, ncodes, res, init_finalize_heap);
 }
 
@@ -731,7 +731,7 @@ void ProductQuantizer::search_sdc (const uint8_t * qcodes,
     for (size_t i = 0; i < nq; i++) {
 
         /* Compute distances and keep smallest values */
-        long * heap_ids = res->ids + i * k;
+        idx_t * heap_ids = res->ids + i * k;
         float *  heap_dis = res->val + i * k;
         const uint8_t * qcode = qcodes + i * code_size;
 

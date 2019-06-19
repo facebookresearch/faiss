@@ -1000,7 +1000,7 @@ void IndexPreTransform::add (idx_t n, const float *x)
 }
 
 void IndexPreTransform::add_with_ids (idx_t n, const float * x,
-                                      const long *xids)
+                                      const idx_t *xids)
 {
     FAISS_THROW_IF_NOT (is_trained);
     const float *xt = apply_chain (n, x);
@@ -1037,8 +1037,8 @@ void IndexPreTransform::reset () {
     ntotal = 0;
 }
 
-long IndexPreTransform::remove_ids (const IDSelector & sel) {
-    long nremove = index->remove_ids (sel);
+size_t IndexPreTransform::remove_ids (const IDSelector & sel) {
+    size_t nremove = index->remove_ids (sel);
     ntotal = index->ntotal;
     return nremove;
 }

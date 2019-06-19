@@ -42,8 +42,6 @@ class IDRemap(unittest.TestCase):
         index2.train(xt)
         index2.add_with_ids(xb, ids)
 
-        # false = do not add 1 to the returned ids (this is done by
-        # default to accommodate lua indexing)
         _D, I = index2.search(xq, k)
 
         assert np.all(I == nb - 1 - Iref)

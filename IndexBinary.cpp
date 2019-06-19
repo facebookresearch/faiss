@@ -31,13 +31,13 @@ void IndexBinary::assign(idx_t n, const uint8_t *x, idx_t *labels, idx_t k) {
   search(n, x, k, distances, labels);
 }
 
-void IndexBinary::add_with_ids(idx_t, const uint8_t *, const long *) {
+void IndexBinary::add_with_ids(idx_t, const uint8_t *, const idx_t *) {
   FAISS_THROW_MSG("add_with_ids not implemented for this type of index");
 }
 
-long IndexBinary::remove_ids(const IDSelector&) {
+size_t IndexBinary::remove_ids(const IDSelector&) {
   FAISS_THROW_MSG("remove_ids not implemented for this type of index");
-  return -1;
+  return 0;
 }
 
 void IndexBinary::reconstruct(idx_t, uint8_t *) const {

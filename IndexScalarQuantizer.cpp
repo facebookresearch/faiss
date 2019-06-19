@@ -1300,6 +1300,7 @@ void ScalarQuantizer::decode (const uint8_t *codes, float *x, size_t n) const
 SQDistanceComputer *
 ScalarQuantizer::get_distance_computer (MetricType metric) const
 {
+    FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
 #ifdef USE_AVX
     if (d % 8 == 0) {
         if (metric == METRIC_L2) {
@@ -1379,7 +1380,7 @@ struct IVFSQScannerIP: InvertedListScanner {
 
             if (accu > simi [0]) {
                 minheap_pop (k, simi, idxi);
-                long id = store_pairs ? (list_no << 32 | j) : ids[j];
+                int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
                 minheap_push (k, simi, idxi, accu, id);
                 nup++;
             }
@@ -1397,7 +1398,7 @@ struct IVFSQScannerIP: InvertedListScanner {
         for (size_t j = 0; j < list_size; j++) {
             float accu = accu0 + dc.query_to_code (codes);
             if (accu > radius) {
-                long id = store_pairs ? (list_no << 32 | j) : ids[j];
+                int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
                 res.add (accu, id);
             }
             codes += code_size;
@@ -1467,7 +1468,7 @@ struct IVFSQScannerL2: InvertedListScanner {
 
             if (dis < simi [0]) {
                 maxheap_pop (k, simi, idxi);
-                long id = store_pairs ? (list_no << 32 | j) : ids[j];
+                int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
                 maxheap_push (k, simi, idxi, dis, id);
                 nup++;
             }
@@ -1485,7 +1486,7 @@ struct IVFSQScannerL2: InvertedListScanner {
         for (size_t j = 0; j < list_size; j++) {
             float dis = dc.query_to_code (codes);
             if (dis < radius) {
-                long id = store_pairs ? (list_no << 32 | j) : ids[j];
+                int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
                 res.add (dis, id);
             }
             codes += code_size;
@@ -1503,9 +1504,11 @@ InvertedListScanner* sel2_InvertedListScanner
     if (DCClass::Sim::metric_type == METRIC_L2) {
         return new IVFSQScannerL2<DCClass>(sq->d, sq->trained, sq->code_size,
                                            quantizer, store_pairs, r);
-    } else {
+    } else if (DCClass::Sim::metric_type == METRIC_INNER_PRODUCT) {
         return new IVFSQScannerIP<DCClass>(sq->d, sq->trained, sq->code_size,
                                            store_pairs, r);
+    } else {
+        FAISS_THROW_MSG("unsupported metric type");
     }
 }
 
@@ -1574,9 +1577,11 @@ InvertedListScanner* sel0_InvertedListScanner
     if (mt == METRIC_L2) {
         return sel1_InvertedListScanner<SimilarityL2<SIMDWIDTH> >
             (sq, quantizer, store_pairs, by_residual);
-    } else {
+    } else if (mt == METRIC_INNER_PRODUCT) {
         return sel1_InvertedListScanner<SimilarityIP<SIMDWIDTH> >
             (sq, quantizer, store_pairs, by_residual);
+    } else {
+        FAISS_THROW_MSG("unsupported metric type");
     }
 }
 
@@ -1645,6 +1650,8 @@ void IndexScalarQuantizer::search(
         idx_t* labels) const
 {
     FAISS_THROW_IF_NOT (is_trained);
+    FAISS_THROW_IF_NOT (metric_type == METRIC_L2 ||
+                        metric_type == METRIC_INNER_PRODUCT);
 
 #pragma omp parallel
     {
@@ -1744,8 +1751,8 @@ void IndexIVFScalarQuantizer::train_residual (idx_t n, const float *x)
     ScopeDeleter<float> del_x (x_in == x ? nullptr : x);
 
     if (by_residual) {
-        long * idx = new long [n];
-        ScopeDeleter<long> del (idx);
+        int64_t * idx = new int64_t [n];
+        ScopeDeleter<int64_t> del (idx);
         quantizer->assign (n, x, idx);
         float *residuals = new float [n * d];
         ScopeDeleter<float> del2 (residuals);
@@ -1776,7 +1783,7 @@ void IndexIVFScalarQuantizer::encode_vectors(idx_t n, const float* x,
         // each thread takes care of a subset of lists
 #pragma omp for
         for (size_t i = 0; i < n; i++) {
-            long list_no = list_nos [i];
+            int64_t list_no = list_nos [i];
             if (list_no >= 0) {
                 const float *xi = x + i * d;
                 if (by_residual) {
@@ -1793,11 +1800,11 @@ void IndexIVFScalarQuantizer::encode_vectors(idx_t n, const float* x,
 
 
 void IndexIVFScalarQuantizer::add_with_ids
-       (idx_t n, const float * x, const long *xids)
+       (idx_t n, const float * x, const idx_t *xids)
 {
     FAISS_THROW_IF_NOT (is_trained);
-    long * idx = new long [n];
-    ScopeDeleter<long> del (idx);
+    int64_t * idx = new int64_t [n];
+    ScopeDeleter<int64_t> del (idx);
     quantizer->assign (n, x, idx);
     size_t nadd = 0;
     Quantizer *squant = select_quantizer (sq);
@@ -1812,9 +1819,9 @@ void IndexIVFScalarQuantizer::add_with_ids
 
         // each thread takes care of a subset of lists
         for (size_t i = 0; i < n; i++) {
-            long list_no = idx [i];
+            int64_t list_no = idx [i];
             if (list_no >= 0 && list_no % nt == rank) {
-                long id = xids ? xids[i] : ntotal + i;
+                int64_t id = xids ? xids[i] : ntotal + i;
 
                 const float * xi = x + i * d;
                 if (by_residual) {
@@ -1847,8 +1854,8 @@ InvertedListScanner* IndexIVFScalarQuantizer::get_InvertedListScanner
 }
 
 
-void IndexIVFScalarQuantizer::reconstruct_from_offset (long list_no,
-                                                       long offset,
+void IndexIVFScalarQuantizer::reconstruct_from_offset (int64_t list_no,
+                                                       int64_t offset,
                                                        float* recons) const
 {
     std::vector<float> centroid(d);

@@ -15,7 +15,7 @@ import pdb
 
 
 # we import * so that the symbol X can be accessed as faiss.X
-from .swigfaiss import *
+from swigfaiss import *
 
 __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
                             FAISS_VERSION_MINOR,
@@ -218,11 +218,20 @@ def handle_IndexBinary(the_class):
                       swig_ptr(labels))
         return distances, labels
 
+    def replacement_remove_ids(self, x):
+        if isinstance(x, IDSelector):
+            sel = x
+        else:
+            assert x.ndim == 1
+            sel = IDSelectorBatch(x.size, swig_ptr(x))
+        return self.remove_ids_c(sel)
+
     replace_method(the_class, 'add', replacement_add)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'train', replacement_train)
     replace_method(the_class, 'search', replacement_search)
     replace_method(the_class, 'reconstruct', replacement_reconstruct)
+    replace_method(the_class, 'remove_ids', replacement_remove_ids)
 
 
 def handle_VectorTransform(the_class):
@@ -375,11 +384,14 @@ add_ref_in_constructor(Level1Quantizer, 0)
 add_ref_in_constructor(IndexIVFScalarQuantizer, 0)
 add_ref_in_constructor(IndexIDMap, 0)
 add_ref_in_constructor(IndexIDMap2, 0)
+add_ref_in_constructor(IndexHNSW, 0)
 add_ref_in_method(IndexShards, 'add_shard', 0)
 add_ref_in_method(IndexBinaryShards, 'add_shard', 0)
 add_ref_in_constructor(IndexRefineFlat, 0)
 add_ref_in_constructor(IndexBinaryIVF, 0)
 add_ref_in_constructor(IndexBinaryFromFloat, 0)
+add_ref_in_constructor(IndexBinaryIDMap, 0)
+add_ref_in_constructor(IndexBinaryIDMap2, 0)
 
 add_ref_in_method(IndexReplicas, 'addIndex', 0)
 add_ref_in_method(IndexBinaryReplicas, 'addIndex', 0)
@@ -507,21 +519,45 @@ def kmax(array, k):
     return D, I
 
 
+def pairwise_distances(xq, xb, mt=METRIC_L2, metric_arg=0):
+    """compute the whole pairwise distance matrix between two sets of
+    vectors"""
+    nq, d = xq.shape
+    nb, d2 = xb.shape
+    assert d == d2
+    dis = np.empty((nq, nb), dtype='float32')
+    if mt == METRIC_L2:
+        pairwise_L2sqr(
+            d, nq, swig_ptr(xq),
+            nb, swig_ptr(xb),
+            swig_ptr(dis))
+    else:
+        pairwise_extra_distances(
+            d, nq, swig_ptr(xq),
+            nb, swig_ptr(xb),
+            mt, metric_arg,
+            swig_ptr(dis))
+    return dis
+
+
+
+
 def rand(n, seed=12345):
     res = np.empty(n, dtype='float32')
-    float_rand(swig_ptr(res), n, seed)
+    float_rand(swig_ptr(res), res.size, seed)
     return res
 
 
-def lrand(n, seed=12345):
+def randint(n, seed=12345):
     res = np.empty(n, dtype='int64')
-    long_rand(swig_ptr(res), n, seed)
+    int64_rand(swig_ptr(res), res.size, seed)
     return res
 
+lrand = randint
 
 def randn(n, seed=12345):
     res = np.empty(n, dtype='float32')
-    float_randn(swig_ptr(res), n, seed)
+    float_randn(swig_ptr(res), res.size, seed)
     return res
 
 
@@ -591,7 +627,7 @@ class Kmeans:
         centroids = vector_float_to_array(clus.centroids)
         self.centroids = centroids.reshape(self.k, d)
         self.obj = vector_float_to_array(clus.obj)
-        return self.obj[-1]
+        return self.obj[-1] if self.obj.size > 0 else 0.0
 
     def assign(self, x):
         assert self.centroids is not None, "should train before assigning"

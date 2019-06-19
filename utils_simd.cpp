@@ -62,7 +62,7 @@ namespace faiss {
  * Reference implementations
  */
 
-/* same without SSE */
+
 float fvec_L2sqr_ref (const float * x,
                      const float * y,
                      size_t d)
@@ -74,6 +74,31 @@ float fvec_L2sqr_ref (const float * x,
        res += tmp * tmp;
     }
     return res;
+}
+
+float fvec_L1_ref (const float * x,
+                   const float * y,
+                   size_t d)
+{
+    size_t i;
+    float res = 0;
+    for (i = 0; i < d; i++) {
+        const float tmp = x[i] - y[i];
+        res += fabs(tmp);
+    }
+    return res;
+}
+
+float fvec_Linf_ref (const float * x,
+                     const float * y,
+                     size_t d)
+{
+  size_t i;
+  float res = 0;
+  for (i = 0; i < d; i++) {
+    res = fmax(res, fabs(x[i] - y[i]));
+  }
+  return res;
 }
 
 float fvec_inner_product_ref (const float * x,
@@ -385,9 +410,93 @@ float fvec_L2sqr (const float * x,
     return  _mm_cvtss_f32 (msum2);
 }
 
-#elif defined(__SSE__)
+float fvec_L1 (const float * x, const float * y, size_t d)
+{
+    __m256 msum1 = _mm256_setzero_ps();
+    __m256 signmask = __m256(_mm256_set1_epi32 (0x7fffffffUL));
 
-/* SSE-implementation of L2 distance */
+    while (d >= 8) {
+        __m256 mx = _mm256_loadu_ps (x); x += 8;
+        __m256 my = _mm256_loadu_ps (y); y += 8;
+        const __m256 a_m_b = mx - my;
+        msum1 += _mm256_and_ps(signmask, a_m_b);
+        d -= 8;
+    }
+
+    __m128 msum2 = _mm256_extractf128_ps(msum1, 1);
+    msum2 +=       _mm256_extractf128_ps(msum1, 0);
+    __m128 signmask2 = __m128(_mm_set1_epi32 (0x7fffffffUL));
+
+    if (d >= 4) {
+        __m128 mx = _mm_loadu_ps (x); x += 4;
+        __m128 my = _mm_loadu_ps (y); y += 4;
+        const __m128 a_m_b = mx - my;
+        msum2 += _mm_and_ps(signmask2, a_m_b);
+        d -= 4;
+    }
+
+    if (d > 0) {
+        __m128 mx = masked_read (d, x);
+        __m128 my = masked_read (d, y);
+        __m128 a_m_b = mx - my;
+        msum2 += _mm_and_ps(signmask2, a_m_b);
+    }
+
+    msum2 = _mm_hadd_ps (msum2, msum2);
+    msum2 = _mm_hadd_ps (msum2, msum2);
+    return  _mm_cvtss_f32 (msum2);
+}
+
+float fvec_Linf (const float * x, const float * y, size_t d)
+{
+    __m256 msum1 = _mm256_setzero_ps();
+    __m256 signmask = __m256(_mm256_set1_epi32 (0x7fffffffUL));
+
+    while (d >= 8) {
+        __m256 mx = _mm256_loadu_ps (x); x += 8;
+        __m256 my = _mm256_loadu_ps (y); y += 8;
+        const __m256 a_m_b = mx - my;
+        msum1 = _mm256_max_ps(msum1, _mm256_and_ps(signmask, a_m_b));
+        d -= 8;
+    }
+
+    __m128 msum2 = _mm256_extractf128_ps(msum1, 1);
+    msum2 = _mm_max_ps (msum2, _mm256_extractf128_ps(msum1, 0));
+    __m128 signmask2 = __m128(_mm_set1_epi32 (0x7fffffffUL));
+
+    if (d >= 4) {
+        __m128 mx = _mm_loadu_ps (x); x += 4;
+        __m128 my = _mm_loadu_ps (y); y += 4;
+        const __m128 a_m_b = mx - my;
+        msum2 = _mm_max_ps(msum2, _mm_and_ps(signmask2, a_m_b));
+        d -= 4;
+    }
+
+    if (d > 0) {
+        __m128 mx = masked_read (d, x);
+        __m128 my = masked_read (d, y);
+        __m128 a_m_b = mx - my;
+        msum2 = _mm_max_ps(msum2, _mm_and_ps(signmask2, a_m_b));
+    }
+
+    msum2 = _mm_max_ps(_mm_movehl_ps(msum2, msum2), msum2);
+    msum2 = _mm_max_ps(msum2, _mm_shuffle_ps (msum2, msum2, 1));
+    return  _mm_cvtss_f32 (msum2);
+}
+
+#elif defined(__SSE__) // But not AVX
+
+float fvec_L1 (const float * x, const float * y, size_t d)
+{
+    return fvec_L1_ref (x, y, d);
+}
+
+float fvec_Linf (const float * x, const float * y, size_t d)
+{
+    return fvec_Linf_ref (x, y, d);
+}
+
+
 float fvec_L2sqr (const float * x,
                  const float * y,
                  size_t d)
@@ -494,6 +603,16 @@ void fvec_L2sqr_ny (float * dis, const float * x,
     fvec_L2sqr_ny_ref (dis, x, y, d, ny);
 }
 
+float fvec_L1 (const float * x, const float * y, size_t d)
+{
+    return fvec_L1_ref (x, y, d);
+}
+
+float fvec_Linf (const float * x, const float * y, size_t d)
+{
+    return fvec_Linf_ref (x, y, d);
+}
+
 
 #else
 // scalar implementation
@@ -503,6 +622,16 @@ float fvec_L2sqr (const float * x,
                   size_t d)
 {
     return fvec_L2sqr_ref (x, y, d);
+}
+
+float fvec_L1 (const float * x, const float * y, size_t d)
+{
+    return fvec_L1_ref (x, y, d);
+}
+
+float fvec_Linf (const float * x, const float * y, size_t d)
+{
+    return fvec_Linf_ref (x, y, d);
 }
 
 float fvec_inner_product (const float * x,

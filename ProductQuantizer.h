@@ -34,7 +34,6 @@ struct ProductQuantizer {
     size_t ksub;           ///< number of centroids for each subquantizer
     bool verbose;          ///< verbose during training?
 
-
     /// initialization
     enum train_type_t {
         Train_default,

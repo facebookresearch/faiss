@@ -18,7 +18,6 @@
 #define FAISS_utils_h
 
 #include <random>
-
 #include <stdint.h>
 
 #include "Heap.h"
@@ -51,8 +50,8 @@ struct RandomGenerator {
     /// random positive integer
     int rand_int ();
 
-    /// random long
-    long rand_long ();
+    /// random int64_t
+    int64_t rand_int64 ();
 
     /// generate random integer between 0 and max-1
     int rand_int (int max);
@@ -62,17 +61,17 @@ struct RandomGenerator {
 
     double rand_double ();
 
-    explicit RandomGenerator (long seed = 1234);
+    explicit RandomGenerator (int64_t seed = 1234);
 };
 
 /* Generate an array of uniform random floats / multi-threaded implementation */
-void float_rand (float * x, size_t n, long seed);
-void float_randn (float * x, size_t n, long seed);
-void long_rand (long * x, size_t n, long seed);
-void byte_rand (uint8_t * x, size_t n, long seed);
+void float_rand (float * x, size_t n, int64_t seed);
+void float_randn (float * x, size_t n, int64_t seed);
+void int64_rand (int64_t * x, size_t n, int64_t seed);
+void byte_rand (uint8_t * x, size_t n, int64_t seed);
 
 /* random permutation */
-void rand_perm (int * perm, size_t n, long seed);
+void rand_perm (int * perm, size_t n, int64_t seed);
 
 
 
@@ -87,15 +86,26 @@ float fvec_L2sqr (
         const float * y,
         size_t d);
 
-/* SSE-implementation of inner product and L2 distance */
+/// inner product
 float  fvec_inner_product (
+        const float * x,
+        const float * y,
+        size_t d);
+
+/// L1 distance
+float fvec_L1 (
+        const float * x,
+        const float * y,
+        size_t d);
+
+float fvec_Linf (
         const float * x,
         const float * y,
         size_t d);
 
 
 /// a balanced assignment has a IF of 1
-double imbalance_factor (int n, int k, const long *assign);
+double imbalance_factor (int n, int k, const int64_t *assign);
 
 /// same, takes a histogram as input
 double imbalance_factor (int k, const int *hist);
@@ -110,12 +120,11 @@ double imbalance_factor (int k, const int *hist);
  * @param dis   output distances (size nq * nb)
  * @param ldq,ldb, ldd strides for the matrices
  */
-void pairwise_L2sqr (long d,
-                     long nq, const float *xq,
-                     long nb, const float *xb,
+void pairwise_L2sqr (int64_t d,
+                     int64_t nq, const float *xq,
+                     int64_t nb, const float *xb,
                      float *dis,
-                     long ldq = -1, long ldb = -1, long ldd = -1);
-
+                     int64_t ldq = -1, int64_t ldb = -1, int64_t ldd = -1);
 
 /* compute the inner product between nx vectors x and one y */
 void fvec_inner_products_ny (
@@ -126,7 +135,7 @@ void fvec_inner_products_ny (
 
 /* compute ny square L2 distance bewteen x and a set of contiguous y vectors */
 void fvec_L2sqr_ny (
-        float * __restrict dis,
+        float * dis,
         const float * x,
         const float * y,
         size_t d, size_t ny);
@@ -153,7 +162,7 @@ void fvec_renorm_L2 (size_t d, size_t nx, float * x);
 /* This function exists because the Torch counterpart is extremly slow
    (not multi-threaded + unexpected overhead even in single thread).
    It is here to implement the usual property |x-y|^2=|x|^2+|y|^2-2<x|y>  */
-void inner_product_to_L2sqr (float * __restrict dis,
+void inner_product_to_L2sqr (float * dis,
                              const float * nr1,
                              const float * nr2,
                              size_t n1, size_t n2);
@@ -165,18 +174,18 @@ void inner_product_to_L2sqr (float * __restrict dis,
  /* compute the inner product between x and a subset y of ny vectors,
    whose indices are given by idy.  */
 void fvec_inner_products_by_idx (
-        float * __restrict ip,
+        float * ip,
         const float * x,
         const float * y,
-        const long * __restrict ids,
+        const int64_t *ids,
         size_t d, size_t nx, size_t ny);
 
 /* same but for a subset in y indexed by idsy (ny vectors in total) */
 void fvec_L2sqr_by_idx (
-        float * __restrict dis,
+        float * dis,
         const float * x,
         const float * y,
-        const long * __restrict ids, /* ids of y vecs */
+        const int64_t *ids, /* ids of y vecs */
         size_t d, size_t nx, size_t ny);
 
 /***************************************************************************
@@ -206,6 +215,8 @@ void knn_L2sqr (
         size_t d, size_t nx, size_t ny,
         float_maxheap_array_t * res);
 
+
+
 /** same as knn_L2sqr, but base_shift[bno] is subtracted to all
  * computed distances.
  *
@@ -224,13 +235,13 @@ void knn_L2sqr_base_shift (
 void knn_inner_products_by_idx (
         const float * x,
         const float * y,
-        const long *  ids,
+        const int64_t *  ids,
         size_t d, size_t nx, size_t ny,
         float_minheap_array_t * res);
 
 void knn_L2sqr_by_idx (const float * x,
                        const float * y,
-                       const long * __restrict ids,
+                       const int64_t * ids,
                        size_t d, size_t nx, size_t ny,
                        float_maxheap_array_t * res);
 
@@ -308,7 +319,7 @@ void reflection (const float * u, float * x, size_t n, size_t d, size_t nu);
 int km_update_centroids (
         const float * x,
         float * centroids,
-        long * assign,
+        int64_t * assign,
         size_t d, size_t k, size_t n,
         size_t k_frozen);
 
@@ -318,13 +329,13 @@ int km_update_centroids (
 void matrix_qr (int m, int n, float *a);
 
 /** distances are supposed to be sorted. Sorts indices with same distance*/
-void ranklist_handle_ties (int k, long *idx, const float *dis);
+void ranklist_handle_ties (int k, int64_t *idx, const float *dis);
 
 /** count the number of comon elements between v1 and v2
  * algorithm = sorting + bissection to avoid double-counting duplicates
  */
-size_t ranklist_intersection_size (size_t k1, const long *v1,
-                                   size_t k2, const long *v2);
+size_t ranklist_intersection_size (size_t k1, const int64_t *v1,
+                                   size_t k2, const int64_t *v2);
 
 /** merge a result table into another one
  *
@@ -335,10 +346,10 @@ size_t ranklist_intersection_size (size_t k1, const long *v1,
  * @return             nb of values that were taken from the second table
  */
 size_t merge_result_table_with (size_t n, size_t k,
-                                long *I0, float *D0,
-                                const long *I1, const float *D1,
+                                int64_t *I0, float *D0,
+                                const int64_t *I1, const float *D1,
                                 bool keep_min = true,
-                                long translation = 0);
+                                int64_t translation = 0);
 
 
 
@@ -375,7 +386,7 @@ size_t ivec_checksum (size_t n, const int *a);
  */
 const float *fvecs_maybe_subsample (
        size_t d, size_t *n, size_t nmax, const float *x,
-       bool verbose = false, long seed = 1234);
+       bool verbose = false, int64_t seed = 1234);
 
 /** Convert binary vector to +1/-1 valued float vector.
  *
@@ -396,7 +407,7 @@ void real_to_binary(size_t d, const float *x_in, uint8_t *x_out);
 
 
 /** A reasonable hashing function */
-uint64_t hash_bytes (const uint8_t *bytes, long n);
+uint64_t hash_bytes (const uint8_t *bytes, int64_t n);
 
 /** Whether OpenMP annotations were respected. */
 bool check_openmp();

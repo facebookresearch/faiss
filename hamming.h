@@ -8,9 +8,10 @@
 // -*- c++ -*-
 
 /*
- * Hamming distances. The binary vector dimensionality should be a multiple
- * of 64, as the elementary operations operate on words. If you really need
- * other sizes, just pad with 0s (this is done by function fvecs2bitvecs).
+ * Hamming distances. The binary vector dimensionality should be a
+ * multiple of 8, as the elementary operations operate on bytes. If
+ * you need other sizes, just pad with 0s (this is done by function
+ * fvecs2bitvecs).
  *
  * User-defined type hamdis_t is used for distances because at this time
  * it is still uncler clear how we will need to balance
@@ -18,8 +19,6 @@
  * - memory usage
  * - cache-misses when dealing with large volumes of data (fewer bits is better)
  *
- * hamdis_t should optimally be compatibe with one of the Torch Storage
- * (Byte,Short,Long) and therefore should be signed for 2-bytes and 4-bytes.
  */
 
 #ifndef FAISS_hamming_h
@@ -31,8 +30,7 @@
 #include "Heap.h"
 
 
-/* The Hamming distance type should be exportable to Lua Tensor, which
-   excludes most unsigned type */
+/* The Hamming distance type */
 typedef int32_t hamdis_t;
 
 namespace faiss {
@@ -125,7 +123,7 @@ void hammings_knn_mc (
   size_t k,
   size_t ncodes,
   int32_t *distances,
-  long *labels);
+  int64_t *labels);
 
 /* Counting the number of matches or of cross-matches (without returning them)
    For use with function that assume pre-allocated memory */
@@ -147,7 +145,7 @@ size_t match_hamming_thres (
         size_t n2,
         hamdis_t ht,
         size_t ncodes,
-        long * idx,
+        int64_t * idx,
         hamdis_t * dis);
 
 /* Cross-matching in a set of vectors */
@@ -529,7 +527,7 @@ void generalized_hammings_knn_hc (
 template<class HammingComputer>
 struct HCounterState {
   int *counters;
-  long *ids_per_dis;
+  int64_t *ids_per_dis;
 
   HammingComputer hc;
   int thres;
@@ -537,7 +535,7 @@ struct HCounterState {
   int count_eq;
   int k;
 
- HCounterState(int *counters, long *ids_per_dis,
+ HCounterState(int *counters, int64_t *ids_per_dis,
                const uint8_t *x, int d, int k)
  : counters(counters),
         ids_per_dis(ids_per_dis),

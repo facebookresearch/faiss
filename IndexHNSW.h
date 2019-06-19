@@ -84,9 +84,6 @@ struct IndexHNSW : Index {
 
     ~IndexHNSW() override;
 
-    // get a DistanceComputer object for this kind of storage
-    virtual DistanceComputer *get_distance_computer() const = 0;
-
     void add(idx_t n, const float *x) override;
 
     /// Trains the storage if needed
@@ -129,7 +126,6 @@ struct IndexHNSW : Index {
 };
 
 
-
 /** Flat index topped with with a HNSW structure to access elements
  *  more efficiently.
  */
@@ -137,8 +133,6 @@ struct IndexHNSW : Index {
 struct IndexHNSWFlat : IndexHNSW {
     IndexHNSWFlat();
     IndexHNSWFlat(int d, int M);
-    DistanceComputer *
-      get_distance_computer() const override;
 };
 
 /** PQ index topped with with a HNSW structure to access elements
@@ -148,8 +142,6 @@ struct IndexHNSWPQ : IndexHNSW {
     IndexHNSWPQ();
     IndexHNSWPQ(int d, int pq_m, int M);
     void train(idx_t n, const float* x) override;
-    DistanceComputer *
-      get_distance_computer() const override;
 };
 
 /** SQ index topped with with a HNSW structure to access elements
@@ -158,8 +150,6 @@ struct IndexHNSWPQ : IndexHNSW {
 struct IndexHNSWSQ : IndexHNSW {
     IndexHNSWSQ();
     IndexHNSWSQ(int d, ScalarQuantizer::QuantizerType qtype, int M);
-    DistanceComputer *
-      get_distance_computer() const override;
 };
 
 /** 2-level code structure with fast random access
@@ -167,8 +157,7 @@ struct IndexHNSWSQ : IndexHNSW {
 struct IndexHNSW2Level : IndexHNSW {
     IndexHNSW2Level();
     IndexHNSW2Level(Index *quantizer, size_t nlist, int m_pq, int M);
-    DistanceComputer *
-      get_distance_computer() const override;
+
     void flip_to_ivf();
 
     /// entry point for search

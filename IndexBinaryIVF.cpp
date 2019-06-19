@@ -57,33 +57,33 @@ void IndexBinaryIVF::add(idx_t n, const uint8_t *x) {
   add_with_ids(n, x, nullptr);
 }
 
-void IndexBinaryIVF::add_with_ids(idx_t n, const uint8_t *x, const long *xids) {
+void IndexBinaryIVF::add_with_ids(idx_t n, const uint8_t *x, const idx_t *xids) {
   add_core(n, x, xids, nullptr);
 }
 
-void IndexBinaryIVF::add_core(idx_t n, const uint8_t *x, const long *xids,
-                              const long *precomputed_idx) {
+void IndexBinaryIVF::add_core(idx_t n, const uint8_t *x, const idx_t *xids,
+                              const idx_t *precomputed_idx) {
   FAISS_THROW_IF_NOT(is_trained);
   assert(invlists);
   FAISS_THROW_IF_NOT_MSG(!(maintain_direct_map && xids),
                          "cannot have direct map and add with ids");
 
-  const long * idx;
+  const idx_t * idx;
 
-  std::unique_ptr<long[]> scoped_idx;
+  std::unique_ptr<idx_t[]> scoped_idx;
 
   if (precomputed_idx) {
     idx = precomputed_idx;
   } else {
-    scoped_idx.reset(new long[n]);
+    scoped_idx.reset(new idx_t[n]);
     quantizer->assign(n, x, scoped_idx.get());
     idx = scoped_idx.get();
   }
 
   long n_add = 0;
   for (size_t i = 0; i < n; i++) {
-    long id = xids ? xids[i] : ntotal + i;
-    long list_no = idx[i];
+    idx_t id = xids ? xids[i] : ntotal + i;
+    idx_t list_no = idx[i];
 
     if (list_no < 0)
       continue;
@@ -112,7 +112,7 @@ void IndexBinaryIVF::make_direct_map(bool new_maintain_direct_map) {
       size_t list_size = invlists->list_size(key);
       const idx_t *idlist = invlists->get_ids(key);
 
-      for (long ofs = 0; ofs < list_size; ofs++) {
+      for (size_t ofs = 0; ofs < list_size; ofs++) {
         FAISS_THROW_IF_NOT_MSG(0 <= idlist[ofs] && idlist[ofs] < ntotal,
                                "direct map supported only for seuquential ids");
         direct_map[idlist[ofs]] = key << 32 | ofs;
@@ -144,20 +144,20 @@ void IndexBinaryIVF::search(idx_t n, const uint8_t *x, idx_t k,
 void IndexBinaryIVF::reconstruct(idx_t key, uint8_t *recons) const {
   FAISS_THROW_IF_NOT_MSG(direct_map.size() == ntotal,
                          "direct map is not initialized");
-  long list_no = direct_map[key] >> 32;
-  long offset = direct_map[key] & 0xffffffff;
+  idx_t list_no = direct_map[key] >> 32;
+  idx_t offset = direct_map[key] & 0xffffffff;
   reconstruct_from_offset(list_no, offset, recons);
 }
 
 void IndexBinaryIVF::reconstruct_n(idx_t i0, idx_t ni, uint8_t *recons) const {
   FAISS_THROW_IF_NOT(ni == 0 || (i0 >= 0 && i0 + ni <= ntotal));
 
-  for (long list_no = 0; list_no < nlist; list_no++) {
+  for (idx_t list_no = 0; list_no < nlist; list_no++) {
     size_t list_size = invlists->list_size(list_no);
     const Index::idx_t *idlist = invlists->get_ids(list_no);
 
-    for (long offset = 0; offset < list_size; offset++) {
-      long id = idlist[offset];
+    for (idx_t offset = 0; offset < list_size; offset++) {
+      idx_t id = idlist[offset];
       if (!(id >= i0 && id < i0 + ni)) {
         continue;
       }
@@ -171,7 +171,7 @@ void IndexBinaryIVF::reconstruct_n(idx_t i0, idx_t ni, uint8_t *recons) const {
 void IndexBinaryIVF::search_and_reconstruct(idx_t n, const uint8_t *x, idx_t k,
                                             int32_t *distances, idx_t *labels,
                                             uint8_t *recons) const {
-  std::unique_ptr<idx_t[]> idx(new long[n * nprobe]);
+  std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
   std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe]);
 
   quantizer->search(n, x, nprobe, coarse_dis.get(), idx.get());
@@ -203,7 +203,7 @@ void IndexBinaryIVF::search_and_reconstruct(idx_t n, const uint8_t *x, idx_t k,
   }
 }
 
-void IndexBinaryIVF::reconstruct_from_offset(long list_no, long offset,
+void IndexBinaryIVF::reconstruct_from_offset(idx_t list_no, idx_t offset,
                                              uint8_t *recons) const {
   memcpy(recons, invlists->get_single_code(list_no, offset), code_size);
 }
@@ -214,15 +214,15 @@ void IndexBinaryIVF::reset() {
   ntotal = 0;
 }
 
-long IndexBinaryIVF::remove_ids(const IDSelector& sel) {
+size_t IndexBinaryIVF::remove_ids(const IDSelector& sel) {
   FAISS_THROW_IF_NOT_MSG(!maintain_direct_map,
                          "direct map remove not implemented");
 
-  std::vector<long> toremove(nlist);
+  std::vector<idx_t> toremove(nlist);
 
 #pragma omp parallel for
-  for (long i = 0; i < nlist; i++) {
-    long l0 = invlists->list_size (i), l = l0, j = 0;
+  for (idx_t i = 0; i < nlist; i++) {
+    idx_t l0 = invlists->list_size (i), l = l0, j = 0;
     const idx_t *idsi = invlists->get_ids(i);
     while (j < l) {
       if (sel.is_member(idsi[j])) {
@@ -238,8 +238,8 @@ long IndexBinaryIVF::remove_ids(const IDSelector& sel) {
     toremove[i] = l0 - l;
   }
   // this will not run well in parallel on ondisk because of possible shrinks
-  long nremove = 0;
-  for (long i = 0; i < nlist; i++) {
+  size_t nremove = 0;
+  for (idx_t i = 0; i < nlist; i++) {
     if (toremove[i] > 0) {
       nremove += toremove[i];
       invlists->resize(
@@ -357,7 +357,7 @@ struct IVFBinaryScannerL2: BinaryInvertedListScanner {
             uint32_t dis = hc.hamming (codes);
             if (dis < simi[0]) {
                 heap_pop<C> (k, simi, idxi);
-                long id = store_pairs ? (list_no << 32 | j) : ids[j];
+                idx_t id = store_pairs ? (list_no << 32 | j) : ids[j];
                 heap_push<C> (k, simi, idxi, dis, id);
                 nup++;
             }
@@ -429,9 +429,9 @@ void search_knn_hamming_heap(const IndexBinaryIVF& ivf,
             const uint8_t *xi = x + i * ivf.code_size;
             scanner->set_query(xi);
 
-            const long * keysi = keys + i * nprobe;
+            const idx_t * keysi = keys + i * nprobe;
             int32_t * simi = distances + k * i;
-            long * idxi = labels + k * i;
+            idx_t * idxi = labels + k * i;
 
             if (metric_type == METRIC_INNER_PRODUCT) {
                 heap_heapify<HeapForIP> (k, simi, idxi);
@@ -442,13 +442,13 @@ void search_knn_hamming_heap(const IndexBinaryIVF& ivf,
             size_t nscan = 0;
 
             for (size_t ik = 0; ik < nprobe; ik++) {
-                long key = keysi[ik];  /* select the list  */
+                idx_t key = keysi[ik];  /* select the list  */
                 if (key < 0) {
                     // not enough centroids for multiprobe
                     continue;
                 }
                 FAISS_THROW_IF_NOT_FMT
-                    (key < (long) ivf.nlist,
+                    (key < (idx_t) ivf.nlist,
                      "Invalid key=%ld  at ik=%ld nlist=%ld\n",
                      key, ik, ivf.nlist);
 
@@ -495,14 +495,14 @@ template<class HammingComputer, bool store_pairs>
 void search_knn_hamming_count(const IndexBinaryIVF& ivf,
                               size_t nx,
                               const uint8_t *x,
-                              const long *keys,
+                              const idx_t *keys,
                               int k,
                               int32_t *distances,
-                              long *labels,
+                              idx_t *labels,
                               const IVFSearchParameters *params) {
   const int nBuckets = ivf.d + 1;
   std::vector<int> all_counters(nx * nBuckets, 0);
-  std::unique_ptr<long[]> all_ids_per_dis(new long[nx * nBuckets * k]);
+  std::unique_ptr<idx_t[]> all_ids_per_dis(new idx_t[nx * nBuckets * k]);
 
   long nprobe = params ? params->nprobe : ivf.nprobe;
   long max_codes = params ? params->max_codes : ivf.max_codes;
@@ -522,19 +522,19 @@ void search_knn_hamming_count(const IndexBinaryIVF& ivf,
 
 #pragma omp parallel for reduction(+: nlistv, ndis)
   for (size_t i = 0; i < nx; i++) {
-    const long * keysi = keys + i * nprobe;
+    const idx_t * keysi = keys + i * nprobe;
     HCounterState<HammingComputer>& csi = cs[i];
 
     size_t nscan = 0;
 
     for (size_t ik = 0; ik < nprobe; ik++) {
-      long key = keysi[ik];  /* select the list  */
+      idx_t key = keysi[ik];  /* select the list  */
       if (key < 0) {
         // not enough centroids for multiprobe
         continue;
       }
       FAISS_THROW_IF_NOT_FMT (
-        key < (long) ivf.nlist,
+        key < (idx_t) ivf.nlist,
         "Invalid key=%ld  at ik=%ld nlist=%ld\n",
         key, ik, ivf.nlist);
 
@@ -549,7 +549,7 @@ void search_knn_hamming_count(const IndexBinaryIVF& ivf,
       for (size_t j = 0; j < list_size; j++) {
         const uint8_t * yj = list_vecs + ivf.code_size * j;
 
-        long id = store_pairs ? (key << 32 | j) : ids[j];
+        idx_t id = store_pairs ? (key << 32 | j) : ids[j];
         csi.update_counter(yj, id);
       }
       if (ids)
@@ -588,10 +588,10 @@ void search_knn_hamming_count_1 (
                         const IndexBinaryIVF& ivf,
                         size_t nx,
                         const uint8_t *x,
-                        const long *keys,
+                        const idx_t *keys,
                         int k,
                         int32_t *distances,
-                        long *labels,
+                        idx_t *labels,
                         const IVFSearchParameters *params) {
     switch (ivf.code_size) {
 #define HANDLE_CS(cs)                                                  \

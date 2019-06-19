@@ -7,8 +7,9 @@
 
 // -*- c++ -*-
 
-#include "IndexFlat.h"
+#include "AuxIndexStructures.h"
 #include "FaissAssert.h"
+#include "utils.h"
 
 #include <cstring>
 
@@ -41,11 +42,11 @@ void Index::assign (idx_t n, const float * x, idx_t * labels, idx_t k)
 void Index::add_with_ids(
     idx_t /*n*/,
     const float* /*x*/,
-    const long* /*xids*/) {
+    const idx_t* /*xids*/) {
   FAISS_THROW_MSG ("add_with_ids not implemented for this type of index");
 }
 
-long Index::remove_ids(const IDSelector& /*sel*/) {
+size_t Index::remove_ids(const IDSelector& /*sel*/) {
   FAISS_THROW_MSG ("remove_ids not implemented for this type of index");
   return -1;
 }
@@ -94,5 +95,52 @@ void Index::compute_residual (const float * x,
 void Index::display () const {
   printf ("Index: %s  -> %ld elements\n", typeid (*this).name(), ntotal);
 }
+
+
+namespace {
+
+
+// storage that explicitly reconstructs vectors before computing distances
+struct GenericDistanceComputer : DistanceComputer {
+  size_t d;
+  const Index& storage;
+  std::vector<float> buf;
+  const float *q;
+
+  explicit GenericDistanceComputer(const Index& storage)
+      : storage(storage) {
+    d = storage.d;
+    buf.resize(d * 2);
+  }
+
+  float operator () (idx_t i) override {
+    storage.reconstruct(i, buf.data());
+    return fvec_L2sqr(q, buf.data(), d);
+  }
+
+  float symmetric_dis(idx_t i, idx_t j) override {
+    storage.reconstruct(i, buf.data());
+    storage.reconstruct(j, buf.data() + d);
+    return fvec_L2sqr(buf.data() + d, buf.data(), d);
+  }
+
+  void set_query(const float *x) override {
+    q = x;
+  }
+
+};
+
+
+}  // namespace
+
+
+DistanceComputer * Index::get_distance_computer() const {
+    if (metric_type == METRIC_L2) {
+        return new GenericDistanceComputer(*this);
+    } else {
+        FAISS_THROW_MSG ("get_distance_computer() not implemented");
+    }
+}
+
 
 }
