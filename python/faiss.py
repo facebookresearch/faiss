@@ -15,7 +15,7 @@ import pdb
 
 
 # we import * so that the symbol X can be accessed as faiss.X
-from swigfaiss import *
+from .swigfaiss import *
 
 __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
                             FAISS_VERSION_MINOR,
