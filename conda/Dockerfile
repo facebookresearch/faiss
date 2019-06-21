@@ -3,8 +3,8 @@ FROM soumith/conda-cuda:latest
 COPY ./ faiss
 WORKDIR /faiss/conda
 
-ENV FAISS_BUILD_VERSION 1.5.2
-ENV FAISS_BUILD_NUMBER  1
+ENV FAISS_BUILD_VERSION 1.5.3
+ENV FAISS_BUILD_NUMBER  0
 RUN conda build faiss --no-anaconda-upload -c pytorch
 RUN CUDA_ROOT=/usr/local/cuda-8.0 \
     CUDA_ARCH="-gencode=arch=compute_35,code=compute_35 \
