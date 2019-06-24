@@ -15,6 +15,7 @@ CLIBNAME=libfaiss_c
 LIBCOBJ=error_impl.o Index_c.o IndexFlat_c.o Clustering_c.o AutoTune_c.o \
 	AuxIndexStructures_c.o IndexIVF_c.o IndexIVFFlat_c.o IndexLSH_c.o \
 	index_io_c.o MetaIndexes_c.o IndexShards_c.o
+CFLAGS=-fPIC -m64 -Wno-sign-compare -g -O3 -Wall -Wextra
 
 # Build static and shared object files by default
 all: $(CLIBNAME).a $(CLIBNAME).$(SHAREDEXT)
@@ -35,6 +36,9 @@ bin/example_c: example_c.c $(CLIBNAME).$(SHAREDEXT)
 
 clean:
 	rm -f $(CLIBNAME).a $(CLIBNAME).$(SHAREDEXT)* *.o bin/example_c
+
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -c $< -o $@
 
 # Dependencies
 

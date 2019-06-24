@@ -70,8 +70,8 @@ int faiss_IndexIVF_merge_from(
  *                      elements are left before and a2 elements are after
  */
 int faiss_IndexIVF_copy_subset_to(
-    const FaissIndexIVF* index, FaissIndexIVF* other, int subset_type, long a1,
-    long a2);
+    const FaissIndexIVF* index, FaissIndexIVF* other, int subset_type, idx_t a1,
+    idx_t a2);
 
 /** search a set of vectors, that are pre-quantized by the IVF
  *  quantizer. Fill in the corresponding heaps with the query
@@ -126,36 +126,6 @@ void faiss_IndexIVFStats_reset(FaissIndexIVFStats* stats);
 inline void faiss_IndexIVFStats_init(FaissIndexIVFStats* stats) {
     faiss_IndexIVFStats_reset(stats);
 }
-
-/** Inverted file with stored vectors. Here the inverted file
- * pre-selects the vectors to be searched, but they are not otherwise
- * encoded, the code array just contains the raw float entries.
- */
-FAISS_DECLARE_CLASS(IndexIVFFlat)
-FAISS_DECLARE_DESTRUCTOR(IndexIVFFlat)
-
-int faiss_IndexIVFFlat_new(FaissIndexIVFFlat** p_index);
-
-int faiss_IndexIVFFlat_new_with(FaissIndexIVFFlat** p_index,
-    FaissIndex* quantizer, size_t d, size_t nlist);
-
-int faiss_IndexIVFFlat_new_with_metric(
-    FaissIndexIVFFlat** p_index, FaissIndex* quantizer, size_t d, size_t nlist,
-    FaissMetricType metric);
-
-int faiss_IndexIVFFlat_add_core(FaissIndexIVFFlat* index, idx_t n, 
-    const float * x, const long *xids, const long *precomputed_idx);
-
-/** Update a subset of vectors.
- *
- * The index must have a direct_map
- *
- * @param nv     nb of vectors to update
- * @param idx    vector indices to update, size nv
- * @param v      vectors of new values, size nv*d
- */
-int faiss_IndexIVFFlat_update_vectors(FaissIndexIVFFlat* index, int nv,
-    idx_t *idx, const float *v);
 
 #ifdef __cplusplus
 }

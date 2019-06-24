@@ -89,7 +89,7 @@ int faiss_IDSelectorRange_new(FaissIDSelectorRange** p_sel, idx_t imin, idx_t im
 DEFINE_GETTER(IDSelectorBatch, int, nbits)
 DEFINE_GETTER(IDSelectorBatch, idx_t, mask)
 
-int faiss_IDSelectorBatch_new(FaissIDSelectorBatch** p_sel, long n, const idx_t* indices) {
+int faiss_IDSelectorBatch_new(FaissIDSelectorBatch** p_sel, size_t n, const idx_t* indices) {
     try {
         *p_sel = reinterpret_cast<FaissIDSelectorBatch*>(
             new IDSelectorBatch(n, indices)

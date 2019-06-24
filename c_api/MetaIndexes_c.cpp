@@ -26,7 +26,7 @@ int faiss_IndexIDMap_new(FaissIndexIDMap** p_index, FaissIndex* index) {
     } CATCH_AND_HANDLE
 }
 
-void faiss_IndexIDMap_id_map(FaissIndexIDMap* index, long** p_id_map, size_t* p_size) {
+void faiss_IndexIDMap_id_map(FaissIndexIDMap* index, idx_t** p_id_map, size_t* p_size) {
     auto idx = reinterpret_cast<IndexIDMap*>(index);
     if (p_id_map)
         *p_id_map = idx->id_map.data();
