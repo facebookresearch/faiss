@@ -4,6 +4,8 @@ Faiss is a library for efficient similarity search and clustering of dense vecto
 
 ## NEWS
 
+*NEW: version 1.5.3 (2019-06-24) fix performance regression in IndexIVF.*
+
 *NEW: version 1.5.2 (2019-05-27) the license was relaxed to MIT from BSD+Patents. Read LICENSE for details.*
 
 *NEW: version 1.5.0 (2018-12-19) GPU binary flat index and binary HNSW index*
