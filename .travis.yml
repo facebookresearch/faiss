@@ -13,8 +13,6 @@ matrix:
           packages:
             - libblas-dev
             - liblapack-dev
-            - python-numpy
-            - python-scipy
             - python-dev
 #            - swig3.0
       env:
@@ -26,8 +24,6 @@ matrix:
           packages:
             - libatlas-base-dev
             - liblapack-dev
-            - python-numpy
-            - python-scipy
             - python-dev
 #            - swig3.0
       env:
@@ -39,21 +35,18 @@ matrix:
           packages:
             - libopenblas-dev
             - liblapack-dev
-            - python-numpy
-            - python-scipy
             - python-dev
 #            - swig3.0
       env:
         - PYTHON_CFLAGS="-I/usr/include/python2.7"
     - os: linux
+      dist: xenial  # To ensure clang 7 for __builtin_cpu_init().
       compiler: clang
       addons:
         apt:
           packages:
             - libopenblas-dev
             - liblapack-dev
-            - python-numpy
-            - python-scipy
             - python-dev
 #            - swig3.0
       env:
@@ -61,20 +54,42 @@ matrix:
         # NOTE: Hack, c.f. https://github.com/travis-ci/travis-ci/issues/8613
         - LD_LIBRARY_PATH="/usr/local/clang/lib"
     - os: osx
+      compiler: gcc
+      addons:
+        homebrew:
+          packages:
+            - gcc
+            - swig
+          update: true
       env:
-        - MATRIX_EVAL="brew update && brew install gcc@6 numpy scipy swig; brew link --overwrite gcc@6; export CC=gcc-6 CXX=g++-6"
+        - MATRIX_EVAL="which gcc; export CC=/usr/local/bin/gcc CXX=/usr/local/bin/g++"
     - os: osx
+      compiler: clang
+      addons:
+        homebrew:
+          packages:
+            - llvm
+            - swig
+          update: true
       env:
-        - MATRIX_EVAL="brew update && brew install llvm numpy scipy swig; brew link --overwrite llvm; export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++"
+        - MATRIX_EVAL="brew link --overwrite llvm; export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++"
         - LDFLAGS="-L/usr/local/opt/llvm/lib"
         - CPPFLAGS="-I/usr/local/opt/llvm/include"
   allow_failures:
     - os: osx
+      compiler: gcc
+      addons:
+        homebrew:
+          packages:
+            - gcc
+            - swig
+          update: true
       env:
-        - MATRIX_EVAL="brew update && brew install gcc@6 numpy scipy swig; brew link --overwrite gcc@6; export CC=gcc-6 CXX=g++-6"
+        - MATRIX_EVAL="which gcc; export CC=/usr/local/bin/gcc CXX=/usr/local/bin/g++"
 
 before_install:
   - eval "$MATRIX_EVAL"
+  - pip install --user scipy
 
 install:
   - ./.travis/install.sh
