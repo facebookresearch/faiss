@@ -65,8 +65,9 @@ uninstall:
 
 #############################
 # Dependencies
-
+ifdef CXXCPP
 -include depend
+endif
 
 depend: $(SRC) $(GPU_SRC)
 	for i in $^; do \
