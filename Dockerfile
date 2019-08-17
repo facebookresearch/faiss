@@ -33,4 +33,4 @@ RUN make test
 RUN make install
 RUN make -C demos demo_ivfpq_indexing && ./demos/demo_ivfpq_indexing
 
-ENV PYTHONPATH="$PYTHONPATH:/opt/faiss"
+ENV PYTHONPATH="$PYTHONPATH:/opt/faiss/python"

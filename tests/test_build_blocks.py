@@ -325,7 +325,7 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         m[5:10] = 0
         comments = faiss.MatrixStats(m).comments
-        print comments
+        print(comments)
         assert 'has 5 copies' in comments
         assert '5 null vectors' in comments
 
@@ -334,7 +334,7 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         m[::2] = m[1::2]
         comments = faiss.MatrixStats(m).comments
-        print comments
+        print(comments)
         assert '20 vectors are distinct' in comments
 
     def test_dead_dims(self):
@@ -342,7 +342,7 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         m[:, 5:10] = 0
         comments = faiss.MatrixStats(m).comments
-        print comments
+        print(comments)
         assert '5 dimensions are constant' in comments
 
     def test_rogue_means(self):
@@ -350,7 +350,7 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         m[:, 5:10] += 12345
         comments = faiss.MatrixStats(m).comments
-        print comments
+        print(comments)
         assert '5 dimensions are too large wrt. their variance' in comments
 
     def test_normalized(self):
@@ -358,7 +358,7 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         faiss.normalize_L2(m)
         comments = faiss.MatrixStats(m).comments
-        print comments
+        print(comments)
         assert 'vectors are normalized' in comments
 
 
