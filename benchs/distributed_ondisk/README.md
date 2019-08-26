@@ -7,6 +7,8 @@ The current code uses the Deep1B dataset for demonstration purposes, but can sca
 ## Distributed k-means
 
 To cluster 200M vectors to 10M centroids, it is useful to have a distriubuted k-means implementation. 
+The distribution simply consists in splitting the training vectors across machines (servers) and have them do the assignment. 
+The master/client then synthesizes the results and updates the centroids.
 
 The distributed k-means implementation here is based on 3 files:
 
@@ -59,12 +61,28 @@ bash run_on_cluster.bash test_kmeans_2
 The test `test_kmeans_2` simulates a distributed run on a single machine by starting one server process per GPU and connecting to the servers via the rpc protocol. 
 The output should look like [this gist](https://gist.github.com/mdouze/5b2dc69b74579ecff04e1686a277d32e).
 
+
+
 ### Distributed run
 
+The way the script can be distributed depends on the cluster's scheduling system. 
+Here we use Slurm, but it should be relatively easy to adapt to any scheduler that can allocate a set of matchines and start the same exectuable on all of them. 
 
+The command 
+```
+bash run_on_cluster.bash slurm_distributed_kmeans
+```
+asks SLURM for 5 machines with 4 GPUs each with the `srun` command. 
+All 5 machines run the script with the `slurm_within_kmeans_server` option. 
+They determine the number of servers and their own server id via the `SLURM_NPROCS` and `SLURM_PROCID` environment variables.
 
+All machines start `distributed_kmeans.py` in server mode for the slice of the dataset they are responsible for.
 
+In addition, the machine #0 also starts the client. 
+The client knows who are the other servers via the variable `SLURM_JOB_NODELIST`. 
+It connects to all clients and performs the clustering. 
+Note that the jobs must be killed at the end of the k-means run. 
 
+The output should look like [this gist](https://gist.github.com/mdouze/8d25e89fb4af5093057cae0f917da6cd).
 
-
-
+For a real run, one would also store the output centroids with the `--out filename` option.
