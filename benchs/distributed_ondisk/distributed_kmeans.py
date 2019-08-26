@@ -235,11 +235,9 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None):
 
 class AssignServer(rpc.Server):
     """ Assign version that can be exposed via RPC """
-    id_counter = 0
 
-    def __init__(self, s, assign):
-        rpc.Server.__init__(self, s, AssignServer.id_counter)
-        AssignServer.id_counter
+    def __init__(self, s, assign, log_prefix=''):
+        rpc.Server.__init__(self, s, log_prefix=log_prefix)
         self.assign = assign
 
     def __getattr__(self, f):
@@ -386,8 +384,9 @@ def main():
 
     if args.server:
         print('starting server')
+        log_prefix = f"{rpc.socket.gethostname()}:{args.port}"
         rpc.run_server(
-            lambda s: AssignServer(s, data),
+            lambda s: AssignServer(s, data, log_prefix=log_prefix),
             args.port, report_to_file=args.when_ready,
             v6=not args.ipv4)
 
