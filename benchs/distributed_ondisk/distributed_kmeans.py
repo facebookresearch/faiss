@@ -368,15 +368,16 @@ def main():
         def connect_client(hostport):
             host, port = hostport.split(':')
             port = int(port)
+            print('connecting %s:%d' % (host, port))
             client = rpc.Client(host, port, v6=not args.ipv4)
             print('client %s:%d ready' % (host, port))
             return client
 
         hostports = args.servers.strip().split(' ')
-        pool = ThreadPool(len(hostports))
+        # pool = ThreadPool(len(hostports))
 
         data = DatasetAssignDispatch(
-            pool.map(connect_client, hostports),
+            list(map(connect_client, hostports)),
             True
         )
     else:

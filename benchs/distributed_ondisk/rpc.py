@@ -1,7 +1,3 @@
-# Local Variables:
-# pythonx-indent-level: 4
-
-
 """
 Simplistic RPC implementation.
 Exposes all functions of a Server object.
