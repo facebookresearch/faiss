@@ -6,7 +6,7 @@ The current code uses the Deep1B dataset for demonstration purposes, but can sca
 
 ## Distributed k-means
 
-To cluster 200M vectors to 10M centroids, it is useful to have a distriubuted k-means implementation. 
+To cluster 500M vectors to 10M centroids, it is useful to have a distriubuted k-means implementation. 
 The distribution simply consists in splitting the training vectors across machines (servers) and have them do the assignment. 
 The master/client then synthesizes the results and updates the centroids.
 
@@ -81,8 +81,29 @@ All machines start `distributed_kmeans.py` in server mode for the slice of the d
 In addition, the machine #0 also starts the client. 
 The client knows who are the other servers via the variable `SLURM_JOB_NODELIST`. 
 It connects to all clients and performs the clustering. 
-Note that the jobs must be killed at the end of the k-means run. 
 
 The output should look like [this gist](https://gist.github.com/mdouze/8d25e89fb4af5093057cae0f917da6cd).
 
-For a real run, one would also store the output centroids with the `--out filename` option.
+### Run used for deep1B
+
+For the real run, we run the clustering on 50M vectors to 1M centroids. 
+This is just a matter of using as many machines / GPUs as possible in setting the output centroids with the `--out filename` option.
+Then run
+```
+bash run_on_cluster.bash deep1b_clustering
+```
+In this implementation, the overhead of transmitting the data is non-negligible and so is the centroid computation stage. 
+This is due to the inefficient Python implementation and the RPC protocol that is not optimized for broadcast / gather (like MPI). 
+However, it is a simple implementation that should run on most clusters.
+
+## Making the trained index
+
+After the centroids are obtained, an empty trained index must be constructed. 
+This is done by: 
+
+- applying a pre-processing stage (a random rotation) to balance the dimensions of the vectors
+
+- wrapping the centroids into a HNSW index to speed up the CPU-based assignment of vectors
+
+- training the 6-bit scalar quantizer used to encode the vectors
+
