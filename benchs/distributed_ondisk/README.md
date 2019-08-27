@@ -118,3 +118,16 @@ This is done by:
 
 This is performed by the script [`make_trained_index.py`](make_trained_index.py). 
 
+## Building the index by slices
+
+We call the slices "vslisces" as they are vertical slices of the big matrix (see explanation in the wiki section [Split across datanbase partitions](https://github.com/facebookresearch/faiss/wiki/Indexing-1T-vectors#split-across-database-partitions)
+
+The script [make_index_vslice.py](make_index_vslice.py) makes an index for a subset of the vectors of the input data and stores it as an independent index. 
+It can be run in a brute-force parallel fashion, there is no constraint on ordering. 
+To run the script in parallel on a slurm cluster, use: 
+```
+bash run_on_cluster.bash make_index_vslices
+```
+
+## Splitting accross inverted lists
+
