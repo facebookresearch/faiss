@@ -92,6 +92,15 @@ Then run
 ```
 bash run_on_cluster.bash deep1b_clustering
 ```
+
+The last lines of output read like: 
+```
+  Iteration 19 (898.92 s, search 875.71 s): objective=1.33601e+07 imbalance=1.303 nsplit=0
+ 0: writing centroids to /checkpoint/matthijs/ondisk_distributed/1M_centroids.npy
+```
+
+This means that the total training time was 899s, of which 876s were used for computation. 
+However, the computation includes the I/O overhead to the assignment servers. 
 In this implementation, the overhead of transmitting the data is non-negligible and so is the centroid computation stage. 
 This is due to the inefficient Python implementation and the RPC protocol that is not optimized for broadcast / gather (like MPI). 
 However, it is a simple implementation that should run on most clusters.
