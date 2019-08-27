@@ -142,4 +142,7 @@ This is run with
 bash run_on_cluster.bash make_index_hslices
 ```
 
+## Querying the index
 
+At this point the index is ready. 
+The horizontal slices need to be loaded in the right order and combined into an index to be usable. 
