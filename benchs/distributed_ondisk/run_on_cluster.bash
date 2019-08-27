@@ -205,7 +205,41 @@ EOF
 
     done
 
+elif [ $todo == make_index_hslices ]; then
 
+    # hslice: slice per inverted lists
+
+    nlist=1000000
+    nslice=50
+
+    for((i=0;i<nslice;i++)); do
+        i0=$((nlist * i / nslice))
+        i1=$((nlist * (i + 1) / nslice))
+
+        # make the script to be run by sbatch
+        cat > $workdir/hslices/slice$i.bash <<EOF
+#!/bin/bash
+
+srun python -u merge_to_ondisk.py \
+                 --input $workdir/vslices/slice{0..199}.faissindex \
+                 --nt 20 \
+                 --l0 $i0 --l1 $i1 \
+                 --output $workdir/hslices/slice$i.faissindex \
+                 --outputIL $workdir/hslices/slice$i.invlists
+
+
+EOF
+        # specify resources for script and run it
+        sbatch -n1 \
+             --time=48:00:00 \
+             --cpus-per-task=20 --gres=gpu:0 --mem=200G \
+             --output=$workdir/hslices/slice$i.log \
+             --job-name=hslice$i.a \
+             --constraint=pascal \
+             $workdir/hslices/slice$i.bash
+        echo "logs in $workdir/hslices/slice$i.log"
+
+    done
 
 else
     echo "unknown todo $todo"
