@@ -123,11 +123,23 @@ This is performed by the script [`make_trained_index.py`](make_trained_index.py)
 We call the slices "vslisces" as they are vertical slices of the big matrix (see explanation in the wiki section [Split across datanbase partitions](https://github.com/facebookresearch/faiss/wiki/Indexing-1T-vectors#split-across-database-partitions)
 
 The script [make_index_vslice.py](make_index_vslice.py) makes an index for a subset of the vectors of the input data and stores it as an independent index. 
+There are 200 slices of 5M vectors each for Deep1B.
 It can be run in a brute-force parallel fashion, there is no constraint on ordering. 
 To run the script in parallel on a slurm cluster, use: 
 ```
 bash run_on_cluster.bash make_index_vslices
 ```
+For a real dataset, the data would be read from a DBMS. 
+In that case, reading the data and indexing it in parallel is worthwhile because reading is very slow.
 
 ## Splitting accross inverted lists
+
+The 200 slices need to be merged together. 
+This is done with the script [merge_to_ondisk.py](merge_to_ondisk.py), that memory maps the 200 vertical slice indexes, extracts a subset of the inverted lists and writes them to a contiguous horizontal slice. 
+We slice the inverted lists into 50 horizontal slices. 
+This is run with 
+```
+bash run_on_cluster.bash make_index_hslices
+```
+
 
