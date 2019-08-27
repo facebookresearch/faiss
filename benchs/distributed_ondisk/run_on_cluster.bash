@@ -3,11 +3,23 @@
 set -e
 
 todo=$1
+# other options can be transmitted
+shift
 
 # the training data of the Deep1B dataset
-testdata=/datasets01_101/simsearch/041218/deep1b/learn.fvecs
-nvec=1000000
-k=4000
+deep1bdir=/datasets01_101/simsearch/041218/deep1b
+traindata=$deep1bdir/learn.fvecs
+
+# this is for small tests
+# nvec=1000000
+# k=4000
+
+# for the real run
+nvec=50000000
+k=1000000
+
+# working directory for the real run
+workdir=/checkpoint/matthijs/ondisk_distributed
 
 
 if [ -z "$todo" ]; then
@@ -16,13 +28,13 @@ if [ -z "$todo" ]; then
 elif [ $todo == test_kmeans_0 ]; then
     # non distributed baseline
     python distributed_kmeans.py \
-           --indata $testdata --i1 $nvec \
+           --indata $traindata --i1 $nvec \
            --k $k
 
 elif [ $todo == test_kmeans_1 ]; then
     # using all the machine's GPUs
     python distributed_kmeans.py \
-           --indata $testdata --i1 $nvec \
+           --indata $traindata --i1 $nvec \
            --k $k --gpu -1
 
 elif [ $todo == test_kmeans_2 ]; then
@@ -44,7 +56,7 @@ elif [ $todo == test_kmeans_2 ]; then
         echo "start server $gpu for range $i0:$i1"
 
         python distributed_kmeans.py \
-               --indata $testdata \
+               --indata $traindata \
                --i0 $i0 --i1 $i1 \
                --server --gpu $gpu \
                --port $port --ipv4 &
@@ -86,7 +98,7 @@ elif [ $todo == slurm_within_kmeans_server ]; then
    if [ $rank != 0 ]; then
 
        python -u distributed_kmeans.py \
-              --indata $testdata \
+              --indata $traindata \
               --i0 $i0 --i1 $i1 \
               --server --gpu -1 \
               --port $port --ipv4
@@ -97,7 +109,7 @@ elif [ $todo == slurm_within_kmeans_server ]; then
        trap 'kill -HUP 0' 0
 
        python -u distributed_kmeans.py \
-              --indata $testdata \
+              --indata $traindata \
               --i0 $i0 --i1 $i1 \
               --server --gpu -1 \
               --port $port --ipv4 &
@@ -108,7 +120,7 @@ elif [ $todo == slurm_within_kmeans_server ]; then
            local blocks=$1
            for block in ${blocks//,/ }; do
                if [ ${block/x/} != $block ]; then
-                   tpn=${block%(*}
+                   tpn="${block%(*}"
                    repeat=${block#*x}
                    repeat=${repeat%?}
                    for((i=0;i<repeat;i++)); do
@@ -141,9 +153,23 @@ elif [ $todo == slurm_within_kmeans_server ]; then
        # run client
        python distributed_kmeans.py \
            --client --servers "$hostports" \
-           --k $k --ipv4
+           --k $k --ipv4 "$@"
+
+       echo "Done, kill the job"
+       scancel $SLURM_JOBID
 
    fi
+
+elif [ $todo == deep1b_clustering ]; then
+    # also set nvec=500M and k=10M in the top of the file
+    nserv=20
+
+    srun -n$nserv \
+         --time=48:00:00 \
+         --cpus-per-task=40 --gres=gpu:4 --mem=100G \
+         --partition=priority --comment='priority is the only one that works'  \
+         -l bash $( realpath $0 ) slurm_within_kmeans_server \
+         --out $workdir/1M_centroids.npy
 
 else
     echo "unknown todo $todo"
