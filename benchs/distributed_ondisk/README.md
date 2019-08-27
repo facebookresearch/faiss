@@ -116,5 +116,5 @@ This is done by:
 
 - training the 6-bit scalar quantizer used to encode the vectors
 
-This is performed by the script `make_trained_index.py`. 
+This is performed by the script [`make_trained_index.py`](make_trained_index.py). 
 
