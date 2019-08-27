@@ -102,11 +102,36 @@ elif [ $todo == slurm_within_kmeans_server ]; then
               --server --gpu -1 \
               --port $port --ipv4 &
 
+       # Slurm has a somewhat convoluted way of specifying the nodes
+       # assigned to each task. This is to parse the SLURM_TASKS_PER_NODE variable
+       function parse_tasks_per_node () {
+           local blocks=$1
+           for block in ${blocks//,/ }; do
+               if [ ${block/x/} != $block ]; then
+                   tpn=${block%(*}
+                   repeat=${block#*x}
+                   repeat=${repeat%?}
+                   for((i=0;i<repeat;i++)); do
+                       echo $tpn
+                   done
+               else
+                   echo $block
+               fi
+            done
+       }
+
        hostports=""
        port=$baseport
-       for hostname in $( scontrol show hostnames $SLURM_JOB_NODELIST ); do
-           hostports="$hostports $hostname:$port"
-           ((port++))
+       echo VARS $SLURM_TASKS_PER_NODE $SLURM_JOB_NODELIST
+       tasks_per_node=( $( parse_tasks_per_node $SLURM_TASKS_PER_NODE ) )
+       nodes=( $( scontrol show hostnames $SLURM_JOB_NODELIST ) )
+       n=${#nodes[*]}
+       for((i=0;i<n;i++)); do
+           hostname=${nodes[i]}
+           for((j=0;j<tasks_per_node[i];j++)); do
+               hostports="$hostports $hostname:$port"
+               ((port++))
+           done
        done
 
        echo HOSTPORTS $hostports
