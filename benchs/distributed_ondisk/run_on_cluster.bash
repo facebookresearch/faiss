@@ -11,16 +11,16 @@ deep1bdir=/datasets01_101/simsearch/041218/deep1b
 traindata=$deep1bdir/learn.fvecs
 
 # this is for small tests
-# nvec=1000000
-# k=4000
+nvec=1000000
+k=4000
 
 # for the real run
-nvec=50000000
-k=1000000
+# nvec=50000000
+# k=1000000
 
 # working directory for the real run
 workdir=/checkpoint/matthijs/ondisk_distributed
-
+mkdir -p $workdir/{vslices,hslices}
 
 if [ -z "$todo" ]; then
     echo "nothing to do"
@@ -170,6 +170,42 @@ elif [ $todo == deep1b_clustering ]; then
          --partition=priority --comment='priority is the only one that works'  \
          -l bash $( realpath $0 ) slurm_within_kmeans_server \
          --out $workdir/1M_centroids.npy
+
+elif [ $todo == make_index_vslices ]; then
+
+    # vslice: slice per database shards
+
+    nvec=1000000000
+    nslice=200
+
+    for((i=0;i<nslice;i++)); do
+        i0=$((nvec * i / nslice))
+        i1=$((nvec * (i + 1) / nslice))
+
+        # make the script to be run by sbatch
+        cat > $workdir/vslices/slice$i.bash <<EOF
+#!/bin/bash
+
+srun python -u make_index_vslice.py \
+                 --inputindex $workdir/trained.faissindex \
+                 --input $deep1bdir/base.fvecs \
+                 --nt 40 \
+                 --i0 $i0 --i1 $i1 \
+                 -o $workdir/vslices/slice$i.faissindex
+
+EOF
+        # specify resources for script and run it
+        sbatch -n1 \
+             --time=48:00:00 \
+             --cpus-per-task=40 --gres=gpu:0 --mem=200G \
+             --output=$workdir/vslices/slice$i.log \
+             --job-name=vslice$i.c \
+             $workdir/vslices/slice$i.bash
+        echo "logs in $workdir/vslices/slice$i.log"
+
+    done
+
+
 
 else
     echo "unknown todo $todo"
