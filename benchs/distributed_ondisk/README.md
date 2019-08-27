@@ -110,9 +110,11 @@ However, it is a simple implementation that should run on most clusters.
 After the centroids are obtained, an empty trained index must be constructed. 
 This is done by: 
 
-- applying a pre-processing stage (a random rotation) to balance the dimensions of the vectors
+- applying a pre-processing stage (a random rotation) to balance the dimensions of the vectors. This can be done after clustering, the clusters are just rotated as well.
 
 - wrapping the centroids into a HNSW index to speed up the CPU-based assignment of vectors
 
 - training the 6-bit scalar quantizer used to encode the vectors
+
+This is performed by the script `make_trained_index.py`. 
 
