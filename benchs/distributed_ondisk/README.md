@@ -166,3 +166,18 @@ nprobe=100 1-recall@1=0.8673 t=29.23s
 nprobe=1000 1-recall@1=0.9132 t=129.58s
 ```
 ie. searching is a lot slower than from RAM. 
+
+## Distributed query
+
+To reduce the bandwidth required from the machine that does the queries, it is possible to split the search accross several search servers. 
+This way, only the effective results are returned to the main machine.
+
+The search client and server are implemented in [`search_server.py`](search_server.py). 
+It can be used as a script to start a search server for `CombinedIndexDeep1B` or as a module to load the clients.
+
+
+
+## Conclusion
+
+This code contains the core components to make an index that scales up to 1T vectors. 
+There are a few simplifications wrt. the index that was effectively used in [Indexing 1T vectors](https://github.com/facebookresearch/faiss/wiki/Indexing-1T-vectors).  
