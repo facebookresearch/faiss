@@ -175,7 +175,18 @@ This way, only the effective results are returned to the main machine.
 The search client and server are implemented in [`search_server.py`](search_server.py). 
 It can be used as a script to start a search server for `CombinedIndexDeep1B` or as a module to load the clients.
 
+The search servers can be started with 
+```
+bash run_on_cluster.bash run_search_servers
+```
+(adjust to the number of servers that can be used). 
 
+Then an example of search client is [`distributed_query_demo.py`](distributed_query_demo.py). 
+It connects to the servers and assigns subsets of inverted lists to visit to each of them.
+
+A typical output is [this gist](https://gist.github.com/mdouze/1585b9854a9a2437d71f2b2c3c05c7c5). 
+The number in MiB indicates the amount of data that is read from disk to perform the search.
+In this case, the scale of the dataset is too small for the distributed search to have much impact, but on datasets > 10x larger, the difference becomes more significant.
 
 ## Conclusion
 
