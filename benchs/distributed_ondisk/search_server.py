@@ -63,32 +63,6 @@ import faiss
 import numpy as np
 
 
-def connect_clients_clist(port=12012, ipv4=False):
-    """ get a list of servers from clist and attempts to connect to them
-    each client is an object that exposes the MyServer interface.
-
-    The servers should be started with
-
-       bash run_search_servers.bash  10
-
-    (to get 10 servers)
-    """
-    clients = []
-    for l in os.popen('clist -Nrp --format tsv', 'r'):
-        l = l.strip()
-        if 'startedRunningAt' in l:
-            continue
-        fi = l.split('\t')
-        name = fi[7]
-        if 'SServ' in name:
-            host = fi[1]
-            jobid = fi[2]
-            if host == 'None': continue
-            print(jobid)
-            client = rpc.Client(host, port, v6=not ipv4)
-            clients.append(client)
-    return clients
-
 
 class ResultHeap:
     """ Combine query results from a sliced dataset (for k-nn search) """
