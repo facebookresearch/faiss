@@ -241,6 +241,18 @@ EOF
 
     done
 
+elif [ $todo == run_search_servers ]; then
+
+    nserv=3
+
+    srun -n$nserv \
+         --time=48:00:00 \
+         --cpus-per-task=64 --gres=gpu:0 --mem=100G \
+         --constraint=pascal \
+         --partition=priority --comment='priority is the only one that works'  \
+         -l python -u search_server.py --port 12012
+
+
 else
     echo "unknown todo $todo"
     exit 1
