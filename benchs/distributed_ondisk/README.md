@@ -3,6 +3,7 @@
 This is code corresponding to the description in [Indexing 1T vectors](https://github.com/facebookresearch/faiss/wiki/Indexing-1T-vectors). 
 All the code is in python 3 (and not compatible with Python 2). 
 The current code uses the Deep1B dataset for demonstration purposes, but can scale to 1000x larger.
+To run it, download the Deep1B dataset as explained [here](../#getting-deep1b), and edit paths to the dataset in the scripts. 
 
 ## Distributed k-means
 
@@ -146,3 +147,48 @@ bash run_on_cluster.bash make_index_hslices
 
 At this point the index is ready. 
 The horizontal slices need to be loaded in the right order and combined into an index to be usable. 
+This is done in the [combined_index.py](combined_index.py) script. 
+It provides a `CombinedIndexDeep1B` object that contains an index object that can be searched. 
+To test, run: 
+```
+python combined_index.py
+```
+The output should look like: 
+```
+(faiss_1.5.2) matthijs@devfair0144:~/faiss_versions/faiss_1Tcode/faiss/benchs/distributed_ondisk$ python combined_index.py
+reading /checkpoint/matthijs/ondisk_distributed//hslices/slice49.faissindex
+loading empty index /checkpoint/matthijs/ondisk_distributed/trained.faissindex
+replace invlists
+loaded index of size  1000000000
+nprobe=1 1-recall@1=0.2904 t=12.35s
+nnprobe=10 1-recall@1=0.6499 t=17.67s
+nprobe=100 1-recall@1=0.8673 t=29.23s
+nprobe=1000 1-recall@1=0.9132 t=129.58s
+```
+ie. searching is a lot slower than from RAM. 
+
+## Distributed query
+
+To reduce the bandwidth required from the machine that does the queries, it is possible to split the search accross several search servers. 
+This way, only the effective results are returned to the main machine.
+
+The search client and server are implemented in [`search_server.py`](search_server.py). 
+It can be used as a script to start a search server for `CombinedIndexDeep1B` or as a module to load the clients.
+
+The search servers can be started with 
+```
+bash run_on_cluster.bash run_search_servers
+```
+(adjust to the number of servers that can be used). 
+
+Then an example of search client is [`distributed_query_demo.py`](distributed_query_demo.py). 
+It connects to the servers and assigns subsets of inverted lists to visit to each of them.
+
+A typical output is [this gist](https://gist.github.com/mdouze/1585b9854a9a2437d71f2b2c3c05c7c5). 
+The number in MiB indicates the amount of data that is read from disk to perform the search.
+In this case, the scale of the dataset is too small for the distributed search to have much impact, but on datasets > 10x larger, the difference becomes more significant.
+
+## Conclusion
+
+This code contains the core components to make an index that scales up to 1T vectors. 
+There are a few simplifications wrt. the index that was effectively used in [Indexing 1T vectors](https://github.com/facebookresearch/faiss/wiki/Indexing-1T-vectors).  
