@@ -5,6 +5,9 @@ All the code is in python 3 (and not compatible with Python 2).
 The current code uses the Deep1B dataset for demonstration purposes, but can scale to 1000x larger.
 To run it, download the Deep1B dataset as explained [here](../#getting-deep1b), and edit paths to the dataset in the scripts. 
 
+The cluster commands are written for the Slurm batch scheduling system. 
+Hopefully, changing to another type of scheduler should be quite straightforward.
+
 ## Distributed k-means
 
 To cluster 500M vectors to 10M centroids, it is useful to have a distriubuted k-means implementation. 
@@ -121,7 +124,7 @@ This is performed by the script [`make_trained_index.py`](make_trained_index.py)
 
 ## Building the index by slices
 
-We call the slices "vslisces" as they are vertical slices of the big matrix (see explanation in the wiki section [Split across datanbase partitions](https://github.com/facebookresearch/faiss/wiki/Indexing-1T-vectors#split-across-database-partitions)
+We call the slices "vslisces" as they are vertical slices of the big matrix, see explanation in the wiki section [Split across datanbase partitions](https://github.com/facebookresearch/faiss/wiki/Indexing-1T-vectors#split-across-database-partitions).
 
 The script [make_index_vslice.py](make_index_vslice.py) makes an index for a subset of the vectors of the input data and stores it as an independent index. 
 There are 200 slices of 5M vectors each for Deep1B.
