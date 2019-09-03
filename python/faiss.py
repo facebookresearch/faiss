@@ -8,14 +8,52 @@
 # not linting this file because it imports * form swigfaiss, which
 # causes a ton of useless warnings.
 
+from __future__ import print_function
+
 import numpy as np
 import sys
 import inspect
 import pdb
+import platform
+import subprocess
 
 
-# we import * so that the symbol X can be accessed as faiss.X
-from .swigfaiss import *
+def instruction_set():
+    if platform.system() == "Darwin":
+        if subprocess.check_output("sysctl hw.optional.avx2_0")[-1] == '1':
+            return "AVX2"
+        elif subprocess.check_output("sysctl hw.optional.sse4_1")[-1] == '1':
+            return "SSE4"
+        else:
+            return "default"
+    elif platform.system() == "Linux":
+        import numpy.distutils.cpuinfo
+        if "avx2" in numpy.distutils.cpuinfo.cpu.info[0]['flags']:
+            return "AVX2"
+        elif "sse4_1" in numpy.distutils.cpuinfo.cpu.info[0]['flags']:
+            return "SSE4"
+
+        # TODO: feature-detection on Linux.
+        return "default"
+
+
+try:
+    instr_set = instruction_set()
+    if instr_set == "AVX2":
+        print("Loading faiss with AVX2 support.", file=sys.stderr)
+        from .swigfaiss_avx2 import *
+    elif instr_set == "SSE4":
+        print("Loading faiss with SSE4 support.", file=sys.stderr)
+        from .swigfaiss_sse import *
+    else:
+        print("Loading faiss.", file=sys.stderr)
+        from .swigfaiss import *
+
+except ImportError:
+    # we import * so that the symbol X can be accessed as faiss.X
+    print("Loading faiss.", file=sys.stderr)
+    from .swigfaiss import *
+
 
 __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
                             FAISS_VERSION_MINOR,
