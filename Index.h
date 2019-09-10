@@ -17,8 +17,8 @@
 #include <sstream>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 5
-#define FAISS_VERSION_PATCH 3
+#define FAISS_VERSION_MINOR 4
+#define FAISS_VERSION_PATCH 0
 
 /**
  * @namespace faiss
@@ -200,10 +200,25 @@ struct Index {
      * @param residual    output residual vector, size d
      * @param key         encoded index, as returned by search and assign
      */
-    void compute_residual (const float * x, float * residual, idx_t key) const;
+    virtual void compute_residual (const float * x,
+                                   float * residual, idx_t key) const;
 
-    /** Display the actual class name and some more info */
-    void display () const;
+    /** Computes a residual vector after indexing encoding (batch form).
+     * Equivalent to calling compute_residual for each vector.
+     *
+     * The residual vector is the difference between a vector and the
+     * reconstruction that can be decoded from its representation in
+     * the index. The residual can be used for multiple-stage indexing
+     * methods, like IndexIVF's methods.
+     *
+     * @param n           number of vectors
+     * @param xs          input vectors, size (n x d)
+     * @param residuals   output residual vectors, size (n x d)
+     * @param keys        encoded index, as returned by search and assign
+     */
+    virtual void compute_residual_n (idx_t n, const float* xs,
+                                     float* residuals,
+                                     const idx_t* keys) const;
 
     /** Get a DistanceComputer (defined in AuxIndexStructures) object
      * for this kind of index.
@@ -212,6 +227,31 @@ struct Index {
      * access of their vectors.
      */
     virtual DistanceComputer * get_distance_computer() const;
+
+
+    /* The standalone codec interface */
+
+    /** size of the produced codes in bytes */
+    virtual size_t sa_code_size () const;
+
+    /** encode a set of vectors
+     *
+     * @param n       number of vectors
+     * @param x       input vectors, size n * d
+     * @param bytes   output encoded vectors, size n * sa_code_size()
+     */
+    virtual void sa_encode (idx_t n, const float *x,
+                                  uint8_t *bytes) const;
+
+    /** encode a set of vectors
+     *
+     * @param n       number of vectors
+     * @param bytes   input encoded vectors, size n * sa_code_size()
+     * @param x       output vectors, size n * d
+     */
+    virtual void sa_decode (idx_t n, const uint8_t *bytes,
+                                    float *x) const;
+
 
 };
 

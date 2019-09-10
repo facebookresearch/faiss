@@ -92,7 +92,7 @@ class TestKNN(unittest.TestCase):
         nb = 100
         nq = 50
         nt = 0
-        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
 
         index = faiss.IndexFlat(d, mt)
         index.add(xb)
@@ -122,7 +122,7 @@ class TestHNSW(unittest.TestCase):
         nb = 1000
         nq = 100
         nt = 0
-        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
 
         mt = faiss.METRIC_L1
 

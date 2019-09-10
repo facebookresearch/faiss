@@ -37,7 +37,7 @@ unsigned int setBitfield(unsigned int val,
 
 __device__ __forceinline__ int getLaneId() {
   int laneId;
-  asm("mov.s32 %0, %laneid;" : "=r"(laneId) );
+  asm("mov.u32 %0, %laneid;" : "=r"(laneId) );
   return laneId;
 }
 
@@ -71,15 +71,6 @@ __device__ __forceinline__ void namedBarrierWait(int name, int numThreads) {
 
 __device__ __forceinline__ void namedBarrierArrived(int name, int numThreads) {
   asm volatile("bar.arrive %0, %1;" : : "r"(name), "r"(numThreads) : "memory");
-}
-
-// FIXME: prefetch does nothing (in SASS) on Maxwell
-__device__ __forceinline__ void prefetchL2(const void *p) {
-  asm volatile("prefetch.global.L2 [%0];" : : "l"(p));
-}
-
-__device__ __forceinline__ void prefetchL1(const void *p) {
-  asm volatile("prefetch.global.L1 [%0];" : : "l"(p));
 }
 
 } } // namespace

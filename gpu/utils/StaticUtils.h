@@ -13,13 +13,18 @@
 namespace faiss { namespace gpu { namespace utils {
 
 template <typename U, typename V>
+constexpr __host__ __device__ auto divDown(U a, V b) -> decltype(a + b) {
+  return (a / b);
+}
+
+template <typename U, typename V>
 constexpr __host__ __device__ auto divUp(U a, V b) -> decltype(a + b) {
   return (a + b - 1) / b;
 }
 
 template <typename U, typename V>
 constexpr __host__ __device__ auto roundDown(U a, V b) -> decltype(a + b) {
-  return (a / b) * b;
+  return divDown(a, b) * b;
 }
 
 template <typename U, typename V>

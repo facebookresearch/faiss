@@ -33,7 +33,7 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         nt = 1500
         nq = 200
 
-        (xt, xb, xq) = get_dataset_2(d, nb, nt, nq)
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
         d = xt.shape[1]
 
         gt_index = faiss.IndexFlatL2(d)
@@ -73,7 +73,7 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         nt = 1500
         nq = 200
 
-        (xt, xb, xq) = get_dataset_2(d, nb, nt, nq)
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
         d = xt.shape[1]
 
         gt_index = faiss.IndexFlatL2(d)
@@ -125,7 +125,7 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         nt = 1500
         nq = 200
 
-        (xt, xb, xq) = get_dataset_2(d, nb, nt, nq)
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
         d = xt.shape[1]
 
         gt_index = faiss.IndexFlatL2(d)
@@ -186,7 +186,7 @@ class TestScalarQuantizer(unittest.TestCase):
         nq = 400
         nb = 5000
 
-        (xt, xb, xq) = get_dataset_2(d, nb, nt, nq)
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
 
         # common quantizer
         quantizer = faiss.IndexFlatL2(d)
@@ -416,7 +416,7 @@ class TestHNSW(unittest.TestCase):
         nb = 1500
         nq = 500
 
-        (_, self.xb, self.xq) = get_dataset_2(d, nb, nt, nq)
+        (_, self.xb, self.xq) = get_dataset_2(d, nt, nb, nq)
         index = faiss.IndexFlatL2(d)
         index.add(self.xb)
         Dref, Iref = index.search(self.xq, 1)
@@ -458,6 +458,14 @@ class TestHNSW(unittest.TestCase):
 
         self.assertTrue(np.all(Dhnsw2 == Dhnsw))
         self.assertTrue(np.all(Ihnsw2 == Ihnsw))
+
+        # also test clone
+        index3 = faiss.clone_index(index)
+        Dhnsw3, Ihnsw3 = index3.search(self.xq, 1)
+
+        self.assertTrue(np.all(Dhnsw3 == Dhnsw))
+        self.assertTrue(np.all(Ihnsw3 == Ihnsw))
+
 
     def test_hnsw_2level(self):
         d = self.xq.shape[1]

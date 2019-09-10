@@ -14,12 +14,12 @@
 
 #include <gtest/gtest.h>
 
-#include <faiss/IndexIVF.h>
-#include <faiss/IndexBinaryIVF.h>
-#include <faiss/AutoTune.h>
-#include <faiss/index_io.h>
-#include <faiss/IVFlib.h>
-#include <faiss/VectorTransform.h>
+#include  <faiss/IndexIVF.h>
+#include  <faiss/IndexBinaryIVF.h>
+#include  <faiss/AutoTune.h>
+#include  <faiss/index_io.h>
+#include  <faiss/IVFlib.h>
+#include  <faiss/VectorTransform.h>
 
 using namespace faiss;
 

@@ -31,6 +31,36 @@ template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
 HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
+  HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t) :
+    Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(),
+    state_(AllocState::NotOwner) {
+  this->operator=(std::move(t));
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>&
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::operator=(
+  HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t) {
+  if (this->state_ == AllocState::Owner) {
+    FAISS_ASSERT(this->data_ != nullptr);
+    delete[] this->data_;
+    this->data_ = nullptr;
+  }
+
+  this->Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::operator=(
+    std::move(t));
+
+  this->state_ = t.state_; t.state_ = AllocState::NotOwner;
+
+  return *this;
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__
+HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
   const IndexT sizes[Dim]) :
     Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes),
     state_(AllocState::Owner) {
