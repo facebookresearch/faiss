@@ -1261,7 +1261,7 @@ void ScalarQuantizer::train_residual(size_t n,
     ScopeDeleter<float> del_x (x_in == x ? nullptr : x);
 
     if (by_residual) {
-        std::vector<long> idx(n);
+        std::vector<Index::idx_t> idx(n);
         quantizer->assign (n, x, idx.data());
 
         std::vector<float> residuals(n * d);
