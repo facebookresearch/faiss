@@ -24,6 +24,7 @@ ifneq ($(strip $(NVCC)),)
 	HEADERS     += $(GPU_HEADERS)
 endif
 
+CPPFLAGS += -I.
 
 ############################
 # Building
