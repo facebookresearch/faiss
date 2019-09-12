@@ -10,6 +10,7 @@
 #define FAISS_LATTICE_ZN_H
 
 #include <vector>
+#include <stddef.h>
 #include <stdint.h>
 
 namespace faiss {
