@@ -18,7 +18,7 @@ tests: $(TESTS_OBJ) ../libfaiss.a gtest/make/gtest_main.a
 	$(CXX) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 %.o: %.cpp gtest
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -c -o $@ $< -Igtest/include -I../..
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -c -o $@ $< -Igtest/include -I..
 
 gtest/make/gtest_main.a: gtest
 	$(MAKE) -C gtest/make CXX="$(CXX)" CXXFLAGS="$(CXXFLAGS)" gtest_main.a
