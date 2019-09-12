@@ -1,14 +1,16 @@
-IndexPreTransform.o: IndexPreTransform.cpp faiss/IndexPreTransform.h \
- faiss/Index.h faiss/VectorTransform.h faiss/utils/utils.h \
- faiss/utils/Heap.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h
+IndexIVFPQR.o: IndexIVFPQR.cpp faiss/IndexIVFPQR.h faiss/IndexIVFPQ.h \
+ faiss/IndexIVF.h faiss/Index.h faiss/InvertedLists.h faiss/Clustering.h \
+ faiss/utils/Heap.h faiss/IndexPQ.h faiss/impl/ProductQuantizer.h \
+ faiss/impl/PolysemousTraining.h faiss/utils/utils.h \
+ faiss/utils/distances.h faiss/impl/FaissAssert.h \
+ faiss/impl/FaissException.h
+OnDiskInvertedLists.o: OnDiskInvertedLists.cpp \
+ faiss/OnDiskInvertedLists.h faiss/IndexIVF.h faiss/Index.h \
+ faiss/InvertedLists.h faiss/Clustering.h faiss/utils/Heap.h \
+ faiss/impl/FaissAssert.h faiss/impl/FaissException.h faiss/utils/utils.h
 IndexFlat.o: IndexFlat.cpp faiss/IndexFlat.h faiss/Index.h \
  faiss/utils/distances.h faiss/utils/Heap.h faiss/utils/extra_distances.h \
  faiss/utils/utils.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
- faiss/impl/AuxIndexStructures.h
-IndexBinaryFlat.o: IndexBinaryFlat.cpp faiss/IndexBinaryFlat.h \
- faiss/IndexBinary.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
- faiss/Index.h faiss/utils/hamming.h faiss/utils/Heap.h \
- faiss/utils/hamming-inl.h faiss/utils/utils.h \
  faiss/impl/AuxIndexStructures.h
 IndexIVFSpectralHash.o: IndexIVFSpectralHash.cpp \
  faiss/IndexIVFSpectralHash.h faiss/IndexIVF.h faiss/Index.h \
@@ -19,14 +21,6 @@ IndexIVFSpectralHash.o: IndexIVFSpectralHash.cpp \
 InvertedLists.o: InvertedLists.cpp faiss/InvertedLists.h faiss/Index.h \
  faiss/utils/utils.h faiss/utils/Heap.h faiss/impl/FaissAssert.h \
  faiss/impl/FaissException.h
-IndexLSH.o: IndexLSH.cpp faiss/IndexLSH.h faiss/Index.h \
- faiss/VectorTransform.h faiss/utils/utils.h faiss/utils/Heap.h \
- faiss/utils/hamming.h faiss/utils/hamming-inl.h faiss/impl/FaissAssert.h \
- faiss/impl/FaissException.h
-IndexShards.o: IndexShards.cpp faiss/IndexShards.h faiss/Index.h \
- faiss/IndexBinary.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
- faiss/impl/ThreadedIndex.h faiss/utils/WorkerThread.h \
- faiss/impl/ThreadedIndex-inl.h faiss/utils/Heap.h
 IndexBinaryIVF.o: IndexBinaryIVF.cpp faiss/IndexBinaryIVF.h \
  faiss/IndexBinary.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
  faiss/Index.h faiss/IndexIVF.h faiss/InvertedLists.h faiss/Clustering.h \
@@ -44,28 +38,48 @@ IndexBinaryFromFloat.o: IndexBinaryFromFloat.cpp \
  faiss/IndexBinaryFromFloat.h faiss/IndexBinary.h \
  faiss/impl/FaissAssert.h faiss/impl/FaissException.h faiss/Index.h \
  faiss/utils/utils.h faiss/utils/Heap.h
-AutoTune.o: AutoTune.cpp faiss/AutoTune.h faiss/Index.h \
- faiss/IndexBinary.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
- faiss/utils/utils.h faiss/utils/Heap.h faiss/utils/random.h \
- faiss/IndexFlat.h faiss/VectorTransform.h faiss/IndexPreTransform.h \
+clone_index.o: clone_index.cpp faiss/clone_index.h \
+ faiss/impl/FaissAssert.h faiss/impl/FaissException.h faiss/IndexFlat.h \
+ faiss/Index.h faiss/VectorTransform.h faiss/IndexPreTransform.h \
  faiss/IndexLSH.h faiss/IndexPQ.h faiss/impl/ProductQuantizer.h \
- faiss/Clustering.h faiss/impl/PolysemousTraining.h faiss/IndexIVF.h \
- faiss/InvertedLists.h faiss/IndexIVFPQ.h faiss/IndexIVFPQR.h \
- faiss/IndexIVFFlat.h faiss/MetaIndexes.h faiss/IndexShards.h \
- faiss/impl/ThreadedIndex.h faiss/utils/WorkerThread.h \
- faiss/impl/ThreadedIndex-inl.h faiss/IndexReplicas.h \
- faiss/IndexScalarQuantizer.h faiss/impl/ScalarQuantizer.h \
- faiss/impl/AuxIndexStructures.h faiss/IndexHNSW.h faiss/impl/HNSW.h \
- faiss/IndexBinaryFlat.h faiss/IndexBinaryHNSW.h faiss/IndexBinaryIVF.h
-Clustering.o: Clustering.cpp faiss/Clustering.h faiss/Index.h \
- faiss/impl/AuxIndexStructures.h faiss/utils/utils.h faiss/utils/Heap.h \
- faiss/utils/random.h faiss/utils/distances.h faiss/impl/FaissAssert.h \
- faiss/impl/FaissException.h faiss/IndexFlat.h
+ faiss/Clustering.h faiss/utils/Heap.h faiss/impl/PolysemousTraining.h \
+ faiss/IndexIVF.h faiss/InvertedLists.h faiss/IndexIVFPQ.h \
+ faiss/IndexIVFPQR.h faiss/Index2Layer.h faiss/IndexIVFFlat.h \
+ faiss/IndexIVFSpectralHash.h faiss/MetaIndexes.h faiss/IndexShards.h \
+ faiss/IndexBinary.h faiss/impl/ThreadedIndex.h \
+ faiss/utils/WorkerThread.h faiss/impl/ThreadedIndex-inl.h \
+ faiss/IndexReplicas.h faiss/IndexScalarQuantizer.h \
+ faiss/impl/ScalarQuantizer.h faiss/impl/AuxIndexStructures.h \
+ faiss/IndexHNSW.h faiss/impl/HNSW.h faiss/utils/random.h \
+ faiss/utils/utils.h faiss/IndexLattice.h faiss/impl/lattice_Zn.h
 MetaIndexes.o: MetaIndexes.cpp faiss/MetaIndexes.h faiss/Index.h \
  faiss/IndexShards.h faiss/IndexBinary.h faiss/impl/FaissAssert.h \
  faiss/impl/FaissException.h faiss/impl/ThreadedIndex.h \
  faiss/utils/WorkerThread.h faiss/impl/ThreadedIndex-inl.h \
  faiss/IndexReplicas.h faiss/utils/Heap.h faiss/impl/AuxIndexStructures.h
+IndexIVF.o: IndexIVF.cpp faiss/IndexIVF.h faiss/Index.h \
+ faiss/InvertedLists.h faiss/Clustering.h faiss/utils/Heap.h \
+ faiss/utils/utils.h faiss/utils/hamming.h faiss/utils/hamming-inl.h \
+ faiss/impl/FaissAssert.h faiss/impl/FaissException.h faiss/IndexFlat.h \
+ faiss/impl/AuxIndexStructures.h
+IndexIVFPQ.o: IndexIVFPQ.cpp faiss/IndexIVFPQ.h faiss/IndexIVF.h \
+ faiss/Index.h faiss/InvertedLists.h faiss/Clustering.h \
+ faiss/utils/Heap.h faiss/IndexPQ.h faiss/impl/ProductQuantizer.h \
+ faiss/impl/PolysemousTraining.h faiss/utils/utils.h \
+ faiss/utils/distances.h faiss/IndexFlat.h faiss/utils/hamming.h \
+ faiss/utils/hamming-inl.h faiss/impl/FaissAssert.h \
+ faiss/impl/FaissException.h faiss/impl/AuxIndexStructures.h
+MatrixStats.o: MatrixStats.cpp faiss/MatrixStats.h faiss/utils/utils.h \
+ faiss/utils/Heap.h
+IndexReplicas.o: IndexReplicas.cpp faiss/IndexReplicas.h faiss/Index.h \
+ faiss/IndexBinary.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
+ faiss/impl/ThreadedIndex.h faiss/utils/WorkerThread.h \
+ faiss/impl/ThreadedIndex-inl.h
+IndexLattice.o: IndexLattice.cpp faiss/IndexLattice.h faiss/IndexIVF.h \
+ faiss/Index.h faiss/InvertedLists.h faiss/Clustering.h \
+ faiss/utils/Heap.h faiss/impl/lattice_Zn.h faiss/utils/hamming.h \
+ faiss/utils/hamming-inl.h faiss/impl/FaissAssert.h \
+ faiss/impl/FaissException.h faiss/utils/distances.h
 index_factory.o: index_factory.cpp faiss/AutoTune.h faiss/Index.h \
  faiss/IndexBinary.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
  faiss/utils/utils.h faiss/utils/Heap.h faiss/utils/random.h \
@@ -81,78 +95,32 @@ index_factory.o: index_factory.cpp faiss/AutoTune.h faiss/Index.h \
  faiss/IndexHNSW.h faiss/impl/HNSW.h faiss/IndexLattice.h \
  faiss/impl/lattice_Zn.h faiss/IndexBinaryFlat.h faiss/IndexBinaryHNSW.h \
  faiss/IndexBinaryIVF.h
+IndexBinaryFlat.o: IndexBinaryFlat.cpp faiss/IndexBinaryFlat.h \
+ faiss/IndexBinary.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
+ faiss/Index.h faiss/utils/hamming.h faiss/utils/Heap.h \
+ faiss/utils/hamming-inl.h faiss/utils/utils.h \
+ faiss/impl/AuxIndexStructures.h
+IndexLSH.o: IndexLSH.cpp faiss/IndexLSH.h faiss/Index.h \
+ faiss/VectorTransform.h faiss/utils/utils.h faiss/utils/Heap.h \
+ faiss/utils/hamming.h faiss/utils/hamming-inl.h faiss/impl/FaissAssert.h \
+ faiss/impl/FaissException.h
+IndexShards.o: IndexShards.cpp faiss/IndexShards.h faiss/Index.h \
+ faiss/IndexBinary.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
+ faiss/impl/ThreadedIndex.h faiss/utils/WorkerThread.h \
+ faiss/impl/ThreadedIndex-inl.h faiss/utils/Heap.h
+IndexPreTransform.o: IndexPreTransform.cpp faiss/IndexPreTransform.h \
+ faiss/Index.h faiss/VectorTransform.h faiss/utils/utils.h \
+ faiss/utils/Heap.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h
+Clustering.o: Clustering.cpp faiss/Clustering.h faiss/Index.h \
+ faiss/impl/AuxIndexStructures.h faiss/utils/utils.h faiss/utils/Heap.h \
+ faiss/utils/random.h faiss/utils/distances.h faiss/impl/FaissAssert.h \
+ faiss/impl/FaissException.h faiss/IndexFlat.h
 VectorTransform.o: VectorTransform.cpp faiss/VectorTransform.h \
  faiss/Index.h faiss/utils/distances.h faiss/utils/Heap.h \
  faiss/utils/random.h faiss/utils/utils.h faiss/impl/FaissAssert.h \
  faiss/impl/FaissException.h faiss/IndexPQ.h \
  faiss/impl/ProductQuantizer.h faiss/Clustering.h \
  faiss/impl/PolysemousTraining.h
-IndexIVF.o: IndexIVF.cpp faiss/IndexIVF.h faiss/Index.h \
- faiss/InvertedLists.h faiss/Clustering.h faiss/utils/Heap.h \
- faiss/utils/utils.h faiss/utils/hamming.h faiss/utils/hamming-inl.h \
- faiss/impl/FaissAssert.h faiss/impl/FaissException.h faiss/IndexFlat.h \
- faiss/impl/AuxIndexStructures.h
-IndexIVFPQ.o: IndexIVFPQ.cpp faiss/IndexIVFPQ.h faiss/IndexIVF.h \
- faiss/Index.h faiss/InvertedLists.h faiss/Clustering.h \
- faiss/utils/Heap.h faiss/IndexPQ.h faiss/impl/ProductQuantizer.h \
- faiss/impl/PolysemousTraining.h faiss/utils/utils.h \
- faiss/utils/distances.h faiss/IndexFlat.h faiss/utils/hamming.h \
- faiss/utils/hamming-inl.h faiss/impl/FaissAssert.h \
- faiss/impl/FaissException.h faiss/impl/AuxIndexStructures.h
-OnDiskInvertedLists.o: OnDiskInvertedLists.cpp \
- faiss/OnDiskInvertedLists.h faiss/IndexIVF.h faiss/Index.h \
- faiss/InvertedLists.h faiss/Clustering.h faiss/utils/Heap.h \
- faiss/impl/FaissAssert.h faiss/impl/FaissException.h faiss/utils/utils.h
-IndexIVFPQR.o: IndexIVFPQR.cpp faiss/IndexIVFPQR.h faiss/IndexIVFPQ.h \
- faiss/IndexIVF.h faiss/Index.h faiss/InvertedLists.h faiss/Clustering.h \
- faiss/utils/Heap.h faiss/IndexPQ.h faiss/impl/ProductQuantizer.h \
- faiss/impl/PolysemousTraining.h faiss/utils/utils.h \
- faiss/utils/distances.h faiss/impl/FaissAssert.h \
- faiss/impl/FaissException.h
-MatrixStats.o: MatrixStats.cpp faiss/MatrixStats.h faiss/utils/utils.h \
- faiss/utils/Heap.h
-IndexBinary.o: IndexBinary.cpp faiss/IndexBinary.h \
- faiss/impl/FaissAssert.h faiss/impl/FaissException.h faiss/Index.h
-IndexPQ.o: IndexPQ.cpp faiss/IndexPQ.h faiss/Index.h \
- faiss/impl/ProductQuantizer.h faiss/Clustering.h faiss/utils/Heap.h \
- faiss/impl/PolysemousTraining.h faiss/impl/FaissAssert.h \
- faiss/impl/FaissException.h faiss/impl/AuxIndexStructures.h \
- faiss/utils/hamming.h faiss/utils/hamming-inl.h
-clone_index.o: clone_index.cpp faiss/clone_index.h \
- faiss/impl/FaissAssert.h faiss/impl/FaissException.h faiss/IndexFlat.h \
- faiss/Index.h faiss/VectorTransform.h faiss/IndexPreTransform.h \
- faiss/IndexLSH.h faiss/IndexPQ.h faiss/impl/ProductQuantizer.h \
- faiss/Clustering.h faiss/utils/Heap.h faiss/impl/PolysemousTraining.h \
- faiss/IndexIVF.h faiss/InvertedLists.h faiss/IndexIVFPQ.h \
- faiss/IndexIVFPQR.h faiss/Index2Layer.h faiss/IndexIVFFlat.h \
- faiss/IndexIVFSpectralHash.h faiss/MetaIndexes.h faiss/IndexShards.h \
- faiss/IndexBinary.h faiss/impl/ThreadedIndex.h \
- faiss/utils/WorkerThread.h faiss/impl/ThreadedIndex-inl.h \
- faiss/IndexReplicas.h faiss/IndexScalarQuantizer.h \
- faiss/impl/ScalarQuantizer.h faiss/impl/AuxIndexStructures.h \
- faiss/IndexHNSW.h faiss/impl/HNSW.h faiss/utils/random.h \
- faiss/utils/utils.h faiss/IndexLattice.h faiss/impl/lattice_Zn.h
-IndexIVFFlat.o: IndexIVFFlat.cpp faiss/IndexIVFFlat.h faiss/IndexIVF.h \
- faiss/Index.h faiss/InvertedLists.h faiss/Clustering.h \
- faiss/utils/Heap.h faiss/IndexFlat.h faiss/utils/distances.h \
- faiss/utils/utils.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
- faiss/impl/AuxIndexStructures.h
-IndexReplicas.o: IndexReplicas.cpp faiss/IndexReplicas.h faiss/Index.h \
- faiss/IndexBinary.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
- faiss/impl/ThreadedIndex.h faiss/utils/WorkerThread.h \
- faiss/impl/ThreadedIndex-inl.h
-IVFlib.o: IVFlib.cpp faiss/IVFlib.h faiss/IndexIVF.h faiss/Index.h \
- faiss/InvertedLists.h faiss/Clustering.h faiss/utils/Heap.h \
- faiss/IndexPreTransform.h faiss/VectorTransform.h \
- faiss/impl/FaissAssert.h faiss/impl/FaissException.h
-Index.o: Index.cpp faiss/Index.h faiss/impl/AuxIndexStructures.h \
- faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
- faiss/utils/distances.h faiss/utils/Heap.h
-IndexScalarQuantizer.o: IndexScalarQuantizer.cpp \
- faiss/IndexScalarQuantizer.h faiss/IndexIVF.h faiss/Index.h \
- faiss/InvertedLists.h faiss/Clustering.h faiss/utils/Heap.h \
- faiss/impl/ScalarQuantizer.h faiss/impl/AuxIndexStructures.h \
- faiss/utils/utils.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h
 IndexBinaryHNSW.o: IndexBinaryHNSW.cpp faiss/IndexBinaryHNSW.h \
  faiss/impl/HNSW.h faiss/Index.h faiss/impl/FaissAssert.h \
  faiss/impl/FaissException.h faiss/utils/random.h faiss/utils/Heap.h \
@@ -166,11 +134,121 @@ Index2Layer.o: Index2Layer.cpp faiss/Index2Layer.h faiss/IndexPQ.h \
  faiss/impl/FaissException.h faiss/utils/utils.h \
  faiss/impl/AuxIndexStructures.h faiss/IndexFlat.h \
  faiss/utils/distances.h
-IndexLattice.o: IndexLattice.cpp faiss/IndexLattice.h faiss/IndexIVF.h \
+IndexIVFFlat.o: IndexIVFFlat.cpp faiss/IndexIVFFlat.h faiss/IndexIVF.h \
  faiss/Index.h faiss/InvertedLists.h faiss/Clustering.h \
- faiss/utils/Heap.h faiss/impl/lattice_Zn.h faiss/utils/hamming.h \
+ faiss/utils/Heap.h faiss/IndexFlat.h faiss/utils/distances.h \
+ faiss/utils/utils.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
+ faiss/impl/AuxIndexStructures.h
+IndexBinary.o: IndexBinary.cpp faiss/IndexBinary.h \
+ faiss/impl/FaissAssert.h faiss/impl/FaissException.h faiss/Index.h
+IndexScalarQuantizer.o: IndexScalarQuantizer.cpp \
+ faiss/IndexScalarQuantizer.h faiss/IndexIVF.h faiss/Index.h \
+ faiss/InvertedLists.h faiss/Clustering.h faiss/utils/Heap.h \
+ faiss/impl/ScalarQuantizer.h faiss/impl/AuxIndexStructures.h \
+ faiss/utils/utils.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h
+IndexPQ.o: IndexPQ.cpp faiss/IndexPQ.h faiss/Index.h \
+ faiss/impl/ProductQuantizer.h faiss/Clustering.h faiss/utils/Heap.h \
+ faiss/impl/PolysemousTraining.h faiss/impl/FaissAssert.h \
+ faiss/impl/FaissException.h faiss/impl/AuxIndexStructures.h \
+ faiss/utils/hamming.h faiss/utils/hamming-inl.h
+AutoTune.o: AutoTune.cpp faiss/AutoTune.h faiss/Index.h \
+ faiss/IndexBinary.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
+ faiss/utils/utils.h faiss/utils/Heap.h faiss/utils/random.h \
+ faiss/IndexFlat.h faiss/VectorTransform.h faiss/IndexPreTransform.h \
+ faiss/IndexLSH.h faiss/IndexPQ.h faiss/impl/ProductQuantizer.h \
+ faiss/Clustering.h faiss/impl/PolysemousTraining.h faiss/IndexIVF.h \
+ faiss/InvertedLists.h faiss/IndexIVFPQ.h faiss/IndexIVFPQR.h \
+ faiss/IndexIVFFlat.h faiss/MetaIndexes.h faiss/IndexShards.h \
+ faiss/impl/ThreadedIndex.h faiss/utils/WorkerThread.h \
+ faiss/impl/ThreadedIndex-inl.h faiss/IndexReplicas.h \
+ faiss/IndexScalarQuantizer.h faiss/impl/ScalarQuantizer.h \
+ faiss/impl/AuxIndexStructures.h faiss/IndexHNSW.h faiss/impl/HNSW.h \
+ faiss/IndexBinaryFlat.h faiss/IndexBinaryHNSW.h faiss/IndexBinaryIVF.h
+IVFlib.o: IVFlib.cpp faiss/IVFlib.h faiss/IndexIVF.h faiss/Index.h \
+ faiss/InvertedLists.h faiss/Clustering.h faiss/utils/Heap.h \
+ faiss/IndexPreTransform.h faiss/VectorTransform.h \
+ faiss/impl/FaissAssert.h faiss/impl/FaissException.h
+Index.o: Index.cpp faiss/Index.h faiss/impl/AuxIndexStructures.h \
+ faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
+ faiss/utils/distances.h faiss/utils/Heap.h
+index_write.o: impl/index_write.cpp faiss/index_io.h \
+ faiss/impl/FaissAssert.h faiss/impl/FaissException.h faiss/impl/io.h \
+ faiss/Index.h faiss/IndexFlat.h faiss/VectorTransform.h \
+ faiss/IndexPreTransform.h faiss/IndexLSH.h faiss/IndexPQ.h \
+ faiss/impl/ProductQuantizer.h faiss/Clustering.h faiss/utils/Heap.h \
+ faiss/impl/PolysemousTraining.h faiss/IndexIVF.h faiss/InvertedLists.h \
+ faiss/IndexIVFPQ.h faiss/IndexIVFPQR.h faiss/Index2Layer.h \
+ faiss/IndexIVFFlat.h faiss/IndexIVFSpectralHash.h faiss/MetaIndexes.h \
+ faiss/IndexShards.h faiss/IndexBinary.h faiss/impl/ThreadedIndex.h \
+ faiss/utils/WorkerThread.h faiss/impl/ThreadedIndex-inl.h \
+ faiss/IndexReplicas.h faiss/IndexScalarQuantizer.h \
+ faiss/impl/ScalarQuantizer.h faiss/impl/AuxIndexStructures.h \
+ faiss/IndexHNSW.h faiss/impl/HNSW.h faiss/utils/random.h \
+ faiss/utils/utils.h faiss/IndexLattice.h faiss/impl/lattice_Zn.h \
+ faiss/OnDiskInvertedLists.h faiss/IndexBinaryFlat.h \
+ faiss/IndexBinaryFromFloat.h faiss/IndexBinaryHNSW.h \
+ faiss/IndexBinaryIVF.h
+ProductQuantizer.o: impl/ProductQuantizer.cpp \
+ faiss/impl/ProductQuantizer.h faiss/Clustering.h faiss/Index.h \
+ faiss/utils/Heap.h faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
+ faiss/VectorTransform.h faiss/IndexFlat.h faiss/utils/distances.h
+PolysemousTraining.o: impl/PolysemousTraining.cpp \
+ faiss/impl/PolysemousTraining.h faiss/impl/ProductQuantizer.h \
+ faiss/Clustering.h faiss/Index.h faiss/utils/Heap.h faiss/utils/random.h \
+ faiss/utils/utils.h faiss/utils/distances.h faiss/utils/hamming.h \
  faiss/utils/hamming-inl.h faiss/impl/FaissAssert.h \
- faiss/impl/FaissException.h faiss/utils/distances.h
+ faiss/impl/FaissException.h
+AuxIndexStructures.o: impl/AuxIndexStructures.cpp \
+ faiss/impl/AuxIndexStructures.h faiss/Index.h faiss/impl/FaissAssert.h \
+ faiss/impl/FaissException.h
+io.o: impl/io.cpp faiss/impl/io.h faiss/Index.h faiss/impl/FaissAssert.h \
+ faiss/impl/FaissException.h
+index_read.o: impl/index_read.cpp faiss/index_io.h \
+ faiss/impl/FaissAssert.h faiss/impl/FaissException.h faiss/impl/io.h \
+ faiss/Index.h faiss/IndexFlat.h faiss/VectorTransform.h \
+ faiss/IndexPreTransform.h faiss/IndexLSH.h faiss/IndexPQ.h \
+ faiss/impl/ProductQuantizer.h faiss/Clustering.h faiss/utils/Heap.h \
+ faiss/impl/PolysemousTraining.h faiss/IndexIVF.h faiss/InvertedLists.h \
+ faiss/IndexIVFPQ.h faiss/IndexIVFPQR.h faiss/Index2Layer.h \
+ faiss/IndexIVFFlat.h faiss/IndexIVFSpectralHash.h faiss/MetaIndexes.h \
+ faiss/IndexShards.h faiss/IndexBinary.h faiss/impl/ThreadedIndex.h \
+ faiss/utils/WorkerThread.h faiss/impl/ThreadedIndex-inl.h \
+ faiss/IndexReplicas.h faiss/IndexScalarQuantizer.h \
+ faiss/impl/ScalarQuantizer.h faiss/impl/AuxIndexStructures.h \
+ faiss/IndexHNSW.h faiss/impl/HNSW.h faiss/utils/random.h \
+ faiss/utils/utils.h faiss/IndexLattice.h faiss/impl/lattice_Zn.h \
+ faiss/OnDiskInvertedLists.h faiss/IndexBinaryFlat.h \
+ faiss/IndexBinaryFromFloat.h faiss/IndexBinaryHNSW.h \
+ faiss/IndexBinaryIVF.h
+HNSW.o: impl/HNSW.cpp faiss/impl/HNSW.h faiss/Index.h \
+ faiss/impl/FaissAssert.h faiss/impl/FaissException.h \
+ faiss/utils/random.h faiss/utils/Heap.h faiss/impl/AuxIndexStructures.h
+ScalarQuantizer.o: impl/ScalarQuantizer.cpp faiss/impl/ScalarQuantizer.h \
+ faiss/IndexIVF.h faiss/Index.h faiss/InvertedLists.h faiss/Clustering.h \
+ faiss/utils/Heap.h faiss/impl/AuxIndexStructures.h faiss/utils/utils.h \
+ faiss/impl/FaissAssert.h faiss/impl/FaissException.h
+FaissException.o: impl/FaissException.cpp faiss/impl/FaissException.h
+lattice_Zn.o: impl/lattice_Zn.cpp faiss/impl/lattice_Zn.h \
+ faiss/utils/distances.h faiss/utils/Heap.h
+random.o: utils/random.cpp faiss/utils/random.h
+utils.o: utils/utils.cpp faiss/utils/utils.h faiss/utils/Heap.h \
+ faiss/impl/AuxIndexStructures.h faiss/Index.h faiss/impl/FaissAssert.h \
+ faiss/impl/FaissException.h faiss/utils/random.h
+Heap.o: utils/Heap.cpp faiss/utils/Heap.h
+distances_simd.o: utils/distances_simd.cpp faiss/utils/distances.h \
+ faiss/utils/Heap.h
+WorkerThread.o: utils/WorkerThread.cpp faiss/utils/WorkerThread.h \
+ faiss/impl/FaissAssert.h faiss/impl/FaissException.h
+extra_distances.o: utils/extra_distances.cpp faiss/utils/distances.h \
+ faiss/utils/Heap.h faiss/utils/utils.h faiss/impl/FaissAssert.h \
+ faiss/impl/FaissException.h faiss/impl/AuxIndexStructures.h \
+ faiss/Index.h
+distances.o: utils/distances.cpp faiss/utils/distances.h \
+ faiss/utils/Heap.h faiss/impl/AuxIndexStructures.h faiss/Index.h \
+ faiss/impl/FaissAssert.h faiss/impl/FaissException.h
+hamming.o: utils/hamming.cpp faiss/utils/hamming.h faiss/utils/Heap.h \
+ faiss/utils/hamming-inl.h faiss/impl/FaissAssert.h \
+ faiss/impl/FaissException.h faiss/utils/utils.h
 GpuCloner.o: gpu/GpuCloner.cpp faiss/gpu/GpuCloner.h faiss/Index.h \
  faiss/clone_index.h faiss/gpu/GpuClonerOptions.h \
  faiss/gpu/GpuIndicesOptions.h faiss/gpu/GpuIndex.h \
