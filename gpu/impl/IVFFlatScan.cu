@@ -6,20 +6,20 @@
  */
 
 
-#include  <faiss/gpu/impl/IVFFlatScan.cuh>
-#include  <faiss/gpu/impl/IVFUtils.cuh>
-#include  <faiss/gpu/impl/Metrics.cuh>
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/utils/ConversionOperators.cuh>
-#include  <faiss/gpu/utils/DeviceDefs.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/DeviceTensor.cuh>
-#include  <faiss/gpu/utils/Float16.cuh>
-#include  <faiss/gpu/utils/MathOperators.cuh>
-#include  <faiss/gpu/utils/LoadStoreOperators.cuh>
-#include  <faiss/gpu/utils/PtxUtils.cuh>
-#include  <faiss/gpu/utils/Reductions.cuh>
-#include  <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/gpu/impl/IVFFlatScan.cuh>
+#include <faiss/gpu/impl/IVFUtils.cuh>
+#include <faiss/gpu/impl/Metrics.cuh>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/MathOperators.cuh>
+#include <faiss/gpu/utils/LoadStoreOperators.cuh>
+#include <faiss/gpu/utils/PtxUtils.cuh>
+#include <faiss/gpu/utils/Reductions.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
 #include <thrust/host_vector.h>
 
 namespace faiss { namespace gpu {

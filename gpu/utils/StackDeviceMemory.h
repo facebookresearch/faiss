@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include  <faiss/gpu/utils/DeviceMemory.h>
+#include <faiss/gpu/utils/DeviceMemory.h>
 #include <list>
 #include <memory>
 #include <unordered_map>

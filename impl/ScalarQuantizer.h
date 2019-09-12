@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include  <faiss/IndexIVF.h>
-#include  <faiss/impl/AuxIndexStructures.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 
 namespace faiss {

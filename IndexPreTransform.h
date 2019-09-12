@@ -11,8 +11,8 @@
 
 
 
-#include  <faiss/Index.h>
-#include  <faiss/VectorTransform.h>
+#include <faiss/Index.h>
+#include <faiss/VectorTransform.h>
 
 namespace faiss {
 

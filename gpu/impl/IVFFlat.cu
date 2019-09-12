@@ -6,19 +6,19 @@
  */
 
 
-#include  <faiss/gpu/impl/IVFFlat.cuh>
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/impl/FlatIndex.cuh>
-#include  <faiss/gpu/impl/IVFAppend.cuh>
-#include  <faiss/gpu/impl/IVFFlatScan.cuh>
-#include  <faiss/gpu/impl/RemapIndices.h>
-#include  <faiss/gpu/utils/ConversionOperators.cuh>
-#include  <faiss/gpu/utils/CopyUtils.cuh>
-#include  <faiss/gpu/utils/DeviceDefs.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/Float16.cuh>
-#include  <faiss/gpu/utils/HostTensor.cuh>
-#include  <faiss/gpu/utils/Transpose.cuh>
+#include <faiss/gpu/impl/IVFFlat.cuh>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/FlatIndex.cuh>
+#include <faiss/gpu/impl/IVFAppend.cuh>
+#include <faiss/gpu/impl/IVFFlatScan.cuh>
+#include <faiss/gpu/impl/RemapIndices.h>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/utils/Transpose.cuh>
 #include <limits>
 #include <thrust/host_vector.h>
 #include <unordered_map>

@@ -6,13 +6,13 @@
  */
 
 
-#include  <faiss/gpu/GpuIndex.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/impl/Metrics.cuh>
-#include  <faiss/gpu/utils/CopyUtils.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/gpu/GpuIndex.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/Metrics.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/StaticUtils.h>
 #include <limits>
 #include <memory>
 

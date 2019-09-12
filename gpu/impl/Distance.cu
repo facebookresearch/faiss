@@ -6,18 +6,18 @@
  */
 
 
-#include  <faiss/gpu/impl/Distance.cuh>
-#include  <faiss/gpu/impl/BroadcastSum.cuh>
-#include  <faiss/gpu/impl/L2Norm.cuh>
-#include  <faiss/gpu/impl/L2Select.cuh>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/impl/AuxIndexStructures.h>
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/utils/DeviceDefs.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/Limits.cuh>
-#include  <faiss/gpu/utils/MatrixMult.cuh>
-#include  <faiss/gpu/utils/BlockSelectKernel.cuh>
+#include <faiss/gpu/impl/Distance.cuh>
+#include <faiss/gpu/impl/BroadcastSum.cuh>
+#include <faiss/gpu/impl/L2Norm.cuh>
+#include <faiss/gpu/impl/L2Select.cuh>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Limits.cuh>
+#include <faiss/gpu/utils/MatrixMult.cuh>
+#include <faiss/gpu/utils/BlockSelectKernel.cuh>
 
 #include <memory>
 #include <algorithm>

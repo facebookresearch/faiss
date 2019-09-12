@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IndexIVFPQ.h>
+#include <faiss/IndexIVFPQ.h>
 
 #include <cmath>
 #include <cstdio>
@@ -16,18 +16,18 @@
 
 #include <algorithm>
 
-#include  <faiss/utils/Heap.h>
-#include  <faiss/utils/utils.h>
-#include  <faiss/utils/distances.h>
+#include <faiss/utils/Heap.h>
+#include <faiss/utils/utils.h>
+#include <faiss/utils/distances.h>
 
-#include  <faiss/Clustering.h>
-#include  <faiss/IndexFlat.h>
+#include <faiss/Clustering.h>
+#include <faiss/IndexFlat.h>
 
-#include  <faiss/utils/hamming.h>
+#include <faiss/utils/hamming.h>
 
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissAssert.h>
 
-#include  <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 namespace faiss {
 

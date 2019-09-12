@@ -8,17 +8,17 @@
 // -*- c++ -*-
 
 
-#include  <faiss/IndexIVFSpectralHash.h>
+#include <faiss/IndexIVFSpectralHash.h>
 
 #include <memory>
 #include <algorithm>
 #include <stdint.h>
 
-#include  <faiss/utils/hamming.h>
-#include  <faiss/utils/utils.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/impl/AuxIndexStructures.h>
-#include  <faiss/VectorTransform.h>
+#include <faiss/utils/hamming.h>
+#include <faiss/utils/utils.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/VectorTransform.h>
 
 namespace faiss {
 

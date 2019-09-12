@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IndexPQ.h>
+#include <faiss/IndexPQ.h>
 
 
 #include <cstddef>
@@ -17,9 +17,9 @@
 
 #include <algorithm>
 
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/impl/AuxIndexStructures.h>
-#include  <faiss/utils/hamming.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/utils/hamming.h>
 
 namespace faiss {
 

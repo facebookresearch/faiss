@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include  <faiss/gpu/GpuIndexIVF.h>
-#include  <faiss/IndexScalarQuantizer.h>
+#include <faiss/gpu/GpuIndexIVF.h>
+#include <faiss/IndexScalarQuantizer.h>
 
 namespace faiss { namespace gpu {
 

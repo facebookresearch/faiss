@@ -7,11 +7,11 @@
 
 // -*- c++ -*-
 
-#include  <faiss/Index.h>
+#include <faiss/Index.h>
 
-#include  <faiss/impl/AuxIndexStructures.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/utils/distances.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/distances.h>
 
 #include <cstring>
 

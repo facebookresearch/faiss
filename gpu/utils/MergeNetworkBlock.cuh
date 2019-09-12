@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include  <faiss/gpu/utils/DeviceDefs.cuh>
-#include  <faiss/gpu/utils/MergeNetworkUtils.cuh>
-#include  <faiss/gpu/utils/PtxUtils.cuh>
-#include  <faiss/gpu/utils/StaticUtils.h>
-#include  <faiss/gpu/utils/WarpShuffles.cuh>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/MergeNetworkUtils.cuh>
+#include <faiss/gpu/utils/PtxUtils.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/gpu/utils/WarpShuffles.cuh>
+#include <faiss/impl/FaissAssert.h>
 #include <cuda.h>
 
 namespace faiss { namespace gpu {

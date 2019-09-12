@@ -6,11 +6,11 @@
  */
 
 
-#include  <faiss/gpu/impl/IVFUtils.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/StaticUtils.h>
-#include  <faiss/gpu/utils/Tensor.cuh>
-#include  <faiss/gpu/utils/ThrustAllocator.cuh>
+#include <faiss/gpu/impl/IVFUtils.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/gpu/utils/ThrustAllocator.cuh>
 #include <thrust/scan.h>
 #include <thrust/execution_policy.h>
 

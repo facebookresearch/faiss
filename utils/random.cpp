@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/utils/random.h>
+#include <faiss/utils/random.h>
 
 namespace faiss {
 

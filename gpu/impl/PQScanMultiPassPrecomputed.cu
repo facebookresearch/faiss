@@ -6,17 +6,17 @@
  */
 
 
-#include  <faiss/gpu/impl/PQScanMultiPassPrecomputed.cuh>
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/impl/PQCodeLoad.cuh>
-#include  <faiss/gpu/impl/IVFUtils.cuh>
-#include  <faiss/gpu/utils/ConversionOperators.cuh>
-#include  <faiss/gpu/utils/DeviceTensor.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/Float16.cuh>
-#include  <faiss/gpu/utils/LoadStoreOperators.cuh>
-#include  <faiss/gpu/utils/MathOperators.cuh>
-#include  <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/gpu/impl/PQScanMultiPassPrecomputed.cuh>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/PQCodeLoad.cuh>
+#include <faiss/gpu/impl/IVFUtils.cuh>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/LoadStoreOperators.cuh>
+#include <faiss/gpu/utils/MathOperators.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
 #include <limits>
 
 namespace faiss { namespace gpu {

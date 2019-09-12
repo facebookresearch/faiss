@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/impl/FaissException.h>
+#include <faiss/impl/FaissException.h>
 #include <sstream>
 
 namespace faiss {

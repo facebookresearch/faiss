@@ -6,19 +6,19 @@
  */
 
 
-#include  <faiss/gpu/impl/PQCodeDistances.cuh>
+#include <faiss/gpu/impl/PQCodeDistances.cuh>
 
-#include  <faiss/gpu/impl/BroadcastSum.cuh>
-#include  <faiss/gpu/impl/Distance.cuh>
-#include  <faiss/gpu/impl/L2Norm.cuh>
-#include  <faiss/gpu/utils/ConversionOperators.cuh>
-#include  <faiss/gpu/utils/DeviceDefs.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/Float16.cuh>
-#include  <faiss/gpu/utils/MatrixMult.cuh>
-#include  <faiss/gpu/utils/PtxUtils.cuh>
-#include  <faiss/gpu/utils/StaticUtils.h>
-#include  <faiss/gpu/utils/Transpose.cuh>
+#include <faiss/gpu/impl/BroadcastSum.cuh>
+#include <faiss/gpu/impl/Distance.cuh>
+#include <faiss/gpu/impl/L2Norm.cuh>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/MatrixMult.cuh>
+#include <faiss/gpu/utils/PtxUtils.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/gpu/utils/Transpose.cuh>
 
 namespace faiss { namespace gpu {
 

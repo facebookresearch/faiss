@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include  <faiss/gpu/GpuIndex.h>
-#include  <faiss/gpu/GpuIndexFlat.h>
-#include  <faiss/gpu/GpuIndicesOptions.h>
-#include  <faiss/Clustering.h>
+#include <faiss/gpu/GpuIndex.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndicesOptions.h>
+#include <faiss/Clustering.h>
 
 namespace faiss { struct IndexIVF; }
 

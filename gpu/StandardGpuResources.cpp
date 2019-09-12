@@ -6,9 +6,9 @@
  */
 
 
-#include  <faiss/gpu/StandardGpuResources.h>
-#include  <faiss/gpu/utils/MemorySpace.h>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/utils/MemorySpace.h>
+#include <faiss/impl/FaissAssert.h>
 #include <limits>
 
 namespace faiss { namespace gpu {

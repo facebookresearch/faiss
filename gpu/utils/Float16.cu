@@ -6,8 +6,8 @@
  */
 
 
-#include  <faiss/gpu/utils/Float16.cuh>
-#include  <faiss/gpu/utils/nvidia/fp16_emu.cuh>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/nvidia/fp16_emu.cuh>
 #include <thrust/execution_policy.h>
 #include <thrust/transform.h>
 

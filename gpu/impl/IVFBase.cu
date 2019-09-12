@@ -6,14 +6,14 @@
  */
 
 
-#include  <faiss/gpu/impl/IVFBase.cuh>
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/impl/FlatIndex.cuh>
-#include  <faiss/gpu/impl/IVFAppend.cuh>
-#include  <faiss/gpu/impl/RemapIndices.h>
-#include  <faiss/gpu/utils/DeviceDefs.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/impl/IVFBase.cuh>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/FlatIndex.cuh>
+#include <faiss/gpu/impl/IVFAppend.cuh>
+#include <faiss/gpu/impl/RemapIndices.h>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/HostTensor.cuh>
 #include <limits>
 #include <thrust/host_vector.h>
 #include <unordered_map>

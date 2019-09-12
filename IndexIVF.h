@@ -14,10 +14,10 @@
 #include <vector>
 #include <stdint.h>
 
-#include  <faiss/Index.h>
-#include  <faiss/InvertedLists.h>
-#include  <faiss/Clustering.h>
-#include  <faiss/utils/Heap.h>
+#include <faiss/Index.h>
+#include <faiss/InvertedLists.h>
+#include <faiss/Clustering.h>
+#include <faiss/utils/Heap.h>
 
 
 namespace faiss {

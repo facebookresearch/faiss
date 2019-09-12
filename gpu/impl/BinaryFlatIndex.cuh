@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include  <faiss/gpu/utils/DeviceTensor.cuh>
-#include  <faiss/gpu/utils/DeviceVector.cuh>
-#include  <faiss/gpu/utils/MemorySpace.h>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceVector.cuh>
+#include <faiss/gpu/utils/MemorySpace.h>
 
 namespace faiss { namespace gpu {
 

@@ -10,8 +10,8 @@
 #include <cstring>
 #include <cassert>
 
-#include  <faiss/impl/io.h>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/impl/io.h>
+#include <faiss/impl/FaissAssert.h>
 
 
 namespace faiss {

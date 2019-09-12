@@ -10,7 +10,7 @@
 #ifndef FAISS_ASSERT_INCLUDED
 #define FAISS_ASSERT_INCLUDED
 
-#include  <faiss/impl/FaissException.h>
+#include <faiss/impl/FaissException.h>
 #include <cstdlib>
 #include <cstdio>
 #include <string>

@@ -11,15 +11,15 @@
 
 #include <gtest/gtest.h>
 
-#include  <faiss/IndexIVFFlat.h>
-#include  <faiss/index_io.h>
-#include  <faiss/impl/io.h>
-#include  <faiss/AutoTune.h>
-#include  <faiss/index_factory.h>
-#include  <faiss/clone_index.h>
-#include  <faiss/VectorTransform.h>
-#include  <faiss/utils/random.h>
-#include  <faiss/IVFlib.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/index_io.h>
+#include <faiss/impl/io.h>
+#include <faiss/AutoTune.h>
+#include <faiss/index_factory.h>
+#include <faiss/clone_index.h>
+#include <faiss/VectorTransform.h>
+#include <faiss/utils/random.h>
+#include <faiss/IVFlib.h>
 
 
 namespace {

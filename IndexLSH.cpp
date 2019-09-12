@@ -7,16 +7,16 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IndexLSH.h>
+#include <faiss/IndexLSH.h>
 
 #include <cstdio>
 #include <cstring>
 
 #include <algorithm>
 
-#include  <faiss/utils/utils.h>
-#include  <faiss/utils/hamming.h>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/utils/utils.h>
+#include <faiss/utils/hamming.h>
+#include <faiss/impl/FaissAssert.h>
 
 
 namespace faiss {

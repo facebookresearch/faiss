@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include  <faiss/gpu/GpuIndexIVF.h>
+#include <faiss/gpu/GpuIndexIVF.h>
 
 namespace faiss { struct IndexIVFFlat; }
 

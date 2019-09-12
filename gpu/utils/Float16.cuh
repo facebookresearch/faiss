@@ -9,8 +9,8 @@
 #pragma once
 
 #include <cuda.h>
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
 
 // We require at least CUDA 7.5 for compilation
 #if CUDA_VERSION < 7050

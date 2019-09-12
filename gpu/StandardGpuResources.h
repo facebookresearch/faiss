@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/utils/StackDeviceMemory.h>
-#include  <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/utils/StackDeviceMemory.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
 #include <unordered_map>
 #include <vector>
 

@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include  <faiss/IndexBinary.h>
+#include <faiss/IndexBinary.h>
 
 namespace faiss {
 

@@ -6,12 +6,12 @@
  */
 
 
-#include  <faiss/gpu/utils/MatrixMult.cuh>
-#include  <faiss/gpu/utils/DeviceMemory.h>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/Float16.cuh>
-#include  <faiss/gpu/utils/DeviceTensor.cuh>
-#include  <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/utils/MatrixMult.cuh>
+#include <faiss/gpu/utils/DeviceMemory.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/HostTensor.cuh>
 
 namespace faiss { namespace gpu {
 

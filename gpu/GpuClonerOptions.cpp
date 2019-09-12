@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include  <faiss/gpu/GpuClonerOptions.h>
+#include <faiss/gpu/GpuClonerOptions.h>
 
 namespace faiss { namespace gpu {
 

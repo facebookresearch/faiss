@@ -6,16 +6,16 @@
  */
 
 
-#include  <faiss/gpu/impl/L2Norm.cuh>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/gpu/utils/ConversionOperators.cuh>
-#include  <faiss/gpu/utils/DeviceDefs.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/Float16.cuh>
-#include  <faiss/gpu/utils/MathOperators.cuh>
-#include  <faiss/gpu/utils/PtxUtils.cuh>
-#include  <faiss/gpu/utils/StaticUtils.h>
-#include  <faiss/gpu/utils/Reductions.cuh>
+#include <faiss/gpu/impl/L2Norm.cuh>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/MathOperators.cuh>
+#include <faiss/gpu/utils/PtxUtils.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/gpu/utils/Reductions.cuh>
 
 namespace faiss { namespace gpu {
 

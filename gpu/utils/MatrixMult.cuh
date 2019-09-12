@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cublas_v2.h>
-#include  <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/gpu/utils/Tensor.cuh>
 
 namespace faiss { namespace gpu {
 

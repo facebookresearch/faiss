@@ -6,8 +6,8 @@
  */
 
 
-#include  <faiss/utils/WorkerThread.h>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/utils/WorkerThread.h>
+#include <faiss/impl/FaissAssert.h>
 #include <exception>
 
 namespace faiss {

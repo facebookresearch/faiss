@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include  <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/Float16.cuh>
 
 #ifndef __HALF2_TO_UI
 // cuda_fp16.hpp doesn't export this

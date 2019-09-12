@@ -6,13 +6,13 @@
  */
 
 
-#include  <faiss/gpu/GpuIndexIVF.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/IndexFlat.h>
-#include  <faiss/IndexIVF.h>
-#include  <faiss/gpu/GpuIndexFlat.h>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/GpuIndexIVF.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
 
 namespace faiss { namespace gpu {
 

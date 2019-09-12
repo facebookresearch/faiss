@@ -8,16 +8,16 @@
 #include <faiss/gpu/GpuAutoTune.h>
 #include <typeinfo>
 
-#include  <faiss/gpu/GpuIndex.h>
-#include  <faiss/IndexReplicas.h>
-#include  <faiss/IndexShards.h>
-#include  <faiss/IndexPreTransform.h>
-#include  <faiss/gpu/GpuIndexFlat.h>
-#include  <faiss/gpu/GpuIndexIVFFlat.h>
-#include  <faiss/gpu/GpuIndexIVFPQ.h>
-#include  <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/GpuIndex.h>
+#include <faiss/IndexReplicas.h>
+#include <faiss/IndexShards.h>
+#include <faiss/IndexPreTransform.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndexIVFFlat.h>
+#include <faiss/gpu/GpuIndexIVFPQ.h>
+#include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
 
 namespace faiss { namespace gpu {
 

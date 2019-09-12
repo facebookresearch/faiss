@@ -13,10 +13,10 @@
 
 #include <vector>
 
-#include  <faiss/IndexBinary.h>
-#include  <faiss/IndexIVF.h>
-#include  <faiss/Clustering.h>
-#include  <faiss/utils/Heap.h>
+#include <faiss/IndexBinary.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/Clustering.h>
+#include <faiss/utils/Heap.h>
 
 
 namespace faiss {

@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 
-#include  <faiss/utils/Heap.h>
+#include <faiss/utils/Heap.h>
 
 
 namespace faiss {

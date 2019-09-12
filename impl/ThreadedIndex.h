@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include  <faiss/Index.h>
-#include  <faiss/IndexBinary.h>
-#include  <faiss/utils/WorkerThread.h>
+#include <faiss/Index.h>
+#include <faiss/IndexBinary.h>
+#include <faiss/utils/WorkerThread.h>
 #include <memory>
 #include <vector>
 
@@ -77,4 +77,4 @@ protected:
 
 } // namespace
 
-#include  <faiss/impl/ThreadedIndex-inl.h>
+#include <faiss/impl/ThreadedIndex-inl.h>

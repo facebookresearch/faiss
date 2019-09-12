@@ -12,7 +12,7 @@
 
 #include <gtest/gtest.h>
 
-#include  <faiss/impl/ProductQuantizer.h>
+#include <faiss/impl/ProductQuantizer.h>
 
 
 namespace {

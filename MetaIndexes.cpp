@@ -7,15 +7,15 @@
 
 // -*- c++ -*-
 
-#include  <faiss/MetaIndexes.h>
+#include <faiss/MetaIndexes.h>
 
 #include <cstdio>
 #include <stdint.h>
 
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/utils/Heap.h>
-#include  <faiss/impl/AuxIndexStructures.h>
-#include  <faiss/utils/WorkerThread.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/Heap.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/utils/WorkerThread.h>
 
 
 namespace faiss {

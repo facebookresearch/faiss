@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissAssert.h>
 #include <exception>
 #include <iostream>
 

@@ -11,30 +11,30 @@
  * implementation of Hyper-parameter auto-tuning
  */
 
-#include  <faiss/AutoTune.h>
+#include <faiss/AutoTune.h>
 
 #include <cmath>
 
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/utils/utils.h>
-#include  <faiss/utils/random.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/utils.h>
+#include <faiss/utils/random.h>
 
-#include  <faiss/IndexFlat.h>
-#include  <faiss/VectorTransform.h>
-#include  <faiss/IndexPreTransform.h>
-#include  <faiss/IndexLSH.h>
-#include  <faiss/IndexPQ.h>
-#include  <faiss/IndexIVF.h>
-#include  <faiss/IndexIVFPQ.h>
-#include  <faiss/IndexIVFPQR.h>
-#include  <faiss/IndexIVFFlat.h>
-#include  <faiss/MetaIndexes.h>
-#include  <faiss/IndexScalarQuantizer.h>
-#include  <faiss/IndexHNSW.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/VectorTransform.h>
+#include <faiss/IndexPreTransform.h>
+#include <faiss/IndexLSH.h>
+#include <faiss/IndexPQ.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexIVFPQR.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/MetaIndexes.h>
+#include <faiss/IndexScalarQuantizer.h>
+#include <faiss/IndexHNSW.h>
 
-#include  <faiss/IndexBinaryFlat.h>
-#include  <faiss/IndexBinaryHNSW.h>
-#include  <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexBinaryFlat.h>
+#include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexBinaryIVF.h>
 
 namespace faiss {
 

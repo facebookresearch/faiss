@@ -7,14 +7,14 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IndexShards.h>
+#include <faiss/IndexShards.h>
 
 #include <cstdio>
 #include <functional>
 
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/utils/Heap.h>
-#include  <faiss/utils/WorkerThread.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/Heap.h>
+#include <faiss/utils/WorkerThread.h>
 
 namespace faiss {
 

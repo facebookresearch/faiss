@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/utils/distances.h>
+#include <faiss/utils/distances.h>
 
 #include <cstdio>
 #include <cassert>
@@ -16,8 +16,8 @@
 
 #include <omp.h>
 
-#include  <faiss/impl/AuxIndexStructures.h>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissAssert.h>
 
 
 

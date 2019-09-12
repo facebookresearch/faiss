@@ -7,14 +7,14 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IndexBinaryFlat.h>
+#include <faiss/IndexBinaryFlat.h>
 
 #include <cstring>
-#include  <faiss/utils/hamming.h>
-#include  <faiss/utils/utils.h>
-#include  <faiss/utils/Heap.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/impl/AuxIndexStructures.h>
+#include <faiss/utils/hamming.h>
+#include <faiss/utils/utils.h>
+#include <faiss/utils/Heap.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 namespace faiss {
 

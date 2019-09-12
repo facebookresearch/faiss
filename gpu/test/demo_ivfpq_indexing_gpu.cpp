@@ -15,11 +15,11 @@
 #include <sys/time.h>
 
 
-#include  <faiss/gpu/StandardGpuResources.h>
-#include  <faiss/gpu/GpuIndexIVFPQ.h>
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/GpuIndexIVFPQ.h>
 
-#include  <faiss/gpu/GpuAutoTune.h>
-#include  <faiss/index_io.h>
+#include <faiss/gpu/GpuAutoTune.h>
+#include <faiss/index_io.h>
 
 double elapsed ()
 {

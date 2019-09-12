@@ -15,9 +15,9 @@
 
 #include <stdint.h>
 
-#include  <faiss/Index.h>
+#include <faiss/Index.h>
 
-#include  <faiss/utils/Heap.h>
+#include <faiss/utils/Heap.h>
 
 
 

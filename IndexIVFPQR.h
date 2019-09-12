@@ -11,7 +11,7 @@
 
 #include <vector>
 
-#include  <faiss/IndexIVFPQ.h>
+#include <faiss/IndexIVFPQ.h>
 
 
 namespace faiss {

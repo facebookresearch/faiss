@@ -19,7 +19,7 @@
 
 #include <sys/time.h>
 
-#include  <faiss/AutoTune.h>
+#include <faiss/AutoTune.h>
 
 
 /**

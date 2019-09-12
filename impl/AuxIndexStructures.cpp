@@ -9,9 +9,9 @@
 
 #include <cstring>
 
-#include  <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissAssert.h>
 
 
 namespace faiss {

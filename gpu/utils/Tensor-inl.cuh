@@ -6,8 +6,8 @@
  */
 
 
-#include  <faiss/gpu/GpuFaissAssert.h>
-#include  <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/GpuFaissAssert.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
 #include <limits>
 
 namespace faiss { namespace gpu {

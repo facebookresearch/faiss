@@ -11,7 +11,7 @@
 #define FAISS_POLYSEMOUS_TRAINING_INCLUDED
 
 
-#include  <faiss/impl/ProductQuantizer.h>
+#include <faiss/impl/ProductQuantizer.h>
 
 
 namespace faiss {

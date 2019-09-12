@@ -7,8 +7,8 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IndexBinary.h>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/IndexBinary.h>
+#include <faiss/impl/FaissAssert.h>
 
 #include <cstring>
 

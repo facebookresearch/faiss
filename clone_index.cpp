@@ -7,29 +7,29 @@
 
 // -*- c++ -*-
 
-#include  <faiss/clone_index.h>
+#include <faiss/clone_index.h>
 
 #include <cstdio>
 #include <cstdlib>
 
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissAssert.h>
 
-#include  <faiss/IndexFlat.h>
-#include  <faiss/VectorTransform.h>
-#include  <faiss/IndexPreTransform.h>
-#include  <faiss/IndexLSH.h>
-#include  <faiss/IndexPQ.h>
-#include  <faiss/IndexIVF.h>
-#include  <faiss/IndexIVFPQ.h>
-#include  <faiss/IndexIVFPQR.h>
-#include  <faiss/Index2Layer.h>
-#include  <faiss/IndexIVFFlat.h>
-#include  <faiss/IndexIVFSpectralHash.h>
-#include  <faiss/MetaIndexes.h>
-#include  <faiss/IndexScalarQuantizer.h>
-#include  <faiss/IndexHNSW.h>
-#include  <faiss/IndexLattice.h>
-#include  <faiss/Index2Layer.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/VectorTransform.h>
+#include <faiss/IndexPreTransform.h>
+#include <faiss/IndexLSH.h>
+#include <faiss/IndexPQ.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexIVFPQR.h>
+#include <faiss/Index2Layer.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFSpectralHash.h>
+#include <faiss/MetaIndexes.h>
+#include <faiss/IndexScalarQuantizer.h>
+#include <faiss/IndexHNSW.h>
+#include <faiss/IndexLattice.h>
+#include <faiss/Index2Layer.h>
 
 namespace faiss {
 

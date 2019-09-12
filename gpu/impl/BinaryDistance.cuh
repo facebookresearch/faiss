@@ -6,7 +6,7 @@
  */
 
 
-#include  <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
 
 namespace faiss { namespace gpu {
 

@@ -7,19 +7,19 @@
 
 // -*- c++ -*-
 
-#include  <faiss/Clustering.h>
-#include  <faiss/impl/AuxIndexStructures.h>
+#include <faiss/Clustering.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 
 #include <cmath>
 #include <cstdio>
 #include <cstring>
 
-#include  <faiss/utils/utils.h>
-#include  <faiss/utils/random.h>
-#include  <faiss/utils/distances.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/IndexFlat.h>
+#include <faiss/utils/utils.h>
+#include <faiss/utils/random.h>
+#include <faiss/utils/distances.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/IndexFlat.h>
 
 namespace faiss {
 

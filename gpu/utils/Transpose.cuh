@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/gpu/utils/Tensor.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/StaticUtils.h>
 #include <cuda.h>
 
 namespace faiss { namespace gpu {

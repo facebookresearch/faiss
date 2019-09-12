@@ -8,10 +8,10 @@
 // -*- c++ -*-
 
 
-#include  <faiss/IndexLattice.h>
-#include  <faiss/utils/hamming.h>    // for the bitstring routines
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/utils/distances.h>
+#include <faiss/IndexLattice.h>
+#include <faiss/utils/hamming.h>    // for the bitstring routines
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/distances.h>
 
 namespace faiss {
 

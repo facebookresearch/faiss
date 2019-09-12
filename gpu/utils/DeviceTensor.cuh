@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include  <faiss/gpu/utils/Tensor.cuh>
-#include  <faiss/gpu/utils/DeviceMemory.h>
-#include  <faiss/gpu/utils/MemorySpace.h>
+#include <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/gpu/utils/DeviceMemory.h>
+#include <faiss/gpu/utils/MemorySpace.h>
 
 namespace faiss { namespace gpu {
 
@@ -110,4 +110,4 @@ class DeviceTensor : public Tensor<T, Dim, InnerContig, IndexT, PtrTraits> {
 
 } } // namespace
 
-#include  <faiss/gpu/utils/DeviceTensor-inl.cuh>
+#include <faiss/gpu/utils/DeviceTensor-inl.cuh>

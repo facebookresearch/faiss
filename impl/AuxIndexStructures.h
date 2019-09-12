@@ -20,7 +20,7 @@
 #include <memory>
 #include <mutex>
 
-#include  <faiss/Index.h>
+#include <faiss/Index.h>
 
 namespace faiss {
 

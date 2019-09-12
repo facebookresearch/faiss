@@ -27,7 +27,7 @@
 
 #include <stdint.h>
 
-#include  <faiss/utils/Heap.h>
+#include <faiss/utils/Heap.h>
 
 
 /* The Hamming distance type */

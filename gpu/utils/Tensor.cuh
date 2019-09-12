@@ -648,4 +648,4 @@ const detail::SubTensor<Tensor<T, Dim, InnerContig, IndexT, PtrTraits>,
 
 } } // namespace
 
-#include  <faiss/gpu/utils/Tensor-inl.cuh>
+#include <faiss/gpu/utils/Tensor-inl.cuh>

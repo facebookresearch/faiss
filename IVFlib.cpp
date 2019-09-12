@@ -7,12 +7,12 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IVFlib.h>
+#include <faiss/IVFlib.h>
 
 #include <memory>
 
-#include  <faiss/IndexPreTransform.h>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/IndexPreTransform.h>
+#include <faiss/impl/FaissAssert.h>
 
 
 

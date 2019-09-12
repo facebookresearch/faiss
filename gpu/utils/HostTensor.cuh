@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include  <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/gpu/utils/Tensor.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -88,4 +88,4 @@ class HostTensor : public Tensor<T, Dim, InnerContig, IndexT, PtrTraits> {
 
 } } // namespace
 
-#include  <faiss/gpu/utils/HostTensor-inl.cuh>
+#include <faiss/gpu/utils/HostTensor-inl.cuh>

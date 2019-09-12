@@ -68,54 +68,54 @@ extern "C" {
 #endif
 
 
-#include  <faiss/IndexFlat.h>
-#include  <faiss/VectorTransform.h>
-#include  <faiss/IndexPreTransform.h>
-#include  <faiss/IndexLSH.h>
-#include  <faiss/IndexPQ.h>
-#include  <faiss/IndexIVF.h>
-#include  <faiss/IndexIVFPQ.h>
-#include  <faiss/Index2Layer.h>
-#include  <faiss/IndexIVFPQR.h>
-#include  <faiss/IndexIVFFlat.h>
-#include  <faiss/IndexScalarQuantizer.h>
-#include  <faiss/IndexIVFSpectralHash.h>
-#include  <faiss/impl/ThreadedIndex.h>
-#include  <faiss/IndexShards.h>
-#include  <faiss/IndexReplicas.h>
-#include  <faiss/impl/HNSW.h>
-#include  <faiss/IndexHNSW.h>
-#include  <faiss/MetaIndexes.h>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/VectorTransform.h>
+#include <faiss/IndexPreTransform.h>
+#include <faiss/IndexLSH.h>
+#include <faiss/IndexPQ.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/Index2Layer.h>
+#include <faiss/IndexIVFPQR.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexScalarQuantizer.h>
+#include <faiss/IndexIVFSpectralHash.h>
+#include <faiss/impl/ThreadedIndex.h>
+#include <faiss/IndexShards.h>
+#include <faiss/IndexReplicas.h>
+#include <faiss/impl/HNSW.h>
+#include <faiss/IndexHNSW.h>
+#include <faiss/MetaIndexes.h>
+#include <faiss/impl/FaissAssert.h>
 
-#include  <faiss/IndexBinaryFlat.h>
-#include  <faiss/IndexBinaryIVF.h>
-#include  <faiss/IndexBinaryFromFloat.h>
-#include  <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexBinaryFlat.h>
+#include <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexBinaryFromFloat.h>
+#include <faiss/IndexBinaryHNSW.h>
 
-#include  <faiss/impl/io.h>
-#include  <faiss/index_io.h>
-#include  <faiss/clone_index.h>
+#include <faiss/impl/io.h>
+#include <faiss/index_io.h>
+#include <faiss/clone_index.h>
 
-#include  <faiss/IVFlib.h>
-#include  <faiss/utils/utils.h>
-#include  <faiss/utils/distances.h>
-#include  <faiss/utils/extra_distances.h>
-#include  <faiss/utils/random.h>
-#include  <faiss/utils/Heap.h>
-#include  <faiss/impl/AuxIndexStructures.h>
-#include  <faiss/OnDiskInvertedLists.h>
+#include <faiss/IVFlib.h>
+#include <faiss/utils/utils.h>
+#include <faiss/utils/distances.h>
+#include <faiss/utils/extra_distances.h>
+#include <faiss/utils/random.h>
+#include <faiss/utils/Heap.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/OnDiskInvertedLists.h>
 
-#include  <faiss/Clustering.h>
+#include <faiss/Clustering.h>
 
-#include  <faiss/utils/hamming.h>
+#include <faiss/utils/hamming.h>
 
-#include  <faiss/AutoTune.h>
-#include  <faiss/MatrixStats.h>
-#include  <faiss/index_factory.h>
+#include <faiss/AutoTune.h>
+#include <faiss/MatrixStats.h>
+#include <faiss/index_factory.h>
 
-#include  <faiss/impl/lattice_Zn.h>
-#include  <faiss/IndexLattice.h>
+#include <faiss/impl/lattice_Zn.h>
+#include <faiss/IndexLattice.h>
 
 
 %}
@@ -235,20 +235,20 @@ void gpu_sync_all_devices();
 
 %{
 
-#include  <faiss/gpu/StandardGpuResources.h>
-#include  <faiss/gpu/GpuIndicesOptions.h>
-#include  <faiss/gpu/GpuClonerOptions.h>
-#include  <faiss/gpu/utils/MemorySpace.h>
-#include  <faiss/gpu/GpuIndex.h>
-#include  <faiss/gpu/GpuIndexFlat.h>
-#include  <faiss/gpu/GpuIndexIVF.h>
-#include  <faiss/gpu/GpuIndexIVFPQ.h>
-#include  <faiss/gpu/GpuIndexIVFFlat.h>
-#include  <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
-#include  <faiss/gpu/GpuIndexBinaryFlat.h>
-#include  <faiss/gpu/GpuAutoTune.h>
-#include  <faiss/gpu/GpuCloner.h>
-#include  <faiss/gpu/GpuDistance.h>
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/GpuIndicesOptions.h>
+#include <faiss/gpu/GpuClonerOptions.h>
+#include <faiss/gpu/utils/MemorySpace.h>
+#include <faiss/gpu/GpuIndex.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndexIVF.h>
+#include <faiss/gpu/GpuIndexIVFPQ.h>
+#include <faiss/gpu/GpuIndexIVFFlat.h>
+#include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
+#include <faiss/gpu/GpuIndexBinaryFlat.h>
+#include <faiss/gpu/GpuAutoTune.h>
+#include <faiss/gpu/GpuCloner.h>
+#include <faiss/gpu/GpuDistance.h>
 
 int get_num_gpus()
 {

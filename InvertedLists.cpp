@@ -7,12 +7,12 @@
 
 // -*- c++ -*-
 
-#include  <faiss/InvertedLists.h>
+#include <faiss/InvertedLists.h>
 
 #include <cstdio>
 
-#include  <faiss/utils/utils.h>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/utils/utils.h>
+#include <faiss/impl/FaissAssert.h>
 
 namespace faiss {
 

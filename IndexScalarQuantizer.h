@@ -13,8 +13,8 @@
 #include <stdint.h>
 #include <vector>
 
-#include  <faiss/IndexIVF.h>
-#include  <faiss/impl/ScalarQuantizer.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/impl/ScalarQuantizer.h>
 
 
 namespace faiss {

@@ -6,13 +6,13 @@
  */
 
 
-#include  <faiss/IndexFlat.h>
-#include  <faiss/gpu/GpuDistance.h>
-#include  <faiss/gpu/StandardGpuResources.h>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/CopyUtils.cuh>
-#include  <faiss/gpu/utils/Transpose.cuh>
-#include  <faiss/gpu/test/TestUtils.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/gpu/GpuDistance.h>
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/Transpose.cuh>
+#include <faiss/gpu/test/TestUtils.h>
 #include <gtest/gtest.h>
 #include <sstream>
 #include <vector>

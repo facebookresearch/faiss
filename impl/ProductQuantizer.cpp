@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/impl/ProductQuantizer.h>
+#include <faiss/impl/ProductQuantizer.h>
 
 
 #include <cstddef>
@@ -17,10 +17,10 @@
 
 #include <algorithm>
 
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/VectorTransform.h>
-#include  <faiss/IndexFlat.h>
-#include  <faiss/utils/distances.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/VectorTransform.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/utils/distances.h>
 
 
 extern "C" {

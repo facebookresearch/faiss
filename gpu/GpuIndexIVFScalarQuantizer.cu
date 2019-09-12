@@ -6,13 +6,13 @@
  */
 
 
-#include  <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
-#include  <faiss/gpu/GpuIndexFlat.h>
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/impl/GpuScalarQuantizer.cuh>
-#include  <faiss/gpu/impl/IVFFlat.cuh>
-#include  <faiss/gpu/utils/CopyUtils.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
+#include <faiss/gpu/impl/IVFFlat.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
 #include <limits>
 
 namespace faiss { namespace gpu {

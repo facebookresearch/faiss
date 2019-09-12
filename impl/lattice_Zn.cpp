@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/impl/lattice_Zn.h>
+#include <faiss/impl/lattice_Zn.h>
 
 #include <cstdlib>
 #include <cmath>
@@ -19,7 +19,7 @@
 #include <unordered_map>
 #include <algorithm>
 
-#include  <faiss/utils/distances.h>
+#include <faiss/utils/distances.h>
 
 namespace faiss {
 

@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include  <faiss/gpu/impl/GpuScalarQuantizer.cuh>
-#include  <faiss/gpu/GpuIndicesOptions.h>
-#include  <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
+#include <faiss/gpu/GpuIndicesOptions.h>
+#include <faiss/gpu/utils/Tensor.cuh>
 #include <thrust/device_vector.h>
 
 namespace faiss { namespace gpu {

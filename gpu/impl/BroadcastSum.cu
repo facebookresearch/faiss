@@ -7,12 +7,12 @@
 
 
 #include <algorithm>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissAssert.h>
 
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/MathOperators.cuh>
-#include  <faiss/gpu/utils/Tensor.cuh>
-#include  <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/MathOperators.cuh>
+#include <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
 
 namespace faiss { namespace gpu {
 

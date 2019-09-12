@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include  <faiss/Index.h>
-#include  <faiss/gpu/utils/MemorySpace.h>
+#include <faiss/Index.h>
+#include <faiss/gpu/utils/MemorySpace.h>
 
 namespace faiss { namespace gpu {
 

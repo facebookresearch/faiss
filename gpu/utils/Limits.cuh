@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include  <faiss/gpu/utils/Pair.cuh>
+#include <faiss/gpu/utils/Pair.cuh>
 #include <limits>
 
 namespace faiss { namespace gpu {

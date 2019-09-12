@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexBinaryHNSW.h>
 
 
 #include <memory>
@@ -26,12 +26,12 @@
 #include <unistd.h>
 #include <stdint.h>
 
-#include  <faiss/utils/random.h>
-#include  <faiss/utils/Heap.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/IndexBinaryFlat.h>
-#include  <faiss/utils/hamming.h>
-#include  <faiss/impl/AuxIndexStructures.h>
+#include <faiss/utils/random.h>
+#include <faiss/utils/Heap.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/IndexBinaryFlat.h>
+#include <faiss/utils/hamming.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 namespace faiss {
 

@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <stdint.h>
 
-#include  <faiss/IndexIVF.h>
+#include <faiss/IndexIVF.h>
 
 
 namespace faiss {

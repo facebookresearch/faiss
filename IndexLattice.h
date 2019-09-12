@@ -13,8 +13,8 @@
 
 #include <vector>
 
-#include  <faiss/IndexIVF.h>
-#include  <faiss/impl/lattice_Zn.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/impl/lattice_Zn.h>
 
 namespace faiss {
 

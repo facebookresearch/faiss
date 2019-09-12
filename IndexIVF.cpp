@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IndexIVF.h>
+#include <faiss/IndexIVF.h>
 
 
 #include <omp.h>
@@ -15,12 +15,12 @@
 #include <cstdio>
 #include <memory>
 
-#include  <faiss/utils/utils.h>
-#include  <faiss/utils/hamming.h>
+#include <faiss/utils/utils.h>
+#include <faiss/utils/hamming.h>
 
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/IndexFlat.h>
-#include  <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 namespace faiss {
 

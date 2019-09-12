@@ -24,7 +24,7 @@
  * (Byte,Short,Long) and therefore should be signed for 2-bytes and 4-bytes
 */
 
-#include  <faiss/utils/hamming.h>
+#include <faiss/utils/hamming.h>
 
 #include <vector>
 #include <memory>
@@ -34,9 +34,9 @@
 #include <assert.h>
 #include <limits.h>
 
-#include  <faiss/utils/Heap.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/utils/utils.h>
+#include <faiss/utils/Heap.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/utils.h>
 
 static const size_t BLOCKSIZE_QUERY = 8192;
 

@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/index_io.h>
+#include <faiss/index_io.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -17,30 +17,30 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/impl/io.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/io.h>
 
-#include  <faiss/IndexFlat.h>
-#include  <faiss/VectorTransform.h>
-#include  <faiss/IndexPreTransform.h>
-#include  <faiss/IndexLSH.h>
-#include  <faiss/IndexPQ.h>
-#include  <faiss/IndexIVF.h>
-#include  <faiss/IndexIVFPQ.h>
-#include  <faiss/IndexIVFPQR.h>
-#include  <faiss/Index2Layer.h>
-#include  <faiss/IndexIVFFlat.h>
-#include  <faiss/IndexIVFSpectralHash.h>
-#include  <faiss/MetaIndexes.h>
-#include  <faiss/IndexScalarQuantizer.h>
-#include  <faiss/IndexHNSW.h>
-#include  <faiss/IndexLattice.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/VectorTransform.h>
+#include <faiss/IndexPreTransform.h>
+#include <faiss/IndexLSH.h>
+#include <faiss/IndexPQ.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexIVFPQR.h>
+#include <faiss/Index2Layer.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFSpectralHash.h>
+#include <faiss/MetaIndexes.h>
+#include <faiss/IndexScalarQuantizer.h>
+#include <faiss/IndexHNSW.h>
+#include <faiss/IndexLattice.h>
 
-#include  <faiss/OnDiskInvertedLists.h>
-#include  <faiss/IndexBinaryFlat.h>
-#include  <faiss/IndexBinaryFromFloat.h>
-#include  <faiss/IndexBinaryHNSW.h>
-#include  <faiss/IndexBinaryIVF.h>
+#include <faiss/OnDiskInvertedLists.h>
+#include <faiss/IndexBinaryFlat.h>
+#include <faiss/IndexBinaryFromFloat.h>
+#include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexBinaryIVF.h>
 
 
 

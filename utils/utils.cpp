@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/utils/utils.h>
+#include <faiss/utils/utils.h>
 
 #include <cstdio>
 #include <cassert>
@@ -23,9 +23,9 @@
 #include <algorithm>
 #include <vector>
 
-#include  <faiss/impl/AuxIndexStructures.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/utils/random.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/random.h>
 
 
 

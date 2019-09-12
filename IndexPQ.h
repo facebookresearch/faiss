@@ -14,9 +14,9 @@
 
 #include <vector>
 
-#include  <faiss/Index.h>
-#include  <faiss/impl/ProductQuantizer.h>
-#include  <faiss/impl/PolysemousTraining.h>
+#include <faiss/Index.h>
+#include <faiss/impl/ProductQuantizer.h>
+#include <faiss/impl/PolysemousTraining.h>
 
 namespace faiss {
 

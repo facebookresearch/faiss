@@ -6,13 +6,13 @@
  */
 
 
-#include  <faiss/utils/random.h>
-#include  <faiss/Clustering.h>
-#include  <faiss/gpu/GpuIndexFlat.h>
-#include  <faiss/gpu/StandardGpuResources.h>
-#include  <faiss/gpu/perf/IndexWrapper.h>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/Timer.h>
+#include <faiss/utils/random.h>
+#include <faiss/Clustering.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/perf/IndexWrapper.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Timer.h>
 #include <gflags/gflags.h>
 #include <memory>
 #include <vector>

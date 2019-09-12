@@ -7,18 +7,18 @@
 
 // -*- c++ -*-
 
-#include  <faiss/VectorTransform.h>
+#include <faiss/VectorTransform.h>
 
 #include <cstdio>
 #include <cmath>
 #include <cstring>
 #include <memory>
 
-#include  <faiss/utils/distances.h>
-#include  <faiss/utils/random.h>
-#include  <faiss/utils/utils.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/IndexPQ.h>
+#include <faiss/utils/distances.h>
+#include <faiss/utils/random.h>
+#include <faiss/utils/utils.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/IndexPQ.h>
 
 using namespace faiss;
 

@@ -10,14 +10,14 @@
 
 #include <gtest/gtest.h>
 
-#include  <faiss/IndexIVFFlat.h>
-#include  <faiss/IndexIVFPQ.h>
-#include  <faiss/IndexFlat.h>
-#include  <faiss/MetaIndexes.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/IndexPreTransform.h>
-#include  <faiss/OnDiskInvertedLists.h>
-#include  <faiss/IVFlib.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/MetaIndexes.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/IndexPreTransform.h>
+#include <faiss/OnDiskInvertedLists.h>
+#include <faiss/IVFlib.h>
 
 
 namespace {

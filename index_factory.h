@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include  <faiss/Index.h>
-#include  <faiss/IndexBinary.h>
+#include <faiss/Index.h>
+#include <faiss/IndexBinary.h>
 
 namespace faiss {
 

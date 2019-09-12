@@ -9,22 +9,22 @@
 #include <faiss/gpu/GpuCloner.h>
 #include <typeinfo>
 
-#include  <faiss/gpu/GpuIndex.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/index_io.h>
-#include  <faiss/IndexFlat.h>
-#include  <faiss/IndexIVF.h>
-#include  <faiss/IndexIVFFlat.h>
-#include  <faiss/IndexScalarQuantizer.h>
-#include  <faiss/IndexIVFPQ.h>
-#include  <faiss/IndexReplicas.h>
-#include  <faiss/IndexPreTransform.h>
-#include  <faiss/MetaIndexes.h>
-#include  <faiss/gpu/GpuIndexFlat.h>
-#include  <faiss/gpu/GpuIndexIVFFlat.h>
-#include  <faiss/gpu/GpuIndexIVFPQ.h>
-#include  <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
-#include  <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/GpuIndex.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/index_io.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexScalarQuantizer.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexReplicas.h>
+#include <faiss/IndexPreTransform.h>
+#include <faiss/MetaIndexes.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndexIVFFlat.h>
+#include <faiss/gpu/GpuIndexIVFPQ.h>
+#include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
 
 namespace faiss { namespace gpu {
 

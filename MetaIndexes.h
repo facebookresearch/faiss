@@ -12,9 +12,9 @@
 
 #include <vector>
 #include <unordered_map>
-#include  <faiss/Index.h>
-#include  <faiss/IndexShards.h>
-#include  <faiss/IndexReplicas.h>
+#include <faiss/Index.h>
+#include <faiss/IndexShards.h>
+#include <faiss/IndexReplicas.h>
 
 namespace faiss {
 

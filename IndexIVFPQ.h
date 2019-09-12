@@ -13,8 +13,8 @@
 
 #include <vector>
 
-#include  <faiss/IndexIVF.h>
-#include  <faiss/IndexPQ.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/IndexPQ.h>
 
 
 namespace faiss {

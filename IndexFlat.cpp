@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IndexFlat.h>
+#include <faiss/IndexFlat.h>
 
 #include <cstring>
 #include <faiss/utils/distances.h>

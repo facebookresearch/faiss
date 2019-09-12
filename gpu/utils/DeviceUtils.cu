@@ -6,9 +6,9 @@
  */
 
 
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/DeviceDefs.cuh>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/impl/FaissAssert.h>
 #include <mutex>
 #include <unordered_map>
 #include <cuda_profiler_api.h>

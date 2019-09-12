@@ -6,15 +6,15 @@
  */
 
 
-#include  <faiss/gpu/GpuIndexIVFFlat.h>
-#include  <faiss/IndexFlat.h>
-#include  <faiss/IndexIVFFlat.h>
-#include  <faiss/gpu/GpuIndexFlat.h>
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/impl/IVFFlat.cuh>
-#include  <faiss/gpu/utils/CopyUtils.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/GpuIndexIVFFlat.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/IVFFlat.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
 
 #include <limits>
 

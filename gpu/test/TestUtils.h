@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/Index.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/Index.h>
 #include <initializer_list>
 #include <memory>
 #include <string>

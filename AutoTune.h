@@ -14,8 +14,8 @@
 #include <unordered_map>
 #include <stdint.h>
 
-#include  <faiss/Index.h>
-#include  <faiss/IndexBinary.h>
+#include <faiss/Index.h>
+#include <faiss/IndexBinary.h>
 
 namespace faiss {
 

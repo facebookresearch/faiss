@@ -14,9 +14,9 @@
 #include <sys/time.h>
 
 
-#include  <faiss/IndexIVFPQ.h>
-#include  <faiss/IndexFlat.h>
-#include  <faiss/index_io.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/index_io.h>
 
 double elapsed ()
 {

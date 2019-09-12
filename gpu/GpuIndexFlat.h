@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include  <faiss/gpu/GpuIndex.h>
+#include <faiss/gpu/GpuIndex.h>
 
 namespace faiss {
 

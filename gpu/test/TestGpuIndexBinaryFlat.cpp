@@ -6,12 +6,12 @@
  */
 
 
-#include  <faiss/IndexBinaryFlat.h>
-#include  <faiss/gpu/GpuIndexBinaryFlat.h>
-#include  <faiss/gpu/StandardGpuResources.h>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/test/TestUtils.h>
-#include  <faiss/utils/utils.h>
+#include <faiss/IndexBinaryFlat.h>
+#include <faiss/gpu/GpuIndexBinaryFlat.h>
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/test/TestUtils.h>
+#include <faiss/utils/utils.h>
 #include <gtest/gtest.h>
 #include <sstream>
 #include <vector>

@@ -7,15 +7,15 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IndexPreTransform.h>
+#include <faiss/IndexPreTransform.h>
 
 #include <cstdio>
 #include <cmath>
 #include <cstring>
 #include <memory>
 
-#include  <faiss/utils/utils.h>
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/utils/utils.h>
+#include <faiss/impl/FaissAssert.h>
 
 namespace faiss {
 

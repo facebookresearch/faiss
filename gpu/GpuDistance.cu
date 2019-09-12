@@ -6,14 +6,14 @@
  */
 
 
-#include  <faiss/gpu/GpuDistance.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/impl/Distance.cuh>
-#include  <faiss/gpu/utils/ConversionOperators.cuh>
-#include  <faiss/gpu/utils/CopyUtils.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/GpuDistance.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/Distance.cuh>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
 
 namespace faiss { namespace gpu {
 

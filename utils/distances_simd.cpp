@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/utils/distances.h>
+#include <faiss/utils/distances.h>
 
 #include <cstdio>
 #include <cassert>
@@ -19,7 +19,7 @@
 #endif
 
 #ifdef __aarch64__
-#include  <arm_neon.h>
+#include <arm_neon.h>
 #endif
 
 #include <omp.h>

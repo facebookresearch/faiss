@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include  <faiss/gpu/utils/DeviceTensor.cuh>
-#include  <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/Float16.cuh>
 
 namespace faiss { namespace gpu {
 

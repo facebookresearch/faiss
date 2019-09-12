@@ -6,8 +6,8 @@
  */
 
 
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
 
 namespace faiss { namespace gpu {
 

@@ -6,15 +6,15 @@
  */
 
 
-#include  <faiss/gpu/GpuIndexIVFPQ.h>
-#include  <faiss/IndexFlat.h>
-#include  <faiss/IndexIVFPQ.h>
-#include  <faiss/impl/ProductQuantizer.h>
-#include  <faiss/gpu/GpuIndexFlat.h>
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/impl/IVFPQ.cuh>
-#include  <faiss/gpu/utils/CopyUtils.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/GpuIndexIVFPQ.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/impl/ProductQuantizer.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/IVFPQ.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
 
 #include <limits>
 

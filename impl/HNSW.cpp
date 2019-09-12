@@ -7,11 +7,11 @@
 
 // -*- c++ -*-
 
-#include  <faiss/impl/HNSW.h>
+#include <faiss/impl/HNSW.h>
 
 #include <string>
 
-#include  <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 namespace faiss {
 

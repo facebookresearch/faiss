@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include  <faiss/gpu/utils/DeviceDefs.cuh>
-#include  <faiss/gpu/utils/PtxUtils.cuh>
-#include  <faiss/gpu/utils/ReductionOperators.cuh>
-#include  <faiss/gpu/utils/StaticUtils.h>
-#include  <faiss/gpu/utils/WarpShuffles.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/PtxUtils.cuh>
+#include <faiss/gpu/utils/ReductionOperators.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/gpu/utils/WarpShuffles.cuh>
 #include <cuda.h>
 
 namespace faiss { namespace gpu {

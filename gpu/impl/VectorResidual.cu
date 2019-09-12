@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include  <faiss/gpu/impl/VectorResidual.cuh>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/gpu/utils/ConversionOperators.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/Tensor.cuh>
-#include  <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/gpu/impl/VectorResidual.cuh>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
 #include <math_constants.h> // in CUDA SDK, for CUDART_NAN_F
 
 namespace faiss { namespace gpu {

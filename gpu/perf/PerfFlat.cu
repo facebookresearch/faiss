@@ -6,15 +6,15 @@
  */
 
 
-#include  <faiss/IndexFlat.h>
-#include  <faiss/utils/random.h>
-#include  <faiss/gpu/GpuIndexFlat.h>
-#include  <faiss/gpu/perf/IndexWrapper.h>
-#include  <faiss/gpu/test/TestUtils.h>
-#include  <faiss/gpu/utils/DeviceTensor.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
-#include  <faiss/gpu/utils/HostTensor.cuh>
-#include  <faiss/gpu/utils/Timer.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/utils/random.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/perf/IndexWrapper.h>
+#include <faiss/gpu/test/TestUtils.h>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/utils/Timer.h>
 #include <gflags/gflags.h>
 #include <map>
 #include <memory>

@@ -8,14 +8,14 @@
 // -*- c++ -*-
 
 
-#include  <faiss/MatrixStats.h>
+#include <faiss/MatrixStats.h>
 
 
 #include <stdarg.h>     /* va_list, va_start, va_arg, va_end */
 
 #include <cmath>
 #include <cstdio>
-#include  <faiss/utils/utils.h>
+#include <faiss/utils/utils.h>
 
 namespace faiss {
 

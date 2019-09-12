@@ -15,10 +15,10 @@
 
 #include <omp.h>
 
-#include  <faiss/Index.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/utils/random.h>
-#include  <faiss/utils/Heap.h>
+#include <faiss/Index.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/random.h>
+#include <faiss/utils/Heap.h>
 
 
 namespace faiss {

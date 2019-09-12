@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include  <faiss/gpu/GpuIndexBinaryFlat.h>
+#include <faiss/gpu/GpuIndexBinaryFlat.h>
 
-#include  <faiss/gpu/GpuResources.h>
-#include  <faiss/gpu/impl/BinaryFlatIndex.cuh>
-#include  <faiss/gpu/utils/ConversionOperators.cuh>
-#include  <faiss/gpu/utils/CopyUtils.cuh>
-#include  <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/BinaryFlatIndex.cuh>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
 
 namespace faiss { namespace gpu {
 

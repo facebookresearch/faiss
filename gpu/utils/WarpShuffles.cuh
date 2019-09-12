@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cuda.h>
-#include  <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
 
 namespace faiss { namespace gpu {
 

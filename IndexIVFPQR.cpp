@@ -7,13 +7,13 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IndexIVFPQR.h>
+#include <faiss/IndexIVFPQR.h>
 
-#include  <faiss/utils/Heap.h>
-#include  <faiss/utils/utils.h>
-#include  <faiss/utils/distances.h>
+#include <faiss/utils/Heap.h>
+#include <faiss/utils/utils.h>
+#include <faiss/utils/distances.h>
 
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissAssert.h>
 
 
 namespace faiss {

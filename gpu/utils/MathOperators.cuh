@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include  <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/Float16.cuh>
 
 //
 // Templated wrappers to express math for different scalar and vector

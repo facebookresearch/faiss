@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include  <faiss/impl/PolysemousTraining.h>
+#include <faiss/impl/PolysemousTraining.h>
 
 #include <cstdlib>
 #include <cmath>
@@ -16,12 +16,12 @@
 
 #include <algorithm>
 
-#include  <faiss/utils/random.h>
-#include  <faiss/utils/utils.h>
-#include  <faiss/utils/distances.h>
-#include  <faiss/utils/hamming.h>
+#include <faiss/utils/random.h>
+#include <faiss/utils/utils.h>
+#include <faiss/utils/distances.h>
+#include <faiss/utils/hamming.h>
 
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissAssert.h>
 
 /*****************************************
  * Mixed PQ / Hamming

@@ -7,16 +7,16 @@
 
 // -*- c++ -*-
 
-#include  <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFFlat.h>
 
 #include <cstdio>
 
-#include  <faiss/IndexFlat.h>
+#include <faiss/IndexFlat.h>
 
-#include  <faiss/utils/distances.h>
-#include  <faiss/utils/utils.h>
-#include  <faiss/impl/FaissAssert.h>
-#include  <faiss/impl/AuxIndexStructures.h>
+#include <faiss/utils/distances.h>
+#include <faiss/utils/utils.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 
 namespace faiss {

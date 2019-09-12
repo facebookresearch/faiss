@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include  <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissAssert.h>
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 #include <vector>
