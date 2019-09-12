@@ -70,7 +70,7 @@ uninstall:
 
 depend: $(SRC) $(GPU_SRC)
 	for i in $^; do \
-		$(CXXCPP) $(CPPFLAGS) -x c++ -MM $$i; \
+		$(CXXCPP) $(CPPFLAGS) -DCUDA_VERSION=7050 -x c++ -MM $$i; \
 	done > depend
 
 
