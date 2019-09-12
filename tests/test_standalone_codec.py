@@ -7,13 +7,12 @@
 
 """ test byte codecs """
 
+from __future__ import print_function
 import numpy as np
 import unittest
 import faiss
 import tempfile
 import os
-
-from catalyzer.quantizers import ITQ
 
 from common import get_dataset_2
 
@@ -195,147 +194,6 @@ class TestAccuracy(unittest.TestCase):
         self.compare_accuracy('ZnLattice3x12_1',
                               'ZnLattice3x12_7',
                               (18000, 16000))
-
-
-class TestITQ(unittest.TestCase):
-    """tests done in 3 levels from lowest to highest. Trainings are
-    repeated 10x because jitter is quite important."""
-
-    def fit_rotation(self, A, B):
-        """ solve argmin norm_F (Omega * A - B) for Omega orthogonal
-        (Orthogonal Procrustes problem) """
-        M = np.dot(B, A.T)
-        U, sigma, Vt = np.linalg.svd(M)
-        R = np.dot(U, Vt)
-        residual = ((np.dot(R, A) - B) ** 2).sum()
-        return R, residual
-
-    def test_ITQ1(self):
-        """ Just test the ITQ optimization with a given initialization """
-        d = 15
-        nb = 1000
-        nq = 0
-        nt = 10000
-
-        xt, xb, _ = get_dataset_2(d, nt, nb, nq)
-        for xp in range(10):
-            xti = xt[xp * 1000: (xp + 1) * 1000]
-
-            ref_itq = ITQ(d, do_pca=False)
-            ref_itq.train(xti)
-            x_bin_ref = ref_itq.quantize(xb)
-            rot_ref = ref_itq._rotation
-
-            new_itq = faiss.ITQMatrix(d)
-            mean = xti.mean(0)
-            training_data = xti - mean
-            faiss.normalize_L2(training_data)
-            new_itq.train(training_data)
-
-            xb_normed = xb - mean
-            faiss.normalize_L2(xb_normed)
-
-            x_new = new_itq.apply_py(xb_normed)
-            x_bin_new = np.where(x_new > 0, 1, -1)
-
-            # compute objective value using computed rotation matrix
-            err_ref = ((x_bin_ref - np.dot(xb_normed, rot_ref))**2).sum()
-            rot_new = faiss.vector_to_array(new_itq.A).reshape(d, d)
-            err_new = ((x_bin_new - np.dot(xb_normed, rot_new.T))**2).sum()
-
-            self.assertTrue(err_ref * 1.01 > err_new)
-
-    def test_ITQ2(self):
-        """ test ITQTransform (that does the normalization) """
-        d = 15
-        nb = 1000
-        nq = 0
-        nt = 10000
-
-        xt, xb, _ = get_dataset_2(d, nt, nb, nq)
-
-        for xp in range(10):
-            xti = xt[xp * 1000: (xp + 1) * 1000]
-
-            ref_itq = ITQ(d, do_pca=False)
-            ref_itq.train(xti)
-            x_bin_ref = ref_itq.quantize(xb)
-
-            new_itq = faiss.ITQTransform(d, d, False)
-            new_itq.train(xti)
-
-            x_new = new_itq.apply_py(xb)
-            x_bin_new = np.where(x_new > 0, 1, -1)
-
-            # compute objective value recomputing optimal rotation
-            _, err_ref = self.fit_rotation(xb.T, x_bin_ref.T)
-            _, err_new = self.fit_rotation(xb.T, x_bin_new.T)
-
-            # test is more lax here because we are not directly
-            # optimizing the same objective
-            self.assertTrue(err_ref * 1.05 > err_new)
-
-    def test_ITQ3(self):
-        """ Direct test with an index, include PCA """
-        d = 40
-        nb = 1000
-        nq = 0
-        nt = 10000
-        d_out = 16
-
-        xt, xb, _ = get_dataset_2(d, nt, nb, nq)
-
-        index = faiss.IndexFlatL2(d)
-        index.add(xb)
-        _, gt_I = index.search(xb, 10)
-
-        def to_binary(x):
-            n, d = x.shape
-            assert d % 8 == 0
-            xs = ((x.reshape(-1, 8) > 0) << np.arange(8)).sum(1).astype('uint8')
-            return xs.reshape(n, d // 8)
-
-        for xp in range(10):
-            xti = xt[xp * 1000: (xp + 1) * 1000]
-            ref_itq = ITQ(d_out, do_pca=True)
-            ref_itq.train(xti)
-            x_bin_ref = to_binary(ref_itq.quantize(xb))
-
-            new_itq = faiss.ITQTransform(d, d_out, True)
-            new_itq.train(xti)
-            x_new = new_itq.apply_py(xb)
-            x_bin_new = to_binary(np.where(x_new > 0, 1, -1))
-
-            ninter_ref = None
-            for x_bin in x_bin_ref, x_bin_new:
-
-                index = faiss.IndexBinaryFlat(d_out)
-                index.add(x_bin)
-                _, I = index.search(x_bin, 10)
-                ninter = faiss.eval_intersection(I, gt_I)
-                if ninter_ref is None:
-                    ninter_ref = ninter
-                else:
-                    ninter_new = ninter
-
-            self.assertTrue(abs(ninter_ref - ninter_new) < 100)
-
-            print(ninter_ref, ninter_new)
-
-            # test I/O for one experiment
-            if xp != 0:
-                continue
-
-            try:
-                _, tmpfile = tempfile.mkstemp()
-                faiss.write_VectorTransform(new_itq, tmpfile)
-                new_itq_2 = faiss.read_VectorTransform(tmpfile)
-            finally:
-                if os.path.exists(tmpfile):
-                    os.unlink(tmpfile)
-
-            x_new_2 = new_itq_2.apply_py(xb)
-            self.assertTrue(np.all(x_new == x_new_2))
 
 
 swig_ptr = faiss.swig_ptr
