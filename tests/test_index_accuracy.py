@@ -244,7 +244,7 @@ class TestSQFlavors(unittest.TestCase):
             D, I = index.search(xq, 10)
             ninter = faiss.eval_intersection(I, gt_I)
             print('(%d, %s): %d, ' % (mt, repr(qname), ninter))
-            assert abs(ninter - self.ref_results[(mt, qname)]) <= 9
+            assert abs(ninter - self.ref_results[(mt, qname)]) <= 10
 
             if qname == '6bit':
                 # the test below fails triggers ASAN. TODO check what's wrong
