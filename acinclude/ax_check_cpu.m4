@@ -8,7 +8,7 @@ AC_MSG_CHECKING([for cpu arch])
 
   case $target in
     amd64-* | x86_64-*)
-      ARCH_CPUFLAGS="-mpopcnt"
+      ARCH_CPUFLAGS="-mpopcnt -msse4"
       ARCH_CXXFLAGS="-m64";;
     *) ;;
   esac

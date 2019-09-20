@@ -17,8 +17,6 @@ shutil.copyfile("faiss.py", "faiss/__init__.py")
 shutil.copyfile("swigfaiss.py", "faiss/swigfaiss.py")
 shutil.copyfile("_swigfaiss.so", "faiss/_swigfaiss.so")
 try:
-    shutil.copyfile("swigfaiss_sse4.py", "faiss/swigfaiss_sse4.py")
-    shutil.copyfile("_swigfaiss_sse4.so", "faiss/_swigfaiss_sse4.so")
     shutil.copyfile("swigfaiss_avx2.py", "faiss/swigfaiss_avx2.py")
     shutil.copyfile("_swigfaiss_avx2.so", "faiss/_swigfaiss_avx2.so")
 except:
