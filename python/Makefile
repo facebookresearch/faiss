@@ -15,9 +15,6 @@ all: build
 swigfaiss.cpp: swigfaiss.swig ../libfaiss.a
 	$(SWIG) -python -c++ -Doverride= -I../ $(SWIGFLAGS) -o $@ $<
 
-swigfaiss_sse4.cpp: swigfaiss.swig ../libfaiss.a
-	$(SWIG) -python -c++ -Doverride= -module swigfaiss_sse4 -I../ $(SWIGFLAGS) -o $@ $<
-
 swigfaiss_avx2.cpp: swigfaiss.swig ../libfaiss.a
 	$(SWIG) -python -c++ -Doverride= -module swigfaiss_avx2 -I../ $(SWIGFLAGS) -o $@ $<
 
