@@ -8,8 +8,10 @@
 
 #pragma once
 
-#include "../GpuIndicesOptions.h"
-#include "../utils/Tensor.cuh"
+#include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
+#include <faiss/gpu/GpuIndicesOptions.h>
+#include <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/Index.h>
 #include <thrust/device_vector.h>
 
 namespace faiss { namespace gpu {
@@ -24,8 +26,10 @@ void runIVFFlatScan(Tensor<float, 2, true>& queries,
                     thrust::device_vector<int>& listLengths,
                     int maxListLength,
                     int k,
-                    bool l2Distance,
-                    bool useFloat16,
+                    faiss::MetricType metric,
+                    bool useResidual,
+                    Tensor<float, 3, true>& residualBase,
+                    GpuScalarQuantizer* scalarQ,
                     // output
                     Tensor<float, 2, true>& outDistances,
                     // output

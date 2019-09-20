@@ -14,9 +14,9 @@
 
 #include <vector>
 
-#include "Index.h"
-#include "ProductQuantizer.h"
-#include "PolysemousTraining.h"
+#include <faiss/Index.h>
+#include <faiss/impl/ProductQuantizer.h>
+#include <faiss/impl/PolysemousTraining.h>
 
 namespace faiss {
 
@@ -62,6 +62,16 @@ struct IndexPQ: Index {
     void reconstruct(idx_t key, float* recons) const override;
 
     size_t remove_ids(const IDSelector& sel) override;
+
+    /* The standalone codec interface */
+    size_t sa_code_size () const override;
+
+    void sa_encode (idx_t n, const float *x,
+                          uint8_t *bytes) const override;
+
+    void sa_decode (idx_t n, const uint8_t *bytes,
+                            float *x) const override;
+
 
     DistanceComputer * get_distance_computer() const override;
 

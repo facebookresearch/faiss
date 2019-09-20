@@ -9,8 +9,12 @@
 #pragma once
 
 #include <cuda.h>
-#include "../../Index.h"
-#include "Float16.cuh"
+#include <faiss/Index.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+
+#include <thrust/execution_policy.h>
+#include <thrust/transform.h>
 
 namespace faiss { namespace gpu {
 
@@ -18,9 +22,24 @@ namespace faiss { namespace gpu {
 // Conversion utilities
 //
 
-struct IntToIdxType {
-  inline __device__ faiss::Index::idx_t operator()(int v) const {
-    return (faiss::Index::idx_t) v;
+template <typename From, typename To>
+struct Convert {
+  inline __device__ To operator()(From v) const {
+    return (To) v;
+  }
+};
+
+template <>
+struct Convert<float, half> {
+  inline __device__ half operator()(float v) const {
+    return __float2half(v);
+  }
+};
+
+template <>
+struct Convert<half, float> {
+  inline __device__ float operator()(half v) const {
+    return __half2float(v);
   }
 };
 
@@ -31,28 +50,21 @@ struct ConvertTo {
 template <>
 struct ConvertTo<float> {
   static inline __device__ float to(float v) { return v; }
-#ifdef FAISS_USE_FLOAT16
   static inline __device__ float to(half v) { return __half2float(v); }
-#endif
 };
 
 template <>
 struct ConvertTo<float2> {
   static inline __device__ float2 to(float2 v) { return v; }
-#ifdef FAISS_USE_FLOAT16
   static inline __device__ float2 to(half2 v) { return __half22float2(v); }
-#endif
 };
 
 template <>
 struct ConvertTo<float4> {
   static inline __device__ float4 to(float4 v) { return v; }
-#ifdef FAISS_USE_FLOAT16
   static inline __device__ float4 to(Half4 v) { return half4ToFloat4(v); }
-#endif
 };
 
-#ifdef FAISS_USE_FLOAT16
 template <>
 struct ConvertTo<half> {
   static inline __device__ half to(float v) { return __float2half(v); }
@@ -70,7 +82,43 @@ struct ConvertTo<Half4> {
   static inline __device__ Half4 to(float4 v) { return float4ToHalf4(v); }
   static inline __device__ Half4 to(Half4 v) { return v; }
 };
-#endif
 
+// Tensor conversion
+template <typename From, typename To>
+void runConvert(const From* in,
+                To* out,
+                size_t num,
+                cudaStream_t stream) {
+  thrust::transform(thrust::cuda::par.on(stream),
+                    in, in + num, out, Convert<From, To>());
+}
+
+template <typename From, typename To, int Dim>
+void convertTensor(cudaStream_t stream,
+                   Tensor<From, Dim, true>& in,
+                   Tensor<To, Dim, true>& out) {
+  FAISS_ASSERT(in.numElements() == out.numElements());
+
+  runConvert<From, To>(in.data(), out.data(), in.numElements(), stream);
+}
+
+template <typename From, typename To, int Dim>
+DeviceTensor<To, Dim, true> convertTensor(GpuResources* res,
+                                          cudaStream_t stream,
+                                          Tensor<From, Dim, true>& in) {
+  DeviceTensor<To, Dim, true> out;
+
+  if (res) {
+    out = std::move(DeviceTensor<To, Dim, true>(
+                      res->getMemoryManagerCurrentDevice(),
+                      in.sizes(),
+                      stream));
+  } else {
+    out = std::move(DeviceTensor<To, Dim, true>(in.sizes()));
+  }
+
+  convertTensor(stream, in, out);
+  return out;
+}
 
 } } // namespace

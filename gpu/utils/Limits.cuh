@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include "Float16.cuh"
-#include "Pair.cuh"
+#include <faiss/gpu/utils/Pair.cuh>
 #include <limits>
 
 namespace faiss { namespace gpu {
@@ -34,8 +33,6 @@ struct Limits<float> {
   }
 };
 
-#ifdef FAISS_USE_FLOAT16
-
 inline __device__ __host__ half kGetHalf(unsigned short v) {
 #if CUDA_VERSION >= 9000
   __half_raw h;
@@ -57,8 +54,6 @@ struct Limits<half> {
     return kGetHalf(0x7bffU);
   }
 };
-
-#endif // FAISS_USE_FLOAT16
 
 constexpr int kIntMax = std::numeric_limits<int>::max();
 constexpr int kIntMin = std::numeric_limits<int>::lowest();

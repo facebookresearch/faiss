@@ -7,9 +7,11 @@
 
 // -*- c++ -*-
 
-#include "AuxIndexStructures.h"
-#include "FaissAssert.h"
-#include "utils.h"
+#include <faiss/Index.h>
+
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/distances.h>
 
 #include <cstring>
 
@@ -83,17 +85,40 @@ void Index::search_and_reconstruct (idx_t n, const float *x, idx_t k,
   }
 }
 
-
 void Index::compute_residual (const float * x,
                               float * residual, idx_t key) const {
   reconstruct (key, residual);
-  for (size_t i = 0; i < d; i++)
+  for (size_t i = 0; i < d; i++) {
     residual[i] = x[i] - residual[i];
+  }
+}
+
+void Index::compute_residual_n (idx_t n, const float* xs,
+                                float* residuals,
+                                const idx_t* keys) const {
+#pragma omp parallel for
+  for (idx_t i = 0; i < n; ++i) {
+    compute_residual(&xs[i * d], &residuals[i * d], keys[i]);
+  }
 }
 
 
-void Index::display () const {
-  printf ("Index: %s  -> %ld elements\n", typeid (*this).name(), ntotal);
+
+size_t Index::sa_code_size () const
+{
+    FAISS_THROW_MSG ("standalone codec not implemented for this type of index");
+}
+
+void Index::sa_encode (idx_t, const float *,
+                             uint8_t *) const
+{
+    FAISS_THROW_MSG ("standalone codec not implemented for this type of index");
+}
+
+void Index::sa_decode (idx_t, const uint8_t *,
+                            float *) const
+{
+    FAISS_THROW_MSG ("standalone codec not implemented for this type of index");
 }
 
 

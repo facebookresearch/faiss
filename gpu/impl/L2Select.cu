@@ -6,17 +6,17 @@
  */
 
 
-#include "L2Select.cuh"
-#include "../../FaissAssert.h"
+#include <faiss/gpu/impl/L2Select.cuh>
+#include <faiss/impl/FaissAssert.h>
 
-#include "../utils/DeviceDefs.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/MathOperators.cuh"
-#include "../utils/Pair.cuh"
-#include "../utils/Reductions.cuh"
-#include "../utils/Select.cuh"
-#include "../utils/Tensor.cuh"
-#include "../utils/StaticUtils.h"
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/MathOperators.cuh>
+#include <faiss/gpu/utils/Pair.cuh>
+#include <faiss/gpu/utils/Reductions.cuh>
+#include <faiss/gpu/utils/Select.cuh>
+#include <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
 
 namespace faiss { namespace gpu {
 
@@ -236,7 +236,6 @@ void runL2SelectMin(Tensor<float, 2, true>& productDistances,
                         stream);
 }
 
-#ifdef FAISS_USE_FLOAT16
 void runL2SelectMin(Tensor<half, 2, true>& productDistances,
                     Tensor<half, 1, true>& centroidDistances,
                     Tensor<half, 2, true>& outDistances,
@@ -250,6 +249,5 @@ void runL2SelectMin(Tensor<half, 2, true>& productDistances,
                        k,
                        stream);
 }
-#endif
 
 } } // namespace

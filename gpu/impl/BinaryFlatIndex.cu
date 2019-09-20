@@ -6,10 +6,10 @@
  */
 
 
-#include "BinaryFlatIndex.cuh"
-#include "BinaryDistance.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../GpuResources.h"
+#include <faiss/gpu/impl/BinaryFlatIndex.cuh>
+#include <faiss/gpu/impl/BinaryDistance.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/GpuResources.h>
 
 namespace faiss { namespace gpu {
 

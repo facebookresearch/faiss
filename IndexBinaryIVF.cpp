@@ -8,17 +8,17 @@
 // Copyright 2004-present Facebook. All Rights Reserved
 // -*- c++ -*-
 
-#include "IndexBinaryIVF.h"
+#include <faiss/IndexBinaryIVF.h>
 
 #include <cstdio>
 #include <memory>
 
-#include "hamming.h"
-#include "utils.h"
+#include <faiss/utils/hamming.h>
+#include <faiss/utils/utils.h>
 
-#include "AuxIndexStructures.h"
-#include "FaissAssert.h"
-#include "IndexFlat.h"
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/IndexFlat.h>
 
 
 namespace faiss {

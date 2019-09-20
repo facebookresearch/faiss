@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "../Index.h"
-#include "utils/MemorySpace.h"
+#include <faiss/Index.h>
+#include <faiss/gpu/utils/MemorySpace.h>
 
 namespace faiss { namespace gpu {
 
@@ -71,6 +71,19 @@ class GpuIndex : public faiss::Index {
               Index::idx_t k,
               float* distances,
               Index::idx_t* labels) const override;
+
+  /// Overridden to force GPU indices to provide their own GPU-friendly
+  /// implementation
+  void compute_residual(const float* x,
+                        float* residual,
+                        Index::idx_t key) const override;
+
+  /// Overridden to force GPU indices to provide their own GPU-friendly
+  /// implementation
+  void compute_residual_n(Index::idx_t n,
+                          const float* xs,
+                          float* residuals,
+                          const Index::idx_t* keys) const override;
 
  protected:
   /// Does addImpl_ require IDs? If so, and no IDs are provided, we will

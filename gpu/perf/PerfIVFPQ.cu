@@ -6,17 +6,17 @@
  */
 
 
-#include "../../IndexIVFPQ.h"
-#include "../../index_io.h"
-#include "../../utils.h"
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/index_io.h>
+#include <faiss/utils/random.h>
 
-#include "../GpuIndexIVFPQ.h"
-#include "IndexWrapper.h"
-#include "../test/TestUtils.h"
-#include "../utils/DeviceTensor.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/HostTensor.cuh"
-#include "../utils/Timer.h"
+#include <faiss/gpu/GpuIndexIVFPQ.h>
+#include <faiss/gpu/perf/IndexWrapper.h>
+#include <faiss/gpu/test/TestUtils.h>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/utils/Timer.h>
 
 #include <cuda_profiler_api.h>
 #include <gflags/gflags.h>

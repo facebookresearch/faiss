@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "Float16.cuh"
+#include <faiss/gpu/utils/Float16.cuh>
 
 //
 // Templated wrappers to express math for different scalar and vector
@@ -215,8 +215,6 @@ struct Math<float4> {
     return v;
   }
 };
-
-#ifdef FAISS_USE_FLOAT16
 
 template <>
 struct Math<half> {
@@ -563,7 +561,5 @@ struct Math<Half8> {
     return h;
   }
 };
-
-#endif // FAISS_USE_FLOAT16
 
 } } // namespace

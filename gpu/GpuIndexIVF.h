@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "GpuIndex.h"
-#include "GpuIndexFlat.h"
-#include "GpuIndicesOptions.h"
-#include "../Clustering.h"
+#include <faiss/gpu/GpuIndex.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndicesOptions.h>
+#include <faiss/Clustering.h>
 
 namespace faiss { struct IndexIVF; }
 
@@ -70,21 +70,20 @@ class GpuIndexIVF : public GpuIndex {
   void trainQuantizer_(faiss::Index::idx_t n, const float* x);
 
  public:
-  /// Exposed as IndexIVF does to allow overriding clustering
-  /// parameters
+  /// Exposing this like the CPU version for manipulation
   ClusteringParameters cp;
+
+  /// Exposing this like the CPU version for query
+  int nlist;
+
+  /// Exposing this like the CPU version for manipulation
+  int nprobe;
+
+  /// Exposeing this like the CPU version for query
+  GpuIndexFlat* quantizer;
 
  protected:
   GpuIndexIVFConfig ivfConfig_;
-
-  /// Number of inverted lists that we manage
-  int nlist_;
-
-  /// Number of inverted list probes per query
-  int nprobe_;
-
-  /// Quantizer for inverted lists
-  GpuIndexFlat* quantizer_;
 };
 
 } } // namespace

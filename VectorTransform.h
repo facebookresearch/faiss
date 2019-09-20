@@ -17,7 +17,7 @@
 #include <vector>
 #include <stdint.h>
 
-#include "Index.h"
+#include <faiss/Index.h>
 
 
 namespace faiss {
@@ -106,6 +106,8 @@ struct LinearTransform: VectorTransform {
     void set_is_orthonormal ();
 
     bool verbose;
+    void print_if_verbose (const char*name, const std::vector<double> &mat,
+                           int n, int d) const;
 
     ~LinearTransform() override {}
 };
@@ -123,7 +125,7 @@ struct RandomRotationMatrix: LinearTransform {
      void init(int seed);
 
      // intializes with an arbitrary seed
-     void train(Index::idx_t n, const float* x) override;
+     void train(idx_t n, const float* x) override;
 
      RandomRotationMatrix () {}
 };
@@ -165,13 +167,60 @@ struct PCAMatrix: LinearTransform {
 
     /// train on n vectors. If n < d_in then the eigenvector matrix
     /// will be completed with 0s
-    void train(Index::idx_t n, const float* x) override;
+    void train(idx_t n, const float* x) override;
 
     /// copy pre-trained PCA matrix
     void copy_from (const PCAMatrix & other);
 
     /// called after mean, PCAMat and eigenvalues are computed
     void prepare_Ab();
+
+};
+
+
+/** ITQ implementation from
+ *
+ *     Iterative quantization: A procrustean approach to learning binary codes
+ *     for large-scale image retrieval,
+ *
+ * Yunchao Gong, Svetlana Lazebnik, Albert Gordo, Florent Perronnin,
+ * PAMI'12.
+ */
+
+struct ITQMatrix: LinearTransform {
+
+    int max_iter;
+    int seed;
+
+    // force initialization of the rotation (for debugging)
+    std::vector<double> init_rotation;
+
+    explicit ITQMatrix (int d = 0);
+
+    void train (idx_t n, const float* x) override;
+};
+
+
+
+/** The full ITQ transform, including normalizations and PCA transformation
+ */
+struct ITQTransform: VectorTransform {
+
+    std::vector<float> mean;
+    bool do_pca;
+    ITQMatrix itq;
+
+    /// max training points per dimension
+    int max_train_per_dim;
+
+    // concatenation of PCA + ITQ transformation
+    LinearTransform pca_then_itq;
+
+    explicit ITQTransform (int d_in = 0, int d_out = 0, bool do_pca = false);
+
+    void train (idx_t n, const float *x) override;
+
+    void apply_noalloc (idx_t n, const float* x, float* xt) const override;
 
 };
 
@@ -204,7 +253,7 @@ struct OPQMatrix: LinearTransform {
     /// if d2 != -1, output vectors of this dimension
     explicit OPQMatrix (int d = 0, int M = 1, int d2 = -1);
 
-    void train(Index::idx_t n, const float* x) override;
+    void train(idx_t n, const float* x) override;
 };
 
 
@@ -226,7 +275,7 @@ struct RemapDimensionsTransform: VectorTransform {
 
     void apply_noalloc(idx_t n, const float* x, float* xt) const override;
 
-    /// reverse transform correct only when the mapping is a permuation
+    /// reverse transform correct only when the mapping is a permutation
     void reverse_transform(idx_t n, const float* xt, float* x) const override;
 
     RemapDimensionsTransform () {}
@@ -255,7 +304,7 @@ struct CenteringTransform: VectorTransform {
     explicit CenteringTransform (int d = 0);
 
     /// train on n vectors.
-    void train(Index::idx_t n, const float* x) override;
+    void train(idx_t n, const float* x) override;
 
     /// subtract the mean
     void apply_noalloc(idx_t n, const float* x, float* xt) const override;
@@ -264,70 +313,6 @@ struct CenteringTransform: VectorTransform {
     void reverse_transform (idx_t n, const float * xt,
                             float *x) const override;
 
-};
-
-
-/** Index that applies a LinearTransform transform on vectors before
- *  handing them over to a sub-index */
-struct IndexPreTransform: Index {
-
-    std::vector<VectorTransform *> chain;  ///! chain of tranforms
-    Index * index;            ///! the sub-index
-
-    bool own_fields;          ///! whether pointers are deleted in destructor
-
-    explicit IndexPreTransform (Index *index);
-
-    IndexPreTransform ();
-
-    /// ltrans is the last transform before the index
-    IndexPreTransform (VectorTransform * ltrans, Index * index);
-
-    void prepend_transform (VectorTransform * ltrans);
-
-    void train(idx_t n, const float* x) override;
-
-    void add(idx_t n, const float* x) override;
-
-    void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
-
-    void reset() override;
-
-    /** removes IDs from the index. Not supported by all indexes.
-     */
-    size_t remove_ids(const IDSelector& sel) override;
-
-    void search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const override;
-
-
-    /* range search, no attempt is done to change the radius */
-    void range_search (idx_t n, const float* x, float radius,
-                       RangeSearchResult* result) const override;
-
-
-    void reconstruct (idx_t key, float * recons) const override;
-
-    void reconstruct_n (idx_t i0, idx_t ni, float *recons)
-        const override;
-
-    void search_and_reconstruct (idx_t n, const float *x, idx_t k,
-                                 float *distances, idx_t *labels,
-                                 float *recons) const override;
-
-    /// apply the transforms in the chain. The returned float * may be
-    /// equal to x, otherwise it should be deallocated.
-    const float * apply_chain (idx_t n, const float *x) const;
-
-    /// Reverse the transforms in the chain. May not be implemented for
-    /// all transforms in the chain or may return approximate results.
-    void reverse_chain (idx_t n, const float* xt, float* x) const;
-
-    ~IndexPreTransform() override;
 };
 
 

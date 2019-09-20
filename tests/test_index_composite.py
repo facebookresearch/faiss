@@ -24,7 +24,7 @@ class TestRemove(unittest.TestCase):
         nq = 200
         nt = 200
 
-        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
 
         quantizer = faiss.IndexFlatL2(d)
 
@@ -321,7 +321,7 @@ class TestRareIO(unittest.TestCase):
         nb = 1000
         nq = 200
         nt = 200
-        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
 
         quantizer = faiss.IndexFlatL2(d)
         index1 = faiss.IndexIVFFlat(quantizer, d, 20)
@@ -374,7 +374,7 @@ class TestIVFFlatDedup(unittest.TestCase):
         nb = 1000
         nq = 200
         nt = 500
-        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
 
         # introduce duplicates
         xb[500:900:2] = xb[501:901:2]
@@ -445,7 +445,7 @@ class TestSerialize(unittest.TestCase):
         nb = 1000
         nq = 200
         nt = 500
-        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
 
         index = faiss.IndexFlatL2(d)
         index.add(xb)
@@ -484,7 +484,7 @@ class TestRenameOndisk(unittest.TestCase):
         nq = 100
         nt = 100
 
-        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
 
         quantizer = faiss.IndexFlatL2(d)
 
@@ -536,7 +536,7 @@ class TestInvlistMeta(unittest.TestCase):
         nq = 100
         nt = 200
 
-        xt, xb, xq = get_dataset_2(d, nb, nt, nq)
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
 
         quantizer = faiss.IndexFlatL2(d)
         index = faiss.IndexIVFFlat(quantizer, d, 30)

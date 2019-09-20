@@ -14,7 +14,7 @@
 #include <gtest/gtest.h>
 
 #include <faiss/IndexIVF.h>
-#include <faiss/AutoTune.h>
+#include <faiss/index_factory.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/IVFlib.h>
 

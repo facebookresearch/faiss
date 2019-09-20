@@ -11,12 +11,10 @@
 #define FAISS_INDEX_SCALAR_QUANTIZER_H
 
 #include <stdint.h>
-
-
 #include <vector>
 
-
-#include "IndexIVF.h"
+#include <faiss/IndexIVF.h>
+#include <faiss/impl/ScalarQuantizer.h>
 
 
 namespace faiss {
@@ -27,67 +25,8 @@ namespace faiss {
  * (default).
  */
 
-struct SQDistanceComputer;
-
-struct ScalarQuantizer {
-
-    enum QuantizerType {
-        QT_8bit,             ///< 8 bits per component
-        QT_4bit,             ///< 4 bits per component
-        QT_8bit_uniform,     ///< same, shared range for all dimensions
-        QT_4bit_uniform,
-        QT_fp16,
-        QT_8bit_direct,      /// fast indexing of uint8s
-        QT_6bit,             ///< 6 bits per component
-    };
-
-    QuantizerType qtype;
-
-    /** The uniform encoder can estimate the range of representable
-     * values of the unform encoder using different statistics. Here
-     * rs = rangestat_arg */
-
-    // rangestat_arg.
-    enum RangeStat {
-        RS_minmax,           ///< [min - rs*(max-min), max + rs*(max-min)]
-        RS_meanstd,          ///< [mean - std * rs, mean + std * rs]
-        RS_quantiles,        ///< [Q(rs), Q(1-rs)]
-        RS_optim,            ///< alternate optimization of reconstruction error
-    };
-
-    RangeStat rangestat;
-    float rangestat_arg;
-
-    /// dimension of input vectors
-    size_t d;
-
-    /// bytes per vector
-    size_t code_size;
-
-    /// trained values (including the range)
-    std::vector<float> trained;
-
-    ScalarQuantizer (size_t d, QuantizerType qtype);
-    ScalarQuantizer ();
-
-    void train (size_t n, const float *x);
 
 
-    /// same as compute_code for several vectors
-    void compute_codes (const float * x,
-                        uint8_t * codes,
-                        size_t n) const ;
-
-    /// decode a vector from a given code (or n vectors if third argument)
-    void decode (const uint8_t *code, float *x, size_t n) const;
-
-
-    SQDistanceComputer *get_distance_computer (MetricType metric = METRIC_L2)
-        const;
-
-};
-
-struct DistanceComputer;
 
 struct IndexScalarQuantizer: Index {
     /// Used to encode the vectors
@@ -129,6 +68,16 @@ struct IndexScalarQuantizer: Index {
 
     DistanceComputer *get_distance_computer () const override;
 
+    /* standalone codec interface */
+    size_t sa_code_size () const override;
+
+    void sa_encode (idx_t n, const float *x,
+                          uint8_t *bytes) const override;
+
+    void sa_decode (idx_t n, const uint8_t *bytes,
+                            float *x) const override;
+
+
 };
 
 
@@ -144,7 +93,8 @@ struct IndexIVFScalarQuantizer: IndexIVF {
 
     IndexIVFScalarQuantizer(Index *quantizer, size_t d, size_t nlist,
                             ScalarQuantizer::QuantizerType qtype,
-                            MetricType metric = METRIC_L2);
+                            MetricType metric = METRIC_L2,
+                            bool encode_residual = true);
 
     IndexIVFScalarQuantizer();
 
@@ -152,7 +102,8 @@ struct IndexIVFScalarQuantizer: IndexIVF {
 
     void encode_vectors(idx_t n, const float* x,
                         const idx_t *list_nos,
-                        uint8_t * codes) const override;
+                        uint8_t * codes,
+                        bool include_listnos=false) const override;
 
     void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
 
@@ -162,6 +113,10 @@ struct IndexIVFScalarQuantizer: IndexIVF {
 
     void reconstruct_from_offset (int64_t list_no, int64_t offset,
                                   float* recons) const override;
+
+    /* standalone codec interface */
+    void sa_decode (idx_t n, const uint8_t *bytes,
+                            float *x) const override;
 
 };
 

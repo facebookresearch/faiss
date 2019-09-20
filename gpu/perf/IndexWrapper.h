@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "../../IndexReplicas.h"
-#include "../StandardGpuResources.h"
+#include <faiss/IndexReplicas.h>
+#include <faiss/gpu/StandardGpuResources.h>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -36,4 +36,4 @@ struct IndexWrapper {
 
 } }
 
-#include "IndexWrapper-inl.h"
+#include <faiss/gpu/perf/IndexWrapper-inl.h>

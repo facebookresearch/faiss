@@ -11,11 +11,11 @@
 
 #include <vector>
 
-#include "HNSW.h"
-#include "IndexFlat.h"
-#include "IndexPQ.h"
-#include "IndexScalarQuantizer.h"
-#include "utils.h"
+#include <faiss/impl/HNSW.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexPQ.h>
+#include <faiss/IndexScalarQuantizer.h>
+#include <faiss/utils/utils.h>
 
 
 namespace faiss {

@@ -6,11 +6,11 @@
  */
 
 
-#include "../../IndexFlat.h"
-#include "../GpuIndexFlat.h"
-#include "../StandardGpuResources.h"
-#include "../utils/DeviceUtils.h"
-#include "../test/TestUtils.h"
+#include <faiss/IndexFlat.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/test/TestUtils.h>
 #include <gtest/gtest.h>
 #include <sstream>
 #include <vector>

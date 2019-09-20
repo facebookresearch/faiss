@@ -7,14 +7,14 @@
 
 #pragma once
 
-#include "Comparators.cuh"
-#include "DeviceDefs.cuh"
-#include "MergeNetworkBlock.cuh"
-#include "MergeNetworkWarp.cuh"
-#include "PtxUtils.cuh"
-#include "Reductions.cuh"
-#include "ReductionOperators.cuh"
-#include "Tensor.cuh"
+#include <faiss/gpu/utils/Comparators.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/MergeNetworkBlock.cuh>
+#include <faiss/gpu/utils/MergeNetworkWarp.cuh>
+#include <faiss/gpu/utils/PtxUtils.cuh>
+#include <faiss/gpu/utils/Reductions.cuh>
+#include <faiss/gpu/utils/ReductionOperators.cuh>
+#include <faiss/gpu/utils/Tensor.cuh>
 
 namespace faiss { namespace gpu {
 

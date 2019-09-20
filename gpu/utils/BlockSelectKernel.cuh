@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include "Float16.cuh"
-#include "Select.cuh"
+#include <faiss/gpu/utils/Select.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -122,7 +121,6 @@ void runBlockSelectPair(Tensor<float, 2, true>& inKeys,
                         Tensor<int, 2, true>& outIndices,
                         bool dir, int k, cudaStream_t stream);
 
-#ifdef FAISS_USE_FLOAT16
 void runBlockSelect(Tensor<half, 2, true>& in,
                     Tensor<half, 2, true>& outKeys,
                     Tensor<int, 2, true>& outIndices,
@@ -133,6 +131,5 @@ void runBlockSelectPair(Tensor<half, 2, true>& inKeys,
                         Tensor<half, 2, true>& outKeys,
                         Tensor<int, 2, true>& outIndices,
                         bool dir, int k, cudaStream_t stream);
-#endif
 
 } } // namespace

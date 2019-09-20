@@ -6,18 +6,15 @@
  */
 
 
-#include "GpuIndexFlat.h"
-#include "../IndexFlat.h"
-#include "GpuResources.h"
-#include "impl/FlatIndex.cuh"
-#include "utils/ConversionOperators.cuh"
-#include "utils/CopyUtils.cuh"
-#include "utils/DeviceUtils.h"
-#include "utils/Float16.cuh"
-#include "utils/StaticUtils.h"
-
-#include <thrust/execution_policy.h>
-#include <thrust/transform.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/FlatIndex.cuh>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
 #include <limits>
 
 namespace faiss { namespace gpu {
@@ -215,11 +212,9 @@ GpuIndexFlat::searchImpl_(int n,
   data_->query(queries, k, outDistances, outIntLabels, true);
 
   // Convert int to idx_t
-  thrust::transform(thrust::cuda::par.on(stream),
-                    outIntLabels.data(),
-                    outIntLabels.end(),
-                    outLabels.data(),
-                    IntToIdxType());
+  convertTensor<int, faiss::Index::idx_t, 2>(stream,
+                                             outIntLabels,
+                                             outLabels);
 }
 
 void
@@ -231,6 +226,7 @@ GpuIndexFlat::reconstruct(faiss::Index::idx_t key,
   auto stream = resources_->getDefaultStream(device_);
 
   if (config_.useFloat16) {
+    // FIXME jhj: kernel for copy
     auto vec = data_->getVectorsFloat32Copy(key, 1, stream);
     fromDevice(vec.data(), out, this->d, stream);
   } else {
@@ -250,6 +246,7 @@ GpuIndexFlat::reconstruct_n(faiss::Index::idx_t i0,
   auto stream = resources_->getDefaultStream(device_);
 
   if (config_.useFloat16) {
+    // FIXME jhj: kernel for copy
     auto vec = data_->getVectorsFloat32Copy(i0, num, stream);
     fromDevice(vec.data(), out, num * this->d, stream);
   } else {
@@ -259,10 +256,55 @@ GpuIndexFlat::reconstruct_n(faiss::Index::idx_t i0,
 }
 
 void
+GpuIndexFlat::compute_residual(const float* x,
+                               float* residual,
+                               faiss::Index::idx_t key) const {
+  compute_residual_n(1, x, residual, &key);
+}
+
+void
+GpuIndexFlat::compute_residual_n(faiss::Index::idx_t n,
+                                 const float* xs,
+                                 float* residuals,
+                                 const faiss::Index::idx_t* keys) const {
+  FAISS_THROW_IF_NOT_FMT(n <=
+                         (faiss::Index::idx_t) std::numeric_limits<int>::max(),
+                         "GPU index only supports up to %zu indices",
+                         (size_t) std::numeric_limits<int>::max());
+
+  auto stream = resources_->getDefaultStream(device_);
+
+  DeviceScope scope(device_);
+
+  auto vecsDevice =
+    toDevice<float, 2>(resources_, device_,
+                       const_cast<float*>(xs), stream,
+                       {(int) n, (int) this->d});
+  auto idsDevice =
+    toDevice<faiss::Index::idx_t, 1>(resources_, device_,
+                                     const_cast<faiss::Index::idx_t*>(keys),
+                                     stream,
+                                     {(int) n});
+  auto residualDevice =
+    toDevice<float, 2>(resources_, device_, residuals, stream,
+                       {(int) n, (int) this->d});
+
+  // Convert idx_t to int
+  auto keysInt =
+    convertTensor<faiss::Index::idx_t, int, 1>(resources_, stream, idsDevice);
+
+  FAISS_ASSERT(data_);
+  data_->computeResidual(vecsDevice,
+                         keysInt,
+                         residualDevice);
+
+  fromDevice<float, 2>(residualDevice, residuals, stream);
+}
+
+void
 GpuIndexFlat::verifySettings_() const {
   // If we want Hgemm, ensure that it is supported on this device
   if (config_.useFloat16Accumulator) {
-#ifdef FAISS_USE_FLOAT16
     FAISS_THROW_IF_NOT_MSG(config_.useFloat16,
                        "useFloat16Accumulator can only be enabled "
                        "with useFloat16");
@@ -271,9 +313,6 @@ GpuIndexFlat::verifySettings_() const {
                        "Device %d does not support Hgemm "
                        "(useFloat16Accumulator)",
                        config_.device);
-#else
-    FAISS_THROW_IF_NOT_MSG(false, "not compiled with float16 support");
-#endif
   }
 }
 
@@ -294,12 +333,20 @@ GpuIndexFlatL2::GpuIndexFlatL2(GpuResources* resources,
 }
 
 void
-GpuIndexFlatL2::copyFrom(faiss::IndexFlatL2* index) {
+GpuIndexFlatL2::copyFrom(faiss::IndexFlat* index) {
+  FAISS_THROW_IF_NOT_MSG(index->metric_type == metric_type,
+                         "Cannot copy a GpuIndexFlatL2 from an index of "
+                         "different metric_type");
+
   GpuIndexFlat::copyFrom(index);
 }
 
 void
-GpuIndexFlatL2::copyTo(faiss::IndexFlatL2* index) {
+GpuIndexFlatL2::copyTo(faiss::IndexFlat* index) {
+  FAISS_THROW_IF_NOT_MSG(index->metric_type == metric_type,
+                         "Cannot copy a GpuIndexFlatL2 to an index of "
+                         "different metric_type");
+
   GpuIndexFlat::copyTo(index);
 }
 
@@ -320,12 +367,21 @@ GpuIndexFlatIP::GpuIndexFlatIP(GpuResources* resources,
 }
 
 void
-GpuIndexFlatIP::copyFrom(faiss::IndexFlatIP* index) {
+GpuIndexFlatIP::copyFrom(faiss::IndexFlat* index) {
+  FAISS_THROW_IF_NOT_MSG(index->metric_type == metric_type,
+                         "Cannot copy a GpuIndexFlatIP from an index of "
+                         "different metric_type");
+
   GpuIndexFlat::copyFrom(index);
 }
 
 void
-GpuIndexFlatIP::copyTo(faiss::IndexFlatIP* index) {
+GpuIndexFlatIP::copyTo(faiss::IndexFlat* index) {
+  // The passed in index must be IP
+  FAISS_THROW_IF_NOT_MSG(index->metric_type == metric_type,
+                         "Cannot copy a GpuIndexFlatIP to an index of "
+                         "different metric_type");
+
   GpuIndexFlat::copyTo(index);
 }
 

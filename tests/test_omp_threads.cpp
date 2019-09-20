@@ -7,7 +7,7 @@
 
 #include <gtest/gtest.h>
 
-#include <faiss/utils.h>
+#include <faiss/utils/utils.h>
 
 TEST(Threading, openmp) {
   EXPECT_TRUE(faiss::check_openmp());

@@ -8,17 +8,17 @@
 // -*- c++ -*-
 
 
-#include "IndexIVFSpectralHash.h"
+#include <faiss/IndexIVFSpectralHash.h>
 
 #include <memory>
 #include <algorithm>
 #include <stdint.h>
 
-#include "hamming.h"
-#include "utils.h"
-#include "FaissAssert.h"
-#include "AuxIndexStructures.h"
-#include "VectorTransform.h"
+#include <faiss/utils/hamming.h>
+#include <faiss/utils/utils.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/VectorTransform.h>
 
 namespace faiss {
 
@@ -161,10 +161,13 @@ void binarize_with_freq(size_t nbit, float freq,
 
 void IndexIVFSpectralHash::encode_vectors(idx_t n, const float* x_in,
                                           const idx_t *list_nos,
-                                          uint8_t * codes) const
+                                          uint8_t * codes,
+                                          bool include_listnos) const
 {
     FAISS_THROW_IF_NOT (is_trained);
     float freq = 2.0 / period;
+
+    FAISS_THROW_IF_NOT_MSG (!include_listnos, "listnos encoding not supported");
 
     // transform with vt
     std::unique_ptr<float []> x (vt->apply (n, x_in));

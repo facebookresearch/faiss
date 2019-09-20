@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cuda.h>
-#include "Float16.cuh"
+#include <faiss/gpu/utils/Float16.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -23,8 +23,6 @@ struct Comparator {
     return a > b;
   }
 };
-
-#ifdef FAISS_USE_FLOAT16
 
 template <>
 struct Comparator<half> {
@@ -44,7 +42,5 @@ struct Comparator<half> {
 #endif // FAISS_USE_FULL_FLOAT16
   }
 };
-
-#endif // FAISS_USE_FLOAT16
 
 } } // namespace

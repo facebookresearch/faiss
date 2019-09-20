@@ -7,16 +7,15 @@
 
 // -*- c++ -*-
 
-#include "IndexFlat.h"
+#include <faiss/IndexFlat.h>
 
 #include <cstring>
-#include "utils.h"
-#include "distances.h"
-#include "Heap.h"
-
-#include "FaissAssert.h"
-
-#include "AuxIndexStructures.h"
+#include <faiss/utils/distances.h>
+#include <faiss/utils/extra_distances.h>
+#include <faiss/utils/utils.h>
+#include <faiss/utils/Heap.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 
 namespace faiss {
@@ -206,6 +205,26 @@ void IndexFlat::reconstruct (idx_t key, float * recons) const
 {
     memcpy (recons, &(xb[key * d]), sizeof(*recons) * d);
 }
+
+
+/* The standalone codec interface */
+size_t IndexFlat::sa_code_size () const
+{
+    return sizeof(float) * d;
+}
+
+void IndexFlat::sa_encode (idx_t n, const float *x, uint8_t *bytes) const
+{
+    memcpy (bytes, x, sizeof(float) * d * n);
+}
+
+void IndexFlat::sa_decode (idx_t n, const uint8_t *bytes, float *x) const
+{
+    memcpy (x, bytes, sizeof(float) * d * n);
+}
+
+
+
 
 /***************************************************
  * IndexFlatL2BaseShift

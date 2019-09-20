@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "../../FaissAssert.h"
-#include "Tensor.cuh"
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/utils/Tensor.cuh>
 #include <initializer_list>
 
 namespace faiss { namespace gpu {

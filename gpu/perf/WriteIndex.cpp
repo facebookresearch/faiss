@@ -6,11 +6,11 @@
  */
 
 
-#include "../../IndexIVFFlat.h"
-#include "../../IndexIVFPQ.h"
-#include "../../IndexFlat.h"
-#include "../../index_io.h"
-#include "../test/TestUtils.h"
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/index_io.h>
+#include <faiss/gpu/test/TestUtils.h>
 #include <vector>
 #include <gflags/gflags.h>
 

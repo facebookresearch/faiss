@@ -8,10 +8,9 @@
 
 #pragma once
 
-#include "../utils/DeviceTensor.cuh"
-#include "../utils/DeviceVector.cuh"
-#include "../utils/Float16.cuh"
-#include "../utils/MemorySpace.h"
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceVector.cuh>
+#include <faiss/gpu/utils/MemorySpace.h>
 
 namespace faiss { namespace gpu {
 
@@ -41,10 +40,8 @@ class FlatIndex {
   /// Returns a reference to our vectors currently in use
   Tensor<float, 2, true>& getVectorsFloat32Ref();
 
-#ifdef FAISS_USE_FLOAT16
   /// Returns a reference to our vectors currently in use (useFloat16 mode)
   Tensor<half, 2, true>& getVectorsFloat16Ref();
-#endif
 
   /// Performs a copy of the vectors on the given device, converting
   /// as needed from float16
@@ -61,13 +58,23 @@ class FlatIndex {
              Tensor<int, 2, true>& outIndices,
              bool exactDistance);
 
-#ifdef FAISS_USE_FLOAT16
   void query(Tensor<half, 2, true>& vecs,
              int k,
              Tensor<half, 2, true>& outDistances,
              Tensor<int, 2, true>& outIndices,
              bool exactDistance);
-#endif
+
+  /// Compute residual for set of vectors
+  void computeResidual(Tensor<float, 2, true>& vecs,
+                       Tensor<int, 1, true>& listIds,
+                       Tensor<float, 2, true>& residuals);
+
+  /// Gather vectors given the set of IDs
+  void reconstruct(Tensor<int, 1, true>& listIds,
+                   Tensor<float, 2, true>& vecs);
+
+  void reconstruct(Tensor<int, 2, true>& listIds,
+                   Tensor<float, 3, true>& vecs);
 
   /// Add vectors to ourselves; the pointer passed can be on the host
   /// or the device
@@ -109,19 +116,15 @@ class FlatIndex {
   DeviceTensor<float, 2, true> vectors_;
   DeviceTensor<float, 2, true> vectorsTransposed_;
 
-#ifdef FAISS_USE_FLOAT16
   /// Vectors currently in rawData_, float16 form
   DeviceTensor<half, 2, true> vectorsHalf_;
   DeviceTensor<half, 2, true> vectorsHalfTransposed_;
-#endif
 
   /// Precomputed L2 norms
   DeviceTensor<float, 1, true> norms_;
 
-#ifdef FAISS_USE_FLOAT16
   /// Precomputed L2 norms, float16 form
   DeviceTensor<half, 1, true> normsHalf_;
-#endif
 };
 
 } } // namespace

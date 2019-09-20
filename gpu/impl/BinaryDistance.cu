@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "../utils/DeviceTensor.cuh"
-#include "../utils/DeviceDefs.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/Select.cuh"
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Select.cuh>
 
 namespace faiss { namespace gpu {
 

@@ -12,8 +12,8 @@
 
 #include <vector>
 
-#include "Index.h"
-#include "VectorTransform.h"
+#include <faiss/Index.h>
+#include <faiss/VectorTransform.h>
 
 namespace faiss {
 
@@ -68,6 +68,16 @@ struct IndexLSH:Index {
     ~IndexLSH() override {}
 
     IndexLSH ();
+
+    /* standalone codec interface */
+    size_t sa_code_size () const override;
+
+    void sa_encode (idx_t n, const float *x,
+                          uint8_t *bytes) const override;
+
+    void sa_decode (idx_t n, const uint8_t *bytes,
+                            float *x) const override;
+
 };
 
 

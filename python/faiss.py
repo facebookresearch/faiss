@@ -169,6 +169,20 @@ def handle_Index(the_class):
         I = rev_swig_ptr(res.labels, nd).copy()
         return lims, D, I
 
+    def replacement_sa_encode(self, x):
+        n, d = x.shape
+        assert d == self.d
+        codes = np.empty((n, self.sa_code_size()), dtype='uint8')
+        self.sa_encode_c(n, swig_ptr(x), swig_ptr(codes))
+        return codes
+
+    def replacement_sa_decode(self, codes):
+        n, cs = codes.shape
+        assert cs == self.sa_code_size()
+        x = np.empty((n, self.d), dtype='float32')
+        self.sa_decode_c(n, swig_ptr(codes), swig_ptr(x))
+        return x
+
     replace_method(the_class, 'add', replacement_add)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'assign', replacement_assign)
@@ -182,6 +196,8 @@ def handle_Index(the_class):
                    ignore_missing=True)
     replace_method(the_class, 'search_and_reconstruct',
                    replacement_search_and_reconstruct, ignore_missing=True)
+    replace_method(the_class, 'sa_encode', replacement_sa_encode)
+    replace_method(the_class, 'sa_decode', replacement_sa_decode)
 
 def handle_IndexBinary(the_class):
 
@@ -406,6 +422,7 @@ if hasattr(this_module, 'GpuIndexFlat'):
     add_ref_in_constructor(GpuIndexFlatIP, 0)
     add_ref_in_constructor(GpuIndexFlatL2, 0)
     add_ref_in_constructor(GpuIndexIVFFlat, 0)
+    add_ref_in_constructor(GpuIndexIVFScalarQuantizer, 0)
     add_ref_in_constructor(GpuIndexIVFPQ, 0)
     add_ref_in_constructor(GpuIndexBinaryFlat, 0)
 
@@ -548,9 +565,12 @@ def rand(n, seed=12345):
     return res
 
 
-def randint(n, seed=12345):
+def randint(n, seed=12345, vmax=None):
     res = np.empty(n, dtype='int64')
-    int64_rand(swig_ptr(res), res.size, seed)
+    if vmax is None:
+        int64_rand(swig_ptr(res), res.size, seed)
+    else:
+        int64_rand_max(swig_ptr(res), res.size, vmax, seed)
     return res
 
 lrand = randint
@@ -576,6 +596,7 @@ def eval_intersection(I1, I2):
 def normalize_L2(x):
     fvec_renorm_L2(x.shape[1], x.shape[0], swig_ptr(x))
 
+# MapLong2Long interface
 
 def replacement_map_add(self, keys, vals):
     n, = keys.shape
@@ -608,11 +629,15 @@ class Kmeans:
         """
         self.d = d
         self.k = k
+        self.gpu = False
         self.cp = ClusteringParameters()
         for k, v in kwargs.items():
-            # if this raises an exception, it means that it is a non-existent field
-            getattr(self.cp, k)
-            setattr(self.cp, k, v)
+            if k == 'gpu':
+                self.gpu = v
+            else:
+                # if this raises an exception, it means that it is a non-existent field
+                getattr(self.cp, k)
+                setattr(self.cp, k, v)
         self.centroids = None
 
     def train(self, x):
@@ -623,6 +648,12 @@ class Kmeans:
             self.index = IndexFlatIP(d)
         else:
             self.index = IndexFlatL2(d)
+        if self.gpu:
+            if self.gpu == True:
+                ngpu = -1
+            else:
+                ngpu = self.gpu
+            self.index = index_cpu_to_all_gpus(self.index, ngpu=ngpu)
         clus.train(x, self.index)
         centroids = vector_float_to_array(clus.centroids)
         self.centroids = centroids.reshape(self.k, d)
@@ -631,12 +662,27 @@ class Kmeans:
 
     def assign(self, x):
         assert self.centroids is not None, "should train before assigning"
-        index = IndexFlatL2(self.d)
-        index.add(self.centroids)
-        D, I = index.search(x, 1)
+        self.index.reset()
+        self.index.add(self.centroids)
+        D, I = self.index.search(x, 1)
         return D.ravel(), I.ravel()
 
 # IndexProxy was renamed to IndexReplicas, remap the old name for any old code
 # people may have
 IndexProxy = IndexReplicas
 ConcatenatedInvertedLists = HStackInvertedLists
+
+###########################################
+# serialization of indexes to byte arrays
+###########################################
+
+def serialize_index(index):
+    """ convert an index to a numpy uint8 array  """
+    writer = VectorIOWriter()
+    write_index(index, writer)
+    return vector_to_array(writer.data)
+
+def deserialize_index(data):
+    reader = VectorIOReader()
+    copy_array_to_vector(data, reader.data)
+    return read_index(reader)

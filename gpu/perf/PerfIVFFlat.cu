@@ -6,17 +6,17 @@
  */
 
 
-#include "../../IndexIVFFlat.h"
-#include "../../index_io.h"
-#include "../../utils.h"
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/index_io.h>
+#include <faiss/utils/random.h>
 
-#include "../GpuIndexIVFFlat.h"
-#include "IndexWrapper.h"
-#include "../test/TestUtils.h"
-#include "../utils/DeviceTensor.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/HostTensor.cuh"
-#include "../utils/Timer.h"
+#include <faiss/gpu/GpuIndexIVFFlat.h>
+#include <faiss/gpu/perf/IndexWrapper.h>
+#include <faiss/gpu/test/TestUtils.h>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/utils/Timer.h>
 #include <gflags/gflags.h>
 #include <map>
 #include <memory>
@@ -29,7 +29,6 @@ DEFINE_int32(k, 3, "final number of closest results returned");
 DEFINE_int32(num_queries, 3, "number of query vectors");
 DEFINE_string(in, "/home/jhj/local/index.out", "index file for input");
 DEFINE_bool(diff, true, "show exact distance + index output discrepancies");
-DEFINE_bool(use_float16, false, "use encodings in float16");
 DEFINE_bool(use_float16_coarse, false, "coarse quantizer in float16");
 DEFINE_int64(seed, -1, "specify random seed");
 DEFINE_int32(num_gpus, 1, "number of gpus to use");
@@ -60,8 +59,6 @@ int main(int argc, char** argv) {
          numQueries, FLAGS_nprobe, FLAGS_k);
   printf("float16 coarse quantizer %s\n",
          FLAGS_use_float16_coarse ? "enabled" : "disabled");
-  printf("float16 encoding %s\n",
-         FLAGS_use_float16 ? "enabled" : "disabled");
 
   // Convert to GPU index
   printf("Copying index to %d GPU(s)...\n", FLAGS_num_gpus);
@@ -72,7 +69,6 @@ int main(int argc, char** argv) {
     config.device = dev;
     config.indicesOptions = (faiss::gpu::IndicesOptions) FLAGS_index;
     config.flatConfig.useFloat16 = FLAGS_use_float16_coarse;
-    config.useFloat16IVFStorage = FLAGS_use_float16;
 
     auto p = std::unique_ptr<faiss::gpu::GpuIndexIVFFlat>(
       new faiss::gpu::GpuIndexIVFFlat(res,

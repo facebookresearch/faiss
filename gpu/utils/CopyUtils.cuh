@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "DeviceTensor.cuh"
-#include "HostTensor.cuh"
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/HostTensor.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -48,6 +48,26 @@ DeviceTensor<T, Dim, true> toDevice(GpuResources* resources,
       newT.copyFrom(oldT, stream);
       return newT;
     }
+  }
+}
+
+/// Copies data to the CPU, if it is not already on the CPU
+template <typename T, int Dim>
+HostTensor<T, Dim, true> toHost(T* src,
+                                cudaStream_t stream,
+                                std::initializer_list<int> sizes) {
+  int dev = getDeviceForAddress(src);
+
+  if (dev == -1) {
+    // Already on the CPU, just wrap in a HostTensor that doesn't own this
+    // memory
+    return HostTensor<T, Dim, true>(src, sizes);
+  } else {
+    HostTensor<T, Dim, true> out(sizes);
+    Tensor<T, Dim, true> devData(src, sizes);
+    out.copyFrom(devData, stream);
+
+    return out;
   }
 }
 

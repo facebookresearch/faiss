@@ -249,6 +249,25 @@ class TestShardedFlat(unittest.TestCase):
             assert False, "this call should fail!"
 
 
+class TestGPUKmeans(unittest.TestCase):
+
+    def test_kmeans(self):
+        d = 32
+        nb = 1000
+        k = 10
+        rs = np.random.RandomState(123)
+        xb = rs.rand(nb, d).astype('float32')
+
+        km1 = faiss.Kmeans(d, k)
+        obj1 = km1.train(xb)
+
+        km2 = faiss.Kmeans(d, k, gpu=True)
+        obj2 = km2.train(xb)
+
+        print(obj1, obj2)
+        assert np.allclose(obj1, obj2)
+
+
 
 
 if __name__ == '__main__':

@@ -6,15 +6,15 @@
  */
 
 
-#include "GpuIndexIVFFlat.h"
-#include "../IndexFlat.h"
-#include "../IndexIVFFlat.h"
-#include "GpuIndexFlat.h"
-#include "GpuResources.h"
-#include "impl/IVFFlat.cuh"
-#include "utils/CopyUtils.cuh"
-#include "utils/DeviceUtils.h"
-#include "utils/Float16.cuh"
+#include <faiss/gpu/GpuIndexIVFFlat.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/IVFFlat.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
 
 #include <limits>
 
@@ -31,11 +31,6 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(GpuResources* resources,
     ivfFlatConfig_(config),
     reserveMemoryVecs_(0),
     index_(nullptr) {
-#ifndef FAISS_USE_FLOAT16
-  FAISS_THROW_IF_NOT_MSG(!ivfFlatConfig_.useFloat16IVFStorage,
-                     "float16 unsupported; need CUDA SDK >= 7.5");
-#endif
-
   copyFrom(index);
 }
 
@@ -51,11 +46,6 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(GpuResources* resources,
 
   // faiss::Index params
   this->is_trained = false;
-
-#ifndef FAISS_USE_FLOAT16
-  FAISS_THROW_IF_NOT_MSG(!ivfFlatConfig_.useFloat16IVFStorage,
-                     "float16 unsupported; need CUDA SDK >= 7.5");
-#endif
 
   // We haven't trained ourselves, so don't construct the IVFFlat
   // index yet
@@ -93,9 +83,10 @@ GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
 
   // Copy our lists as well
   index_ = new IVFFlat(resources_,
-                       quantizer_->getGpuData(),
-                       index->metric_type == faiss::METRIC_L2,
-                       ivfFlatConfig_.useFloat16IVFStorage,
+                       quantizer->getGpuData(),
+                       index->metric_type,
+                       false, // no residual
+                       nullptr, // no scalar quantizer
                        ivfFlatConfig_.indicesOptions,
                        memorySpace_);
   InvertedLists *ivf = index->invlists;
@@ -111,9 +102,10 @@ GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
                        (size_t) std::numeric_limits<int>::max(),
                        numVecs);
 
-    index_->addCodeVectorsFromCpu(
-             i, (const float*)(ivf->get_codes(i)),
-             ivf->get_ids(i), numVecs);
+    index_->addCodeVectorsFromCpu(i,
+                                  (const unsigned char*)(ivf->get_codes(i)),
+                                  ivf->get_ids(i),
+                                  numVecs);
   }
 }
 
@@ -123,24 +115,25 @@ GpuIndexIVFFlat::copyTo(faiss::IndexIVFFlat* index) const {
 
   // We must have the indices in order to copy to ourselves
   FAISS_THROW_IF_NOT_MSG(ivfFlatConfig_.indicesOptions != INDICES_IVF,
-                     "Cannot copy to CPU as GPU index doesn't retain "
-                     "indices (INDICES_IVF)");
+                         "Cannot copy to CPU as GPU index doesn't retain "
+                         "indices (INDICES_IVF)");
 
   GpuIndexIVF::copyTo(index);
   index->code_size = this->d * sizeof(float);
 
-  InvertedLists *ivf = new ArrayInvertedLists(
-      nlist_, index->code_size);
-
+  InvertedLists *ivf = new ArrayInvertedLists(nlist, index->code_size);
   index->replace_invlists(ivf, true);
 
   // Copy the inverted lists
   if (index_) {
-    for (int i = 0; i < nlist_; ++i) {
-      ivf->add_entries (
-              i, index_->getListIndices(i).size(),
-              index_->getListIndices(i).data(),
-              (const uint8_t*)index_->getListVectors(i).data());
+    for (int i = 0; i < nlist; ++i) {
+      auto listIndices = index_->getListIndices(i);
+      auto listData = index_->getListVectors(i);
+
+      ivf->add_entries(i,
+                       listIndices.size(),
+                       listIndices.data(),
+                       (const uint8_t*) listData.data());
     }
   }
 }
@@ -173,8 +166,8 @@ GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
   DeviceScope scope(device_);
 
   if (this->is_trained) {
-    FAISS_ASSERT(quantizer_->is_trained);
-    FAISS_ASSERT(quantizer_->ntotal == nlist_);
+    FAISS_ASSERT(quantizer->is_trained);
+    FAISS_ASSERT(quantizer->ntotal == nlist);
     FAISS_ASSERT(index_);
     return;
   }
@@ -185,9 +178,10 @@ GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
 
   // The quantizer is now trained; construct the IVF index
   index_ = new IVFFlat(resources_,
-                       quantizer_->getGpuData(),
-                       this->metric_type == faiss::METRIC_L2,
-                       ivfFlatConfig_.useFloat16IVFStorage,
+                       quantizer->getGpuData(),
+                       this->metric_type,
+                       false, // no residual
+                       nullptr, // no scalar quantizer
                        ivfFlatConfig_.indicesOptions,
                        memorySpace_);
 
@@ -237,7 +231,7 @@ GpuIndexIVFFlat::searchImpl_(int n,
   static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
   Tensor<long, 2, true> outLabels(const_cast<long*>(labels), {n, k});
 
-  index_->query(queries, nprobe_, k, outDistances, outLabels);
+  index_->query(queries, nprobe, k, outDistances, outLabels);
 }
 
 

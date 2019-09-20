@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "IndexReplicas.h"
-#include "FaissAssert.h"
+#include <faiss/IndexReplicas.h>
+#include <faiss/impl/FaissAssert.h>
 
 namespace faiss {
 

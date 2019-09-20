@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include "OnDiskInvertedLists.h"
+#include <faiss/OnDiskInvertedLists.h>
 
 #include <pthread.h>
 
@@ -17,8 +17,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include "FaissAssert.h"
-#include "utils.h"
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/utils.h>
 
 
 namespace faiss {

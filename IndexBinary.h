@@ -15,8 +15,8 @@
 #include <string>
 #include <sstream>
 
-#include "FaissAssert.h"
-#include "Index.h"
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/Index.h>
 
 
 namespace faiss {

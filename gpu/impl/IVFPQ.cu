@@ -6,24 +6,25 @@
  */
 
 
-#include "IVFPQ.cuh"
-#include "../GpuResources.h"
-#include "BroadcastSum.cuh"
-#include "Distance.cuh"
-#include "FlatIndex.cuh"
-#include "InvertedListAppend.cuh"
-#include "L2Norm.cuh"
-#include "PQCodeDistances.cuh"
-#include "PQScanMultiPassNoPrecomputed.cuh"
-#include "PQScanMultiPassPrecomputed.cuh"
-#include "RemapIndices.h"
-#include "VectorResidual.cuh"
-#include "../utils/DeviceDefs.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/HostTensor.cuh"
-#include "../utils/MatrixMult.cuh"
-#include "../utils/NoTypeTensor.cuh"
-#include "../utils/Transpose.cuh"
+#include <faiss/gpu/impl/IVFPQ.cuh>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/BroadcastSum.cuh>
+#include <faiss/gpu/impl/Distance.cuh>
+#include <faiss/gpu/impl/FlatIndex.cuh>
+#include <faiss/gpu/impl/IVFAppend.cuh>
+#include <faiss/gpu/impl/L2Norm.cuh>
+#include <faiss/gpu/impl/PQCodeDistances.cuh>
+#include <faiss/gpu/impl/PQScanMultiPassNoPrecomputed.cuh>
+#include <faiss/gpu/impl/PQScanMultiPassPrecomputed.cuh>
+#include <faiss/gpu/impl/RemapIndices.h>
+#include <faiss/gpu/impl/VectorResidual.cuh>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/utils/MatrixMult.cuh>
+#include <faiss/gpu/utils/NoTypeTensor.cuh>
+#include <faiss/gpu/utils/Transpose.cuh>
 #include <limits>
 #include <thrust/host_vector.h>
 #include <unordered_map>
@@ -54,10 +55,6 @@ IVFPQ::IVFPQ(GpuResources* resources,
   FAISS_ASSERT(bitsPerSubQuantizer_ <= 8);
   FAISS_ASSERT(dim_ % numSubQuantizers_ == 0);
   FAISS_ASSERT(isSupportedPQCodeLength(bytesPerVector_));
-
-#ifndef FAISS_USE_FLOAT16
-  FAISS_ASSERT(!useFloat16LookupTables_);
-#endif
 
   setPQCentroids_(pqCentroidData);
 }
@@ -106,10 +103,7 @@ IVFPQ::setPrecomputedCodes(bool enable) {
     } else {
       // Clear out old precomputed code data
       precomputedCode_ = std::move(DeviceTensor<float, 3, true>());
-
-#ifdef FAISS_USE_FLOAT16
       precomputedCodeHalf_ = std::move(DeviceTensor<half, 3, true>());
-#endif
     }
   }
 }
@@ -498,18 +492,16 @@ IVFPQ::precomputeCodes_() {
   runSumAlongColumns(subQuantizerNorms, coarsePQProductTransposedView,
                      resources_->getDefaultStreamCurrentDevice());
 
-#ifdef FAISS_USE_FLOAT16
-  if (useFloat16LookupTables_) {
-    precomputedCodeHalf_ = toHalf(resources_,
-                                  resources_->getDefaultStreamCurrentDevice(),
-                                  coarsePQProductTransposed);
-    return;
-  }
-#endif
-
   // We added into the view, so `coarsePQProductTransposed` is now our
   // precomputed term 2.
-  precomputedCode_ = std::move(coarsePQProductTransposed);
+  if (useFloat16LookupTables_) {
+    precomputedCodeHalf_ =
+      convertTensor<float, half, 3>(resources_,
+                                    resources_->getDefaultStreamCurrentDevice(),
+                                    coarsePQProductTransposed);
+  } else {
+    precomputedCode_ = std::move(coarsePQProductTransposed);
+  }
 }
 
 void
@@ -640,17 +632,15 @@ IVFPQ::runPQPrecomputedCodes_(
 
   NoTypeTensor<3, true> term2;
   NoTypeTensor<3, true> term3;
-#ifdef FAISS_USE_FLOAT16
   DeviceTensor<half, 3, true> term3Half;
 
   if (useFloat16LookupTables_) {
-    term3Half = toHalf(resources_, stream, term3Transposed);
+    term3Half =
+      convertTensor<float, half, 3>(resources_, stream, term3Transposed);
+
     term2 = NoTypeTensor<3, true>(precomputedCodeHalf_);
     term3 = NoTypeTensor<3, true>(term3Half);
-  }
-#endif
-
-  if (!useFloat16LookupTables_) {
+  } else {
     term2 = NoTypeTensor<3, true>(precomputedCode_);
     term3 = NoTypeTensor<3, true>(term3Transposed);
   }

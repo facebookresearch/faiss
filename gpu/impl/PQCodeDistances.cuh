@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "../utils/Tensor.cuh"
-#include "../utils/NoTypeTensor.cuh"
+#include <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/gpu/utils/NoTypeTensor.cuh>
 #include <cublas_v2.h>
 
 namespace faiss { namespace gpu {

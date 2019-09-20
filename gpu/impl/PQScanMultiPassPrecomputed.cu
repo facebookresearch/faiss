@@ -6,17 +6,17 @@
  */
 
 
-#include "PQScanMultiPassPrecomputed.cuh"
-#include "../GpuResources.h"
-#include "PQCodeLoad.cuh"
-#include "IVFUtils.cuh"
-#include "../utils/ConversionOperators.cuh"
-#include "../utils/DeviceTensor.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/Float16.cuh"
-#include "../utils/LoadStoreOperators.cuh"
-#include "../utils/MathOperators.cuh"
-#include "../utils/StaticUtils.h"
+#include <faiss/gpu/impl/PQScanMultiPassPrecomputed.cuh>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/PQCodeLoad.cuh>
+#include <faiss/gpu/impl/IVFUtils.cuh>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/LoadStoreOperators.cuh>
+#include <faiss/gpu/utils/MathOperators.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
 #include <limits>
 
 namespace faiss { namespace gpu {
@@ -251,12 +251,8 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
     auto block = dim3(kThreadsPerBlock);
 
     // pq precomputed terms (2 + 3)
-    auto smem = sizeof(float);
-#ifdef FAISS_USE_FLOAT16
-    if (useFloat16Lookup) {
-      smem = sizeof(half);
-    }
-#endif
+    auto smem = useFloat16Lookup ? sizeof(half) : sizeof(float);
+
     smem *= numSubQuantizers * numSubQuantizerCodes;
     FAISS_ASSERT(smem <= getMaxSharedMemPerBlockCurrentDevice());
 
@@ -278,7 +274,6 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
           allDistances);                                                \
     } while (0)
 
-#ifdef FAISS_USE_FLOAT16
 #define RUN_PQ(NUM_SUB_Q)                       \
     do {                                        \
       if (useFloat16Lookup) {                   \
@@ -287,12 +282,6 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
         RUN_PQ_OPT(NUM_SUB_Q, float, float4);   \
       }                                         \
     } while (0)
-#else
-#define RUN_PQ(NUM_SUB_Q)                       \
-    do {                                        \
-      RUN_PQ_OPT(NUM_SUB_Q, float, float4);     \
-    } while (0)
-#endif // FAISS_USE_FLOAT16
 
     switch (bytesPerCode) {
       case 1:

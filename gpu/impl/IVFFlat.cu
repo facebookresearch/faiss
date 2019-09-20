@@ -6,18 +6,19 @@
  */
 
 
-#include "IVFFlat.cuh"
-#include "../GpuResources.h"
-#include "FlatIndex.cuh"
-#include "InvertedListAppend.cuh"
-#include "IVFFlatScan.cuh"
-#include "RemapIndices.h"
-#include "../utils/CopyUtils.cuh"
-#include "../utils/DeviceDefs.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/Float16.cuh"
-#include "../utils/HostTensor.cuh"
-#include "../utils/Transpose.cuh"
+#include <faiss/gpu/impl/IVFFlat.cuh>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/FlatIndex.cuh>
+#include <faiss/gpu/impl/IVFAppend.cuh>
+#include <faiss/gpu/impl/IVFFlatScan.cuh>
+#include <faiss/gpu/impl/RemapIndices.h>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/utils/Transpose.cuh>
 #include <limits>
 #include <thrust/host_vector.h>
 #include <unordered_map>
@@ -26,23 +27,20 @@ namespace faiss { namespace gpu {
 
 IVFFlat::IVFFlat(GpuResources* resources,
                  FlatIndex* quantizer,
-                 bool l2Distance,
-                 bool useFloat16,
+                 faiss::MetricType metric,
+                 bool useResidual,
+                 faiss::ScalarQuantizer* scalarQ,
                  IndicesOptions indicesOptions,
                  MemorySpace space) :
     IVFBase(resources,
             quantizer,
-#ifdef FAISS_USE_FLOAT16
-            useFloat16 ?
-            sizeof(half) * quantizer->getDim()
-            : sizeof(float) * quantizer->getDim(),
-#else
+            scalarQ ? scalarQ->code_size :
             sizeof(float) * quantizer->getDim(),
-#endif
             indicesOptions,
             space),
-    l2Distance_(l2Distance),
-    useFloat16_(useFloat16) {
+    metric_(metric),
+    useResidual_(useResidual),
+    scalarQ_(scalarQ ? new GpuScalarQuantizer(*scalarQ) : nullptr) {
 }
 
 IVFFlat::~IVFFlat() {
@@ -50,7 +48,7 @@ IVFFlat::~IVFFlat() {
 
 void
 IVFFlat::addCodeVectorsFromCpu(int listId,
-                               const float* vecs,
+                               const unsigned char* vecs,
                                const long* indices,
                                size_t numVecs) {
   // This list must already exist
@@ -72,33 +70,10 @@ IVFFlat::addCodeVectorsFromCpu(int listId,
   FAISS_ASSERT(listData->size() + lengthInBytes <=
          (size_t) std::numeric_limits<int>::max());
 
-  if (useFloat16_) {
-#ifdef FAISS_USE_FLOAT16
-    // We have to convert data to the half format.
-    // Make sure the source data is on our device first; it is not
-    // guaranteed before function entry to avoid unnecessary h2d copies
-    auto floatData =
-      toDevice<float, 1>(resources_,
-                         getCurrentDevice(),
-                         (float*) vecs,
-                         stream,
-                         {(int) numVecs * dim_});
-    auto halfData = toHalf<1>(resources_, stream, floatData);
-
-    listData->append((unsigned char*) halfData.data(),
-                     lengthInBytes,
-                     stream,
-                     true /* exact reserved size */);
-#else
-    // we are not compiling with float16 support
-    FAISS_ASSERT(false);
-#endif
-  } else {
-    listData->append((unsigned char*) vecs,
-                     lengthInBytes,
-                     stream,
-                     true /* exact reserved size */);
-  }
+  listData->append(vecs,
+                   lengthInBytes,
+                   stream,
+                   true /* exact reserved size */);
 
   // Handle the indices as well
   addIndicesFromCpu_(listId, indices, numVecs);
@@ -135,13 +110,22 @@ IVFFlat::classifyAndAddVectors(Tensor<float, 2, true>& vecs,
   // Number of valid vectors that we actually add; we return this
   int numAdded = 0;
 
-  // We don't actually need this
-  DeviceTensor<float, 2, true> listDistance(mem, {vecs.getSize(0), 1}, stream);
-  // We use this
-  DeviceTensor<int, 2, true> listIds2d(mem, {vecs.getSize(0), 1},  stream);
+  DeviceTensor<float, 2, true>
+    listDistance2d(mem, {vecs.getSize(0), 1}, stream);
+
+  DeviceTensor<int, 2, true>
+    listIds2d(mem, {vecs.getSize(0), 1},  stream);
   auto listIds = listIds2d.view<1>({vecs.getSize(0)});
 
-  quantizer_->query(vecs, 1, listDistance, listIds2d, false);
+  quantizer_->query(vecs, 1, listDistance2d, listIds2d, false);
+
+  // Calculate residuals for these vectors, if needed
+  DeviceTensor<float, 2, true>
+    residuals(mem, {vecs.getSize(0), dim_}, stream);
+
+  if (useResidual_) {
+    quantizer_->computeResidual(vecs, listIds, residuals);
+  }
 
   // Copy the lists that we wish to append to back to the CPU
   // FIXME: really this can be into pinned memory and a true async
@@ -271,7 +255,9 @@ IVFFlat::classifyAndAddVectors(Tensor<float, 2, true>& vecs,
                                  listOffset,
                                  vecs,
                                  indices,
-                                 useFloat16_,
+                                 useResidual_,
+                                 residuals,
+                                 scalarQ_.get(),
                                  deviceListDataPointers_,
                                  deviceListIndexPointers_,
                                  indicesOptions_,
@@ -314,6 +300,14 @@ IVFFlat::query(Tensor<float, 2, true>& queries,
                     coarseIndices,
                     false);
 
+  DeviceTensor<float, 3, true>
+    residualBase(mem, {queries.getSize(0), nprobe, dim_}, stream);
+
+  if (useResidual_) {
+    // Reconstruct vectors from the quantizer
+    quantizer_->reconstruct(coarseIndices, residualBase);
+  }
+
   runIVFFlatScan(queries,
                  coarseIndices,
                  deviceListDataPointers_,
@@ -322,8 +316,10 @@ IVFFlat::query(Tensor<float, 2, true>& queries,
                  deviceListLengths_,
                  maxListLength_,
                  k,
-                 l2Distance_,
-                 useFloat16_,
+                 metric_,
+                 useResidual_,
+                 residualBase,
+                 scalarQ_.get(),
                  outDistances,
                  outIndices,
                  resources_);
@@ -345,39 +341,6 @@ IVFFlat::query(Tensor<float, 2, true>& queries,
     // GPU
     outIndices.copyFrom(hostOutIndices, stream);
   }
-}
-
-std::vector<float>
-IVFFlat::getListVectors(int listId) const {
-  FAISS_ASSERT(listId < deviceListData_.size());
-  auto& encVecs = *deviceListData_[listId];
-
-  auto stream = resources_->getDefaultStreamCurrentDevice();
-
-  if (useFloat16_) {
-#ifdef FAISS_USE_FLOAT16
-    size_t num = encVecs.size() / sizeof(half);
-
-    Tensor<half, 1, true> devHalf((half*) encVecs.data(), {(int) num});
-    auto devFloat = fromHalf(resources_, stream, devHalf);
-
-    std::vector<float> out(num);
-    HostTensor<float, 1, true> hostFloat(out.data(), {(int) num});
-    hostFloat.copyFrom(devFloat, stream);
-
-    return out;
-#endif
-  }
-
-  size_t num = encVecs.size() / sizeof(float);
-
-  Tensor<float, 1, true> devFloat((float*) encVecs.data(), {(int) num});
-
-  std::vector<float> out(num);
-  HostTensor<float, 1, true> hostFloat(out.data(), {(int) num});
-  hostFloat.copyFrom(devFloat, stream);
-
-  return out;
 }
 
 } } // namespace

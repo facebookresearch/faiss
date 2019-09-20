@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "../GpuIndicesOptions.h"
-#include "../utils/DeviceVector.cuh"
-#include "../utils/DeviceTensor.cuh"
-#include "../utils/MemorySpace.h"
+#include <faiss/gpu/GpuIndicesOptions.h>
+#include <faiss/gpu/utils/DeviceVector.cuh>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/MemorySpace.h>
 #include <memory>
 #include <thrust/device_vector.h>
 #include <vector>
@@ -56,6 +56,9 @@ class IVFBase {
 
   /// Return the list indices of a particular list back to the CPU
   std::vector<long> getListIndices(int listId) const;
+
+  /// Return the encoded vectors of a particular list back to the CPU
+  std::vector<unsigned char> getListVectors(int listId) const;
 
  protected:
   /// Reclaim memory consumed on the device for our inverted lists

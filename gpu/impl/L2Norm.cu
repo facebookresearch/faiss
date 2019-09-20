@@ -6,16 +6,16 @@
  */
 
 
-#include "L2Norm.cuh"
-#include "../../FaissAssert.h"
-#include "../utils/ConversionOperators.cuh"
-#include "../utils/DeviceDefs.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/Float16.cuh"
-#include "../utils/MathOperators.cuh"
-#include "../utils/PtxUtils.cuh"
-#include "../utils/StaticUtils.h"
-#include "../utils/Reductions.cuh"
+#include <faiss/gpu/impl/L2Norm.cuh>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/MathOperators.cuh>
+#include <faiss/gpu/utils/PtxUtils.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/gpu/utils/Reductions.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -311,7 +311,6 @@ void runL2Norm(Tensor<float, 2, true>& input,
   }
 }
 
-#ifdef FAISS_USE_FLOAT16
 void runL2Norm(Tensor<half, 2, true>& input,
                bool inputRowMajor,
                Tensor<half, 1, true>& output,
@@ -328,6 +327,5 @@ void runL2Norm(Tensor<half, 2, true>& input,
       inputCast, inputRowMajor, outputCast, normSquared, stream);
   }
 }
-#endif
 
 } } // namespace

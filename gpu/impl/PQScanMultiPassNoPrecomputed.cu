@@ -6,20 +6,20 @@
  */
 
 
-#include "PQScanMultiPassNoPrecomputed.cuh"
-#include "../GpuResources.h"
-#include "PQCodeDistances.cuh"
-#include "PQCodeLoad.cuh"
-#include "IVFUtils.cuh"
-#include "../utils/ConversionOperators.cuh"
-#include "../utils/DeviceTensor.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/Float16.cuh"
-#include "../utils/LoadStoreOperators.cuh"
-#include "../utils/NoTypeTensor.cuh"
-#include "../utils/StaticUtils.h"
+#include <faiss/gpu/impl/PQScanMultiPassNoPrecomputed.cuh>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/PQCodeDistances.cuh>
+#include <faiss/gpu/impl/PQCodeLoad.cuh>
+#include <faiss/gpu/impl/IVFUtils.cuh>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/LoadStoreOperators.cuh>
+#include <faiss/gpu/utils/NoTypeTensor.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
 
-#include "../utils/HostTensor.cuh"
+#include <faiss/gpu/utils/HostTensor.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -241,10 +241,6 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
                  Tensor<float, 2, true>& outDistances,
                  Tensor<long, 2, true>& outIndices,
                  cudaStream_t stream) {
-#ifndef FAISS_USE_FLOAT16
-  FAISS_ASSERT(!useFloat16Lookup);
-#endif
-
   // Calculate offset lengths, so we know where to write out
   // intermediate results
   runCalcListOffsets(topQueryToCentroid, listLengths, prefixSumOffsets,
@@ -270,12 +266,8 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
     auto block = dim3(kThreadsPerBlock);
 
     // pq centroid distances
-    auto smem = sizeof(float);
-#ifdef FAISS_USE_FLOAT16
-    if (useFloat16Lookup) {
-      smem = sizeof(half);
-    }
-#endif
+    auto smem = useFloat16Lookup ? sizeof(half) : sizeof(float);
+
     smem *= numSubQuantizers * numSubQuantizerCodes;
     FAISS_ASSERT(smem <= getMaxSharedMemPerBlockCurrentDevice());
 
@@ -295,7 +287,6 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
           allDistances);                                                \
     } while (0)
 
-#ifdef FAISS_USE_FLOAT16
 #define RUN_PQ(NUM_SUB_Q)                       \
     do {                                        \
       if (useFloat16Lookup) {                   \
@@ -304,12 +295,6 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
         RUN_PQ_OPT(NUM_SUB_Q, float, float4);   \
       }                                         \
     } while (0)
-#else
-#define RUN_PQ(NUM_SUB_Q)                       \
-    do {                                        \
-      RUN_PQ_OPT(NUM_SUB_Q, float, float4);     \
-    } while (0)
-#endif // FAISS_USE_FLOAT16
 
     switch (bytesPerCode) {
       case 1:
@@ -497,14 +482,7 @@ void runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
                               sizeof(int),
                               stream));
 
-  int codeDistanceTypeSize = sizeof(float);
-#ifdef FAISS_USE_FLOAT16
-  if (useFloat16Lookup) {
-    codeDistanceTypeSize = sizeof(half);
-  }
-#else
-  FAISS_ASSERT(!useFloat16Lookup);
-#endif
+  int codeDistanceTypeSize = useFloat16Lookup ? sizeof(half) : sizeof(float);
 
   int totalCodeDistancesSize =
     queryTileSize * nprobe * numSubQuantizers * numSubQuantizerCodes *

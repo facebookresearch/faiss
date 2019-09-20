@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../IndexBinaryFlat.h"
-#include "GpuIndex.h"
+#include <faiss/IndexBinaryFlat.h>
+#include <faiss/gpu/GpuIndex.h>
 
 namespace faiss { namespace gpu {
 

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "BlockSelectImpl.cuh"
+#include <faiss/gpu/utils/blockselect/BlockSelectImpl.cuh>
 
 namespace faiss { namespace gpu {
 

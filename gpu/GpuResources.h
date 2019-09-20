@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "utils/DeviceMemory.h"
+#include <faiss/gpu/utils/DeviceMemory.h>
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 #include <utility>

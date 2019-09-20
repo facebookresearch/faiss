@@ -5,13 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "WarpSelectImpl.cuh"
+#include <faiss/gpu/utils/warpselect/WarpSelectImpl.cuh>
 
 namespace faiss { namespace gpu {
 
-#ifdef FAISS_USE_FLOAT16
 WARP_SELECT_IMPL(half, true, 32, 2);
 WARP_SELECT_IMPL(half, false, 32, 2);
-#endif
 
 } } // namespace

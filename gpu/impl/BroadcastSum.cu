@@ -7,12 +7,12 @@
 
 
 #include <algorithm>
-#include "../../FaissAssert.h"
+#include <faiss/impl/FaissAssert.h>
 
-#include "../utils/DeviceUtils.h"
-#include "../utils/MathOperators.cuh"
-#include "../utils/Tensor.cuh"
-#include "../utils/StaticUtils.h"
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/MathOperators.cuh>
+#include <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
 
 namespace faiss { namespace gpu {
 
@@ -262,13 +262,11 @@ void runSumAlongColumns(Tensor<float, 1, true>& input,
   runSumAlongColumns<float, float4>(input, output, stream);
 }
 
-#ifdef FAISS_USE_FLOAT16
 void runSumAlongColumns(Tensor<half, 1, true>& input,
                         Tensor<half, 2, true>& output,
                         cudaStream_t stream) {
   runSumAlongColumns<half, half2>(input, output, stream);
 }
-#endif
 
 template <typename T, typename TVec>
 void runAssignAlongColumns(Tensor<T, 1, true>& input,
@@ -312,13 +310,11 @@ void runAssignAlongColumns(Tensor<float, 1, true>& input,
   runAssignAlongColumns<float, float4>(input, output, stream);
 }
 
-#ifdef FAISS_USE_FLOAT16
 void runAssignAlongColumns(Tensor<half, 1, true>& input,
                            Tensor<half, 2, true>& output,
                            cudaStream_t stream) {
   runAssignAlongColumns<half, half2>(input, output, stream);
 }
-#endif
 
 template <typename T>
 void runSumAlongRows(Tensor<T, 1, true>& input,
@@ -348,13 +344,11 @@ void runSumAlongRows(Tensor<float, 1, true>& input,
   runSumAlongRows<float>(input, output, zeroClamp, stream);
 }
 
-#ifdef FAISS_USE_FLOAT16
 void runSumAlongRows(Tensor<half, 1, true>& input,
                      Tensor<half, 2, true>& output,
                      bool zeroClamp,
                      cudaStream_t stream) {
   runSumAlongRows<half>(input, output, zeroClamp, stream);
 }
-#endif
 
 } } // namespace

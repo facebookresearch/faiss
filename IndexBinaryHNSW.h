@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include "HNSW.h"
-#include "IndexBinaryFlat.h"
-#include "utils.h"
+#include <faiss/impl/HNSW.h>
+#include <faiss/IndexBinaryFlat.h>
+#include <faiss/utils/utils.h>
 
 
 namespace faiss {

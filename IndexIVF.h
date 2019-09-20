@@ -14,10 +14,10 @@
 #include <vector>
 #include <stdint.h>
 
-#include "Index.h"
-#include "InvertedLists.h"
-#include "Clustering.h"
-#include "Heap.h"
+#include <faiss/Index.h>
+#include <faiss/InvertedLists.h>
+#include <faiss/Clustering.h>
+#include <faiss/utils/Heap.h>
 
 
 namespace faiss {
@@ -31,6 +31,7 @@ namespace faiss {
 struct Level1Quantizer {
     Index * quantizer;        ///< quantizer that maps vectors to inverted lists
     size_t nlist;             ///< number of possible key values
+
 
     /**
      * = 0: use the quantizer as index in a kmeans training
@@ -46,6 +47,12 @@ struct Level1Quantizer {
     /// Trains the quantizer and calls train_residual to train sub-quantizers
     void train_q1 (size_t n, const float *x, bool verbose,
                    MetricType metric_type);
+
+
+    /// compute the number of bytes required to store list ids
+    size_t coarse_code_size () const;
+    void encode_listno (Index::idx_t list_no, uint8_t *code) const;
+    Index::idx_t decode_listno (const uint8_t *code) const;
 
     Level1Quantizer (Index * quantizer, size_t nlist);
 
@@ -134,10 +141,14 @@ struct IndexIVF: Index, Level1Quantizer {
      * @param list_nos   inverted list ids as returned by the
      *                   quantizer (size n). -1s are ignored.
      * @param codes      output codes, size n * code_size
+     * @param include_listno
+     *                   include the list ids in the code (in this case add
+     *                   ceil(log8(nlist)) to the code size)
      */
     virtual void encode_vectors(idx_t n, const float* x,
                                 const idx_t *list_nos,
-                                uint8_t * codes) const = 0;
+                                uint8_t * codes,
+                                bool include_listno = false) const = 0;
 
     /// Sub-classes that encode the residuals can train their encoders here
     /// does nothing by default
@@ -259,6 +270,12 @@ struct IndexIVF: Index, Level1Quantizer {
 
     /// replace the inverted lists, old one is deallocated if own_invlists
     void replace_invlists (InvertedLists *il, bool own=false);
+
+    /* The standalone codec interface (except sa_decode that is specific) */
+    size_t sa_code_size () const override;
+
+    void sa_encode (idx_t n, const float *x,
+                          uint8_t *bytes) const override;
 
     IndexIVF ();
 };

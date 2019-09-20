@@ -7,7 +7,7 @@
 
 // from Nvidia cuDNN library samples; modified to compile within faiss
 
-#include "fp16_emu.cuh"
+#include <faiss/gpu/utils/nvidia/fp16_emu.cuh>
 
 namespace faiss { namespace gpu {
 

@@ -13,7 +13,7 @@
 #include <vector>
 #include <list>
 
-#include "IndexIVF.h"
+#include <faiss/IndexIVF.h>
 
 namespace faiss {
 

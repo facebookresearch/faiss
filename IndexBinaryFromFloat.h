@@ -10,7 +10,7 @@
 #ifndef FAISS_INDEX_BINARY_FROM_FLOAT_H
 #define FAISS_INDEX_BINARY_FROM_FLOAT_H
 
-#include "IndexBinary.h"
+#include <faiss/IndexBinary.h>
 
 
 namespace faiss {

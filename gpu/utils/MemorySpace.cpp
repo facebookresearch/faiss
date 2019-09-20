@@ -6,8 +6,8 @@
  */
 
 
-#include "MemorySpace.h"
-#include "../../FaissAssert.h"
+#include <faiss/gpu/utils/MemorySpace.h>
+#include <faiss/impl/FaissAssert.h>
 #include <cuda_runtime.h>
 
 namespace faiss { namespace gpu {

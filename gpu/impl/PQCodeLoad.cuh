@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../utils/PtxUtils.cuh"
+#include <faiss/gpu/utils/PtxUtils.cuh>
 
 namespace faiss { namespace gpu {
 

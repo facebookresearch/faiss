@@ -5,15 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "BlockSelectImpl.cuh"
-#include "../DeviceDefs.cuh"
+#include <faiss/gpu/utils/blockselect/BlockSelectImpl.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
 
 namespace faiss { namespace gpu {
 
 #if GPU_MAX_SELECTION_K >= 2048
-#ifdef FAISS_USE_FLOAT16
 BLOCK_SELECT_IMPL(half, true, 2048, 8);
-#endif
 #endif
 
 } } // namespace

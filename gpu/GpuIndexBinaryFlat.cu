@@ -5,16 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "GpuIndexBinaryFlat.h"
+#include <faiss/gpu/GpuIndexBinaryFlat.h>
 
-#include "GpuResources.h"
-#include "impl/BinaryFlatIndex.cuh"
-#include "utils/ConversionOperators.cuh"
-#include "utils/CopyUtils.cuh"
-#include "utils/DeviceUtils.h"
-
-#include <thrust/execution_policy.h>
-#include <thrust/transform.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/BinaryFlatIndex.cuh>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
 
 namespace faiss { namespace gpu {
 
@@ -215,11 +212,9 @@ GpuIndexBinaryFlat::search(faiss::IndexBinary::idx_t n,
                                                      {(int) n, (int) k});
 
   // Convert int to long
-  thrust::transform(thrust::cuda::par.on(stream),
-                    outIntIndices.data(),
-                    outIntIndices.end(),
-                    outIndices.data(),
-                    IntToIdxType());
+  convertTensor<int, faiss::Index::idx_t, 2>(stream,
+                                             outIntIndices,
+                                             outIndices);
 
   // Copy back if necessary
   fromDevice<int32_t, 2>(outDistances, distances, stream);

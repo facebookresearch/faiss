@@ -28,7 +28,6 @@ namespace faiss {
 struct Index;
 struct IndexBinary;
 struct VectorTransform;
-struct IndexIVF;
 struct ProductQuantizer;
 struct IOReader;
 struct IOWriter;
@@ -68,20 +67,6 @@ void write_ProductQuantizer (const ProductQuantizer*pq, IOWriter *f);
 
 void write_InvertedLists (const InvertedLists *ils, IOWriter *f);
 InvertedLists *read_InvertedLists (IOReader *reader, int io_flags = 0);
-
-/* cloning functions */
-Index *clone_index (const Index *);
-
-/** Cloner class, useful to override classes with other cloning
- * functions. The cloning function above just calls
- * Cloner::clone_Index. */
-struct Cloner {
-    virtual VectorTransform *clone_VectorTransform (const VectorTransform *);
-    virtual Index *clone_Index (const Index *);
-    virtual IndexIVF *clone_IndexIVF (const IndexIVF *);
-    virtual ~Cloner() {}
-};
-
 
 
 } // namespace faiss

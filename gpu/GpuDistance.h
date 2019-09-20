@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../Index.h"
+#include <faiss/Index.h>
 
 namespace faiss { namespace gpu {
 

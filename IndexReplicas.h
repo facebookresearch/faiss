@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "Index.h"
-#include "IndexBinary.h"
-#include "ThreadedIndex.h"
+#include <faiss/Index.h>
+#include <faiss/IndexBinary.h>
+#include <faiss/impl/ThreadedIndex.h>
 
 namespace faiss {
 

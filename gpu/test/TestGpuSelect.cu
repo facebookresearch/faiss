@@ -6,13 +6,13 @@
  */
 
 
-#include "../test/TestUtils.h"
-#include "../utils/BlockSelectKernel.cuh"
-#include "../utils/DeviceDefs.cuh"
-#include "../utils/DeviceTensor.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/HostTensor.cuh"
-#include "../utils/WarpSelectKernel.cuh"
+#include <faiss/gpu/test/TestUtils.h>
+#include <faiss/gpu/utils/BlockSelectKernel.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/utils/WarpSelectKernel.cuh>
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <sstream>

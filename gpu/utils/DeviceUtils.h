@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../../FaissAssert.h"
+#include <faiss/impl/FaissAssert.h>
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 #include <vector>
@@ -23,6 +23,12 @@ void setCurrentDevice(int device);
 
 /// Returns the number of available GPU devices
 int getNumDevices();
+
+/// Starts the CUDA profiler (exposed via SWIG)
+void profilerStart();
+
+/// Stops the CUDA profiler (exposed via SWIG)
+void profilerStop();
 
 /// Synchronizes the CPU against all devices (equivalent to
 /// cudaDeviceSynchronize for each device)

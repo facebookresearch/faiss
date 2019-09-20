@@ -6,7 +6,7 @@
  */
 
 
-#include "../../FaissAssert.h"
+#include <faiss/impl/FaissAssert.h>
 
 namespace faiss { namespace gpu {
 

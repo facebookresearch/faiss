@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../BlockSelectKernel.cuh"
-#include "../Limits.cuh"
+#include <faiss/gpu/utils/BlockSelectKernel.cuh>
+#include <faiss/gpu/utils/Limits.cuh>
 
 #define BLOCK_SELECT_DECL(TYPE, DIR, WARP_Q)                            \
   extern void runBlockSelect_ ## TYPE ## _ ## DIR ## _ ## WARP_Q ## _(  \

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "Float16.cuh"
+#include <faiss/gpu/utils/Float16.cuh>
 
 #ifndef __HALF2_TO_UI
 // cuda_fp16.hpp doesn't export this
@@ -34,8 +34,6 @@ struct LoadStore {
     *((T*) p) = v;
   }
 };
-
-#ifdef FAISS_USE_FLOAT16
 
 template <>
 struct LoadStore<Half4> {
@@ -88,7 +86,5 @@ struct LoadStore<Half8> {
 #endif
   }
 };
-
-#endif // FAISS_USE_FLOAT16
 
 } } // namespace

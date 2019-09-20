@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "../GpuIndicesOptions.h"
-#include "../utils/Tensor.cuh"
+#include <faiss/gpu/GpuIndicesOptions.h>
+#include <faiss/gpu/utils/Tensor.cuh>
 #include <thrust/device_vector.h>
 
 // A collection of utility functions for IVFPQ and IVFFlat, for

@@ -6,15 +6,15 @@
  */
 
 
-#include "../../IndexBinaryFlat.h"
-#include "../../utils.h"
-#include "../GpuIndexBinaryFlat.h"
-#include "../StandardGpuResources.h"
-#include "../test/TestUtils.h"
-#include "../utils/DeviceTensor.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/HostTensor.cuh"
-#include "../utils/Timer.h"
+#include <faiss/IndexBinaryFlat.h>
+#include <faiss/utils/random.h>
+#include <faiss/gpu/GpuIndexBinaryFlat.h>
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/test/TestUtils.h>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/utils/Timer.h>
 #include <gflags/gflags.h>
 #include <map>
 #include <memory>

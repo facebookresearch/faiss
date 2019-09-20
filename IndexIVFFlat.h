@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <stdint.h>
 
-#include "IndexIVF.h"
+#include <faiss/IndexIVF.h>
 
 
 namespace faiss {
@@ -37,7 +37,8 @@ struct IndexIVFFlat: IndexIVF {
 
     void encode_vectors(idx_t n, const float* x,
                         const idx_t *list_nos,
-                        uint8_t * codes) const override;
+                        uint8_t * codes,
+                        bool include_listnos=false) const override;
 
 
     InvertedListScanner *get_InvertedListScanner (bool store_pairs)
@@ -55,6 +56,9 @@ struct IndexIVFFlat: IndexIVF {
 
     void reconstruct_from_offset (int64_t list_no, int64_t offset,
                                   float* recons) const override;
+
+    void sa_decode (idx_t n, const uint8_t *bytes,
+                            float *x) const override;
 
     IndexIVFFlat () {}
 };

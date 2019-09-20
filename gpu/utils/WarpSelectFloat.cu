@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "warpselect/WarpSelectImpl.cuh"
-#include "DeviceDefs.cuh"
+#include <faiss/gpu/utils/warpselect/WarpSelectImpl.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
 
 namespace faiss { namespace gpu {
 

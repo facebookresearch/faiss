@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include "Index.h"
+#include <faiss/Index.h>
 
 
 namespace faiss {
@@ -66,6 +66,16 @@ struct IndexFlat: Index {
     IndexFlat () {}
 
     DistanceComputer * get_distance_computer() const override;
+
+    /* The stanadlone codec interface (just memcopies in this case) */
+    size_t sa_code_size () const override;
+
+    void sa_encode (idx_t n, const float *x,
+                          uint8_t *bytes) const override;
+
+    void sa_decode (idx_t n, const uint8_t *bytes,
+                            float *x) const override;
+
 };
 
 

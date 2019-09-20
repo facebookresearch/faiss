@@ -8,13 +8,13 @@
 
 
 #include <cuda_profiler_api.h>
-#include "../../IndexFlat.h"
-#include "../../IndexIVFPQ.h"
-#include "../GpuIndexIVFPQ.h"
-#include "../StandardGpuResources.h"
-#include "../test/TestUtils.h"
-#include "../utils/DeviceUtils.h"
-#include "../utils/Timer.h"
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/gpu/GpuIndexIVFPQ.h>
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/test/TestUtils.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Timer.h>
 #include <gflags/gflags.h>
 #include <map>
 #include <vector>

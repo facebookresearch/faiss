@@ -14,8 +14,8 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/MetaIndexes.h>
-#include <faiss/FaissAssert.h>
-#include <faiss/VectorTransform.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/IndexPreTransform.h>
 #include <faiss/OnDiskInvertedLists.h>
 #include <faiss/IVFlib.h>
 

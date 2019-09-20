@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "GpuIndex.h"
+#include <faiss/gpu/GpuIndex.h>
 
 namespace faiss {
 
@@ -90,10 +90,20 @@ class GpuIndexFlat : public GpuIndex {
   void reconstruct(faiss::Index::idx_t key, float* out) const override;
 
   /// Batch reconstruction method
-  void reconstruct_n(
-      faiss::Index::idx_t i0,
-      faiss::Index::idx_t num,
-      float* out) const override;
+  void reconstruct_n(faiss::Index::idx_t i0,
+                     faiss::Index::idx_t num,
+                     float* out) const override;
+
+  /// Compute residual
+  void compute_residual(const float* x,
+                        float* residual,
+                        faiss::Index::idx_t key) const override;
+
+  /// Compute residual (batch mode)
+  void compute_residual_n(faiss::Index::idx_t n,
+                          const float* xs,
+                          float* residuals,
+                          const faiss::Index::idx_t* keys) const override;
 
   /// For internal access
   inline FlatIndex* getGpuData() { return data_; }
@@ -145,11 +155,11 @@ class GpuIndexFlatL2 : public GpuIndexFlat {
 
   /// Initialize ourselves from the given CPU index; will overwrite
   /// all data in ourselves
-  void copyFrom(faiss::IndexFlatL2* index);
+  void copyFrom(faiss::IndexFlat* index);
 
   /// Copy ourselves to the given CPU index; will overwrite all data
   /// in the index instance
-  void copyTo(faiss::IndexFlatL2* index);
+  void copyTo(faiss::IndexFlat* index);
 };
 
 /// Wrapper around the GPU implementation that looks like
@@ -170,11 +180,11 @@ class GpuIndexFlatIP : public GpuIndexFlat {
 
   /// Initialize ourselves from the given CPU index; will overwrite
   /// all data in ourselves
-  void copyFrom(faiss::IndexFlatIP* index);
+  void copyFrom(faiss::IndexFlat* index);
 
   /// Copy ourselves to the given CPU index; will overwrite all data
   /// in the index instance
-  void copyTo(faiss::IndexFlatIP* index);
+  void copyTo(faiss::IndexFlat* index);
 };
 
 } } // namespace

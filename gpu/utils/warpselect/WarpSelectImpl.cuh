@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "../WarpSelectKernel.cuh"
-#include "../Limits.cuh"
+#include <faiss/gpu/utils/WarpSelectKernel.cuh>
+#include <faiss/gpu/utils/Limits.cuh>
 
 #define WARP_SELECT_DECL(TYPE, DIR, WARP_Q)                             \
   extern void runWarpSelect_ ## TYPE ## _ ## DIR ## _ ## WARP_Q ## _(   \

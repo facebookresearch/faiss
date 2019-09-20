@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include "IndexPQ.h"
+#include <faiss/IndexPQ.h>
 
 
 #include <cstddef>
@@ -17,9 +17,9 @@
 
 #include <algorithm>
 
-#include "FaissAssert.h"
-#include "AuxIndexStructures.h"
-#include "hamming.h"
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/utils/hamming.h>
 
 namespace faiss {
 
@@ -447,6 +447,23 @@ void IndexPQ::search_core_polysemous (idx_t n, const float *x, idx_t k,
     indexPQ_stats.n_hamming_pass += n_pass;
 
 
+}
+
+
+/* The standalone codec interface (just remaps to the PQ functions) */
+size_t IndexPQ::sa_code_size () const
+{
+    return pq.code_size;
+}
+
+void IndexPQ::sa_encode (idx_t n, const float *x, uint8_t *bytes) const
+{
+    pq.compute_codes (x, bytes, n);
+}
+
+void IndexPQ::sa_decode (idx_t n, const uint8_t *bytes, float *x) const
+{
+    pq.decode (bytes, x, n);
 }
 
 

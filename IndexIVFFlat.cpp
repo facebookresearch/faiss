@@ -7,15 +7,16 @@
 
 // -*- c++ -*-
 
-#include "IndexIVFFlat.h"
+#include <faiss/IndexIVFFlat.h>
 
 #include <cstdio>
 
-#include "utils.h"
+#include <faiss/IndexFlat.h>
 
-#include "FaissAssert.h"
-#include "IndexFlat.h"
-#include "AuxIndexStructures.h"
+#include <faiss/utils/distances.h>
+#include <faiss/utils/utils.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 
 namespace faiss {
@@ -80,12 +81,39 @@ void IndexIVFFlat::add_core (idx_t n, const float * x, const int64_t *xids,
 }
 
 void IndexIVFFlat::encode_vectors(idx_t n, const float* x,
-                                  const idx_t * /* list_nos */,
-                                  uint8_t * codes) const
+                                  const idx_t * list_nos,
+                                  uint8_t * codes,
+                                  bool include_listnos) const
 {
-    memcpy (codes, x, code_size * n);
+    if (!include_listnos) {
+        memcpy (codes, x, code_size * n);
+    } else {
+        size_t coarse_size = coarse_code_size ();
+        for (size_t i = 0; i < n; i++) {
+            int64_t list_no = list_nos [i];
+            uint8_t *code = codes + i * (code_size + coarse_size);
+            const float *xi = x + i * d;
+            if (list_no >= 0) {
+                encode_listno (list_no, code);
+                memcpy (code + coarse_size, xi, code_size);
+            } else {
+                memset (code, 0, code_size + coarse_size);
+            }
+
+        }
+    }
 }
 
+void IndexIVFFlat::sa_decode (idx_t n, const uint8_t *bytes,
+                                      float *x) const
+{
+    size_t coarse_size = coarse_code_size ();
+    for (size_t i = 0; i < n; i++) {
+        const uint8_t *code = bytes + i * (code_size + coarse_size);
+        float *xi = x + i * d;
+        memcpy (xi, code + coarse_size, code_size);
+    }
+}
 
 
 namespace {

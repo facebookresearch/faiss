@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "MemorySpace.h"
+#include <faiss/gpu/utils/MemorySpace.h>
 #include <cuda.h>
 #include <unordered_set>
 

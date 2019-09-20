@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "GpuIndexIVF.h"
+#include <faiss/gpu/GpuIndexIVF.h>
 
 namespace faiss { struct IndexIVFFlat; }
 
@@ -18,13 +18,6 @@ class IVFFlat;
 class GpuIndexFlat;
 
 struct GpuIndexIVFFlatConfig : public GpuIndexIVFConfig {
-  inline GpuIndexIVFFlatConfig()
-      : useFloat16IVFStorage(false) {
-  }
-
-  /// Whether or not IVFFlat inverted list storage is in float16;
-  /// supported on all architectures
-  bool useFloat16IVFStorage;
 };
 
 /// Wrapper around the GPU implementation that looks like

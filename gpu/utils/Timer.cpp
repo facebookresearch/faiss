@@ -6,9 +6,9 @@
  */
 
 
-#include "Timer.h"
-#include "DeviceUtils.h"
-#include "../../FaissAssert.h"
+#include <faiss/gpu/utils/Timer.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/impl/FaissAssert.h>
 
 namespace faiss { namespace gpu {
 

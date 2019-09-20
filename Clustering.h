@@ -9,7 +9,7 @@
 
 #ifndef FAISS_CLUSTERING_H
 #define FAISS_CLUSTERING_H
-#include "Index.h"
+#include <faiss/Index.h>
 
 #include <vector>
 

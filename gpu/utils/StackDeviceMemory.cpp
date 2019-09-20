@@ -6,11 +6,11 @@
  */
 
 
-#include "StackDeviceMemory.h"
-#include "DeviceUtils.h"
-#include "MemorySpace.h"
-#include "StaticUtils.h"
-#include "../../FaissAssert.h"
+#include <faiss/gpu/utils/StackDeviceMemory.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/MemorySpace.h>
+#include <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/impl/FaissAssert.h>
 #include <stdio.h>
 #include <sstream>
 

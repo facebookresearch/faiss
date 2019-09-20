@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include "IndexHNSW.h"
+#include <faiss/IndexHNSW.h>
 
 
 #include <cstdlib>
@@ -29,12 +29,14 @@
 #include <immintrin.h>
 #endif
 
-#include "utils.h"
-#include "Heap.h"
-#include "FaissAssert.h"
-#include "IndexFlat.h"
-#include "IndexIVFPQ.h"
-#include "AuxIndexStructures.h"
+#include <faiss/utils/distances.h>
+#include <faiss/utils/random.h>
+#include <faiss/utils/Heap.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/Index2Layer.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 
 extern "C" {
@@ -232,6 +234,8 @@ IndexHNSW::~IndexHNSW() {
 
 void IndexHNSW::train(idx_t n, const float* x)
 {
+    FAISS_THROW_IF_NOT_MSG(storage,
+       "Please use IndexHSNWFlat (or variants) instead of IndexHNSW directly");
     // hnsw structure does not require training
     storage->train (n, x);
     is_trained = true;
@@ -241,6 +245,8 @@ void IndexHNSW::search (idx_t n, const float *x, idx_t k,
                         float *distances, idx_t *labels) const
 
 {
+    FAISS_THROW_IF_NOT_MSG(storage,
+       "Please use IndexHSNWFlat (or variants) instead of IndexHNSW directly");
     size_t nreorder = 0;
 
     idx_t check_period = InterruptCallback::get_period_hint (
@@ -290,6 +296,8 @@ void IndexHNSW::search (idx_t n, const float *x, idx_t k,
 
 void IndexHNSW::add(idx_t n, const float *x)
 {
+    FAISS_THROW_IF_NOT_MSG(storage,
+       "Please use IndexHSNWFlat (or variants) instead of IndexHNSW directly");
     FAISS_THROW_IF_NOT(is_trained);
     int n0 = ntotal;
     storage->add(n, x);

@@ -16,7 +16,7 @@
  */
 
 #include <vector>
-#include "Index.h"
+#include <faiss/Index.h>
 
 
 namespace faiss {

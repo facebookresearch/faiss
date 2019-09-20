@@ -6,12 +6,12 @@
  */
 
 
-#include "../../IndexFlat.h"
-#include "../../IndexIVFPQ.h"
-#include "../GpuIndexIVFPQ.h"
-#include "../StandardGpuResources.h"
-#include "../utils/DeviceUtils.h"
-#include "../test/TestUtils.h"
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/gpu/GpuIndexIVFPQ.h>
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/test/TestUtils.h>
 #include <cmath>
 #include <gtest/gtest.h>
 #include <sstream>

@@ -17,7 +17,7 @@
  */
 
 #include <vector>
-#include "IndexIVF.h"
+#include <faiss/IndexIVF.h>
 
 namespace faiss { namespace ivflib {
 
@@ -116,13 +116,16 @@ ArrayInvertedLists * get_invlist_range (const Index *index,
 void set_invlist_range (Index *index, long i0, long i1,
                         ArrayInvertedLists * src);
 
-
-// search an IndexIVF, possibly  embedded in an IndexPreTransform
-// with given parameters
+// search an IndexIVF, possibly embedded in an IndexPreTransform with
+// given parameters. Optionally returns the number of distances
+// computed
 void search_with_parameters (const Index *index,
                              idx_t n, const float *x, idx_t k,
                              float *distances, idx_t *labels,
-                             IVFSearchParameters *params);
+                             IVFSearchParameters *params,
+                             size_t *nb_dis = nullptr);
+
+
 
 } } // namespace faiss::ivflib
 

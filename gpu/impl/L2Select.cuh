@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include "../utils/Float16.cuh"
-#include "../utils/Tensor.cuh"
+#include <faiss/gpu/utils/Tensor.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -20,13 +19,11 @@ void runL2SelectMin(Tensor<float, 2, true>& productDistances,
                     int k,
                     cudaStream_t stream);
 
-#ifdef FAISS_USE_FLOAT16
 void runL2SelectMin(Tensor<half, 2, true>& productDistances,
                     Tensor<half, 1, true>& centroidDistances,
                     Tensor<half, 2, true>& outDistances,
                     Tensor<int, 2, true>& outIndices,
                     int k,
                     cudaStream_t stream);
-#endif
 
 } } // namespace

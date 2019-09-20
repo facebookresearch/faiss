@@ -13,8 +13,8 @@
 
 #include <vector>
 
-#include "IndexIVF.h"
-#include "IndexPQ.h"
+#include <faiss/IndexIVF.h>
+#include <faiss/IndexPQ.h>
 
 
 namespace faiss {
@@ -24,8 +24,6 @@ struct IVFPQSearchParameters: IVFSearchParameters {
     int polysemous_ht;             ///< Hamming thresh for polysemous filtering
     ~IVFPQSearchParameters () {}
 };
-
-
 
 
 /** Inverted file with Product Quantizer encoding. Each residual
@@ -67,7 +65,12 @@ struct IndexIVFPQ: IndexIVF {
 
     void encode_vectors(idx_t n, const float* x,
                         const idx_t *list_nos,
-                        uint8_t * codes) const override;
+                        uint8_t * codes,
+                        bool include_listnos = false) const override;
+
+    void sa_decode (idx_t n, const uint8_t *bytes,
+                    float *x) const override;
+
 
     /// same as add_core, also:
     /// - output 2nd level residuals if residuals_2 != NULL
@@ -150,106 +153,6 @@ struct IndexIVFPQStats {
 extern IndexIVFPQStats indexIVFPQ_stats;
 
 
-
-/** Index with an additional level of PQ refinement */
-struct IndexIVFPQR: IndexIVFPQ {
-    ProductQuantizer refine_pq;           ///< 3rd level quantizer
-    std::vector <uint8_t> refine_codes;   ///< corresponding codes
-
-    /// factor between k requested in search and the k requested from the IVFPQ
-    float k_factor;
-
-    IndexIVFPQR (
-            Index * quantizer, size_t d, size_t nlist,
-            size_t M, size_t nbits_per_idx,
-            size_t M_refine, size_t nbits_per_idx_refine);
-
-    void reset() override;
-
-    size_t remove_ids(const IDSelector& sel) override;
-
-    /// trains the two product quantizers
-    void train_residual(idx_t n, const float* x) override;
-
-    void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
-
-    /// same as add_with_ids, but optionally use the precomputed list ids
-    void add_core (idx_t n, const float *x, const idx_t *xids,
-                     const idx_t *precomputed_idx = nullptr);
-
-    void reconstruct_from_offset (int64_t list_no, int64_t offset,
-                                  float* recons) const override;
-
-    void merge_from (IndexIVF &other, idx_t add_id) override;
-
-
-    void search_preassigned (idx_t n, const float *x, idx_t k,
-                             const idx_t *assign,
-                             const float *centroid_dis,
-                             float *distances, idx_t *labels,
-                             bool store_pairs,
-                             const IVFSearchParameters *params=nullptr
-                             ) const override;
-
-    IndexIVFPQR();
-};
-
-
-
-/** Same as an IndexIVFPQ without the inverted lists: codes are stored sequentially
- *
- * The class is mainly inteded to store encoded vectors that can be
- * accessed randomly, the search function is not implemented.
- */
-struct Index2Layer: Index {
-    /// first level quantizer
-    Level1Quantizer q1;
-
-    /// second level quantizer is always a PQ
-    ProductQuantizer pq;
-
-    /// Codes. Size ntotal * code_size.
-    std::vector<uint8_t> codes;
-
-    /// size of the code for the first level (ceil(log8(q1.nlist)))
-    size_t code_size_1;
-
-    /// size of the code for the second level
-    size_t code_size_2;
-
-    /// code_size_1 + code_size_2
-    size_t code_size;
-
-    Index2Layer (Index * quantizer, size_t nlist,
-                 int M, MetricType metric = METRIC_L2);
-
-    Index2Layer ();
-    ~Index2Layer ();
-
-    void train(idx_t n, const float* x) override;
-
-    void add(idx_t n, const float* x) override;
-
-    /// not implemented
-    void search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const override;
-
-    void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
-
-    void reconstruct(idx_t key, float* recons) const override;
-
-    void reset() override;
-
-    DistanceComputer * get_distance_computer() const override;
-
-    /// transfer the flat codes to an IVFPQ index
-    void transfer_to_IVFPQ(IndexIVFPQ & other) const;
-
-};
 
 
 } // namespace faiss

@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "../../FaissAssert.h"
-#include "DeviceUtils.h"
-#include "MemorySpace.h"
-#include "StaticUtils.h"
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/MemorySpace.h>
+#include <faiss/gpu/utils/StaticUtils.h>
 #include <algorithm>
 #include <cuda.h>
 #include <vector>

@@ -82,7 +82,7 @@ def get_dataset(d, nb, nt, nq):
     return (xt, xb, xq)
 
 
-def get_dataset_2(d, nb, nt, nq):
+def get_dataset_2(d, nt, nb, nq):
     """A dataset that is not completely random but still challenging to
     index
     """
@@ -96,4 +96,4 @@ def get_dataset_2(d, nb, nt, nq):
     x = x * (rs.rand(d) * 4 + 0.1)
     x = np.sin(x)
     x = x.astype('float32')
-    return x[:nt], x[nt:-nq], x[-nq:]
+    return x[:nt], x[nt:nt + nb], x[nt + nb:]

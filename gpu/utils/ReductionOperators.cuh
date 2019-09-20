@@ -9,9 +9,9 @@
 #pragma once
 
 #include <cuda.h>
-#include "Limits.cuh"
-#include "MathOperators.cuh"
-#include "Pair.cuh"
+#include <faiss/gpu/utils/Limits.cuh>
+#include <faiss/gpu/utils/MathOperators.cuh>
+#include <faiss/gpu/utils/Pair.cuh>
 
 namespace faiss { namespace gpu {
 

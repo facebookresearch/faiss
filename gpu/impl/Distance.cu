@@ -6,18 +6,18 @@
  */
 
 
-#include "Distance.cuh"
-#include "BroadcastSum.cuh"
-#include "L2Norm.cuh"
-#include "L2Select.cuh"
-#include "../../FaissAssert.h"
-#include "../../AuxIndexStructures.h"
-#include "../GpuResources.h"
-#include "../utils/DeviceDefs.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/Limits.cuh"
-#include "../utils/MatrixMult.cuh"
-#include "../utils/BlockSelectKernel.cuh"
+#include <faiss/gpu/impl/Distance.cuh>
+#include <faiss/gpu/impl/BroadcastSum.cuh>
+#include <faiss/gpu/impl/L2Norm.cuh>
+#include <faiss/gpu/impl/L2Select.cuh>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Limits.cuh>
+#include <faiss/gpu/utils/MatrixMult.cuh>
+#include <faiss/gpu/utils/BlockSelectKernel.cuh>
 
 #include <memory>
 #include <algorithm>
@@ -458,7 +458,6 @@ runIPDistance(GpuResources* resources,
                        false);
 }
 
-#ifdef FAISS_USE_FLOAT16
 void
 runIPDistance(GpuResources* resources,
               Tensor<half, 2, true>& vectors,
@@ -479,7 +478,6 @@ runIPDistance(GpuResources* resources,
                       outIndices,
                       useHgemm);
 }
-#endif
 
 void
 runL2Distance(GpuResources* resources,
@@ -505,7 +503,6 @@ runL2Distance(GpuResources* resources,
                        ignoreOutDistances);
 }
 
-#ifdef FAISS_USE_FLOAT16
 void
 runL2Distance(GpuResources* resources,
               Tensor<half, 2, true>& vectors,
@@ -530,6 +527,5 @@ runL2Distance(GpuResources* resources,
                       useHgemm,
                       ignoreOutDistances);
 }
-#endif
 
 } } // namespace

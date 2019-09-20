@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "GpuIndicesOptions.h"
+#include <faiss/gpu/GpuIndicesOptions.h>
 
 namespace faiss { namespace gpu {
 

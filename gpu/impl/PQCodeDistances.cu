@@ -6,18 +6,19 @@
  */
 
 
-#include "PQCodeDistances.cuh"
+#include <faiss/gpu/impl/PQCodeDistances.cuh>
 
-#include "BroadcastSum.cuh"
-#include "Distance.cuh"
-#include "L2Norm.cuh"
-#include "../utils/DeviceDefs.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/Float16.cuh"
-#include "../utils/MatrixMult.cuh"
-#include "../utils/PtxUtils.cuh"
-#include "../utils/StaticUtils.h"
-#include "../utils/Transpose.cuh"
+#include <faiss/gpu/impl/BroadcastSum.cuh>
+#include <faiss/gpu/impl/Distance.cuh>
+#include <faiss/gpu/impl/L2Norm.cuh>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/MatrixMult.cuh>
+#include <faiss/gpu/utils/PtxUtils.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
+#include <faiss/gpu/utils/Transpose.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -25,12 +26,10 @@ template <typename T>
 struct Converter {
 };
 
-#ifdef FAISS_USE_FLOAT16
 template <>
 struct Converter<half> {
   inline static __device__ half to(float v) { return __float2half(v); }
 };
-#endif
 
 template <>
 struct Converter<float> {
@@ -340,7 +339,6 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
   Tensor<float, 4, true> outCodeDistancesF;
   DeviceTensor<float, 4, true> outCodeDistancesFloatMem;
 
-#ifdef FAISS_USE_FLOAT16
   if (useFloat16Lookup) {
     outCodeDistancesFloatMem = DeviceTensor<float, 4, true>(
       mem, {outCodeDistances.getSize(0),
@@ -350,10 +348,7 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
       stream);
 
     outCodeDistancesF = outCodeDistancesFloatMem;
-  }
-#endif
-
-  if (!useFloat16Lookup) {
+  } else {
     outCodeDistancesF = outCodeDistances.toTensor<float>();
   }
 
@@ -395,13 +390,13 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
 
   runSumAlongColumns(pqCentroidsNorm, outDistancesCodeViewCols, stream);
 
-#ifdef FAISS_USE_FLOAT16
   if (useFloat16Lookup) {
     // Need to convert back
     auto outCodeDistancesH = outCodeDistances.toTensor<half>();
-    toHalf(stream, outCodeDistancesF, outCodeDistancesH);
+    convertTensor<float, half, 4>(stream,
+                                  outCodeDistancesF,
+                                  outCodeDistancesH);
   }
-#endif
 }
 
 void
@@ -432,7 +427,6 @@ runPQCodeDistances(Tensor<float, 3, true>& pqCentroids,
   auto smem = (3 * dimsPerSubQuantizer) * sizeof(float)
     + topQueryToCentroid.getSize(1) * sizeof(int);
 
-#ifdef FAISS_USE_FLOAT16
 #define CODE_DISTANCE(DIMS)                                             \
   do {                                                                  \
     if (useFloat16Lookup) {                                             \
@@ -451,19 +445,6 @@ runPQCodeDistances(Tensor<float, 3, true>& pqCentroids,
         topQueryToCentroid, outCodeDistancesT);                         \
     }                                                                   \
   } while (0)
-#else
-#define CODE_DISTANCE(DIMS)                                             \
-  do {                                                                  \
-    if (!useFloat16Lookup) {                                            \
-      auto outCodeDistancesT = outCodeDistances.toTensor<float>();      \
-                                                                        \
-      pqCodeDistances<float, DIMS><<<grid, block, smem, stream>>>(      \
-        queries, kQueriesPerBlock,                                      \
-        coarseCentroids, pqCentroids,                                   \
-        topQueryToCentroid, outCodeDistancesT);                         \
-    }                                                                   \
-  } while (0)
-#endif
 
   switch (dimsPerSubQuantizer) {
     case 1:

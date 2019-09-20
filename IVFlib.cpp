@@ -7,12 +7,12 @@
 
 // -*- c++ -*-
 
-#include "IVFlib.h"
+#include <faiss/IVFlib.h>
 
 #include <memory>
 
-#include "VectorTransform.h"
-#include "FaissAssert.h"
+#include <faiss/IndexPreTransform.h>
+#include <faiss/impl/FaissAssert.h>
 
 
 
@@ -294,7 +294,8 @@ void set_invlist_range (Index *index, long i0, long i1,
 void search_with_parameters (const Index *index,
                              idx_t n, const float *x, idx_t k,
                              float *distances, idx_t *labels,
-                             IVFSearchParameters *params)
+                             IVFSearchParameters *params,
+                             size_t *nb_dis_ptr)
 {
     FAISS_THROW_IF_NOT (params);
     const float *prev_x = x;
@@ -316,6 +317,17 @@ void search_with_parameters (const Index *index,
 
     index_ivf->quantizer->search(n, x, params->nprobe,
                                  Dq.data(), Iq.data());
+
+    if (nb_dis_ptr) {
+        size_t nb_dis = 0;
+        const InvertedLists *il = index_ivf->invlists;
+        for (idx_t i = 0; i < n * params->nprobe; i++) {
+          if (Iq[i] >= 0) {
+              nb_dis += il->list_size(Iq[i]);
+          }
+        }
+        *nb_dis_ptr = nb_dis;
+    }
 
     index_ivf->search_preassigned(n, x, k, Iq.data(), Dq.data(),
                                   distances, labels,

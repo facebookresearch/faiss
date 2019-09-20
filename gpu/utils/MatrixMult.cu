@@ -6,11 +6,12 @@
  */
 
 
-#include "MatrixMult.cuh"
-#include "DeviceMemory.h"
-#include "DeviceUtils.h" // CUDA_VERIFY
-#include "DeviceTensor.cuh"
-#include "HostTensor.cuh"
+#include <faiss/gpu/utils/MatrixMult.cuh>
+#include <faiss/gpu/utils/DeviceMemory.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/HostTensor.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -40,7 +41,6 @@ struct CublasGemm<float> {
   }
 };
 
-#ifdef FAISS_USE_FLOAT16
 template <>
 struct CublasGemm<half> {
   static cublasStatus_t gemm(cublasHandle_t handle,
@@ -80,8 +80,6 @@ struct CublasGemm<half> {
                          C, halfType, ldc);
   }
 };
-#endif // FAISS_USE_FLOAT16
-
 
 template <typename T>
 void
@@ -165,7 +163,6 @@ void runMatrixMult(Tensor<float, 2, true>& c, bool transC,
                               alpha, beta, useHgemm, handle, stream);
 }
 
-#ifdef FAISS_USE_FLOAT16
 void runMatrixMult(Tensor<half, 2, true>& c, bool transC,
                    Tensor<half, 2, true>& a, bool transA,
                    Tensor<half, 2, true>& b, bool transB,
@@ -177,7 +174,6 @@ void runMatrixMult(Tensor<half, 2, true>& c, bool transC,
   return runMatrixMult<half>(c, transC, a, transA, b, transB,
                              alpha, beta, useHgemm, handle, stream);
 }
-#endif
 
 void
 runIteratedMatrixMult(Tensor<float, 3, true>& c, bool transC,

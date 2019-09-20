@@ -7,10 +7,10 @@
 
 // -*- c++ -*-
 
-#include "IndexBinaryFromFloat.h"
+#include <faiss/IndexBinaryFromFloat.h>
 
 #include <memory>
-#include "utils.h"
+#include <faiss/utils/utils.h>
 
 namespace faiss {
 

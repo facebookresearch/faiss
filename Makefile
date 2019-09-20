@@ -5,8 +5,8 @@
 
 -include makefile.inc
 
-HEADERS     = $(wildcard *.h)
-SRC         = $(wildcard *.cpp)
+HEADERS     = $(wildcard *.h impl/*.h utils/*.h)
+SRC         = $(wildcard *.cpp impl/*.cpp utils/*.cpp)
 OBJ         = $(SRC:.cpp=.o)
 INSTALLDIRS = $(DESTDIR)$(libdir) $(DESTDIR)$(includedir)/faiss
 
@@ -24,6 +24,7 @@ ifneq ($(strip $(NVCC)),)
 	HEADERS     += $(GPU_HEADERS)
 endif
 
+CPPFLAGS += -I.
 
 ############################
 # Building
@@ -70,7 +71,7 @@ uninstall:
 
 depend: $(SRC) $(GPU_SRC)
 	for i in $^; do \
-		$(CXXCPP) $(CPPFLAGS) -x c++ -MM $$i; \
+		$(CXXCPP) $(CPPFLAGS) -DCUDA_VERSION=7050 -x c++ -MM $$i; \
 	done > depend
 
 

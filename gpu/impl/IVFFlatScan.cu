@@ -6,153 +6,122 @@
  */
 
 
-#include "IVFFlatScan.cuh"
-#include "../GpuResources.h"
-#include "IVFUtils.cuh"
-#include "../utils/ConversionOperators.cuh"
-#include "../utils/DeviceDefs.cuh"
-#include "../utils/DeviceUtils.h"
-#include "../utils/DeviceTensor.cuh"
-#include "../utils/Float16.cuh"
-#include "../utils/MathOperators.cuh"
-#include "../utils/LoadStoreOperators.cuh"
-#include "../utils/PtxUtils.cuh"
-#include "../utils/Reductions.cuh"
-#include "../utils/StaticUtils.h"
+#include <faiss/gpu/impl/IVFFlatScan.cuh>
+#include <faiss/gpu/impl/IVFUtils.cuh>
+#include <faiss/gpu/impl/Metrics.cuh>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/utils/MathOperators.cuh>
+#include <faiss/gpu/utils/LoadStoreOperators.cuh>
+#include <faiss/gpu/utils/PtxUtils.cuh>
+#include <faiss/gpu/utils/Reductions.cuh>
+#include <faiss/gpu/utils/StaticUtils.h>
 #include <thrust/host_vector.h>
 
 namespace faiss { namespace gpu {
 
-template <typename T>
-inline __device__ typename Math<T>::ScalarType l2Distance(T a, T b) {
-  a = Math<T>::sub(a, b);
-  a = Math<T>::mul(a, a);
-  return Math<T>::reduceAdd(a);
-}
+// Number of warps we create per block of IVFFlatScan
+constexpr int kIVFFlatScanWarps = 4;
 
-template <typename T>
-inline __device__ typename Math<T>::ScalarType ipDistance(T a, T b) {
-  return Math<T>::reduceAdd(Math<T>::mul(a, b));
-}
-
-// For list scanning, even if the input data is `half`, we perform all
-// math in float32, because the code is memory b/w bound, and the
-// added precision for accumulation is useful
-
-/// The class that we use to provide scan specializations
-template <int Dims, bool L2, typename T>
+// Works for any dimension size
+template <typename Codec, typename Metric>
 struct IVFFlatScan {
-};
-
-// Fallback implementation: works for any dimension size
-template <bool L2, typename T>
-struct IVFFlatScan<-1, L2, T> {
   static __device__ void scan(float* query,
+                              bool useResidual,
+                              float* residualBaseSlice,
                               void* vecData,
+                              const Codec& codec,
+                              const Metric& metric,
                               int numVecs,
                               int dim,
                               float* distanceOut) {
-    extern __shared__ float smem[];
-    T* vecs = (T*) vecData;
+    // How many separate loading points are there for the decoder?
+    int limit = utils::divDown(dim, Codec::kDimPerIter);
 
-    for (int vec = 0; vec < numVecs; ++vec) {
+    // Each warp handles a separate chunk of vectors
+    int warpId = threadIdx.x / kWarpSize;
+    // FIXME: why does getLaneId() not work when we write out below!?!?!
+    int laneId = threadIdx.x % kWarpSize; // getLaneId();
+
+    // Divide the set of vectors among the warps
+    int vecsPerWarp = utils::divUp(numVecs, kIVFFlatScanWarps);
+
+    int vecStart = vecsPerWarp * warpId;
+    int vecEnd = min(vecsPerWarp * (warpId + 1), numVecs);
+
+    // Walk the list of vectors for this warp
+    for (int vec = vecStart; vec < vecEnd; ++vec) {
       // Reduce in dist
       float dist = 0.0f;
 
-      for (int d = threadIdx.x; d < dim; d += blockDim.x) {
-        float vecVal = ConvertTo<float>::to(vecs[vec * dim + d]);
-        float queryVal = query[d];
-        float curDist;
+      // Scan the dimensions availabe that have whole units for the decoder,
+      // as the decoder may handle more than one dimension at once (leaving the
+      // remainder to be handled separately)
+      for (int d = laneId; d < limit; d += kWarpSize) {
+        int realDim = d * Codec::kDimPerIter;
+        float vecVal[Codec::kDimPerIter];
 
-        if (L2) {
-          curDist = l2Distance(queryVal, vecVal);
-        } else {
-          curDist = ipDistance(queryVal, vecVal);
+        // Decode the kDimPerIter dimensions
+        codec.decode(vecData, vec, d, vecVal);
+
+#pragma unroll
+        for (int j = 0; j < Codec::kDimPerIter; ++j) {
+          vecVal[j] += useResidual ? residualBaseSlice[realDim + j] : 0.0f;
         }
 
-        dist += curDist;
+#pragma unroll
+        for (int j = 0; j < Codec::kDimPerIter; ++j) {
+          dist += metric.distance(query[realDim + j], vecVal[j]);
+        }
       }
 
-      // Reduce distance within block
-      dist = blockReduceAllSum<float, false, true>(dist, smem);
+      // Handle remainder by a single thread, if any
+      // Not needed if we decode 1 dim per time
+      if (Codec::kDimPerIter > 1) {
+        int realDim = limit * Codec::kDimPerIter;
 
-      if (threadIdx.x == 0) {
+        // Was there any remainder?
+        if (realDim < dim) {
+          // Let the first threads in the block sequentially perform it
+          int remainderDim = realDim + laneId;
+
+          if (remainderDim < dim) {
+            float vecVal =
+              codec.decodePartial(vecData, vec, limit, laneId);
+            vecVal += useResidual ? residualBaseSlice[remainderDim] : 0.0f;
+            dist += metric.distance(query[remainderDim], vecVal);
+          }
+        }
+      }
+
+      // Reduce distance within warp
+      dist = warpReduceAllSum(dist);
+
+      if (laneId == 0) {
         distanceOut[vec] = dist;
       }
     }
   }
 };
 
-// implementation: works for # dims == blockDim.x
-template <bool L2, typename T>
-struct IVFFlatScan<0, L2, T> {
-  static __device__ void scan(float* query,
-                              void* vecData,
-                              int numVecs,
-                              int dim,
-                              float* distanceOut) {
-    extern __shared__ float smem[];
-    T* vecs = (T*) vecData;
-
-    float queryVal = query[threadIdx.x];
-
-    constexpr int kUnroll = 4;
-    int limit = utils::roundDown(numVecs, kUnroll);
-
-    for (int i = 0; i < limit; i += kUnroll) {
-      float vecVal[kUnroll];
-
-#pragma unroll
-      for (int j = 0; j < kUnroll; ++j) {
-        vecVal[j] = ConvertTo<float>::to(vecs[(i + j) * dim + threadIdx.x]);
-      }
-
-#pragma unroll
-      for (int j = 0; j < kUnroll; ++j) {
-        if (L2) {
-          vecVal[j] = l2Distance(queryVal, vecVal[j]);
-        } else {
-          vecVal[j] = ipDistance(queryVal, vecVal[j]);
-        }
-      }
-
-      blockReduceAllSum<kUnroll, float, false, true>(vecVal, smem);
-
-      if (threadIdx.x == 0) {
-#pragma unroll
-        for (int j = 0; j < kUnroll; ++j) {
-          distanceOut[i + j] = vecVal[j];
-        }
-      }
-    }
-
-    // Handle remainder
-    for (int i = limit; i < numVecs; ++i) {
-      float vecVal = ConvertTo<float>::to(vecs[i * dim + threadIdx.x]);
-
-      if (L2) {
-        vecVal = l2Distance(queryVal, vecVal);
-      } else {
-        vecVal = ipDistance(queryVal, vecVal);
-      }
-
-      vecVal = blockReduceAllSum<float, false, true>(vecVal, smem);
-
-      if (threadIdx.x == 0) {
-        distanceOut[i] = vecVal;
-      }
-    }
-  }
-};
-
-template <int Dims, bool L2, typename T>
+template <typename Codec, typename Metric>
 __global__ void
 ivfFlatScan(Tensor<float, 2, true> queries,
+            bool useResidual,
+            Tensor<float, 3, true> residualBase,
             Tensor<int, 2, true> listIds,
             void** allListData,
             int* listLengths,
+            Codec codec,
+            Metric metric,
             Tensor<int, 2, true> prefixSumOffsets,
             Tensor<float, 1, true> distance) {
+  extern __shared__ float smem[];
+
   auto queryId = blockIdx.y;
   auto probeId = blockIdx.x;
 
@@ -172,7 +141,19 @@ ivfFlatScan(Tensor<float, 2, true> queries,
   auto dim = queries.getSize(1);
   auto distanceOut = distance[outBase].data();
 
-  IVFFlatScan<Dims, L2, T>::scan(query, vecs, numVecs, dim, distanceOut);
+  auto residualBaseSlice = residualBase[queryId][probeId].data();
+
+  codec.setSmem(smem, dim);
+
+  IVFFlatScan<Codec, Metric>::scan(query,
+                                   useResidual,
+                                   residualBaseSlice,
+                                   vecs,
+                                   codec,
+                                   metric,
+                                   numVecs,
+                                   dim,
+                                   distanceOut);
 }
 
 void
@@ -188,90 +169,148 @@ runIVFFlatScanTile(Tensor<float, 2, true>& queries,
                    Tensor<float, 3, true>& heapDistances,
                    Tensor<int, 3, true>& heapIndices,
                    int k,
-                   bool l2Distance,
-                   bool useFloat16,
+                   faiss::MetricType metricType,
+                   bool useResidual,
+                   Tensor<float, 3, true>& residualBase,
+                   GpuScalarQuantizer* scalarQ,
                    Tensor<float, 2, true>& outDistances,
                    Tensor<long, 2, true>& outIndices,
                    cudaStream_t stream) {
+  int dim = queries.getSize(1);
+
+  // Check the amount of shared memory per block available based on our type is
+  // sufficient
+  if (scalarQ &&
+      (scalarQ->qtype == ScalarQuantizer::QuantizerType::QT_8bit ||
+       scalarQ->qtype == ScalarQuantizer::QuantizerType::QT_4bit)) {
+    int maxDim = getMaxSharedMemPerBlockCurrentDevice() /
+      (sizeof(float) * 2);
+
+    FAISS_THROW_IF_NOT_FMT(dim < maxDim,
+                           "Insufficient shared memory available on the GPU "
+                           "for QT_8bit or QT_4bit with %d dimensions; "
+                           "maximum dimensions possible is %d", dim, maxDim);
+  }
+
+
   // Calculate offset lengths, so we know where to write out
   // intermediate results
   runCalcListOffsets(listIds, listLengths, prefixSumOffsets, thrustMem, stream);
 
-  // Calculate distances for vectors within our chunk of lists
-  constexpr int kMaxThreadsIVF = 512;
+  auto grid = dim3(listIds.getSize(1), listIds.getSize(0));
+  auto block = dim3(kWarpSize * kIVFFlatScanWarps);
 
-  // FIXME: if `half` and # dims is multiple of 2, halve the
-  // threadblock size
-
-  int dim = queries.getSize(1);
-  int numThreads = std::min(dim, kMaxThreadsIVF);
-
-  auto grid = dim3(listIds.getSize(1),
-                   listIds.getSize(0));
-  auto block = dim3(numThreads);
-  // All exact dim kernels are unrolled by 4, hence the `4`
-  auto smem = sizeof(float) * utils::divUp(numThreads, kWarpSize) * 4;
-
-#define RUN_IVF_FLAT(DIMS, L2, T)                                       \
+#define RUN_IVF_FLAT                                                    \
   do {                                                                  \
-    ivfFlatScan<DIMS, L2, T>                                            \
-      <<<grid, block, smem, stream>>>(                                  \
+    ivfFlatScan                                                         \
+      <<<grid, block, codec.getSmemSize(dim), stream>>>(                \
         queries,                                                        \
+        useResidual,                                                    \
+        residualBase,                                                   \
         listIds,                                                        \
         listData.data().get(),                                          \
         listLengths.data().get(),                                       \
+        codec,                                                          \
+        metric,                                                         \
         prefixSumOffsets,                                               \
         allDistances);                                                  \
   } while (0)
 
-#ifdef FAISS_USE_FLOAT16
+#define HANDLE_METRICS                                  \
+    do {                                                \
+      if (metricType == MetricType::METRIC_L2) {        \
+        L2Metric metric; RUN_IVF_FLAT;                  \
+      } else {                                          \
+        IPMetric metric; RUN_IVF_FLAT;                  \
+      }                                                 \
+    } while (0)
 
-#define HANDLE_DIM_CASE(DIMS)                   \
-  do {                                          \
-    if (l2Distance) {                           \
-      if (useFloat16) {                         \
-        RUN_IVF_FLAT(DIMS, true, half);         \
-      } else {                                  \
-        RUN_IVF_FLAT(DIMS, true, float);        \
-      }                                         \
-    } else {                                    \
-      if (useFloat16) {                         \
-        RUN_IVF_FLAT(DIMS, false, half);        \
-      } else {                                  \
-        RUN_IVF_FLAT(DIMS, false, float);       \
-      }                                         \
-    }                                           \
-  } while (0)
-#else
-
-#define HANDLE_DIM_CASE(DIMS)                   \
-  do {                                          \
-    if (l2Distance) {                           \
-      if (useFloat16) {                         \
-        FAISS_ASSERT(false);                    \
-      } else {                                  \
-        RUN_IVF_FLAT(DIMS, true, float);        \
-      }                                         \
-    } else {                                    \
-      if (useFloat16) {                         \
-        FAISS_ASSERT(false);                    \
-      } else {                                  \
-        RUN_IVF_FLAT(DIMS, false, float);       \
-      }                                         \
-    }                                           \
-  } while (0)
-
-#endif // FAISS_USE_FLOAT16
-
-  if (dim <= kMaxThreadsIVF) {
-    HANDLE_DIM_CASE(0);
+  if (!scalarQ) {
+    CodecFloat codec(dim * sizeof(float));
+    HANDLE_METRICS;
   } else {
-    HANDLE_DIM_CASE(-1);
+    switch (scalarQ->qtype) {
+      case ScalarQuantizer::QuantizerType::QT_8bit:
+      {
+        // FIXME: investigate 32 bit load perf issues
+//        if (dim % 4 == 0) {
+        if (false) {
+          Codec<ScalarQuantizer::QuantizerType::QT_8bit, 4>
+            codec(scalarQ->code_size,
+                  scalarQ->gpuTrained.data(),
+                  scalarQ->gpuTrained.data() + dim);
+          HANDLE_METRICS;
+        } else {
+          Codec<ScalarQuantizer::QuantizerType::QT_8bit, 1>
+            codec(scalarQ->code_size,
+                  scalarQ->gpuTrained.data(),
+                  scalarQ->gpuTrained.data() + dim);
+          HANDLE_METRICS;
+        }
+      }
+      break;
+      case ScalarQuantizer::QuantizerType::QT_8bit_uniform:
+      {
+        // FIXME: investigate 32 bit load perf issues
+        if (false) {
+//        if (dim % 4 == 0) {
+          Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, 4>
+            codec(scalarQ->code_size, scalarQ->trained[0], scalarQ->trained[1]);
+          HANDLE_METRICS;
+        } else {
+          Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, 1>
+            codec(scalarQ->code_size, scalarQ->trained[0], scalarQ->trained[1]);
+          HANDLE_METRICS;
+        }
+      }
+      break;
+      case ScalarQuantizer::QuantizerType::QT_fp16:
+      {
+        if (false) {
+          // FIXME: investigate 32 bit load perf issues
+//        if (dim % 2 == 0) {
+          Codec<ScalarQuantizer::QuantizerType::QT_fp16, 2>
+            codec(scalarQ->code_size);
+          HANDLE_METRICS;
+        } else {
+          Codec<ScalarQuantizer::QuantizerType::QT_fp16, 1>
+            codec(scalarQ->code_size);
+          HANDLE_METRICS;
+        }
+      }
+      break;
+      case ScalarQuantizer::QuantizerType::QT_8bit_direct:
+      {
+        Codec<ScalarQuantizer::QuantizerType::QT_8bit_direct, 1>
+          codec(scalarQ->code_size);
+        HANDLE_METRICS;
+      }
+      break;
+      case ScalarQuantizer::QuantizerType::QT_4bit:
+      {
+        Codec<ScalarQuantizer::QuantizerType::QT_4bit, 1>
+          codec(scalarQ->code_size,
+                scalarQ->gpuTrained.data(),
+                scalarQ->gpuTrained.data() + dim);
+        HANDLE_METRICS;
+      }
+      break;
+      case ScalarQuantizer::QuantizerType::QT_4bit_uniform:
+      {
+        Codec<ScalarQuantizer::QuantizerType::QT_4bit_uniform, 1>
+          codec(scalarQ->code_size, scalarQ->trained[0], scalarQ->trained[1]);
+        HANDLE_METRICS;
+      }
+      break;
+      default:
+        // unimplemented, should be handled at a higher level
+        FAISS_ASSERT(false);
+    }
   }
 
   CUDA_TEST_ERROR();
 
-#undef HANDLE_DIM_CASE
+#undef HANDLE_METRICS
 #undef RUN_IVF_FLAT
 
   // k-select the output in chunks, to increase parallelism
@@ -279,7 +318,7 @@ runIVFFlatScanTile(Tensor<float, 2, true>& queries,
                       allDistances,
                       listIds.getSize(1),
                       k,
-                      !l2Distance, // L2 distance chooses smallest
+                      metricToSortDirection(metricType),
                       heapDistances,
                       heapIndices,
                       stream);
@@ -295,7 +334,7 @@ runIVFFlatScanTile(Tensor<float, 2, true>& queries,
                       prefixSumOffsets,
                       listIds,
                       k,
-                      !l2Distance, // L2 distance chooses smallest
+                      metricToSortDirection(metricType),
                       outDistances,
                       outIndices,
                       stream);
@@ -310,8 +349,10 @@ runIVFFlatScan(Tensor<float, 2, true>& queries,
                thrust::device_vector<int>& listLengths,
                int maxListLength,
                int k,
-               bool l2Distance,
-               bool useFloat16,
+               faiss::MetricType metric,
+               bool useResidual,
+               Tensor<float, 3, true>& residualBase,
+               GpuScalarQuantizer* scalarQ,
                // output
                Tensor<float, 2, true>& outDistances,
                // output
@@ -432,6 +473,8 @@ runIVFFlatScan(Tensor<float, 2, true>& queries,
       listIds.narrowOutermost(query, numQueriesInTile);
     auto queryView =
       queries.narrowOutermost(query, numQueriesInTile);
+    auto residualBaseView =
+      residualBase.narrowOutermost(query, numQueriesInTile);
 
     auto heapDistancesView =
       heapDistances[curStream]->narrowOutermost(0, numQueriesInTile);
@@ -455,8 +498,10 @@ runIVFFlatScan(Tensor<float, 2, true>& queries,
                        heapDistancesView,
                        heapIndicesView,
                        k,
-                       l2Distance,
-                       useFloat16,
+                       metric,
+                       useResidual,
+                       residualBaseView,
+                       scalarQ,
                        outDistanceView,
                        outIndicesView,
                        streams[curStream]);

@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "IVFBase.cuh"
-#include "../utils/Float16.cuh"
+#include <faiss/gpu/impl/IVFBase.cuh>
+#include <faiss/gpu/utils/Float16.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -130,10 +130,8 @@ class IVFPQ : public IVFBase {
   /// (centroid id)(sub q)(code id)
   DeviceTensor<float, 3, true> precomputedCode_;
 
-#ifdef FAISS_USE_FLOAT16
   /// Precomputed term 2 in half form
   DeviceTensor<half, 3, true> precomputedCodeHalf_;
-#endif
 };
 
 } } // namespace

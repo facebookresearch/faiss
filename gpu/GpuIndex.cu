@@ -6,12 +6,13 @@
  */
 
 
-#include "GpuIndex.h"
-#include "../FaissAssert.h"
-#include "GpuResources.h"
-#include "utils/CopyUtils.cuh"
-#include "utils/DeviceUtils.h"
-#include "utils/StaticUtils.h"
+#include <faiss/gpu/GpuIndex.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/Metrics.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/StaticUtils.h>
 #include <limits>
 #include <memory>
 
@@ -60,6 +61,9 @@ GpuIndex::GpuIndex(GpuResources* resources,
   FAISS_THROW_IF_NOT_MSG(memorySpace_ == MemorySpace::Device,
                      "Must compile with CUDA 8+ for Unified Memory support");
 #endif
+
+  FAISS_THROW_IF_NOT_MSG(isMetricSupported(metric),
+                         "Unsupported metric type on GPU");
 
   FAISS_ASSERT(resources_);
   resources_->initializeForDevice(device_);
@@ -437,6 +441,21 @@ GpuIndex::searchFromCpuPaged_(int n,
       cur1BufIndex = (cur1BufIndex == 0) ? 1 : 0;
     }
   }
+}
+
+void
+GpuIndex::compute_residual(const float* x,
+                           float* residual,
+                           Index::idx_t key) const {
+  FAISS_THROW_MSG("compute_residual not implemented for this type of index");
+}
+
+void
+GpuIndex::compute_residual_n(Index::idx_t n,
+                             const float* xs,
+                             float* residuals,
+                             const Index::idx_t* keys) const {
+  FAISS_THROW_MSG("compute_residual_n not implemented for this type of index");
 }
 
 } } // namespace

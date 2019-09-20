@@ -9,8 +9,7 @@
 #pragma once
 
 #include <cuda.h>
-#include "DeviceDefs.cuh"
-#include "Float16.cuh"
+#include <faiss/gpu/utils/DeviceDefs.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -92,8 +91,7 @@ inline __device__ T* shfl_xor(T* const val,
   return (T*) shfl_xor(v, laneMask, width);
 }
 
-#ifdef FAISS_USE_FLOAT16
-// CUDA 9.0 has half shuffle
+// CUDA 9.0+ has half shuffle
 #if CUDA_VERSION < 9000
 inline __device__ half shfl(half v,
                             int srcLane, int width = kWarpSize) {
@@ -115,6 +113,5 @@ inline __device__ half shfl_xor(half v,
   return h;
 }
 #endif // CUDA_VERSION
-#endif // FAISS_USE_FLOAT16
 
 } } // namespace

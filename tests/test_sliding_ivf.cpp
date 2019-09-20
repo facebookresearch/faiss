@@ -15,7 +15,8 @@
 
 #include <faiss/IndexIVF.h>
 #include <faiss/AutoTune.h>
-#include <faiss/index_io.h>
+#include <faiss/index_factory.h>
+#include <faiss/clone_index.h>
 #include <faiss/IVFlib.h>
 
 using namespace faiss;

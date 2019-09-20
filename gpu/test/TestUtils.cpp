@@ -6,8 +6,8 @@
  */
 
 
-#include "../test/TestUtils.h"
-#include "../../utils.h"
+#include <faiss/gpu/test/TestUtils.h>
+#include <faiss/utils/random.h>
 #include <cmath>
 #include <gtest/gtest.h>
 #include <set>
@@ -181,39 +181,46 @@ void compareLists(const float* refDist,
       auto t = lookup(testInd, query, result, dim1, dim2);
 
       // All indices reported within a query should be unique; this is
-      // a serious error if is otherwise the case
-      bool uniqueIndex = uniqueIndices.count(t) == 0;
-      if (assertOnErr) {
-        EXPECT_TRUE(uniqueIndex) << configMsg
-                                 << " " << query
-                                 << " " << result
-                                 << " " << t;
-      }
-
-      if (!uniqueIndex) {
-        ++nonUniqueIndices;
+      // a serious error if is otherwise the case.
+      // If -1 is reported (no result due to IVF partitioning or not enough
+      // entries in the index), then duplicates are allowed, but both the
+      // reference and test must have -1 in the same position.
+      if (t == -1) {
+        EXPECT_EQ(lookup(refInd, query, result, dim1, dim2), t);
       } else {
-        uniqueIndices.insert(t);
-      }
-
-      auto it = indices.find(t);
-      if (it != indices.end()) {
-        int diff = std::abs(result - it->second);
-        diffs.push_back(diff);
-
-        if (diff == 1) {
-          ++diff1;
-          maxDiff = std::max(diff, maxDiff);
-        } else if (diff > 1) {
-          ++diffN;
-          maxDiff = std::max(diff, maxDiff);
+        bool uniqueIndex = uniqueIndices.count(t) == 0;
+        if (assertOnErr) {
+          EXPECT_TRUE(uniqueIndex) << configMsg
+                                   << " " << query
+                                   << " " << result
+                                   << " " << t;
         }
 
-        avgDiff += (double) diff;
-      } else {
-        ++diffInf;
-        diffs.push_back(-1);
-        // don't count this for maxDiff
+        if (!uniqueIndex) {
+          ++nonUniqueIndices;
+        } else {
+          uniqueIndices.insert(t);
+        }
+
+        auto it = indices.find(t);
+        if (it != indices.end()) {
+          int diff = std::abs(result - it->second);
+          diffs.push_back(diff);
+
+          if (diff == 1) {
+            ++diff1;
+            maxDiff = std::max(diff, maxDiff);
+          } else if (diff > 1) {
+            ++diffN;
+            maxDiff = std::max(diff, maxDiff);
+          }
+
+          avgDiff += (double) diff;
+        } else {
+          ++diffInf;
+          diffs.push_back(-1);
+          // don't count this for maxDiff
+        }
       }
 
       auto refD = lookup(refDist, query, result, dim1, dim2);

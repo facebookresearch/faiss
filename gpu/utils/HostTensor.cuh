@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "Tensor.cuh"
+#include <faiss/gpu/utils/Tensor.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -27,6 +27,13 @@ class HostTensor : public Tensor<T, Dim, InnerContig, IndexT, PtrTraits> {
 
   /// Destructor
   __host__ ~HostTensor();
+
+  /// Move constructor
+  __host__ HostTensor(HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t);
+
+  /// Move assignment
+  __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>&
+  operator=(HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t);
 
   /// Constructs a tensor of the given size, allocating memory for it
   /// locally
@@ -81,4 +88,4 @@ class HostTensor : public Tensor<T, Dim, InnerContig, IndexT, PtrTraits> {
 
 } } // namespace
 
-#include "HostTensor-inl.cuh"
+#include <faiss/gpu/utils/HostTensor-inl.cuh>

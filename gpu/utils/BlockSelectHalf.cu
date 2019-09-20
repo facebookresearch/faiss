@@ -5,12 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "blockselect/BlockSelectImpl.cuh"
-#include "DeviceDefs.cuh"
+#include <faiss/gpu/utils/blockselect/BlockSelectImpl.cuh>
+#include <faiss/gpu/utils/DeviceDefs.cuh>
 
 namespace faiss { namespace gpu {
-
-#ifdef FAISS_USE_FLOAT16
 
 // warp Q to thread Q:
 // 1, 1
@@ -142,7 +140,5 @@ void runBlockSelectPair(Tensor<half, 2, true>& inK,
     }
   }
 }
-
-#endif
 
 } } // namespace

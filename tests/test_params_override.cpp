@@ -15,6 +15,7 @@
 
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexBinaryIVF.h>
+#include <faiss/index_factory.h>
 #include <faiss/AutoTune.h>
 #include <faiss/IVFlib.h>
 

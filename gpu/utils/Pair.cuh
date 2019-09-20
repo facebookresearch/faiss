@@ -9,8 +9,8 @@
 #pragma once
 
 #include <cuda.h>
-#include "MathOperators.cuh"
-#include "WarpShuffles.cuh"
+#include <faiss/gpu/utils/MathOperators.cuh>
+#include <faiss/gpu/utils/WarpShuffles.cuh>
 
 namespace faiss { namespace gpu {
 

@@ -6,17 +6,14 @@
  */
 
 
-#include "GpuDistance.h"
-#include "../FaissAssert.h"
-#include "GpuResources.h"
-#include "impl/Distance.cuh"
-#include "utils/ConversionOperators.cuh"
-#include "utils/CopyUtils.cuh"
-#include "utils/DeviceUtils.h"
-#include "utils/DeviceTensor.cuh"
-
-#include <thrust/execution_policy.h>
-#include <thrust/transform.h>
+#include <faiss/gpu/GpuDistance.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/Distance.cuh>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -99,11 +96,9 @@ void bruteForceKnn(GpuResources* resources,
                                                       {numQueries, k});
 
   // Convert int to idx_t
-  thrust::transform(thrust::cuda::par.on(stream),
-                    tOutIntIndices.data(),
-                    tOutIntIndices.end(),
-                    tOutIndices.data(),
-                    IntToIdxType());
+  convertTensor<int, faiss::Index::idx_t, 2>(stream,
+                                             tOutIntIndices,
+                                             tOutIndices);
 
   // Copy back if necessary
   fromDevice<float, 2>(tOutDistances, outDistances, stream);

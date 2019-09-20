@@ -6,9 +6,9 @@
  */
 
 
-#include "DeviceMemory.h"
-#include "DeviceUtils.h"
-#include "../../FaissAssert.h"
+#include <faiss/gpu/utils/DeviceMemory.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/impl/FaissAssert.h>
 
 namespace faiss { namespace gpu {
 

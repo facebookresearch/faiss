@@ -9,8 +9,7 @@
 #pragma once
 
 #include <cublas_v2.h>
-#include "Float16.cuh"
-#include "Tensor.cuh"
+#include <faiss/gpu/utils/Tensor.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -27,7 +26,6 @@ void runMatrixMult(Tensor<float, 2, true>& c, bool transC,
                    cublasHandle_t handle,
                    cudaStream_t stream);
 
-#ifdef FAISS_USE_FLOAT16
 /// C = alpha * A * B + beta * C
 /// Expects row major layout, not fortran/blas column major!
 void runMatrixMult(Tensor<half, 2, true>& c, bool transC,
@@ -38,7 +36,6 @@ void runMatrixMult(Tensor<half, 2, true>& c, bool transC,
                    bool useHgemm,
                    cublasHandle_t handle,
                    cudaStream_t stream);
-#endif
 
 /// C_i = alpha * A_i * B_i + beta * C_i
 /// where `i` is the outermost dimension, via iterated gemm

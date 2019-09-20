@@ -13,7 +13,7 @@
 
 #include <vector>
 
-#include "IndexIVF.h"
+#include <faiss/IndexIVF.h>
 
 
 namespace faiss {
@@ -56,7 +56,8 @@ struct IndexIVFSpectralHash: IndexIVF {
 
     void encode_vectors(idx_t n, const float* x,
                         const idx_t *list_nos,
-                        uint8_t * codes) const override;
+                        uint8_t * codes,
+                        bool include_listnos = false) const override;
 
     InvertedListScanner *get_InvertedListScanner (bool store_pairs)
         const override;

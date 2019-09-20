@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "../utils/DeviceTensor.cuh"
-#include "../utils/Float16.cuh"
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/Float16.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -43,7 +43,6 @@ void runIPDistance(GpuResources* resources,
                    Tensor<float, 2, true>& outDistances,
                    Tensor<int, 2, true>& outIndices);
 
-#ifdef FAISS_USE_FLOAT16
 void runIPDistance(GpuResources* resources,
                    Tensor<half, 2, true>& vectors,
                    bool vectorsRowMajor,
@@ -65,6 +64,5 @@ void runL2Distance(GpuResources* resources,
                    Tensor<int, 2, true>& outIndices,
                    bool useHgemm,
                    bool ignoreOutDistances = false);
-#endif
 
 } } // namespace

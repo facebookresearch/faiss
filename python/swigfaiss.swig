@@ -68,43 +68,54 @@ extern "C" {
 #endif
 
 
-#include "IndexFlat.h"
-#include "VectorTransform.h"
-#include "IndexLSH.h"
-#include "IndexPQ.h"
-#include "IndexIVF.h"
-#include "IndexIVFPQ.h"
-#include "IndexIVFFlat.h"
-#include "IndexScalarQuantizer.h"
-#include "IndexIVFSpectralHash.h"
-#include "ThreadedIndex.h"
-#include "IndexShards.h"
-#include "IndexReplicas.h"
-#include "HNSW.h"
-#include "IndexHNSW.h"
-#include "MetaIndexes.h"
-#include "FaissAssert.h"
+#include <faiss/IndexFlat.h>
+#include <faiss/VectorTransform.h>
+#include <faiss/IndexPreTransform.h>
+#include <faiss/IndexLSH.h>
+#include <faiss/IndexPQ.h>
+#include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/Index2Layer.h>
+#include <faiss/IndexIVFPQR.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexScalarQuantizer.h>
+#include <faiss/IndexIVFSpectralHash.h>
+#include <faiss/impl/ThreadedIndex.h>
+#include <faiss/IndexShards.h>
+#include <faiss/IndexReplicas.h>
+#include <faiss/impl/HNSW.h>
+#include <faiss/IndexHNSW.h>
+#include <faiss/MetaIndexes.h>
+#include <faiss/impl/FaissAssert.h>
 
-#include "IndexBinaryFlat.h"
-#include "IndexBinaryIVF.h"
-#include "IndexBinaryFromFloat.h"
-#include "IndexBinaryHNSW.h"
+#include <faiss/IndexBinaryFlat.h>
+#include <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexBinaryFromFloat.h>
+#include <faiss/IndexBinaryHNSW.h>
 
-#include "index_io.h"
+#include <faiss/impl/io.h>
+#include <faiss/index_io.h>
+#include <faiss/clone_index.h>
 
-#include "IVFlib.h"
-#include "utils.h"
-#include "distances.h"
-#include "Heap.h"
-#include "AuxIndexStructures.h"
-#include "OnDiskInvertedLists.h"
+#include <faiss/IVFlib.h>
+#include <faiss/utils/utils.h>
+#include <faiss/utils/distances.h>
+#include <faiss/utils/extra_distances.h>
+#include <faiss/utils/random.h>
+#include <faiss/utils/Heap.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/OnDiskInvertedLists.h>
 
-#include "Clustering.h"
+#include <faiss/Clustering.h>
 
-#include "hamming.h"
+#include <faiss/utils/hamming.h>
 
-#include "AutoTune.h"
+#include <faiss/AutoTune.h>
+#include <faiss/MatrixStats.h>
+#include <faiss/index_factory.h>
 
+#include <faiss/impl/lattice_Zn.h>
+#include <faiss/IndexLattice.h>
 
 
 %}
@@ -188,12 +199,13 @@ namespace std {
 %template(Uint64Vector) std::vector<unsigned long>;
 %template(LongVector) std::vector<long>;
 %template(IntVector) std::vector<int>;
-%template(VectorTransformVector) std::vector<faiss::VectorTransform*>;
-%template(OperatingPointVector) std::vector<faiss::OperatingPoint>;
-%template(InvertedListsPtrVector) std::vector<faiss::InvertedLists*>;
 %template(FloatVectorVector) std::vector<std::vector<float> >;
 %template(ByteVectorVector) std::vector<std::vector<unsigned char> >;
 %template(LongVectorVector) std::vector<std::vector<long> >;
+%template(VectorTransformVector) std::vector<faiss::VectorTransform*>;
+%template(OperatingPointVector) std::vector<faiss::OperatingPoint>;
+%template(InvertedListsPtrVector) std::vector<faiss::InvertedLists*>;
+%template(RepeatVector) std::vector<faiss::Repeat>;
 
 #ifdef GPU_WRAPPER
 %template(GpuResourcesVector) std::vector<faiss::gpu::GpuResources*>;
@@ -211,31 +223,51 @@ namespace std {
 
 %ignore *::cmp;
 
-%include "Heap.h"
-%include "hamming.h"
+%include  <faiss/utils/Heap.h>
+%include  <faiss/utils/hamming.h>
 
 int get_num_gpus();
+void gpu_profiler_start();
+void gpu_profiler_stop();
+void gpu_sync_all_devices();
 
 #ifdef GPU_WRAPPER
 
 %{
 
-#include "gpu/StandardGpuResources.h"
-#include "gpu/GpuIndicesOptions.h"
-#include "gpu/GpuClonerOptions.h"
-#include "gpu/utils/MemorySpace.h"
-#include "gpu/GpuIndex.h"
-#include "gpu/GpuIndexFlat.h"
-#include "gpu/GpuIndexIVF.h"
-#include "gpu/GpuIndexIVFPQ.h"
-#include "gpu/GpuIndexIVFFlat.h"
-#include "gpu/GpuIndexBinaryFlat.h"
-#include "gpu/GpuAutoTune.h"
-#include "gpu/GpuDistance.h"
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/GpuIndicesOptions.h>
+#include <faiss/gpu/GpuClonerOptions.h>
+#include <faiss/gpu/utils/MemorySpace.h>
+#include <faiss/gpu/GpuIndex.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndexIVF.h>
+#include <faiss/gpu/GpuIndexIVFPQ.h>
+#include <faiss/gpu/GpuIndexIVFFlat.h>
+#include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
+#include <faiss/gpu/GpuIndexBinaryFlat.h>
+#include <faiss/gpu/GpuAutoTune.h>
+#include <faiss/gpu/GpuCloner.h>
+#include <faiss/gpu/GpuDistance.h>
 
 int get_num_gpus()
 {
     return faiss::gpu::getNumDevices();
+}
+
+void gpu_profiler_start()
+{
+    return faiss::gpu::profilerStart();
+}
+
+void gpu_profiler_stop()
+{
+    return faiss::gpu::profilerStop();
+}
+
+void gpu_sync_all_devices()
+{
+    return faiss::gpu::synchronizeAllDevices();
 }
 
 %}
@@ -244,8 +276,8 @@ int get_num_gpus()
 %ignore *::getMemoryManager;
 %ignore *::getMemoryManagerCurrentDevice;
 
-%include "gpu/GpuResources.h"
-%include "gpu/StandardGpuResources.h"
+%include  <faiss/gpu/GpuResources.h>
+%include  <faiss/gpu/StandardGpuResources.h>
 
 #else
 
@@ -254,70 +286,91 @@ int get_num_gpus()
 {
     return 0;
 }
+
+void gpu_profiler_start()
+{
+}
+
+void gpu_profiler_stop()
+{
+}
+
+void gpu_sync_all_devices()
+{
+}
 %}
 
 
 #endif
 
+// order matters because includes are not recursive
 
-%include "utils.h"
+%include  <faiss/utils/utils.h>
+%include  <faiss/utils/distances.h>
+%include  <faiss/utils/random.h>
 
-%include "Index.h"
-%include "Clustering.h"
+%include  <faiss/Index.h>
+%include  <faiss/Clustering.h>
 
-%include "distances.h"
+%include  <faiss/utils/extra_distances.h>
 
 %ignore faiss::ProductQuantizer::get_centroids(size_t,size_t) const;
 
-%include "ProductQuantizer.h"
+%include  <faiss/impl/ProductQuantizer.h>
 
-%include "VectorTransform.h"
-%include "IndexFlat.h"
-%include "IndexLSH.h"
-%include "PolysemousTraining.h"
-%include "IndexPQ.h"
-%include "InvertedLists.h"
+%include  <faiss/VectorTransform.h>
+%include  <faiss/IndexPreTransform.h>
+%include  <faiss/IndexFlat.h>
+%include  <faiss/IndexLSH.h>
+%include  <faiss/impl/PolysemousTraining.h>
+%include  <faiss/IndexPQ.h>
+%include  <faiss/InvertedLists.h>
 %ignore InvertedListScanner;
 %ignore BinaryInvertedListScanner;
-%include "IndexIVF.h"
+%include  <faiss/IndexIVF.h>
 // NOTE(hoss): SWIG (wrongly) believes the overloaded const version shadows the
 //   non-const one.
 %warnfilter(509) extract_index_ivf;
-%include "IVFlib.h"
-%include "IndexScalarQuantizer.h"
-%include "IndexIVFSpectralHash.h"
-%include "HNSW.h"
-%include "IndexHNSW.h"
-%include "IndexIVFFlat.h"
-%include "OnDiskInvertedLists.h"
+%include  <faiss/IVFlib.h>
+%include  <faiss/impl/ScalarQuantizer.h>
+%include  <faiss/IndexScalarQuantizer.h>
+%include  <faiss/IndexIVFSpectralHash.h>
+%include  <faiss/impl/HNSW.h>
+%include  <faiss/IndexHNSW.h>
+%include  <faiss/IndexIVFFlat.h>
+%include  <faiss/OnDiskInvertedLists.h>
+
+%include  <faiss/impl/lattice_Zn.h>
+%include  <faiss/IndexLattice.h>
 
 %ignore faiss::IndexIVFPQ::alloc_type;
-%include "IndexIVFPQ.h"
+%include  <faiss/IndexIVFPQ.h>
+%include  <faiss/IndexIVFPQR.h>
+%include  <faiss/Index2Layer.h>
 
-%include "IndexBinary.h"
-%include "IndexBinaryFlat.h"
-%include "IndexBinaryIVF.h"
-%include "IndexBinaryFromFloat.h"
-%include "IndexBinaryHNSW.h"
+%include  <faiss/IndexBinary.h>
+%include  <faiss/IndexBinaryFlat.h>
+%include  <faiss/IndexBinaryIVF.h>
+%include  <faiss/IndexBinaryFromFloat.h>
+%include  <faiss/IndexBinaryHNSW.h>
 
 
 
  // %ignore faiss::IndexReplicas::at(int) const;
 
-%include "ThreadedIndex.h"
+%include  <faiss/impl/ThreadedIndex.h>
 %template(ThreadedIndexBase) faiss::ThreadedIndex<faiss::Index>;
 %template(ThreadedIndexBaseBinary) faiss::ThreadedIndex<faiss::IndexBinary>;
 
-%include "IndexShards.h"
+%include  <faiss/IndexShards.h>
 %template(IndexShards) faiss::IndexShardsTemplate<faiss::Index>;
 %template(IndexBinaryShards) faiss::IndexShardsTemplate<faiss::IndexBinary>;
 
-%include "IndexReplicas.h"
+%include  <faiss/IndexReplicas.h>
 %template(IndexReplicas) faiss::IndexReplicasTemplate<faiss::Index>;
 %template(IndexBinaryReplicas) faiss::IndexReplicasTemplate<faiss::IndexBinary>;
 
-
-%include "MetaIndexes.h"
+%include  <faiss/MetaIndexes.h>
 %template(IndexIDMap) faiss::IndexIDMapTemplate<faiss::Index>;
 %template(IndexBinaryIDMap) faiss::IndexIDMapTemplate<faiss::IndexBinary>;
 %template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
@@ -328,16 +381,17 @@ int get_num_gpus()
 // quiet SWIG warnings
 %ignore faiss::gpu::GpuIndexIVF::GpuIndexIVF;
 
-%include "gpu/GpuIndicesOptions.h"
-%include "gpu/GpuClonerOptions.h"
-%include "gpu/utils/MemorySpace.h"
-%include "gpu/GpuIndex.h"
-%include "gpu/GpuIndexFlat.h"
-%include "gpu/GpuIndexIVF.h"
-%include "gpu/GpuIndexIVFPQ.h"
-%include "gpu/GpuIndexIVFFlat.h"
-%include "gpu/GpuIndexBinaryFlat.h"
-%include "gpu/GpuDistance.h"
+%include  <faiss/gpu/GpuIndicesOptions.h>
+%include  <faiss/gpu/GpuClonerOptions.h>
+%include  <faiss/gpu/utils/MemorySpace.h>
+%include  <faiss/gpu/GpuIndex.h>
+%include  <faiss/gpu/GpuIndexFlat.h>
+%include  <faiss/gpu/GpuIndexIVF.h>
+%include  <faiss/gpu/GpuIndexIVFPQ.h>
+%include  <faiss/gpu/GpuIndexIVFFlat.h>
+%include  <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
+%include  <faiss/gpu/GpuIndexBinaryFlat.h>
+%include  <faiss/gpu/GpuDistance.h>
 
 #ifdef SWIGLUA
 
@@ -511,6 +565,7 @@ struct AsyncIndexSearchC {
     DOWNCAST ( IndexPQ )
     DOWNCAST ( IndexScalarQuantizer )
     DOWNCAST ( IndexLSH )
+    DOWNCAST ( IndexLattice )
     DOWNCAST ( IndexPreTransform )
     DOWNCAST ( MultiIndexQuantizer )
     DOWNCAST ( IndexHNSWFlat )
@@ -521,6 +576,7 @@ struct AsyncIndexSearchC {
 #ifdef GPU_WRAPPER
     DOWNCAST_GPU ( GpuIndexIVFPQ )
     DOWNCAST_GPU ( GpuIndexIVFFlat )
+    DOWNCAST_GPU ( GpuIndexIVFScalarQuantizer )
     DOWNCAST_GPU ( GpuIndexFlat )
 #endif
     // default for non-recognized classes
@@ -619,22 +675,27 @@ faiss::InvertedLists * downcast_InvertedLists (faiss::InvertedLists *il)
 }
 %}
 
-
-%include "index_io.h"
+%include  <faiss/impl/io.h>
+%include  <faiss/index_io.h>
+%include  <faiss/clone_index.h>
 
 %newobject index_factory;
 %newobject index_binary_factory;
 
-%include "AutoTune.h"
+%include  <faiss/AutoTune.h>
+%include  <faiss/index_factory.h>
+%include  <faiss/MatrixStats.h>
 
 
 #ifdef GPU_WRAPPER
+
+%include  <faiss/gpu/GpuAutoTune.h>
 
 %newobject index_gpu_to_cpu;
 %newobject index_cpu_to_gpu;
 %newobject index_cpu_to_gpu_multiple;
 
-%include "gpu/GpuAutoTune.h"
+%include  <faiss/gpu/GpuCloner.h>
 
 #endif
 
@@ -866,7 +927,7 @@ int * cast_integer_to_int_ptr (long x) {
 
 %ignore faiss::InterruptCallback::instance;
 %ignore faiss::InterruptCallback::lock;
-%include "AuxIndexStructures.h"
+%include  <faiss/impl/AuxIndexStructures.h>
 
 %{
 // may be useful for lua code launched in background from shell
