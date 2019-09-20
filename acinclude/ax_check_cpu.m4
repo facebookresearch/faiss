@@ -9,7 +9,12 @@ AC_MSG_CHECKING([for cpu arch])
   case $target in
     amd64-* | x86_64-*)
       ARCH_CPUFLAGS="-mpopcnt -msse4"
-      ARCH_CXXFLAGS="-m64";;
+      ARCH_CXXFLAGS="-m64"
+      ;;
+    aarch64*-*)
+dnl This is an arch for Nvidia Xavier a proper detection would be nice.
+      ARCH_CPUFLAGS="-march=armv8.2-a"
+      ;;
     *) ;;
   esac
 
