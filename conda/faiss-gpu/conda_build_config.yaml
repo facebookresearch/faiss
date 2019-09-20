@@ -5,7 +5,7 @@ cudatoolkit:
   - 9.0
   - 9.2
   - 10.0
-#  - 10.1 # cudatoolkit 10.1 packages are not yet available on Anaconda.
+  - 10.1
 pin_run_as_build:
   cudatoolkit:
     max_pin: x.x

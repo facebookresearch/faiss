@@ -16,6 +16,11 @@ os.mkdir("faiss")
 shutil.copyfile("faiss.py", "faiss/__init__.py")
 shutil.copyfile("swigfaiss.py", "faiss/swigfaiss.py")
 shutil.copyfile("_swigfaiss.so", "faiss/_swigfaiss.so")
+try:
+    shutil.copyfile("swigfaiss_avx2.py", "faiss/swigfaiss_avx2.py")
+    shutil.copyfile("_swigfaiss_avx2.so", "faiss/_swigfaiss_avx2.so")
+except:
+    pass
 
 long_description="""
 Faiss is a library for efficient similarity search and clustering of dense

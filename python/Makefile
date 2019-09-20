@@ -15,12 +15,15 @@ all: build
 swigfaiss.cpp: swigfaiss.swig ../libfaiss.a
 	$(SWIG) -python -c++ -Doverride= -I../ $(SWIGFLAGS) -o $@ $<
 
-swigfaiss.o: swigfaiss.cpp
+swigfaiss_avx2.cpp: swigfaiss.swig ../libfaiss.a
+	$(SWIG) -python -c++ -Doverride= -module swigfaiss_avx2 -I../ $(SWIGFLAGS) -o $@ $<
+
+%.o: %.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) $(PYTHONCFLAGS) \
                -I../ -c $< -o $@
 
 # Extension is .so even on OSX.
-_swigfaiss.so: swigfaiss.o ../libfaiss.a
+_%.so: %.o ../libfaiss.a
 	$(CXX) $(SHAREDFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 build: _swigfaiss.so faiss.py
@@ -30,8 +33,7 @@ install: build
 	$(PYTHON) setup.py install
 
 clean:
-	rm -f swigfaiss.cpp swigfaiss.o swigfaiss.py
-	rm -f _swigfaiss.so
+	rm -f swigfaiss*.cpp swigfaiss*.o swigfaiss*.py _swigfaiss*.so
 	rm -rf build/
 
 .PHONY: all build clean install

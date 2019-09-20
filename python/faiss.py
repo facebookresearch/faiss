@@ -8,14 +8,44 @@
 # not linting this file because it imports * form swigfaiss, which
 # causes a ton of useless warnings.
 
+from __future__ import print_function
+
 import numpy as np
 import sys
 import inspect
 import pdb
+import platform
+import subprocess
 
 
-# we import * so that the symbol X can be accessed as faiss.X
-from .swigfaiss import *
+def instruction_set():
+    if platform.system() == "Darwin":
+        if subprocess.check_output(["/usr/sbin/sysctl", "hw.optional.avx2_0"])[-1] == '1':
+            return "AVX2"
+        else:
+            return "default"
+    elif platform.system() == "Linux":
+        import numpy.distutils.cpuinfo
+        if "avx2" in numpy.distutils.cpuinfo.cpu.info[0]['flags']:
+            return "AVX2"
+        else:
+            return "default"
+
+
+try:
+    instr_set = instruction_set()
+    if instr_set == "AVX2":
+        print("Loading faiss with AVX2 support.", file=sys.stderr)
+        from .swigfaiss_avx2 import *
+    else:
+        print("Loading faiss.", file=sys.stderr)
+        from .swigfaiss import *
+
+except ImportError:
+    # we import * so that the symbol X can be accessed as faiss.X
+    print("Loading faiss.", file=sys.stderr)
+    from .swigfaiss import *
+
 
 __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
                             FAISS_VERSION_MINOR,
