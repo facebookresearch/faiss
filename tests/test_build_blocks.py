@@ -430,6 +430,60 @@ class TestScalarQuantizer(unittest.TestCase):
                     print(dis, D[i, j])
                     assert abs(D[i, j] - dis) / dis < 1e-5
 
+class TestRandom(unittest.TestCase):
+
+    def test_rand(self):
+        x = faiss.rand(2000)
+        assert np.all(x >= 0) and np.all(x < 1)
+        h, _ = np.histogram(x, np.arange(0, 1, 0.1))
+        assert h.min() > 160 and h.max() < 240
+
+    def test_randint(self):
+        x = faiss.randint(20000, vmax=100)
+        assert np.all(x >= 0) and np.all(x < 100)
+        c = np.bincount(x, minlength=100)
+        print(c)
+        assert c.max() - c.min() < 50 * 2
+
+
+class TestPairwiseDis(unittest.TestCase):
+
+    def test_L2(self):
+        swig_ptr = faiss.swig_ptr
+        x = faiss.rand((100, 10), seed=1)
+        y = faiss.rand((200, 10), seed=2)
+        ix = faiss.randint(50, vmax=100)
+        iy = faiss.randint(50, vmax=200)
+        dis = np.empty(50, dtype='float32')
+        faiss.pairwise_indexed_L2sqr(
+            10, 50,
+            swig_ptr(x), swig_ptr(ix),
+            swig_ptr(y), swig_ptr(iy),
+            swig_ptr(dis))
+
+        for i in range(50):
+            assert np.allclose(
+                dis[i], ((x[ix[i]] - y[iy[i]]) ** 2).sum())
+
+    def test_IP(self):
+        swig_ptr = faiss.swig_ptr
+        x = faiss.rand((100, 10), seed=1)
+        y = faiss.rand((200, 10), seed=2)
+        ix = faiss.randint(50, vmax=100)
+        iy = faiss.randint(50, vmax=200)
+        dis = np.empty(50, dtype='float32')
+        faiss.pairwise_indexed_inner_product(
+            10, 50,
+            swig_ptr(x), swig_ptr(ix),
+            swig_ptr(y), swig_ptr(iy),
+            swig_ptr(dis))
+
+        for i in range(50):
+            assert np.allclose(
+                dis[i], np.dot(x[ix[i]], y[iy[i]]))
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

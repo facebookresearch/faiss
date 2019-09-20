@@ -131,6 +131,25 @@ void int64_rand (int64_t * x, size_t n, int64_t seed)
     }
 }
 
+void int64_rand_max (int64_t * x, size_t n, uint64_t max, int64_t seed)
+{
+    // only try to parallelize on large enough arrays
+    const size_t nblock = n < 1024 ? 1 : 1024;
+
+    RandomGenerator rng0 (seed);
+    int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
+
+#pragma omp parallel for
+    for (size_t j = 0; j < nblock; j++) {
+
+        RandomGenerator rng (a0 + j * b0);
+
+        const size_t istart = j * n / nblock;
+        const size_t iend = (j + 1) * n / nblock;
+        for (size_t i = istart; i < iend; i++)
+            x[i] = rng.rand_int64 () % max;
+    }
+}
 
 
 void rand_perm (int *perm, size_t n, int64_t seed)

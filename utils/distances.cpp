@@ -432,6 +432,8 @@ void fvec_inner_products_by_idx (float * __restrict ip,
     }
 }
 
+
+
 /* compute the inner product between x and a subset y of ny vectors,
    whose indices are given by idy.  */
 void fvec_L2sqr_by_idx (float * __restrict dis,
@@ -453,8 +455,33 @@ void fvec_L2sqr_by_idx (float * __restrict dis,
     }
 }
 
+void pairwise_indexed_L2sqr (
+        size_t d, size_t n,
+        const float * x, const int64_t *ix,
+        const float * y, const int64_t *iy,
+        float *dis)
+{
+#pragma omp parallel for
+    for (size_t j = 0; j < n; j++) {
+        if (ix[j] >= 0 && iy[j] >= 0) {
+            dis[j] = fvec_L2sqr (x + d * ix[j], y + d * iy[j], d);
+        }
+    }
+}
 
-
+void pairwise_indexed_inner_product (
+        size_t d, size_t n,
+        const float * x, const int64_t *ix,
+        const float * y, const int64_t *iy,
+        float *dis)
+{
+#pragma omp parallel for
+    for (size_t j = 0; j < n; j++) {
+        if (ix[j] >= 0 && iy[j] >= 0) {
+            dis[j] = fvec_inner_product (x + d * ix[j], y + d * iy[j], d);
+        }
+    }
+}
 
 
 /* Find the nearest neighbors for nx queries in a set of ny vectors

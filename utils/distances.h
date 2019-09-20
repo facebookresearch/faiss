@@ -126,6 +126,28 @@ void fvec_L2sqr_by_idx (
         const int64_t *ids, /* ids of y vecs */
         size_t d, size_t nx, size_t ny);
 
+
+/** compute dis[j] = L2sqr(x[ix[j]], y[iy[j]]) forall j=0..n-1
+ *
+ * @param x  size (max(ix) + 1, d)
+ * @param y  size (max(iy) + 1, d)
+ * @param ix size n
+ * @param iy size n
+ * @param dis size n
+ */
+void pairwise_indexed_L2sqr (
+        size_t d, size_t n,
+        const float * x, const int64_t *ix,
+        const float * y, const int64_t *iy,
+        float *dis);
+
+/* same for inner product */
+void pairwise_indexed_inner_product (
+        size_t d, size_t n,
+        const float * x, const int64_t *ix,
+        const float * y, const int64_t *iy,
+        float *dis);
+
 /***************************************************************************
  * KNN functions
  ***************************************************************************/

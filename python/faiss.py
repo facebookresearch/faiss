@@ -565,9 +565,12 @@ def rand(n, seed=12345):
     return res
 
 
-def randint(n, seed=12345):
+def randint(n, seed=12345, vmax=None):
     res = np.empty(n, dtype='int64')
-    int64_rand(swig_ptr(res), res.size, seed)
+    if vmax is None:
+        int64_rand(swig_ptr(res), res.size, seed)
+    else:
+        int64_rand_max(swig_ptr(res), res.size, vmax, seed)
     return res
 
 lrand = randint
