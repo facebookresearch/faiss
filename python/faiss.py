@@ -20,21 +20,16 @@ import subprocess
 
 def instruction_set():
     if platform.system() == "Darwin":
-        if subprocess.check_output("sysctl hw.optional.avx2_0")[-1] == '1':
+        if subprocess.check_output(["/usr/sbin/sysctl", "hw.optional.avx2_0"])[-1] == '1':
             return "AVX2"
-        elif subprocess.check_output("sysctl hw.optional.sse4_1")[-1] == '1':
-            return "SSE4"
         else:
             return "default"
     elif platform.system() == "Linux":
         import numpy.distutils.cpuinfo
         if "avx2" in numpy.distutils.cpuinfo.cpu.info[0]['flags']:
             return "AVX2"
-        elif "sse4_1" in numpy.distutils.cpuinfo.cpu.info[0]['flags']:
-            return "SSE4"
-
-        # TODO: feature-detection on Linux.
-        return "default"
+        else:
+            return "default"
 
 
 try:
@@ -42,9 +37,6 @@ try:
     if instr_set == "AVX2":
         print("Loading faiss with AVX2 support.", file=sys.stderr)
         from .swigfaiss_avx2 import *
-    elif instr_set == "SSE4":
-        print("Loading faiss with SSE4 support.", file=sys.stderr)
-        from .swigfaiss_sse import *
     else:
         print("Loading faiss.", file=sys.stderr)
         from .swigfaiss import *
