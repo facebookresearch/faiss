@@ -25,6 +25,7 @@ ifneq ($(strip $(NVCC)),)
 endif
 
 CPPFLAGS += -I.
+NVCCFLAGS += -I.
 
 ############################
 # Building
