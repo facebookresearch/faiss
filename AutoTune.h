@@ -193,7 +193,7 @@ struct ParameterSpace {
      * @param index   index to run on
      * @param xq      query vectors (size nq * index.d)
      * @param crit    selection criterion
-     * @param ops     resutling operating points
+     * @param ops     resulting operating points
      */
     void explore (Index *index,
                   size_t nq, const float *xq,
