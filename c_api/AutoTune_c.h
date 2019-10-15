@@ -15,52 +15,47 @@
 #include "Index_c.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
+    /// possible values of a parameter, sorted from least to most expensive/accurate
+    FAISS_DECLARE_CLASS(ParameterRange)
 
-/** Build and index with the sequence of processing steps described in
- *  the string.
+    FAISS_DECLARE_GETTER(ParameterRange, const char *, name)
+
+    /// Getter for the values in the range. The output values are invalidated
+    /// upon any other modification of the range.
+    void faiss_ParameterRange_values(FaissParameterRange *, double **, size_t *);
+
+    /** Uses a-priori knowledge on the Faiss indexes to extract tunable parameters.
  */
-int faiss_index_factory(FaissIndex** p_index, int d, const char* description, FaissMetricType metric);
+    FAISS_DECLARE_CLASS(ParameterSpace)
 
-/// possible values of a parameter, sorted from least to most expensive/accurate
-FAISS_DECLARE_CLASS(ParameterRange)
+    /// Parameter space default constructor
+    int faiss_ParameterSpace_new(FaissParameterSpace **space);
 
-FAISS_DECLARE_GETTER(ParameterRange, const char*, name)
+    /// nb of combinations, = product of values sizes
+    size_t faiss_ParameterSpace_n_combinations(const FaissParameterSpace *);
 
-/// Getter for the values in the range. The output values are invalidated
-/// upon any other modification of the range.
-void faiss_ParameterRange_values(FaissParameterRange*, double**, size_t*);
+    /// get string representation of the combination
+    /// by writing it to the given character buffer.
+    /// A buffer size of 1000 ensures that the full name is collected.
+    int faiss_ParameterSpace_combination_name(const FaissParameterSpace *, size_t, char *, size_t);
 
-/** Uses a-priori knowledge on the Faiss indexes to extract tunable parameters.
- */
-FAISS_DECLARE_CLASS(ParameterSpace)
+    /// set a combination of parameters described by a string
+    int faiss_ParameterSpace_set_index_parameters(const FaissParameterSpace *, FaissIndex *, const char *);
 
-/// Parameter space default constructor
-int faiss_ParameterSpace_new(FaissParameterSpace** space);
+    /// set a combination of parameters on an index
+    int faiss_ParameterSpace_set_index_parameters_cno(const FaissParameterSpace *, FaissIndex *, size_t);
 
-/// nb of combinations, = product of values sizes
-size_t faiss_ParameterSpace_n_combinations(const FaissParameterSpace*);
+    /// set one of the parameters
+    int faiss_ParameterSpace_set_index_parameter(const FaissParameterSpace *, FaissIndex *, const char *, double);
 
-/// get string representation of the combination
-/// by writing it to the given character buffer.
-/// A buffer size of 1000 ensures that the full name is collected.
-int faiss_ParameterSpace_combination_name(const FaissParameterSpace*, size_t, char*, size_t);
+    /// print a description on stdout
+    void faiss_ParameterSpace_display(const FaissParameterSpace *);
 
-/// set a combination of parameters described by a string
-int faiss_ParameterSpace_set_index_parameters(const FaissParameterSpace*, FaissIndex*, const char *);
-
-/// set a combination of parameters on an index
-int faiss_ParameterSpace_set_index_parameters_cno(const FaissParameterSpace*, FaissIndex*, size_t);
-
-/// set one of the parameters
-int faiss_ParameterSpace_set_index_parameter(const FaissParameterSpace*, FaissIndex*, const char *, double);
-
-/// print a description on stdout
-void faiss_ParameterSpace_display(const FaissParameterSpace*);
-
-/// add a new parameter (or return it if it exists)
-int faiss_ParameterSpace_add_range(FaissParameterSpace*, const char*, FaissParameterRange**);
+    /// add a new parameter (or return it if it exists)
+    int faiss_ParameterSpace_add_range(FaissParameterSpace *, const char *, FaissParameterRange **);
 
 #ifdef __cplusplus
 }
