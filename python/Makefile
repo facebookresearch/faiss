@@ -30,7 +30,7 @@ build: _swigfaiss.so faiss.py
 	$(PYTHON) setup.py build
 
 install: build
-	$(PYTHON) setup.py install
+	$(PYTHON) setup.py install --prefix=$(prefix)
 
 clean:
 	rm -f swigfaiss*.cpp swigfaiss*.o swigfaiss*.py _swigfaiss*.so
