@@ -130,7 +130,11 @@ int faiss_RangeSearchPartialResult_new_result(
 FAISS_DECLARE_CLASS(DistanceComputer)
 /// called before computing distances
 int faiss_DistanceComputer_set_query(FaissDistanceComputer *dc, const float *x);
-/// compute distance of vector i to current query
+
+/**
+ * Compute distance of vector i to current query.
+ * This function correspond to the call operator DistanceComputer::operator()()
+ * */
 int faiss_DistanceComputer_vector_to_query_dis( FaissDistanceComputer *dc, idx_t i, float *qd);
 /// compute distance between two stored vectors
 int faiss_DistanceComputer_symmetric_dis(FaissDistanceComputer *dc, idx_t i, idx_t j, float *vd);
