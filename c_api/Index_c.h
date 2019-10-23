@@ -26,8 +26,16 @@ typedef struct FaissIDSelector_H FaissIDSelector;
 
 /// Some algorithms support both an inner product version and a L2 search version.
 typedef enum FaissMetricType {
-    METRIC_INNER_PRODUCT = 0,
-    METRIC_L2 = 1,
+    METRIC_INNER_PRODUCT = 0,  ///< maximum inner product search
+    METRIC_L2 = 1,             ///< squared L2 search
+    METRIC_L1,                 ///< L1 (aka cityblock)
+    METRIC_Linf,               ///< infinity distance
+    METRIC_Lp,                 ///< L_p distance, p is given by metric_arg
+
+    /// some additional metrics defined in scipy.spatial.distance
+    METRIC_Canberra = 20,
+    METRIC_BrayCurtis,
+    METRIC_JensenShannon,    
 } FaissMetricType;
 
 /// Opaque type for referencing to an index object
