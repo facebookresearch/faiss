@@ -133,8 +133,8 @@ int faiss_DistanceComputer_set_query(FaissDistanceComputer *dc, const float *x);
 
 /**
  * Compute distance of vector i to current query.
- * This function correspond to the call operator DistanceComputer::operator()()
- * */
+ * This function corresponds to the function call operator: DistanceComputer::operator()
+ */
 int faiss_DistanceComputer_vector_to_query_dis( FaissDistanceComputer *dc, idx_t i, float *qd);
 /// compute distance between two stored vectors
 int faiss_DistanceComputer_symmetric_dis(FaissDistanceComputer *dc, idx_t i, idx_t j, float *vd);
