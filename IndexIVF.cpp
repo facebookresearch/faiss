@@ -622,17 +622,16 @@ void IndexIVF::reconstruct_n (idx_t i0, idx_t ni, float* recons) const
 {
     FAISS_THROW_IF_NOT (ni == 0 || (i0 >= 0 && i0 + ni <= ntotal));
 
+    idx_t nc = 0;
     for (idx_t list_no = 0; list_no < nlist; list_no++) {
         size_t list_size = invlists->list_size (list_no);
-        ScopedIds idlist (invlists, list_no);
 
-        for (idx_t offset = 0; offset < list_size; offset++) {
-            idx_t id = idlist[offset];
-            if (!(id >= i0 && id < i0 + ni)) {
+        for (idx_t offset = 0; offset < list_size; offset++, nc++) {
+            if (!(nc >= i0 && nc < i0 + ni)) {
                 continue;
             }
-
-            float* reconstructed = recons + (id - i0) * d;
+            
+            float* reconstructed = recons + (nc - i0) * d;
             reconstruct_from_offset (list_no, offset, reconstructed);
         }
     }
