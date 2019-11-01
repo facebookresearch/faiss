@@ -139,6 +139,7 @@ GpuIndexIVFScalarQuantizer::copyTo(
 
   GpuIndexIVF::copyTo(index);
   index->sq = sq;
+  index->code_size = sq.code_size;
   index->by_residual = by_residual;
 
   InvertedLists* ivf = new ArrayInvertedLists(nlist, index->code_size);
