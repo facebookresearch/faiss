@@ -194,7 +194,7 @@ GpuIndexIVF::setNumProbes(int nprobe) {
                          "GPU index only supports nprobe <= %d; passed %d",
                          getMaxKSelection(),
                          nprobe);
-  nprobe = nprobe;
+  this->nprobe = nprobe;
 }
 
 int
