@@ -16,6 +16,10 @@ import inspect
 import pdb
 import platform
 import subprocess
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def instruction_set():
@@ -35,15 +39,15 @@ def instruction_set():
 try:
     instr_set = instruction_set()
     if instr_set == "AVX2":
-        print("Loading faiss with AVX2 support.", file=sys.stderr)
+        logger.info("Loading faiss with AVX2 support.")
         from .swigfaiss_avx2 import *
     else:
-        print("Loading faiss.", file=sys.stderr)
+        logger.info("Loading faiss.")
         from .swigfaiss import *
 
 except ImportError:
     # we import * so that the symbol X can be accessed as faiss.X
-    print("Loading faiss.", file=sys.stderr)
+    logger.error("Loading faiss.")
     from .swigfaiss import *
 
 
