@@ -8,8 +8,6 @@
 # not linting this file because it imports * form swigfaiss, which
 # causes a ton of useless warnings.
 
-from __future__ import print_function
-
 import numpy as np
 import sys
 import inspect
@@ -47,7 +45,7 @@ try:
 
 except ImportError:
     # we import * so that the symbol X can be accessed as faiss.X
-    logger.error("Loading faiss.")
+    logger.info("Loading faiss.")
     from .swigfaiss import *
 
 
