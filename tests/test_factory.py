@@ -5,8 +5,11 @@
 
 #! /usr/bin/env python2
 
+import numpy as np
 import unittest
 import faiss
+
+
 
 
 class TestFactory(unittest.TestCase):
@@ -50,3 +53,15 @@ class TestFactory(unittest.TestCase):
     def test_factory_4(self):
         index = faiss.index_factory(12, "IVF10,FlatDedup")
         assert index.instances is not None
+
+
+
+class TestCloneSize(unittest.TestCase):
+
+    def test_clone_size(self):
+        index = faiss.index_factory(20, 'PCA10,Flat')
+        xb = faiss.rand((100, 20))
+        index.train(xb)
+        index.add(xb)
+        index2 = faiss.clone_index(index)
+        assert index2.ntotal == 100
