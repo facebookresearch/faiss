@@ -1,0 +1,8 @@
+gcc -std=c++11 -lfaiss -L/opt/intel/compilers_and_libraries_2019.3.199/linux/mkl/lib/intel64_lin/ -lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lstdc++ -o 1-Flat 1-Flat.cpp
+
+LD_LIBRARY_PATH=/usr/local/lib:/opt/intel/compilers_and_libraries_2019.3.199/linux/mkl/lib/intel64_lin/:/usr/local/cuda-10.0/lib64 ./1-Flat
+
+gcc -I/usr/local/cuda-10.0/include/ -std=c++11 -lfaiss -L/opt/intel/compilers_and_libraries_2019.3.199/linux/mkl/lib/intel64_lin/ -lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lstdc++ -o 4-GPU 4-GPU.cpp
+
+LD_PRELOAD=/usr/lib64/libgomp.so.1:/opt/intel/mkl/lib/intel64/libmkl_def.so:/opt/intel/mkl/lib/intel64/libmkl_avx2.so:/opt/intel/mkl/lib/intel64/libmkl_core.so:/opt/intel/mkl/lib/intel64/libmkl_intel_lp64.so:/opt/intel/mkl/lib/intel64/libmkl_gnu_thread.so LD_LIBRARY_PATH=/usr/local/lib/:/opt/intel/mkl/lib/intel64/:/usr/local/cuda-10.0/lib64/ java -cp target/faiss4j-0.0.1.jar:/home/yzq/.m2/repository/com/google/guava/guava/21.0/guava-21.0.jar  com.gameofdimension.faiss.demo.Examples
+

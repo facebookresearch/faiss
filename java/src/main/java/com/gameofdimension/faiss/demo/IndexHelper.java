@@ -4,11 +4,11 @@ package com.gameofdimension.faiss.demo;
 import com.gameofdimension.faiss.swig.floatArray;
 import com.gameofdimension.faiss.swig.intArray;
 import com.gameofdimension.faiss.swig.longArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
 
 public class IndexHelper {
-    private static final Logger log = LoggerFactory.getLogger(IndexHelper.class);
+    // private static final Logger log = LoggerFactory.getLogger(IndexHelper.class);
 
     public static String show(longArray a, int rows, int cols) {
         StringBuilder sb = new StringBuilder();

@@ -4,8 +4,8 @@ import com.gameofdimension.faiss.swig.*;
 // import org.junit.Assert;
 // import org.junit.BeforeClass;
 // import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 
 import java.nio.file.Paths;
@@ -14,10 +14,11 @@ import java.util.Random;
 import static com.gameofdimension.faiss.demo.IndexHelper.*;
 
 public class Examples {
-    private static final Logger log = LoggerFactory.getLogger(Examples.class);
+    // private static final Logger log = LoggerFactory.getLogger(Examples.class);
 
     public void testLogger() {
-        log.info("test logger");
+        // System.out.println("test logger");
+        System.out.println("test logger");
     }
 
     public static void load() {
@@ -48,9 +49,9 @@ public class Examples {
             }
 
             IndexFlatL2 index = new IndexFlatL2(d);
-            log.info("is_trained = {}", index.getIs_trained());
+            System.out.println("is_trained = " + index.getIs_trained());
             index.add(nb, xb.cast());
-            log.info("ntotal = {}", index.getNtotal());
+            System.out.println("ntotal = " + index.getNtotal());
 
 
 //            long *I = new long[k * 5];
@@ -60,14 +61,14 @@ public class Examples {
                 longArray I = new longArray(k * 5);
                 floatArray D = new floatArray(k * 5);
 
-                log.info("search 5 first vector of xb");
+                System.out.println("search 5 first vector of xb");
                 index.search(5, xb.cast(), 4, D.cast(), I.cast());
-                log.info("Vectors:\n{}", show(xb, nb, d));
-                log.info("Distances:\n{}", show(D, 5, 4));
-                log.info("I:\n{}", show(I, 5, 4));
+                System.out.println("Vectors:\n" + show(xb, nb, d));
+                System.out.println("Distances:\n" + show(D, 5, 4));
+                System.out.println("I:\n" + show(I, 5, 4));
             }
         } catch (Exception e) {
-            log.error("failed", e);
+            System.out.println("failed" + e);
         }
     }
 
@@ -84,7 +85,7 @@ public class Examples {
 //            index.add_with_ids(3, xb.cast(), ids.cast());
             index.add(numberOfVector, xb.cast());
 
-            log.info("ntotal = {}", index.getNtotal());
+            System.out.println("ntotal = " + index.getNtotal());
 
             {
                 int resultSize = 3;
@@ -95,13 +96,13 @@ public class Examples {
                 floatArray distances = new floatArray(resultSize);
                 index.search(1, query.cast(), resultSize, distances.cast(), labels.cast());
 
-                log.info("Vectors:\n{}", show(xb, numberOfVector, d));
-                log.info("Query:\n{}", show(query, queryConds.length, queryConds[0].length));
-                log.info("Distances:\n{}", show(distances, 1, resultSize));
-                log.info("Labels:\n{}", show(labels, 1, resultSize));
+                System.out.println("Vectors:\n" + show(xb, numberOfVector, d));
+                System.out.println("Query:\n" + show(query, queryConds.length, queryConds[0].length));
+                System.out.println("Distances:\n" + show(distances, 1, resultSize));
+                System.out.println("Labels:\n" + show(labels, 1, resultSize));
             }
         } catch (Exception e) {
-            log.error("failed", e);
+            System.out.println("failed" + e);
         }
     }
 
@@ -127,14 +128,14 @@ public class Examples {
                 longArray labels = longArray.frompointer(re.getLabels());
                 floatArray distances = floatArray.frompointer(re.getDistances());
 
-                log.info("Vectors:\n{}", show(xb, numberOfVector, d));
-                log.info("Query:\n{}", show(query, querySize, queryConds[0].length));
-                log.info("Distances:\n{}", show(distances, querySize, resultSize));
-                log.info("Labels:\n{}", show(labels, querySize, resultSize));
+                System.out.println("Vectors:\n" + show(xb, numberOfVector, d));
+                System.out.println("Query:\n" + show(query, querySize, queryConds[0].length));
+                System.out.println("Distances:\n" + show(distances, querySize, resultSize));
+                System.out.println("Labels:\n" + show(labels, querySize, resultSize));
             }
 
         } catch (Exception e) {
-            log.error("failed", e);
+            System.out.println("failed" + e);
         }
     }
 
@@ -152,7 +153,7 @@ public class Examples {
             Preconditions.checkArgument(!index.getIs_trained());
             float[][] trainData = dummyData3d(5);
             floatArray tb = makeFloatArray(trainData);
-            log.info("Vectors:\n{}", show(tb, trainData.length, dimension));
+            System.out.println("Vectors:\n" + show(tb, trainData.length, dimension));
             index.train(trainData.length, tb.cast());
             Preconditions.checkArgument(index.getIs_trained());
 
@@ -170,12 +171,12 @@ public class Examples {
             index.setNprobe(nprobe);
             index.search(numberOfQuery, query.cast(), resultSize, distances.cast(), labels.cast());
 
-            log.info("Vectors:\n{}", show(xb, numberOfVector, dimension));
-            log.info("Query:\n{}", show(query, queryConds.length, queryConds[0].length));
-            log.info("Distances:\n{}", show(distances, 1, resultSize));
-            log.info("Labels:\n{}", show(labels, 1, resultSize));
+            System.out.println("Vectors:\n" + show(xb, numberOfVector, dimension));
+            System.out.println("Query:\n" + show(query, queryConds.length, queryConds[0].length));
+            System.out.println("Distances:\n" + show(distances, 1, resultSize));
+            System.out.println("Labels:\n" + show(labels, 1, resultSize));
         } catch (Exception e) {
-            log.error("failed", e);
+            System.out.println("failed" + e);
         }
     }
 
@@ -208,6 +209,8 @@ public class Examples {
 	    Examples example = new Examples();
 	    example.testLogger();
 	    example.testFlat();
+example.simpleTest();
+example.egIndexIVFFlat();
     }
 
 }
