@@ -13,10 +13,10 @@ all: build
 
 # Also silently generates swigfaiss.py.
 swigfaiss.cpp: swigfaiss.swig ../libfaiss.a
-	$(SWIG) -java -c++ -Doverride= -I../ $(SWIGFLAGS) -o $@ $<
+	$(SWIG) -java -c++ -Doverride= -I../ $(SWIGFLAGS) -package com.gameofdimension.faiss.swig -outdir src/main/java/com/gameofdimension/faiss/swig -o $@ $<
 
 swigfaiss_avx2.cpp: swigfaiss.swig ../libfaiss.a
-	$(SWIG) -java -c++ -Doverride= -module swigfaiss_avx2 -I../ $(SWIGFLAGS) -o $@ $<
+	$(SWIG) -java -c++ -Doverride= -module swigfaiss_avx2 -I../ $(SWIGFLAGS) -package com.gameofdimension.faiss.swig -outdir src/main/java/com/gameofdimension/faiss/swig -o $@ $<
 
 %.o: %.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) $(PYTHONCFLAGS) $(JAVACFLAGS)\

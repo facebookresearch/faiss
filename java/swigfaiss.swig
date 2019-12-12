@@ -34,6 +34,9 @@
 // #endif
 
 %module swigfaiss;
+%rename(faiss_RangeSearchPartialResult_finalize) faiss::RangeSearchPartialResult::finalize();
+%rename(faiss_gpu_GpuIndexIVF_getQuantizer) faiss::gpu::GpuIndexIVF::getQuantizer();
+%ignore wait();
 
 // fbode SWIG fails on warnings, so make them non fatal
 #pragma SWIG nowarn=321
