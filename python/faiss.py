@@ -481,9 +481,33 @@ def index_cpu_to_gpu_multiple_py(resources, index, co=None):
 def index_cpu_to_all_gpus(index, co=None, ngpu=-1):
     if ngpu == -1:
         ngpu = get_num_gpus()
-    res = [StandardGpuResources() for i in range(ngpu)]
-    index2 = index_cpu_to_gpu_multiple_py(res, index, co)
-    return index2
+    res = [StandardGpuResources() for _ in range(ngpu)]
+    index_gpu = index_cpu_to_gpu_multiple_py(res, index, co)
+    return index_gpu
+
+
+def index_cpu_to_gpu_selected_py(gpus, resources, index, co=None):
+    """ builds the C++ vectors for the GPU indices and the
+    resources. Handles the case where the resources are assigned to
+    the list of GPUs """
+    vres = GpuResourcesVector()
+    vdev = IntVector()
+    for i, res in zip(gpus, resources):
+        vdev.push_back(i)
+        vres.push_back(res)
+    index = index_cpu_to_gpu_multiple(vres, vdev, index, co)
+    index.referenced_objects = resources
+    return index
+
+
+def index_cpu_to_gpus_list(index, co=None, gpus=None):
+    """ Here we can pass list of GPU ids as a parameter. 
+        gpus mut be a list or None """
+    if gpus is None:
+        gpus = range(get_num_gpus())
+    res = [StandardGpuResources() for _ in gpus]
+    index_gpu = index_cpu_to_gpu_selected_py(gpus, res, index, co)
+    return index_gpu
 
 
 ###########################################
