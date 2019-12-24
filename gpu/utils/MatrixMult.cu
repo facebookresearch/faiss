@@ -62,6 +62,9 @@ struct CublasGemm<half> {
       half hAlpha = hostFloat2Half(fAlpha);
       half hBeta = hostFloat2Half(fBeta);
 
+      if (getDeviceSupportsTensorCore(getCurrentDevice())) {
+        cublasSetMathMode(handle, CUBLAS_TENSOR_OP_MATH);
+      }
       return cublasHgemm(handle, transa, transb, m, n, k,
                          &hAlpha, A, lda, B, ldb, &hBeta, C, ldc);
     }

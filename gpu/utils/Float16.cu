@@ -20,6 +20,11 @@ bool getDeviceSupportsFloat16Math(int device) {
           (prop.major == 5 && prop.minor >= 3));
 }
 
+bool getDeviceSupportsTensorCore(int device) {
+  const auto& prop = getDeviceProperties(device);
+  return (prop.major >=7);
+}
+
 __half hostFloat2Half(float a) {
 #if CUDA_VERSION >= 9000
   __half_raw raw;

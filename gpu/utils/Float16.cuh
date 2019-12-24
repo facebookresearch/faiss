@@ -70,6 +70,9 @@ struct Half8 {
 /// Returns true if the given device supports native float16 math
 bool getDeviceSupportsFloat16Math(int device);
 
+/// Returns true if the given device supports Tensor Core
+bool getDeviceSupportsTensorCore(int device);
+
 __half hostFloat2Half(float v);
 
 } } // namespace
