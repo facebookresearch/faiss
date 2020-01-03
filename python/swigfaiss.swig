@@ -25,7 +25,7 @@
 #pragma SWIG nowarn=512
 
 %include <stdint.i>
-typedef int64_t size_t;
+typedef uint64_t size_t;
 
 #define __restrict
 
