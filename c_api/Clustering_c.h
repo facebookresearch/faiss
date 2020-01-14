@@ -47,7 +47,7 @@ void faiss_ClusteringParameters_init(FaissClusteringParameters* params);
  * points to the centroids. Therefore, at each iteration the centroids
  * are added to the index.
  *
- * On output, the centoids table is set to the latest version
+ * On output, the centroids table is set to the latest version
  * of the centroids and they are also added to the index. If the
  * centroids table it is not empty on input, it is also used for
  * initialization.
