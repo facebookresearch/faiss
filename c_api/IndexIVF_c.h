@@ -114,6 +114,8 @@ double faiss_IndexIVF_imbalance_factor (const FaissIndexIVF* index);
 /// display some stats about the inverted lists of the index
 void faiss_IndexIVF_print_stats (const FaissIndexIVF* index);
 
+/// get inverted lists ids
+void faiss_IndexIVF_invlists_get_ids (const FaissIndexIVF* index, size_t list_no, idx_t* invlist);
 
 typedef struct FaissIndexIVFStats {
     size_t nq;       // nb of queries run
