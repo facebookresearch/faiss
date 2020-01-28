@@ -80,6 +80,8 @@ namespace faiss {
  **************************************************************/
 
 static void read_index_header (Index *idx, IOReader *f) {
+    if (!idx)
+        FAISS_THROW_MSG ("read_index_header: Invalid idx");
     READ1 (idx->d);
     READ1 (idx->ntotal);
     Index::idx_t dummy;
