@@ -889,7 +889,12 @@ IndexIVF::~IndexIVF()
 
 void IndexIVFStats::reset()
 {
-    memset ((void*)this, 0, sizeof (*this));
+    nq = 0;
+    nlist = 0;
+    ndis = 0;
+    nheap_updates = 0;
+    quantization_time = 0.0;
+    search_time = 0.0;
 }
 
 
