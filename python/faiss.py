@@ -469,6 +469,8 @@ def index_cpu_to_gpu_multiple_py(resources, index, co=None, gpus=None):
     """ builds the C++ vectors for the GPU indices and the
     resources. Handles the case where the resources are assigned to
     the list of GPUs """
+    if gpus is None:
+        gpus = range(len(resources))
     vres = GpuResourcesVector()
     vdev = IntVector()
     for i, res in zip(gpus, resources):
