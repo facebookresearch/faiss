@@ -15,7 +15,7 @@ CLIBNAME=libfaiss_c
 LIBCOBJ=error_impl.o Index_c.o IndexFlat_c.o Clustering_c.o AutoTune_c.o \
 	impl/AuxIndexStructures_c.o IndexIVF_c.o IndexIVFFlat_c.o IndexLSH_c.o \
 	index_io_c.o MetaIndexes_c.o IndexShards_c.o index_factory_c.o \
-	clone_index_c.o
+	clone_index_c.o IndexPreTransform_c.o
 CFLAGS=-fPIC -m64 -Wno-sign-compare -g -O3 -Wall -Wextra
 
 # Build static and shared object files by default
@@ -84,3 +84,6 @@ impl/AuxIndexStructures_c.o: impl/AuxIndexStructures_c.cpp impl/AuxIndexStructur
 
 MetaIndexes_c.o: CXXFLAGS += -I.. -I ../impl $(DEBUGFLAG)
 MetaIndexes_c.o: MetaIndexes_c.cpp MetaIndexes_c.h ../MetaIndexes.h macros_impl.h
+
+IndexPreTransform_c.o: CXXFLAGS += -I.. -I ../impl $(DEBUGFLAG)
+IndexPreTransform_c.o: IndexPreTransform_c.cpp IndexPreTransform_c.h ../IndexPreTransform.h macros_impl.h
