@@ -465,25 +465,37 @@ if hasattr(this_module, 'GpuIndexFlat'):
 ###########################################
 
 
-def index_cpu_to_gpu_multiple_py(resources, index, co=None):
-    """builds the C++ vectors for the GPU indices and the
-    resources. Handles the common case where the resources are assigned to
-    the first len(resources) GPUs"""
+def index_cpu_to_gpu_multiple_py(resources, index, co=None, gpus=None):
+    """ builds the C++ vectors for the GPU indices and the
+    resources. Handles the case where the resources are assigned to
+    the list of GPUs """
+    if gpus is None:
+        gpus = range(len(resources))
     vres = GpuResourcesVector()
     vdev = IntVector()
-    for i, res in enumerate(resources):
+    for i, res in zip(gpus, resources):
         vdev.push_back(i)
         vres.push_back(res)
     index = index_cpu_to_gpu_multiple(vres, vdev, index, co)
     index.referenced_objects = resources
     return index
 
+
 def index_cpu_to_all_gpus(index, co=None, ngpu=-1):
-    if ngpu == -1:
-        ngpu = get_num_gpus()
-    res = [StandardGpuResources() for i in range(ngpu)]
-    index2 = index_cpu_to_gpu_multiple_py(res, index, co)
-    return index2
+    index_gpu = index_cpu_to_gpus_list(index, co=co, gpus=None, ngpu=ngpu)
+    return index_gpu
+
+
+def index_cpu_to_gpus_list(index, co=None, gpus=None, ngpu=-1):
+    """ Here we can pass list of GPU ids as a parameter or ngpu to
+    use first n GPU's. gpus mut be a list or None"""
+    if (gpus is None) and (ngpu == -1):  # All blank
+        gpus = range(get_num_gpus())
+    elif (gpus is None) and (ngpu != -1):  # Get number of GPU's only
+        gpus = range(ngpu)
+    res = [StandardGpuResources() for _ in gpus]
+    index_gpu = index_cpu_to_gpu_multiple_py(res, index, co, gpus)
+    return index_gpu
 
 
 ###########################################
