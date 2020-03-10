@@ -199,6 +199,7 @@ namespace std {
 //   uint64_t as unsigned long long, which SWIG is not aware of.
 %template(Uint64Vector) std::vector<unsigned long>;
 %template(LongVector) std::vector<long>;
+%template(LongLongVector) std::vector<long long>;
 %template(IntVector) std::vector<int>;
 %template(FloatVectorVector) std::vector<std::vector<float> >;
 %template(ByteVectorVector) std::vector<std::vector<unsigned char> >;
