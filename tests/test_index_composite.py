@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 """ more elaborate that test_index.py """
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import unittest
