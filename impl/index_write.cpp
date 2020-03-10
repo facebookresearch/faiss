@@ -286,20 +286,33 @@ static void write_HNSW (const HNSW *hnsw, IOWriter *f) {
     WRITE1 (hnsw->upper_beam);
 }
 
+static void write_direct_map (const DirectMap *dm, IOWriter *f) {
+    char maintain_direct_map = (char)dm->type; // for backwards compatibility with bool
+    WRITE1 (maintain_direct_map);
+    WRITEVECTOR (dm->array);
+    if (dm->type == DirectMap::Hashtable) {
+        using idx_t = Index::idx_t;
+        std::vector<std::pair<idx_t, idx_t>> v;
+        const std::unordered_map<idx_t, idx_t> & map = dm->hashtable;
+        v.resize (map.size());
+        std::copy(map.begin(), map.end(), v.begin());
+        WRITEVECTOR (v);
+    }
+}
+
 static void write_ivf_header (const IndexIVF *ivf, IOWriter *f) {
     write_index_header (ivf, f);
     WRITE1 (ivf->nlist);
     WRITE1 (ivf->nprobe);
     write_index (ivf->quantizer, f);
-    WRITE1 (ivf->maintain_direct_map);
-    WRITEVECTOR (ivf->direct_map);
+    write_direct_map (&ivf->direct_map, f);
 }
 
 void write_index (const Index *idx, IOWriter *f) {
     if (const IndexFlat * idxf = dynamic_cast<const IndexFlat *> (idx)) {
         uint32_t h = fourcc (
               idxf->metric_type == METRIC_INNER_PRODUCT ? "IxFI" :
-              idxf->metric_type == METRIC_L2 ? "IxF2" : nullptr);
+              idxf->metric_type == METRIC_L2 ? "IxF2" : "IxFl");
         WRITE1 (h);
         write_index_header (idx, f);
         WRITEVECTOR (idxf->xb);
@@ -499,8 +512,7 @@ static void write_binary_ivf_header (const IndexBinaryIVF *ivf, IOWriter *f) {
     WRITE1 (ivf->nlist);
     WRITE1 (ivf->nprobe);
     write_index_binary (ivf->quantizer, f);
-    WRITE1 (ivf->maintain_direct_map);
-    WRITEVECTOR (ivf->direct_map);
+    write_direct_map (&ivf->direct_map, f);
 }
 
 void write_index_binary (const IndexBinary *idx, IOWriter *f) {

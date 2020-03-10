@@ -58,7 +58,7 @@ struct IndexIVFPQ: IndexIVF {
 
     IndexIVFPQ (
             Index * quantizer, size_t d, size_t nlist,
-            size_t M, size_t nbits_per_idx);
+            size_t M, size_t nbits_per_idx, MetricType metric = METRIC_L2);
 
     void add_with_ids(idx_t n, const float* x, const idx_t* xids = nullptr)
         override;

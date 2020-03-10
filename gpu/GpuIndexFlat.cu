@@ -22,7 +22,11 @@ namespace faiss { namespace gpu {
 GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
                            const faiss::IndexFlat* index,
                            GpuIndexFlatConfig config) :
-    GpuIndex(resources, index->d, index->metric_type, config),
+    GpuIndex(resources,
+             index->d,
+             index->metric_type,
+             index->metric_arg,
+             config),
     config_(std::move(config)),
     data_(nullptr) {
   verifySettings_();
@@ -37,7 +41,7 @@ GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
                            int dims,
                            faiss::MetricType metric,
                            GpuIndexFlatConfig config) :
-    GpuIndex(resources, dims, metric, config),
+    GpuIndex(resources, dims, metric, 0, config),
     config_(std::move(config)),
     data_(nullptr) {
   verifySettings_();
@@ -49,9 +53,7 @@ GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
   DeviceScope scope(device_);
   data_ = new FlatIndex(resources,
                         dims,
-                        metric == faiss::METRIC_L2,
                         config_.useFloat16,
-                        config_.useFloat16Accumulator,
                         config_.storeTransposed,
                         memorySpace_);
 }
@@ -64,8 +66,7 @@ void
 GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
   DeviceScope scope(device_);
 
-  this->d = index->d;
-  this->metric_type = index->metric_type;
+  GpuIndex::copyFrom(index);
 
   // GPU code has 32 bit indices
   FAISS_THROW_IF_NOT_FMT(index->ntotal <=
@@ -74,14 +75,11 @@ GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
                          "attempting to copy CPU index with %zu parameters",
                          (size_t) std::numeric_limits<int>::max(),
                          (size_t) index->ntotal);
-  this->ntotal = index->ntotal;
 
   delete data_;
   data_ = new FlatIndex(resources_,
                         this->d,
-                        index->metric_type == faiss::METRIC_L2,
                         config_.useFloat16,
-                        config_.useFloat16Accumulator,
                         config_.storeTransposed,
                         memorySpace_);
 
@@ -97,9 +95,7 @@ void
 GpuIndexFlat::copyTo(faiss::IndexFlat* index) const {
   DeviceScope scope(device_);
 
-  index->d = this->d;
-  index->ntotal = this->ntotal;
-  index->metric_type = this->metric_type;
+  GpuIndex::copyTo(index);
 
   FAISS_ASSERT(data_);
   FAISS_ASSERT(data_->getSize() == this->ntotal);
@@ -209,7 +205,8 @@ GpuIndexFlat::searchImpl_(int n,
   DeviceTensor<int, 2, true> outIntLabels(
     resources_->getMemoryManagerCurrentDevice(), {n, k}, stream);
 
-  data_->query(queries, k, outDistances, outIntLabels, true);
+  data_->query(queries, k, metric_type, metric_arg,
+               outDistances, outIntLabels, true);
 
   // Convert int to idx_t
   convertTensor<int, faiss::Index::idx_t, 2>(stream,

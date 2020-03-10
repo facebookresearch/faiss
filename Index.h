@@ -10,7 +10,7 @@
 #ifndef FAISS_INDEX_H
 #define FAISS_INDEX_H
 
-
+#include <faiss/MetricType.h>
 #include <cstdio>
 #include <typeinfo>
 #include <string>
@@ -18,7 +18,7 @@
 
 #define FAISS_VERSION_MAJOR 1
 #define FAISS_VERSION_MINOR 6
-#define FAISS_VERSION_PATCH 1
+#define FAISS_VERSION_PATCH 2
 
 /**
  * @namespace faiss
@@ -38,23 +38,6 @@
 
 
 namespace faiss {
-
-
-/// Some algorithms support both an inner product version and a L2 search version.
-enum MetricType {
-    METRIC_INNER_PRODUCT = 0,  ///< maximum inner product search
-    METRIC_L2 = 1,             ///< squared L2 search
-    METRIC_L1,                 ///< L1 (aka cityblock)
-    METRIC_Linf,               ///< infinity distance
-    METRIC_Lp,                 ///< L_p distance, p is given by metric_arg
-
-    /// some additional metrics defined in scipy.spatial.distance
-    METRIC_Canberra = 20,
-    METRIC_BrayCurtis,
-    METRIC_JensenShannon,
-
-};
-
 
 /// Forward declarations see AuxIndexStructures.h
 struct IDSelector;

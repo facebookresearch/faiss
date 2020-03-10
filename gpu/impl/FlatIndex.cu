@@ -19,17 +19,13 @@ namespace faiss { namespace gpu {
 
 FlatIndex::FlatIndex(GpuResources* res,
                      int dim,
-                     bool l2Distance,
                      bool useFloat16,
-                     bool useFloat16Accumulator,
                      bool storeTransposed,
                      MemorySpace space) :
     resources_(res),
     dim_(dim),
     useFloat16_(useFloat16),
-    useFloat16Accumulator_(useFloat16Accumulator),
     storeTransposed_(storeTransposed),
-    l2Distance_(l2Distance),
     space_(space),
     num_(0),
     rawData_(space) {
@@ -104,6 +100,8 @@ FlatIndex::getVectorsFloat32Copy(int from, int num, cudaStream_t stream) {
 void
 FlatIndex::query(Tensor<float, 2, true>& input,
                  int k,
+                 faiss::MetricType metric,
+                 float metricArg,
                  Tensor<float, 2, true>& outDistances,
                  Tensor<int, 2, true>& outIndices,
                  bool exactDistance) {
@@ -111,79 +109,54 @@ FlatIndex::query(Tensor<float, 2, true>& input,
   auto& mem = resources_->getMemoryManagerCurrentDevice();
 
   if (useFloat16_) {
-    // We need to convert to float16
-    auto inputHalf = convertTensor<float, half, 2>(resources_,
-                                                   stream,
-                                                   input);
+    // We need to convert the input to float16 for comparison to ourselves
+    auto inputHalf =
+      convertTensor<float, half, 2>(resources_, stream, input);
 
-    DeviceTensor<half, 2, true> outDistancesHalf(
-      mem, {outDistances.getSize(0), outDistances.getSize(1)}, stream);
-
-    query(inputHalf, k, outDistancesHalf, outIndices, exactDistance);
-
-    if (exactDistance) {
-      // Convert outDistances back
-      convertTensor<half, float, 2>(stream,
-                                    outDistancesHalf,
-                                    outDistances);
-    }
+    query(inputHalf, k, metric, metricArg,
+          outDistances, outIndices, exactDistance);
   } else {
-    if (l2Distance_) {
-      runL2Distance(resources_,
-                    storeTransposed_ ? vectorsTransposed_ : vectors_,
-                    !storeTransposed_, // is vectors row major?
-                    &norms_,
-                    input,
-                    true, // input is row major
-                    k,
-                    outDistances,
-                    outIndices,
-                    !exactDistance);
-    } else {
-      runIPDistance(resources_,
-                    storeTransposed_ ? vectorsTransposed_ : vectors_,
-                    !storeTransposed_, // is vectors row major?
-                    input,
-                    true, // input is row major
-                    k,
-                    outDistances,
-                    outIndices);
-    }
+    bfKnnOnDevice(resources_,
+                  getCurrentDevice(),
+                  stream,
+                  storeTransposed_ ? vectorsTransposed_ : vectors_,
+                  !storeTransposed_, // is vectors row major?
+                  &norms_,
+                  input,
+                  true, // input is row major
+                  k,
+                  metric,
+                  metricArg,
+                  outDistances,
+                  outIndices,
+                  !exactDistance);
   }
 }
 
 void
 FlatIndex::query(Tensor<half, 2, true>& input,
                  int k,
-                 Tensor<half, 2, true>& outDistances,
+                 faiss::MetricType metric,
+                 float metricArg,
+                 Tensor<float, 2, true>& outDistances,
                  Tensor<int, 2, true>& outIndices,
                  bool exactDistance) {
   FAISS_ASSERT(useFloat16_);
 
-  if (l2Distance_) {
-    runL2Distance(resources_,
-                  storeTransposed_ ? vectorsHalfTransposed_ : vectorsHalf_,
-                  !storeTransposed_, // is vectors row major?
-                  &normsHalf_,
-                  input,
-                  true, // input is row major
-                  k,
-                  outDistances,
-                  outIndices,
-                  useFloat16Accumulator_,
-                  // FIXME
-                  !exactDistance);
-  } else {
-    runIPDistance(resources_,
-                  storeTransposed_ ? vectorsHalfTransposed_ : vectorsHalf_,
-                  !storeTransposed_, // is vectors row major?
-                  input,
-                  true, // input is row major
-                  k,
-                  outDistances,
-                  outIndices,
-                  useFloat16Accumulator_);
-  }
+  bfKnnOnDevice(resources_,
+                getCurrentDevice(),
+                resources_->getDefaultStreamCurrentDevice(),
+                storeTransposed_ ? vectorsHalfTransposed_ : vectorsHalf_,
+                !storeTransposed_, // is vectors row major?
+                &norms_,
+                input,
+                true, // input is row major
+                k,
+                metric,
+                metricArg,
+                outDistances,
+                outIndices,
+                !exactDistance);
 }
 
 void
@@ -283,17 +256,15 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
     }
   }
 
-  if (l2Distance_) {
-    // Precompute L2 norms of our database
-    if (useFloat16_) {
-      DeviceTensor<half, 1, true> normsHalf({(int) num_}, space_);
-      runL2Norm(vectorsHalf_, true, normsHalf, true, stream);
-      normsHalf_ = std::move(normsHalf);
-    } else {
-      DeviceTensor<float, 1, true> norms({(int) num_}, space_);
-      runL2Norm(vectors_, true, norms, true, stream);
-      norms_ = std::move(norms);
-    }
+  // Precompute L2 norms of our database
+  if (useFloat16_) {
+    DeviceTensor<float, 1, true> norms({(int) num_}, space_);
+    runL2Norm(vectorsHalf_, true, norms, true, stream);
+    norms_ = std::move(norms);
+  } else {
+    DeviceTensor<float, 1, true> norms({(int) num_}, space_);
+    runL2Norm(vectors_, true, norms, true, stream);
+    norms_ = std::move(norms);
   }
 }
 
@@ -301,6 +272,9 @@ void
 FlatIndex::reset() {
   rawData_.clear();
   vectors_ = std::move(DeviceTensor<float, 2, true>());
+  vectorsTransposed_ = std::move(DeviceTensor<float, 2, true>());
+  vectorsHalf_ = std::move(DeviceTensor<half, 2, true>());
+  vectorsHalfTransposed_ = std::move(DeviceTensor<half, 2, true>());
   norms_ = std::move(DeviceTensor<float, 1, true>());
   num_ = 0;
 }

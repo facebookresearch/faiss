@@ -32,9 +32,8 @@ struct GpuIndexFlatConfig : public GpuIndexConfig {
   /// Whether or not data is stored as float16
   bool useFloat16;
 
-  /// Whether or not all math is performed in float16, if useFloat16 is
-  /// specified. If true, we use cublasHgemm, supported only on CC
-  /// 5.3+. Otherwise, we use cublasSgemmEx.
+  /// This option is now deprecated and doesn't do anything. All accumulation of
+  /// float16 or float32 data is now done in float32.
   bool useFloat16Accumulator;
 
   /// Whether or not data is stored (transparently) in a transposed

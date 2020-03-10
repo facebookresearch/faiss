@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <faiss/MetricType.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/utils/Tensor.cuh>
 #include <thrust/device_vector.h>
@@ -34,6 +35,7 @@ void runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
                                      thrust::device_vector<int>& listLengths,
                                      int maxListLength,
                                      int k,
+                                     faiss::MetricType metric,
                                      // output
                                      Tensor<float, 2, true>& outDistances,
                                      // output

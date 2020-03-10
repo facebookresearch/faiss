@@ -34,8 +34,7 @@ struct CublasGemm<float> {
                              int ldb,
                              float fBeta,
                              float *C,
-                             int ldc,
-                             bool useHgemm) {
+                             int ldc) {
     return cublasSgemm(handle, transa, transb, m, n, k,
                        &fAlpha, A, lda, B, ldb, &fBeta, C, ldc);
   }
@@ -55,40 +54,24 @@ struct CublasGemm<half> {
                              const half *B,
                              int ldb,
                              const float fBeta,
-                             half *C,
-                             int ldc,
-                             bool useHgemm) {
-    if (getDeviceSupportsFloat16Math(getCurrentDevice()) && useHgemm) {
-      half hAlpha = hostFloat2Half(fAlpha);
-      half hBeta = hostFloat2Half(fBeta);
-
-      return cublasHgemm(handle, transa, transb, m, n, k,
-                         &hAlpha, A, lda, B, ldb, &hBeta, C, ldc);
-    }
-
-    // CUDA 8.0 changes the half datatype specifier
-#if CUDA_VERSION == 7050
-    auto halfType = CUBLAS_DATA_HALF;
-#else
-    auto halfType = CUDA_R_16F;
-#endif // CUDA_VERSION
-
+                             float *C,
+                             int ldc) {
+    // Always accumulate in f32
     return cublasSgemmEx(handle, transa, transb, m, n, k,
-                         &fAlpha, A, halfType, lda,
-                         B, halfType, ldb,
+                         &fAlpha, A, CUDA_R_16F, lda,
+                         B, CUDA_R_16F, ldb,
                          &fBeta,
-                         C, halfType, ldc);
+                         C, CUDA_R_32F, ldc);
   }
 };
 
 template <typename T>
 void
-runMatrixMult(Tensor<T, 2, true>& c, bool transC,
+runMatrixMult(Tensor<float, 2, true>& c, bool transC,
               Tensor<T, 2, true>& a, bool transA,
               Tensor<T, 2, true>& b, bool transB,
               float alpha,
               float beta,
-              bool useHgemm,
               cublasHandle_t handle,
               cudaStream_t stream) {
   cublasSetStream(handle, stream);
@@ -116,7 +99,7 @@ runMatrixMult(Tensor<T, 2, true>& c, bool transC,
   // column-major layout
   T* pA = transC ? a.data() : b.data();
   T* pB = transC ? b.data() : a.data();
-  T* pC = c.data();
+  float* pC = c.data();
 
   int m = c.getSize(1); // stride 1 size
   int n = c.getSize(0); // other size
@@ -138,13 +121,12 @@ runMatrixMult(Tensor<T, 2, true>& c, bool transC,
                                  gemmTrA, gemmTrB,
                                  m, n, k, alpha,
                                  pA, lda, pB, ldb, beta,
-                                 pC, ldc, useHgemm);
+                                 pC, ldc);
 
   FAISS_ASSERT_FMT(err == CUBLAS_STATUS_SUCCESS,
-                   "cublas failed (%d): %s "
+                   "cublas failed (%d): "
                    "(%d, %d)%s x (%d, %d)%s = (%d, %d)%s",
                    (int) err,
-                   useHgemm ? "Hgemm" : "Sgemm",
                    a.getSize(0), a.getSize(1), transA ? "'" : "",
                    b.getSize(0), b.getSize(1), transB ? "'" : "",
                    c.getSize(0), c.getSize(1), transC ? "'" : "");
@@ -156,23 +138,21 @@ void runMatrixMult(Tensor<float, 2, true>& c, bool transC,
                    Tensor<float, 2, true>& b, bool transB,
                    float alpha,
                    float beta,
-                   bool useHgemm,
                    cublasHandle_t handle,
                    cudaStream_t stream) {
   return runMatrixMult<float>(c, transC, a, transA, b, transB,
-                              alpha, beta, useHgemm, handle, stream);
+                              alpha, beta, handle, stream);
 }
 
-void runMatrixMult(Tensor<half, 2, true>& c, bool transC,
+void runMatrixMult(Tensor<float, 2, true>& c, bool transC,
                    Tensor<half, 2, true>& a, bool transA,
                    Tensor<half, 2, true>& b, bool transB,
                    float alpha,
                    float beta,
-                   bool useHgemm,
                    cublasHandle_t handle,
                    cudaStream_t stream) {
   return runMatrixMult<half>(c, transC, a, transA, b, transB,
-                             alpha, beta, useHgemm, handle, stream);
+                             alpha, beta, handle, stream);
 }
 
 void
@@ -194,7 +174,7 @@ runIteratedMatrixMult(Tensor<float, 3, true>& c, bool transC,
     runMatrixMult(cView, transC,
                   aView, transA,
                   bView, transB,
-                  alpha, beta, false, handle, stream);
+                  alpha, beta, handle, stream);
   }
 }
 

@@ -19,6 +19,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/IndexFlat.h>
+#include <faiss/IndexLSH.h>
 
 
 namespace faiss {
@@ -29,7 +30,6 @@ IndexBinaryIVF::IndexBinaryIVF(IndexBinary *quantizer, size_t d, size_t nlist)
       own_invlists(true),
       nprobe(1),
       max_codes(0),
-      maintain_direct_map(false),
       quantizer(quantizer),
       nlist(nlist),
       own_fields(false),
@@ -46,7 +46,6 @@ IndexBinaryIVF::IndexBinaryIVF()
       own_invlists(false),
       nprobe(1),
       max_codes(0),
-      maintain_direct_map(false),
       quantizer(nullptr),
       nlist(0),
       own_fields(false),
@@ -65,8 +64,7 @@ void IndexBinaryIVF::add_core(idx_t n, const uint8_t *x, const idx_t *xids,
                               const idx_t *precomputed_idx) {
   FAISS_THROW_IF_NOT(is_trained);
   assert(invlists);
-  FAISS_THROW_IF_NOT_MSG(!(maintain_direct_map && xids),
-                         "cannot have direct map and add with ids");
+  direct_map.check_can_add (xids);
 
   const idx_t * idx;
 
@@ -85,13 +83,15 @@ void IndexBinaryIVF::add_core(idx_t n, const uint8_t *x, const idx_t *xids,
     idx_t id = xids ? xids[i] : ntotal + i;
     idx_t list_no = idx[i];
 
-    if (list_no < 0)
-      continue;
-    const uint8_t *xi = x + i * code_size;
-    size_t offset = invlists->add_entry(list_no, id, xi);
+    if (list_no < 0) {
+        direct_map.add_single_id (id, -1, 0);
+    } else {
+        const uint8_t *xi = x + i * code_size;
+        size_t offset = invlists->add_entry(list_no, id, xi);
 
-    if (maintain_direct_map)
-      direct_map.push_back(list_no << 32 | offset);
+        direct_map.add_single_id (id, list_no, offset);
+    }
+
     n_add++;
   }
   if (verbose) {
@@ -101,28 +101,20 @@ void IndexBinaryIVF::add_core(idx_t n, const uint8_t *x, const idx_t *xids,
   ntotal += n_add;
 }
 
-void IndexBinaryIVF::make_direct_map(bool new_maintain_direct_map) {
-  // nothing to do
-  if (new_maintain_direct_map == maintain_direct_map)
-    return;
-
-  if (new_maintain_direct_map) {
-    direct_map.resize(ntotal, -1);
-    for (size_t key = 0; key < nlist; key++) {
-      size_t list_size = invlists->list_size(key);
-      const idx_t *idlist = invlists->get_ids(key);
-
-      for (size_t ofs = 0; ofs < list_size; ofs++) {
-        FAISS_THROW_IF_NOT_MSG(0 <= idlist[ofs] && idlist[ofs] < ntotal,
-                               "direct map supported only for seuquential ids");
-        direct_map[idlist[ofs]] = key << 32 | ofs;
-      }
+void IndexBinaryIVF::make_direct_map (bool b)
+{
+    if (b) {
+        direct_map.set_type (DirectMap::Array, invlists, ntotal);
+    } else {
+        direct_map.set_type (DirectMap::NoMap, invlists, ntotal);
     }
-  } else {
-    direct_map.clear();
-  }
-  maintain_direct_map = new_maintain_direct_map;
 }
+
+void IndexBinaryIVF::set_direct_map_type (DirectMap::Type type)
+{
+    direct_map.set_type (type, invlists, ntotal);
+}
+
 
 void IndexBinaryIVF::search(idx_t n, const uint8_t *x, idx_t k,
                             int32_t *distances, idx_t *labels) const {
@@ -142,11 +134,8 @@ void IndexBinaryIVF::search(idx_t n, const uint8_t *x, idx_t k,
 }
 
 void IndexBinaryIVF::reconstruct(idx_t key, uint8_t *recons) const {
-  FAISS_THROW_IF_NOT_MSG(direct_map.size() == ntotal,
-                         "direct map is not initialized");
-  idx_t list_no = direct_map[key] >> 32;
-  idx_t offset = direct_map[key] & 0xffffffff;
-  reconstruct_from_offset(list_no, offset, recons);
+    idx_t lo = direct_map.get (key);
+    reconstruct_from_offset (lo_listno(lo), lo_offset(lo), recons);
 }
 
 void IndexBinaryIVF::reconstruct_n(idx_t i0, idx_t ni, uint8_t *recons) const {
@@ -215,39 +204,9 @@ void IndexBinaryIVF::reset() {
 }
 
 size_t IndexBinaryIVF::remove_ids(const IDSelector& sel) {
-  FAISS_THROW_IF_NOT_MSG(!maintain_direct_map,
-                         "direct map remove not implemented");
-
-  std::vector<idx_t> toremove(nlist);
-
-#pragma omp parallel for
-  for (idx_t i = 0; i < nlist; i++) {
-    idx_t l0 = invlists->list_size (i), l = l0, j = 0;
-    const idx_t *idsi = invlists->get_ids(i);
-    while (j < l) {
-      if (sel.is_member(idsi[j])) {
-        l--;
-        invlists->update_entry(
-          i, j,
-          invlists->get_single_id(i, l),
-          invlists->get_single_code(i, l));
-      } else {
-        j++;
-      }
-    }
-    toremove[i] = l0 - l;
-  }
-  // this will not run well in parallel on ondisk because of possible shrinks
-  size_t nremove = 0;
-  for (idx_t i = 0; i < nlist; i++) {
-    if (toremove[i] > 0) {
-      nremove += toremove[i];
-      invlists->resize(
-        i, invlists->list_size(i) - toremove[i]);
-    }
-  }
-  ntotal -= nremove;
-  return nremove;
+    size_t nremove = direct_map.remove_ids (sel, invlists);
+    ntotal -= nremove;
+    return nremove;
 }
 
 void IndexBinaryIVF::train(idx_t n, const uint8_t *x) {
@@ -267,9 +226,6 @@ void IndexBinaryIVF::train(idx_t n, const uint8_t *x) {
     Clustering clus(d, nlist, cp);
     quantizer->reset();
 
-    std::unique_ptr<float[]> x_f(new float[n * d]);
-    binary_to_real(n * d, x, x_f.get());
-
     IndexFlatL2 index_tmp(d);
 
     if (clustering_index && verbose) {
@@ -277,8 +233,12 @@ void IndexBinaryIVF::train(idx_t n, const uint8_t *x) {
              clustering_index->d);
     }
 
-    clus.train(n, x_f.get(), clustering_index ? *clustering_index : index_tmp);
+    // LSH codec that is able to convert the binary vectors to floats.
+    IndexLSH codec(d, d, false, false);
 
+    clus.train_encoded (n, x, &codec, clustering_index ? *clustering_index : index_tmp);
+
+    // convert clusters to binary
     std::unique_ptr<uint8_t[]> x_b(new uint8_t[clus.k * code_size]);
     real_to_binary(d * clus.k, clus.centroids.data(), x_b.get());
 
@@ -294,8 +254,7 @@ void IndexBinaryIVF::merge_from(IndexBinaryIVF &other, idx_t add_id) {
   FAISS_THROW_IF_NOT(other.d == d);
   FAISS_THROW_IF_NOT(other.nlist == nlist);
   FAISS_THROW_IF_NOT(other.code_size == code_size);
-  FAISS_THROW_IF_NOT_MSG((!maintain_direct_map &&
-                          !other.maintain_direct_map),
+  FAISS_THROW_IF_NOT_MSG(direct_map.no() && other.direct_map.no(),
                          "direct map copy not implemented");
   FAISS_THROW_IF_NOT_MSG(typeid (*this) == typeid (other),
                          "can only merge indexes of the same type");

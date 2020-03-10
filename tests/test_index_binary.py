@@ -3,9 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-#! /usr/bin/env python2
-
 """this is a basic test script for simple indices work"""
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import numpy as np
 import unittest
@@ -180,6 +179,37 @@ class TestBinaryIVF(unittest.TestCase):
             assert(np.all(Iivfflat == -1))
             assert(np.all(Divfflat == 2147483647)) # NOTE(hoss): int32_t max
 
+    def test_ivf_reconstruction(self):
+        d = self.xq.shape[1] * 8
+        quantizer = faiss.IndexBinaryFlat(d)
+        index = faiss.IndexBinaryIVF(quantizer, d, 8)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.nprobe = 4
+        index.train(self.xt)
+
+        index.add(self.xb)
+        index.set_direct_map_type(faiss.DirectMap.Array)
+
+        for i in range(0, len(self.xb), 13):
+            np.testing.assert_array_equal(
+                index.reconstruct(i),
+                self.xb[i]
+            )
+
+        # try w/ hashtable
+        index = faiss.IndexBinaryIVF(quantizer, d, 8)
+        rs = np.random.RandomState(123)
+        ids = rs.choice(10000, size=len(self.xb), replace=False)
+        index.add_with_ids(self.xb, ids)
+        index.set_direct_map_type(faiss.DirectMap.Hashtable)
+
+        for i in range(0, len(self.xb), 13):
+            np.testing.assert_array_equal(
+                index.reconstruct(int(ids[i])),
+                self.xb[i]
+            )
+
+
 class TestHNSW(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
@@ -265,7 +295,7 @@ class TestReplicasAndShards(unittest.TestCase):
 
         nrep = 5
         index = faiss.IndexBinaryReplicas()
-        for i in range(nrep):
+        for _i in range(nrep):
             sub_idx = faiss.IndexBinaryFlat(d)
             sub_idx.add(xb)
             index.addIndex(sub_idx)
@@ -276,7 +306,7 @@ class TestReplicasAndShards(unittest.TestCase):
         self.assertTrue((Iref == I).all())
 
         index2 = faiss.IndexBinaryReplicas()
-        for i in range(nrep):
+        for _i in range(nrep):
             sub_idx = faiss.IndexBinaryFlat(d)
             index2.addIndex(sub_idx)
 
@@ -310,7 +340,7 @@ class TestReplicasAndShards(unittest.TestCase):
         compare_binary_result_lists(Dref, Iref, D, I)
 
         index2 = faiss.IndexBinaryShards(d)
-        for i in range(nrep):
+        for _i in range(nrep):
             sub_idx = faiss.IndexBinaryFlat(d)
             index2.add_shard(sub_idx)
 

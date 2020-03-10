@@ -3,13 +3,11 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-#! /usr/bin/env python2
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import unittest
 import faiss
-
-
 
 
 class TestFactory(unittest.TestCase):
@@ -53,7 +51,6 @@ class TestFactory(unittest.TestCase):
     def test_factory_4(self):
         index = faiss.index_factory(12, "IVF10,FlatDedup")
         assert index.instances is not None
-
 
 
 class TestCloneSize(unittest.TestCase):

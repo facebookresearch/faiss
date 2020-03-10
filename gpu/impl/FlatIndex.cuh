@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <faiss/MetricType.h>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
 #include <faiss/gpu/utils/MemorySpace.h>
@@ -21,9 +22,7 @@ class FlatIndex {
  public:
   FlatIndex(GpuResources* res,
             int dim,
-            bool l2Distance,
             bool useFloat16,
-            bool useFloat16Accumulator,
             bool storeTransposed,
             MemorySpace space);
 
@@ -54,13 +53,17 @@ class FlatIndex {
 
   void query(Tensor<float, 2, true>& vecs,
              int k,
+             faiss::MetricType metric,
+             float metricArg,
              Tensor<float, 2, true>& outDistances,
              Tensor<int, 2, true>& outIndices,
              bool exactDistance);
 
   void query(Tensor<half, 2, true>& vecs,
              int k,
-             Tensor<half, 2, true>& outDistances,
+             faiss::MetricType metric,
+             float metricArg,
+             Tensor<float, 2, true>& outDistances,
              Tensor<int, 2, true>& outIndices,
              bool exactDistance);
 
@@ -93,15 +96,9 @@ class FlatIndex {
   /// Float16 data format
   const bool useFloat16_;
 
-  /// For supporting hardware, whether or not we use Hgemm
-  const bool useFloat16Accumulator_;
-
   /// Store vectors in transposed layout for speed; makes addition to
   /// the index slower
   const bool storeTransposed_;
-
-  /// L2 or inner product distance?
-  bool l2Distance_;
 
   /// Memory space for our allocations
   MemorySpace space_;
@@ -122,9 +119,6 @@ class FlatIndex {
 
   /// Precomputed L2 norms
   DeviceTensor<float, 1, true> norms_;
-
-  /// Precomputed L2 norms, float16 form
-  DeviceTensor<half, 1, true> normsHalf_;
 };
 
 } } // namespace
