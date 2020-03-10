@@ -25,6 +25,7 @@ void runPQCodeDistances(Tensor<float, 3, true>& pqCentroids,
                         Tensor<float, 2, true>& coarseCentroids,
                         Tensor<int, 2, true>& topQueryToCentroid,
                         NoTypeTensor<4, true>& outCodeDistances,
+                        bool l2Distance,
                         bool useFloat16Lookup,
                         cudaStream_t stream);
 

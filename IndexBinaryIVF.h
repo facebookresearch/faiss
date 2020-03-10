@@ -46,8 +46,7 @@ struct IndexBinaryIVF : IndexBinary {
     bool use_heap = true;
 
     /// map for direct access to the elements. Enables reconstruct().
-    bool maintain_direct_map;
-    std::vector<idx_t> direct_map;
+    DirectMap direct_map;
 
     IndexBinary *quantizer;   ///< quantizer that maps vectors to inverted lists
     size_t nlist;             ///< number of possible key values
@@ -167,6 +166,8 @@ struct IndexBinaryIVF : IndexBinary {
      *                                   else clear it
      */
     void make_direct_map(bool new_maintain_direct_map=true);
+
+    void set_direct_map_type (DirectMap::Type type);
 
     void replace_invlists(InvertedLists *il, bool own=false);
 };

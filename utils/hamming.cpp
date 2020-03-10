@@ -28,11 +28,8 @@
 
 #include <vector>
 #include <memory>
-#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <assert.h>
-#include <limits.h>
 
 #include <faiss/utils/Heap.h>
 #include <faiss/impl/FaissAssert.h>

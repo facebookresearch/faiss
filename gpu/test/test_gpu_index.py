@@ -3,9 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-#! /usr/bin/env python2
+from __future__ import absolute_import, division, print_function, unicode_literals
 
-from __future__ import print_function
 import time
 import unittest
 import numpy as np
@@ -126,7 +125,7 @@ class ReferencedObject(unittest.TestCase):
 
     def test_proxy(self):
         index = faiss.IndexReplicas()
-        for i in range(3):
+        for _i in range(3):
             sub_index = faiss.IndexFlatL2(self.d)
             sub_index.add(self.xb)
             index.addIndex(sub_index)
@@ -196,7 +195,7 @@ class ReferencedObject(unittest.TestCase):
         index = faiss.IndexReplicas()
         size, dim = target.shape
         num_gpu = 4
-        for i in range(num_gpu):
+        for _i in range(num_gpu):
             config = faiss.GpuIndexFlatConfig()
             config.device = 0   # simulate on a single GPU
             sub_index = faiss.GpuIndexFlatIP(faiss.StandardGpuResources(), dim, config)

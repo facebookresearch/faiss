@@ -75,12 +75,25 @@ def replace_method(the_class, name, replacement, ignore_missing=False):
 
 
 def handle_Clustering():
-    def replacement_train(self, x, index):
-        assert x.flags.contiguous
+    def replacement_train(self, x, index, weights=None):
         n, d = x.shape
         assert d == self.d
-        self.train_c(n, swig_ptr(x), index)
+        if weights is not None:
+            assert weights.shape == (n, )
+            self.train_c(n, swig_ptr(x), index, swig_ptr(weights))
+        else:
+            self.train_c(n, swig_ptr(x), index)
+    def replacement_train_encoded(self, x, codec, index, weights=None):
+        n, d = x.shape
+        assert d == codec.sa_code_size()
+        assert codec.d == index.d
+        if weights is not None:
+            assert weights.shape == (n, )
+            self.train_encoded_c(n, swig_ptr(x), codec, index, swig_ptr(weights))
+        else:
+            self.train_encoded_c(n, swig_ptr(x), codec, index)
     replace_method(Clustering, 'train', replacement_train)
+    replace_method(Clustering, 'train_encoded', replacement_train_encoded)
 
 
 handle_Clustering()
@@ -170,7 +183,11 @@ def handle_Index(the_class):
             sel = x
         else:
             assert x.ndim == 1
-            sel = IDSelectorBatch(x.size, swig_ptr(x))
+            index_ivf = try_extract_index_ivf (self)
+            if index_ivf and index_ivf.direct_map.type == DirectMap.Hashtable:
+                sel = IDSelectorArray(x.size, swig_ptr(x))
+            else:
+                sel = IDSelectorBatch(x.size, swig_ptr(x))
         return self.remove_ids_c(sel)
 
     def replacement_reconstruct(self, key):
@@ -684,7 +701,7 @@ class Kmeans:
                 setattr(self.cp, k, v)
         self.centroids = None
 
-    def train(self, x):
+    def train(self, x, weights=None):
         n, d = x.shape
         assert d == self.d
         clus = Clustering(d, self.k, self.cp)
@@ -698,10 +715,13 @@ class Kmeans:
             else:
                 ngpu = self.gpu
             self.index = index_cpu_to_all_gpus(self.index, ngpu=ngpu)
-        clus.train(x, self.index)
+        clus.train(x, self.index, weights)
         centroids = vector_float_to_array(clus.centroids)
         self.centroids = centroids.reshape(self.k, d)
-        self.obj = vector_float_to_array(clus.obj)
+        stats = clus.iteration_stats
+        self.obj = np.array([
+            stats.at(i).obj for i in range(stats.size())
+        ])
         return self.obj[-1] if self.obj.size > 0 else 0.0
 
     def assign(self, x):
@@ -730,3 +750,32 @@ def deserialize_index(data):
     reader = VectorIOReader()
     copy_array_to_vector(data, reader.data)
     return read_index(reader)
+
+
+class ResultHeap:
+    """Combine query results from a sliced dataset. The final result will
+    be in self.D, self.I."""
+
+    def __init__(self, nq, k):
+        " nq: number of query vectors, k: number of results per query "
+        self.I = np.zeros((nq, k), dtype='int64')
+        self.D = np.zeros((nq, k), dtype='float32')
+        self.nq, self.k = nq, k
+        heaps = float_maxheap_array_t()
+        heaps.k = k
+        heaps.nh = nq
+        heaps.val = swig_ptr(self.D)
+        heaps.ids = swig_ptr(self.I)
+        heaps.heapify()
+        self.heaps = heaps
+
+    def add_result(self, D, I):
+        """D, I do not need to be in a particular order (heap or sorted)"""
+        assert D.shape == (self.nq, self.k)
+        assert I.shape == (self.nq, self.k)
+        self.heaps.addn_with_ids(
+            self.k, faiss.swig_ptr(D),
+            faiss.swig_ptr(I), self.k)
+
+    def finalize(self):
+        self.heaps.reorder()

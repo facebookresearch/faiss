@@ -32,6 +32,8 @@
 namespace faiss { namespace gpu {
 
 IVFPQ::IVFPQ(GpuResources* resources,
+             faiss::MetricType metric,
+             float metricArg,
              FlatIndex* quantizer,
              int numSubQuantizers,
              int bitsPerSubQuantizer,
@@ -40,6 +42,8 @@ IVFPQ::IVFPQ(GpuResources* resources,
              bool useFloat16LookupTables,
              MemorySpace space) :
     IVFBase(resources,
+            metric,
+            metricArg,
             quantizer,
             numSubQuantizers,
             indicesOptions,
@@ -95,6 +99,11 @@ IVFPQ::isSupportedNoPrecomputedSubDimSize(int dims) {
 
 void
 IVFPQ::setPrecomputedCodes(bool enable) {
+  if (enable && metric_ == MetricType::METRIC_INNER_PRODUCT) {
+    FAISS_THROW_MSG("Precomputed codes are not needed for GpuIndexIVFPQ "
+                    "with METRIC_INNER_PRODUCT");
+  }
+
   if (precomputedCodes_ != enable) {
     precomputedCodes_ = enable;
 
@@ -128,7 +137,13 @@ IVFPQ::classifyAndAddVectors(Tensor<float, 2, true>& vecs,
   DeviceTensor<int, 2, true> listIds2d(mem, {vecs.getSize(0), 1}, stream);
   auto listIds = listIds2d.view<1>({vecs.getSize(0)});
 
-  quantizer_->query(vecs, 1, listDistance, listIds2d, false);
+  quantizer_->query(vecs,
+                    1,
+                    metric_,
+                    metricArg_,
+                    listDistance,
+                    listIds2d,
+                    false);
 
   // Copy the lists that we wish to append to back to the CPU
   // FIXME: really this can be into pinned memory and a true async
@@ -424,6 +439,8 @@ IVFPQ::setPQCentroids_(float* data) {
 
 void
 IVFPQ::precomputeCodes_() {
+  FAISS_ASSERT(metric_ == MetricType::METRIC_L2);
+
   //
   //    d = || x - y_C ||^2 + || y_R ||^2 + 2 * (y_C|y_R) - 2 * (x|y_R)
   //        ---------------   ---------------------------       -------
@@ -532,11 +549,15 @@ IVFPQ::query(Tensor<float, 2, true>& queries,
   // indices both internally and externally
   quantizer_->query(queries,
                     nprobe,
+                    metric_,
+                    metricArg_,
                     coarseDistances,
                     coarseIndices,
                     true);
 
   if (precomputedCodes_) {
+    FAISS_ASSERT(metric_ == MetricType::METRIC_L2);
+
     runPQPrecomputedCodes_(queries,
                            coarseDistances,
                            coarseIndices,
@@ -592,6 +613,8 @@ IVFPQ::runPQPrecomputedCodes_(
   int k,
   Tensor<float, 2, true>& outDistances,
   Tensor<long, 2, true>& outIndices) {
+  FAISS_ASSERT(metric_ == MetricType::METRIC_L2);
+
   auto& mem = resources_->getMemoryManagerCurrentDevice();
   auto stream = resources_->getDefaultStreamCurrentDevice();
 
@@ -690,6 +713,7 @@ IVFPQ::runPQNoPrecomputedCodes_(
                                   deviceListLengths_,
                                   maxListLength_,
                                   k,
+                                  metric_,
                                   outDistances,
                                   outIndices,
                                   resources_);

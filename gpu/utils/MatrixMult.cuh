@@ -22,18 +22,16 @@ void runMatrixMult(Tensor<float, 2, true>& c, bool transC,
                    Tensor<float, 2, true>& b, bool transB,
                    float alpha,
                    float beta,
-                   bool useHgemm, // ignored for float32
                    cublasHandle_t handle,
                    cudaStream_t stream);
 
 /// C = alpha * A * B + beta * C
 /// Expects row major layout, not fortran/blas column major!
-void runMatrixMult(Tensor<half, 2, true>& c, bool transC,
+void runMatrixMult(Tensor<float, 2, true>& c, bool transC,
                    Tensor<half, 2, true>& a, bool transA,
                    Tensor<half, 2, true>& b, bool transB,
                    float alpha,
                    float beta,
-                   bool useHgemm,
                    cublasHandle_t handle,
                    cudaStream_t stream);
 

@@ -25,6 +25,7 @@
 #pragma SWIG nowarn=512
 
 %include <stdint.i>
+
 typedef uint64_t size_t;
 
 #define __restrict
@@ -206,6 +207,7 @@ namespace std {
 %template(OperatingPointVector) std::vector<faiss::OperatingPoint>;
 %template(InvertedListsPtrVector) std::vector<faiss::InvertedLists*>;
 %template(RepeatVector) std::vector<faiss::Repeat>;
+%template(ClusteringIterationStatsVector) std::vector<faiss::ClusteringIterationStats>;
 
 #ifdef GPU_WRAPPER
 %template(GpuResourcesVector) std::vector<faiss::gpu::GpuResources*>;
@@ -309,6 +311,7 @@ void gpu_sync_all_devices()
 %include  <faiss/utils/distances.h>
 %include  <faiss/utils/random.h>
 
+%include  <faiss/MetricType.h>
 %include  <faiss/Index.h>
 %include  <faiss/Clustering.h>
 
@@ -325,12 +328,14 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/PolysemousTraining.h>
 %include  <faiss/IndexPQ.h>
 %include  <faiss/InvertedLists.h>
+%include  <faiss/DirectMap.h>
 %ignore InvertedListScanner;
 %ignore BinaryInvertedListScanner;
 %include  <faiss/IndexIVF.h>
 // NOTE(hoss): SWIG (wrongly) believes the overloaded const version shadows the
 //   non-const one.
 %warnfilter(509) extract_index_ivf;
+%warnfilter(509) try_extract_index_ivf;
 %include  <faiss/IVFlib.h>
 %include  <faiss/impl/ScalarQuantizer.h>
 %include  <faiss/IndexScalarQuantizer.h>

@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <faiss/MetricType.h>
 #include <faiss/gpu/impl/IVFBase.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
@@ -17,6 +18,8 @@ namespace faiss { namespace gpu {
 class IVFPQ : public IVFBase {
  public:
   IVFPQ(GpuResources* resources,
+        faiss::MetricType metric,
+        float metricArg,
         /// We do not own this reference
         FlatIndex* quantizer,
         int numSubQuantizers,
