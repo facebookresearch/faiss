@@ -10,10 +10,6 @@
 #ifndef FAISS_DIRECT_MAP_H
 #define FAISS_DIRECT_MAP_H
 
-/**
- * Direct map: a way to map back from ids to inverted lists
- */
-
 #include <faiss/InvertedLists.h>
 #include <unordered_map>
 
@@ -35,6 +31,9 @@ inline uint64_t lo_offset (uint64_t lo) {
     return lo & 0xffffffff;
 }
 
+/**
+ * Direct map: a way to map back from ids to inverted lists
+ */
 struct DirectMap {
     typedef Index::idx_t idx_t;
 
