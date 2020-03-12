@@ -88,7 +88,7 @@ void faiss_Clustering_centroids(
 
 /// getter for iteration stats
 void faiss_Clustering_iteration_stats(
-    FaissClustering* clustering, FaissClusteringIterationStats** obj, size_t* size);
+    FaissClustering* clustering, FaissClusteringIterationStats** iteration_stats, size_t* size);
 
 /// the only mandatory parameters are k and d
 int faiss_Clustering_new(FaissClustering** p_clustering, int d, int k);
