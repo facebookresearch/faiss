@@ -84,7 +84,7 @@ void faiss_Clustering_iteration_stats(
     FaissClustering* clustering, FaissClusteringIterationStats** obj, size_t* size) {
     std::vector<ClusteringIterationStats>& v = reinterpret_cast<Clustering*>(clustering)->iteration_stats;
     if (obj) {
-        *obj = reinterpret_cast<FaissClusteringIterationStats*>(v.data());
+        *iteration_stats = reinterpret_cast<FaissClusteringIterationStats*>(v.data());
     }
     if (size) {
         *size = v.size();
