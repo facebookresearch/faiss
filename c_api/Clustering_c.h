@@ -75,14 +75,20 @@ FAISS_DECLARE_GETTER(Clustering, size_t, d)
 /// getter for k
 FAISS_DECLARE_GETTER(Clustering, size_t, k)
 
+FAISS_DECLARE_CLASS(ClusteringIterationStats)
+FAISS_DECLARE_GETTER(ClusteringIterationStats, float, obj)
+FAISS_DECLARE_GETTER(ClusteringIterationStats, double, time)
+FAISS_DECLARE_GETTER(ClusteringIterationStats, double, time_search)
+FAISS_DECLARE_GETTER(ClusteringIterationStats, double, imbalance_factor)
+FAISS_DECLARE_GETTER(ClusteringIterationStats, int, nsplit)
+
 /// getter for centroids (size = k * d)
 void faiss_Clustering_centroids(
     FaissClustering* clustering, float** centroids, size_t* size);
 
-/// getter for objective values (sum of distances reported by index)
-/// over iterations
-void faiss_Clustering_obj(
-    FaissClustering* clustering, float** obj, size_t* size);
+/// getter for iteration stats
+void faiss_Clustering_iteration_stats(
+    FaissClustering* clustering, FaissClusteringIterationStats** iteration_stats, size_t* size);
 
 /// the only mandatory parameters are k and d
 int faiss_Clustering_new(FaissClustering** p_clustering, int d, int k);
