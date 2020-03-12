@@ -39,6 +39,12 @@ DEFINE_GETTER(Clustering, size_t, d)
 /// getter for k
 DEFINE_GETTER(Clustering, size_t, k)
 
+DEFINE_GETTER(ClusteringIterationStats, float, obj)
+DEFINE_GETTER(ClusteringIterationStats, double, time)
+DEFINE_GETTER(ClusteringIterationStats, double, time_search)
+DEFINE_GETTER(ClusteringIterationStats, double, imbalance_factor)
+DEFINE_GETTER(ClusteringIterationStats, int, nsplit)
+
 void faiss_ClusteringParameters_init(FaissClusteringParameters* params) {
     ClusteringParameters d;
     params->frozen_centroids = d.frozen_centroids;
