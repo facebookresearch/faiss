@@ -6,7 +6,8 @@ env:
 
 matrix:
   include:
-    - os: linux
+    - &base_job
+      os: linux
       compiler: gcc
       addons:
         apt:
@@ -17,6 +18,10 @@ matrix:
 #            - swig3.0
       env:
         - PYTHON_CFLAGS="-I/usr/include/python2.7"
+    - <<: *base_job
+      env:
+        - PYTHON_CFLAGS="-I/usr/include/python2.7"
+        - BUILD_C_API="true"
     - os: linux
       compiler: gcc
       addons:
@@ -86,6 +91,9 @@ matrix:
           update: true
       env:
         - MATRIX_EVAL="which gcc; export CC=/usr/local/bin/gcc CXX=/usr/local/bin/g++"
+    - env:
+        - PYTHON_CFLAGS="-I/usr/include/python2.7"
+        - BUILD_C_API="true"
 
 before_install:
   - eval "$MATRIX_EVAL"
@@ -98,6 +106,7 @@ install:
   - ./configure --without-cuda
   - make
   - make -C python
+  - ./.travis/install_c.sh
 
 script:
   - make test
