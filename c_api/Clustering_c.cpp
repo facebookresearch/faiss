@@ -19,6 +19,7 @@ extern "C" {
 using faiss::Clustering;
 using faiss::ClusteringParameters;
 using faiss::Index;
+using faiss::ClusteringIterationStats;
 
 DEFINE_GETTER(Clustering, int, niter)
 DEFINE_GETTER(Clustering, int, nredo)
@@ -78,13 +79,12 @@ void faiss_Clustering_centroids(
     }
 }
 
-/// getter for objective values (sum of distances reported by index)
-/// over iterations
-void faiss_Clustering_obj(
-    FaissClustering* clustering, float** obj, size_t* size) {
-    std::vector<float>& v = reinterpret_cast<Clustering*>(clustering)->obj;
+/// getter for iteration stats
+void faiss_Clustering_iteration_stats(
+    FaissClustering* clustering, FaissClusteringIterationStats** obj, size_t* size) {
+    std::vector<ClusteringIterationStats>& v = reinterpret_cast<Clustering*>(clustering)->iteration_stats;
     if (obj) {
-        *obj = v.data();
+        *obj = reinterpret_cast<FaissClusteringIterationStats*>(v.data());
     }
     if (size) {
         *size = v.size();
