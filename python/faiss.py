@@ -28,7 +28,7 @@ def instruction_set():
             return "default"
     elif platform.system() == "Linux":
         import numpy.distutils.cpuinfo
-        if "avx2" in numpy.distutils.cpuinfo.cpu.info[0]['flags']:
+        if "avx2" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
             return "AVX2"
         else:
             return "default"
