@@ -44,12 +44,10 @@ struct IDSelector;
 struct RangeSearchResult;
 struct DistanceComputer;
 
-/** Abstract structure for an index
+/** Abstract structure for an index, supports adding vectors and searching them.
  *
- * Supports adding vertices and searching them.
- *
- * Currently only asymmetric queries are supported:
- * database-to-database queries are not implemented.
+ * All vectors provided at add or search time are 32-bit float arrays,
+ * although the internal representation may vary.
  */
 struct Index {
     using idx_t = int64_t;  ///< all indices are this type

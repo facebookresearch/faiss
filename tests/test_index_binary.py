@@ -10,12 +10,8 @@ import numpy as np
 import unittest
 import faiss
 
+from common import compare_binary_result_lists, make_binary_dataset
 
-def make_binary_dataset(d, nt, nb, nq):
-    assert d % 8 == 0
-    rs = np.random.RandomState(123)
-    x = rs.randint(256, size=(nb + nq + nt, int(d / 8))).astype('uint8')
-    return x[:nt], x[nt:-nq], x[-nq:]
 
 
 def binary_to_float(x):
@@ -124,6 +120,29 @@ class TestBinaryFlat(unittest.TestCase):
             assert(np.all(Iflat == -1))
             assert(np.all(Dflat == 2147483647)) # NOTE(hoss): int32_t max
 
+    def test_range_search(self):
+        d = self.xq.shape[1] * 8
+
+        index = faiss.IndexBinaryFlat(d)
+        index.add(self.xb)
+        D, I = index.search(self.xq, 10)
+        thresh = int(np.median(D[:, -1]))
+
+        lims, D2, I2 = index.range_search(self.xq, thresh)
+        nt1 = nt2 = 0
+        for i in range(len(self.xq)):
+            range_res = I2[lims[i]:lims[i + 1]]
+            if thresh > D[i, -1]:
+                self.assertTrue(set(I[i]) <= set(range_res))
+                nt1 += 1
+            elif thresh < D[i, -1]:
+                self.assertTrue(set(range_res) <= set(I[i]))
+                nt2 += 1
+            # in case of equality we have a problem with ties
+        print('nb tests', nt1, nt2)
+        # nb tests is actually low...
+        self.assertTrue(nt1 > 19 and nt2 > 19)
+
 
 class TestBinaryIVF(unittest.TestCase):
 
@@ -165,6 +184,29 @@ class TestBinaryIVF(unittest.TestCase):
         Divfflat, _ = index.search(self.xq, 10)
 
         self.assertEqual((self.Dref == Divfflat).sum(), 4122)
+
+    def test_ivf_range(self):
+        d = self.xq.shape[1] * 8
+
+        quantizer = faiss.IndexBinaryFlat(d)
+        index = faiss.IndexBinaryIVF(quantizer, d, 8)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.nprobe = 4
+        index.train(self.xt)
+        index.add(self.xb)
+        D, I = index.search(self.xq, 10)
+
+        radius = int(np.median(D[:, -1]) + 1)
+        Lr, Dr, Ir = index.range_search(self.xq, radius)
+
+        for i in range(len(self.xq)):
+            res = Ir[Lr[i]:Lr[i + 1]]
+            if D[i, -1] < radius:
+                self.assertTrue(set(I[i]) <= set(res))
+            else:
+                subset = I[i, D[i, :] < radius]
+                self.assertTrue(set(subset) == set(res))
+
 
     def test_ivf_flat_empty(self):
         d = self.xq.shape[1] * 8
@@ -256,27 +298,6 @@ class TestHNSW(unittest.TestCase):
 
         self.assertTrue((Dref == Dbin).all())
 
-
-def compare_binary_result_lists(D1, I1, D2, I2):
-    """comparing result lists is difficult because there are many
-    ties. Here we sort by (distance, index) pairs and ignore the largest
-    distance of each result. Compatible result lists should pass this."""
-    assert D1.shape == I1.shape == D2.shape == I2.shape
-    n, k = D1.shape
-    ndiff = (D1 != D2).sum()
-    assert ndiff == 0, '%d differences in distance matrix %s' % (
-        ndiff, D1.shape)
-
-    def normalize_DI(D, I):
-        norm = I.max() + 1.0
-        Dr = D.astype('float64') + I / norm
-        # ignore -1s and elements on last column
-        Dr[I1 == -1] = 1e20
-        Dr[D == D[:, -1:]] = 1e20
-        Dr.sort(axis=1)
-        return Dr
-    ndiff = (normalize_DI(D1, I1) != normalize_DI(D2, I2)).sum()
-    assert ndiff == 0, '%d differences in normalized D matrix' % ndiff
 
 
 class TestReplicasAndShards(unittest.TestCase):

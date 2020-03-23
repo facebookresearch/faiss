@@ -34,7 +34,7 @@ struct ClusteringParameters {
 
     int seed; ///< seed for the random number generator
 
-    size_t decode_block_size;  /// < how many vectors at a time to decode
+    size_t decode_block_size;  ///< how many vectors at a time to decode
 
     /// sets reasonable defaults
     ClusteringParameters ();
@@ -42,11 +42,11 @@ struct ClusteringParameters {
 
 
 struct ClusteringIterationStats {
-    float obj;    /// objective values (sum of distances reported by index)
-    double time;  /// seconds for iteration
-    double time_search; /// seconds for just search
-    double imbalance_factor; /// imbalance factor of iteration
-    int nsplit;   /// number of cluster splits
+    float obj;               ///< objective values (sum of distances reported by index)
+    double time;             ///< seconds for iteration
+    double time_search;      ///< seconds for just search
+    double imbalance_factor; ///< imbalance factor of iteration
+    int nsplit;              ///< number of cluster splits
 };
 
 

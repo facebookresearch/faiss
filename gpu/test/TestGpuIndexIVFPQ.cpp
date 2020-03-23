@@ -187,6 +187,41 @@ TEST(TestGpuIndexIVFPQ, Query_IP) {
   }
 }
 
+TEST(TestGpuIndexIVFPQ, Float16Coarse) {
+  Options opt;
+
+  std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
+  std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+
+  faiss::IndexFlatL2 coarseQuantizer(opt.dim);
+  faiss::IndexIVFPQ cpuIndex(&coarseQuantizer, opt.dim, opt.numCentroids,
+                             opt.codes, opt.bitsPerCode);
+  cpuIndex.nprobe = opt.nprobe;
+  cpuIndex.train(opt.numTrain, trainVecs.data());
+
+  faiss::gpu::StandardGpuResources res;
+  res.noTempMemory();
+
+  faiss::gpu::GpuIndexIVFPQConfig config;
+  config.device = opt.device;
+  config.flatConfig.useFloat16 = true;
+  config.usePrecomputedTables = opt.usePrecomputed;
+  config.indicesOptions = opt.indicesOpt;
+  config.useFloat16LookupTables = opt.useFloat16;
+
+  faiss::gpu::GpuIndexIVFPQ gpuIndex(&res, &cpuIndex, config);
+  gpuIndex.setNumProbes(opt.nprobe);
+
+  gpuIndex.add(opt.numAdd, addVecs.data());
+  cpuIndex.add(opt.numAdd, addVecs.data());
+
+  faiss::gpu::compareIndices(cpuIndex, gpuIndex,
+                             opt.numQuery, opt.dim, opt.k, opt.toString(),
+                             opt.getCompareEpsilon(),
+                             opt.getPctMaxDiff1(),
+                             opt.getPctMaxDiffN());
+}
+
 TEST(TestGpuIndexIVFPQ, Add_L2) {
   for (int tries = 0; tries < 2; ++tries) {
     Options opt;

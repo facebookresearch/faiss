@@ -612,7 +612,6 @@ InvertedListScanner *IndexIVF::get_InvertedListScanner (
 void IndexIVF::reconstruct (idx_t key, float* recons) const
 {
     idx_t lo = direct_map.get (key);
-
     reconstruct_from_offset (lo_listno(lo), lo_offset(lo), recons);
 }
 

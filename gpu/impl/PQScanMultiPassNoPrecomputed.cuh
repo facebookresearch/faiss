@@ -21,8 +21,9 @@ class GpuResources;
 /// per subquantizer?
 bool isSupportedNoPrecomputedSubDimSize(int dims);
 
+template <typename CentroidT>
 void runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
-                                     Tensor<float, 2, true>& centroids,
+                                     Tensor<CentroidT, 2, true>& centroids,
                                      Tensor<float, 3, true>& pqCentroidsInnermostCode,
                                      Tensor<int, 2, true>& topQueryToCentroid,
                                      bool useFloat16Lookup,
@@ -43,3 +44,5 @@ void runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
                                      GpuResources* res);
 
 } } // namespace
+
+#include <faiss/gpu/impl/PQScanMultiPassNoPrecomputed-inl.cuh>

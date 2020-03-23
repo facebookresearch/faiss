@@ -25,16 +25,11 @@ struct FlatIndex;
 struct GpuIndexFlatConfig : public GpuIndexConfig {
   inline GpuIndexFlatConfig()
       : useFloat16(false),
-        useFloat16Accumulator(false),
         storeTransposed(false) {
   }
 
   /// Whether or not data is stored as float16
   bool useFloat16;
-
-  /// This option is now deprecated and doesn't do anything. All accumulation of
-  /// float16 or float32 data is now done in float32.
-  bool useFloat16Accumulator;
 
   /// Whether or not data is stored (transparently) in a transposed
   /// layout, enabling use of the NN GEMM call, which is ~10% faster.
@@ -122,10 +117,6 @@ class GpuIndexFlat : public GpuIndex {
                    int k,
                    float* distances,
                    faiss::Index::idx_t* labels) const override;
-
- private:
-  /// Checks user settings for consistency
-  void verifySettings_() const;
 
  protected:
   /// Our config object
