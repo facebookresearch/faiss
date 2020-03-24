@@ -283,6 +283,18 @@ def handle_IndexBinary(the_class):
                       swig_ptr(labels))
         return distances, labels
 
+    def replacement_range_search(self, x, thresh):
+        n, d = x.shape
+        assert d * 8 == self.d
+        res = RangeSearchResult(n)
+        self.range_search_c(n, swig_ptr(x), thresh, res)
+        # get pointers and copy them
+        lims = rev_swig_ptr(res.lims, n + 1).copy()
+        nd = int(lims[-1])
+        D = rev_swig_ptr(res.distances, nd).copy()
+        I = rev_swig_ptr(res.labels, nd).copy()
+        return lims, D, I
+
     def replacement_remove_ids(self, x):
         if isinstance(x, IDSelector):
             sel = x
@@ -295,6 +307,7 @@ def handle_IndexBinary(the_class):
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'train', replacement_train)
     replace_method(the_class, 'search', replacement_search)
+    replace_method(the_class, 'range_search', replacement_range_search)
     replace_method(the_class, 'reconstruct', replacement_reconstruct)
     replace_method(the_class, 'remove_ids', replacement_remove_ids)
 
@@ -460,6 +473,9 @@ add_ref_in_constructor(IndexBinaryIDMap2, 0)
 
 add_ref_in_method(IndexReplicas, 'addIndex', 0)
 add_ref_in_method(IndexBinaryReplicas, 'addIndex', 0)
+
+add_ref_in_constructor(BufferedIOWriter, 0)
+add_ref_in_constructor(BufferedIOReader, 0)
 
 # seems really marginal...
 # remove_ref_from_method(IndexReplicas, 'removeIndex', 0)
@@ -751,9 +767,24 @@ def deserialize_index(data):
     copy_array_to_vector(data, reader.data)
     return read_index(reader)
 
+def serialize_index_binary(index):
+    """ convert an index to a numpy uint8 array  """
+    writer = VectorIOWriter()
+    write_index_binary(index, writer)
+    return vector_to_array(writer.data)
+
+def deserialize_index_binary(data):
+    reader = VectorIOReader()
+    copy_array_to_vector(data, reader.data)
+    return read_index_binary(reader)
+
+
+###########################################
+# ResultHeap
+###########################################
 
 class ResultHeap:
-    """Combine query results from a sliced dataset. The final result will
+    """Accumulate query results from a sliced dataset. The final result will
     be in self.D, self.I."""
 
     def __init__(self, nq, k):

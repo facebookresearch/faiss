@@ -93,6 +93,7 @@ extern "C" {
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexBinaryFromFloat.h>
 #include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexBinaryHash.h>
 
 #include <faiss/impl/io.h>
 #include <faiss/index_io.h>
@@ -359,6 +360,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexBinaryIVF.h>
 %include  <faiss/IndexBinaryFromFloat.h>
 %include  <faiss/IndexBinaryHNSW.h>
+%include  <faiss/IndexBinaryHash.h>
 
 
 
@@ -978,6 +980,124 @@ struct MapLong2Long {
 };
 
 %}
+
+/*******************************************************************
+ * Support I/O to arbitrary functions
+ *******************************************************************/
+
+
+%inline %{
+
+#ifdef SWIGPYTHON
+
+
+struct PyCallbackIOWriter: faiss::IOWriter {
+
+    PyObject * callback;
+    size_t bs; // maximum write size
+
+    PyCallbackIOWriter(PyObject *callback,
+                       size_t bs = 1024 * 1024):
+        callback(callback), bs(bs) {
+        Py_INCREF(callback);
+        name = "PyCallbackIOWriter";
+    }
+
+    size_t operator()(const void *ptrv, size_t size, size_t nitems) override {
+        size_t ws = size * nitems;
+        const char *ptr = (const char*)ptrv;
+        PyGILState_STATE gstate;
+        gstate = PyGILState_Ensure();
+        while(ws > 0) {
+            size_t wi = ws > bs ? bs : ws;
+            PyObject* bo = PyBytes_FromStringAndSize(ptr, wi);
+            PyObject *arglist = Py_BuildValue("(N)", bo);
+            if(!arglist) {
+                PyGILState_Release(gstate);
+                return 0;
+            }
+            ptr += wi;
+            ws -= wi;
+            PyObject * result = PyObject_CallObject(callback, arglist);
+            Py_DECREF(arglist);
+            if (result == NULL) {
+                PyGILState_Release(gstate);
+                return 0;
+            }
+            Py_DECREF(result);
+        }
+        PyGILState_Release(gstate);
+        return nitems;
+    }
+
+    ~PyCallbackIOWriter() {
+        Py_DECREF(callback);
+    }
+
+};
+
+struct PyCallbackIOReader: faiss::IOReader {
+
+    PyObject * callback;
+    size_t bs; // maximum buffer size
+
+    PyCallbackIOReader(PyObject *callback,
+                       size_t bs = 1024 * 1024):
+        callback(callback), bs(bs) {
+        Py_INCREF(callback);
+        name = "PyCallbackIOReader";
+    }
+
+    size_t operator()(void *ptrv, size_t size, size_t nitems) override {
+        size_t rs = size * nitems;
+        char *ptr = (char*)ptrv;
+        PyGILState_STATE gstate;
+        gstate = PyGILState_Ensure();
+        while(rs > 0) {
+            size_t ri = rs > bs ? bs : rs;
+            PyObject *arglist = Py_BuildValue("(n)", ri);
+            PyObject * result = PyObject_CallObject(callback, arglist);
+            Py_DECREF(arglist);
+            if (result == NULL) {
+                PyGILState_Release(gstate);
+                return 0;
+            }
+            if(!PyBytes_Check(result)) {
+                Py_DECREF(result);
+                PyErr_SetString(PyExc_RuntimeError,
+                                "read callback did not return a bytes object");
+                PyGILState_Release(gstate);
+                throw faiss::FaissException("reader error");
+            }
+            size_t sz = PyBytes_Size(result);
+            if (sz == 0 || sz > rs) {
+                Py_DECREF(result);
+                PyErr_Format(PyExc_RuntimeError,
+                             "read callback returned %ld bytes (asked %ld)",
+                             sz, rs);
+                PyGILState_Release(gstate);
+                throw faiss::FaissException("reader error");
+            }
+            memcpy(ptr, PyBytes_AsString(result), sz);
+            Py_DECREF(result);
+            ptr += sz;
+            rs -= sz;
+        }
+        PyGILState_Release(gstate);
+        return nitems;
+    }
+
+    ~PyCallbackIOReader() {
+        Py_DECREF(callback);
+    }
+
+};
+
+#endif
+
+%}
+
+
 
 %inline %{
     void wait() {

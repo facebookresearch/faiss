@@ -11,11 +11,13 @@
 #include <faiss/IndexBinaryIVF.h>
 
 #include <cstdio>
+#include <omp.h>
+
 #include <memory>
+
 
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
-
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/IndexFlat.h>
@@ -281,13 +283,15 @@ namespace {
 using idx_t = Index::idx_t;
 
 
-template<class HammingComputer, bool store_pairs>
+template<class HammingComputer>
 struct IVFBinaryScannerL2: BinaryInvertedListScanner {
 
     HammingComputer hc;
     size_t code_size;
+    bool store_pairs;
 
-    IVFBinaryScannerL2 (size_t code_size): code_size (code_size)
+    IVFBinaryScannerL2 (size_t code_size, bool store_pairs):
+        code_size (code_size), store_pairs(store_pairs)
     {}
 
     void set_query (const uint8_t *query_vector) override {
@@ -316,13 +320,31 @@ struct IVFBinaryScannerL2: BinaryInvertedListScanner {
             uint32_t dis = hc.hamming (codes);
             if (dis < simi[0]) {
                 heap_pop<C> (k, simi, idxi);
-                idx_t id = store_pairs ? (list_no << 32 | j) : ids[j];
+                idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
                 heap_push<C> (k, simi, idxi, dis, id);
                 nup++;
             }
             codes += code_size;
         }
         return nup;
+    }
+
+    void scan_codes_range (size_t n,
+                           const uint8_t *codes,
+                           const idx_t *ids,
+                           int radius,
+                           RangeQueryResult &result) const
+    {
+        size_t nup = 0;
+        for (size_t j = 0; j < n; j++) {
+            uint32_t dis = hc.hamming (codes);
+            if (dis < radius) {
+                int64_t id = store_pairs ? lo_build (list_no, j) : ids[j];
+                result.add (dis, id);
+            }
+            codes += code_size;
+        }
+
     }
 
 
@@ -332,29 +354,6 @@ struct IVFBinaryScannerL2: BinaryInvertedListScanner {
 template <bool store_pairs>
 BinaryInvertedListScanner *select_IVFBinaryScannerL2 (size_t code_size) {
 
-    switch (code_size) {
-#define HANDLE_CS(cs)                                                  \
-    case cs:                                                            \
-        return new IVFBinaryScannerL2<HammingComputer ## cs, store_pairs> (cs);
-      HANDLE_CS(4);
-      HANDLE_CS(8);
-      HANDLE_CS(16);
-      HANDLE_CS(20);
-      HANDLE_CS(32);
-      HANDLE_CS(64);
-#undef HANDLE_CS
-    default:
-        if (code_size % 8 == 0) {
-            return new IVFBinaryScannerL2<HammingComputerM8,
-                store_pairs> (code_size);
-        } else if (code_size % 4 == 0) {
-            return new IVFBinaryScannerL2<HammingComputerM4,
-                store_pairs> (code_size);
-        } else {
-            return new IVFBinaryScannerL2<HammingComputerDefault,
-                store_pairs> (code_size);
-        }
-    }
 }
 
 
@@ -425,8 +424,10 @@ void search_knn_hamming_heap(const IndexBinaryIVF& ivf,
                     ids = sids->get();
                 }
 
-                nheap += scanner->scan_codes (list_size, scodes.get(),
-                                              ids, simi, idxi, k);
+                nheap += scanner->scan_codes (
+                        list_size, scodes.get(),
+                        ids, simi, idxi, k
+                );
 
                 nscan += list_size;
                 if (max_codes && nscan >= max_codes)
@@ -586,11 +587,26 @@ void search_knn_hamming_count_1 (
 BinaryInvertedListScanner *IndexBinaryIVF::get_InvertedListScanner
       (bool store_pairs) const
 {
-    if (store_pairs) {
-        return select_IVFBinaryScannerL2<true> (code_size);
-    } else {
-        return select_IVFBinaryScannerL2<false> (code_size);
+
+#define HC(name) return new IVFBinaryScannerL2<name> (code_size, store_pairs)
+    switch (code_size) {
+    case 4: HC(HammingComputer4);
+    case 8: HC(HammingComputer8);
+    case 16: HC(HammingComputer16);
+    case 20: HC(HammingComputer20);
+    case 32: HC(HammingComputer32);
+    case 64: HC(HammingComputer64);
+    default:
+        if (code_size % 8 == 0) {
+            HC(HammingComputerM8);
+        } else if (code_size % 4 == 0) {
+            HC(HammingComputerM4);
+        } else {
+            HC(HammingComputerDefault);
+        }
     }
+#undef HC
+
 }
 
 void IndexBinaryIVF::search_preassigned(idx_t n, const uint8_t *x, idx_t k,
@@ -615,6 +631,84 @@ void IndexBinaryIVF::search_preassigned(idx_t n, const uint8_t *x, idx_t k,
         }
     }
 }
+
+
+void IndexBinaryIVF::range_search(
+        idx_t n, const uint8_t *x, int radius,
+        RangeSearchResult *res) const
+{
+
+    std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
+    std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe]);
+
+    double t0 = getmillisecs();
+    quantizer->search(n, x, nprobe, coarse_dis.get(), idx.get());
+    indexIVF_stats.quantization_time += getmillisecs() - t0;
+
+    t0 = getmillisecs();
+    invlists->prefetch_lists(idx.get(), n * nprobe);
+
+    bool store_pairs = false;
+    size_t nlistv = 0, ndis = 0;
+
+    std::vector<RangeSearchPartialResult *> all_pres (omp_get_max_threads());
+
+#pragma omp parallel reduction(+: nlistv, ndis)
+    {
+        RangeSearchPartialResult pres(res);
+        std::unique_ptr<BinaryInvertedListScanner> scanner
+            (get_InvertedListScanner(store_pairs));
+        FAISS_THROW_IF_NOT (scanner.get ());
+
+        all_pres[omp_get_thread_num()] = &pres;
+
+        auto scan_list_func = [&](size_t i, size_t ik, RangeQueryResult &qres)
+        {
+
+            idx_t key = idx[i * nprobe + ik];  /* select the list  */
+            if (key < 0) return;
+            FAISS_THROW_IF_NOT_FMT (
+                    key < (idx_t) nlist,
+                    "Invalid key=%ld  at ik=%ld nlist=%ld\n",
+                    key, ik, nlist);
+            const size_t list_size = invlists->list_size(key);
+
+            if (list_size == 0) return;
+
+            InvertedLists::ScopedCodes scodes (invlists, key);
+            InvertedLists::ScopedIds ids (invlists, key);
+
+            scanner->set_list (key, coarse_dis[i * nprobe + ik]);
+            nlistv++;
+            ndis += list_size;
+            scanner->scan_codes_range (list_size, scodes.get(),
+                                       ids.get(), radius, qres);
+        };
+
+#pragma omp for
+        for (size_t i = 0; i < n; i++) {
+            scanner->set_query (x + i * code_size);
+
+            RangeQueryResult & qres = pres.new_result (i);
+
+            for (size_t ik = 0; ik < nprobe; ik++) {
+                scan_list_func (i, ik, qres);
+            }
+
+        }
+
+        pres.finalize();
+
+    }
+    indexIVF_stats.nq += n;
+    indexIVF_stats.nlist += nlistv;
+    indexIVF_stats.ndis += ndis;
+    indexIVF_stats.search_time += getmillisecs() - t0;
+
+}
+
+
+
 
 IndexBinaryIVF::~IndexBinaryIVF() {
   if (own_invlists) {

@@ -62,6 +62,22 @@ FlatIndex::reserve(size_t numVecs, cudaStream_t stream) {
   }
 }
 
+template <>
+Tensor<float, 2, true>&
+FlatIndex::getVectorsRef<float>() {
+  // Should not call this unless we are in float32 mode
+  FAISS_ASSERT(!useFloat16_);
+  return getVectorsFloat32Ref();
+}
+
+template <>
+Tensor<half, 2, true>&
+FlatIndex::getVectorsRef<half>() {
+  // Should not call this unless we are in float16 mode
+  FAISS_ASSERT(useFloat16_);
+  return getVectorsFloat16Ref();
+}
+
 Tensor<float, 2, true>&
 FlatIndex::getVectorsFloat32Ref() {
   // Should not call this unless we are in float32 mode

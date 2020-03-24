@@ -13,7 +13,7 @@ import faiss
 import tempfile
 import os
 import re
-
+import warnings
 
 from common import get_dataset, get_dataset_2
 
@@ -22,7 +22,6 @@ class TestModuleInterface(unittest.TestCase):
     def test_version_attribute(self):
         assert hasattr(faiss, '__version__')
         assert re.match('^\\d+\\.\\d+\\.\\d+$', faiss.__version__)
-
 
 
 class EvalIVFPQAccuracy(unittest.TestCase):
@@ -506,37 +505,6 @@ class TestHNSW(unittest.TestCase):
         assert np.allclose(Dref[mask, 0], Dhnsw[mask, 0])
 
 
-class TestIOError(unittest.TestCase):
-
-    def test_io_error(self):
-        d, n = 32, 1000
-        x = np.random.uniform(size=(n, d)).astype('float32')
-        index = faiss.IndexFlatL2(d)
-        index.add(x)
-        _, fname = tempfile.mkstemp()
-        try:
-            faiss.write_index(index, fname)
-
-            # should be fine
-            faiss.read_index(fname)
-
-            # now damage file
-            data = open(fname, 'rb').read()
-            data = data[:int(len(data) / 2)]
-            open(fname, 'wb').write(data)
-
-            # should make a nice readable exception that mentions the
-            try:
-                faiss.read_index(fname)
-            except RuntimeError as e:
-                if fname not in str(e):
-                    raise
-            else:
-                raise
-
-        finally:
-            if os.path.exists(fname):
-                os.unlink(fname)
 
 
 class TestDistancesPositive(unittest.TestCase):

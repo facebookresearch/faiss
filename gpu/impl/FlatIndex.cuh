@@ -26,15 +26,22 @@ class FlatIndex {
             bool storeTransposed,
             MemorySpace space);
 
+  /// Whether or not this flat index primarily stores data in float16
   bool getUseFloat16() const;
 
   /// Returns the number of vectors we contain
   int getSize() const;
 
+  /// Returns the dimensionality of the vectors
   int getDim() const;
 
   /// Reserve storage that can contain at least this many vectors
   void reserve(size_t numVecs, cudaStream_t stream);
+
+  /// Returns the vectors based on the type desired; the FlatIndex must be of
+  /// the same type (float16 or float32) to not assert
+  template <typename T>
+  Tensor<T, 2, true>& getVectorsRef();
 
   /// Returns a reference to our vectors currently in use
   Tensor<float, 2, true>& getVectorsFloat32Ref();

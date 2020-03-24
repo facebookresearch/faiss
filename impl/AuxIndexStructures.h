@@ -51,9 +51,7 @@ struct RangeSearchResult {
 };
 
 
-/**
-
- Encapsulates a set of ids to remove. */
+/** Encapsulates a set of ids to remove. */
 struct IDSelector {
     typedef Index::idx_t idx_t;
     virtual bool is_member (idx_t id) const = 0;

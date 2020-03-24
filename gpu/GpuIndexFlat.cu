@@ -29,8 +29,6 @@ GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
              config),
     config_(std::move(config)),
     data_(nullptr) {
-  verifySettings_();
-
   // Flat index doesn't need training
   this->is_trained = true;
 
@@ -44,8 +42,6 @@ GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
     GpuIndex(resources, dims, metric, 0, config),
     config_(std::move(config)),
     data_(nullptr) {
-  verifySettings_();
-
   // Flat index doesn't need training
   this->is_trained = true;
 
@@ -296,21 +292,6 @@ GpuIndexFlat::compute_residual_n(faiss::Index::idx_t n,
                          residualDevice);
 
   fromDevice<float, 2>(residualDevice, residuals, stream);
-}
-
-void
-GpuIndexFlat::verifySettings_() const {
-  // If we want Hgemm, ensure that it is supported on this device
-  if (config_.useFloat16Accumulator) {
-    FAISS_THROW_IF_NOT_MSG(config_.useFloat16,
-                       "useFloat16Accumulator can only be enabled "
-                       "with useFloat16");
-
-    FAISS_THROW_IF_NOT_FMT(getDeviceSupportsFloat16Math(config_.device),
-                       "Device %d does not support Hgemm "
-                       "(useFloat16Accumulator)",
-                       config_.device);
-  }
 }
 
 //
