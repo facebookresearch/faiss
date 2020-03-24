@@ -17,8 +17,6 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 from common import get_dataset, get_dataset_2
 
-warnings.simplefilter("ignore", category=ResourceWarning)
-
 
 class TestIOVariants(unittest.TestCase):
 
