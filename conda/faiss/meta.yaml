@@ -8,14 +8,17 @@ source:
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - python {{ python }}
     - llvm-openmp # [osx]
     - setuptools
     - swig
+    - mkl >=2018
 
   host:
     - python {{ python }}
     - intel-openmp # [osx]
     - numpy 1.11.*
+    - blas=*=mkl
     - mkl >=2018
 
   run:
