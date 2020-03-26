@@ -21,10 +21,10 @@ run: $(TESTS_BIN) $(CUDA_TESTS_BIN)
 	for t in $(TESTS_BIN) $(CUDA_TESTS_BIN); do ./$$t || exit; done
 
 $(CUDA_TESTS_OBJ): %.o: %.cu gtest
-	$(NVCC) $(NVCCFLAGS) -g -O3 -o $@ -c $< -Igtest/include
+	$(NVCC) $(NVCCFLAGS) -g -O3 -o $@ -c $< -Igtest/include -I../..
 
 $(TESTS_OBJ): %.o: %.cpp gtest
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -o $@ -c $< -Igtest/include
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -o $@ -c $< -Igtest/include -I../..
 
 $(TESTS_BIN): %: %.o TestUtils.o ../../libfaiss.a gtest/make/gtest.a
 	$(CXX) -o $@ $^ $(LDFLAGS) $(LIBS)
@@ -33,7 +33,10 @@ demo_ivfpq_indexing_gpu: demo_ivfpq_indexing_gpu.o ../../libfaiss.a
 	$(CXX) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 demo_ivfpq_indexing_gpu.o: demo_ivfpq_indexing_gpu.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -o $@ -c $^
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -o $@ -c $^ -I../..
+
+TestUtils.o: TestUtils.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -o $@ -c $^ -Igtest/include -I../..
 
 gtest/make/gtest.a: gtest
 	$(MAKE) -C gtest/make CXX="$(CXX)" CXXFLAGS="$(CXXFLAGS)" gtest.a
