@@ -75,7 +75,8 @@ This builds the python interface.
 This installs the python library.
 
 
-Faiss has been tested only on x86_64 machines on Linux and Mac OS.
+Faiss is supported on x86_64 machines on Linux and Mac OS. 
+It has been found to run on other platforms as well, see [other platforms](https://github.com/facebookresearch/faiss/wiki/Related-projects#bindings-to-other-languages-and-porting-to-other-platforms)
 
 Faiss requires a C++ compiler that understands:
 - the Intel intrinsics for SSE instructions,
