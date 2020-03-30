@@ -27,7 +27,7 @@ template <typename OutCodeT,
           int DimsPerSubQuantizer,
           bool L2Distance>
 __global__ void
-__launch_bounds__(288, 4)
+__launch_bounds__(288, 3)
 pqCodeDistances(Tensor<float, 2, true> queries,
                 int queriesPerBlock,
                 Tensor<CentroidT, 2, true> coarseCentroids,

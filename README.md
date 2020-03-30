@@ -4,6 +4,8 @@ Faiss is a library for efficient similarity search and clustering of dense vecto
 
 ## NEWS
 
+*NEW: version 1.6.3 (2020-03-27) IndexBinaryHash, GPU support for alternative distances*
+
 *NEW: version 1.6.1 (2019-11-29) bugfix.*
 
 *NEW: version 1.6.0 (2019-10-15) code structure reorg, support for codec interface.*
