@@ -64,7 +64,7 @@ void runDistance(bool computeL2,
   if (centroids.numElements() == 0) {
     thrust::fill(thrust::cuda::par.on(defaultStream),
                  outDistances.data(), outDistances.end(),
-                 Limits<T>::getMax());
+                 Limits<float>::getMax());
 
     thrust::fill(thrust::cuda::par.on(defaultStream),
                  outIndices.data(), outIndices.end(),

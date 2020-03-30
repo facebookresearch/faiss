@@ -277,7 +277,7 @@ TEST(TestGpuIndexFlat, CopyFrom) {
   int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
 
   faiss::gpu::GpuIndexFlatConfig config;
-  config.device = 0;
+  config.device = device;
   config.useFloat16 = false;
   config.storeTransposed = false;
 

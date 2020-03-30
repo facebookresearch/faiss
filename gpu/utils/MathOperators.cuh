@@ -537,7 +537,7 @@ struct Math<Half8> {
     return h;
   }
 
-  static inline __device__ half reduceAdd(Half8 v) {
+  static inline __device__ float reduceAdd(Half8 v) {
     float x = Math<Half4>::reduceAdd(v.a);
     float y = Math<Half4>::reduceAdd(v.b);
     return x + y;

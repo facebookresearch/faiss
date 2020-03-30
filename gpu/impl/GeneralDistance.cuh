@@ -9,6 +9,7 @@
 #include <faiss/MetricType.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/gpu/impl/DistanceUtils.cuh>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
 #include <faiss/gpu/utils/DeviceUtils.h>
@@ -144,11 +145,11 @@ generalDistance(Tensor<T, 2, InnerContig> query, // m x k
 
         queryTileBase[threadIdx.x + i * kWarpSize] =
                              kInBounds ?
-                             queryBase[k] : (T) 0; //DistanceOp::kIdentityData;
+                             queryBase[k] : ConvertTo<T>::to(0);
 
         vecTileBase[threadIdx.x + i * kWarpSize] =
                              kInBounds ?
-                             vecBase[k] : (T) 0; // DistanceOp::kIdentityData;
+                             vecBase[k] : ConvertTo<T>::to(0);
       }
 
       __syncthreads();
@@ -179,11 +180,11 @@ generalDistance(Tensor<T, 2, InnerContig> query, // m x k
       // Load query tile
       queryTileBase[threadIdx.x] =
         queryThreadInBounds ?
-        queryBase[k] : (T) 0; // DistanceOp::kIdentityData;
+        queryBase[k] : ConvertTo<T>::to(0);
 
       vecTileBase[threadIdx.x] =
         vecThreadInBoundsLoad ?
-        vecBase[k] : (T) 0; // DistanceOp::kIdentityData;
+        vecBase[k] : ConvertTo<T>::to(0);
 
       __syncthreads();
 
@@ -205,11 +206,11 @@ generalDistance(Tensor<T, 2, InnerContig> query, // m x k
       // Load query tile
       queryTileBase[threadIdx.x] =
                            queryThreadInBounds && kInBounds ?
-                           queryBase[k] : (T) 0; // DistanceOp::kIdentityData;
+                           queryBase[k] : ConvertTo<T>::to(0);
 
       vecTileBase[threadIdx.x] =
                            vecThreadInBoundsLoad && kInBounds ?
-                           vecBase[k] : (T) 0; // DistanceOp::kIdentityData;
+                           vecBase[k] : ConvertTo<T>::to(0);
 
       __syncthreads();
 
@@ -278,7 +279,7 @@ void runGeneralDistance(GpuResources* resources,
   if (centroids.numElements() == 0) {
     thrust::fill(thrust::cuda::par.on(defaultStream),
                  outDistances.data(), outDistances.end(),
-                 Limits<T>::getMax());
+                 Limits<float>::getMax());
 
     thrust::fill(thrust::cuda::par.on(defaultStream),
                  outIndices.data(), outIndices.end(),
