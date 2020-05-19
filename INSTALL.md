@@ -198,7 +198,7 @@ calling a BLAS function. A simple way to check this
 
 ```python
 python -c "import faiss, numpy
-faiss.Kmeans(10, 20).train(numpy.random.rand(1000, 10).astype('float32'))
+faiss.Kmeans(10, 20).train(numpy.random.rand(1000, 10).astype('float32'))"
 ```
 
 
