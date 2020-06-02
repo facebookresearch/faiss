@@ -52,6 +52,26 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(12, "IVF10,FlatDedup")
         assert index.instances is not None
 
+    def test_factory_HNSW(self):
+        index = faiss.index_factory(12, "HNSW32")
+        assert index.storage.sa_code_size() == 12 * 4
+        index = faiss.index_factory(12, "HNSW32_SQ8")
+        assert index.storage.sa_code_size() == 12
+        index = faiss.index_factory(12, "HNSW32_PQ4")
+        assert index.storage.sa_code_size() == 4
+
+    def test_factory_HNSW_newstyle(self):
+        index = faiss.index_factory(12, "HNSW32,Flat")
+        assert index.storage.sa_code_size() == 12 * 4
+        index = faiss.index_factory(12, "HNSW32,SQ8", faiss.METRIC_INNER_PRODUCT)
+        assert index.storage.sa_code_size() == 12
+        assert index.metric_type == faiss.METRIC_INNER_PRODUCT
+        index = faiss.index_factory(12, "HNSW32,PQ4")
+        assert index.storage.sa_code_size() == 4
+        index = faiss.index_factory(12, "HNSW32,PQ4np")
+        indexpq = faiss.downcast_index(index.storage)
+        assert not indexpq.do_polysemous_training
+
 
 class TestCloneSize(unittest.TestCase):
 

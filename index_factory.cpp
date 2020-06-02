@@ -87,6 +87,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
 
     int64_t ncentroids = -1;
     bool use_2layer = false;
+    int hnsw_M = -1;
 
     for (char *tok = strtok_r (description, " ,", &ptr);
          tok;
@@ -186,6 +187,8 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                 del_coarse_quantizer.release ();
                 index_ivf->own_fields = true;
                 index_1 = index_ivf;
+            } else if (hnsw_M > 0) {
+                index_1 = new IndexHNSWFlat (d, hnsw_M, metric);
             } else {
                 FAISS_THROW_IF_NOT_MSG (stok != "FlatDedup",
                                         "dedup supported only for IVFFlat");
@@ -209,6 +212,8 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                 del_coarse_quantizer.release ();
                 index_ivf->own_fields = true;
                 index_1 = index_ivf;
+            } else if (hnsw_M > 0) {
+                index_1 = new IndexHNSWSQ(d, qt, hnsw_M, metric);
             } else {
                 index_1 = new IndexScalarQuantizer (d, qt, metric);
             }
@@ -248,6 +253,11 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                     index_2l->q1.own_fields = true;
                     index_1 = index_2l;
                 }
+            } else if (hnsw_M > 0) {
+                IndexHNSWPQ *ipq = new IndexHNSWPQ(d, M, hnsw_M);
+                dynamic_cast<IndexPQ*>(ipq->storage)->do_polysemous_training =
+                    do_polysemous_training;
+                index_1 = ipq;
             } else {
                 IndexPQ *index_pq = new IndexPQ (d, M, nbit, metric);
                 index_pq->do_polysemous_training = do_polysemous_training;
@@ -273,12 +283,13 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                    sscanf (tok, "HNSW%d_PQ%d", &M, &pq_m) == 2) {
             index_1 = new IndexHNSWPQ (d, pq_m, M);
         } else if (!index &&
-                   sscanf (tok, "HNSW%d", &M) == 1) {
-            index_1 = new IndexHNSWFlat (d, M);
-        } else if (!index &&
                    sscanf (tok, "HNSW%d_SQ%d", &M, &pq_m) == 2 &&
                    pq_m == 8) {
             index_1 = new IndexHNSWSQ (d, ScalarQuantizer::QT_8bit, M);
+        } else if (!index &&
+                   sscanf (tok, "HNSW%d", &M) == 1) {
+            hnsw_M = M;
+            // here it is unclear what we want: HNSW flat or HNSWx,Y ?
         } else if (!index && (stok == "LSH" || stok == "LSHr" ||
                               stok == "LSHrt" || stok == "LSHt")) {
             bool rotate_data = strstr(tok, "r") != nullptr;
@@ -316,6 +327,11 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             index = index_1;
             del_index.set (index);
         }
+    }
+
+    if (!index && hnsw_M > 0) {
+        index = new IndexHNSWFlat (d, hnsw_M, metric);
+        del_index.set (index);
     }
 
     FAISS_THROW_IF_NOT_FMT(index, "description %s did not generate an index",
