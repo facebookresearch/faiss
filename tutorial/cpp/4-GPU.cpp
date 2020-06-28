@@ -75,8 +75,7 @@ int main() {
     // Using an IVF index
 
     int nlist = 100;
-    faiss::gpu::GpuIndexIVFFlat index_ivf(&res, d, nlist, faiss::METRIC_L2);
-    // here we specify METRIC_L2, by default it performs inner-product search
+    faiss::gpu::GpuIndexIVFFlat index_ivf(&res, d, nlist);
 
     assert(!index_ivf.is_trained);
     index_ivf.train(nb, xb);
