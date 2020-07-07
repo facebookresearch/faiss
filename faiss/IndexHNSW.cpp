@@ -507,9 +507,9 @@ void IndexHNSW::init_level_0_from_knngraph(
 #pragma omp parallel for
     for (idx_t i = 0; i < ntotal; i++) {
         DistanceComputer *qdis = storage_distance_computer(storage);
-        float vec[d];
-        storage->reconstruct(i, vec);
-        qdis->set_query(vec);
+        std::vector<float> vec(d);
+        storage->reconstruct(i, vec.data());
+        qdis->set_query(vec.data());
 
         std::priority_queue<NodeDistFarther> initial_list;
 
@@ -552,14 +552,14 @@ void IndexHNSW::init_level_0_from_entry_points(
 
         DistanceComputer *dis = storage_distance_computer(storage);
         ScopeDeleter1<DistanceComputer> del(dis);
-        float vec[storage->d];
+        std::vector<float> vec(storage->d);
 
 #pragma omp  for schedule(dynamic)
         for (int i = 0; i < n; i++) {
             storage_idx_t pt_id = points[i];
             storage_idx_t nearest = nearests[i];
-            storage->reconstruct (pt_id, vec);
-            dis->set_query (vec);
+            storage->reconstruct (pt_id, vec.data());
+            dis->set_query (vec.data());
 
             hnsw.add_links_starting_from(*dis, pt_id,
                                          nearest, (*dis)(nearest),
@@ -740,7 +740,7 @@ void ReconstructFromNeighbors::reconstruct(storage_idx_t i, float *x, float *tmp
                 x[l] += w * tmp[l];
         }
     } else {
-        const float *betas[nsq];
+        std::vector<const float *> betas(nsq);
         {
             const float *b = codebook.data();
             const uint8_t *c = &codes[i * code_size];

@@ -329,13 +329,13 @@ void EnumeratedVectors::find_nn (
         labels[i] = -1;
     }
 
-    float c[dim];
+    std::vector<float> c(dim);
     for(size_t i = 0; i < nc; i++) {
         uint64_t code = codes[nc];
-        decode(code, c);
+        decode(code, c.data());
         for (size_t j = 0; j < nq; j++) {
             const float *x = xq + j * dim;
-            float dis = fvec_inner_product(x, c, dim);
+            float dis = fvec_inner_product(x, c.data(), dim);
             if (dis > distances[j]) {
                 distances[j] = dis;
                 labels[j] = i;
@@ -357,9 +357,9 @@ ZnSphereSearch::ZnSphereSearch(int dim, int r2): dimS(dim), r2(r2) {
 }
 
 float ZnSphereSearch::search(const float *x, float *c) const {
-    float tmp[dimS * 2];
-    int tmp_int[dimS];
-    return search(x, c, tmp, tmp_int);
+    std::vector<float> tmp(dimS * 2);
+    std::vector<int> tmp_int(dimS);
+    return search(x, c, tmp.data(), tmp_int.data());
 }
 
 float ZnSphereSearch::search(const float *x, float *c,
@@ -446,13 +446,13 @@ ZnSphereCodec::ZnSphereCodec(int dim, int r2):
 }
 
 uint64_t ZnSphereCodec::search_and_encode(const float *x) const {
-    float tmp[dim * 2];
-    int tmp_int[dim];
+    std::vector<float> tmp(dim * 2);
+    std::vector<int> tmp_int(dim);
     int ano; // atom number
-    float c[dim];
-    search(x, c, tmp, tmp_int, &ano);
+    std::vector<float> c(dim);
+    search(x, c.data(), tmp.data(), tmp_int.data(), &ano);
     uint64_t signs = 0;
-    float cabs[dim];
+    std::vector<float> cabs(dim);
     int nnz = 0;
     for (int i = 0; i < dim; i++) {
         cabs[i] = fabs(c[i]);
@@ -466,7 +466,7 @@ uint64_t ZnSphereCodec::search_and_encode(const float *x) const {
     const CodeSegment &cs = code_segments[ano];
     assert(nnz == cs.signbits);
     uint64_t code = cs.c0 + signs;
-    code += cs.encode(cabs) << cs.signbits;
+    code += cs.encode(cabs.data()) << cs.signbits;
     return code;
 }
 
@@ -576,13 +576,13 @@ ZnSphereCodecRec::ZnSphereCodecRec(int dim, int r2):
         std::vector<float> &cache = decode_cache[r2sub];
         int dimsub = (1 << cache_level);
         cache.resize (nvi * dimsub);
-        float c[dim];
+        std::vector<float> c(dim);
         uint64_t code0 = get_nv_cum(cache_level + 1, r2,
                                  r2 - r2sub);
         for (int i = 0; i < nvi; i++) {
-            decode(i + code0, c);
-            memcpy(&cache[i * dimsub], c + dim - dimsub,
-                   dimsub * sizeof(*c));
+            decode(i + code0, c.data());
+            memcpy(&cache[i * dimsub], c.data() + dim - dimsub,
+                   dimsub * sizeof(*c.data()));
         }
     }
     decode_cache_ld = cache_level;
@@ -597,8 +597,8 @@ uint64_t ZnSphereCodecRec::encode(const float *c) const
 
 uint64_t ZnSphereCodecRec::encode_centroid(const float *c) const
 {
-    uint64_t codes[dim];
-    int norm2s[dim];
+    std::vector<uint64_t> codes(dim);
+    std::vector<int> norm2s(dim);
     for(int i = 0; i < dim; i++) {
         if (c[i] == 0) {
             codes[i] = 0;
@@ -633,8 +633,8 @@ uint64_t ZnSphereCodecRec::encode_centroid(const float *c) const
 
 void ZnSphereCodecRec::decode(uint64_t code, float *c) const
 {
-    uint64_t codes[dim];
-    int norm2s[dim];
+    std::vector<uint64_t> codes(dim);
+    std::vector<int> norm2s(dim);
     codes[0] = code;
     norm2s[0] = r2;
 
