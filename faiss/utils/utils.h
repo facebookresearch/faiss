@@ -18,6 +18,10 @@
 
 #include <stdint.h>
 
+#ifdef _MSC_VER
+#define strtok_r strtok_s
+#endif // _MSC_VER
+
 #include <faiss/utils/Heap.h>
 
 
