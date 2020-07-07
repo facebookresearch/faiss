@@ -21,6 +21,22 @@
 
 #include <faiss/utils/distances.h>
 
+#ifdef _MSC_VER
+
+#include <intrin.h>
+
+static inline int __builtin_ctzll(uint64_t x) {
+    unsigned long ret;
+    _BitScanForward64(&ret, x);
+    return (int)ret;
+}
+
+static inline int __builtin_clzll(uint64_t x) {
+    return (int)__lzcnt64(x);
+}
+
+#endif // _MSC_VER
+
 namespace faiss {
 
 /********************************************
@@ -115,7 +131,7 @@ uint64_t repeats_encode_64 (
         uint64_t tosee = ~coded;
         for(;;) {
             // directly jump to next available slot.
-            int i = __builtin_ctzl(tosee);
+            int i = __builtin_ctzll(tosee);
             tosee &= ~(uint64_t{1} << i) ;
             if (c[i] == r->val) {
                 code_comb += comb(rank, occ + 1);
@@ -150,7 +166,7 @@ void repeats_decode_64(
         int next_rank = decode_comb_1 (&code_comb, r->n, rank);
         uint64_t tosee = ((uint64_t{1} << dim) - 1) ^ decoded;
         for(;;) {
-            int i = 63 - __builtin_clzl(tosee);
+            int i = 63 - __builtin_clzll(tosee);
             tosee &= ~(uint64_t{1} << i);
             rank--;
             if (rank == next_rank) {
