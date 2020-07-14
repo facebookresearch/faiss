@@ -805,8 +805,8 @@ class ResultHeap:
         assert D.shape == (self.nq, self.k)
         assert I.shape == (self.nq, self.k)
         self.heaps.addn_with_ids(
-            self.k, faiss.swig_ptr(D),
-            faiss.swig_ptr(I), self.k)
+            self.k, swig_ptr(D),
+            swig_ptr(I), self.k)
 
     def finalize(self):
         self.heaps.reorder()
