@@ -20,6 +20,7 @@ GPU_CUOBJ   = $(GPU_CUSRC:.cu=.o)
 GPU_OBJ     = $(GPU_CPPOBJ) $(GPU_CUOBJ)
 
 ifneq ($(strip $(NVCC)),)
+	SRC         += $(GPU_SRC)
 	OBJ         += $(GPU_OBJ)
 	HEADERS     += $(GPU_HEADERS)
 endif
@@ -47,6 +48,7 @@ libfaiss.$(SHAREDEXT): $(OBJ)
 clean:
 	rm -f libfaiss.a libfaiss.$(SHAREDEXT)
 	rm -f $(OBJ)
+	rm -f depend
 
 
 ############################
@@ -70,7 +72,7 @@ uninstall:
 
 -include depend
 
-depend: $(SRC) $(GPU_SRC)
+depend: $(SRC)
 	for i in $^; do \
 		$(CXXCPP) $(CPPFLAGS) -DCUDA_VERSION=7050 -x c++ -MM $$i; \
 	done > depend
