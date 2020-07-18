@@ -9,7 +9,7 @@
 // -*- c++ -*-
 
 #include "GpuClonerOptions_c.h"
-#include "gpu/GpuClonerOptions.h"
+#include <faiss/gpu/GpuClonerOptions.h>
 #include "macros_impl.h"
 
 using faiss::gpu::IndicesOptions;
