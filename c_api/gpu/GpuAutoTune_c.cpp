@@ -12,8 +12,10 @@
 #include "GpuClonerOptions_c.h"
 #include "macros_impl.h"
 #include "Index.h"
-#include "gpu/GpuAutoTune.h"
-#include "gpu/GpuClonerOptions.h"
+#include <faiss/gpu/GpuCloner.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/GpuAutoTune.h>
+#include <faiss/gpu/GpuClonerOptions.h>
 #include <vector>
 
 using faiss::Index;
