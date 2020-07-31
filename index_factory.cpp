@@ -38,6 +38,7 @@
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexBinaryHash.h>
 
 namespace faiss {
 
@@ -371,7 +372,7 @@ IndexBinary *index_binary_factory(int d, const char *description)
     IndexBinary *index = nullptr;
 
     int ncentroids = -1;
-    int M;
+    int M, nhash, b;
 
     if (sscanf(description, "BIVF%d_HNSW%d", &ncentroids, &M) == 2) {
         IndexBinaryIVF *index_ivf = new IndexBinaryIVF(
@@ -390,6 +391,12 @@ IndexBinary *index_binary_factory(int d, const char *description)
     } else if (sscanf(description, "BHNSW%d", &M) == 1) {
         IndexBinaryHNSW *index_hnsw = new IndexBinaryHNSW(d, M);
         index = index_hnsw;
+
+    } else if (sscanf(description, "BHash%dx%d", &nhash, &b) == 2) {
+        index = new IndexBinaryMultiHash (d, nhash, b);
+
+    } else if (sscanf(description, "BHash%d", &b) == 1) {
+        index = new IndexBinaryHash (d, b);
 
     } else if (std::string(description) == "BFlat") {
         index = new IndexBinaryFlat(d);

@@ -29,7 +29,7 @@ struct IOReader {
     // name that can be used in error messages
     std::string name;
 
-    // fread
+    // fread. Returns number of items read or 0 in case of EOF.
     virtual size_t operator()(
          void *ptr, size_t size, size_t nitems) = 0;
 
@@ -43,7 +43,7 @@ struct IOWriter {
     // name that can be used in error messages
     std::string name;
 
-    // fwrite
+    // fwrite. Return number of items written
     virtual size_t operator()(
          const void *ptr, size_t size, size_t nitems) = 0;
 
@@ -97,6 +97,10 @@ struct FileIOWriter: IOWriter {
 
 /*******************************************************
  * Buffered reader + writer
+ *
+ * They attempt to read and write only buffers of size bsz to the
+ * underlying reader or writer. This is done by splitting or merging
+ * the read/write functions.
  *******************************************************/
 
 
@@ -105,24 +109,32 @@ struct FileIOWriter: IOWriter {
 struct BufferedIOReader: IOReader {
 
     IOReader *reader;
-    size_t bsz, totsz, ofs;
+    size_t bsz;
+    size_t ofs;    ///< offset in input stream
+    size_t ofs2;   ///< number of bytes returned to caller
     size_t b0, b1; ///< range of available bytes in the buffer
     std::vector<char> buffer;
 
-    BufferedIOReader(IOReader *reader, size_t bsz,
-                     size_t totsz=(size_t)(-1));
+    /**
+     * @param bsz    buffer size (bytes). Reads will be done by batched of
+     *               this size
+     */
+    explicit BufferedIOReader(IOReader *reader, size_t bsz = 1024 * 1024);
 
     size_t operator()(void *ptr, size_t size, size_t nitems) override;
 };
 
+
 struct BufferedIOWriter: IOWriter {
 
     IOWriter *writer;
-    size_t bsz, ofs;
-    size_t b0; ///< amount of data in buffer
+    size_t bsz;
+    size_t ofs;
+    size_t ofs2;     ///< number of bytes received from caller
+    size_t b0;       ///< amount of data in buffer
     std::vector<char> buffer;
 
-    BufferedIOWriter(IOWriter *writer, size_t bsz);
+    explicit BufferedIOWriter(IOWriter *writer, size_t bsz = 1024 * 1024);
 
     size_t operator()(const void *ptr, size_t size, size_t nitems) override;
 
@@ -132,5 +144,7 @@ struct BufferedIOWriter: IOWriter {
 
 /// cast a 4-character string to a uint32_t that can be written and read easily
 uint32_t fourcc (const char sx[4]);
+uint32_t fourcc (const std::string & sx);
+
 
 } // namespace faiss

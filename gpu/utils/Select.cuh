@@ -273,10 +273,10 @@ struct BlockSelect<K, V, Dir, Comp, 1, NumThreadQ, ThreadsPerBlock> {
   static constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
   __device__ inline BlockSelect(K initK, V initV, K* smemK, V* smemV, int k) :
-      sharedK(smemK),
-      sharedV(smemV),
       threadK(initK),
-      threadV(initV) {
+      threadV(initV),
+      sharedK(smemK),
+      sharedV(smemV) {
   }
 
   __device__ inline void addThreadQ(K k, V v) {

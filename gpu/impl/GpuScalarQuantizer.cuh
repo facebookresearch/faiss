@@ -31,9 +31,13 @@ inline bool isSQSupported(ScalarQuantizer::QuantizerType qtype) {
 // Wrapper around the CPU ScalarQuantizer that allows storage of parameters in
 // GPU memory
 struct GpuScalarQuantizer : public ScalarQuantizer {
-  GpuScalarQuantizer(const ScalarQuantizer& sq)
+  GpuScalarQuantizer(GpuResources* res,
+                     const ScalarQuantizer& sq)
       : ScalarQuantizer(sq),
-        gpuTrained(DeviceTensor<float, 1, true>({(int) sq.trained.size()})) {
+        gpuTrained(DeviceTensor<float, 1, true>(
+                     res,
+                     makeDevAlloc(AllocType::Quantizer, 0),
+          {(int) sq.trained.size()})) {
     HostTensor<float, 1, true>
       cpuTrained((float*) sq.trained.data(), {(int) sq.trained.size()});
 

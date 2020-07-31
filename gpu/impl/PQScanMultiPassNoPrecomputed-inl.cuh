@@ -219,7 +219,8 @@ pqScanNoPrecomputedMultiPass(Tensor<float, 2, true> queries,
 
 template <typename CentroidT>
 void
-runMultiPassTile(Tensor<float, 2, true>& queries,
+runMultiPassTile(GpuResources* res,
+                 Tensor<float, 2, true>& queries,
                  Tensor<CentroidT, 2, true>& centroids,
                  Tensor<float, 3, true>& pqCentroidsInnermostCode,
                  NoTypeTensor<4, true>& codeDistances,
@@ -250,7 +251,7 @@ runMultiPassTile(Tensor<float, 2, true>& queries,
 
   // Calculate offset lengths, so we know where to write out
   // intermediate results
-  runCalcListOffsets(topQueryToCentroid, listLengths, prefixSumOffsets,
+  runCalcListOffsets(res, topQueryToCentroid, listLengths, prefixSumOffsets,
                      thrustMem, stream);
 
   // Calculate residual code distances, since this is without
@@ -419,21 +420,22 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
 
   int nprobe = topQueryToCentroid.getSize(1);
 
-  auto& mem = res->getMemoryManagerCurrentDevice();
   auto stream = res->getDefaultStreamCurrentDevice();
 
   // Make a reservation for Thrust to do its dirty work (global memory
   // cross-block reduction space); hopefully this is large enough.
   DeviceTensor<char, 1, true> thrustMem1(
-    mem, {kThrustMemSize}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {kThrustMemSize});
   DeviceTensor<char, 1, true> thrustMem2(
-    mem, {kThrustMemSize}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {kThrustMemSize});
   DeviceTensor<char, 1, true>* thrustMem[2] =
     {&thrustMem1, &thrustMem2};
 
   // How much temporary storage is available?
   // If possible, we'd like to fit within the space available.
-  size_t sizeAvailable = mem.getSizeAvailable();
+  size_t sizeAvailable = res->getTempMemoryAvailableCurrentDevice();
 
   // We run two passes of heap selection
   // This is the size of the first-level heap passes
@@ -469,9 +471,11 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
   // Make sure there is space prior to the start which will be 0, and
   // will handle the boundary condition without branches
   DeviceTensor<int, 1, true> prefixSumOffsetSpace1(
-    mem, {queryTileSize * nprobe + 1}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize * nprobe + 1});
   DeviceTensor<int, 1, true> prefixSumOffsetSpace2(
-    mem, {queryTileSize * nprobe + 1}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize * nprobe + 1});
 
   DeviceTensor<int, 2, true> prefixSumOffsets1(
     prefixSumOffsetSpace1[1].data(),
@@ -500,14 +504,16 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
     codeDistanceTypeSize;
 
   DeviceTensor<char, 1, true> codeDistances1Mem(
-    mem, {totalCodeDistancesSize}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {totalCodeDistancesSize});
   NoTypeTensor<4, true> codeDistances1(
     codeDistances1Mem.data(),
     codeDistanceTypeSize,
     {queryTileSize, nprobe, numSubQuantizers, numSubQuantizerCodes});
 
   DeviceTensor<char, 1, true> codeDistances2Mem(
-    mem, {totalCodeDistancesSize}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {totalCodeDistancesSize});
   NoTypeTensor<4, true> codeDistances2(
     codeDistances2Mem.data(),
     codeDistanceTypeSize,
@@ -517,23 +523,29 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
     {&codeDistances1, &codeDistances2};
 
   DeviceTensor<float, 1, true> allDistances1(
-    mem, {queryTileSize * nprobe * maxListLength}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize * nprobe * maxListLength});
   DeviceTensor<float, 1, true> allDistances2(
-    mem, {queryTileSize * nprobe * maxListLength}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize * nprobe * maxListLength});
   DeviceTensor<float, 1, true>* allDistances[2] =
     {&allDistances1, &allDistances2};
 
   DeviceTensor<float, 3, true> heapDistances1(
-    mem, {queryTileSize, pass2Chunks, k}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize, pass2Chunks, k});
   DeviceTensor<float, 3, true> heapDistances2(
-    mem, {queryTileSize, pass2Chunks, k}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize, pass2Chunks, k});
   DeviceTensor<float, 3, true>* heapDistances[2] =
     {&heapDistances1, &heapDistances2};
 
   DeviceTensor<int, 3, true> heapIndices1(
-    mem, {queryTileSize, pass2Chunks, k}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize, pass2Chunks, k});
   DeviceTensor<int, 3, true> heapIndices2(
-    mem, {queryTileSize, pass2Chunks, k}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize, pass2Chunks, k});
   DeviceTensor<int, 3, true>* heapIndices[2] =
     {&heapIndices1, &heapIndices2};
 
@@ -566,7 +578,8 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
     auto outIndicesView =
       outIndices.narrowOutermost(query, numQueriesInTile);
 
-    runMultiPassTile(queryView,
+    runMultiPassTile(res,
+                     queryView,
                      centroids,
                      pqCentroidsInnermostCode,
                      codeDistancesView,

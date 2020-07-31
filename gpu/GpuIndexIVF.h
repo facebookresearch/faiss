@@ -18,7 +18,6 @@ namespace faiss { struct IndexIVF; }
 namespace faiss { namespace gpu {
 
 class GpuIndexFlat;
-class GpuResources;
 
 struct GpuIndexIVFConfig : public GpuIndexConfig {
   inline GpuIndexIVFConfig()
@@ -34,7 +33,7 @@ struct GpuIndexIVFConfig : public GpuIndexConfig {
 
 class GpuIndexIVF : public GpuIndex {
  public:
-  GpuIndexIVF(GpuResources* resources,
+  GpuIndexIVF(GpuResourcesProvider* provider,
               int dims,
               faiss::MetricType metric,
               float metricArg,

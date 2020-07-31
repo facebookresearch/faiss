@@ -18,49 +18,56 @@
 namespace faiss { namespace gpu {
 
 template <typename T>
-void bfKnnConvert(GpuResources* resources, const GpuDistanceParams& args) {
+void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
+  // Don't let the resources go out of scope
+  auto resImpl = prov->getResources();
+  auto res = resImpl.get();
   auto device = getCurrentDevice();
-  auto stream = resources->getDefaultStreamCurrentDevice();
-  auto& mem = resources->getMemoryManagerCurrentDevice();
+  auto stream = res->getDefaultStreamCurrentDevice();
 
   auto tVectors =
-    toDevice<T, 2>(resources,
-                   device,
-                   const_cast<T*>(reinterpret_cast<const T*>(args.vectors)),
-                   stream,
-                   {args.vectorsRowMajor ? args.numVectors : args.dims,
-                    args.vectorsRowMajor ? args.dims : args.numVectors});
+    toDeviceTemporary<T, 2>(
+      res,
+      device,
+      const_cast<T*>(reinterpret_cast<const T*>(args.vectors)),
+      stream,
+      {args.vectorsRowMajor ? args.numVectors : args.dims,
+       args.vectorsRowMajor ? args.dims : args.numVectors});
   auto tQueries =
-    toDevice<T, 2>(resources,
-                   device,
-                   const_cast<T*>(reinterpret_cast<const T*>(args.queries)),
-                   stream,
-                   {args.queriesRowMajor ? args.numQueries : args.dims,
-                    args.queriesRowMajor ? args.dims : args.numQueries});
+    toDeviceTemporary<T, 2>(
+      res,
+      device,
+      const_cast<T*>(reinterpret_cast<const T*>(args.queries)),
+      stream,
+      {args.queriesRowMajor ? args.numQueries : args.dims,
+       args.queriesRowMajor ? args.dims : args.numQueries});
 
   DeviceTensor<float, 1, true> tVectorNorms;
   if (args.vectorNorms) {
-    tVectorNorms = toDevice<float, 1>(resources,
-                                      device,
-                                      const_cast<float*>(args.vectorNorms),
-                                      stream,
-                                      {args.numVectors});
+    tVectorNorms =
+      toDeviceTemporary<float, 1>(res,
+                                  device,
+                                  const_cast<float*>(args.vectorNorms),
+                                  stream,
+                                  {args.numVectors});
   }
 
   auto tOutDistances =
-    toDevice<float, 2>(resources,
-                       device,
-                       args.outDistances,
-                       stream,
-                       {args.numQueries, args.k});
+    toDeviceTemporary<float, 2>(res,
+                                device,
+                                args.outDistances,
+                                stream,
+                                {args.numQueries, args.k});
 
   // The brute-force API only supports an interface for integer indices
   DeviceTensor<int, 2, true>
-    tOutIntIndices(mem, {args.numQueries, args.k}, stream);
+    tOutIntIndices(res,
+                   makeTempAlloc(AllocType::Other, stream),
+                   {args.numQueries, args.k});
 
   // Since we've guaranteed that all arguments are on device, call the
   // implementation
-  bfKnnOnDevice<T>(resources,
+  bfKnnOnDevice<T>(res,
                    device,
                    stream,
                    tVectors,
@@ -77,11 +84,11 @@ void bfKnnConvert(GpuResources* resources, const GpuDistanceParams& args) {
 
   // Convert and copy int indices out
   auto tOutIndices =
-    toDevice<faiss::Index::idx_t, 2>(resources,
-                                     device,
-                                     args.outIndices,
-                                     stream,
-                                     {args.numQueries, args.k});
+    toDeviceTemporary<faiss::Index::idx_t, 2>(res,
+                                              device,
+                                              args.outIndices,
+                                              stream,
+                                              {args.numQueries, args.k});
 
   // Convert int to idx_t
   convertTensor<int, faiss::Index::idx_t, 2>(stream,
@@ -94,7 +101,7 @@ void bfKnnConvert(GpuResources* resources, const GpuDistanceParams& args) {
 }
 
 void
-bfKnn(GpuResources* resources, const GpuDistanceParams& args) {
+bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
   // For now, both vectors and queries must be of the same data type
   FAISS_THROW_IF_NOT_MSG(
     args.vectorType == args.queryType,
@@ -102,9 +109,9 @@ bfKnn(GpuResources* resources, const GpuDistanceParams& args) {
     "be the same (F32 or F16");
 
   if (args.vectorType == DistanceDataType::F32) {
-    bfKnnConvert<float>(resources, args);
+    bfKnnConvert<float>(res, args);
   } else if (args.vectorType == DistanceDataType::F16) {
-    bfKnnConvert<half>(resources, args);
+    bfKnnConvert<half>(res, args);
   } else {
     FAISS_THROW_MSG("unknown vectorType");
   }
@@ -112,7 +119,7 @@ bfKnn(GpuResources* resources, const GpuDistanceParams& args) {
 
 // legacy version
 void
-bruteForceKnn(GpuResources* resources,
+bruteForceKnn(GpuResourcesProvider* res,
               faiss::MetricType metric,
               // A region of memory size numVectors x dims, with dims
               // innermost
@@ -147,7 +154,7 @@ bruteForceKnn(GpuResources* resources,
   args.outDistances = outDistances;
   args.outIndices = outIndices;
 
-  bfKnn(resources, args);
+  bfKnn(res, args);
 }
 
 } } // namespace

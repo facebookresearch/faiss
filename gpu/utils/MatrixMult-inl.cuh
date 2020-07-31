@@ -16,8 +16,6 @@
 
 namespace faiss { namespace gpu {
 
-class DeviceMemory;
-
 template <typename T>
 struct GetCudaType;
 

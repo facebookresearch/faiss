@@ -208,6 +208,7 @@ struct ArrayInvertedLists: InvertedLists {
  * that can be stacked horizontally, vertically and sliced.
  *****************************************************************/
 
+/// invlists that fail for all write functions
 struct ReadOnlyInvertedLists: InvertedLists {
 
     ReadOnlyInvertedLists (size_t nlist, size_t code_size):

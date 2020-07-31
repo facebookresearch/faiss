@@ -43,6 +43,7 @@ namespace faiss {
 
 struct VisitedTable;
 struct DistanceComputer; // from AuxIndexStructures
+struct HNSWStats;
 
 struct HNSW {
   /// internal storage of vectors (32 bits: this is expensive)
@@ -186,19 +187,20 @@ struct HNSW {
                              idx_t *I, float *D,
                              MinimaxHeap& candidates,
                              VisitedTable &vt,
+                             HNSWStats &stats,
                              int level, int nres_in = 0) const;
 
   std::priority_queue<Node> search_from_candidate_unbounded(
     const Node& node,
     DistanceComputer& qdis,
     int ef,
-    VisitedTable *vt
-  ) const;
+    VisitedTable *vt,
+    HNSWStats &stats) const;
 
   /// search interface
-  void search(DistanceComputer& qdis, int k,
-              idx_t *I, float *D,
-              VisitedTable& vt) const;
+  HNSWStats search(DistanceComputer& qdis, int k,
+                   idx_t *I, float *D,
+                   VisitedTable &vt) const;
 
   void reset();
 
@@ -254,7 +256,6 @@ struct HNSWStats {
   size_t n1, n2, n3;
   size_t ndis;
   size_t nreorder;
-  bool view;
 
   HNSWStats() {
     reset();
@@ -264,7 +265,14 @@ struct HNSWStats {
     n1 = n2 = n3 = 0;
     ndis = 0;
     nreorder = 0;
-    view = false;
+  }
+
+  void combine(const HNSWStats& other) {
+    n1 += other.n1;
+    n2 += other.n2;
+    n3 += other.n3;
+    ndis += other.ndis;
+    nreorder += other.nreorder;
   }
 };
 

@@ -12,6 +12,11 @@
 
 namespace faiss { namespace gpu {
 
+// We require at least CUDA 8.0 for compilation
+#if CUDA_VERSION < 8000
+#error "CUDA >= 8.0 is required"
+#endif
+
 #ifdef __CUDA_ARCH__
 #if __CUDA_ARCH__ <= 750
 constexpr int kWarpSize = 32;

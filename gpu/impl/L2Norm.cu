@@ -241,7 +241,7 @@ void runL2Norm(Tensor<T, 2, true, IndexType>& input,
 
       auto dim = inputV.getSize(1);
       bool normLoop = dim > maxThreads;
-      auto numThreads = min(dim, maxThreads);
+      auto numThreads = std::min(dim, maxThreads);
 
       auto grid = dim3(utils::divUp(inputV.getSize(0), rowTileSize));
       auto block = dim3(numThreads);
@@ -254,7 +254,7 @@ void runL2Norm(Tensor<T, 2, true, IndexType>& input,
 
       auto dim = input.getSize(1);
       bool normLoop = dim > maxThreads;
-      auto numThreads = min(dim, maxThreads);
+      auto numThreads = std::min(dim, maxThreads);
 
       auto grid = dim3(utils::divUp(input.getSize(0), rowTileSize));
       auto block = dim3(numThreads);

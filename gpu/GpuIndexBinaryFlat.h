@@ -9,11 +9,12 @@
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/gpu/GpuIndex.h>
+#include <faiss/gpu/GpuResources.h>
+#include <memory>
 
 namespace faiss { namespace gpu {
 
 class BinaryFlatIndex;
-class GpuResources;
 
 struct GpuIndexBinaryFlatConfig : public GpuIndexConfig {
 };
@@ -24,13 +25,13 @@ class GpuIndexBinaryFlat : public IndexBinary {
  public:
   /// Construct from a pre-existing faiss::IndexBinaryFlat instance, copying
   /// data over to the given GPU
-  GpuIndexBinaryFlat(GpuResources* resources,
+  GpuIndexBinaryFlat(GpuResourcesProvider* resources,
                      const faiss::IndexBinaryFlat* index,
                      GpuIndexBinaryFlatConfig config =
                      GpuIndexBinaryFlatConfig());
 
   /// Construct an empty instance that can be added to
-  GpuIndexBinaryFlat(GpuResources* resources,
+  GpuIndexBinaryFlat(GpuResourcesProvider* resources,
                      int dims,
                      GpuIndexBinaryFlatConfig config =
                      GpuIndexBinaryFlatConfig());
@@ -76,14 +77,13 @@ class GpuIndexBinaryFlat : public IndexBinary {
 
  protected:
   /// Manages streans, cuBLAS handles and scratch memory for devices
-  GpuResources* resources_;
+  std::shared_ptr<GpuResources> resources_;
 
   /// Configuration options
   GpuIndexBinaryFlatConfig config_;
 
-  /// Holds our GPU data containing the list of vectors; is managed via raw
-  /// pointer so as to allow non-CUDA compilers to see this header
-  BinaryFlatIndex* data_;
+  /// Holds our GPU data containing the list of vectors
+  std::unique_ptr<BinaryFlatIndex> data_;
 };
 
 } } // namespace gpu

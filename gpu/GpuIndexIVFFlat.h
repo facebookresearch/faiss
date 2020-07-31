@@ -9,6 +9,7 @@
 #pragma once
 
 #include <faiss/gpu/GpuIndexIVF.h>
+#include <memory>
 
 namespace faiss { struct IndexIVFFlat; }
 
@@ -26,13 +27,13 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
  public:
   /// Construct from a pre-existing faiss::IndexIVFFlat instance, copying
   /// data over to the given GPU, if the input index is trained.
-  GpuIndexIVFFlat(GpuResources* resources,
+  GpuIndexIVFFlat(GpuResourcesProvider* provider,
                   const faiss::IndexIVFFlat* index,
                   GpuIndexIVFFlatConfig config = GpuIndexIVFFlatConfig());
 
   /// Constructs a new instance with an empty flat quantizer; the user
   /// provides the number of lists desired.
-  GpuIndexIVFFlat(GpuResources* resources,
+  GpuIndexIVFFlat(GpuResourcesProvider* provider,
                   int dims,
                   int nlist,
                   faiss::MetricType metric,
@@ -79,7 +80,7 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
   size_t reserveMemoryVecs_;
 
   /// Instance that we own; contains the inverted list
-  IVFFlat* index_;
+  std::unique_ptr<IVFFlat> index_;
 };
 
 } } // namespace

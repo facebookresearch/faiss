@@ -148,6 +148,11 @@ extern "C" {
         PyEval_RestoreThread(_save);
         PyErr_SetString(PyExc_MemoryError, "std::bad_alloc");
         SWIG_fail;
+    } catch(const std::exception& ex) {
+        PyEval_RestoreThread(_save);
+        std::string what = std::string("C++ exception ") + ex.what();
+        PyErr_SetString(PyExc_RuntimeError, what.c_str());
+        SWIG_fail;
     }
     Py_END_ALLOW_THREADS
 }
@@ -190,7 +195,9 @@ namespace std {
     };
 };
 
-
+%include <std_string.i>
+%include <std_pair.i>
+%include <std_map.i>
 
 %template(FloatVector) std::vector<float>;
 %template(DoubleVector) std::vector<double>;
@@ -210,12 +217,11 @@ namespace std {
 %template(InvertedListsPtrVector) std::vector<faiss::InvertedLists*>;
 %template(RepeatVector) std::vector<faiss::Repeat>;
 %template(ClusteringIterationStatsVector) std::vector<faiss::ClusteringIterationStats>;
+%template(OnDiskOneListVector) std::vector<faiss::OnDiskOneList>;
 
 #ifdef GPU_WRAPPER
-%template(GpuResourcesVector) std::vector<faiss::gpu::GpuResources*>;
+%template(GpuResourcesVector) std::vector<faiss::gpu::GpuResourcesProvider*>;
 #endif
-
-%include <std_string.i>
 
 // produces an error on the Mac
 %ignore faiss::hamming;
@@ -242,7 +248,6 @@ void gpu_sync_all_devices();
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/GpuClonerOptions.h>
-#include <faiss/gpu/utils/MemorySpace.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVF.h>
@@ -276,9 +281,15 @@ void gpu_sync_all_devices()
 
 %}
 
+
+%template() std::pair<int, unsigned long>;
+%template() std::map<std::string, std::pair<int, unsigned long> >;
+%template() std::map<int, std::map<std::string, std::pair<int, unsigned long> > >;
+
 // causes weird wrapper bug
-%ignore *::getMemoryManager;
-%ignore *::getMemoryManagerCurrentDevice;
+%ignore *::allocMemoryHandle;
+%ignore faiss::gpu::GpuMemoryReservation;
+%ignore faiss::gpu::GpuMemoryReservation::operator=(GpuMemoryReservation&&);
 
 %include  <faiss/gpu/GpuResources.h>
 %include  <faiss/gpu/StandardGpuResources.h>
@@ -345,6 +356,9 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/HNSW.h>
 %include  <faiss/IndexHNSW.h>
 %include  <faiss/IndexIVFFlat.h>
+
+%warnfilter(401) faiss::OnDiskInvertedListsIOHook;
+%ignore OnDiskInvertedListsIOHook;
 %include  <faiss/OnDiskInvertedLists.h>
 
 %include  <faiss/impl/lattice_Zn.h>
@@ -361,10 +375,6 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexBinaryFromFloat.h>
 %include  <faiss/IndexBinaryHNSW.h>
 %include  <faiss/IndexBinaryHash.h>
-
-
-
- // %ignore faiss::IndexReplicas::at(int) const;
 
 %include  <faiss/impl/ThreadedIndex.h>
 %template(ThreadedIndexBase) faiss::ThreadedIndex<faiss::Index>;
@@ -391,7 +401,6 @@ void gpu_sync_all_devices()
 
 %include  <faiss/gpu/GpuIndicesOptions.h>
 %include  <faiss/gpu/GpuClonerOptions.h>
-%include  <faiss/gpu/utils/MemorySpace.h>
 %include  <faiss/gpu/GpuIndex.h>
 %include  <faiss/gpu/GpuIndexFlat.h>
 %include  <faiss/gpu/GpuIndexIVF.h>
@@ -611,6 +620,8 @@ struct AsyncIndexSearchC {
     DOWNCAST ( IndexBinaryFlat )
     DOWNCAST ( IndexBinaryFromFloat )
     DOWNCAST ( IndexBinaryHNSW )
+    DOWNCAST ( IndexBinaryHash )
+    DOWNCAST ( IndexBinaryMultiHash )
 #ifdef GPU_WRAPPER
     DOWNCAST_GPU ( GpuIndexBinaryFlat )
 #endif
@@ -707,6 +718,25 @@ faiss::InvertedLists * downcast_InvertedLists (faiss::InvertedLists *il)
 
 #endif
 
+
+
+/*******************************************************************
+ * Support I/O to arbitrary functions
+ *******************************************************************/
+
+
+#ifdef SWIGPYTHON
+%include <faiss/python/python_callbacks.h>
+
+
+%{
+#include <faiss/python/python_callbacks.h>
+%}
+
+#endif
+
+
+
 // Python-specific: do not release GIL any more, as functions below
 // use the Python/C API
 #ifdef SWIGPYTHON
@@ -726,6 +756,13 @@ faiss::InvertedLists * downcast_InvertedLists (faiss::InvertedLists *il)
 %{
 PyObject *swig_ptr (PyObject *a)
 {
+
+    if (PyBytes_Check(a)) {
+        return SWIG_NewPointerObj(PyBytes_AsString(a), SWIGTYPE_p_char, 0);
+    }
+    if (PyByteArray_Check(a)) {
+        return SWIG_NewPointerObj(PyByteArray_AsString(a), SWIGTYPE_p_char, 0);
+    }
     if(!PyArray_Check(a)) {
         PyErr_SetString(PyExc_ValueError, "input not a numpy array");
         return NULL;
@@ -981,121 +1018,7 @@ struct MapLong2Long {
 
 %}
 
-/*******************************************************************
- * Support I/O to arbitrary functions
- *******************************************************************/
 
-
-%inline %{
-
-#ifdef SWIGPYTHON
-
-
-struct PyCallbackIOWriter: faiss::IOWriter {
-
-    PyObject * callback;
-    size_t bs; // maximum write size
-
-    PyCallbackIOWriter(PyObject *callback,
-                       size_t bs = 1024 * 1024):
-        callback(callback), bs(bs) {
-        Py_INCREF(callback);
-        name = "PyCallbackIOWriter";
-    }
-
-    size_t operator()(const void *ptrv, size_t size, size_t nitems) override {
-        size_t ws = size * nitems;
-        const char *ptr = (const char*)ptrv;
-        PyGILState_STATE gstate;
-        gstate = PyGILState_Ensure();
-        while(ws > 0) {
-            size_t wi = ws > bs ? bs : ws;
-            PyObject* bo = PyBytes_FromStringAndSize(ptr, wi);
-            PyObject *arglist = Py_BuildValue("(N)", bo);
-            if(!arglist) {
-                PyGILState_Release(gstate);
-                return 0;
-            }
-            ptr += wi;
-            ws -= wi;
-            PyObject * result = PyObject_CallObject(callback, arglist);
-            Py_DECREF(arglist);
-            if (result == NULL) {
-                PyGILState_Release(gstate);
-                return 0;
-            }
-            Py_DECREF(result);
-        }
-        PyGILState_Release(gstate);
-        return nitems;
-    }
-
-    ~PyCallbackIOWriter() {
-        Py_DECREF(callback);
-    }
-
-};
-
-struct PyCallbackIOReader: faiss::IOReader {
-
-    PyObject * callback;
-    size_t bs; // maximum buffer size
-
-    PyCallbackIOReader(PyObject *callback,
-                       size_t bs = 1024 * 1024):
-        callback(callback), bs(bs) {
-        Py_INCREF(callback);
-        name = "PyCallbackIOReader";
-    }
-
-    size_t operator()(void *ptrv, size_t size, size_t nitems) override {
-        size_t rs = size * nitems;
-        char *ptr = (char*)ptrv;
-        PyGILState_STATE gstate;
-        gstate = PyGILState_Ensure();
-        while(rs > 0) {
-            size_t ri = rs > bs ? bs : rs;
-            PyObject *arglist = Py_BuildValue("(n)", ri);
-            PyObject * result = PyObject_CallObject(callback, arglist);
-            Py_DECREF(arglist);
-            if (result == NULL) {
-                PyGILState_Release(gstate);
-                return 0;
-            }
-            if(!PyBytes_Check(result)) {
-                Py_DECREF(result);
-                PyErr_SetString(PyExc_RuntimeError,
-                                "read callback did not return a bytes object");
-                PyGILState_Release(gstate);
-                throw faiss::FaissException("reader error");
-            }
-            size_t sz = PyBytes_Size(result);
-            if (sz == 0 || sz > rs) {
-                Py_DECREF(result);
-                PyErr_Format(PyExc_RuntimeError,
-                             "read callback returned %ld bytes (asked %ld)",
-                             sz, rs);
-                PyGILState_Release(gstate);
-                throw faiss::FaissException("reader error");
-            }
-            memcpy(ptr, PyBytes_AsString(result), sz);
-            Py_DECREF(result);
-            ptr += sz;
-            rs -= sz;
-        }
-        PyGILState_Release(gstate);
-        return nitems;
-    }
-
-    ~PyCallbackIOReader() {
-        Py_DECREF(callback);
-    }
-
-};
-
-#endif
-
-%}
 
 
 

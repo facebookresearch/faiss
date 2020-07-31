@@ -31,11 +31,11 @@ IVFBase::IVFBase(GpuResources* resources,
     metric_(metric),
     metricArg_(metricArg),
     quantizer_(quantizer),
+    dim_(quantizer->getDim()),
+    numLists_(quantizer->getSize()),
     bytesPerVector_(bytesPerVector),
     indicesOptions_(indicesOptions),
     space_(space),
-    dim_(quantizer->getDim()),
-    numLists_(quantizer->getSize()),
     maxListLength_(0) {
   reset();
 }
@@ -82,13 +82,18 @@ IVFBase::reset() {
   deviceListLengths_.clear();
   listOffsetToUserIndex_.clear();
 
+  auto info = AllocInfo(AllocType::IVFLists,
+                        getCurrentDevice(),
+                        space_,
+                        resources_->getDefaultStreamCurrentDevice());
+
   for (size_t i = 0; i < numLists_; ++i) {
     deviceListData_.emplace_back(
       std::unique_ptr<DeviceVector<unsigned char>>(
-        new DeviceVector<unsigned char>(space_)));
+        new DeviceVector<unsigned char>(resources_, info)));
     deviceListIndices_.emplace_back(
       std::unique_ptr<DeviceVector<unsigned char>>(
-        new DeviceVector<unsigned char>(space_)));
+        new DeviceVector<unsigned char>(resources_, info)));
     listOffsetToUserIndex_.emplace_back(std::vector<long>());
   }
 
@@ -149,8 +154,6 @@ IVFBase::updateDeviceListInfo_(cudaStream_t stream) {
 void
 IVFBase::updateDeviceListInfo_(const std::vector<int>& listIds,
                                cudaStream_t stream) {
-  auto& mem = resources_->getMemoryManagerCurrentDevice();
-
   HostTensor<int, 1, true>
     hostListsToUpdate({(int) listIds.size()});
   HostTensor<int, 1, true>
@@ -173,13 +176,13 @@ IVFBase::updateDeviceListInfo_(const std::vector<int>& listIds,
 
   // Copy the above update sets to the GPU
   DeviceTensor<int, 1, true> listsToUpdate(
-    mem, hostListsToUpdate, stream);
+    resources_, makeTempAlloc(AllocType::Other, stream), hostListsToUpdate);
   DeviceTensor<int, 1, true> newListLength(
-    mem,  hostNewListLength, stream);
+    resources_, makeTempAlloc(AllocType::Other, stream), hostNewListLength);
   DeviceTensor<void*, 1, true> newDataPointers(
-    mem, hostNewDataPointers, stream);
+    resources_, makeTempAlloc(AllocType::Other, stream), hostNewDataPointers);
   DeviceTensor<void*, 1, true> newIndexPointers(
-    mem, hostNewIndexPointers, stream);
+    resources_, makeTempAlloc(AllocType::Other, stream), hostNewIndexPointers);
 
   // Update all pointers to the lists on the device that may have
   // changed

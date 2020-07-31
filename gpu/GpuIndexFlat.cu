@@ -19,7 +19,22 @@
 
 namespace faiss { namespace gpu {
 
-GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
+GpuIndexFlat::GpuIndexFlat(GpuResourcesProvider* provider,
+                           const faiss::IndexFlat* index,
+                           GpuIndexFlatConfig config) :
+    GpuIndex(provider->getResources(),
+             index->d,
+             index->metric_type,
+             index->metric_arg,
+             config),
+    config_(std::move(config)) {
+  // Flat index doesn't need training
+  this->is_trained = true;
+
+  copyFrom(index);
+}
+
+GpuIndexFlat::GpuIndexFlat(std::shared_ptr<GpuResources> resources,
                            const faiss::IndexFlat* index,
                            GpuIndexFlatConfig config) :
     GpuIndex(resources,
@@ -27,35 +42,54 @@ GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
              index->metric_type,
              index->metric_arg,
              config),
-    config_(std::move(config)),
-    data_(nullptr) {
+    config_(std::move(config)) {
   // Flat index doesn't need training
   this->is_trained = true;
 
   copyFrom(index);
 }
 
-GpuIndexFlat::GpuIndexFlat(GpuResources* resources,
+GpuIndexFlat::GpuIndexFlat(GpuResourcesProvider* provider,
                            int dims,
                            faiss::MetricType metric,
                            GpuIndexFlatConfig config) :
-    GpuIndex(resources, dims, metric, 0, config),
-    config_(std::move(config)),
-    data_(nullptr) {
+    GpuIndex(provider->getResources(),
+             dims,
+             metric,
+             0,
+             config),
+    config_(std::move(config)) {
   // Flat index doesn't need training
   this->is_trained = true;
 
   // Construct index
   DeviceScope scope(device_);
-  data_ = new FlatIndex(resources,
-                        dims,
-                        config_.useFloat16,
-                        config_.storeTransposed,
-                        memorySpace_);
+  data_.reset(new FlatIndex(resources_.get(),
+                            dims,
+                            config_.useFloat16,
+                            config_.storeTransposed,
+                            memorySpace_));
+}
+
+GpuIndexFlat::GpuIndexFlat(std::shared_ptr<GpuResources> resources,
+                           int dims,
+                           faiss::MetricType metric,
+                           GpuIndexFlatConfig config) :
+    GpuIndex(resources, dims, metric, 0, config),
+    config_(std::move(config)) {
+  // Flat index doesn't need training
+  this->is_trained = true;
+
+  // Construct index
+  DeviceScope scope(device_);
+  data_.reset(new FlatIndex(resources_.get(),
+                            dims,
+                            config_.useFloat16,
+                            config_.storeTransposed,
+                            memorySpace_));
 }
 
 GpuIndexFlat::~GpuIndexFlat() {
-  delete data_;
 }
 
 void
@@ -72,12 +106,12 @@ GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
                          (size_t) std::numeric_limits<int>::max(),
                          (size_t) index->ntotal);
 
-  delete data_;
-  data_ = new FlatIndex(resources_,
-                        this->d,
-                        config_.useFloat16,
-                        config_.storeTransposed,
-                        memorySpace_);
+  data_.reset();
+  data_.reset(new FlatIndex(resources_.get(),
+                            this->d,
+                            config_.useFloat16,
+                            config_.storeTransposed,
+                            memorySpace_));
 
   // The index could be empty
   if (index->ntotal > 0) {
@@ -199,7 +233,9 @@ GpuIndexFlat::searchImpl_(int n,
 
   // FlatIndex only supports int indices
   DeviceTensor<int, 2, true> outIntLabels(
-    resources_->getMemoryManagerCurrentDevice(), {n, k}, stream);
+    resources_.get(),
+    makeTempAlloc(AllocType::Other, stream),
+    {n, k});
 
   data_->query(queries, k, metric_type, metric_arg,
                outDistances, outIntLabels, true);
@@ -270,21 +306,24 @@ GpuIndexFlat::compute_residual_n(faiss::Index::idx_t n,
   DeviceScope scope(device_);
 
   auto vecsDevice =
-    toDevice<float, 2>(resources_, device_,
-                       const_cast<float*>(xs), stream,
-                       {(int) n, (int) this->d});
+    toDeviceTemporary<float, 2>(resources_.get(), device_,
+                                const_cast<float*>(xs), stream,
+                                {(int) n, (int) this->d});
   auto idsDevice =
-    toDevice<faiss::Index::idx_t, 1>(resources_, device_,
-                                     const_cast<faiss::Index::idx_t*>(keys),
-                                     stream,
-                                     {(int) n});
+    toDeviceTemporary<faiss::Index::idx_t, 1>(
+      resources_.get(), device_,
+      const_cast<faiss::Index::idx_t*>(keys),
+      stream,
+      {(int) n});
+
   auto residualDevice =
-    toDevice<float, 2>(resources_, device_, residuals, stream,
-                       {(int) n, (int) this->d});
+    toDeviceTemporary<float, 2>(resources_.get(), device_, residuals, stream,
+                                {(int) n, (int) this->d});
 
   // Convert idx_t to int
   auto keysInt =
-    convertTensor<faiss::Index::idx_t, int, 1>(resources_, stream, idsDevice);
+    convertTensorTemporary<faiss::Index::idx_t, int, 1>(
+      resources_.get(), stream, idsDevice);
 
   FAISS_ASSERT(data_);
   data_->computeResidual(vecsDevice,
@@ -298,13 +337,25 @@ GpuIndexFlat::compute_residual_n(faiss::Index::idx_t n,
 // GpuIndexFlatL2
 //
 
-GpuIndexFlatL2::GpuIndexFlatL2(GpuResources* resources,
+GpuIndexFlatL2::GpuIndexFlatL2(GpuResourcesProvider* provider,
+                               faiss::IndexFlatL2* index,
+                               GpuIndexFlatConfig config) :
+    GpuIndexFlat(provider, index, config) {
+}
+
+GpuIndexFlatL2::GpuIndexFlatL2(std::shared_ptr<GpuResources> resources,
                                faiss::IndexFlatL2* index,
                                GpuIndexFlatConfig config) :
     GpuIndexFlat(resources, index, config) {
 }
 
-GpuIndexFlatL2::GpuIndexFlatL2(GpuResources* resources,
+GpuIndexFlatL2::GpuIndexFlatL2(GpuResourcesProvider* provider,
+                               int dims,
+                               GpuIndexFlatConfig config) :
+    GpuIndexFlat(provider, dims, faiss::METRIC_L2, config) {
+}
+
+GpuIndexFlatL2::GpuIndexFlatL2(std::shared_ptr<GpuResources> resources,
                                int dims,
                                GpuIndexFlatConfig config) :
     GpuIndexFlat(resources, dims, faiss::METRIC_L2, config) {
@@ -332,13 +383,25 @@ GpuIndexFlatL2::copyTo(faiss::IndexFlat* index) {
 // GpuIndexFlatIP
 //
 
-GpuIndexFlatIP::GpuIndexFlatIP(GpuResources* resources,
+GpuIndexFlatIP::GpuIndexFlatIP(GpuResourcesProvider* provider,
+                               faiss::IndexFlatIP* index,
+                               GpuIndexFlatConfig config) :
+    GpuIndexFlat(provider, index, config) {
+}
+
+GpuIndexFlatIP::GpuIndexFlatIP(std::shared_ptr<GpuResources> resources,
                                faiss::IndexFlatIP* index,
                                GpuIndexFlatConfig config) :
     GpuIndexFlat(resources, index, config) {
 }
 
-GpuIndexFlatIP::GpuIndexFlatIP(GpuResources* resources,
+GpuIndexFlatIP::GpuIndexFlatIP(GpuResourcesProvider* provider,
+                               int dims,
+                               GpuIndexFlatConfig config) :
+    GpuIndexFlat(provider, dims, faiss::METRIC_INNER_PRODUCT, config) {
+}
+
+GpuIndexFlatIP::GpuIndexFlatIP(std::shared_ptr<GpuResources> resources,
                                int dims,
                                GpuIndexFlatConfig config) :
     GpuIndexFlat(resources, dims, faiss::METRIC_INNER_PRODUCT, config) {

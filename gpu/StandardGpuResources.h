@@ -11,18 +11,20 @@
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/StackDeviceMemory.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <functional>
+#include <map>
 #include <unordered_map>
 #include <vector>
 
 namespace faiss { namespace gpu {
 
-/// Default implementation of GpuResources that allocates a cuBLAS
-/// stream and 2 streams for use, as well as temporary memory
-class StandardGpuResources : public GpuResources {
+/// Standard implementation of the GpuResources object that provides for a
+/// temporary memory manager
+class StandardGpuResourcesImpl : public GpuResources {
  public:
-  StandardGpuResources();
+  StandardGpuResourcesImpl();
 
-  ~StandardGpuResources() override;
+  ~StandardGpuResourcesImpl() override;
 
   /// Disable allocation of temporary memory; all temporary memory
   /// requests will call cudaMalloc / cudaFree at the point of use
@@ -46,10 +48,6 @@ class StandardGpuResources : public GpuResources {
   /// for all devices
   void setDefaultNullStreamAllDevices();
 
-  /// Enable or disable the warning about not having enough temporary memory
-  /// when cudaMalloc gets called
-  void setCudaMallocWarning(bool b);
-
  public:
   /// Internal system calls
 
@@ -62,7 +60,17 @@ class StandardGpuResources : public GpuResources {
 
   std::vector<cudaStream_t> getAlternateStreams(int device) override;
 
-  DeviceMemory& getMemoryManager(int device) override;
+  /// Allocate non-temporary GPU memory
+  void* allocMemory(const AllocRequest& req) override;
+
+  /// Returns a previous allocation
+  void deallocMemory(int device, void* in) override;
+
+  size_t getTempMemoryAvailable(int device) const override;
+
+  /// Export a description of memory used for Python
+  std::map<int, std::map<std::string, std::pair<int, size_t>>>
+  getMemoryInfo() const;
 
   std::pair<void*, size_t> getPinnedMemory() override;
 
@@ -77,6 +85,13 @@ class StandardGpuResources : public GpuResources {
   static size_t getDefaultTempMemForGPU(int device, size_t requested);
 
  private:
+  /// Set of currently outstanding memory allocations per device
+  /// device -> (alloc request, allocated ptr)
+  std::unordered_map<int, std::unordered_map<void*, AllocRequest>> allocs_;
+
+  /// Temporary memory provider, per each device
+  std::unordered_map<int, std::unique_ptr<StackDeviceMemory>> tempMemory_;
+
   /// Our default stream that work is ordered on, one per each device
   std::unordered_map<int, cudaStream_t> defaultStreams_;
 
@@ -85,16 +100,13 @@ class StandardGpuResources : public GpuResources {
   std::unordered_map<int, cudaStream_t> userDefaultStreams_;
 
   /// Other streams we can use, per each device
-  std::unordered_map<int, std::vector<cudaStream_t> > alternateStreams_;
+  std::unordered_map<int, std::vector<cudaStream_t>> alternateStreams_;
 
   /// Async copy stream to use for GPU <-> CPU pinned memory copies
   std::unordered_map<int, cudaStream_t> asyncCopyStreams_;
 
   /// cuBLAS handle for each device
   std::unordered_map<int, cublasHandle_t> blasHandles_;
-
-  /// Temporary memory provider, per each device
-  std::unordered_map<int, std::unique_ptr<StackDeviceMemory> > memory_;
 
   /// Pinned memory allocation for use with this GPU
   void* pinnedMemAlloc_;
@@ -109,6 +121,54 @@ class StandardGpuResources : public GpuResources {
 
   /// Whether or not a warning upon cudaMalloc is generated
   bool cudaMallocWarning_;
+};
+
+/// Default implementation of GpuResources that allocates a cuBLAS
+/// stream and 2 streams for use, as well as temporary memory
+class StandardGpuResources : public GpuResourcesProvider {
+ public:
+  StandardGpuResources();
+  ~StandardGpuResources() override;
+
+  std::shared_ptr<GpuResources> getResources() override;
+
+  /// Disable allocation of temporary memory; all temporary memory
+  /// requests will call cudaMalloc / cudaFree at the point of use
+  void noTempMemory();
+
+  /// Specify that we wish to use a certain fixed size of memory on
+  /// all devices as temporary memory. This is the upper bound for the GPU
+  /// memory that we will reserve. We will never go above 1.5 GiB on any GPU;
+  /// smaller GPUs (with <= 4 GiB or <= 8 GiB) will use less memory than that.
+  /// To avoid any temporary memory allocation, pass 0.
+  void setTempMemory(size_t size);
+
+  /// Set amount of pinned memory to allocate, for async GPU <-> CPU
+  /// transfers
+  void setPinnedMemory(size_t size);
+
+  /// Called to change the stream for work ordering
+  void setDefaultStream(int device, cudaStream_t stream);
+
+  /// Called to change the work ordering streams to the null stream
+  /// for all devices
+  void setDefaultNullStreamAllDevices();
+
+  /// Export a description of memory used for Python
+  std::map<int, std::map<std::string, std::pair<int, size_t>>>
+  getMemoryInfo() const;
+
+  /// Returns the current default stream
+  cudaStream_t getDefaultStream(int device);
+
+  /// Returns the current amount of temp memory available
+  size_t getTempMemoryAvailable(int device) const;
+
+  /// Synchronize our default stream with the CPU
+  void syncDefaultStreamCurrentDevice();
+
+ private:
+  std::shared_ptr<StandardGpuResourcesImpl> res_;
 };
 
 } } // namespace

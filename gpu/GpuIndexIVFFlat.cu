@@ -20,30 +20,28 @@
 
 namespace faiss { namespace gpu {
 
-GpuIndexIVFFlat::GpuIndexIVFFlat(GpuResources* resources,
+GpuIndexIVFFlat::GpuIndexIVFFlat(GpuResourcesProvider* provider,
                                  const faiss::IndexIVFFlat* index,
                                  GpuIndexIVFFlatConfig config) :
-    GpuIndexIVF(resources,
+    GpuIndexIVF(provider,
                 index->d,
                 index->metric_type,
                 index->metric_arg,
                 index->nlist,
                 config),
     ivfFlatConfig_(config),
-    reserveMemoryVecs_(0),
-    index_(nullptr) {
+    reserveMemoryVecs_(0) {
   copyFrom(index);
 }
 
-GpuIndexIVFFlat::GpuIndexIVFFlat(GpuResources* resources,
+GpuIndexIVFFlat::GpuIndexIVFFlat(GpuResourcesProvider* provider,
                                  int dims,
                                  int nlist,
                                  faiss::MetricType metric,
                                  GpuIndexIVFFlatConfig config) :
-    GpuIndexIVF(resources, dims, metric, 0, nlist, config),
+    GpuIndexIVF(provider, dims, metric, 0, nlist, config),
     ivfFlatConfig_(config),
-    reserveMemoryVecs_(0),
-    index_(nullptr) {
+    reserveMemoryVecs_(0) {
 
   // faiss::Index params
   this->is_trained = false;
@@ -53,7 +51,6 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(GpuResources* resources,
 }
 
 GpuIndexIVFFlat::~GpuIndexIVFFlat() {
-  delete index_;
 }
 
 void
@@ -72,8 +69,7 @@ GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
   GpuIndexIVF::copyFrom(index);
 
   // Clear out our old data
-  delete index_;
-  index_ = nullptr;
+  index_.reset();
 
   // The other index might not be trained
   if (!index->is_trained) {
@@ -85,14 +81,14 @@ GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
   FAISS_ASSERT(is_trained);
 
   // Copy our lists as well
-  index_ = new IVFFlat(resources_,
-                       quantizer->getGpuData(),
-                       index->metric_type,
-                       index->metric_arg,
-                       false, // no residual
-                       nullptr, // no scalar quantizer
-                       ivfFlatConfig_.indicesOptions,
-                       memorySpace_);
+  index_.reset(new IVFFlat(resources_.get(),
+                           quantizer->getGpuData(),
+                           index->metric_type,
+                           index->metric_arg,
+                           false, // no residual
+                           nullptr, // no scalar quantizer
+                           ivfFlatConfig_.indicesOptions,
+                           memorySpace_));
   InvertedLists *ivf = index->invlists;
 
   for (size_t i = 0; i < ivf->nlist; ++i) {
@@ -181,14 +177,14 @@ GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
   trainQuantizer_(n, x);
 
   // The quantizer is now trained; construct the IVF index
-  index_ = new IVFFlat(resources_,
-                       quantizer->getGpuData(),
-                       this->metric_type,
-                       this->metric_arg,
-                       false, // no residual
-                       nullptr, // no scalar quantizer
-                       ivfFlatConfig_.indicesOptions,
-                       memorySpace_);
+  index_.reset(new IVFFlat(resources_.get(),
+                           quantizer->getGpuData(),
+                           this->metric_type,
+                           this->metric_arg,
+                           false, // no residual
+                           nullptr, // no scalar quantizer
+                           ivfFlatConfig_.indicesOptions,
+                           memorySpace_));
 
   if (reserveMemoryVecs_) {
     index_->reserveMemory(reserveMemoryVecs_);

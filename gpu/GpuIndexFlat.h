@@ -9,6 +9,7 @@
 #pragma once
 
 #include <faiss/gpu/GpuIndex.h>
+#include <memory>
 
 namespace faiss {
 
@@ -47,12 +48,21 @@ class GpuIndexFlat : public GpuIndex {
  public:
   /// Construct from a pre-existing faiss::IndexFlat instance, copying
   /// data over to the given GPU
-  GpuIndexFlat(GpuResources* resources,
+  GpuIndexFlat(GpuResourcesProvider* provider,
+               const faiss::IndexFlat* index,
+               GpuIndexFlatConfig config = GpuIndexFlatConfig());
+
+  GpuIndexFlat(std::shared_ptr<GpuResources> resources,
                const faiss::IndexFlat* index,
                GpuIndexFlatConfig config = GpuIndexFlatConfig());
 
   /// Construct an empty instance that can be added to
-  GpuIndexFlat(GpuResources* resources,
+  GpuIndexFlat(GpuResourcesProvider* provider,
+               int dims,
+               faiss::MetricType metric,
+               GpuIndexFlatConfig config = GpuIndexFlatConfig());
+
+  GpuIndexFlat(std::shared_ptr<GpuResources> resources,
                int dims,
                faiss::MetricType metric,
                GpuIndexFlatConfig config = GpuIndexFlatConfig());
@@ -100,7 +110,7 @@ class GpuIndexFlat : public GpuIndex {
                           const faiss::Index::idx_t* keys) const override;
 
   /// For internal access
-  inline FlatIndex* getGpuData() { return data_; }
+  inline FlatIndex* getGpuData() { return data_.get(); }
 
  protected:
   /// Flat index does not require IDs as there is no storage available for them
@@ -122,9 +132,8 @@ class GpuIndexFlat : public GpuIndex {
   /// Our config object
   const GpuIndexFlatConfig config_;
 
-  /// Holds our GPU data containing the list of vectors; is managed via raw
-  /// pointer so as to allow non-CUDA compilers to see this header
-  FlatIndex* data_;
+  /// Holds our GPU data containing the list of vectors
+  std::unique_ptr<FlatIndex> data_;
 };
 
 /// Wrapper around the GPU implementation that looks like
@@ -134,12 +143,20 @@ class GpuIndexFlatL2 : public GpuIndexFlat {
  public:
   /// Construct from a pre-existing faiss::IndexFlatL2 instance, copying
   /// data over to the given GPU
-  GpuIndexFlatL2(GpuResources* resources,
+  GpuIndexFlatL2(GpuResourcesProvider* provider,
+                 faiss::IndexFlatL2* index,
+                 GpuIndexFlatConfig config = GpuIndexFlatConfig());
+
+  GpuIndexFlatL2(std::shared_ptr<GpuResources> resources,
                  faiss::IndexFlatL2* index,
                  GpuIndexFlatConfig config = GpuIndexFlatConfig());
 
   /// Construct an empty instance that can be added to
-  GpuIndexFlatL2(GpuResources* resources,
+  GpuIndexFlatL2(GpuResourcesProvider* provider,
+                 int dims,
+                 GpuIndexFlatConfig config = GpuIndexFlatConfig());
+
+  GpuIndexFlatL2(std::shared_ptr<GpuResources> resources,
                  int dims,
                  GpuIndexFlatConfig config = GpuIndexFlatConfig());
 
@@ -159,12 +176,20 @@ class GpuIndexFlatIP : public GpuIndexFlat {
  public:
   /// Construct from a pre-existing faiss::IndexFlatIP instance, copying
   /// data over to the given GPU
-  GpuIndexFlatIP(GpuResources* resources,
+  GpuIndexFlatIP(GpuResourcesProvider* provider,
+                 faiss::IndexFlatIP* index,
+                 GpuIndexFlatConfig config = GpuIndexFlatConfig());
+
+  GpuIndexFlatIP(std::shared_ptr<GpuResources> resources,
                  faiss::IndexFlatIP* index,
                  GpuIndexFlatConfig config = GpuIndexFlatConfig());
 
   /// Construct an empty instance that can be added to
-  GpuIndexFlatIP(GpuResources* resources,
+  GpuIndexFlatIP(GpuResourcesProvider* provider,
+                 int dims,
+                 GpuIndexFlatConfig config = GpuIndexFlatConfig());
+
+  GpuIndexFlatIP(std::shared_ptr<GpuResources> resources,
                  int dims,
                  GpuIndexFlatConfig config = GpuIndexFlatConfig());
 

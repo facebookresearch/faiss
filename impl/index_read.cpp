@@ -19,6 +19,7 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/io.h>
+#include <faiss/impl/io_macros.h>
 #include <faiss/utils/hamming.h>
 
 #include <faiss/IndexFlat.h>
@@ -47,34 +48,6 @@
 
 
 namespace faiss {
-
-/*************************************************************
- * I/O macros
- *
- * we use macros so that we have a line number to report in abort
- * (). This makes debugging a lot easier. The IOReader or IOWriter is
- * always called f and thus is not passed in as a macro parameter.
- **************************************************************/
-
-
-#define READANDCHECK(ptr, n) {                                  \
-        size_t ret = (*f)(ptr, sizeof(*(ptr)), n);              \
-        FAISS_THROW_IF_NOT_FMT(ret == (n),                      \
-            "read error in %s: %ld != %ld (%s)",                \
-            f->name.c_str(), ret, size_t(n), strerror(errno));  \
-    }
-
-#define READ1(x)  READANDCHECK(&(x), 1)
-
-// will fail if we write 256G of data at once...
-#define READVECTOR(vec) {                       \
-        long size;                            \
-        READANDCHECK (&size, 1);                \
-        FAISS_THROW_IF_NOT (size >= 0 && size < (1L << 40));  \
-        (vec).resize (size);                    \
-        READANDCHECK ((vec).data (), size);     \
-    }
-
 
 
 /*************************************************************
@@ -202,7 +175,7 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
         fprintf(stderr, "read_InvertedLists:"
                 " WARN! inverted lists not stored with IVF object\n");
         return nullptr;
-    } else if (h == fourcc ("ilar") && !(io_flags & IO_FLAG_MMAP)) {
+    } else if (h == fourcc ("ilar") && !(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
         auto ails = new ArrayInvertedLists (0, 0);
         READ1 (ails->nlist);
         READ1 (ails->code_size);
@@ -222,94 +195,22 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
             }
         }
         return ails;
-    } else if (h == fourcc ("ilar") && (io_flags & IO_FLAG_MMAP)) {
-        // then we load it as an OnDiskInvertedLists
-
-        FileIOReader *reader = dynamic_cast<FileIOReader*>(f);
-        FAISS_THROW_IF_NOT_MSG(reader, "mmap only supported for File objects");
-        FILE *fdesc = reader->f;
-
-        auto ails = new OnDiskInvertedLists ();
-        READ1 (ails->nlist);
-        READ1 (ails->code_size);
-        ails->read_only = true;
-        ails->lists.resize (ails->nlist);
-        std::vector<size_t> sizes (ails->nlist);
+    } else if (h == fourcc ("ilar") && (io_flags & IO_FLAG_SKIP_IVF_DATA)) {
+        // code is always ilxx where xx is specific to the type of invlists we want
+        // so we get the 16 high bits from the io_flag and the 16 low bits as "il"
+        int h2 = (io_flags & 0xffff0000) | (fourcc("il__") & 0x0000ffff);
+        size_t nlist, code_size;
+        READ1 (nlist);
+        READ1 (code_size);
+        std::vector<size_t> sizes (nlist);
         read_ArrayInvertedLists_sizes (f, sizes);
-        size_t o0 = ftell(fdesc), o = o0;
-        { // do the mmap
-            struct stat buf;
-            int ret = fstat (fileno(fdesc), &buf);
-            FAISS_THROW_IF_NOT_FMT (ret == 0,
-                                    "fstat failed: %s", strerror(errno));
-            ails->totsize = buf.st_size;
-            ails->ptr = (uint8_t*)mmap (nullptr, ails->totsize,
-                                        PROT_READ, MAP_SHARED,
-                                        fileno(fdesc), 0);
-            FAISS_THROW_IF_NOT_FMT (ails->ptr != MAP_FAILED,
-                            "could not mmap: %s",
-                            strerror(errno));
-        }
-
-        for (size_t i = 0; i < ails->nlist; i++) {
-            OnDiskInvertedLists::List & l = ails->lists[i];
-            l.size = l.capacity = sizes[i];
-            l.offset = o;
-            o += l.size * (sizeof(OnDiskInvertedLists::idx_t) +
-                           ails->code_size);
-        }
-        FAISS_THROW_IF_NOT(o <= ails->totsize);
-        // resume normal reading of file
-        fseek (fdesc, o, SEEK_SET);
-        return ails;
-    } else if (h == fourcc ("ilod")) {
-        OnDiskInvertedLists *od = new OnDiskInvertedLists();
-        od->read_only = io_flags & IO_FLAG_READ_ONLY;
-        READ1 (od->nlist);
-        READ1 (od->code_size);
-        // this is a POD object
-        READVECTOR (od->lists);
-        {
-            std::vector<OnDiskInvertedLists::Slot> v;
-            READVECTOR(v);
-            od->slots.assign(v.begin(), v.end());
-        }
-        {
-            std::vector<char> x;
-            READVECTOR(x);
-            od->filename.assign(x.begin(), x.end());
-
-            if (io_flags & IO_FLAG_ONDISK_SAME_DIR) {
-                FileIOReader *reader = dynamic_cast<FileIOReader*>(f);
-                FAISS_THROW_IF_NOT_MSG (
-                    reader, "IO_FLAG_ONDISK_SAME_DIR only supported "
-                    "when reading from file");
-                std::string indexname = reader->name;
-                std::string dirname = "./";
-                size_t slash = indexname.find_last_of('/');
-                if (slash != std::string::npos) {
-                    dirname = indexname.substr(0, slash + 1);
-                }
-                std::string filename = od->filename;
-                slash = filename.find_last_of('/');
-                if (slash != std::string::npos) {
-                    filename = filename.substr(slash + 1);
-                }
-                filename = dirname + filename;
-                printf("IO_FLAG_ONDISK_SAME_DIR: "
-                       "updating ondisk filename from %s to %s\n",
-                       od->filename.c_str(), filename.c_str());
-                od->filename = filename;
-            }
-
-        }
-        READ1(od->totsize);
-        od->do_mmap();
-        return od;
+        return InvertedListsIOHook::lookup(h2)->read_ArrayInvertedLists(
+                f, io_flags, nlist, code_size, sizes);
     } else {
-        FAISS_THROW_MSG ("read_InvertedLists: unsupported invlist type");
+        return InvertedListsIOHook::lookup(h)->read(f, io_flags);
     }
 }
+
 
 static void read_InvertedLists (
         IndexIVF *ivf, IOReader *f, int io_flags) {
@@ -884,6 +785,76 @@ IndexBinary *read_index_binary (const char *fname, int io_flags) {
     IndexBinary *idx = read_index_binary (&reader, io_flags);
     return idx;
 }
+
+
+/**********************************************************
+ * InvertedListIOHook's
+ **********************************************************/
+
+InvertedListsIOHook::InvertedListsIOHook(
+        const std::string & key, const std::string & classname):
+    key(key), classname(classname)
+{}
+
+namespace {
+
+/// std::vector that deletes its contents
+struct IOHookTable: std::vector<InvertedListsIOHook*> {
+
+    IOHookTable() {
+        push_back(new OnDiskInvertedListsIOHook());
+    }
+
+    ~IOHookTable() {
+        for (auto x: *this) {
+            delete x;
+        }
+    }
+};
+
+static IOHookTable InvertedListsIOHook_table;
+
+} // anonymous namepsace
+
+InvertedListsIOHook* InvertedListsIOHook::lookup(int h)
+{
+    for(const auto & callback: InvertedListsIOHook_table) {
+        if (h == fourcc(callback->key)) {
+            return callback;
+        }
+    }
+    FAISS_THROW_FMT ("read_InvertedLists: could not load ArrayInvertedLists as %04x", h);
+}
+
+InvertedListsIOHook* InvertedListsIOHook::lookup_classname(const std::string & classname)
+{
+    for(const auto & callback: InvertedListsIOHook_table) {
+        if (callback->classname == classname) {
+            return callback;
+        }
+    }
+    FAISS_THROW_FMT ("read_InvertedLists: could not find classname %s", classname.c_str());
+}
+
+void InvertedListsIOHook::add_callback(InvertedListsIOHook *cb)
+{
+    InvertedListsIOHook_table.push_back(cb);
+}
+
+void InvertedListsIOHook::print_callbacks()
+{
+    printf("registered %ld InvertedListsIOHooks:\n",
+          InvertedListsIOHook_table.size());
+    for(const auto & cb: InvertedListsIOHook_table) {
+        printf("%08x %s %s\n",
+               fourcc(cb->key.c_str()),
+               cb->key.c_str(),
+               cb->classname.c_str());
+    }
+}
+
+
+
 
 
 } // namespace faiss

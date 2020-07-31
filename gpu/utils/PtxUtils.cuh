@@ -37,7 +37,7 @@ unsigned int setBitfield(unsigned int val,
 
 __device__ __forceinline__ int getLaneId() {
   int laneId;
-  asm("mov.u32 %0, %laneid;" : "=r"(laneId) );
+  asm("mov.u32 %0, %%laneid;" : "=r"(laneId) );
   return laneId;
 }
 

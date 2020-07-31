@@ -19,6 +19,7 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/io.h>
+#include <faiss/impl/io_macros.h>
 #include <faiss/utils/hamming.h>
 
 #include <faiss/IndexFlat.h>
@@ -68,35 +69,7 @@
  * leak memory.
  **************************************************************/
 
-
-
 namespace faiss {
-
-
-/*************************************************************
- * I/O macros
- *
- * we use macros so that we have a line number to report in abort
- * (). This makes debugging a lot easier. The IOReader or IOWriter is
- * always called f and thus is not passed in as a macro parameter.
- **************************************************************/
-
-
-#define WRITEANDCHECK(ptr, n) {                                 \
-        size_t ret = (*f)(ptr, sizeof(*(ptr)), n);              \
-        FAISS_THROW_IF_NOT_FMT(ret == (n),                      \
-            "write error in %s: %ld != %ld (%s)",               \
-            f->name.c_str(), ret, size_t(n), strerror(errno));  \
-    }
-
-#define WRITE1(x) WRITEANDCHECK(&(x), 1)
-
-#define WRITEVECTOR(vec) {                      \
-        size_t size = (vec).size ();            \
-        WRITEANDCHECK (&size, 1);               \
-        WRITEANDCHECK ((vec).data (), size);    \
-    }
-
 
 
 /*************************************************************
@@ -239,31 +212,17 @@ void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
                 WRITEANDCHECK (ails->ids[i].data(), n);
             }
         }
-    } else if (const auto & od =
-               dynamic_cast<const OnDiskInvertedLists *>(ils)) {
-        uint32_t h = fourcc ("ilod");
-        WRITE1 (h);
-        WRITE1 (ils->nlist);
-        WRITE1 (ils->code_size);
-        // this is a POD object
-        WRITEVECTOR (od->lists);
-
-        {
-            std::vector<OnDiskInvertedLists::Slot> v(
-                      od->slots.begin(), od->slots.end());
-            WRITEVECTOR(v);
-        }
-        {
-            std::vector<char> x(od->filename.begin(), od->filename.end());
-            WRITEVECTOR(x);
-        }
-        WRITE1(od->totsize);
-
     } else {
+
+        InvertedListsIOHook::lookup_classname(
+                typeid(*ils).name())->write(ils, f);
+
+        /*
         fprintf(stderr, "WARN! write_InvertedLists: unsupported invlist type, "
                 "saving null invlist\n");
         uint32_t h = fourcc ("il00");
         WRITE1 (h);
+        */
     }
 }
 

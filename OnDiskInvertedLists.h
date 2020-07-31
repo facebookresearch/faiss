@@ -12,13 +12,25 @@
 
 #include <vector>
 #include <list>
+#include <typeinfo>
 
 #include <faiss/IndexIVF.h>
+
+#include <faiss/index_io.h>
 
 namespace faiss {
 
 
 struct LockLevels;
+
+
+struct OnDiskOneList {
+    size_t size;     // size of inverted list (entries)
+    size_t capacity; // allocated size (entries)
+    size_t offset;   // offset in buffer (bytes)
+    OnDiskOneList ();
+};
+
 
 /** On-disk storage of inverted lists.
  *
@@ -49,13 +61,7 @@ struct LockLevels;
  * lists in parallel.
  */
 struct OnDiskInvertedLists: InvertedLists {
-
-    struct List {
-        size_t size;     // size of inverted list (entries)
-        size_t capacity; // allocated size (entries)
-        size_t offset;   // offset in buffer (bytes)
-        List ();
-    };
+    using List = OnDiskOneList;
 
     // size nlist
     std::vector<List> lists;
@@ -95,6 +101,9 @@ struct OnDiskInvertedLists: InvertedLists {
     // allocating slots)
     size_t merge_from (const InvertedLists **ils, int n_il, bool verbose=false);
 
+    /// same as merge_from for a single invlist
+    size_t merge_from_1 (const InvertedLists *il, bool verbose=false);
+
     /// restrict the inverted lists to l0:l1 without touching the mmapped region
     void crop_invlists(size_t l0, size_t l1);
 
@@ -120,6 +129,17 @@ struct OnDiskInvertedLists: InvertedLists {
     // empty constructor for the I/O functions
     OnDiskInvertedLists ();
 };
+
+struct OnDiskInvertedListsIOHook: InvertedListsIOHook {
+    OnDiskInvertedListsIOHook();
+    void write(const InvertedLists *ils, IOWriter *f) const override;
+    InvertedLists * read(IOReader *f, int io_flags) const override;
+    InvertedLists * read_ArrayInvertedLists(
+            IOReader *f, int io_flags,
+            size_t nlist, size_t code_size,
+            const std::vector<size_t> &sizes) const override;
+};
+
 
 
 } // namespace faiss

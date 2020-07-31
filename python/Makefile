@@ -23,10 +23,10 @@ swigfaiss_avx2.cpp: swigfaiss.swig ../libfaiss.a
                -I../ -c $< -o $@
 
 # Extension is .so even on OSX.
-_%.so: %.o ../libfaiss.a
+_%.so: %.o python_callbacks.o ../libfaiss.a
 	$(CXX) $(SHAREDFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-build: _swigfaiss.so faiss.py
+build: _swigfaiss.so __init__.py loader.py
 	$(PYTHON) setup.py build
 
 install: build

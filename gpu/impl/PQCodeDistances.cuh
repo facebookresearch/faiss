@@ -37,7 +37,7 @@ void runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
                           Tensor<int, 2, true>& topQueryToCentroid,
                           NoTypeTensor<4, true>& outCodeDistances,
                           bool useFloat16Lookup,
-                          DeviceMemory& mem,
+                          GpuResources* res,
                           cublasHandle_t handle,
                           cudaStream_t stream);
 

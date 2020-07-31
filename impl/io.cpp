@@ -135,8 +135,8 @@ int FileIOWriter::fileno()  {
  * IO buffer
  ***********************************************************************/
 
-BufferedIOReader::BufferedIOReader(IOReader *reader, size_t bsz, size_t totsz):
-    reader(reader), bsz(bsz), totsz(totsz), ofs(0), b0(0), b1(0), buffer(bsz)
+BufferedIOReader::BufferedIOReader(IOReader *reader, size_t bsz):
+    reader(reader), bsz(bsz), ofs(0), ofs2(0), b0(0), b1(0), buffer(bsz)
 {
 }
 
@@ -156,15 +156,12 @@ size_t BufferedIOReader::operator()(void *ptr, size_t unitsize, size_t nitems)
         size -= nb;
     }
 
-    if (size > totsz - ofs) {
-        size = totsz - ofs;
-    }
     // while we would like to have more data
     while (size > 0) {
         assert (b0 == b1); // buffer empty on input
         // try to read from main reader
         b0 = 0;
-        b1 = (*reader)(buffer.data(), 1, std::min(bsz, size));
+        b1 = (*reader)(buffer.data(), 1, bsz);
 
         if (b1 == 0) {
             // no more bytes available
@@ -180,12 +177,13 @@ size_t BufferedIOReader::operator()(void *ptr, size_t unitsize, size_t nitems)
         dst += nb2;
         size -= nb2;
     }
+    ofs2 += nb;
     return nb / unitsize;
 }
 
 
 BufferedIOWriter::BufferedIOWriter(IOWriter *writer, size_t bsz):
-    writer(writer), bsz(bsz), b0(0), buffer(bsz)
+    writer(writer), bsz(bsz), ofs2(0), b0(0), buffer(bsz)
 {
 }
 
@@ -222,7 +220,7 @@ size_t BufferedIOWriter::operator()(const void *ptr, size_t unitsize, size_t nit
         src += nb1;
         size -= nb1;
     }
-
+    ofs2 += nb;
     return nb / unitsize;
 }
 
@@ -230,7 +228,7 @@ BufferedIOWriter::~BufferedIOWriter()
 {
     size_t ofs = 0;
     while(ofs != b0) {
-        printf("Destructor write %ld \n", b0 - ofs);
+        // printf("Destructor write %ld \n", b0 - ofs);
         size_t written = (*writer)(buffer.data() + ofs, 1, b0 - ofs);
         FAISS_THROW_IF_NOT(written > 0);
         ofs += written;
@@ -242,9 +240,15 @@ BufferedIOWriter::~BufferedIOWriter()
 
 
 
-uint32_t fourcc (const char sx[4]) {
+uint32_t fourcc (const  char sx[4]) {
     assert(4 == strlen(sx));
     const unsigned char *x = (unsigned char*)sx;
+    return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
+}
+
+uint32_t fourcc (const std::string & sx) {
+    assert(sx.length() == 4);
+    const unsigned char *x = (unsigned char*)sx.c_str();
     return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
 }
 

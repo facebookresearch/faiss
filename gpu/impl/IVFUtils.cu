@@ -38,7 +38,8 @@ getResultLengths(Tensor<int, 2, true> topQueryToCentroid,
   length[queryId][listId] = (centroidId != -1) ? listLengths[centroidId] : 0;
 }
 
-void runCalcListOffsets(Tensor<int, 2, true>& topQueryToCentroid,
+void runCalcListOffsets(GpuResources* res,
+                        Tensor<int, 2, true>& topQueryToCentroid,
                         thrust::device_vector<int>& listLengths,
                         Tensor<int, 2, true>& prefixSumOffsets,
                         Tensor<char, 1, true>& thrustMem,
@@ -64,8 +65,10 @@ void runCalcListOffsets(Tensor<int, 2, true>& topQueryToCentroid,
   // Prefix sum of the indices, so we know where the intermediate
   // results should be maintained
   // Thrust wants a place for its temporary allocations, so provide
-  // one, so it won't call cudaMalloc/Free
-  GpuResourcesThrustAllocator alloc(thrustMem.data(),
+  // one, so it won't call cudaMalloc/Free if we size it sufficiently
+  GpuResourcesThrustAllocator alloc(res,
+                                    stream,
+                                    thrustMem.data(),
                                     thrustMem.getSizeInBytes());
 
   thrust::inclusive_scan(thrust::cuda::par(alloc).on(stream),

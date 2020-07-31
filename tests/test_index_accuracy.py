@@ -293,6 +293,23 @@ class TestSQFlavors(unittest.TestCase):
     def test_SQ_L2(self):
         self.subtest(faiss.METRIC_L2)
 
+    def test_parallel_mode(self):
+        d = 32
+        xt, xb, xq = get_dataset_2(d, 2000, 1000, 200)
+
+        index = faiss.index_factory(d, "IVF64,SQ8")
+        index.train(xt)
+        index.add(xb)
+        index.nprobe = 4   # hopefully more robust than 1
+        Dref, Iref = index.search(xq, 10)
+
+        for pm in 1, 2:
+            index.parallel_mode = pm
+
+            Dnew, Inew = index.search(xq, 10)
+            np.testing.assert_array_equal(Iref, Inew)
+            np.testing.assert_array_equal(Dref, Dnew)
+
 
 class TestSQByte(unittest.TestCase):
 

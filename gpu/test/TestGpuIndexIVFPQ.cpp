@@ -131,8 +131,8 @@ TEST(TestGpuIndexIVFPQ, Query_L2) {
     cpuIndex.train(opt.numTrain, trainVecs.data());
     cpuIndex.add(opt.numAdd, addVecs.data());
 
+    // Use the default temporary memory management to test the memory manager
     faiss::gpu::StandardGpuResources res;
-    res.noTempMemory();
 
     faiss::gpu::GpuIndexIVFPQConfig config;
     config.device = opt.device;
@@ -167,8 +167,8 @@ TEST(TestGpuIndexIVFPQ, Query_IP) {
     cpuIndex.train(opt.numTrain, trainVecs.data());
     cpuIndex.add(opt.numAdd, addVecs.data());
 
+    // Use the default temporary memory management to test the memory manager
     faiss::gpu::StandardGpuResources res;
-    res.noTempMemory();
 
     faiss::gpu::GpuIndexIVFPQConfig config;
     config.device = opt.device;
@@ -199,8 +199,8 @@ TEST(TestGpuIndexIVFPQ, Float16Coarse) {
   cpuIndex.nprobe = opt.nprobe;
   cpuIndex.train(opt.numTrain, trainVecs.data());
 
+  // Use the default temporary memory management to test the memory manager
   faiss::gpu::StandardGpuResources res;
-  res.noTempMemory();
 
   faiss::gpu::GpuIndexIVFPQConfig config;
   config.device = opt.device;
@@ -235,8 +235,8 @@ TEST(TestGpuIndexIVFPQ, Add_L2) {
     cpuIndex.nprobe = opt.nprobe;
     cpuIndex.train(opt.numTrain, trainVecs.data());
 
+    // Use the default temporary memory management to test the memory manager
     faiss::gpu::StandardGpuResources res;
-    res.noTempMemory();
 
     faiss::gpu::GpuIndexIVFPQConfig config;
     config.device = opt.device;
@@ -272,8 +272,8 @@ TEST(TestGpuIndexIVFPQ, Add_IP) {
     cpuIndex.nprobe = opt.nprobe;
     cpuIndex.train(opt.numTrain, trainVecs.data());
 
+    // Use the default temporary memory management to test the memory manager
     faiss::gpu::StandardGpuResources res;
-    res.noTempMemory();
 
     faiss::gpu::GpuIndexIVFPQConfig config;
     config.device = opt.device;
@@ -300,8 +300,8 @@ TEST(TestGpuIndexIVFPQ, CopyTo) {
   std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
   std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
 
+  // Use the default temporary memory management to test the memory manager
   faiss::gpu::StandardGpuResources res;
-  res.noTempMemory();
 
   faiss::gpu::GpuIndexIVFPQConfig config;
   config.device = opt.device;
@@ -358,9 +358,8 @@ TEST(TestGpuIndexIVFPQ, CopyFrom) {
   cpuIndex.train(opt.numTrain, trainVecs.data());
   cpuIndex.add(opt.numAdd, addVecs.data());
 
-  // Use garbage values to see if we overwrite them
+  // Use the default temporary memory management to test the memory manager
   faiss::gpu::StandardGpuResources res;
-  res.noTempMemory();
 
   faiss::gpu::GpuIndexIVFPQConfig config;
   config.device = opt.device;
@@ -368,6 +367,7 @@ TEST(TestGpuIndexIVFPQ, CopyFrom) {
   config.indicesOptions = opt.indicesOpt;
   config.useFloat16LookupTables = opt.useFloat16;
 
+  // Use garbage values to see if we overwrite them
   faiss::gpu::GpuIndexIVFPQ
     gpuIndex(&res, 1, 1, 1, 1, faiss::METRIC_L2, config);
   gpuIndex.setNumProbes(1);
@@ -401,8 +401,8 @@ TEST(TestGpuIndexIVFPQ, QueryNaN) {
   std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
   std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
 
+  // Use the default temporary memory management to test the memory manager
   faiss::gpu::StandardGpuResources res;
-  res.noTempMemory();
 
   faiss::gpu::GpuIndexIVFPQConfig config;
   config.device = opt.device;
@@ -447,8 +447,8 @@ TEST(TestGpuIndexIVFPQ, QueryNaN) {
 TEST(TestGpuIndexIVFPQ, AddNaN) {
   Options opt;
 
+  // Use the default temporary memory management to test the memory manager
   faiss::gpu::StandardGpuResources res;
-  res.noTempMemory();
 
   faiss::gpu::GpuIndexIVFPQConfig config;
   config.device = opt.device;

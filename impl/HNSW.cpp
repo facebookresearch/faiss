@@ -527,6 +527,7 @@ int HNSW::search_from_candidates(
   idx_t *I, float *D,
   MinimaxHeap& candidates,
   VisitedTable& vt,
+  HNSWStats& stats,
   int level, int nres_in) const
 {
   int nres = nres_in;
@@ -590,14 +591,11 @@ int HNSW::search_from_candidates(
   }
 
   if (level == 0) {
-#pragma omp critical
-    {
-      hnsw_stats.n1 ++;
-      if (candidates.size() == 0) {
-        hnsw_stats.n2 ++;
-      }
-      hnsw_stats.n3 += ndis;
+    stats.n1 ++;
+    if (candidates.size() == 0) {
+      stats.n2 ++;
     }
+    stats.n3 += ndis;
   }
 
   return nres;
@@ -612,7 +610,8 @@ std::priority_queue<HNSW::Node> HNSW::search_from_candidate_unbounded(
   const Node& node,
   DistanceComputer& qdis,
   int ef,
-  VisitedTable *vt) const
+  VisitedTable *vt,
+  HNSWStats& stats) const
 {
   int ndis = 0;
   std::priority_queue<Node> top_candidates;
@@ -663,22 +662,21 @@ std::priority_queue<HNSW::Node> HNSW::search_from_candidate_unbounded(
     }
   }
 
-#pragma omp critical
-  {
-    ++hnsw_stats.n1;
-    if (candidates.size() == 0) {
-      ++hnsw_stats.n2;
-    }
-    hnsw_stats.n3 += ndis;
+  ++stats.n1;
+  if (candidates.size() == 0) {
+    ++stats.n2;
   }
+  stats.n3 += ndis;
 
   return top_candidates;
 }
 
-void HNSW::search(DistanceComputer& qdis, int k,
-                  idx_t *I, float *D,
-                  VisitedTable& vt) const
+HNSWStats HNSW::search(DistanceComputer& qdis, int k,
+                       idx_t *I, float *D,
+                       VisitedTable& vt) const
 {
+  HNSWStats stats;
+
   if (upper_beam == 1) {
 
     //  greedy search on upper levels
@@ -695,11 +693,11 @@ void HNSW::search(DistanceComputer& qdis, int k,
 
       candidates.push(nearest, d_nearest);
 
-      search_from_candidates(qdis, k, I, D, candidates, vt, 0);
+      search_from_candidates(qdis, k, I, D, candidates, vt, stats, 0);
     } else {
       std::priority_queue<Node> top_candidates =
         search_from_candidate_unbounded(Node(d_nearest, nearest),
-                                        qdis, ef, &vt);
+                                        qdis, ef, &vt, stats);
 
       while (top_candidates.size() > k) {
         top_candidates.pop();
@@ -739,17 +737,19 @@ void HNSW::search(DistanceComputer& qdis, int k,
       }
 
       if (level == 0) {
-        nres = search_from_candidates(qdis, k, I, D, candidates, vt, 0);
+        nres = search_from_candidates(qdis, k, I, D, candidates, vt, stats, 0);
       } else  {
         nres = search_from_candidates(
           qdis, candidates_size,
           I_to_next.data(), D_to_next.data(),
-          candidates, vt, level
+          candidates, vt, stats, level
         );
       }
       vt.advance();
     }
   }
+
+  return stats;
 }
 
 

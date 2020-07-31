@@ -6,6 +6,7 @@
  */
 
 
+#include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/BlockSelectKernel.cuh>
@@ -29,10 +30,12 @@ DEFINE_int32(iter, 5, "iterations to run");
 DEFINE_bool(k_powers, false, "test k powers of 2 from 1 -> max k");
 
 int main(int argc, char** argv) {
+  using namespace faiss::gpu;
+
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  std::vector<float> v = faiss::gpu::randVecs(FLAGS_rows, FLAGS_cols);
-  faiss::gpu::HostTensor<float, 2, true> hostVal({FLAGS_rows, FLAGS_cols});
+  std::vector<float> v = randVecs(FLAGS_rows, FLAGS_cols);
+  HostTensor<float, 2, true> hostVal({FLAGS_rows, FLAGS_cols});
 
   for (int r = 0; r < FLAGS_rows; ++r) {
     for (int c = 0; c < FLAGS_cols; ++c) {
@@ -40,8 +43,14 @@ int main(int argc, char** argv) {
     }
   }
 
+  StandardGpuResources res;
+  res.noTempMemory();
+
+  auto resUse = res.getResources();
+
   // Select top-k on GPU
-  faiss::gpu::DeviceTensor<float, 2, true> gpuVal(hostVal, 0);
+  DeviceTensor<float, 2, true>
+    gpuVal(resUse.get(), makeDevAlloc(AllocType::Other, 0), hostVal);
 
   int startK = FLAGS_k;
   int limitK = FLAGS_k;
@@ -52,16 +61,16 @@ int main(int argc, char** argv) {
   }
 
   for (int k = startK; k <= limitK; k *= 2) {
-    faiss::gpu::DeviceTensor<float, 2, true> gpuOutVal({FLAGS_rows, k});
-    faiss::gpu::DeviceTensor<int, 2, true> gpuOutInd({FLAGS_rows, k});
+    DeviceTensor<float, 2, true>
+      gpuOutVal(resUse.get(), makeDevAlloc(AllocType::Other, 0), {FLAGS_rows, k});
+    DeviceTensor<int, 2, true>
+      gpuOutInd(resUse.get(), makeDevAlloc(AllocType::Other, 0), {FLAGS_rows, k});
 
     for (int i = 0; i < FLAGS_iter; ++i) {
       if (FLAGS_warp) {
-        faiss::gpu::runWarpSelect(gpuVal, gpuOutVal, gpuOutInd,
-                                  FLAGS_dir, k, 0);
+        runWarpSelect(gpuVal, gpuOutVal, gpuOutInd, FLAGS_dir, k, 0);
       } else {
-        faiss::gpu::runBlockSelect(gpuVal, gpuOutVal, gpuOutInd,
-                                   FLAGS_dir, k, 0);
+        runBlockSelect(gpuVal, gpuOutVal, gpuOutInd, FLAGS_dir, k, 0);
       }
     }
   }

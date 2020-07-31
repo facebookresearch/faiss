@@ -21,19 +21,21 @@ void testTransposition(bool colMajorVecs,
                        bool colMajorQueries,
                        faiss::MetricType metric,
                        float metricArg = 0) {
-  int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
+  using namespace faiss::gpu;
 
-  faiss::gpu::StandardGpuResources res;
+  int device = randVal(0, getNumDevices() - 1);
+
+  StandardGpuResources res;
   res.noTempMemory();
 
-  int dim = faiss::gpu::randVal(20, 150);
-  int numVecs = faiss::gpu::randVal(10, 30000);
-  int numQuery = faiss::gpu::randVal(1, 1024);
-  int k = std::min(numVecs, faiss::gpu::randVal(20, 70));
+  int dim = randVal(20, 150);
+  int numVecs = randVal(10, 30000);
+  int numQuery = randVal(1, 1024);
+  int k = std::min(numVecs, randVal(20, 70));
 
   // Input data for CPU
-  std::vector<float> vecs = faiss::gpu::randVecs(numVecs, dim);
-  std::vector<float> queries = faiss::gpu::randVecs(numQuery, dim);
+  std::vector<float> vecs = randVecs(numVecs, dim);
+  std::vector<float> queries = randVecs(numQuery, dim);
 
   if (metric == faiss::MetricType::METRIC_JensenShannon) {
     // make values positive
@@ -64,26 +66,30 @@ void testTransposition(bool colMajorVecs,
                     cpuDistance.data(), cpuIndices.data());
 
   // The transpose and distance code assumes the desired device is already set
-  faiss::gpu::DeviceScope scope(device);
+  DeviceScope scope(device);
   auto stream = res.getDefaultStream(device);
 
   // Copy input data to GPU, and pre-transpose both vectors and queries for
   // passing
-  auto gpuVecs = faiss::gpu::toDevice<float, 2>(
-    nullptr, device, vecs.data(), stream, {numVecs, dim});
-  auto gpuQueries = faiss::gpu::toDevice<float, 2>(
-    nullptr, device, queries.data(), stream, {numQuery, dim});
+  auto gpuVecs = toDeviceNonTemporary<float, 2>(
+    res.getResources().get(), device, vecs.data(), stream, {numVecs, dim});
+  auto gpuQueries = toDeviceNonTemporary<float, 2>(
+    res.getResources().get(), device, queries.data(), stream, {numQuery, dim});
 
-  faiss::gpu::DeviceTensor<float, 2, true> vecsT({dim, numVecs});
-  faiss::gpu::runTransposeAny(gpuVecs, 0, 1, vecsT, stream);
+  DeviceTensor<float, 2, true>
+    vecsT(res.getResources().get(),
+          makeDevAlloc(AllocType::Other, stream), {dim, numVecs});
+  runTransposeAny(gpuVecs, 0, 1, vecsT, stream);
 
-  faiss::gpu::DeviceTensor<float, 2, true> queriesT({dim, numQuery});
-  faiss::gpu::runTransposeAny(gpuQueries, 0, 1, queriesT, stream);
+  DeviceTensor<float, 2, true>
+    queriesT(res.getResources().get(),
+             makeDevAlloc(AllocType::Other, stream), {dim, numQuery});
+  runTransposeAny(gpuQueries, 0, 1, queriesT, stream);
 
   std::vector<float> gpuDistance(numQuery * k, 0);
   std::vector<faiss::Index::idx_t> gpuIndices(numQuery * k, -1);
 
-  faiss::gpu::GpuDistanceParams args;
+  GpuDistanceParams args;
   args.metric = metric;
   args.metricArg = metricArg;
   args.k = k;
@@ -97,21 +103,21 @@ void testTransposition(bool colMajorVecs,
   args.outDistances = gpuDistance.data();
   args.outIndices = gpuIndices.data();
 
-  faiss::gpu::bfKnn(&res, args);
+  bfKnn(&res, args);
 
   std::stringstream str;
   str << "metric " << metric
       << " colMajorVecs " << colMajorVecs
       << " colMajorQueries " << colMajorQueries;
 
-  faiss::gpu::compareLists(cpuDistance.data(),
-                           cpuIndices.data(),
-                           gpuDistance.data(),
-                           gpuIndices.data(),
-                           numQuery, k,
-                           str.str(),
-                           false, false, true,
-                           6e-3f, 0.1f, 0.015f);
+  compareLists(cpuDistance.data(),
+               cpuIndices.data(),
+               gpuDistance.data(),
+               gpuIndices.data(),
+               numQuery, k,
+               str.str(),
+               false, false, true,
+               6e-3f, 0.1f, 0.015f);
 }
 
 // Test different memory layouts for brute-force k-NN

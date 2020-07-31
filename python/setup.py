@@ -13,7 +13,8 @@ if not os.path.exists(check_fpath):
 # make the faiss python package dir
 shutil.rmtree("faiss", ignore_errors=True)
 os.mkdir("faiss")
-shutil.copyfile("faiss.py", "faiss/__init__.py")
+shutil.copyfile("__init__.py", "faiss/__init__.py")
+shutil.copyfile("loader.py", "faiss/loader.py")
 shutil.copyfile("swigfaiss.py", "faiss/swigfaiss.py")
 shutil.copyfile("_swigfaiss.so", "faiss/_swigfaiss.so")
 try:

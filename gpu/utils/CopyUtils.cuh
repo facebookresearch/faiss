@@ -14,42 +14,57 @@
 namespace faiss { namespace gpu {
 
 /// Ensure the memory at `p` is either on the given device, or copy it
-/// to the device in a new allocation.
-/// If `resources` is provided, then we will perform a temporary
-/// memory allocation if needed. Otherwise, we will call cudaMalloc if
-/// needed.
+/// to the device in a new temporary allocation.
 template <typename T, int Dim>
-DeviceTensor<T, Dim, true> toDevice(GpuResources* resources,
-                                    int dstDevice,
-                                    T* src,
-                                    cudaStream_t stream,
-                                    std::initializer_list<int> sizes) {
+DeviceTensor<T, Dim, true> toDeviceTemporary(
+  GpuResources* resources,
+  int dstDevice,
+  T* src,
+  cudaStream_t stream,
+  std::initializer_list<int> sizes) {
   int dev = getDeviceForAddress(src);
+  DeviceTensor<T, Dim, true> oldT(src, sizes);
 
   if (dev == dstDevice) {
     // On device we expect
-    return DeviceTensor<T, Dim, true>(src, sizes);
+    return oldT;
   } else {
     // On different device or on host
     DeviceScope scope(dstDevice);
 
-    Tensor<T, Dim, true> oldT(src, sizes);
+    DeviceTensor<T, Dim, true> newT(
+      resources, makeTempAlloc(AllocType::Other, stream), sizes);
 
-    if (resources) {
-      DeviceTensor<T, Dim, true> newT(resources->getMemoryManager(dstDevice),
-                                      sizes,
-                                      stream);
-
-      newT.copyFrom(oldT, stream);
-      return newT;
-    } else {
-      DeviceTensor<T, Dim, true> newT(sizes);
-
-      newT.copyFrom(oldT, stream);
-      return newT;
-    }
+    newT.copyFrom(oldT, stream);
+    return newT;
   }
 }
+
+template <typename T, int Dim>
+DeviceTensor<T, Dim, true> toDeviceNonTemporary(
+  GpuResources* resources,
+  int dstDevice,
+  T* src,
+  cudaStream_t stream,
+  std::initializer_list<int> sizes) {
+  int dev = getDeviceForAddress(src);
+  DeviceTensor<T, Dim, true> oldT(src, sizes);
+
+  if (dev == dstDevice) {
+    // On device we expect
+    return oldT;
+  } else {
+    // On different device or on host
+    DeviceScope scope(dstDevice);
+
+    DeviceTensor<T, Dim, true> newT(
+      resources, makeDevAlloc(AllocType::Other, stream), sizes);
+
+    newT.copyFrom(oldT, stream);
+    return newT;
+  }
+}
+
 
 /// Copies data to the CPU, if it is not already on the CPU
 template <typename T, int Dim>

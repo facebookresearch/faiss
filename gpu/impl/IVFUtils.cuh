@@ -16,9 +16,12 @@
 // post-processing and k-selecting the results
 namespace faiss { namespace gpu {
 
+class GpuResources;
+
 /// Function for multi-pass scanning that collects the length of
 /// intermediate results for all (query, probe) pair
-void runCalcListOffsets(Tensor<int, 2, true>& topQueryToCentroid,
+void runCalcListOffsets(GpuResources* res,
+                        Tensor<int, 2, true>& topQueryToCentroid,
                         thrust::device_vector<int>& listLengths,
                         Tensor<int, 2, true>& prefixSumOffsets,
                         Tensor<char, 1, true>& thrustMem,

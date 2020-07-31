@@ -103,22 +103,32 @@ void convertTensor(cudaStream_t stream,
 }
 
 template <typename From, typename To, int Dim>
-DeviceTensor<To, Dim, true> convertTensor(GpuResources* res,
-                                          cudaStream_t stream,
-                                          Tensor<From, Dim, true>& in) {
-  DeviceTensor<To, Dim, true> out;
-
-  if (res) {
-    out = std::move(DeviceTensor<To, Dim, true>(
-                      res->getMemoryManagerCurrentDevice(),
-                      in.sizes(),
-                      stream));
-  } else {
-    out = std::move(DeviceTensor<To, Dim, true>(in.sizes()));
-  }
+DeviceTensor<To, Dim, true>
+convertTensorTemporary(GpuResources* res,
+                       cudaStream_t stream,
+                       Tensor<From, Dim, true>& in) {
+  FAISS_ASSERT(res);
+  DeviceTensor<To, Dim, true> out(
+    res, makeTempAlloc(AllocType::Other, stream),
+    in.sizes());
 
   convertTensor(stream, in, out);
   return out;
 }
+
+template <typename From, typename To, int Dim>
+DeviceTensor<To, Dim, true>
+convertTensorNonTemporary(GpuResources* res,
+                          cudaStream_t stream,
+                          Tensor<From, Dim, true>& in) {
+  FAISS_ASSERT(res);
+  DeviceTensor<To, Dim, true> out(
+    res, makeDevAlloc(AllocType::Other, stream),
+    in.sizes());
+
+  convertTensor(stream, in, out);
+  return out;
+}
+
 
 } } // namespace
