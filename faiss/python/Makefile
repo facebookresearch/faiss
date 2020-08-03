@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
--include ../makefile.inc
+-include ../../makefile.inc
 
 ifneq ($(strip $(NVCC)),)
 	SWIGFLAGS += -DGPU_WRAPPER
@@ -12,18 +12,18 @@ endif
 all: build
 
 # Also silently generates swigfaiss.py.
-swigfaiss.cpp: swigfaiss.swig ../libfaiss.a
-	$(SWIG) -python -c++ -Doverride= -I../ $(SWIGFLAGS) -o $@ $<
+swigfaiss.cpp: swigfaiss.swig ../../libfaiss.a
+	$(SWIG) -python -c++ -Doverride= -I../.. $(SWIGFLAGS) -o $@ $<
 
-swigfaiss_avx2.cpp: swigfaiss.swig ../libfaiss.a
-	$(SWIG) -python -c++ -Doverride= -module swigfaiss_avx2 -I../ $(SWIGFLAGS) -o $@ $<
+swigfaiss_avx2.cpp: swigfaiss.swig ../../libfaiss.a
+	$(SWIG) -python -c++ -Doverride= -module swigfaiss_avx2 -I../.. $(SWIGFLAGS) -o $@ $<
 
 %.o: %.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) $(PYTHONCFLAGS) \
-               -I../ -c $< -o $@
+               -I../.. -c $< -o $@
 
 # Extension is .so even on OSX.
-_%.so: %.o python_callbacks.o ../libfaiss.a
+_%.so: %.o python_callbacks.o ../../libfaiss.a
 	$(CXX) $(SHAREDFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 build: _swigfaiss.so __init__.py loader.py

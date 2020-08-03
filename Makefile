@@ -5,15 +5,18 @@
 
 -include makefile.inc
 
-HEADERS     = $(wildcard *.h impl/*.h utils/*.h)
-SRC         = $(wildcard *.cpp impl/*.cpp utils/*.cpp)
+HEADERS     = $(wildcard faiss/*.h faiss/impl/*.h faiss/utils/*.h)
+SRC         = $(wildcard faiss/*.cpp faiss/impl/*.cpp faiss/utils/*.cpp)
 OBJ         = $(SRC:.cpp=.o)
 INSTALLDIRS = $(DESTDIR)$(libdir) $(DESTDIR)$(includedir)/faiss
 
-GPU_HEADERS = $(wildcard gpu/*.h gpu/impl/*.h gpu/impl/*.cuh gpu/utils/*.h gpu/utils/*.cuh)
-GPU_CPPSRC  = $(wildcard gpu/*.cpp gpu/impl/*.cpp gpu/utils/*.cpp)
-GPU_CUSRC   = $(wildcard gpu/*.cu gpu/impl/*.cu gpu/utils/*.cu \
-gpu/utils/nvidia/*.cu gpu/utils/blockselect/*.cu gpu/utils/warpselect/*.cu)
+GPU_HEADERS = $(wildcard faiss/gpu/*.h faiss/gpu/impl/*.h faiss/gpu/impl/*.cuh \
+faiss/gpu/utils/*.h faiss/gpu/utils/*.cuh)
+GPU_CPPSRC  = $(wildcard faiss/gpu/*.cpp faiss/gpu/impl/*.cpp \
+faiss/gpu/utils/*.cpp)
+GPU_CUSRC   = $(wildcard faiss/gpu/*.cu faiss/gpu/impl/*.cu \
+faiss/gpu/utils/*.cu faiss/gpu/utils/nvidia/*.cu \
+faiss/gpu/utils/blockselect/*.cu faiss/gpu/utils/warpselect/*.cu)
 GPU_SRC     = $(GPU_CPPSRC) $(GPU_CUSRC)
 GPU_CPPOBJ  = $(GPU_CPPSRC:.cpp=.o)
 GPU_CUOBJ   = $(GPU_CUSRC:.cu=.o)
@@ -80,7 +83,7 @@ depend: $(SRC) $(GPU_SRC)
 # Python
 
 py: libfaiss.a
-	$(MAKE) -C python
+	$(MAKE) -C faiss/python
 
 
 #############################
@@ -88,12 +91,12 @@ py: libfaiss.a
 
 test: libfaiss.a py
 	$(MAKE) -C tests run
-	PYTHONPATH=./python/build/`ls python/build | grep lib` \
+	PYTHONPATH=./faiss/python/build/`ls faiss/python/build | grep lib` \
 	$(PYTHON) -m unittest discover tests/ -v
 
 test_gpu: libfaiss.a
 	$(MAKE) -C gpu/test run
-	PYTHONPATH=./python/build/`ls python/build | grep lib` \
+	PYTHONPATH=./faiss/python/build/`ls faiss/python/build | grep lib` \
 	$(PYTHON) -m unittest discover gpu/test/ -v
 
 #############################

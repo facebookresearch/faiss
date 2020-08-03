@@ -587,7 +587,7 @@ PACKAGE_STRING='faiss 1.0'
 PACKAGE_BUGREPORT=''
 PACKAGE_URL=''
 
-ac_unique_file="Index.h"
+ac_unique_file="faiss/Index.h"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
