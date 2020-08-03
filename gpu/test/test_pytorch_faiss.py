@@ -91,10 +91,19 @@ def search_raw_array_pytorch(res, xb, xq, k, D=None, I=None,
     D_ptr = swig_ptr_from_FloatTensor(D)
     I_ptr = swig_ptr_from_LongTensor(I)
 
-    faiss.bruteForceKnn(res, metric,
-                        xb_ptr, xb_row_major, nb,
-                        xq_ptr, xq_row_major, nq,
-                        d, k, D_ptr, I_ptr)
+    args = faiss.GpuDistanceParams()
+    args.metric = metric
+    args.k = k
+    args.dims = d
+    args.vectors = xb_ptr
+    args.vectorsRowMajor = xb_row_major
+    args.numVectors = nb
+    args.queries = xq_ptr
+    args.queriesRowMajor = xq_row_major
+    args.numQueries = nq
+    args.outDistances = D_ptr
+    args.outIndices = I_ptr
+    faiss.bfKnn(res, args)
 
     return D, I
 

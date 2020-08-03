@@ -10,7 +10,7 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
-#include <faiss/gpu/utils/MemorySpace.h>
+#include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <algorithm>
 #include <cuda.h>
@@ -25,11 +25,12 @@ namespace faiss { namespace gpu {
 template <typename T>
 class DeviceVector {
  public:
-  DeviceVector(MemorySpace space = MemorySpace::Device)
-      : data_(nullptr),
-        num_(0),
+  DeviceVector(GpuResources* res, AllocInfo allocInfo)
+      : num_(0),
         capacity_(0),
-        space_(space) {
+        res_(res),
+        allocInfo_(allocInfo) {
+    FAISS_ASSERT(res_);
   }
 
   ~DeviceVector() {
@@ -38,24 +39,27 @@ class DeviceVector {
 
   // Clear all allocated memory; reset to zero size
   void clear() {
-    freeMemorySpace(space_, data_);
-    data_ = nullptr;
+    alloc_.release();
     num_ = 0;
     capacity_ = 0;
   }
 
   size_t size() const { return num_; }
   size_t capacity() const { return capacity_; }
-  T* data() { return data_; }
-  const T* data() const { return data_; }
+  T* data() { return (T*) alloc_.data; }
+  const T* data() const { return (const T*) alloc_.data; }
 
   template <typename OutT>
   std::vector<OutT> copyToHost(cudaStream_t stream) const {
     FAISS_ASSERT(num_ * sizeof(T) % sizeof(OutT) == 0);
 
     std::vector<OutT> out((num_ * sizeof(T)) / sizeof(OutT));
-    CUDA_VERIFY(cudaMemcpyAsync(out.data(), data_, num_ * sizeof(T),
-                                cudaMemcpyDeviceToHost, stream));
+
+    if (num_ > 0) {
+      FAISS_ASSERT(data());
+      CUDA_VERIFY(cudaMemcpyAsync(out.data(), data(), num_ * sizeof(T),
+                                  cudaMemcpyDeviceToHost, stream));
+    }
 
     return out;
   }
@@ -79,10 +83,10 @@ class DeviceVector {
 
       int dev = getDeviceForAddress(d);
       if (dev == -1) {
-        CUDA_VERIFY(cudaMemcpyAsync(data_ + num_, d, n * sizeof(T),
+        CUDA_VERIFY(cudaMemcpyAsync(data() + num_, d, n * sizeof(T),
                                     cudaMemcpyHostToDevice, stream));
       } else {
-        CUDA_VERIFY(cudaMemcpyAsync(data_ + num_, d, n * sizeof(T),
+        CUDA_VERIFY(cudaMemcpyAsync(data() + num_, d, n * sizeof(T),
                                     cudaMemcpyDeviceToDevice, stream));
       }
       num_ += n;
@@ -152,13 +156,17 @@ class DeviceVector {
   void realloc_(size_t newCapacity, cudaStream_t stream) {
     FAISS_ASSERT(num_ <= newCapacity);
 
-    T* newData = nullptr;
-    allocMemorySpace(space_, &newData, newCapacity * sizeof(T));
-    CUDA_VERIFY(cudaMemcpyAsync(newData, data_, num_ * sizeof(T),
-                                cudaMemcpyDeviceToDevice, stream));
-    freeMemorySpace(space_, data_);
+    size_t newSizeInBytes = newCapacity * sizeof(T);
 
-    data_ = newData;
+    // The new allocation will occur on this stream
+    allocInfo_.stream = stream;
+
+    auto newAlloc =
+      res_->allocMemoryHandle(AllocRequest(allocInfo_, newSizeInBytes));
+
+    CUDA_VERIFY(cudaMemcpyAsync(newAlloc.data, data(), num_ * sizeof(T),
+                                cudaMemcpyDeviceToDevice, stream));
+    alloc_ = std::move(newAlloc);
     capacity_ = newCapacity;
   }
 
@@ -166,10 +174,20 @@ class DeviceVector {
     return utils::nextHighestPowerOf2(preferredSize);
   }
 
-  T* data_;
+  /// Our current memory allocation, if any
+  GpuMemoryReservation alloc_;
+
+  /// current valid number of T present
   size_t num_;
+
+  /// current space of T present (bytes is sizeof(T) * capacity_)
   size_t capacity_;
-  MemorySpace space_;
+
+  /// Where we should allocate memory
+  GpuResources* res_;
+
+  /// How we should allocate memory
+  AllocInfo allocInfo_;
 };
 
 } } // namespace

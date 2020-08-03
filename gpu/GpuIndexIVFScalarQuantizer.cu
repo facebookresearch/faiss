@@ -18,20 +18,19 @@
 namespace faiss { namespace gpu {
 
 GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
-  GpuResources* resources,
+  GpuResourcesProvider* provider,
   const faiss::IndexIVFScalarQuantizer* index,
   GpuIndexIVFScalarQuantizerConfig config) :
-    GpuIndexIVF(resources,
+    GpuIndexIVF(provider,
                 index->d,
                 index->metric_type,
                 index->metric_arg,
                 index->nlist,
                 config),
-    ivfSQConfig_(config),
     sq(index->sq),
     by_residual(index->by_residual),
-    reserveMemoryVecs_(0),
-    index_(nullptr) {
+    ivfSQConfig_(config),
+    reserveMemoryVecs_(0) {
   copyFrom(index);
 
   FAISS_THROW_IF_NOT_MSG(isSQSupported(sq.qtype),
@@ -39,20 +38,18 @@ GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
 }
 
 GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
-  GpuResources* resources,
+  GpuResourcesProvider* provider,
   int dims,
   int nlist,
   faiss::ScalarQuantizer::QuantizerType qtype,
   faiss::MetricType metric,
   bool encodeResidual,
   GpuIndexIVFScalarQuantizerConfig config) :
-    GpuIndexIVF(resources, dims, metric, 0, nlist, config),
-    ivfSQConfig_(config),
+    GpuIndexIVF(provider, dims, metric, 0, nlist, config),
     sq(dims, qtype),
     by_residual(encodeResidual),
-    reserveMemoryVecs_(0),
-    index_(nullptr) {
-
+    ivfSQConfig_(config),
+    reserveMemoryVecs_(0) {
   // faiss::Index params
   this->is_trained = false;
 
@@ -63,7 +60,6 @@ GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
 }
 
 GpuIndexIVFScalarQuantizer::~GpuIndexIVFScalarQuantizer() {
-  delete index_;
 }
 
 void
@@ -81,8 +77,7 @@ GpuIndexIVFScalarQuantizer::copyFrom(
   DeviceScope scope(device_);
 
   // Clear out our old data
-  delete index_;
-  index_ = nullptr;
+  index_.reset();
 
   // Copy what we need from the CPU index
   GpuIndexIVF::copyFrom(index);
@@ -99,14 +94,14 @@ GpuIndexIVFScalarQuantizer::copyFrom(
   this->is_trained = true;
 
   // Copy our lists as well
-  index_ = new IVFFlat(resources_,
-                       quantizer->getGpuData(),
-                       index->metric_type,
-                       index->metric_arg,
-                       by_residual,
-                       &sq,
-                       ivfSQConfig_.indicesOptions,
-                       memorySpace_);
+  index_.reset(new IVFFlat(resources_.get(),
+                           quantizer->getGpuData(),
+                           index->metric_type,
+                           index->metric_arg,
+                           by_residual,
+                           &sq,
+                           ivfSQConfig_.indicesOptions,
+                           memorySpace_));
 
   InvertedLists* ivf = index->invlists;
 
@@ -215,14 +210,14 @@ GpuIndexIVFScalarQuantizer::train(Index::idx_t n, const float* x) {
   trainResiduals_(n, hostData.data());
 
   // The quantizer is now trained; construct the IVF index
-  index_ = new IVFFlat(resources_,
-                       quantizer->getGpuData(),
-                       this->metric_type,
-                       this->metric_arg,
-                       by_residual,
-                       &sq,
-                       ivfSQConfig_.indicesOptions,
-                       memorySpace_);
+  index_.reset(new IVFFlat(resources_.get(),
+                           quantizer->getGpuData(),
+                           this->metric_type,
+                           this->metric_arg,
+                           by_residual,
+                           &sq,
+                           ivfSQConfig_.indicesOptions,
+                           memorySpace_));
 
   if (reserveMemoryVecs_) {
     index_->reserveMemory(reserveMemoryVecs_);

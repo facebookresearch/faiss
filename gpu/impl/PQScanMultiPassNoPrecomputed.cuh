@@ -19,7 +19,7 @@ class GpuResources;
 
 /// For no precomputed codes, is this a supported number of dimensions
 /// per subquantizer?
-bool isSupportedNoPrecomputedSubDimSize(int dims);
+inline bool isSupportedNoPrecomputedSubDimSize(int dims);
 
 template <typename CentroidT>
 void runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,

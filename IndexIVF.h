@@ -68,6 +68,7 @@ struct Level1Quantizer {
 struct IVFSearchParameters {
     size_t nprobe;            ///< number of probes at query time
     size_t max_codes;         ///< max nb of codes to visit to do a query
+    IVFSearchParameters(): nprobe(1), max_codes(0) {}
     virtual ~IVFSearchParameters () {}
 };
 

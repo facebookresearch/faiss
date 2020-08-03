@@ -12,7 +12,7 @@
 
 namespace faiss { namespace gpu {
 
-class GpuResources;
+class GpuResourcesProvider;
 
 // Scalar type of the vector data
 enum class DistanceDataType {
@@ -116,10 +116,10 @@ struct GpuDistanceParams {
 ///
 /// For each vector in `queries`, searches all of `vectors` to find its k
 /// nearest neighbors with respect to the given metric
-void bfKnn(GpuResources* resources, const GpuDistanceParams& args);
+void bfKnn(GpuResourcesProvider* resources, const GpuDistanceParams& args);
 
 /// Deprecated legacy implementation
-void bruteForceKnn(GpuResources* resources,
+void bruteForceKnn(GpuResourcesProvider* resources,
                    faiss::MetricType metric,
                    // If vectorsRowMajor is true, this is
                    // numVectors x dims, with dims innermost; otherwise,

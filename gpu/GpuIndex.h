@@ -9,11 +9,9 @@
 #pragma once
 
 #include <faiss/Index.h>
-#include <faiss/gpu/utils/MemorySpace.h>
+#include <faiss/gpu/GpuResources.h>
 
 namespace faiss { namespace gpu {
-
-class GpuResources;
 
 struct GpuIndexConfig {
   inline GpuIndexConfig()
@@ -32,7 +30,7 @@ struct GpuIndexConfig {
 
 class GpuIndex : public faiss::Index {
  public:
-  GpuIndex(GpuResources* resources,
+  GpuIndex(std::shared_ptr<GpuResources> resources,
            int dims,
            faiss::MetricType metric,
            float metricArg,
@@ -40,10 +38,6 @@ class GpuIndex : public faiss::Index {
 
   inline int getDevice() const {
     return device_;
-  }
-
-  inline GpuResources* getResources() {
-    return resources_;
   }
 
   /// Set the minimum data size for searches (in MiB) for which we use
@@ -140,7 +134,7 @@ private:
 
  protected:
   /// Manages streams, cuBLAS handles and scratch memory for devices
-  GpuResources* resources_;
+  std::shared_ptr<GpuResources> resources_;
 
   /// The GPU device we are resident on
   const int device_;

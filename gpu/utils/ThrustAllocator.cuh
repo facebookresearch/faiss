@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <faiss/gpu/utils/MemorySpace.h>
+#include <faiss/gpu/GpuResources.h>
 #include <cuda.h>
 #include <unordered_set>
 
@@ -19,21 +19,26 @@ class GpuResourcesThrustAllocator {
  public:
   typedef char value_type;
 
-  GpuResourcesThrustAllocator(void* mem, size_t size)
-      : start_((char*) mem),
+  inline GpuResourcesThrustAllocator(GpuResources* res,
+                                     cudaStream_t stream,
+                                     void* mem,
+                                     size_t size)
+      : res_(res),
+        stream_(stream),
+        start_((char*) mem),
         cur_((char*) mem),
         end_((char*) mem + size) {
   }
 
-  ~GpuResourcesThrustAllocator() {
+  inline ~GpuResourcesThrustAllocator() {
     // In the case of an exception being thrown, we may not have called
     // deallocate on all of our sub-allocations. Free them here
     for (auto p : mallocAllocs_) {
-      freeMemorySpace(MemorySpace::Device, p);
+      res_->deallocMemory(getCurrentDevice(), p);
     }
   }
 
-  char* allocate(std::ptrdiff_t size) {
+  inline char* allocate(std::ptrdiff_t size) {
     if (size <= (end_ - cur_)) {
       char* p = cur_;
       cur_ += size;
@@ -41,24 +46,31 @@ class GpuResourcesThrustAllocator {
 
       return p;
     } else {
-      char* p = nullptr;
-      allocMemorySpace(MemorySpace::Device, &p, size);
+      // FIXME: we cannot use temporary memory for new requests because the
+      // current temporary memory allocator cannot handle stream synchronization
+      // at present, so just allocate through the general device
+      char* p =
+        (char*) res_->allocMemory(
+          AllocRequest(makeDevAlloc(AllocType::Other, stream_), size));
+
       mallocAllocs_.insert(p);
       return p;
     }
   }
 
-  void deallocate(char* p, size_t size) {
+  inline void deallocate(char* p, size_t size) {
     // Allocations could be returned out-of-order; ignore those we
     // didn't cudaMalloc
     auto it = mallocAllocs_.find(p);
     if (it != mallocAllocs_.end()) {
-      freeMemorySpace(MemorySpace::Device, p);
+      res_->deallocMemory(getCurrentDevice(), p);
       mallocAllocs_.erase(it);
     }
   }
 
  private:
+  GpuResources* res_;
+  cudaStream_t stream_;
   char* start_;
   char* cur_;
   char* end_;

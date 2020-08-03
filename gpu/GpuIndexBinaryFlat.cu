@@ -18,13 +18,12 @@ namespace faiss { namespace gpu {
 /// Default CPU search size for which we use paged copies
 constexpr size_t kMinPageSize = (size_t) 256 * 1024 * 1024;
 
-GpuIndexBinaryFlat::GpuIndexBinaryFlat(GpuResources* resources,
+GpuIndexBinaryFlat::GpuIndexBinaryFlat(GpuResourcesProvider* provider,
                                        const faiss::IndexBinaryFlat* index,
                                        GpuIndexBinaryFlatConfig config)
     : IndexBinary(index->d),
-      resources_(resources),
-      config_(std::move(config)),
-      data_(nullptr) {
+      resources_(provider->getResources()),
+      config_(std::move(config)) {
   FAISS_THROW_IF_NOT_FMT(this->d % 8 == 0,
                          "vector dimension (number of bits) "
                          "must be divisible by 8 (passed %d)",
@@ -37,13 +36,12 @@ GpuIndexBinaryFlat::GpuIndexBinaryFlat(GpuResources* resources,
 }
 
 
-GpuIndexBinaryFlat::GpuIndexBinaryFlat(GpuResources* resources,
+GpuIndexBinaryFlat::GpuIndexBinaryFlat(GpuResourcesProvider* provider,
                                        int dims,
                                        GpuIndexBinaryFlatConfig config)
     : IndexBinary(dims),
-      resources_(resources),
-      config_(std::move(config)),
-      data_(nullptr) {
+      resources_(provider->getResources()),
+      config_(std::move(config)) {
   FAISS_THROW_IF_NOT_FMT(this->d % 8 == 0,
                          "vector dimension (number of bits) "
                          "must be divisible by 8 (passed %d)",
@@ -54,13 +52,11 @@ GpuIndexBinaryFlat::GpuIndexBinaryFlat(GpuResources* resources,
 
   // Construct index
   DeviceScope scope(config_.device);
-  data_ = new BinaryFlatIndex(resources,
-                              this->d,
-                              config_.memorySpace);
+  data_.reset(
+    new BinaryFlatIndex(resources_.get(), this->d, config_.memorySpace));
 }
 
 GpuIndexBinaryFlat::~GpuIndexBinaryFlat() {
-  delete data_;
 }
 
 void
@@ -78,10 +74,10 @@ GpuIndexBinaryFlat::copyFrom(const faiss::IndexBinaryFlat* index) {
                          (size_t) index->ntotal);
   this->ntotal = index->ntotal;
 
-  delete data_;
-  data_ = new BinaryFlatIndex(resources_,
-                              this->d,
-                              config_.memorySpace);
+  // destroy old first before allocating new
+  data_.reset();
+  data_.reset(
+    new BinaryFlatIndex(resources_.get(), this->d, config_.memorySpace));
 
   // The index could be empty
   if (index->ntotal > 0) {
@@ -168,16 +164,16 @@ GpuIndexBinaryFlat::search(faiss::IndexBinary::idx_t n,
   // GPU.
   // If we reach a point where all inputs are too big, we can add
   // another level of tiling.
-  auto outDistances = toDevice<int32_t, 2>(resources_,
-                                           config_.device,
-                                           distances,
-                                           stream,
-                                           {(int) n, (int) k});
+  auto outDistances = toDeviceTemporary<int32_t, 2>(resources_.get(),
+                                                    config_.device,
+                                                    distances,
+                                                    stream,
+                                                    {(int) n, (int) k});
 
   // FlatIndex only supports an interface returning int indices
   DeviceTensor<int, 2, true> outIntIndices(
-    resources_->getMemoryManagerCurrentDevice(),
-    {(int) n, (int) k}, stream);
+    resources_.get(), makeTempAlloc(AllocType::Other, stream),
+    {(int) n, (int) k});
 
   bool usePaged = false;
 
@@ -205,11 +201,12 @@ GpuIndexBinaryFlat::search(faiss::IndexBinary::idx_t n,
   }
 
   // Convert and copy int indices out
-  auto outIndices = toDevice<faiss::Index::idx_t, 2>(resources_,
-                                                     config_.device,
-                                                     labels,
-                                                     stream,
-                                                     {(int) n, (int) k});
+  auto outIndices =
+    toDeviceTemporary<faiss::Index::idx_t, 2>(resources_.get(),
+                                              config_.device,
+                                              labels,
+                                              stream,
+                                              {(int) n, (int) k});
 
   // Convert int to long
   convertTensor<int, faiss::Index::idx_t, 2>(stream,
@@ -234,11 +231,11 @@ GpuIndexBinaryFlat::searchNonPaged_(int n,
 
   // Make sure arguments are on the device we desire; use temporary
   // memory allocations to move it if necessary
-  auto vecs = toDevice<uint8_t, 2>(resources_,
-                                   config_.device,
-                                   const_cast<uint8_t*>(x),
-                                   stream,
-                                   {n, (int) (this->d / 8)});
+  auto vecs = toDeviceTemporary<uint8_t, 2>(resources_.get(),
+                                            config_.device,
+                                            const_cast<uint8_t*>(x),
+                                            stream,
+                                            {n, (int) (this->d / 8)});
 
   data_->query(vecs, k, outDistances, outIndices);
 }

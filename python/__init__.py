@@ -11,42 +11,9 @@
 import numpy as np
 import sys
 import inspect
-import pdb
-import platform
-import subprocess
-import logging
 
-
-logger = logging.getLogger(__name__)
-
-
-def instruction_set():
-    if platform.system() == "Darwin":
-        if subprocess.check_output(["/usr/sbin/sysctl", "hw.optional.avx2_0"])[-1] == '1':
-            return "AVX2"
-        else:
-            return "default"
-    elif platform.system() == "Linux":
-        import numpy.distutils.cpuinfo
-        if "avx2" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
-            return "AVX2"
-        else:
-            return "default"
-
-
-try:
-    instr_set = instruction_set()
-    if instr_set == "AVX2":
-        logger.info("Loading faiss with AVX2 support.")
-        from .swigfaiss_avx2 import *
-    else:
-        logger.info("Loading faiss.")
-        from .swigfaiss import *
-
-except ImportError:
-    # we import * so that the symbol X can be accessed as faiss.X
-    logger.info("Loading faiss.")
-    from .swigfaiss import *
+# We import * so that the symbol foo can be accessed as faiss.foo.
+from .loader import *
 
 
 __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
@@ -380,6 +347,25 @@ def handle_MatrixStats(the_class):
 
 handle_MatrixStats(MatrixStats)
 
+def handle_IOWriter(the_class):
+
+    def write_bytes(self, b):
+        return self(swig_ptr(b), 1, len(b))
+
+    the_class.write_bytes = write_bytes
+
+handle_IOWriter(IOWriter)
+
+def handle_IOReader(the_class):
+
+    def read_bytes(self, totsz):
+        buf = bytearray(totsz)
+        was_read = self(swig_ptr(buf), 1, len(buf))
+        return bytes(buf[:was_read])
+
+    the_class.read_bytes = read_bytes
+
+handle_IOReader(IOReader)
 
 this_module = sys.modules[__name__]
 
@@ -429,6 +415,7 @@ def add_ref_in_constructor(the_class, parameter_no):
         the_class.__init__ = replacement_init_multiple
     else:
         the_class.__init__ = replacement_init
+
 
 def add_ref_in_method(the_class, method_name, parameter_no):
     original_method = getattr(the_class, method_name)
@@ -480,19 +467,6 @@ add_ref_in_constructor(BufferedIOReader, 0)
 # seems really marginal...
 # remove_ref_from_method(IndexReplicas, 'removeIndex', 0)
 
-if hasattr(this_module, 'GpuIndexFlat'):
-    # handle all the GPUResources refs
-    add_ref_in_function('index_cpu_to_gpu', 0)
-    add_ref_in_constructor(GpuIndexFlat, 0)
-    add_ref_in_constructor(GpuIndexFlatIP, 0)
-    add_ref_in_constructor(GpuIndexFlatL2, 0)
-    add_ref_in_constructor(GpuIndexIVFFlat, 0)
-    add_ref_in_constructor(GpuIndexIVFScalarQuantizer, 0)
-    add_ref_in_constructor(GpuIndexIVFPQ, 0)
-    add_ref_in_constructor(GpuIndexBinaryFlat, 0)
-
-
-
 ###########################################
 # GPU functions
 ###########################################
@@ -510,7 +484,6 @@ def index_cpu_to_gpu_multiple_py(resources, index, co=None, gpus=None):
         vdev.push_back(i)
         vres.push_back(res)
     index = index_cpu_to_gpu_multiple(vres, vdev, index, co)
-    index.referenced_objects = resources
     return index
 
 
@@ -717,10 +690,14 @@ class Kmeans:
                 setattr(self.cp, k, v)
         self.centroids = None
 
-    def train(self, x, weights=None):
+    def train(self, x, weights=None, init_centroids=None):
         n, d = x.shape
         assert d == self.d
         clus = Clustering(d, self.k, self.cp)
+        if init_centroids is not None:
+            nc, d2 = init_centroids.shape
+            assert d2 == d
+            copy_array_to_vector(init_centroids.ravel(), clus.centroids)
         if self.cp.spherical:
             self.index = IndexFlatIP(d)
         else:
@@ -735,9 +712,14 @@ class Kmeans:
         centroids = vector_float_to_array(clus.centroids)
         self.centroids = centroids.reshape(self.k, d)
         stats = clus.iteration_stats
-        self.obj = np.array([
-            stats.at(i).obj for i in range(stats.size())
-        ])
+        stats = [stats.at(i) for i in range(stats.size())]
+        self.obj = np.array([st.obj for st in stats])
+        # copy all the iteration_stats objects to a python array
+        stat_fields = 'obj time time_search imbalance_factor nsplit'.split()
+        self.iteration_stats = [
+            {field: getattr(st, field) for field in stat_fields}
+            for st in stats
+        ]
         return self.obj[-1] if self.obj.size > 0 else 0.0
 
     def assign(self, x):

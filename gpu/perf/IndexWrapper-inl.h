@@ -13,7 +13,7 @@ namespace faiss { namespace gpu {
 template <typename GpuIndex>
 IndexWrapper<GpuIndex>::IndexWrapper(
   int numGpus,
-  std::function<std::unique_ptr<GpuIndex>(GpuResources*, int)> init) {
+  std::function<std::unique_ptr<GpuIndex>(GpuResourcesProvider*, int)> init) {
   FAISS_ASSERT(numGpus <= faiss::gpu::getNumDevices());
   for (int i = 0; i < numGpus; ++i) {
     auto res = std::unique_ptr<faiss::gpu::StandardGpuResources>(

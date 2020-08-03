@@ -320,18 +320,17 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
                      Tensor<int, 2, true>& topQueryToCentroid,
                      NoTypeTensor<4, true>& outCodeDistances,
                      bool useFloat16Lookup,
-                     DeviceMemory& mem,
+                     GpuResources* res,
                      cublasHandle_t handle,
                      cudaStream_t stream) {
   // Calculate (q - c) residual vector
   // (sub q)(query id)(centroid id)(sub dim)
   DeviceTensor<float, 4, true> residual(
-    mem,
+    res, makeTempAlloc(AllocType::Other, stream),
     {pqCentroids.getSize(0),
-        topQueryToCentroid.getSize(0),
-        topQueryToCentroid.getSize(1),
-        pqCentroids.getSize(1)},
-    stream);
+     topQueryToCentroid.getSize(0),
+     topQueryToCentroid.getSize(1),
+     pqCentroids.getSize(1)});
 
   runResidualVector(pqCentroids, queries,
                     coarseCentroids, topQueryToCentroid,
@@ -339,11 +338,10 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
 
   // Calculate ||q - c||^2
   DeviceTensor<float, 1, true> residualNorms(
-    mem,
+    res, makeTempAlloc(AllocType::Other, stream),
     {pqCentroids.getSize(0) *
-        topQueryToCentroid.getSize(0) *
-        topQueryToCentroid.getSize(1)},
-    stream);
+     topQueryToCentroid.getSize(0) *
+     topQueryToCentroid.getSize(1)});
 
   auto residualView2 = residual.view<2>(
     {pqCentroids.getSize(0) *
@@ -362,11 +360,10 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
         pqCentroids.getSize(1)});
 
   DeviceTensor<float, 3, true> residualDistance(
-    mem,
+    res, makeTempAlloc(AllocType::Other, stream),
     {pqCentroids.getSize(0),
-        topQueryToCentroid.getSize(0) * topQueryToCentroid.getSize(1),
-        pqCentroids.getSize(2)},
-    stream);
+     topQueryToCentroid.getSize(0) * topQueryToCentroid.getSize(1),
+     pqCentroids.getSize(2)});
 
   runIteratedMatrixMult(residualDistance, false,
                         residualView3, false,
@@ -389,11 +386,11 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
 
   if (useFloat16Lookup) {
     outCodeDistancesFloatMem = DeviceTensor<float, 4, true>(
-      mem, {outCodeDistances.getSize(0),
-          outCodeDistances.getSize(1),
-          outCodeDistances.getSize(2),
-          outCodeDistances.getSize(3)},
-      stream);
+      res, makeTempAlloc(AllocType::Other, stream),
+      {outCodeDistances.getSize(0),
+       outCodeDistances.getSize(1),
+       outCodeDistances.getSize(2),
+       outCodeDistances.getSize(3)});
 
     outCodeDistancesF = outCodeDistancesFloatMem;
   } else {
@@ -413,9 +410,8 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
   // (sub q)(sub dim)(code) is pqCentroids
   // transpose to (sub q)(code)(sub dim)
   DeviceTensor<float, 3, true> pqCentroidsTranspose(
-    mem,
-    {pqCentroids.getSize(0), pqCentroids.getSize(2), pqCentroids.getSize(1)},
-    stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {pqCentroids.getSize(0), pqCentroids.getSize(2), pqCentroids.getSize(1)});
 
   runTransposeAny(pqCentroids, 1, 2, pqCentroidsTranspose, stream);
 
@@ -424,9 +420,8 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
         pqCentroids.getSize(1)});
 
   DeviceTensor<float, 1, true> pqCentroidsNorm(
-    mem,
-    {pqCentroids.getSize(0) * pqCentroids.getSize(2)},
-    stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {pqCentroids.getSize(0) * pqCentroids.getSize(2)});
 
   runL2Norm(pqCentroidsTransposeView, true, pqCentroidsNorm, true, stream);
 

@@ -10,6 +10,7 @@
 
 #include <faiss/gpu/GpuIndexIVF.h>
 #include <faiss/IndexScalarQuantizer.h>
+#include <memory>
 
 namespace faiss { namespace gpu {
 
@@ -26,7 +27,7 @@ class GpuIndexIVFScalarQuantizer : public GpuIndexIVF {
   /// Construct from a pre-existing faiss::IndexIVFScalarQuantizer instance,
   /// copying data over to the given GPU, if the input index is trained.
   GpuIndexIVFScalarQuantizer(
-    GpuResources* resources,
+    GpuResourcesProvider* provider,
     const faiss::IndexIVFScalarQuantizer* index,
     GpuIndexIVFScalarQuantizerConfig config =
     GpuIndexIVFScalarQuantizerConfig());
@@ -34,7 +35,7 @@ class GpuIndexIVFScalarQuantizer : public GpuIndexIVF {
   /// Constructs a new instance with an empty flat quantizer; the user
   /// provides the number of lists desired.
   GpuIndexIVFScalarQuantizer(
-    GpuResources* resources,
+    GpuResourcesProvider* provider,
     int dims,
     int nlist,
     faiss::ScalarQuantizer::QuantizerType qtype,
@@ -94,7 +95,7 @@ class GpuIndexIVFScalarQuantizer : public GpuIndexIVF {
   size_t reserveMemoryVecs_;
 
   /// Instance that we own; contains the inverted list
-  IVFFlat* index_;
+  std::unique_ptr<IVFFlat> index_;
 };
 
 } } // namespace

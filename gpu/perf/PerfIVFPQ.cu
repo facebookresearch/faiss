@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
   auto useFloat16Lookup = FLAGS_float16_lookup;
 
   auto initFn = [precomp, indicesOpt, useFloat16Lookup, &index]
-    (faiss::gpu::GpuResources* res, int dev) ->
+    (faiss::gpu::GpuResourcesProvider* res, int dev) ->
     std::unique_ptr<faiss::gpu::GpuIndexIVFPQ> {
 
     faiss::gpu::GpuIndexIVFPQConfig config;
@@ -150,8 +150,6 @@ int main(int argc, char** argv) {
                "", true, FLAGS_diff, false);
 
   CUDA_VERIFY(cudaDeviceSynchronize());
-  // printf("\ncudaMalloc usage %zd\n",
-  //        resources.getMemoryManager().getHighWaterCudaMalloc());
 
   return 0;
 }

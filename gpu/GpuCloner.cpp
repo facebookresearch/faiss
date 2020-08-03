@@ -114,9 +114,9 @@ faiss::Index * index_gpu_to_cpu(const faiss::Index *gpu_index)
  * Cloning to 1 GPU
  **********************************************************/
 
-ToGpuCloner::ToGpuCloner(GpuResources *resources, int device,
+ToGpuCloner::ToGpuCloner(GpuResourcesProvider *prov, int device,
                          const GpuClonerOptions &options):
-    GpuClonerOptions(options), resources(resources), device(device)
+    GpuClonerOptions(options), provider(prov), device(device)
 {}
 
 Index *ToGpuCloner::clone_Index(const Index *index)
@@ -127,7 +127,7 @@ Index *ToGpuCloner::clone_Index(const Index *index)
         config.useFloat16 = useFloat16;
         config.storeTransposed = storeTransposed;
 
-        return new GpuIndexFlat(resources, ifl, config);
+        return new GpuIndexFlat(provider, ifl, config);
     } else if(auto ifl = dynamic_cast<const faiss::IndexIVFFlat *>(index)) {
         GpuIndexIVFFlatConfig config;
         config.device = device;
@@ -136,7 +136,7 @@ Index *ToGpuCloner::clone_Index(const Index *index)
         config.flatConfig.storeTransposed = storeTransposed;
 
         GpuIndexIVFFlat *res =
-            new GpuIndexIVFFlat(resources,
+            new GpuIndexIVFFlat(provider,
                                 ifl->d,
                                 ifl->nlist,
                                 ifl->metric_type,
@@ -156,7 +156,7 @@ Index *ToGpuCloner::clone_Index(const Index *index)
         config.flatConfig.storeTransposed = storeTransposed;
 
         GpuIndexIVFScalarQuantizer *res =
-            new GpuIndexIVFScalarQuantizer(resources,
+            new GpuIndexIVFScalarQuantizer(provider,
                                            ifl->d,
                                            ifl->nlist,
                                            ifl->sq.qtype,
@@ -184,7 +184,7 @@ Index *ToGpuCloner::clone_Index(const Index *index)
         config.useFloat16LookupTables = useFloat16;
         config.usePrecomputedTables = usePrecomputed;
 
-        GpuIndexIVFPQ *res = new GpuIndexIVFPQ(resources, ipq, config);
+        GpuIndexIVFPQ *res = new GpuIndexIVFPQ(provider, ipq, config);
 
         if(reserveVecs > 0 && ipq->ntotal == 0) {
             res->reserveMemory(reserveVecs);
@@ -198,12 +198,12 @@ Index *ToGpuCloner::clone_Index(const Index *index)
 
 
 faiss::Index * index_cpu_to_gpu(
-       GpuResources* resources, int device,
+       GpuResourcesProvider* provider, int device,
        const faiss::Index *index,
        const GpuClonerOptions *options)
 {
     GpuClonerOptions defaults;
-    ToGpuCloner cl(resources, device, options ? *options : defaults);
+    ToGpuCloner cl(provider, device, options ? *options : defaults);
     return cl.clone_Index(index);
 }
 
@@ -213,14 +213,14 @@ faiss::Index * index_cpu_to_gpu(
  **********************************************************/
 
 ToGpuClonerMultiple::ToGpuClonerMultiple(
-                        std::vector<GpuResources *> & resources,
+                        std::vector<GpuResourcesProvider *> & provider,
                         std::vector<int>& devices,
                         const GpuMultipleClonerOptions &options):
     GpuMultipleClonerOptions(options)
 {
-    FAISS_ASSERT(resources.size() == devices.size());
-    for(int i = 0; i < resources.size(); i++) {
-        sub_cloners.push_back(ToGpuCloner(resources[i], devices[i], options));
+    FAISS_ASSERT(provider.size() == devices.size());
+    for(int i = 0; i < provider.size(); i++) {
+        sub_cloners.push_back(ToGpuCloner(provider[i], devices[i], options));
     }
 }
 
@@ -394,13 +394,13 @@ Index *ToGpuClonerMultiple::clone_Index(const Index *index)
 
 
 faiss::Index * index_cpu_to_gpu_multiple(
-       std::vector<GpuResources*> & resources,
+       std::vector<GpuResourcesProvider*> & provider,
        std::vector<int> &devices,
        const faiss::Index *index,
        const GpuMultipleClonerOptions *options)
 {
     GpuMultipleClonerOptions defaults;
-    ToGpuClonerMultiple cl(resources, devices, options ? *options : defaults);
+    ToGpuClonerMultiple cl(provider, devices, options ? *options : defaults);
     return cl.clone_Index(index);
 }
 

@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
   // Convert to GPU index
   printf("Copying index to %d GPU(s)...\n", FLAGS_num_gpus);
 
-  auto initFn = [&index](faiss::gpu::GpuResources* res, int dev) ->
+  auto initFn = [&index](faiss::gpu::GpuResourcesProvider* res, int dev) ->
     std::unique_ptr<faiss::gpu::GpuIndexFlat> {
     ((faiss::gpu::StandardGpuResources*) res)->setPinnedMemory(
       FLAGS_pinned_mem);

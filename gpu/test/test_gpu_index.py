@@ -73,13 +73,22 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         gpu_index = faiss.index_cpu_to_gpu(res, 0, index)
         ts.append(time.time())
 
+        # Validate the layout of the memory info
+        mem_info = res.getMemoryInfo()
+
+        assert type(mem_info) == dict
+        assert type(mem_info[0]['FlatData']) == tuple
+        assert type(mem_info[0]['FlatData'][0]) == int
+        assert type(mem_info[0]['FlatData'][1]) == int
+
         gpu_index.setNumProbes(4)
 
         D, Inew = gpu_index.search(xq, 10)
         ts.append(time.time())
         print('times:', [t - ts[0] for t in ts])
 
-        self.assertGreaterEqual((Iref == Inew).sum(), Iref.size)
+        # Give us some margin of error
+        self.assertGreaterEqual((Iref == Inew).sum(), Iref.size - 50)
 
         if faiss.get_num_gpus() == 1:
             return
@@ -309,6 +318,33 @@ class TestAlternativeDistances(unittest.TestCase):
     def test_Lp(self):
         self.do_test(faiss.METRIC_Lp, 0.7)
 
+
+class TestGpuRef(unittest.TestCase):
+
+    def test_gpu_ref(self):
+        # this crashes
+        dim = 256
+        training_data = np.random.randint(256, size=(10000, dim // 8)).astype('uint8')
+        centroids = 330
+
+        def create_cpu(dim):
+            quantizer = faiss.IndexBinaryFlat(dim)
+            return faiss.IndexBinaryIVF(quantizer, dim, centroids)
+
+        def create_gpu(dim):
+            gpu_quantizer = faiss.index_cpu_to_all_gpus(faiss.IndexFlatL2(dim))
+
+            index = create_cpu(dim)
+            index.clustering_index = gpu_quantizer
+            index.dont_dealloc_me = gpu_quantizer
+            return index
+
+        index = create_gpu(dim)
+
+        index.verbose = True
+        index.cp.verbose = True
+
+        index.train(training_data)
 
 if __name__ == '__main__':
     unittest.main()

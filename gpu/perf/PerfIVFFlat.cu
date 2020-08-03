@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
   // Convert to GPU index
   printf("Copying index to %d GPU(s)...\n", FLAGS_num_gpus);
 
-  auto initFn = [&index](faiss::gpu::GpuResources* res, int dev) ->
+  auto initFn = [&index](faiss::gpu::GpuResourcesProvider* res, int dev) ->
     std::unique_ptr<faiss::gpu::GpuIndexIVFFlat> {
     GpuIndexIVFFlatConfig config;
     config.device = dev;
@@ -139,8 +139,6 @@ int main(int argc, char** argv) {
                "", true, FLAGS_diff, false);
 
   CUDA_VERIFY(cudaDeviceSynchronize());
-  // printf("\ncudaMalloc usage %zd\n",
-  //        resources.getMemoryManager().getHighWaterCudaMalloc());
 
   return 0;
 }

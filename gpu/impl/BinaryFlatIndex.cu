@@ -18,9 +18,12 @@ BinaryFlatIndex::BinaryFlatIndex(GpuResources* res,
                                  MemorySpace space) :
     resources_(res),
     dim_(dim),
-    space_(space),
     num_(0),
-    rawData_(space) {
+    rawData_(res,
+             makeSpaceAlloc(
+               AllocType::FlatData,
+               space,
+               res->getDefaultStreamCurrentDevice())) {
   FAISS_ASSERT(dim % 8 == 0);
 }
 
@@ -74,14 +77,14 @@ BinaryFlatIndex::add(const unsigned char* data,
   num_ += numVecs;
 
   DeviceTensor<unsigned char, 2, true> vectors(
-    (unsigned char*) rawData_.data(), {(int) num_, (dim_ / 8)}, space_);
+    (unsigned char*) rawData_.data(), {(int) num_, (dim_ / 8)});
   vectors_ = std::move(vectors);
 }
 
 void
 BinaryFlatIndex::reset() {
   rawData_.clear();
-  vectors_ = std::move(DeviceTensor<unsigned char, 2, true>());
+  vectors_ = DeviceTensor<unsigned char, 2, true>();
   num_ = 0;
 }
 

@@ -176,7 +176,8 @@ ivfFlatScan(Tensor<float, 2, true> queries,
 }
 
 void
-runIVFFlatScanTile(Tensor<float, 2, true>& queries,
+runIVFFlatScanTile(GpuResources* res,
+                   Tensor<float, 2, true>& queries,
                    Tensor<int, 2, true>& listIds,
                    thrust::device_vector<void*>& listData,
                    thrust::device_vector<void*>& listIndices,
@@ -214,7 +215,8 @@ runIVFFlatScanTile(Tensor<float, 2, true>& queries,
 
   // Calculate offset lengths, so we know where to write out
   // intermediate results
-  runCalcListOffsets(listIds, listLengths, prefixSumOffsets, thrustMem, stream);
+  runCalcListOffsets(
+    res, listIds, listLengths, prefixSumOffsets, thrustMem, stream);
 
   auto grid = dim3(listIds.getSize(1), listIds.getSize(0));
   auto block = dim3(kWarpSize * kIVFFlatScanWarps);
@@ -383,21 +385,20 @@ runIVFFlatScan(Tensor<float, 2, true>& queries,
 
   int nprobe = listIds.getSize(1);
 
-  auto& mem = res->getMemoryManagerCurrentDevice();
   auto stream = res->getDefaultStreamCurrentDevice();
 
   // Make a reservation for Thrust to do its dirty work (global memory
   // cross-block reduction space); hopefully this is large enough.
   DeviceTensor<char, 1, true> thrustMem1(
-    mem, {kThrustMemSize}, stream);
+    res, makeTempAlloc(AllocType::Other, stream), {kThrustMemSize});
   DeviceTensor<char, 1, true> thrustMem2(
-    mem, {kThrustMemSize}, stream);
+    res, makeTempAlloc(AllocType::Other, stream), {kThrustMemSize});
   DeviceTensor<char, 1, true>* thrustMem[2] =
     {&thrustMem1, &thrustMem2};
 
   // How much temporary storage is available?
   // If possible, we'd like to fit within the space available.
-  size_t sizeAvailable = mem.getSizeAvailable();
+  size_t sizeAvailable = res->getTempMemoryAvailableCurrentDevice();
 
   // We run two passes of heap selection
   // This is the size of the first-level heap passes
@@ -431,9 +432,9 @@ runIVFFlatScan(Tensor<float, 2, true>& queries,
   // Make sure there is space prior to the start which will be 0, and
   // will handle the boundary condition without branches
   DeviceTensor<int, 1, true> prefixSumOffsetSpace1(
-    mem, {queryTileSize * nprobe + 1}, stream);
+    res, makeTempAlloc(AllocType::Other, stream), {queryTileSize * nprobe + 1});
   DeviceTensor<int, 1, true> prefixSumOffsetSpace2(
-    mem, {queryTileSize * nprobe + 1}, stream);
+    res, makeTempAlloc(AllocType::Other, stream), {queryTileSize * nprobe + 1});
 
   DeviceTensor<int, 2, true> prefixSumOffsets1(
     prefixSumOffsetSpace1[1].data(),
@@ -456,23 +457,29 @@ runIVFFlatScan(Tensor<float, 2, true>& queries,
                               stream));
 
   DeviceTensor<float, 1, true> allDistances1(
-    mem, {queryTileSize * nprobe * maxListLength}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize * nprobe * maxListLength});
   DeviceTensor<float, 1, true> allDistances2(
-    mem, {queryTileSize * nprobe * maxListLength}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize * nprobe * maxListLength});
   DeviceTensor<float, 1, true>* allDistances[2] =
     {&allDistances1, &allDistances2};
 
   DeviceTensor<float, 3, true> heapDistances1(
-    mem, {queryTileSize, pass2Chunks, k}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize, pass2Chunks, k});
   DeviceTensor<float, 3, true> heapDistances2(
-    mem, {queryTileSize, pass2Chunks, k}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize, pass2Chunks, k});
   DeviceTensor<float, 3, true>* heapDistances[2] =
     {&heapDistances1, &heapDistances2};
 
   DeviceTensor<int, 3, true> heapIndices1(
-    mem, {queryTileSize, pass2Chunks, k}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize, pass2Chunks, k});
   DeviceTensor<int, 3, true> heapIndices2(
-    mem, {queryTileSize, pass2Chunks, k}, stream);
+    res, makeTempAlloc(AllocType::Other, stream),
+    {queryTileSize, pass2Chunks, k});
   DeviceTensor<int, 3, true>* heapIndices[2] =
     {&heapIndices1, &heapIndices2};
 
@@ -505,7 +512,8 @@ runIVFFlatScan(Tensor<float, 2, true>& queries,
     auto outIndicesView =
       outIndices.narrowOutermost(query, numQueriesInTile);
 
-    runIVFFlatScanTile(queryView,
+    runIVFFlatScanTile(res,
+                       queryView,
                        listIdsView,
                        listData,
                        listIndices,

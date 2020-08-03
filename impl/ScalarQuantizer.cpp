@@ -170,17 +170,37 @@ struct Codec6bit {
     }
 
 #ifdef USE_AVX
-    static __m256 decode_8_components (const uint8_t *code, int i) {
-        return _mm256_set_ps
-            (decode_component(code, i + 7),
-             decode_component(code, i + 6),
-             decode_component(code, i + 5),
-             decode_component(code, i + 4),
-             decode_component(code, i + 3),
-             decode_component(code, i + 2),
-             decode_component(code, i + 1),
-             decode_component(code, i + 0));
+
+    /* Load 6 bytes that represent 8 6-bit values, return them as a
+     * 8*32 bit vector register */
+    static __m256i load6 (const uint16_t *code16) {
+        const __m128i perm = _mm_set_epi8(-1, 5, 5, 4, 4, 3, -1, 3, -1, 2, 2, 1, 1, 0, -1, 0);
+        const __m256i shifts = _mm256_set_epi32(2, 4, 6, 0, 2, 4, 6, 0);
+
+        // load 6 bytes
+        __m128i c1 = _mm_set_epi16(0, 0, 0, 0, 0, code16[2], code16[1], code16[0]);
+
+        // put in 8 * 32 bits
+        __m128i c2 = _mm_shuffle_epi8(c1, perm);
+        __m256i c3 = _mm256_cvtepi16_epi32(c2);
+
+        // shift and mask out useless bits
+        __m256i c4 = _mm256_srlv_epi32(c3, shifts);
+        __m256i c5 = _mm256_and_si256(_mm256_set1_epi32(63), c4);
+        return c5;
     }
+
+    static __m256 decode_8_components (const uint8_t *code, int i) {
+        __m256i i8 = load6 ((const uint16_t *)(code + (i >> 2) * 3));
+        __m256 f8 = _mm256_cvtepi32_ps (i8);
+        // this could also be done with bit manipulations but it is
+        // not obviously faster
+        __m256 half = _mm256_set1_ps (0.5f);
+        f8 += half;
+        __m256 one_63 = _mm256_set1_ps (1.f / 63.f);
+        return f8 * one_63;
+    }
+
 #endif
 };
 
@@ -326,12 +346,15 @@ struct QuantizerTemplate<Codec, true, 1>: ScalarQuantizer::Quantizer {
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
-            float xi = (x[i] - vmin) / vdiff;
-            if (xi < 0) {
-                xi = 0;
-            }
-            if (xi > 1.0) {
-                xi = 1.0;
+            float xi = 0;
+            if (vdiff != 0) {
+                xi = (x[i] - vmin) / vdiff;
+                if (xi < 0) {
+                    xi = 0;
+                }
+                if (xi > 1.0) {
+                    xi = 1.0;
+                }
             }
             Codec::encode_component(xi, code, i);
         }
@@ -384,11 +407,16 @@ struct QuantizerTemplate<Codec, false, 1>: ScalarQuantizer::Quantizer {
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
-            float xi = (x[i] - vmin[i]) / vdiff[i];
-            if (xi < 0)
-                xi = 0;
-            if (xi > 1.0)
-                xi = 1.0;
+            float xi = 0;
+            if (vdiff[i] != 0) {
+                xi = (x[i] - vmin[i]) / vdiff[i];
+                if (xi < 0) {
+                    xi = 0;
+                }
+                if (xi > 1.0) {
+                    xi = 1.0;
+                }
+            }
             Codec::encode_component(xi, code, i);
         }
     }
@@ -691,7 +719,7 @@ void train_NonUniform(RangeStat rs, float rs_arg,
             float vexp = (vmax[j] - vmin[j]) * rs_arg;
             vmin[j] -= vexp;
             vmax[j] += vexp;
-            vdiff [j] = vmax[j] - vmin[j];
+            vdiff[j] = vmax[j] - vmin[j];
         }
     } else {
         // transpose
@@ -915,7 +943,7 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer
         for (size_t i = 0; i < quant.d; i++) {
             float x1 = quant.reconstruct_component(code1, i);
             float x2 = quant.reconstruct_component(code2, i);
-                sim.add_component_2(x1, x2);
+            sim.add_component_2(x1, x2);
         }
         return sim.result();
     }

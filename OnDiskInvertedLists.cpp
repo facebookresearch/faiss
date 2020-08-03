@@ -16,9 +16,13 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
+
+#include <faiss/impl/io.h>
+#include <faiss/impl/io_macros.h>
 
 
 namespace faiss {
@@ -341,7 +345,7 @@ void OnDiskInvertedLists::update_totsize (size_t new_size)
 
 #define INVALID_OFFSET (size_t)(-1)
 
-OnDiskInvertedLists::List::List ():
+OnDiskOneList::OnDiskOneList ():
     size (0), capacity (0), offset (INVALID_OFFSET)
 {}
 
@@ -656,6 +660,12 @@ size_t OnDiskInvertedLists::merge_from (const InvertedLists **ils, int n_il,
 }
 
 
+size_t OnDiskInvertedLists::merge_from_1 (const InvertedLists *ils, bool verbose)
+{
+    return merge_from (&ils, 1, verbose);
+}
+
+
 void OnDiskInvertedLists::crop_invlists(size_t l0, size_t l1)
 {
     FAISS_THROW_IF_NOT(0 <= l0 && l0 <= l1 && l1 <= nlist);
@@ -667,6 +677,134 @@ void OnDiskInvertedLists::crop_invlists(size_t l0, size_t l1)
 
     nlist = l1 - l0;
 }
+
+/*******************************************************
+ * I/O support via callbacks
+ *******************************************************/
+
+
+
+
+OnDiskInvertedListsIOHook::OnDiskInvertedListsIOHook():
+    InvertedListsIOHook("ilod", typeid(OnDiskInvertedLists).name())
+{}
+
+
+void OnDiskInvertedListsIOHook::write(const InvertedLists *ils, IOWriter *f) const
+{
+    uint32_t h = fourcc ("ilod");
+    WRITE1 (h);
+    WRITE1 (ils->nlist);
+    WRITE1 (ils->code_size);
+    const OnDiskInvertedLists *od = dynamic_cast<const OnDiskInvertedLists*> (ils);
+    // this is a POD object
+    WRITEVECTOR (od->lists);
+
+    {
+        std::vector<OnDiskInvertedLists::Slot> v(
+                od->slots.begin(), od->slots.end());
+        WRITEVECTOR(v);
+    }
+    {
+        std::vector<char> x(od->filename.begin(), od->filename.end());
+        WRITEVECTOR(x);
+    }
+    WRITE1(od->totsize);
+}
+
+InvertedLists * OnDiskInvertedListsIOHook::read(IOReader *f, int io_flags) const
+{
+    OnDiskInvertedLists *od = new OnDiskInvertedLists();
+    od->read_only = io_flags & IO_FLAG_READ_ONLY;
+    READ1 (od->nlist);
+    READ1 (od->code_size);
+    // this is a POD object
+    READVECTOR (od->lists);
+    {
+        std::vector<OnDiskInvertedLists::Slot> v;
+        READVECTOR(v);
+        od->slots.assign(v.begin(), v.end());
+    }
+    {
+        std::vector<char> x;
+        READVECTOR(x);
+        od->filename.assign(x.begin(), x.end());
+
+        if (io_flags & IO_FLAG_ONDISK_SAME_DIR) {
+            FileIOReader *reader = dynamic_cast<FileIOReader*>(f);
+            FAISS_THROW_IF_NOT_MSG (
+                    reader, "IO_FLAG_ONDISK_SAME_DIR only supported "
+                    "when reading from file");
+            std::string indexname = reader->name;
+            std::string dirname = "./";
+            size_t slash = indexname.find_last_of('/');
+            if (slash != std::string::npos) {
+                dirname = indexname.substr(0, slash + 1);
+            }
+            std::string filename = od->filename;
+            slash = filename.find_last_of('/');
+            if (slash != std::string::npos) {
+                filename = filename.substr(slash + 1);
+            }
+            filename = dirname + filename;
+            printf("IO_FLAG_ONDISK_SAME_DIR: "
+                   "updating ondisk filename from %s to %s\n",
+                   od->filename.c_str(), filename.c_str());
+            od->filename = filename;
+        }
+
+    }
+    READ1(od->totsize);
+    od->do_mmap();
+    return od;
+}
+
+/** read from a ArrayInvertedLists into this invertedlist type */
+InvertedLists * OnDiskInvertedListsIOHook::read_ArrayInvertedLists(
+        IOReader *f, int /* io_flags */,
+        size_t nlist, size_t code_size,
+        const std::vector<size_t> &sizes) const
+{
+    auto ails = new OnDiskInvertedLists ();
+    ails->nlist = nlist;
+    ails->code_size = code_size;
+    ails->read_only = true;
+    ails->lists.resize (nlist);
+
+    FileIOReader *reader = dynamic_cast<FileIOReader*>(f);
+    FAISS_THROW_IF_NOT_MSG(reader, "mmap only supported for File objects");
+    FILE *fdesc = reader->f;
+    size_t o0 = ftell(fdesc);
+    size_t o = o0;
+    { // do the mmap
+        struct stat buf;
+        int ret = fstat (fileno(fdesc), &buf);
+        FAISS_THROW_IF_NOT_FMT (ret == 0,
+                                "fstat failed: %s", strerror(errno));
+        ails->totsize = buf.st_size;
+        ails->ptr = (uint8_t*)mmap (nullptr, ails->totsize,
+                                    PROT_READ, MAP_SHARED,
+                                    fileno(fdesc), 0);
+        FAISS_THROW_IF_NOT_FMT (ails->ptr != MAP_FAILED,
+                                "could not mmap: %s",
+                                strerror(errno));
+    }
+
+    FAISS_THROW_IF_NOT(o <= ails->totsize);
+
+    for (size_t i = 0; i < ails->nlist; i++) {
+        OnDiskInvertedLists::List & l = ails->lists[i];
+        l.size = l.capacity = sizes[i];
+        l.offset = o;
+        o += l.size * (sizeof(OnDiskInvertedLists::idx_t) +
+                       ails->code_size);
+    }
+    // resume normal reading of file
+    fseek (fdesc, o, SEEK_SET);
+
+    return ails;
+}
+
 
 
 

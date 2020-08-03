@@ -25,7 +25,7 @@
 
 namespace faiss { namespace gpu {
 
-IVFFlat::IVFFlat(GpuResources* resources,
+IVFFlat::IVFFlat(GpuResources* res,
                  FlatIndex* quantizer,
                  faiss::MetricType metric,
                  float metricArg,
@@ -33,7 +33,7 @@ IVFFlat::IVFFlat(GpuResources* resources,
                  faiss::ScalarQuantizer* scalarQ,
                  IndicesOptions indicesOptions,
                  MemorySpace space) :
-    IVFBase(resources,
+    IVFBase(res,
             metric,
             metricArg,
             quantizer,
@@ -42,7 +42,7 @@ IVFFlat::IVFFlat(GpuResources* resources,
             indicesOptions,
             space),
     useResidual_(useResidual),
-    scalarQ_(scalarQ ? new GpuScalarQuantizer(*scalarQ) : nullptr) {
+    scalarQ_(scalarQ ? new GpuScalarQuantizer(res, *scalarQ) : nullptr) {
 }
 
 IVFFlat::~IVFFlat() {
@@ -106,25 +106,24 @@ IVFFlat::classifyAndAddVectors(Tensor<float, 2, true>& vecs,
   FAISS_ASSERT(vecs.getSize(0) == indices.getSize(0));
   FAISS_ASSERT(vecs.getSize(1) == dim_);
 
-  auto& mem = resources_->getMemoryManagerCurrentDevice();
   auto stream = resources_->getDefaultStreamCurrentDevice();
 
   // Number of valid vectors that we actually add; we return this
   int numAdded = 0;
 
-  DeviceTensor<float, 2, true>
-    listDistance2d(mem, {vecs.getSize(0), 1}, stream);
+  DeviceTensor<float, 2, true> listDistance2d(
+    resources_, makeTempAlloc(AllocType::Other, stream), {vecs.getSize(0), 1});
 
-  DeviceTensor<int, 2, true>
-    listIds2d(mem, {vecs.getSize(0), 1},  stream);
+  DeviceTensor<int, 2, true> listIds2d(
+    resources_, makeTempAlloc(AllocType::Other, stream), {vecs.getSize(0), 1});
   auto listIds = listIds2d.view<1>({vecs.getSize(0)});
 
   quantizer_->query(vecs, 1, metric_, metricArg_,
                     listDistance2d, listIds2d, false);
 
   // Calculate residuals for these vectors, if needed
-  DeviceTensor<float, 2, true>
-    residuals(mem, {vecs.getSize(0), dim_}, stream);
+  DeviceTensor<float, 2, true> residuals(
+    resources_, makeTempAlloc(AllocType::Other, stream), {vecs.getSize(0), dim_});
 
   if (useResidual_) {
     quantizer_->computeResidual(vecs, listIds, residuals);
@@ -251,7 +250,8 @@ IVFFlat::classifyAndAddVectors(Tensor<float, 2, true>& vecs,
 
   // We similarly need to actually append the new vectors
   {
-    DeviceTensor<int, 1, true> listOffset(mem, listOffsetHost, stream);
+    DeviceTensor<int, 1, true> listOffset(
+      resources_, makeTempAlloc(AllocType::Other, stream), listOffsetHost);
 
     // Now, for each list to which a vector is being assigned, write it
     runIVFFlatInvertedListAppend(listIds,
@@ -276,7 +276,6 @@ IVFFlat::query(Tensor<float, 2, true>& queries,
                int k,
                Tensor<float, 2, true>& outDistances,
                Tensor<long, 2, true>& outIndices) {
-  auto& mem = resources_->getMemoryManagerCurrentDevice();
   auto stream = resources_->getDefaultStreamCurrentDevice();
 
   // These are caught at a higher level
@@ -290,10 +289,10 @@ IVFFlat::query(Tensor<float, 2, true>& queries,
   FAISS_ASSERT(outIndices.getSize(0) == queries.getSize(0));
 
   // Reserve space for the quantized information
-  DeviceTensor<float, 2, true>
-    coarseDistances(mem, {queries.getSize(0), nprobe}, stream);
-  DeviceTensor<int, 2, true>
-    coarseIndices(mem, {queries.getSize(0), nprobe}, stream);
+  DeviceTensor<float, 2, true> coarseDistances(
+    resources_, makeTempAlloc(AllocType::Other, stream), {queries.getSize(0), nprobe});
+  DeviceTensor<int, 2, true> coarseIndices(
+    resources_, makeTempAlloc(AllocType::Other, stream), {queries.getSize(0), nprobe});
 
   // Find the `nprobe` closest lists; we can use int indices both
   // internally and externally
@@ -305,8 +304,9 @@ IVFFlat::query(Tensor<float, 2, true>& queries,
                     coarseIndices,
                     false);
 
-  DeviceTensor<float, 3, true>
-    residualBase(mem, {queries.getSize(0), nprobe, dim_}, stream);
+  DeviceTensor<float, 3, true> residualBase(
+    resources_, makeTempAlloc(AllocType::Other, stream),
+    {queries.getSize(0), nprobe, dim_});
 
   if (useResidual_) {
     // Reconstruct vectors from the quantizer

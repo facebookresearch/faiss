@@ -33,3 +33,12 @@ class TestBinaryFactory(unittest.TestCase):
         index = faiss.index_binary_factory(256, "BIVF1024_BHNSW32")
         assert index.code_size == 32
         assert index.nlist == 1024
+
+    def test_factory_Hash(self):
+        index = faiss.index_binary_factory(256, "BHash12")
+        assert index.b == 12
+
+    def test_factory_MultiHash(self):
+        index = faiss.index_binary_factory(256, "BHash5x6")
+        assert index.b == 6
+        assert index.nhash == 5

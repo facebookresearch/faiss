@@ -249,7 +249,7 @@ void runGeneralDistanceKernel(Tensor<T, 2, InnerContig>& vecs,
 }
 
 template <typename T, typename DistanceOp, bool InnerContig>
-void runGeneralDistance(GpuResources* resources,
+void runGeneralDistance(GpuResources* res,
                         Tensor<T, 2, InnerContig>& centroids,
                         Tensor<T, 2, InnerContig>& queries,
                         int k,
@@ -272,8 +272,7 @@ void runGeneralDistance(GpuResources* resources,
   FAISS_ASSERT(outDistances.getSize(1) == k);
   FAISS_ASSERT(outIndices.getSize(1) == k);
 
-  auto& mem = resources->getMemoryManagerCurrentDevice();
-  auto defaultStream = resources->getDefaultStreamCurrentDevice();
+  auto defaultStream = res->getDefaultStreamCurrentDevice();
 
   // If we're quering against a 0 sized set, just return empty results
   if (centroids.numElements() == 0) {
@@ -296,7 +295,7 @@ void runGeneralDistance(GpuResources* resources,
                  numCentroids,
                  dim,
                  sizeof(T),
-                 mem.getSizeAvailable(),
+                 res->getTempMemoryAvailableCurrentDevice(),
                  tileRows,
                  tileCols);
 
@@ -308,27 +307,27 @@ void runGeneralDistance(GpuResources* resources,
 
   // Temporary output memory space we'll use
   DeviceTensor<float, 2, true> distanceBuf1(
-    mem, {tileRows, tileCols}, defaultStream);
+    res, makeTempAlloc(AllocType::Other, defaultStream), {tileRows, tileCols});
   DeviceTensor<float, 2, true> distanceBuf2(
-    mem, {tileRows, tileCols}, defaultStream);
+    res, makeTempAlloc(AllocType::Other, defaultStream), {tileRows, tileCols});
   DeviceTensor<float, 2, true>* distanceBufs[2] =
     {&distanceBuf1, &distanceBuf2};
 
   DeviceTensor<float, 2, true> outDistanceBuf1(
-    mem, {tileRows, numColTiles * k}, defaultStream);
+    res, makeTempAlloc(AllocType::Other, defaultStream), {tileRows, numColTiles * k});
   DeviceTensor<float, 2, true> outDistanceBuf2(
-    mem, {tileRows, numColTiles * k}, defaultStream);
+    res, makeTempAlloc(AllocType::Other, defaultStream), {tileRows, numColTiles * k});
   DeviceTensor<float, 2, true>* outDistanceBufs[2] =
     {&outDistanceBuf1, &outDistanceBuf2};
 
   DeviceTensor<int, 2, true> outIndexBuf1(
-    mem, {tileRows, numColTiles * k}, defaultStream);
+    res, makeTempAlloc(AllocType::Other, defaultStream), {tileRows, numColTiles * k});
   DeviceTensor<int, 2, true> outIndexBuf2(
-    mem, {tileRows, numColTiles * k}, defaultStream);
+    res, makeTempAlloc(AllocType::Other, defaultStream), {tileRows, numColTiles * k});
   DeviceTensor<int, 2, true>* outIndexBufs[2] =
     {&outIndexBuf1, &outIndexBuf2};
 
-  auto streams = resources->getAlternateStreamsCurrentDevice();
+  auto streams = res->getAlternateStreamsCurrentDevice();
   streamWait(streams, {defaultStream});
 
   int curStream = 0;

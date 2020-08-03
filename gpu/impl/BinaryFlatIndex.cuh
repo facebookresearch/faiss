@@ -10,7 +10,6 @@
 
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
-#include <faiss/gpu/utils/MemorySpace.h>
 
 namespace faiss { namespace gpu {
 
@@ -52,9 +51,6 @@ class BinaryFlatIndex {
 
   /// Dimensionality of our vectors
   const int dim_;
-
-  /// Memory space for our allocations
-  MemorySpace space_;
 
   /// How many vectors we have
   int num_;

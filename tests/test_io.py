@@ -1,9 +1,9 @@
+#!/usr/bin/env python3
+
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-
-#!/usr/bin/env python3
 
 import numpy as np
 import unittest
@@ -16,6 +16,8 @@ import warnings
 from multiprocessing.dummy import Pool as ThreadPool
 
 from common import get_dataset, get_dataset_2
+
+warnings.simplefilter("ignore", category=ResourceWarning)
 
 
 class TestIOVariants(unittest.TestCase):
@@ -218,3 +220,29 @@ class TestCallbacks(unittest.TestCase):
 
         np.testing.assert_array_equal(Iref, Inew)
         np.testing.assert_array_equal(Dref, Dnew)
+
+
+class PyOndiskInvertedLists:
+    """ wraps an OnDisk object for use from C++ """
+
+    def __init__(self, oil):
+        self.oil = oil
+
+    def list_size(self, list_no):
+        return self.oil.list_size(list_no)
+
+    def get_codes(self, list_no):
+        oil = self.oil
+        assert 0 <= list_no < oil.lists.size()
+        l = oil.lists.at(list_no)
+        with open(oil.filename, 'rb') as f:
+            f.seek(l.offset)
+            return f.read(l.size * oil.code_size)
+
+    def get_ids(self, list_no):
+        oil = self.oil
+        assert 0 <= list_no < oil.lists.size()
+        l = oil.lists.at(list_no)
+        with open(oil.filename, 'rb') as f:
+            f.seek(l.offset + l.capacity * oil.code_size)
+            return f.read(l.size * 8)

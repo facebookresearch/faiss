@@ -16,17 +16,18 @@
 
 namespace faiss { namespace gpu {
 
-GpuIndexIVF::GpuIndexIVF(GpuResources* resources,
+GpuIndexIVF::GpuIndexIVF(GpuResourcesProvider* provider,
                          int dims,
                          faiss::MetricType metric,
                          float metricArg,
                          int nlistIn,
                          GpuIndexIVFConfig config) :
-    GpuIndex(resources, dims, metric, metricArg, config),
-    ivfConfig_(std::move(config)),
+    GpuIndex(provider->getResources(),
+             dims, metric, metricArg, config),
     nlist(nlistIn),
     nprobe(1),
-    quantizer(nullptr) {
+    quantizer(nullptr),
+    ivfConfig_(std::move(config)) {
   init_();
 
   // Only IP and L2 are supported for now

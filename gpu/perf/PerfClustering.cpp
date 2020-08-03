@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
   printf("transposed storage %s\n", FLAGS_transposed ? "enabled" : "disabled");
   printf("verbose %s\n", FLAGS_verbose ? "enabled" : "disabled");
 
-  auto initFn = [](faiss::gpu::GpuResources* res, int dev) ->
+  auto initFn = [](faiss::gpu::GpuResourcesProvider* res, int dev) ->
     std::unique_ptr<faiss::gpu::GpuIndexFlat> {
     if (FLAGS_pinned_mem >= 0) {
       ((faiss::gpu::StandardGpuResources*) res)->setPinnedMemory(

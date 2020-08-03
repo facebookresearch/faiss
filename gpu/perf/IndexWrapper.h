@@ -27,7 +27,7 @@ struct IndexWrapper {
 
   IndexWrapper(
     int numGpus,
-    std::function<std::unique_ptr<GpuIndex>(GpuResources*, int)> init);
+    std::function<std::unique_ptr<GpuIndex>(GpuResourcesProvider*, int)> init);
   faiss::Index* getIndex();
 
   void runOnIndices(std::function<void(GpuIndex*)> f);

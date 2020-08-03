@@ -5,9 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved
-
-
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -17,7 +14,6 @@
 
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
-#include <faiss/gpu/GpuCloner.h>
 
 #include <faiss/gpu/GpuAutoTune.h>
 #include <faiss/index_io.h>

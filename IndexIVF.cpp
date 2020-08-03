@@ -300,10 +300,10 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
     bool do_heap_init = !(this->parallel_mode & PARALLEL_MODE_NO_HEAP_INIT);
 
     // don't start parallel section if single query
-    bool do_parallel =
-        pmode == 0 ? n > 1 :
-        pmode == 1 ? nprobe > 1 :
-        nprobe * n > 1;
+    bool do_parallel = omp_get_max_threads() >= 2 && (
+            pmode == 0 ? n > 1 :
+            pmode == 1 ? nprobe > 1 :
+            nprobe * n > 1);
 
 #pragma omp parallel if(do_parallel) reduction(+: nlistv, ndis, nheap)
     {
@@ -324,6 +324,19 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
                 heap_heapify<HeapForIP> (k, simi, idxi);
             } else {
                 heap_heapify<HeapForL2> (k, simi, idxi);
+            }
+        };
+
+        auto add_local_results = [&](
+                const float * local_dis, const idx_t * local_idx,
+                float *simi, idx_t *idxi)
+        {
+            if (metric_type == METRIC_INNER_PRODUCT) {
+                heap_addn<HeapForIP>
+                    (k, simi, idxi, local_dis, local_idx, k);
+            } else {
+                heap_addn<HeapForL2>
+                    (k, simi, idxi, local_dis, local_idx, k);
             }
         };
 
@@ -447,19 +460,41 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
 #pragma omp barrier
 #pragma omp critical
                 {
-                    if (metric_type == METRIC_INNER_PRODUCT) {
-                        heap_addn<HeapForIP>
-                            (k, simi, idxi,
-                             local_dis.data(), local_idx.data(), k);
-                    } else {
-                        heap_addn<HeapForL2>
-                            (k, simi, idxi,
-                             local_dis.data(), local_idx.data(), k);
-                    }
+                    add_local_results (local_dis.data(), local_idx.data(),
+                                       simi, idxi);
                 }
 #pragma omp barrier
 #pragma omp single
                 reorder_result (simi, idxi);
+            }
+        } else if (pmode == 2) {
+            std::vector <idx_t> local_idx (k);
+            std::vector <float> local_dis (k);
+
+#pragma omp single
+            for (size_t i = 0; i < n; i++) {
+                init_result (distances + i * k, labels + i * k);
+            }
+
+#pragma omp for schedule(dynamic)
+            for (size_t ij = 0; ij < n * nprobe; ij++) {
+                size_t i = ij / nprobe;
+                size_t j = ij % nprobe;
+
+                scanner->set_query (x + i * d);
+                init_result (local_dis.data(), local_idx.data());
+                ndis += scan_one_list (
+                        keys [ij], coarse_dis[ij],
+                        local_dis.data(), local_idx.data());
+#pragma omp critical
+                {
+                    add_local_results (local_dis.data(), local_idx.data(),
+                                       distances + i * k, labels + i * k);
+                }
+            }
+#pragma omp single
+            for (size_t i = 0; i < n; i++) {
+                reorder_result (distances + i * k, labels + i * k);
             }
         } else {
             FAISS_THROW_FMT ("parallel_mode %d not supported\n",

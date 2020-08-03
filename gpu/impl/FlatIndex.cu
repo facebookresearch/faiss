@@ -28,7 +28,13 @@ FlatIndex::FlatIndex(GpuResources* res,
     storeTransposed_(storeTransposed),
     space_(space),
     num_(0),
-    rawData_(space) {
+    rawData_(
+      res,
+      AllocInfo(
+        AllocType::FlatData,
+        getCurrentDevice(),
+        space,
+        res->getDefaultStreamCurrentDevice())) {
 }
 
 bool
@@ -101,7 +107,10 @@ FlatIndex::getVectorsFloat32Copy(cudaStream_t stream) {
 
 DeviceTensor<float, 2, true>
 FlatIndex::getVectorsFloat32Copy(int from, int num, cudaStream_t stream) {
-  DeviceTensor<float, 2, true> vecFloat32({num, dim_}, space_);
+  DeviceTensor<float, 2, true> vecFloat32(
+    resources_,
+    makeDevAlloc(AllocType::Other, stream),
+    {num, dim_});
 
   if (useFloat16_) {
     auto halfNarrow = vectorsHalf_.narrowOutermost(from, num);
@@ -122,12 +131,11 @@ FlatIndex::query(Tensor<float, 2, true>& input,
                  Tensor<int, 2, true>& outIndices,
                  bool exactDistance) {
   auto stream = resources_->getDefaultStreamCurrentDevice();
-  auto& mem = resources_->getMemoryManagerCurrentDevice();
 
   if (useFloat16_) {
     // We need to convert the input to float16 for comparison to ourselves
     auto inputHalf =
-      convertTensor<float, half, 2>(resources_, stream, input);
+      convertTensorTemporary<float, half, 2>(resources_, stream, input);
 
     query(inputHalf, k, metric, metricArg,
           outDistances, outIndices, exactDistance);
@@ -228,14 +236,14 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
   if (useFloat16_) {
     // Make sure that `data` is on our device; we'll run the
     // conversion on our device
-    auto devData = toDevice<float, 2>(resources_,
-                                      getCurrentDevice(),
-                                      (float*) data,
-                                      stream,
-                                      {numVecs, dim_});
+    auto devData = toDeviceTemporary<float, 2>(resources_,
+                                               getCurrentDevice(),
+                                               (float*) data,
+                                               stream,
+                                               {numVecs, dim_});
 
     auto devDataHalf =
-      convertTensor<float, half, 2>(resources_, stream, devData);
+      convertTensorTemporary<float, half, 2>(resources_, stream, devData);
 
     rawData_.append((char*) devDataHalf.data(),
                     devDataHalf.getSizeInBytes(),
@@ -252,33 +260,45 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
 
   if (useFloat16_) {
     DeviceTensor<half, 2, true> vectorsHalf(
-      (half*) rawData_.data(), {(int) num_, dim_}, space_);
+      (half*) rawData_.data(), {(int) num_, dim_});
     vectorsHalf_ = std::move(vectorsHalf);
   } else {
     DeviceTensor<float, 2, true> vectors(
-      (float*) rawData_.data(), {(int) num_, dim_}, space_);
+      (float*) rawData_.data(), {(int) num_, dim_});
     vectors_ = std::move(vectors);
   }
 
   if (storeTransposed_) {
     if (useFloat16_) {
       vectorsHalfTransposed_ =
-        std::move(DeviceTensor<half, 2, true>({dim_, (int) num_}, space_));
+        DeviceTensor<half, 2, true>(
+          resources_,
+          makeSpaceAlloc(AllocType::FlatData, space_, stream),
+          {dim_, (int) num_});
       runTransposeAny(vectorsHalf_, 0, 1, vectorsHalfTransposed_, stream);
     } else {
       vectorsTransposed_ =
-        std::move(DeviceTensor<float, 2, true>({dim_, (int) num_}, space_));
+        DeviceTensor<float, 2, true>(
+          resources_,
+          makeSpaceAlloc(AllocType::FlatData, space_, stream),
+          {dim_, (int)num_});
       runTransposeAny(vectors_, 0, 1, vectorsTransposed_, stream);
     }
   }
 
   // Precompute L2 norms of our database
   if (useFloat16_) {
-    DeviceTensor<float, 1, true> norms({(int) num_}, space_);
+    DeviceTensor<float, 1, true> norms(
+      resources_,
+      makeSpaceAlloc(AllocType::FlatData, space_, stream),
+      {(int) num_});
     runL2Norm(vectorsHalf_, true, norms, true, stream);
     norms_ = std::move(norms);
   } else {
-    DeviceTensor<float, 1, true> norms({(int) num_}, space_);
+    DeviceTensor<float, 1, true> norms(
+      resources_,
+      makeSpaceAlloc(AllocType::FlatData, space_, stream),
+      {(int) num_});
     runL2Norm(vectors_, true, norms, true, stream);
     norms_ = std::move(norms);
   }
@@ -287,11 +307,11 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
 void
 FlatIndex::reset() {
   rawData_.clear();
-  vectors_ = std::move(DeviceTensor<float, 2, true>());
-  vectorsTransposed_ = std::move(DeviceTensor<float, 2, true>());
-  vectorsHalf_ = std::move(DeviceTensor<half, 2, true>());
-  vectorsHalfTransposed_ = std::move(DeviceTensor<half, 2, true>());
-  norms_ = std::move(DeviceTensor<float, 1, true>());
+  vectors_ = DeviceTensor<float, 2, true>();
+  vectorsTransposed_ = DeviceTensor<float, 2, true>();
+  vectorsHalf_ = DeviceTensor<half, 2, true>();
+  vectorsHalfTransposed_ = DeviceTensor<half, 2, true>();
+  norms_ = DeviceTensor<float, 1, true>();
   num_ = 0;
 }
 

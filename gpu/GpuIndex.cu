@@ -35,7 +35,7 @@ constexpr size_t kAddVecSize = (size_t) 512 * 1024;
 // FIXME: parameterize based on algorithm need
 constexpr size_t kSearchVecSize = (size_t) 32 * 1024;
 
-GpuIndex::GpuIndex(GpuResources* resources,
+GpuIndex::GpuIndex(std::shared_ptr<GpuResources> resources,
                    int dims,
                    faiss::MetricType metric,
                    float metricArg,
@@ -50,21 +50,16 @@ GpuIndex::GpuIndex(GpuResources* resources,
 
   FAISS_THROW_IF_NOT_MSG(dims > 0, "Invalid number of dimensions");
 
-#ifdef FAISS_UNIFIED_MEM
   FAISS_THROW_IF_NOT_FMT(
     memorySpace_ == MemorySpace::Device ||
     (memorySpace_ == MemorySpace::Unified &&
      getFullUnifiedMemSupport(device_)),
     "Device %d does not support full CUDA 8 Unified Memory (CC 6.0+)",
     config.device);
-#else
-  FAISS_THROW_IF_NOT_MSG(memorySpace_ == MemorySpace::Device,
-                     "Must compile with CUDA 8+ for Unified Memory support");
-#endif
 
   metric_arg = metricArg;
 
-  FAISS_ASSERT(resources_);
+  FAISS_ASSERT((bool) resources_);
   resources_->initializeForDevice(device_);
 }
 
@@ -174,18 +169,20 @@ GpuIndex::addPage_(int n,
   // Before continuing, we guarantee that all data will be resident on the GPU.
   auto stream = resources_->getDefaultStreamCurrentDevice();
 
-  auto vecs = toDevice<float, 2>(resources_,
-                                 device_,
-                                 const_cast<float*>(x),
-                                 stream,
-                                 {n, this->d});
+  auto vecs =
+    toDeviceTemporary<float, 2>(resources_.get(),
+                                device_,
+                                const_cast<float*>(x),
+                                stream,
+                                {n, this->d});
 
   if (ids) {
-    auto indices = toDevice<Index::idx_t, 1>(resources_,
-                                             device_,
-                                             const_cast<Index::idx_t*>(ids),
-                                             stream,
-                                             {n});
+    auto indices =
+      toDeviceTemporary<Index::idx_t, 1>(resources_.get(),
+                                         device_,
+                                         const_cast<Index::idx_t*>(ids),
+                                         stream,
+                                         {n});
 
     addImpl_(n, vecs.data(), ids ? indices.data() : nullptr);
   } else {
@@ -230,12 +227,14 @@ GpuIndex::search(Index::idx_t n,
   // If we reach a point where all inputs are too big, we can add
   // another level of tiling.
   auto outDistances =
-    toDevice<float, 2>(resources_, device_, distances, stream,
-                       {(int) n, (int) k});
+    toDeviceTemporary<float, 2>(
+      resources_.get(), device_, distances, stream,
+      {(int) n, (int) k});
 
   auto outLabels =
-    toDevice<faiss::Index::idx_t, 2>(resources_, device_, labels, stream,
-                                     {(int) n, (int) k});
+    toDeviceTemporary<faiss::Index::idx_t, 2>(
+      resources_.get(), device_, labels, stream,
+      {(int) n, (int) k});
 
   bool usePaged = false;
 
@@ -277,11 +276,11 @@ GpuIndex::searchNonPaged_(int n,
 
   // Make sure arguments are on the device we desire; use temporary
   // memory allocations to move it if necessary
-  auto vecs = toDevice<float, 2>(resources_,
-                                 device_,
-                                 const_cast<float*>(x),
-                                 stream,
-                                 {n, (int) this->d});
+  auto vecs = toDeviceTemporary<float, 2>(resources_.get(),
+                                          device_,
+                                          const_cast<float*>(x),
+                                          stream,
+                                          {n, (int) this->d});
 
   searchImpl_(n, vecs.data(), k, outDistancesData, outIndicesData);
 }
@@ -349,13 +348,13 @@ GpuIndex::searchFromCpuPaged_(int n,
   // Reserve space on the GPU for the destination of the pinned buffer
   // copy
   DeviceTensor<float, 2, true> bufGpuA(
-    resources_->getMemoryManagerCurrentDevice(),
-    {(int) pageSizeInVecs, (int) this->d},
-    defaultStream);
+    resources_.get(),
+    makeTempAlloc(AllocType::Other, defaultStream),
+    {(int) pageSizeInVecs, (int) this->d});
   DeviceTensor<float, 2, true> bufGpuB(
-    resources_->getMemoryManagerCurrentDevice(),
-    {(int) pageSizeInVecs, (int) this->d},
-    defaultStream);
+    resources_.get(),
+    makeTempAlloc(AllocType::Other, defaultStream),
+    {(int) pageSizeInVecs, (int) this->d});
   DeviceTensor<float, 2, true>* bufGpus[2] = {&bufGpuA, &bufGpuB};
 
   // Copy completion events for the pinned buffers
@@ -398,8 +397,7 @@ GpuIndex::searchFromCpuPaged_(int n,
                                   copyStream));
 
       // Mark a completion event in this stream
-      eventPinnedCopyDone[cur2BufIndex] =
-        std::move(std::unique_ptr<CudaEvent>(new CudaEvent(copyStream)));
+      eventPinnedCopyDone[cur2BufIndex].reset(new CudaEvent(copyStream));
 
       // We pick up from here
       cur3 = cur2;
@@ -430,8 +428,7 @@ GpuIndex::searchFromCpuPaged_(int n,
                   outIndicesSlice.data());
 
       // Create completion event
-      eventGpuExecuteDone[cur3BufIndex] =
-        std::move(std::unique_ptr<CudaEvent>(new CudaEvent(defaultStream)));
+      eventGpuExecuteDone[cur3BufIndex].reset(new CudaEvent(defaultStream));
 
       // We pick up from here
       cur3BufIndex = (cur3BufIndex == 0) ? 1 : 0;

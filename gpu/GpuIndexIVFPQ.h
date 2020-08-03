@@ -9,6 +9,7 @@
 #pragma once
 
 #include <faiss/gpu/GpuIndexIVF.h>
+#include <memory>
 #include <vector>
 
 namespace faiss { struct IndexIVFPQ; }
@@ -39,12 +40,12 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
  public:
   /// Construct from a pre-existing faiss::IndexIVFPQ instance, copying
   /// data over to the given GPU, if the input index is trained.
-  GpuIndexIVFPQ(GpuResources* resources,
+  GpuIndexIVFPQ(GpuResourcesProvider* provider,
                 const faiss::IndexIVFPQ* index,
                 GpuIndexIVFPQConfig config = GpuIndexIVFPQConfig());
 
   /// Construct an empty index
-  GpuIndexIVFPQ(GpuResources* resources,
+  GpuIndexIVFPQ(GpuResourcesProvider* provider,
                 int dims,
                 int nlist,
                 int subQuantizers,
@@ -137,7 +138,7 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
 
   /// The product quantizer instance that we own; contains the
   /// inverted lists
-  IVFPQ* index_;
+  std::unique_ptr<IVFPQ> index_;
 };
 
 } } // namespace

@@ -6,6 +6,7 @@
  */
 
 
+#include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/BlockSelectKernel.cuh>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
@@ -20,8 +21,12 @@
 #include <vector>
 
 void testForSize(int rows, int cols, int k, bool dir, bool warp) {
-  std::vector<float> v = faiss::gpu::randVecs(rows, cols);
-  faiss::gpu::HostTensor<float, 2, true> hostVal({rows, cols});
+  using namespace faiss::gpu;
+
+  StandardGpuResources res;
+
+  std::vector<float> v = randVecs(rows, cols);
+  HostTensor<float, 2, true> hostVal({rows, cols});
 
   for (int r = 0; r < rows; ++r) {
     for (int c = 0; c < cols; ++c) {
@@ -52,19 +57,25 @@ void testForSize(int rows, int cols, int k, bool dir, bool warp) {
   }
 
   // Select top-k on GPU
-  faiss::gpu::DeviceTensor<float, 2, true> gpuVal(hostVal, 0);
-  faiss::gpu::DeviceTensor<float, 2, true> gpuOutVal({rows, k});
-  faiss::gpu::DeviceTensor<int, 2, true> gpuOutInd({rows, k});
+  DeviceTensor<float, 2, true>
+    gpuVal(res.getResources().get(),
+           makeDevAlloc(AllocType::Other, 0), hostVal);
+  DeviceTensor<float, 2, true>
+    gpuOutVal(res.getResources().get(),
+              makeDevAlloc(AllocType::Other, 0), {rows, k});
+  DeviceTensor<int, 2, true>
+    gpuOutInd(res.getResources().get(),
+              makeDevAlloc(AllocType::Other, 0), {rows, k});
 
   if (warp) {
-    faiss::gpu::runWarpSelect(gpuVal, gpuOutVal, gpuOutInd, dir, k, 0);
+    runWarpSelect(gpuVal, gpuOutVal, gpuOutInd, dir, k, 0);
   } else {
-    faiss::gpu::runBlockSelect(gpuVal, gpuOutVal, gpuOutInd, dir, k, 0);
+    runBlockSelect(gpuVal, gpuOutVal, gpuOutInd, dir, k, 0);
   }
 
   // Copy back to CPU
-  faiss::gpu::HostTensor<float, 2, true> outVal(gpuOutVal, 0);
-  faiss::gpu::HostTensor<int, 2, true> outInd(gpuOutInd, 0);
+  HostTensor<float, 2, true> outVal(gpuOutVal, 0);
+  HostTensor<int, 2, true> outInd(gpuOutInd, 0);
 
   for (int r = 0; r < rows; ++r) {
     std::unordered_map<int, int> seenIndices;

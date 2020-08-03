@@ -7,7 +7,7 @@
 
 
 #include <faiss/gpu/utils/MatrixMult.cuh>
-#include <faiss/gpu/utils/DeviceMemory.h>
+#include <faiss/gpu/GpuResources.h>
 
 namespace faiss { namespace gpu {
 
@@ -17,7 +17,7 @@ runBatchMatrixMult(Tensor<float, 3, true>& c, bool transC,
                    Tensor<float, 3, true>& b, bool transB,
                    float alpha,
                    float beta,
-                   DeviceMemory& mem,
+                   GpuResources* res,
                    cublasHandle_t handle,
                    cudaStream_t stream) {
   FAISS_ASSERT(c.getSize(0) == a.getSize(0));
@@ -75,9 +75,12 @@ runBatchMatrixMult(Tensor<float, 3, true>& c, bool transC,
     hostC[i] = c.data() + i * cOffset;
   }
 
-  DeviceTensor<float*, 1, true> deviceA(mem, hostA, stream);
-  DeviceTensor<float*, 1, true> deviceB(mem, hostB, stream);
-  DeviceTensor<float*, 1, true> deviceC(mem, hostC, stream);
+  DeviceTensor<float*, 1, true>
+    deviceA(res, makeTempAlloc(AllocType::Other, stream), hostA);
+  DeviceTensor<float*, 1, true>
+    deviceB(res, makeTempAlloc(AllocType::Other, stream), hostB);
+  DeviceTensor<float*, 1, true>
+    deviceC(res, makeTempAlloc(AllocType::Other, stream), hostC);
 
   auto err =
     cublasSgemmBatched(handle,

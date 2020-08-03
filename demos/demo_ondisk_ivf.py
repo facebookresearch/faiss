@@ -1,14 +1,14 @@
+#!/usr/bin/env python3
+
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-#!/usr/bin/env python2
-
 import sys
 import numpy as np
 import faiss
-
+from faiss_contrib.ondisk import merge_ondisk
 
 #################################################################
 # Small I/O functions
@@ -26,7 +26,7 @@ def fvecs_read(fname):
 
 
 #################################################################
-#  Main program
+# Main program
 #################################################################
 
 stage = int(sys.argv[1])
@@ -54,43 +54,18 @@ if 1 <= stage <= 4:
     print("write " + tmpdir + "block_%d.index" % bno)
     faiss.write_index(index, tmpdir + "block_%d.index" % bno)
 
-
 if stage == 5:
-    # merge the images into an on-disk index
-    # first load the inverted lists
-    ivfs = []
-    for bno in range(4):
-        # the IO_FLAG_MMAP is to avoid actually loading the data thus
-        # the total size of the inverted lists can exceed the
-        # available RAM
-        print("read " + tmpdir + "block_%d.index" % bno)
-        index = faiss.read_index(tmpdir + "block_%d.index" % bno,
-                                 faiss.IO_FLAG_MMAP)
-        ivfs.append(index.invlists)
 
-        # avoid that the invlists get deallocated with the index
-        index.own_invlists = False
-
+    print('loading trained index')
     # construct the output index
     index = faiss.read_index(tmpdir + "trained.index")
 
-    # prepare the output inverted lists. They will be written
-    # to merged_index.ivfdata
-    invlists = faiss.OnDiskInvertedLists(
-        index.nlist, index.code_size,
-        tmpdir + "merged_index.ivfdata")
+    block_fnames = [
+        tmpdir + "block_%d.index" % bno
+        for bno in range(4)
+    ]
 
-    # merge all the inverted lists
-    ivf_vector = faiss.InvertedListsPtrVector()
-    for ivf in ivfs:
-        ivf_vector.push_back(ivf)
-
-    print("merge %d inverted lists " % ivf_vector.size())
-    ntotal = invlists.merge_from(ivf_vector.data(), ivf_vector.size())
-
-    # now replace the inverted lists in the output index
-    index.ntotal = ntotal
-    index.replace_invlists(invlists)
+    merge_ondisk(index, block_fnames, tmpdir + "merged_index.ivfdata")
 
     print("write " + tmpdir + "populated.index")
     faiss.write_index(index, tmpdir + "populated.index")

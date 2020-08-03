@@ -134,5 +134,4 @@ uint64_t PQDecoder16::decode() {
     return (uint64_t)(*code++);
 }
 
-
 } // namespace faiss

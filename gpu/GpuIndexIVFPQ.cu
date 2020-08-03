@@ -20,10 +20,10 @@
 
 namespace faiss { namespace gpu {
 
-GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResources* resources,
+GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResourcesProvider* provider,
                              const faiss::IndexIVFPQ* index,
                              GpuIndexIVFPQConfig config) :
-    GpuIndexIVF(resources,
+    GpuIndexIVF(provider,
                 index->d,
                 index->metric_type,
                 index->metric_arg,
@@ -32,19 +32,18 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResources* resources,
     ivfpqConfig_(config),
     subQuantizers_(0),
     bitsPerCode_(0),
-    reserveMemoryVecs_(0),
-    index_(nullptr) {
+    reserveMemoryVecs_(0) {
   copyFrom(index);
 }
 
-GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResources* resources,
+GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResourcesProvider* provider,
                              int dims,
                              int nlist,
                              int subQuantizers,
                              int bitsPerCode,
                              faiss::MetricType metric,
                              GpuIndexIVFPQConfig config) :
-    GpuIndexIVF(resources,
+    GpuIndexIVF(provider,
                 dims,
                 metric,
                 0,
@@ -53,8 +52,7 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResources* resources,
     ivfpqConfig_(config),
     subQuantizers_(subQuantizers),
     bitsPerCode_(bitsPerCode),
-    reserveMemoryVecs_(0),
-    index_(nullptr) {
+    reserveMemoryVecs_(0) {
   verifySettings_();
 
   // We haven't trained ourselves, so don't construct the PQ index yet
@@ -62,7 +60,6 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResources* resources,
 }
 
 GpuIndexIVFPQ::~GpuIndexIVFPQ() {
-  delete index_;
 }
 
 void
@@ -72,8 +69,7 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
   GpuIndexIVF::copyFrom(index);
 
   // Clear out our old data
-  delete index_;
-  index_ = nullptr;
+  index_.reset();
 
   subQuantizers_ = index->pq.M;
   bitsPerCode_ = index->pq.nbits;
@@ -98,16 +94,16 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
   // Copy our lists as well
   // The product quantizer must have data in it
   FAISS_ASSERT(index->pq.centroids.size() > 0);
-  index_ = new IVFPQ(resources_,
-                     index->metric_type,
-                     index->metric_arg,
-                     quantizer->getGpuData(),
-                     subQuantizers_,
-                     bitsPerCode_,
-                     (float*) index->pq.centroids.data(),
-                     ivfpqConfig_.indicesOptions,
-                     ivfpqConfig_.useFloat16LookupTables,
-                     memorySpace_);
+  index_.reset(new IVFPQ(resources_.get(),
+                         index->metric_type,
+                         index->metric_arg,
+                         quantizer->getGpuData(),
+                         subQuantizers_,
+                         bitsPerCode_,
+                         (float*) index->pq.centroids.data(),
+                         ivfpqConfig_.indicesOptions,
+                         ivfpqConfig_.useFloat16LookupTables,
+                         memorySpace_));
   // Doesn't make sense to reserve memory here
   index_->setPrecomputedCodes(ivfpqConfig_.usePrecomputedTables);
 
@@ -126,7 +122,7 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
                        list_size);
 
     index_->addCodeVectorsFromCpu(
-                       i, ivf->get_codes(i), ivf->get_ids(i), list_size);
+      i, ivf->get_codes(i), ivf->get_ids(i), list_size);
   }
 }
 
@@ -157,9 +153,7 @@ GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
   index->polysemous_ht = 0;
   index->precomputed_table.clear();
 
-  InvertedLists *ivf = new ArrayInvertedLists(
-      nlist, index->code_size);
-
+  InvertedLists *ivf = new ArrayInvertedLists(nlist, index->code_size);
   index->replace_invlists(ivf, true);
 
   if (index_) {
@@ -276,16 +270,16 @@ GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
   pq.verbose = this->verbose;
   pq.train(n, residuals.data());
 
-  index_ = new IVFPQ(resources_,
-                     metric_type,
-                     metric_arg,
-                     quantizer->getGpuData(),
-                     subQuantizers_,
-                     bitsPerCode_,
-                     pq.centroids.data(),
-                     ivfpqConfig_.indicesOptions,
-                     ivfpqConfig_.useFloat16LookupTables,
-                     memorySpace_);
+  index_.reset(new IVFPQ(resources_.get(),
+                         metric_type,
+                         metric_arg,
+                         quantizer->getGpuData(),
+                         subQuantizers_,
+                         bitsPerCode_,
+                         pq.centroids.data(),
+                         ivfpqConfig_.indicesOptions,
+                         ivfpqConfig_.useFloat16LookupTables,
+                         memorySpace_));
   if (reserveMemoryVecs_) {
     index_->reserveMemory(reserveMemoryVecs_);
   }
