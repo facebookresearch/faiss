@@ -8,8 +8,6 @@ import subprocess
 import logging
 
 
-logger = logging.getLogger(__name__)
-
 def instruction_set():
     if platform.system() == "Darwin":
         if subprocess.check_output(["/usr/sbin/sysctl", "hw.optional.avx2_0"])[-1] == '1':
@@ -23,6 +21,8 @@ def instruction_set():
         else:
             return "default"
 
+
+logger = logging.getLogger(__name__)
 
 try:
     instr_set = instruction_set()
