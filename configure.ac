@@ -7,7 +7,7 @@ AC_COPYRIGHT([Copyright (c) Facebook, Inc. and its affiliates.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.])
-AC_CONFIG_SRCDIR([Index.h])
+AC_CONFIG_SRCDIR([faiss/Index.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([acinclude])
 

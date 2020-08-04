@@ -97,7 +97,7 @@ install:
   - autoconf
   - ./configure --without-cuda
   - make
-  - make -C python
+  - make -C faiss/python
 
 script:
   - make test
