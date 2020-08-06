@@ -39,11 +39,7 @@ namespace faiss {
  * that hides the template mess.
  ********************************************************************/
 
-#ifdef __AVX__
-#define USE_AVX
-#endif
-
-#ifdef __F16C__
+#if defined(__F16C__) && defined(__AVX2__)
 #define USE_F16C
 #endif
 
@@ -72,7 +68,7 @@ struct Codec8bit {
         return (code[i] + 0.5f) / 255.0f;
     }
 
-#ifdef USE_AVX
+#ifdef __AVX2__
     static __m256 decode_8_components (const uint8_t *code, int i) {
         uint64_t c8 = *(uint64_t*)(code + i);
         __m128i c4lo = _mm_cvtepu8_epi32 (_mm_set1_epi32(c8));
@@ -101,7 +97,7 @@ struct Codec4bit {
     }
 
 
-#ifdef USE_AVX
+#ifdef __AVX2__
     static __m256 decode_8_components (const uint8_t *code, int i) {
         uint32_t c4 = *(uint32_t*)(code + (i >> 1));
         uint32_t mask = 0x0f0f0f0f;
@@ -169,7 +165,7 @@ struct Codec6bit {
         return (bits + 0.5f) / 63.0f;
     }
 
-#ifdef USE_AVX
+#ifdef __AVX2__
 
     /* Load 6 bytes that represent 8 6-bit values, return them as a
      * 8*32 bit vector register */
@@ -377,7 +373,7 @@ struct QuantizerTemplate<Codec, true, 1>: ScalarQuantizer::Quantizer {
 
 
 
-#ifdef USE_AVX
+#ifdef __AVX2__
 
 template<class Codec>
 struct QuantizerTemplate<Codec, true, 8>: QuantizerTemplate<Codec, true, 1> {
@@ -437,7 +433,7 @@ struct QuantizerTemplate<Codec, false, 1>: ScalarQuantizer::Quantizer {
 };
 
 
-#ifdef USE_AVX
+#ifdef __AVX2__
 
 template<class Codec>
 struct QuantizerTemplate<Codec, false, 8>: QuantizerTemplate<Codec, false, 1> {
@@ -541,7 +537,7 @@ struct Quantizer8bitDirect<1>: ScalarQuantizer::Quantizer {
 
 };
 
-#ifdef USE_AVX
+#ifdef __AVX2__
 
 template<>
 struct Quantizer8bitDirect<8>: Quantizer8bitDirect<1> {
@@ -788,7 +784,7 @@ struct SimilarityL2<1> {
 };
 
 
-#ifdef USE_AVX
+#ifdef __AVX2__
 template<>
 struct SimilarityL2<8> {
     static constexpr int simdwidth = 8;
@@ -863,7 +859,7 @@ struct SimilarityIP<1> {
     }
 };
 
-#ifdef USE_AVX
+#ifdef __AVX2__
 
 template<>
 struct SimilarityIP<8> {
@@ -1086,7 +1082,7 @@ struct DistanceComputerByte<Similarity, 1> : SQDistanceComputer {
 
 };
 
-#ifdef USE_AVX
+#ifdef __AVX2__
 
 
 template<class Similarity>
