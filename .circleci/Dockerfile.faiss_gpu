@@ -1,0 +1,14 @@
+FROM beauby/faiss-circleci:cuda10.2
+
+COPY . /faiss
+
+WORKDIR /faiss
+
+RUN cmake -B build \
+        -DFAISS_ENABLE_GPU=ON \
+        -DFAISS_ENABLE_PYTHON=ON \
+        -DBUILD_TESTING=ON \
+        -DCMAKE_CUDA_FLAGS="-gencode arch=compute_61,code=sm_61" \
+        .
+
+RUN make -C build -j20

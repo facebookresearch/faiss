@@ -180,4 +180,4 @@ endforeach()
 
 find_package(CUDAToolkit REQUIRED)
 
-target_link_libraries(faiss PRIVATE CUDA::cuda_driver CUDA::cudart CUDA::cublas)
+target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas)
