@@ -288,7 +288,7 @@ void Clustering::train_encoded (idx_t nx, const uint8_t *x_in,
         // reports.
         const float *x = reinterpret_cast<const float *>(x_in);
         for (size_t i = 0; i < nx * d; i++) {
-            FAISS_THROW_IF_NOT_MSG (finite (x[i]),
+            FAISS_THROW_IF_NOT_MSG (isfinite (x[i]),
                                     "input contains NaN's or Inf's");
         }
     }
