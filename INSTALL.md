@@ -41,7 +41,7 @@ described separately (please see the [C interface installation file](c_api/INSTA
 General compilation instructions
 ================================
 
-TL;DR: `./configure && make (&& make install)` for the C++ library, and then `cd python; make && make install` for the python interface.
+TL;DR: `./configure && make (&& make install)` for the C++ library, and then `cd faiss/python; make && make install` for the python interface.
 
 1. `./configure`
 
@@ -66,11 +66,11 @@ found, or the CPU part only otherwise).
 
 This installs the headers and libraries.
 
-4. `make -C python` (or `make py`)
+4. `make -C faiss/python` (or `make py`)
 
 This builds the python interface.
 
-5. `make -C python install`
+5. `make -C faiss/python install`
 
 This installs the python library.
 
@@ -168,16 +168,16 @@ The Python interface
 
 The Python interface is compiled with
 
-  `make -C python` (or `make py`)
+  `make -C faiss/python` (or `make py`)
 
 How it works
 ------------
 
 The Python interface is provided via SWIG (Simple Wrapper and
-Interface Generator) and an additional level of manual wrappers (in python/faiss.py).
+Interface Generator) and an additional level of manual wrappers (in faiss/python/faiss.py).
 
-SWIG generates two wrapper files: a Python file (`python/swigfaiss.py`) and a
-C++ file that must be compiled to a dynamic library (`python/_swigfaiss.so`).
+SWIG generates two wrapper files: a Python file (`faiss/python/swigfaiss.py`) and a
+C++ file that must be compiled to a dynamic library (`faiss/python/_swigfaiss.so`).
 
 Testing the Python wrapper
 --------------------------
