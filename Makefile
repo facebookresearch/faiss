@@ -8,7 +8,7 @@
 HEADERS     = $(wildcard faiss/*.h faiss/impl/*.h faiss/utils/*.h)
 SRC         = $(wildcard faiss/*.cpp faiss/impl/*.cpp faiss/utils/*.cpp)
 OBJ         = $(SRC:.cpp=.o)
-INSTALLDIRS = $(DESTDIR)$(libdir) $(DESTDIR)$(includedir)/faiss
+INSTALLDIRS = $(DESTDIR)$(libdir) $(DESTDIR)$(includedir)
 
 GPU_HEADERS = $(wildcard faiss/gpu/*.h faiss/gpu/impl/*.h faiss/gpu/impl/*.cuh \
 faiss/gpu/utils/*.h faiss/gpu/utils/*.cuh)
@@ -57,7 +57,7 @@ clean:
 
 install: libfaiss.a libfaiss.$(SHAREDEXT) installdirs
 	cp libfaiss.a libfaiss.$(SHAREDEXT) $(DESTDIR)$(libdir)
-	tar cf - $(HEADERS) | tar xf - -C $(DESTDIR)$(includedir)/faiss/
+	tar cf - $(HEADERS) | tar xf - -C $(DESTDIR)$(includedir)/
 
 installdirs:
 	$(MKDIR_P) $(INSTALLDIRS)
