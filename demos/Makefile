@@ -8,6 +8,9 @@
 DEMOS_SRC=$(wildcard demo_*.cpp)
 DEMOS=$(DEMOS_SRC:.cpp=)
 
+CPPFLAGS += -I$(includedir)
+LDFLAGS += -L$(libdir)
+
 
 all: $(DEMOS)
 
