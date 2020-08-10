@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  win: circleci/windows@2.4.0
+
 jobs:
   build_linux:
     docker:
@@ -103,9 +106,23 @@ jobs:
           environment:
             OMP_NUM_THREADS: 10
 
+  build_windows:
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+          name: Build/test
+          command: |
+            conda install conda-build
+            cd conda
+            conda build faiss --python 3.7
+
 workflows:
   version: 2
   build:
     jobs:
       - build_linux
       - build_osx
+      - build_windows
