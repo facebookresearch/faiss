@@ -14,7 +14,7 @@
 #include <cstring>
 #include <cmath>
 
-#ifdef __SSE__
+#ifdef __SSE3__
 #include <immintrin.h>
 #endif
 
@@ -133,7 +133,7 @@ void fvec_L2sqr_ny_ref (float * dis,
  * SSE and AVX implementations
  */
 
-#ifdef __SSE__
+#ifdef __SSE3__
 
 // reads 0 <= d < 4 floats as __m128
 static inline __m128 masked_read (int d, const float *x)
@@ -477,7 +477,7 @@ float fvec_Linf (const float * x, const float * y, size_t d)
     return  _mm_cvtss_f32 (msum2);
 }
 
-#elif defined(__SSE__) // But not AVX
+#elif defined(__SSE3__) // But not AVX
 
 float fvec_L1 (const float * x, const float * y, size_t d)
 {
@@ -677,7 +677,7 @@ static inline void fvec_madd_ref (size_t n, const float *a,
         c[i] = a[i] + bf * b[i];
 }
 
-#ifdef __SSE__
+#ifdef __SSE3__
 
 static inline void fvec_madd_sse (size_t n, const float *a,
                                   float bf, const float *b, float *c) {
@@ -730,7 +730,7 @@ static inline int fvec_madd_and_argmin_ref (size_t n, const float *a,
     return imin;
 }
 
-#ifdef __SSE__
+#ifdef __SSE3__
 
 static inline int fvec_madd_and_argmin_sse (
         size_t n, const float *a,
