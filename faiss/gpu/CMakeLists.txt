@@ -1,0 +1,183 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree.
+
+target_sources(faiss PRIVATE
+  GpuAutoTune.cpp
+  GpuCloner.cpp
+  GpuClonerOptions.cpp
+  GpuDistance.cu
+  GpuIndex.cu
+  GpuIndexBinaryFlat.cu
+  GpuIndexFlat.cu
+  GpuIndexIVF.cu
+  GpuIndexIVFFlat.cu
+  GpuIndexIVFPQ.cu
+  GpuIndexIVFScalarQuantizer.cu
+  GpuResources.cpp
+  StandardGpuResources.cpp
+  impl/BinaryDistance.cu
+  impl/BinaryFlatIndex.cu
+  impl/BroadcastSum.cu
+  impl/Distance.cu
+  impl/FlatIndex.cu
+  impl/IVFAppend.cu
+  impl/IVFBase.cu
+  impl/IVFFlat.cu
+  impl/IVFFlatScan.cu
+  impl/IVFPQ.cu
+  impl/IVFUtils.cu
+  impl/IVFUtilsSelect1.cu
+  impl/IVFUtilsSelect2.cu
+  impl/L2Norm.cu
+  impl/L2Select.cu
+  impl/PQScanMultiPassPrecomputed.cu
+  impl/RemapIndices.cpp
+  impl/VectorResidual.cu
+  utils/BlockSelectFloat.cu
+  utils/BlockSelectHalf.cu
+  utils/DeviceUtils.cu
+  utils/Float16.cu
+  utils/MatrixMult.cu
+  utils/StackDeviceMemory.cpp
+  utils/Timer.cpp
+  utils/WarpSelectFloat.cu
+  utils/WarpSelectHalf.cu
+  utils/blockselect/BlockSelectFloat1.cu
+  utils/blockselect/BlockSelectFloat128.cu
+  utils/blockselect/BlockSelectFloat256.cu
+  utils/blockselect/BlockSelectFloat32.cu
+  utils/blockselect/BlockSelectFloat64.cu
+  utils/blockselect/BlockSelectFloatF1024.cu
+  utils/blockselect/BlockSelectFloatF2048.cu
+  utils/blockselect/BlockSelectFloatF512.cu
+  utils/blockselect/BlockSelectFloatT1024.cu
+  utils/blockselect/BlockSelectFloatT2048.cu
+  utils/blockselect/BlockSelectFloatT512.cu
+  utils/blockselect/BlockSelectHalf1.cu
+  utils/blockselect/BlockSelectHalf128.cu
+  utils/blockselect/BlockSelectHalf256.cu
+  utils/blockselect/BlockSelectHalf32.cu
+  utils/blockselect/BlockSelectHalf64.cu
+  utils/blockselect/BlockSelectHalfF1024.cu
+  utils/blockselect/BlockSelectHalfF2048.cu
+  utils/blockselect/BlockSelectHalfF512.cu
+  utils/blockselect/BlockSelectHalfT1024.cu
+  utils/blockselect/BlockSelectHalfT2048.cu
+  utils/blockselect/BlockSelectHalfT512.cu
+  utils/nvidia/fp16_emu.cu
+  utils/warpselect/WarpSelectFloat1.cu
+  utils/warpselect/WarpSelectFloat128.cu
+  utils/warpselect/WarpSelectFloat256.cu
+  utils/warpselect/WarpSelectFloat32.cu
+  utils/warpselect/WarpSelectFloat64.cu
+  utils/warpselect/WarpSelectFloatF1024.cu
+  utils/warpselect/WarpSelectFloatF2048.cu
+  utils/warpselect/WarpSelectFloatF512.cu
+  utils/warpselect/WarpSelectFloatT1024.cu
+  utils/warpselect/WarpSelectFloatT2048.cu
+  utils/warpselect/WarpSelectFloatT512.cu
+  utils/warpselect/WarpSelectHalf1.cu
+  utils/warpselect/WarpSelectHalf128.cu
+  utils/warpselect/WarpSelectHalf256.cu
+  utils/warpselect/WarpSelectHalf32.cu
+  utils/warpselect/WarpSelectHalf64.cu
+  utils/warpselect/WarpSelectHalfF1024.cu
+  utils/warpselect/WarpSelectHalfF2048.cu
+  utils/warpselect/WarpSelectHalfF512.cu
+  utils/warpselect/WarpSelectHalfT1024.cu
+  utils/warpselect/WarpSelectHalfT2048.cu
+  utils/warpselect/WarpSelectHalfT512.cu
+)
+
+set(FAISS_GPU_HEADERS
+  GpuAutoTune.h
+  GpuCloner.h
+  GpuClonerOptions.h
+  GpuDistance.h
+  GpuFaissAssert.h
+  GpuIndexBinaryFlat.h
+  GpuIndexFlat.h
+  GpuIndex.h
+  GpuIndexIVFFlat.h
+  GpuIndexIVF.h
+  GpuIndexIVFPQ.h
+  GpuIndexIVFScalarQuantizer.h
+  GpuIndicesOptions.h
+  GpuResources.h
+  StandardGpuResources.h
+  impl/BinaryDistance.cuh
+  impl/BinaryFlatIndex.cuh
+  impl/BroadcastSum.cuh
+  impl/Distance.cuh
+  impl/DistanceUtils.cuh
+  impl/FlatIndex.cuh
+  impl/GeneralDistance.cuh
+  impl/GpuScalarQuantizer.cuh
+  impl/IVFAppend.cuh
+  impl/IVFBase.cuh
+  impl/IVFFlat.cuh
+  impl/IVFFlatScan.cuh
+  impl/IVFPQ.cuh
+  impl/IVFUtils.cuh
+  impl/L2Norm.cuh
+  impl/L2Select.cuh
+  impl/PQCodeDistances.cuh
+  impl/PQCodeDistances-inl.cuh
+  impl/PQCodeLoad.cuh
+  impl/PQScanMultiPassNoPrecomputed.cuh
+  impl/PQScanMultiPassNoPrecomputed-inl.cuh
+  impl/PQScanMultiPassPrecomputed.cuh
+  impl/RemapIndices.h
+  impl/VectorResidual.cuh
+  utils/blockselect/BlockSelectImpl.cuh
+  utils/BlockSelectKernel.cuh
+  utils/Comparators.cuh
+  utils/ConversionOperators.cuh
+  utils/CopyUtils.cuh
+  utils/DeviceDefs.cuh
+  utils/DeviceTensor.cuh
+  utils/DeviceTensor-inl.cuh
+  utils/DeviceUtils.h
+  utils/DeviceVector.cuh
+  utils/Float16.cuh
+  utils/HostTensor.cuh
+  utils/HostTensor-inl.cuh
+  utils/Limits.cuh
+  utils/LoadStoreOperators.cuh
+  utils/MathOperators.cuh
+  utils/MatrixMult.cuh
+  utils/MatrixMult-inl.cuh
+  utils/MergeNetworkBlock.cuh
+  utils/MergeNetworkUtils.cuh
+  utils/MergeNetworkWarp.cuh
+  utils/NoTypeTensor.cuh
+  utils/nvidia/fp16_emu.cuh
+  utils/Pair.cuh
+  utils/PtxUtils.cuh
+  utils/ReductionOperators.cuh
+  utils/Reductions.cuh
+  utils/Select.cuh
+  utils/StackDeviceMemory.h
+  utils/StaticUtils.h
+  utils/Tensor.cuh
+  utils/Tensor-inl.cuh
+  utils/ThrustAllocator.cuh
+  utils/Timer.h
+  utils/Transpose.cuh
+  utils/WarpSelectKernel.cuh
+  utils/warpselect/WarpSelectImpl.cuh
+  utils/WarpShuffles.cuh
+)
+foreach(header ${FAISS_GPU_HEADERS})
+  get_filename_component(dir ${header} DIRECTORY )
+  install(FILES ${header}
+    DESTINATION include/faiss/gpu/${dir}
+  )
+endforeach()
+
+find_package(CUDAToolkit REQUIRED)
+
+target_link_libraries(faiss PRIVATE CUDA::cuda_driver CUDA::cudart CUDA::cublas)

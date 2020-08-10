@@ -11,28 +11,6 @@ matrix:
       addons:
         apt:
           packages:
-            - libblas-dev
-            - liblapack-dev
-            - python-dev
-#            - swig3.0
-      env:
-        - PYTHON_CFLAGS="-I/usr/include/python2.7"
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          packages:
-            - libatlas-base-dev
-            - liblapack-dev
-            - python-dev
-#            - swig3.0
-      env:
-        - PYTHON_CFLAGS="-I/usr/include/python2.7"
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          packages:
             - libopenblas-dev
             - liblapack-dev
             - python-dev
@@ -60,6 +38,7 @@ matrix:
           packages:
             - gcc
             - swig
+            - cmake
           update: true
       env:
         - MATRIX_EVAL="which gcc; export CC=/usr/local/bin/gcc CXX=/usr/local/bin/g++"
@@ -70,6 +49,7 @@ matrix:
           packages:
             - llvm
             - swig
+            - cmake
           update: true
       env:
         - MATRIX_EVAL="brew link --overwrite llvm; export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++"
@@ -83,6 +63,7 @@ matrix:
           packages:
             - gcc
             - swig
+            - cmake
           update: true
       env:
         - MATRIX_EVAL="which gcc; export CC=/usr/local/bin/gcc CXX=/usr/local/bin/g++"
@@ -93,11 +74,10 @@ before_install:
 
 install:
   - ./.travis/install.sh
-  - aclocal
-  - autoconf
-  - ./configure --without-cuda
-  - make
-  - make -C faiss/python
+  - PATH="$TRAVIS_BUILD_DIR/cmake/bin/:$PATH" cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF .
+  - make -C build -j
+  - (cd build/faiss/python && python setup.py build)
 
 script:
-  - make test
+  - make -C build test
+  - PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)" python -m unittest discover ./tests
