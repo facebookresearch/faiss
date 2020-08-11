@@ -141,7 +141,6 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
         // coarse quantizers
         } else if (!coarse_quantizer &&
                    sscanf (tok, "IVF%ld_HNSW%d", &ncentroids, &M) == 2) {
-            FAISS_THROW_IF_NOT (metric == METRIC_L2);
             coarse_quantizer_1 = new IndexHNSWFlat (d, M);
 
         } else if (!coarse_quantizer &&
