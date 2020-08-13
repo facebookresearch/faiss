@@ -14,7 +14,7 @@
 #include <cassert>
 #include <stdint.h>
 
-#ifdef __SSE__
+#ifdef __SSE3__
 #include <immintrin.h>
 #endif
 
@@ -270,7 +270,7 @@ struct DistanceXPQ4 : Distance2Level {
     }
 
     float operator () (idx_t i) override {
-#ifdef __SSE__
+#ifdef __SSE3__
         const uint8_t *code = storage.codes.data() + i * storage.code_size;
         long key = 0;
         memcpy (&key, code, storage.code_size_1);
@@ -323,7 +323,7 @@ struct Distance2xXPQ4 : Distance2Level {
         long key01 = 0;
         memcpy (&key01, code, storage.code_size_1);
         code += storage.code_size_1;
-#ifdef __SSE__
+#ifdef __SSE3__
 
         // walking pointers
         const float *qa = q;
@@ -361,7 +361,7 @@ struct Distance2xXPQ4 : Distance2Level {
 
 
 DistanceComputer * Index2Layer::get_distance_computer() const {
-#ifdef __SSE__
+#ifdef __SSE3__
     const MultiIndexQuantizer *mi =
         dynamic_cast<MultiIndexQuantizer*> (q1.quantizer);
 
