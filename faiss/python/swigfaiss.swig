@@ -579,6 +579,7 @@ struct AsyncIndexSearchC {
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
     DOWNCAST ( IndexFlat )
+    DOWNCAST ( IndexRefineFlat )
     DOWNCAST ( IndexPQ )
     DOWNCAST ( IndexScalarQuantizer )
     DOWNCAST ( IndexLSH )
