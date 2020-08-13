@@ -615,6 +615,18 @@ class TestSWIGWrap(unittest.TestCase):
 
         [index.id_map.at(int(i)) for i in range(index.ntotal)]
 
+    def test_downcast_Refine(self):
+
+        index = faiss.IndexRefineFlat(
+            faiss.IndexScalarQuantizer(10, faiss.ScalarQuantizer.QT_8bit)
+        )
+
+        # serialize and deserialize
+        index2 = faiss.deserialize_index(
+            faiss.serialize_index(index)
+        )
+
+        assert isinstance(index2, faiss.IndexRefineFlat)
 
 if __name__ == '__main__':
     unittest.main()
