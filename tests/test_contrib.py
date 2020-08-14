@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from common import get_dataset_2
-from faiss_contrib.exhaustive_search import knn_ground_truth
+from faiss.contrib.exhaustive_search import knn_ground_truth
 
 class TestComputeGT(unittest.TestCase):
 

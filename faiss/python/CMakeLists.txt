@@ -78,3 +78,8 @@ target_link_libraries(swigfaiss PRIVATE faiss faiss_python_callbacks)
 configure_file(setup.py setup.py COPYONLY)
 configure_file(__init__.py __init__.py COPYONLY)
 configure_file(loader.py loader.py COPYONLY)
+
+configure_file(${PROJECT_SOURCE_DIR}/../../contrib/client_server.py contrib/client_server.py COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/../../contrib/exhaustive_search.py contrib/exhaustive_search.py COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/../../contrib/ondisk.py contrib/ondisk.py COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/../../contrib/rpc.py contrib/rpc.py COPYONLY)
