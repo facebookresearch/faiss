@@ -13,6 +13,7 @@ if not os.path.exists(check_fpath):
 # make the faiss python package dir
 shutil.rmtree("faiss", ignore_errors=True)
 os.mkdir("faiss")
+shutil.copytree("contrib", "faiss/contrib")
 shutil.copyfile("__init__.py", "faiss/__init__.py")
 shutil.copyfile("loader.py", "faiss/loader.py")
 shutil.copyfile("swigfaiss.py", "faiss/swigfaiss.py")
@@ -43,7 +44,7 @@ setup(
     keywords='search nearest neighbors',
 
     install_requires=['numpy'],
-    packages=['faiss'],
+    packages=['faiss', 'faiss.contrib'],
     package_data={
         'faiss': ['*.so'],
     },
