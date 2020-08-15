@@ -1,0 +1,111 @@
+version: 2.1
+
+jobs:
+  build_linux:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Register Intel APT repository for MKL
+          command: |
+            cd /tmp
+            wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
+            sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
+            rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
+            sudo sh -c 'echo deb https://apt.repos.intel.com/mkl all main > /etc/apt/sources.list.d/intel-mkl.list'
+      - run:
+          name: Install apt packages
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y swig python3-dev intel-mkl-64bit-2020.0.088
+            echo "source /opt/intel/bin/compilervars.sh intel64" >> $BASH_ENV
+      - run:
+          name: Install numpy/scipy
+          command: |
+            pip install numpy scipy
+      - run:
+          name: Install cmake
+          command: |
+            wget -O - https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1-Linux-x86_64.tar.gz | tar xzf -
+            sudo cp -R cmake-3.17.1-Linux-x86_64/* /usr
+      - run:
+          name: Build faiss library
+          command: |
+            source $BASH_ENV
+            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
+                  -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
+            make -C build -j faiss
+      - run:
+          name: Test faiss library
+          command: |
+            source $BASH_ENV
+            make -C build -j faiss_test
+            make -C build test
+          environment:
+            OMP_NUM_THREADS: 10
+      - run:
+          name: Build python extension
+          command: |
+            source $BASH_ENV
+            make -C build -j swigfaiss
+            cd build/faiss/python
+            python setup.py build
+      - run:
+          name: Test python extension
+          command: |
+            source $BASH_ENV
+            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
+            python -m unittest discover ./tests
+          environment:
+            OMP_NUM_THREADS: 10
+
+  build_osx:
+    macos:
+      xcode: 11.6.0
+    steps:
+      - checkout
+      - run:
+          name: Install Homebrew packages
+          command: |
+            brew install cmake swig libomp
+      - run:
+          name: Install numpy/scipy
+          command: |
+            pip3 install numpy scipy
+      - run:
+          name: Generate Makefiles
+          command: |
+            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -DPython_EXECUTABLE=/usr/local/bin/python3 .
+      - run:
+          name: Build faiss library
+          command: |
+            make -C build -j faiss
+      - run:
+          name: Test faiss library
+          command: |
+            make -C build -j faiss_test
+            make -C build test
+          environment:
+            OMP_NUM_THREADS: 10
+      - run:
+          name: Build python extension
+          command: |
+            make -C build -j swigfaiss
+            cd build/faiss/python
+            python3 setup.py build
+      - run:
+          name: Test python extension
+          command: |
+            PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)" python3 -m unittest discover ./tests
+          environment:
+            OMP_NUM_THREADS: 10
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build_linux
+      - build_osx

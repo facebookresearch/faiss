@@ -28,9 +28,13 @@ set(BUILD_GMOCK CACHE BOOL OFF)
 set(INSTALL_GTEST CACHE BOOL OFF)
 FetchContent_MakeAvailable(googletest)
 
+find_package(OpenMP REQUIRED)
+
 target_link_libraries(faiss_test PRIVATE
   faiss
-  gtest_main)
+  OpenMP::OpenMP_CXX
+  gtest_main
+)
 
 # Defines `gtest_discover_tests()`.
 include(GoogleTest)

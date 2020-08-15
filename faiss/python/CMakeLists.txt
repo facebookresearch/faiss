@@ -51,7 +51,15 @@ if(NOT TARGET faiss)
   find_package(faiss REQUIRED)
 endif()
 
-target_link_libraries(swigfaiss PRIVATE faiss Python::Module Python::NumPy)
+find_package(OpenMP REQUIRED)
+
+target_link_libraries(swigfaiss PRIVATE
+  faiss
+  Python::Module
+  Python::NumPy
+  OpenMP::OpenMP_CXX
+)
+
 # Hack so that python_callbacks.h can be included as
 # `#include <faiss/python/python_callbacks.h>`.
 target_include_directories(swigfaiss PRIVATE ${PROJECT_SOURCE_DIR}/../../)
