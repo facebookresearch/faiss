@@ -13,11 +13,13 @@ import os
 import io
 import sys
 import warnings
+import platform
 from multiprocessing.dummy import Pool as ThreadPool
 
 from common import get_dataset, get_dataset_2
 
-warnings.simplefilter("ignore", category=ResourceWarning)
+if platform.python_version_tuple()[0] >= '3':
+    warnings.simplefilter("ignore", category=ResourceWarning)
 
 
 class TestIOVariants(unittest.TestCase):
