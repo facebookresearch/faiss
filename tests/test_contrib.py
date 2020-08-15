@@ -1,10 +1,16 @@
 import faiss
 import unittest
 import numpy as np
+import platform
 
 from common import get_dataset_2
-from faiss.contrib.exhaustive_search import knn_ground_truth
+try:
+    from faiss.contrib.exhaustive_search import knn_ground_truth
+except:
+    pass  # Submodule import broken in python 2.
 
+@unittest.skipIf(platform.python_version_tuple()[0] < '3', \
+                 'Submodule import broken in python 2.')
 class TestComputeGT(unittest.TestCase):
 
     def test_compute_GT(self):
