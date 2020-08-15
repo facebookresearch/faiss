@@ -40,13 +40,11 @@ Result Variables
 
 This module defines the following variables:
 
-``BLAS_FOUND``
+``MKL_FOUND``
   library implementing the BLAS interface is found
-``BLAS_LINKER_FLAGS``
-  uncached list of required linker flags (excluding ``-l`` and ``-L``).
-``BLAS_LIBRARIES``
+``MKL_LIBRARIES``
   uncached list of libraries (using full path name) to link against
-  to use BLAS (may be empty if compiler implicitly links BLAS)
+  to use MKL (may be empty if compiler implicitly links MKL)
 
 .. note::
 
@@ -57,7 +55,7 @@ This module defines the following variables:
   .. code-block:: cmake
 
     set(BLA_VENDOR Intel10_64lp)
-    find_package(BLAS)
+    find_package(MKL)
 
 Hints
 ^^^^^
@@ -166,7 +164,7 @@ macro(CHECK_BLAS_LIBRARIES LIBRARIES _prefix _name _flags _list _threadlibs _add
   #message("DEBUG: ${LIBRARIES} = ${${LIBRARIES}}")
 endmacro()
 
-set(BLAS_LIBRARIES)
+set(MKL_LIBRARIES)
 if(NOT $ENV{BLA_VENDOR} STREQUAL "")
   set(BLA_VENDOR $ENV{BLA_VENDOR})
 else()
@@ -225,7 +223,7 @@ if(CMAKE_C_COMPILER_LOADED OR CMAKE_CXX_COMPILER_LOADED)
   set(BLAS_SEARCH_LIBS "")
 
   set(BLAS_mkl_SEARCH_SYMBOL sgemm)
-  set(_LIBRARIES BLAS_LIBRARIES)
+  set(_LIBRARIES MKL_LIBRARIES)
   if(WIN32)
     # Find the main file (32-bit or 64-bit)
     set(BLAS_SEARCH_LIBS_WIN_MAIN "")
@@ -359,7 +357,7 @@ if(CMAKE_C_COMPILER_LOADED OR CMAKE_CXX_COMPILER_LOADED)
 endif()
 
 
-find_package_handle_standard_args(MKL REQUIRED_VARS BLAS_LIBRARIES)
+find_package_handle_standard_args(MKL REQUIRED_VARS MKL_LIBRARIES)
 
 cmake_pop_check_state()
 set(CMAKE_FIND_LIBRARY_SUFFIXES ${_blas_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES})
