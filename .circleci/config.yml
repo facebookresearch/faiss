@@ -68,7 +68,7 @@ jobs:
       - run:
           name: Install Homebrew packages
           command: |
-            brew install cmake swig llvm
+            brew install cmake swig libomp
       - run:
           name: Install numpy/scipy
           command: |
@@ -83,10 +83,6 @@ jobs:
           name: Build faiss library
           command: |
             make -C build -j faiss
-          environment:
-            CXX: /usr/local/opt/llvm/bin/clang++
-            LDFLAGS: -L/usr/local/opt/llvm/lib
-            CPPFLAGS: -I/usr/local/opt/llvm/include
       - run:
           name: Test faiss library
           command: |
