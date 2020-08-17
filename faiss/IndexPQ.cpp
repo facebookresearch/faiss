@@ -835,7 +835,7 @@ struct MinSumK {
             x += ldx;
         }
 
-        { // intial result: take min for all elements
+        { // initial result: take min for all elements
             T sum = 0;
             terms[0] = 0;
             mark_seen (0);

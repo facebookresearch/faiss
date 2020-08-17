@@ -33,7 +33,7 @@ struct BinaryInvertedListScanner;
  * Otherwise the object is similar to the IndexIVF
  */
 struct IndexBinaryIVF : IndexBinary {
-    /// Acess to the actual data
+    /// Access to the actual data
     InvertedLists *invlists;
     bool own_invlists;
 

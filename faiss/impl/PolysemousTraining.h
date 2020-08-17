@@ -101,7 +101,7 @@ struct RandomGenerator;
                                  const SimulatedAnnealingParameters &p);
     RandomGenerator *rnd;
 
-    /// remember intial cost of optimization
+    /// remember initial cost of optimization
     double init_cost;
 
     // main entry point. Perform the optimization loop, starting from

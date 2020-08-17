@@ -209,7 +209,7 @@ void compute_centroids (size_t d, size_t k, size_t n,
 /** Handle empty clusters by splitting larger ones.
  *
  * It works by slightly changing the centroids to make 2 clusters from
- * a single one. Takes the same arguements as compute_centroids.
+ * a single one. Takes the same arguments as compute_centroids.
  *
  * @return           nb of spliting operations (larger is worse)
  */

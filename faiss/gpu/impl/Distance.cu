@@ -59,7 +59,7 @@ void runDistance(bool computeL2,
 
   auto defaultStream = res->getDefaultStreamCurrentDevice();
 
-  // If we're quering against a 0 sized set, just return empty results
+  // If we're querying against a 0 sized set, just return empty results
   if (centroids.numElements() == 0) {
     thrust::fill(thrust::cuda::par.on(defaultStream),
                  outDistances.data(), outDistances.end(),

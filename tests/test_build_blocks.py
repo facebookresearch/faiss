@@ -182,7 +182,7 @@ class TestClustering(unittest.TestCase):
         km2 = faiss.Kmeans(d, k, niter=4)
         km2.train(xt, init_centroids=km.centroids)
 
-        # check that the intial objective is better for km2 than km
+        # check that the initial objective is better for km2 than km
         self.assertGreater(km.obj[0], km2.obj[0] * 1.01)
 
     def test_stats(self):

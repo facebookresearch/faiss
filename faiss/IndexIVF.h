@@ -97,7 +97,7 @@ struct InvertedListScanner;
  * the distance estimation from the query to databse vectors.
  */
 struct IndexIVF: Index, Level1Quantizer {
-    /// Acess to the actual data
+    /// Access to the actual data
     InvertedLists *invlists;
     bool own_invlists;
 

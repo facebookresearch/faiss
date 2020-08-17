@@ -39,7 +39,7 @@ int main() {
     int m = 8;                             // bytes per vector
     faiss::IndexFlatL2 quantizer(d);       // the other index
     faiss::IndexIVFPQ index(&quantizer, d, nlist, m, 8);
-    
+
     index.train(nb, xb);
     index.add(nb, xb);
 
