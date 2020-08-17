@@ -121,7 +121,7 @@ int main ()
                 elapsed() - t0, nb);
 
         std::vector <float> database (nb * d);
-        std::vector <int64_t> ids (nb);
+        std::vector <faiss::Index::idx_t> ids (nb);
         for (size_t i = 0; i < nb; i++) {
             for (size_t j = 0; j < d; j++) {
                 database[i * d + j] = drand48();
