@@ -29,7 +29,7 @@
 #define READVECTOR(vec) {                       \
         long size;                            \
         READANDCHECK (&size, 1);                \
-        FAISS_THROW_IF_NOT (size >= 0 && size < (1L << 40));  \
+        FAISS_THROW_IF_NOT (size >= 0 && size < (1LL << 40));  \
         (vec).resize (size);                    \
         READANDCHECK ((vec).data (), size);     \
     }

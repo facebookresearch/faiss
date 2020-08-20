@@ -116,11 +116,11 @@ long repeats_encode_64 (
         for(;;) {
             // directly jump to next available slot.
             int i = __builtin_ctzl(tosee);
-            tosee &= ~(1UL << i) ;
+            tosee &= ~(1ULL << i) ;
             if (c[i] == r->val) {
                 code_comb += comb(rank, occ + 1);
                 occ++;
-                coded |= 1UL << i;
+                coded |= 1ULL << i;
                 if (occ == r->n) break;
             }
             rank++;
@@ -148,13 +148,13 @@ void repeats_decode_64(
         int occ = 0;
         int rank = nfree;
         int next_rank = decode_comb_1 (&code_comb, r->n, rank);
-        uint64_t tosee = ((1UL << dim) - 1) ^ decoded;
+        uint64_t tosee = ((1ULL << dim) - 1) ^ decoded;
         for(;;) {
             int i = 63 - __builtin_clzl(tosee);
-            tosee &= ~(1UL << i);
+            tosee &= ~(1ULL << i);
             rank--;
             if (rank == next_rank) {
-                decoded |= 1UL << i;
+                decoded |= 1ULL << i;
                 c[i] = r->val;
                 occ++;
                 if (occ == r->n) break;
