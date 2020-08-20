@@ -7,6 +7,7 @@
 
 // -*- c++ -*-
 
+#include <algorithm>
 #include <cstring>
 
 #include <faiss/impl/AuxIndexStructures.h>

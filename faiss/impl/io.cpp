@@ -7,6 +7,7 @@
 
 // -*- c++ -*-
 
+#include <algorithm>
 #include <cstring>
 #include <cassert>
 
