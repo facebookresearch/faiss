@@ -398,7 +398,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
         if (pmode == 0) {
 
 #pragma omp for
-            for (size_t i = 0; i < n; i++) {
+            for (idx_t i = 0; i < n; i++) {
 
                 if (interrupt) {
                     continue;
@@ -444,7 +444,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
                 init_result (local_dis.data(), local_idx.data());
 
 #pragma omp for schedule(dynamic)
-                for (size_t ik = 0; ik < nprobe; ik++) {
+                for (long ik = 0; ik < nprobe; ik++) {
                     ndis += scan_one_list
                         (keys [i * nprobe + ik],
                          coarse_dis[i * nprobe + ik],
@@ -474,12 +474,12 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
             std::vector <float> local_dis (k);
 
 #pragma omp single
-            for (size_t i = 0; i < n; i++) {
+            for (int64_t i = 0; i < n; i++) {
                 init_result (distances + i * k, labels + i * k);
             }
 
 #pragma omp for schedule(dynamic)
-            for (size_t ij = 0; ij < n * nprobe; ij++) {
+            for (int64_t ij = 0; ij < n * nprobe; ij++) {
                 size_t i = ij / nprobe;
                 size_t j = ij % nprobe;
 
@@ -495,7 +495,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
                 }
             }
 #pragma omp single
-            for (size_t i = 0; i < n; i++) {
+            for (int64_t i = 0; i < n; i++) {
                 reorder_result (distances + i * k, labels + i * k);
             }
         } else {
@@ -583,7 +583,7 @@ void IndexIVF::range_search_preassigned (
         if (parallel_mode == 0) {
 
 #pragma omp for
-            for (size_t i = 0; i < nx; i++) {
+            for (idx_t i = 0; i < nx; i++) {
                 scanner->set_query (x + i * d);
 
                 RangeQueryResult & qres = pres.new_result (i);
@@ -602,7 +602,7 @@ void IndexIVF::range_search_preassigned (
                 RangeQueryResult & qres = pres.new_result (i);
 
 #pragma omp for schedule(dynamic)
-                for (size_t ik = 0; ik < nprobe; ik++) {
+                for (int64_t ik = 0; ik < nprobe; ik++) {
                     scan_list_func (i, ik, qres);
                 }
             }
@@ -611,9 +611,9 @@ void IndexIVF::range_search_preassigned (
             RangeQueryResult *qres = nullptr;
 
 #pragma omp for schedule(dynamic)
-            for (size_t iik = 0; iik < nx * nprobe; iik++) {
-                size_t i = iik / nprobe;
-                size_t ik = iik % nprobe;
+            for (idx_t iik = 0; iik < nx * (idx_t)nprobe; iik++) {
+                idx_t i = iik / (idx_t)nprobe;
+                idx_t ik = iik % (idx_t)nprobe;
                 if (qres == nullptr || qres->qno != i) {
                     FAISS_ASSERT (!qres || i > qres->qno);
                     qres = &pres.new_result (i);

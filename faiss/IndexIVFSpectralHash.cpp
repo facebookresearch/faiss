@@ -178,7 +178,7 @@ void IndexIVFSpectralHash::encode_vectors(idx_t n, const float* x_in,
 
         // each thread takes care of a subset of lists
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             int64_t list_no = list_nos [i];
 
             if (list_no >= 0) {

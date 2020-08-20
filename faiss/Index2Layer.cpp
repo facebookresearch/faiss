@@ -417,13 +417,13 @@ void Index2Layer::sa_decode (idx_t n, const uint8_t *bytes, float *x) const
         std::vector<float> residual (d);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             const uint8_t *code = bytes + i * code_size;
             int64_t list_no = q1.decode_listno (code);
             float *xi = x + i * d;
             pq.decode (code + code_size_1, xi);
             q1.quantizer->reconstruct (list_no, residual.data());
-            for (size_t j = 0; j < d; j++) {
+            for (int j = 0; j < d; j++) {
                 xi[j] += residual[j];
             }
         }

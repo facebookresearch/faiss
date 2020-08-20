@@ -728,7 +728,7 @@ void train_NonUniform(RangeStat rs, float rs_arg,
         }
         std::vector<float> trained_d(2);
 #pragma omp parallel for
-        for (size_t j = 0; j < d; j++) {
+        for (int j = 0; j < d; j++) {
             train_Uniform(rs, rs_arg,
                           n, k, xt.data() + j * n,
                           trained_d);
@@ -1322,7 +1322,7 @@ void ScalarQuantizer::compute_codes (const float * x,
 
     memset (codes, 0, code_size * n);
 #pragma omp parallel for
-    for (size_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++)
         squant->encode_vector (x + i * d, codes + i * code_size);
 }
 
@@ -1331,7 +1331,7 @@ void ScalarQuantizer::decode (const uint8_t *codes, float *x, size_t n) const
     std::unique_ptr<Quantizer> squant(select_quantizer ());
 
 #pragma omp parallel for
-    for (size_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++)
         squant->decode_vector (codes + i * code_size, x + i * d);
 }
 

@@ -241,7 +241,7 @@ void IndexIVFPQ::sa_decode (idx_t n, const uint8_t *codes,
         std::vector<float> residual (d);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             const uint8_t *code = codes + i * (code_size + coarse_size);
             int64_t list_no = decode_listno (code);
             float *xi = x + i * d;

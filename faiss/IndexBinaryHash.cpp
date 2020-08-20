@@ -222,7 +222,7 @@ void IndexBinaryHash::range_search(idx_t n, const uint8_t *x, int radius,
         RangeSearchPartialResult pres (result);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) { // loop queries
+        for (idx_t i = 0; i < n; i++) { // loop queries
             RangeQueryResult & qres = pres.new_result (i);
             RangeSearchResults res = {radius, qres};
             const uint8_t *q = x + i * code_size;
@@ -246,7 +246,7 @@ void IndexBinaryHash::search(idx_t n, const uint8_t *x, idx_t k,
     size_t nlist = 0, ndis = 0, n0 = 0;
 
 #pragma omp parallel for if(n > 100) reduction(+: nlist, ndis, n0)
-    for (size_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         int32_t * simi = distances + k * i;
         idx_t * idxi = labels + k * i;
 
@@ -437,7 +437,7 @@ void IndexBinaryMultiHash::range_search(idx_t n, const uint8_t *x, int radius,
         RangeSearchPartialResult pres (result);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) { // loop queries
+        for (idx_t i = 0; i < n; i++) { // loop queries
             RangeQueryResult & qres = pres.new_result (i);
             RangeSearchResults res = {radius, qres};
             const uint8_t *q = x + i * code_size;
@@ -461,7 +461,7 @@ void IndexBinaryMultiHash::search(idx_t n, const uint8_t *x, idx_t k,
     size_t nlist = 0, ndis = 0, n0 = 0;
 
 #pragma omp parallel for if(n > 100) reduction(+: nlist, ndis, n0)
-    for (size_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         int32_t * simi = distances + k * i;
         idx_t * idxi = labels + k * i;
 

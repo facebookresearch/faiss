@@ -191,7 +191,7 @@ void compute_centroids (size_t d, size_t k, size_t n,
     }
 
 #pragma omp parallel for
-    for (size_t ci = 0; ci < k; ci++) {
+    for (idx_t ci = 0; ci < k; ci++) {
         if (hassign[ci] == 0) {
             continue;
         }
