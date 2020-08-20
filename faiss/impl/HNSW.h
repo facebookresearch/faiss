@@ -257,9 +257,8 @@ struct HNSWStats {
   size_t ndis;
   size_t nreorder;
 
-  HNSWStats() {
-    reset();
-  }
+  HNSWStats(size_t n1 = 0, size_t n2 = 0, size_t n3 = 0, size_t ndis = 0, size_t nreorder = 0)
+    : n1(n1), n2(n2), n3(n3), ndis(ndis), nreorder(nreorder) {}
 
   void reset() {
     n1 = n2 = n3 = 0;
