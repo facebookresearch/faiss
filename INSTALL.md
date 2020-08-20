@@ -47,7 +47,7 @@ cmake -B build .
 make -C build
 
 # For the Python interface:
-cd faiss/python && python setup.py install
+cd build/faiss/python && python setup.py install
 ```
 
 1. `cmake`
