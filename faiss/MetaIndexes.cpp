@@ -11,6 +11,7 @@
 
 #include <cinttypes>
 #include <cstdio>
+#include <limits>
 #include <stdint.h>
 
 #include <faiss/impl/FaissAssert.h>
@@ -320,7 +321,7 @@ void IndexSplitVectors::search (
                     distances[j] += distances_i[j];
                 } else {
                     labels[j] = -1;
-                    distances[j] = 0.0 / 0.0;
+                    distances[j] = std::numeric_limits<float>::quiet_NaN();
                 }
             }
         }
