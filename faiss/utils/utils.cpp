@@ -184,7 +184,7 @@ void inner_product_to_L2sqr (float * __restrict dis,
 {
 
 #pragma omp parallel for
-    for (size_t j = 0 ; j < n1 ; j++) {
+    for (int64_t j = 0 ; j < n1 ; j++) {
         float * disj = dis + j * n2;
         for (size_t i = 0 ; i < n2 ; i++)
             disj[i] = nr1[j] + nr2[i] - 2 * disj[i];
@@ -251,7 +251,7 @@ size_t merge_result_table_with (size_t n, size_t k,
         std::vector<float> tmpD (k);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             int64_t *lI0 = I0 + i * k;
             float *lD0 = D0 + i * k;
             const int64_t *lI1 = I1 + i * k;

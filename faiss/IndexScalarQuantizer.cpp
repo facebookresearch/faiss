@@ -77,7 +77,7 @@ void IndexScalarQuantizer::search(
         ScopeDeleter1<InvertedListScanner> del(scanner);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             float * D = distances + k * i;
             idx_t * I = labels + k * i;
             // re-order heap
@@ -197,7 +197,7 @@ void IndexIVFScalarQuantizer::encode_vectors(idx_t n, const float* x,
         std::vector<float> residual (d);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             int64_t list_no = list_nos [i];
             if (list_no >= 0) {
                 const float *xi = x + i * d;
@@ -227,7 +227,7 @@ void IndexIVFScalarQuantizer::sa_decode (idx_t n, const uint8_t *codes,
         std::vector<float> residual (d);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             const uint8_t *code = codes + i * (code_size + coarse_size);
             int64_t list_no = decode_listno (code);
             float *xi = x + i * d;

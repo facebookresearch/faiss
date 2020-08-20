@@ -678,7 +678,7 @@ void ParameterSpace::explore (Index *index,
 
             if (thread_over_batches) {
 #pragma omp parallel for
-                for (size_t q0 = 0; q0 < nq; q0 += batchsize) {
+                for (idx_t q0 = 0; q0 < nq; q0 += batchsize) {
                     size_t q1 = q0 + batchsize;
                     if (q1 > nq) q1 = nq;
                     index->search (q1 - q0, xq + q0 * index->d,

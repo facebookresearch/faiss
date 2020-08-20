@@ -164,7 +164,7 @@ void knn_extra_metrics_template (
         size_t i1 = std::min(i0 + check_period, nx);
 
 #pragma omp parallel for
-        for (size_t i = i0; i < i1; i++) {
+        for (int64_t i = i0; i < i1; i++) {
             const float * x_i = x + i * d;
             const float * y_j = y;
             size_t j;

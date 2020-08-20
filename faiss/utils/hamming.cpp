@@ -281,7 +281,7 @@ void hammings_knn_hc (
     for (size_t j0 = 0; j0 < n2; j0 += block_size) {
       const size_t j1 = std::min(j0 + block_size, n2);
 #pragma omp parallel for
-      for (size_t i = 0; i < ha->nh; i++) {
+      for (int64_t i = 0; i < ha->nh; i++) {
         HammingComputer hc (bs1 + i * bytes_per_code, bytes_per_code);
 
         const uint8_t * bs2_ = bs2 + j0 * bytes_per_code;
@@ -333,7 +333,7 @@ void hammings_knn_mc (
   for (size_t j0 = 0; j0 < nb; j0 += block_size) {
     const size_t j1 = std::min(j0 + block_size, nb);
 #pragma omp parallel for
-    for (size_t i = 0; i < na; ++i) {
+    for (int64_t i = 0; i < na; ++i) {
       for (size_t j = j0; j < j1; ++j) {
         cs[i].update_counter(b + j * bytes_per_code, j);
       }
@@ -380,7 +380,7 @@ void hammings_knn_hc_1 (
     }
 
 #pragma omp parallel for
-    for (size_t i = 0; i < ha->nh; i++) {
+    for (int64_t i = 0; i < ha->nh; i++) {
         const uint64_t bs1_ = bs1 [i];
         const uint64_t * bs2_ = bs2;
         hamdis_t dis;
@@ -436,7 +436,7 @@ void fvecs2bitvecs (const float * x, uint8_t * b, size_t d, size_t n)
 {
     const int64_t ncodes = ((d + 7) / 8);
 #pragma omp parallel for if(n > 100000)
-    for (size_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++)
         fvec2bitvec (x + i * d, b + i * ncodes, d);
 }
 
@@ -450,7 +450,7 @@ void bitvecs2fvecs (
 
     const int64_t ncodes = ((d + 7) / 8);
 #pragma omp parallel for if(n > 100000)
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         binary_to_real (d, b + i * ncodes, x + i * d);
     }
 }
@@ -498,7 +498,7 @@ void bitvec_shuffle (size_t n, size_t da, size_t db,
     size_t ldb = (db + 7) / 8;
 
 #pragma omp parallel for if(n > 10000)
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         const uint8_t *ai = a + i * lda;
         uint8_t *bi = b + i * ldb;
         memset (bi, 0, ldb);
@@ -654,7 +654,7 @@ void hamming_range_search_template (
         RangeSearchPartialResult pres (res);
 
 #pragma omp for
-        for (size_t i = 0; i < na; i++) {
+        for (int64_t i = 0; i < na; i++) {
              HammingComputer hc (a + i * code_size, code_size);
             const uint8_t * yi = b;
             RangeQueryResult & qres = pres.new_result (i);
