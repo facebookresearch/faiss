@@ -9,6 +9,8 @@
 
 #include <faiss/IndexIVFPQR.h>
 
+#include <cinttypes>
+
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/utils.h>
 #include <faiss/utils/distances.h>
@@ -59,7 +61,7 @@ void IndexIVFPQR::train_residual (idx_t n, const float *x)
     train_residual_o (n, x, residual_2);
 
     if (verbose)
-        printf ("training %zdx%zd 2nd level PQ quantizer on %ld %dD-vectors\n",
+        printf ("training %zdx%zd 2nd level PQ quantizer on %" PRId64 " %dD-vectors\n",
                 refine_pq.M, refine_pq.ksub, n, d);
 
     refine_pq.cp.max_points_per_centroid = 1000;

@@ -9,6 +9,7 @@
 
 #include <faiss/IndexIVFFlat.h>
 
+#include <cinttypes>
 #include <cstdio>
 
 #include <faiss/IndexFlat.h>
@@ -75,7 +76,7 @@ void IndexIVFFlat::add_core (idx_t n, const float * x, const int64_t *xids,
     }
 
     if (verbose) {
-        printf("IndexIVFFlat::add_core: added %ld / %ld vectors\n",
+        printf("IndexIVFFlat::add_core: added %" PRId64 " / %" PRId64 " vectors\n",
                n_add, n);
     }
     ntotal += n;
@@ -247,8 +248,8 @@ void IndexIVFFlatDedup::train(idx_t n, const float* x)
         }
     }
     if (verbose) {
-        printf ("IndexIVFFlatDedup::train: train on %ld points after dedup "
-                "(was %ld points)\n", n2, n);
+        printf ("IndexIVFFlatDedup::train: train on %" PRId64 " points after dedup "
+                "(was %" PRId64 " points)\n", n2, n);
     }
     IndexIVFFlat::train (n2, x2);
 }
@@ -303,8 +304,8 @@ void IndexIVFFlatDedup::add_with_ids(
         n_add++;
     }
     if (verbose) {
-        printf("IndexIVFFlat::add_with_ids: added %ld / %ld vectors"
-               " (out of which %ld are duplicates)\n",
+        printf("IndexIVFFlat::add_with_ids: added %" PRId64 " / %" PRId64 " vectors"
+               " (out of which %" PRId64 " are duplicates)\n",
                n_add, na, n_dup);
     }
     ntotal += n_add;

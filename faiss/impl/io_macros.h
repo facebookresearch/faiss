@@ -19,7 +19,7 @@
 #define READANDCHECK(ptr, n) {                                  \
         size_t ret = (*f)(ptr, sizeof(*(ptr)), n);              \
         FAISS_THROW_IF_NOT_FMT(ret == (n),                      \
-            "read error in %s: %ld != %ld (%s)",                \
+            "read error in %s: %zd != %zd (%s)",                \
             f->name.c_str(), ret, size_t(n), strerror(errno));  \
     }
 
@@ -44,7 +44,7 @@
 #define WRITEANDCHECK(ptr, n) {                                 \
         size_t ret = (*f)(ptr, sizeof(*(ptr)), n);              \
         FAISS_THROW_IF_NOT_FMT(ret == (n),                      \
-            "write error in %s: %ld != %ld (%s)",               \
+            "write error in %s: %zd != %zd (%s)",               \
             f->name.c_str(), ret, size_t(n), strerror(errno));  \
     }
 

@@ -324,7 +324,7 @@ void OnDiskInvertedLists::update_totsize (size_t new_size)
     totsize = new_size;
 
     // create file
-    printf ("resizing %s to %ld bytes\n", filename.c_str(), totsize);
+    printf ("resizing %s to %zd bytes\n", filename.c_str(), totsize);
 
     int err = truncate (filename.c_str(), totsize);
 
@@ -644,7 +644,7 @@ size_t OnDiskInvertedLists::merge_from (const InvertedLists **ils, int n_il,
                 nmerged++;
                 double t1 = getmillisecs();
                 if (t1 - last_t > 500) {
-                    printf("merged %ld lists in %.3f s\r",
+                    printf("merged %zd lists in %.3f s\r",
                            nmerged, (t1 - t0) / 1000.0);
                     fflush(stdout);
                     last_t = t1;

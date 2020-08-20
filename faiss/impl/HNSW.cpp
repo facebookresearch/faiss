@@ -157,11 +157,11 @@ void HNSW::print_neighbor_stats(int level) const
     }
   }
   float normalizer = n_node;
-  printf("   nb of nodes at that level %ld\n", n_node);
-  printf("   neighbors per node: %.2f (%ld)\n",
+  printf("   nb of nodes at that level %zd\n", n_node);
+  printf("   neighbors per node: %.2f (%zd)\n",
          tot_neigh / normalizer, tot_neigh);
   printf("   nb of reciprocal neighbors: %.2f\n", tot_reciprocal / normalizer);
-  printf("   nb of neighbors that are also neighbor-of-neighbors: %.2f (%ld)\n",
+  printf("   nb of neighbors that are also neighbor-of-neighbors: %.2f (%zd)\n",
          tot_common / normalizer, tot_common);
 
 
@@ -181,7 +181,7 @@ void HNSW::fill_with_random_links(size_t n)
         elts.push_back(i);
       }
     }
-    printf ("linking %ld elements in level %d\n",
+    printf ("linking %zd elements in level %d\n",
             elts.size(), level);
 
     if (elts.size() == 1) continue;

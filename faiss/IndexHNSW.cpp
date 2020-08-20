@@ -119,7 +119,7 @@ void hnsw_add_vertices(IndexHNSW &index_hnsw,
     size_t ntotal = n0 + n;
     double t0 = getmillisecs();
     if (verbose) {
-        printf("hnsw_add_vertices: adding %ld elements on top of %ld "
+        printf("hnsw_add_vertices: adding %zd elements on top of %zd "
                "(preset_levels=%d)\n",
                n, n0, int(preset_levels));
     }
@@ -628,7 +628,7 @@ void IndexHNSW::link_singletons()
         }
     }
 
-    printf("  Found %d / %ld singletons (%d appear in a level above)\n",
+    printf("  Found %d / %zd singletons (%d appear in a level above)\n",
            n_sing, ntotal, n_sing_l1);
 
     std::vector<float>recons(singletons.size() * d);

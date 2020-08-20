@@ -9,6 +9,7 @@
 
 #include <faiss/IndexIVFPQ.h>
 
+#include <cinttypes>
 #include <cmath>
 #include <cstdio>
 #include <cassert>
@@ -91,7 +92,7 @@ void IndexIVFPQ::train_residual_o (idx_t n, const float *x, float *residuals_2)
         trainset = x;
     }
     if (verbose)
-        printf ("training %zdx%zd product quantizer on %ld vectors in %dD\n",
+        printf ("training %zdx%zd product quantizer on %" PRId64 " vectors in %dD\n",
                 pq.M, pq.ksub, n, d);
     pq.verbose = verbose;
     pq.train (n, trainset);
@@ -265,7 +266,7 @@ void IndexIVFPQ::add_core_o (idx_t n, const float * x, const idx_t *xids,
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(i0 + bs, n);
             if (verbose) {
-                printf("IndexIVFPQ::add_core_o: adding %ld:%ld / %ld\n",
+                printf("IndexIVFPQ::add_core_o: adding %" PRId64 ":%" PRId64 " / %" PRId64 "\n",
                        i0, i1, n);
             }
             add_core_o (i1 - i0, x + i0 * d,
@@ -341,7 +342,7 @@ void IndexIVFPQ::add_core_o (idx_t n, const float * x, const idx_t *xids,
     if(verbose) {
         char comment[100] = {0};
         if (n_ignore > 0)
-            snprintf (comment, 100, "(%ld vectors ignored)", n_ignore);
+            snprintf (comment, 100, "(%zd vectors ignored)", n_ignore);
         printf(" add_core times: %.3f %.3f %.3f %s\n",
                t1 - t0, t2 - t1, t3 - t2, comment);
     }
@@ -425,7 +426,7 @@ void IndexIVFPQ::precompute_table ()
                 if (verbose) {
                     printf(
                        "IndexIVFPQ::precompute_table: not precomputing table, "
-                       "it would be too big: %ld bytes (max %ld)\n",
+                       "it would be too big: %zd bytes (max %zd)\n",
                        table_size, precomputed_table_max_bytes);
                     use_precomputed_table = 0;
                 }

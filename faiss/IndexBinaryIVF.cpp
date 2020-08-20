@@ -9,6 +9,7 @@
 
 #include <faiss/IndexBinaryIVF.h>
 
+#include <cinttypes>
 #include <cstdio>
 #include <omp.h>
 
@@ -96,7 +97,7 @@ void IndexBinaryIVF::add_core(idx_t n, const uint8_t *x, const idx_t *xids,
     n_add++;
   }
   if (verbose) {
-    printf("IndexBinaryIVF::add_with_ids: added %ld / %ld vectors\n",
+    printf("IndexBinaryIVF::add_with_ids: added %ld / %" PRId64 " vectors\n",
            n_add, n);
   }
   ntotal += n_add;
@@ -221,7 +222,7 @@ void IndexBinaryIVF::train(idx_t n, const uint8_t *x) {
     }
   } else {
     if (verbose) {
-      printf("Training quantizer on %ld vectors in %dD\n", n, d);
+      printf("Training quantizer on %" PRId64 " vectors in %dD\n", n, d);
     }
 
     Clustering clus(d, nlist, cp);
@@ -406,7 +407,7 @@ void search_knn_hamming_heap(const IndexBinaryIVF& ivf,
                 }
                 FAISS_THROW_IF_NOT_FMT
                     (key < (idx_t) ivf.nlist,
-                     "Invalid key=%ld  at ik=%ld nlist=%ld\n",
+                     "Invalid key=%" PRId64 " at ik=%zd nlist=%zd\n",
                      key, ik, ivf.nlist);
 
                 scanner->set_list (key, coarse_dis[i * nprobe + ik]);
@@ -494,7 +495,7 @@ void search_knn_hamming_count(const IndexBinaryIVF& ivf,
       }
       FAISS_THROW_IF_NOT_FMT (
         key < (idx_t) ivf.nlist,
-        "Invalid key=%ld  at ik=%ld nlist=%ld\n",
+        "Invalid key=%" PRId64 " at ik=%zd nlist=%zd\n",
         key, ik, ivf.nlist);
 
       nlistv++;
@@ -668,7 +669,7 @@ void IndexBinaryIVF::range_search(
             if (key < 0) return;
             FAISS_THROW_IF_NOT_FMT (
                     key < (idx_t) nlist,
-                    "Invalid key=%ld  at ik=%ld nlist=%ld\n",
+                    "Invalid key=%" PRId64 " at ik=%zd nlist=%zd\n",
                     key, ik, nlist);
             const size_t list_size = invlists->list_size(key);
 

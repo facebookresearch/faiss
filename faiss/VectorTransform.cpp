@@ -9,6 +9,7 @@
 
 #include <faiss/VectorTransform.h>
 
+#include <cinttypes>
 #include <cstdio>
 #include <cmath>
 #include <cstring>
@@ -867,7 +868,7 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
 
     if (verbose) {
         printf ("OPQMatrix::train: training an OPQ rotation matrix "
-                "for M=%d from %ld vectors in %dD -> %dD\n",
+                "for M=%d from %" PRId64 " vectors in %dD -> %dD\n",
                 M, n, d_in, d_out);
     }
 
@@ -895,7 +896,7 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
         A.resize (d * d);
         rotation = A.data();
         if (verbose)
-            printf("  OPQMatrix::train: making random %ld*%ld rotation\n",
+            printf("  OPQMatrix::train: making random %zd*%zd rotation\n",
                    d, d);
         float_randn (rotation, d * d, 1234);
         matrix_qr (d, d, rotation);

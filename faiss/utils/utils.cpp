@@ -598,8 +598,8 @@ const float *fvecs_maybe_subsample (
 
     size_t n2 = nmax;
     if (verbose) {
-        printf ("  Input training set too big (max size is %ld), sampling "
-                "%ld / %ld vectors\n", nmax, n2, *n);
+        printf ("  Input training set too big (max size is %zd), sampling "
+                "%zd / %zd vectors\n", nmax, n2, *n);
     }
     std::vector<int> subset (*n);
     rand_perm (subset.data (), *n, seed);
