@@ -229,7 +229,7 @@ BufferedIOWriter::~BufferedIOWriter()
 {
     size_t ofs = 0;
     while(ofs != b0) {
-        // printf("Destructor write %ld \n", b0 - ofs);
+        // printf("Destructor write %zd \n", b0 - ofs);
         size_t written = (*writer)(buffer.data() + ofs, 1, b0 - ofs);
         FAISS_THROW_IF_NOT(written > 0);
         ofs += written;

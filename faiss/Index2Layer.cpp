@@ -9,6 +9,7 @@
 
 #include <faiss/Index2Layer.h>
 
+#include <cinttypes>
 #include <cmath>
 #include <cstdio>
 #include <cassert>
@@ -77,7 +78,7 @@ Index2Layer::~Index2Layer ()
 void Index2Layer::train(idx_t n, const float* x)
 {
     if (verbose) {
-        printf ("training level-1 quantizer %ld vectors in %dD\n",
+        printf ("training level-1 quantizer %" PRId64 " vectors in %dD\n",
                 n, d);
     }
 
@@ -104,7 +105,7 @@ void Index2Layer::train(idx_t n, const float* x)
     }
 
     if (verbose)
-        printf ("training %zdx%zd product quantizer on %ld vectors in %dD\n",
+        printf ("training %zdx%zd product quantizer on %" PRId64 " vectors in %dD\n",
                 pq.M, pq.ksub, n, d);
     pq.verbose = verbose;
     pq.train (n, residuals.data());
@@ -119,7 +120,7 @@ void Index2Layer::add(idx_t n, const float* x)
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(i0 + bs, n);
             if (verbose) {
-                printf("Index2Layer::add: adding %ld:%ld / %ld\n",
+                printf("Index2Layer::add: adding %" PRId64 ":%" PRId64 " / %" PRId64 "\n",
                        i0, i1, n);
             }
             add (i1 - i0, x + i0 * d);

@@ -261,7 +261,7 @@ void ProductQuantizer::train (int n, const float * x)
             train_type == Train_hypercube_pca) {
             if (dsub < nbits) {
                 final_train_type = Train_default;
-                printf ("cannot train hypercube: nbits=%ld > log2(d=%ld)\n",
+                printf ("cannot train hypercube: nbits=%zd > log2(d=%zd)\n",
                         nbits, dsub);
             }
         }

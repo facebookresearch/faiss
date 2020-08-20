@@ -13,8 +13,8 @@
 
 #include <faiss/AutoTune.h>
 
+#include <cinttypes>
 #include <cmath>
-
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
@@ -140,11 +140,11 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
 
         // coarse quantizers
         } else if (!coarse_quantizer &&
-                   sscanf (tok, "IVF%ld_HNSW%d", &ncentroids, &M) == 2) {
+                   sscanf (tok, "IVF%" PRId64 "_HNSW%d", &ncentroids, &M) == 2) {
             coarse_quantizer_1 = new IndexHNSWFlat (d, M);
 
         } else if (!coarse_quantizer &&
-                   sscanf (tok, "IVF%ld", &ncentroids) == 1) {
+                   sscanf (tok, "IVF%" PRId64, &ncentroids) == 1) {
             if (metric == METRIC_L2) {
                 coarse_quantizer_1 = new IndexFlatL2 (d);
             } else {
@@ -165,7 +165,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             use_2layer = true;
 
         } else if (!coarse_quantizer &&
-                   sscanf (tok, "Residual%ld", &ncentroids) == 1) {
+                   sscanf (tok, "Residual%" PRId64, &ncentroids) == 1) {
             coarse_quantizer_1 = new IndexFlatL2 (d);
             use_2layer = true;
 

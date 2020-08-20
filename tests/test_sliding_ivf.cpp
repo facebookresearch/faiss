@@ -192,7 +192,7 @@ int test_sliding_invlists (const char *index_key) {
         // will be deleted by the index
         index_ivf->replace_invlists (ci, true);
 
-        printf ("   nb invlists = %ld\n", ils.size());
+        printf ("   nb invlists = %zd\n", ils.size());
 
         auto new_res = search_index (index.get(), xq.data());
 
@@ -208,7 +208,7 @@ int test_sliding_invlists (const char *index_key) {
             if (ref_res[j] != new_res[j])
                 ndiff++;
         }
-        printf("  nb differences: %ld / %ld\n",
+        printf("  nb differences: %zd / %zd\n",
                ndiff, ref_res.size());
         EXPECT_EQ (ref_res, new_res);
     }

@@ -893,7 +893,7 @@ void PolysemousTraining::optimize_ranking (
         ScopeDeleter1<PermutationObjective> del (obj);
 
         if (verbose > 0) {
-            printf("   m=%d, nq=%ld, nb=%ld, intialize RankingScore "
+            printf("   m=%d, nq=%zd, nb=%zd, intialize RankingScore "
                    "in %.3f ms\n",
                    m, nq, nb, getmillisecs () - t0);
         }

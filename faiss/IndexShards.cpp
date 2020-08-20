@@ -9,6 +9,7 @@
 
 #include <faiss/IndexShards.h>
 
+#include <cinttypes>
 #include <cstdio>
 #include <functional>
 
@@ -172,7 +173,7 @@ IndexShardsTemplate<IndexT>::train(idx_t n,
   auto fn =
     [n, x](int no, IndexT *index) {
       if (index->verbose) {
-        printf("begin train shard %d on %ld points\n", no, n);
+        printf("begin train shard %d on %" PRId64 " points\n", no, n);
       }
 
       index->train(n, x);
@@ -237,7 +238,7 @@ IndexShardsTemplate<IndexT>::add_with_ids(idx_t n,
       auto x0 = x + i0 * components_per_vec;
 
       if (index->verbose) {
-        printf ("begin add shard %d on %ld points\n", no, n);
+        printf ("begin add shard %d on %" PRId64 " points\n", no, n);
       }
 
       if (ids) {
@@ -247,7 +248,7 @@ IndexShardsTemplate<IndexT>::add_with_ids(idx_t n,
       }
 
       if (index->verbose) {
-        printf ("end add shard %d on %ld points\n", no, i1 - i0);
+        printf ("end add shard %d on %" PRId64 " points\n", no, i1 - i0);
       }
     };
 
@@ -273,7 +274,7 @@ IndexShardsTemplate<IndexT>::search(idx_t n,
   auto fn =
     [n, k, x, &all_distances, &all_labels](int no, const IndexT *index) {
       if (index->verbose) {
-        printf ("begin query shard %d on %ld points\n", no, n);
+        printf ("begin query shard %d on %" PRId64 " points\n", no, n);
       }
 
       index->search (n, x, k,

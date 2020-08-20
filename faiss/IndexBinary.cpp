@@ -10,6 +10,7 @@
 #include <faiss/IndexBinary.h>
 #include <faiss/impl/FaissAssert.h>
 
+#include <cinttypes>
 #include <cstring>
 
 namespace faiss {
@@ -70,7 +71,7 @@ void IndexBinary::search_and_reconstruct(idx_t n, const uint8_t *x, idx_t k,
 }
 
 void IndexBinary::display() const {
-  printf("Index: %s  -> %ld elements\n", typeid (*this).name(), ntotal);
+  printf("Index: %s  -> %" PRId64 " elements\n", typeid (*this).name(), ntotal);
 }
 
 

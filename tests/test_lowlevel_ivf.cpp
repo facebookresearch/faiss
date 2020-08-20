@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
 
@@ -376,7 +377,7 @@ void test_lowlevel_access_binary (const char *index_key) {
 
         printf("new before reroder: [");
         for (int j = 0; j < k; j++)
-            printf("%ld,%d ", I[j], D[j]);
+            printf("%" PRId64 ",%d ", I[j], D[j]);
         printf("]\n");
 
         // re-order heap
@@ -384,10 +385,10 @@ void test_lowlevel_access_binary (const char *index_key) {
 
         printf("ref: [");
         for (int j = 0; j < k; j++)
-            printf("%ld,%d ", I_ref[j], D_ref[j]);
+            printf("%" PRId64 ",%d ", I_ref[j], D_ref[j]);
         printf("]\nnew: [");
         for (int j = 0; j < k; j++)
-            printf("%ld,%d ", I[j], D[j]);
+            printf("%" PRId64 ",%d ", I[j], D[j]);
         printf("]\n");
 
         // check that we have the same results as the reference search

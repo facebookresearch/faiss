@@ -9,6 +9,7 @@
 
 #include <faiss/IndexBinaryHash.h>
 
+#include <cinttypes>
 #include <cstdio>
 #include <memory>
 
@@ -271,10 +272,10 @@ size_t IndexBinaryHash::hashtable_size() const
 void IndexBinaryHash::display() const
 {
     for (auto it = invlists.begin(); it != invlists.end(); ++it) {
-        printf("%ld: [", it->first);
+        printf("%" PRId64 ": [", it->first);
         const std::vector<idx_t> & v = it->second.ids;
         for (auto x: v) {
-            printf("%ld ", 0 + x);
+            printf("%" PRId64 " ", x);
         }
         printf("]\n");
 

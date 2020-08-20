@@ -10,6 +10,7 @@
 #include <faiss/Clustering.h>
 #include <faiss/impl/AuxIndexStructures.h>
 
+#include <cinttypes>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -97,7 +98,7 @@ idx_t subsample_training_set(
 )
 {
     if (clus.verbose) {
-        printf("Sampling a subset of %ld / %ld for training\n",
+        printf("Sampling a subset of %zd / %" PRId64 " for training\n",
                clus.k * clus.max_points_per_centroid, nx);
     }
     std::vector<int> perm (nx);
@@ -269,8 +270,8 @@ void Clustering::train_encoded (idx_t nx, const uint8_t *x_in,
                                 const float *weights) {
 
     FAISS_THROW_IF_NOT_FMT (nx >= k,
-             "Number of training points (%ld) should be at least "
-             "as large as number of clusters (%ld)", nx, k);
+             "Number of training points (%" PRId64 ") should be at least "
+             "as large as number of clusters (%zd)", nx, k);
 
     FAISS_THROW_IF_NOT_FMT ((!codec || codec->d == d),
              "Codec dimension %d not the same as data dimension %d",
@@ -307,15 +308,15 @@ void Clustering::train_encoded (idx_t nx, const uint8_t *x_in,
         del3.reset (weights_new); weights = weights_new;
     } else if (nx < k * min_points_per_centroid) {
         fprintf (stderr,
-                 "WARNING clustering %ld points to %ld centroids: "
-                 "please provide at least %ld training points\n",
+                 "WARNING clustering %" PRId64 " points to %zd centroids: "
+                 "please provide at least %" PRId64 " training points\n",
                  nx, k, idx_t(k) * min_points_per_centroid);
     }
 
     if (nx == k) {
         // this is a corner case, just copy training set to clusters
         if (verbose) {
-            printf("Number of training points (%ld) same as number of "
+            printf("Number of training points (%" PRId64 ") same as number of "
                    "clusters, just copying\n", nx);
         }
         centroids.resize (d * k);
@@ -336,11 +337,11 @@ void Clustering::train_encoded (idx_t nx, const uint8_t *x_in,
 
 
     if (verbose) {
-        printf("Clustering %d points in %ldD to %ld clusters, "
+        printf("Clustering %" PRId64 " points in %zdD to %zd clusters, "
                "redo %d times, %d iterations\n",
-               int(nx), d, k, nredo, niter);
+               nx, d, k, nredo, niter);
         if (codec) {
-            printf("Input data encoded in %ld bytes per vector\n",
+            printf("Input data encoded in %zd bytes per vector\n",
                    codec->sa_code_size ());
         }
     }

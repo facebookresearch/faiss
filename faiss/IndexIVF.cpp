@@ -13,6 +13,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <cinttypes>
 #include <cstdio>
 #include <memory>
 
@@ -73,7 +74,7 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
                           "nlist not consistent with quantizer size");
     } else if (quantizer_trains_alone == 0) {
         if (verbose)
-            printf ("Training level-1 quantizer on %ld vectors in %ldD\n",
+            printf ("Training level-1 quantizer on %zd vectors in %zdD\n",
                     n, d);
 
         Clustering clus (d, nlist, cp);
@@ -88,7 +89,7 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
     } else if (quantizer_trains_alone == 2) {
         if (verbose)
             printf (
-                "Training L2 quantizer on %ld vectors in %ldD%s\n",
+                "Training L2 quantizer on %zd vectors in %zdD%s\n",
                 n, d,
                 clustering_index ? "(user provided index)" : "");
         FAISS_THROW_IF_NOT (metric_type == METRIC_L2);
@@ -189,7 +190,7 @@ void IndexIVF::add_with_ids (idx_t n, const float * x, const idx_t *xids)
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min (n, i0 + bs);
             if (verbose) {
-                printf("   IndexIVF::add_with_ids %ld:%ld\n", i0, i1);
+                printf("   IndexIVF::add_with_ids %" PRId64 ":%" PRId64 "\n", i0, i1);
             }
             add_with_ids (i1 - i0, x + i0 * d,
                           xids ? xids + i0 : nullptr);
@@ -239,7 +240,7 @@ void IndexIVF::add_with_ids (idx_t n, const float * x, const idx_t *xids)
 
 
     if (verbose) {
-        printf("    added %ld / %ld vectors (%ld -1s)\n", nadd, n, nminus1);
+        printf("    added %zd / %" PRId64 " vectors (%zd -1s)\n", nadd, n, nminus1);
     }
 
     ntotal += n;
@@ -360,7 +361,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
                 return (size_t)0;
             }
             FAISS_THROW_IF_NOT_FMT (key < (idx_t) nlist,
-                                    "Invalid key=%ld nlist=%ld\n",
+                                    "Invalid key=%" PRId64 " nlist=%zd\n",
                                     key, nlist);
 
             size_t list_size = invlists->list_size(key);
@@ -563,7 +564,7 @@ void IndexIVF::range_search_preassigned (
             if (key < 0) return;
             FAISS_THROW_IF_NOT_FMT (
                   key < (idx_t) nlist,
-                  "Invalid key=%ld  at ik=%ld nlist=%ld\n",
+                  "Invalid key=%" PRId64 " at ik=%zd nlist=%zd\n",
                   key, ik, nlist);
             const size_t list_size = invlists->list_size(key);
 

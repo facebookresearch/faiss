@@ -843,7 +843,7 @@ void InvertedListsIOHook::add_callback(InvertedListsIOHook *cb)
 
 void InvertedListsIOHook::print_callbacks()
 {
-    printf("registered %ld InvertedListsIOHooks:\n",
+    printf("registered %zd InvertedListsIOHooks:\n",
           InvertedListsIOHook_table.size());
     for(const auto & cb: InvertedListsIOHook_table) {
         printf("%08x %s %s\n",

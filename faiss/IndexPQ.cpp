@@ -9,7 +9,7 @@
 
 #include <faiss/IndexPQ.h>
 
-
+#include <cinttypes>
 #include <cstddef>
 #include <cstring>
 #include <cstdio>
@@ -59,7 +59,7 @@ void IndexPQ::train (idx_t n, const float *x)
         if (ntrain_perm > n / 4)
             ntrain_perm = n / 4;
         if (verbose) {
-            printf ("PQ training on %ld points, remains %ld points: "
+            printf ("PQ training on %" PRId64 " points, remains %" PRId64 " points: "
                     "training polysemous on %s\n",
                     n - ntrain_perm, ntrain_perm,
                     ntrain_perm == 0 ? "centroids" : "these");
@@ -523,7 +523,7 @@ void IndexPQ::hamming_distance_histogram (idx_t n, const float *x,
         ScopeDeleter<hamdis_t> del (distances);
 #pragma omp for
         for (size_t q0 = 0; q0 < n; q0 += bs) {
-            // printf ("dis stats: %ld/%ld\n", q0, n);
+            // printf ("dis stats: %zd/%zd\n", q0, n);
             size_t q1 = q0 + bs;
             if (q1 > n) q1 = n;
 
@@ -955,7 +955,7 @@ void MultiIndexQuantizer::search (idx_t n, const float *x, idx_t k,
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(i0 + bs, n);
             if (verbose) {
-                printf("MultiIndexQuantizer::search: %ld:%ld / %ld\n",
+                printf("MultiIndexQuantizer::search: %" PRId64 ":%" PRId64 " / %" PRId64 "\n",
                        i0, i1, n);
             }
             search (i1 - i0, x + i0 * d, k,

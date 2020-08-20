@@ -52,7 +52,7 @@ void hnsw_add_vertices(IndexBinaryHNSW& index_hnsw,
   size_t ntotal = n0 + n;
   double t0 = getmillisecs();
   if (verbose) {
-    printf("hnsw_add_vertices: adding %ld elements on top of %ld "
+    printf("hnsw_add_vertices: adding %zd elements on top of %zd "
            "(preset_levels=%d)\n",
            n, n0, int(preset_levels));
   }

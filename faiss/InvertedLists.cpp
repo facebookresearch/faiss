@@ -274,7 +274,7 @@ const uint8_t * HStackInvertedLists::get_single_code (
         }
         offset -= sz;
     }
-    FAISS_THROW_FMT ("offset %ld unknown", offset);
+    FAISS_THROW_FMT ("offset %zd unknown", offset);
 }
 
 
@@ -309,7 +309,7 @@ Index::idx_t HStackInvertedLists::get_single_id (
         }
         offset -= sz;
     }
-    FAISS_THROW_FMT ("offset %ld unknown", offset);
+    FAISS_THROW_FMT ("offset %zd unknown", offset);
 }
 
 

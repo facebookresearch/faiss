@@ -13,6 +13,7 @@
 
 #include <faiss/AutoTune.h>
 
+#include <cinttypes>
 #include <cmath>
 
 #include <faiss/impl/FaissAssert.h>
@@ -233,7 +234,7 @@ void OperatingPoints::display (bool only_optimal) const
 {
     const std::vector<OperatingPoint> &pts =
         only_optimal ? optimal_pts : all_pts;
-    printf("Tested %ld operating points, %ld ones are optimal:\n",
+    printf("Tested %zd operating points, %zd ones are optimal:\n",
            all_pts.size(), optimal_pts.size());
 
     for (int i = 0; i < pts.size(); i++) {
@@ -247,7 +248,7 @@ void OperatingPoints::display (bool only_optimal) const
                 }
             }
         }
-        printf ("cno=%ld key=%s perf=%.4f t=%.3f %s\n",
+        printf ("cno=%" PRId64 " key=%s perf=%.4f t=%.3f %s\n",
                 op.cno, op.key.c_str(), op.perf, op.t, star);
     }
 
@@ -566,7 +567,7 @@ void ParameterSpace::set_index_parameter (
 
 void ParameterSpace::display () const
 {
-    printf ("ParameterSpace, %ld parameters, %ld combinations:\n",
+    printf ("ParameterSpace, %zd parameters, %zd combinations:\n",
             parameter_ranges.size (), n_combinations ());
     for (int i = 0; i < parameter_ranges.size(); i++) {
         const ParameterRange & pr = parameter_ranges[i];
@@ -622,7 +623,7 @@ void ParameterSpace::explore (Index *index,
             bool keep = ops->add (perf, t_search, combination_name (cno), cno);
 
             if (verbose)
-                printf("  %ld/%ld: %s perf=%.3f t=%.3f s %s\n", cno, n_comb,
+                printf("  %zd/%zd: %s perf=%.3f t=%.3f s %s\n", cno, n_comb,
                        combination_name (cno).c_str(), perf, t_search,
                        keep ? "*" : "");
         }
@@ -646,7 +647,7 @@ void ParameterSpace::explore (Index *index,
         size_t cno = perm[xp];
 
         if (verbose)
-            printf("  %ld/%d: cno=%ld %s ", xp, n_exp, cno,
+            printf("  %zd/%d: cno=%zd %s ", xp, n_exp, cno,
                    combination_name (cno).c_str());
 
         {
