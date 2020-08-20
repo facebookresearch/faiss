@@ -26,14 +26,14 @@
 #define READ1(x)  READANDCHECK(&(x), 1)
 
 // will fail if we write 256G of data at once...
-#define READVECTOR(vec) {                       \
-        long size;                            \
-        READANDCHECK (&size, 1);                \
-        FAISS_THROW_IF_NOT (size >= 0 && size < (1L << 40));  \
-        (vec).resize (size);                    \
-        READANDCHECK ((vec).data (), size);     \
-    }
-
+#define READVECTOR(vec)                                          \
+  {                                                              \
+    size_t size;                                                 \
+    READANDCHECK(&size, 1);                                      \
+    FAISS_THROW_IF_NOT(size >= 0 && size < (uint64_t{1} << 40)); \
+    (vec).resize(size);                                          \
+    READANDCHECK((vec).data(), size);                            \
+  }
 
 #define READSTRING(s) {                      \
         size_t size = (s).size ();            \

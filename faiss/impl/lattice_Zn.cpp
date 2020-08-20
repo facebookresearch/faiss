@@ -116,11 +116,11 @@ long repeats_encode_64 (
         for(;;) {
             // directly jump to next available slot.
             int i = __builtin_ctzl(tosee);
-            tosee &= ~(1UL << i) ;
+            tosee &= ~(uint64_t{1} << i) ;
             if (c[i] == r->val) {
                 code_comb += comb(rank, occ + 1);
                 occ++;
-                coded |= 1UL << i;
+                coded |= uint64_t{1} << i;
                 if (occ == r->n) break;
             }
             rank++;
@@ -148,13 +148,13 @@ void repeats_decode_64(
         int occ = 0;
         int rank = nfree;
         int next_rank = decode_comb_1 (&code_comb, r->n, rank);
-        uint64_t tosee = ((1UL << dim) - 1) ^ decoded;
+        uint64_t tosee = ((uint64_t{1} << dim) - 1) ^ decoded;
         for(;;) {
             int i = 63 - __builtin_clzl(tosee);
-            tosee &= ~(1UL << i);
+            tosee &= ~(uint64_t{1} << i);
             rank--;
             if (rank == next_rank) {
-                decoded |= 1UL << i;
+                decoded |= uint64_t{1} << i;
                 c[i] = r->val;
                 occ++;
                 if (occ == r->n) break;
@@ -442,7 +442,7 @@ uint64_t ZnSphereCodec::search_and_encode(const float *x) const {
         cabs[i] = fabs(c[i]);
         if (c[i] != 0) {
             if (c[i] < 0) {
-                signs |= 1UL << nnz;
+                signs |= uint64_t{1} << nnz;
             }
             nnz ++;
         }
