@@ -26,6 +26,7 @@
 
 #include <faiss/utils/hamming.h>
 
+#include <algorithm>
 #include <vector>
 #include <memory>
 #include <stdio.h>
