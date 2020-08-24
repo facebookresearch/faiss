@@ -306,7 +306,7 @@ void EnumeratedVectors::decode_multi(size_t n, const uint64_t * codes,
 void EnumeratedVectors::find_nn (
                   size_t nc, const uint64_t * codes,
                   size_t nq, const float *xq,
-                  uint64_t *labels, float *distances)
+                  int64_t *labels, float *distances)
 {
     for (size_t i = 0; i < nq; i++) {
         distances[i] = -1e20;
