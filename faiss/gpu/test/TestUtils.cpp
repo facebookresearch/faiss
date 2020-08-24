@@ -24,6 +24,8 @@ inline float relativeError(float a, float b) {
 // This seed is also used for the faiss float_rand API; in a test it
 // is all within a single thread, so it is ok
 long s_seed = 1;
+std::mt19937 rng(1);
+std::uniform_int_distribution<> distrib;
 
 void newTestSeed() {
   struct timespec t;
@@ -35,7 +37,7 @@ void newTestSeed() {
 void setTestSeed(long seed) {
   printf("testing with random seed %ld\n", seed);
 
-  srand48(seed);
+  rng = std::mt19937(seed);
   s_seed = seed;
 }
 
@@ -43,7 +45,7 @@ int randVal(int a, int b) {
   EXPECT_GE(a, 0);
   EXPECT_LE(a, b);
 
-  return a + (lrand48() % (b + 1 - a));
+  return a + (distrib(rng) % (b + 1 - a));
 }
 
 bool randBool() {

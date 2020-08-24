@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <random>
 
 #include <sys/time.h>
 
@@ -61,13 +62,16 @@ int main ()
     faiss::gpu::GpuIndexIVFPQ index (
       &resources, d, ncentroids, 4, 8, faiss::METRIC_L2, config);
 
+    std::mt19937 rng;
+
     { // training
         printf ("[%.3f s] Generating %ld vectors in %dD for training\n",
                 elapsed() - t0, nt, d);
 
         std::vector <float> trainvecs (nt * d);
+        std::uniform_real_distribution<> distrib;
         for (size_t i = 0; i < nt * d; i++) {
-            trainvecs[i] = drand48();
+            trainvecs[i] = distrib(rng);
         }
 
         printf ("[%.3f s] Training the index\n",
@@ -97,8 +101,9 @@ int main ()
                 elapsed() - t0, nb);
 
         std::vector <float> database (nb * d);
+        std::uniform_real_distribution<> distrib;
         for (size_t i = 0; i < nb * d; i++) {
-            database[i] = drand48();
+            database[i] = distrib(rng);
         }
 
         printf ("[%.3f s] Adding the vectors to the index\n",
