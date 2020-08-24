@@ -80,7 +80,7 @@ struct EnumeratedVectors {
     // (decodes and computes distances)
     void find_nn (size_t n, const uint64_t * codes,
                   size_t nq, const float *xq,
-                  uint64_t *idx, float *dis);
+                  int64_t *idx, float *dis);
 
     virtual ~EnumeratedVectors() {}
 
