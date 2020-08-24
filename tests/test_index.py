@@ -445,7 +445,8 @@ class TestHNSW(unittest.TestCase):
         self.io_and_retest(index, Dhnsw, Ihnsw)
 
     def io_and_retest(self, index, Dhnsw, Ihnsw):
-        _, tmpfile = tempfile.mkstemp()
+        fd, tmpfile = tempfile.mkstemp()
+        os.close(fd)
         try:
             faiss.write_index(index, tmpfile)
             index2 = faiss.read_index(tmpfile)
