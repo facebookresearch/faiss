@@ -102,7 +102,7 @@ int decode_comb_1 (uint64_t *n, int k1, int r) {
 }
 
 // optimized version for < 64 bits
-long repeats_encode_64 (
+uint64_t repeats_encode_64 (
      const std::vector<Repeat> & repeats,
      int dim, const float *c)
 {
@@ -190,9 +190,9 @@ Repeats::Repeats (int dim, const float *c): dim(dim)
 }
 
 
-long Repeats::count () const
+uint64_t Repeats::count () const
 {
-    long accu = 1;
+    uint64_t accu = 1;
     int remain = dim;
     for (int i = 0; i < repeats.size(); i++) {
         accu *= comb(remain, repeats[i].n);
@@ -204,7 +204,7 @@ long Repeats::count () const
 
 
 // version with a bool vector that works for > 64 dim
-long Repeats::encode(const float *c) const
+uint64_t Repeats::encode(const float *c) const
 {
     if (dim < 64) {
         return repeats_encode_64 (repeats, dim, c);
@@ -306,18 +306,18 @@ void EnumeratedVectors::decode_multi(size_t n, const uint64_t * codes,
 void EnumeratedVectors::find_nn (
                   size_t nc, const uint64_t * codes,
                   size_t nq, const float *xq,
-                  long *labels, float *distances)
+                  uint64_t *labels, float *distances)
 {
-    for (long i = 0; i < nq; i++) {
+    for (size_t i = 0; i < nq; i++) {
         distances[i] = -1e20;
         labels[i] = -1;
     }
 
     float c[dim];
-    for(long i = 0; i < nc; i++) {
+    for(size_t i = 0; i < nc; i++) {
         uint64_t code = codes[nc];
         decode(code, c);
-        for (long j = 0; j < nq; j++) {
+        for (size_t j = 0; j < nq; j++) {
             const float *x = xq + j * dim;
             float dis = fvec_inner_product(x, c, dim);
             if (dis > distances[j]) {

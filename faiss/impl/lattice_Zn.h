@@ -80,7 +80,7 @@ struct EnumeratedVectors {
     // (decodes and computes distances)
     void find_nn (size_t n, const uint64_t * codes,
                   size_t nq, const float *xq,
-                  long *idx, float *dis);
+                  uint64_t *idx, float *dis);
 
     virtual ~EnumeratedVectors() {}
 
@@ -103,9 +103,9 @@ struct Repeats {
     Repeats(int dim = 0, const float *c = nullptr);
 
     // count number of possible codes for this atom
-    long count() const;
+    uint64_t count() const;
 
-    long encode(const float *c) const;
+    uint64_t encode(const float *c) const;
 
     void decode(uint64_t code, float *c) const;
 };
