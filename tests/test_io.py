@@ -15,8 +15,6 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 from common import get_dataset, get_dataset_2
 
-warnings.simplefilter("ignore", category=ResourceWarning)
-
 
 class TestIOVariants(unittest.TestCase):
 
@@ -202,17 +200,18 @@ class TestCallbacks(unittest.TestCase):
             reader = faiss.PyCallbackIOReader(lambda size: os.read(rf, size))
             return faiss.read_index(reader)
 
-        fut = ThreadPool(1).apply_async(index_from_pipe, ())
+        with ThreadPool(1) as pool:
+            fut = pool.apply_async(index_from_pipe, ())
 
-        # write to pipe
-        writer = faiss.PyCallbackIOWriter(lambda b: os.write(wf, b))
-        faiss.write_index(index, writer)
+            # write to pipe
+            writer = faiss.PyCallbackIOWriter(lambda b: os.write(wf, b))
+            faiss.write_index(index, writer)
 
-        index2 = fut.get()
+            index2 = fut.get()
 
-        # closing is not really useful but it does not hurt
-        os.close(wf)
-        os.close(rf)
+            # closing is not really useful but it does not hurt
+            os.close(wf)
+            os.close(rf)
 
         Dnew, Inew = index2.search(x, 10)
 
