@@ -30,10 +30,11 @@ class TestIOVariants(unittest.TestCase):
             # should be fine
             faiss.read_index(fname)
 
+            with open(fname, 'rb') as f:
+                data = f.read()
             # now damage file
-            data = open(fname, 'rb').read()
-            data = data[:int(len(data) / 2)]
-            open(fname, 'wb').write(data)
+            with open(fname, 'wb') as f:
+                f.write(data[:int(len(data) / 2)])
 
             # should make a nice readable exception that mentions the filename
             try:
@@ -89,19 +90,20 @@ class TestCallbacks(unittest.TestCase):
     def test_buf_read(self):
         x = np.random.uniform(size=20)
 
-        _, fname = tempfile.mkstemp()
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
         try:
             x.tofile(fname)
 
-            f = open(fname, 'rb')
-            reader = faiss.PyCallbackIOReader(f.read, 1234)
+            with open(fname, 'rb') as f:
+                reader = faiss.PyCallbackIOReader(f.read, 1234)
 
-            bsz = 123
-            reader = faiss.BufferedIOReader(reader, bsz)
+                bsz = 123
+                reader = faiss.BufferedIOReader(reader, bsz)
 
-            y = np.zeros_like(x)
-            print('nbytes=', y.nbytes)
-            reader(faiss.swig_ptr(y), y.nbytes, 1)
+                y = np.zeros_like(x)
+                print('nbytes=', y.nbytes)
+                reader(faiss.swig_ptr(y), y.nbytes, 1)
 
             np.testing.assert_array_equal(x, y)
         finally:
@@ -114,18 +116,18 @@ class TestCallbacks(unittest.TestCase):
         index = faiss.IndexFlatL2(d)
         index.add(x)
 
-        _, fname = tempfile.mkstemp()
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
         try:
             faiss.write_index(index, fname)
 
-            f = open(fname, 'rb')
+            with open(fname, 'rb') as f:
+                reader = faiss.PyCallbackIOReader(f.read, 1234)
 
-            reader = faiss.PyCallbackIOReader(f.read, 1234)
+                if bsz > 0:
+                    reader = faiss.BufferedIOReader(reader, bsz)
 
-            if bsz > 0:
-                reader = faiss.BufferedIOReader(reader, bsz)
-
-            index2 = faiss.read_index(reader)
+                index2 = faiss.read_index(reader)
 
             self.assertEqual(index.d, index2.d)
             np.testing.assert_array_equal(
@@ -163,7 +165,8 @@ class TestCallbacks(unittest.TestCase):
         index = faiss.IndexFlatL2(d)
         index.add(x)
 
-        _, fname = tempfile.mkstemp()
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
         try:
             faiss.write_index(index, fname)
 
@@ -179,6 +182,7 @@ class TestCallbacks(unittest.TestCase):
             )
 
         finally:
+            del reader
             if os.path.exists(fname):
                 os.unlink(fname)
 

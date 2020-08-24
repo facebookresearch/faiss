@@ -130,7 +130,8 @@ class TestRemove(unittest.TestCase):
             assert False, 'should have raised an exception'
 
         # while we are there, let's test I/O as well...
-        _, tmpnam = tempfile.mkstemp()
+        fd, tmpnam = tempfile.mkstemp()
+        os.close(fd)
         try:
             faiss.write_index_binary(index, tmpnam)
             index = faiss.read_index_binary(tmpnam)
@@ -409,7 +410,8 @@ class TestIVFFlatDedup(unittest.TestCase):
             assert ref == new
 
         # test I/O
-        _, tmpfile = tempfile.mkstemp()
+        fd, tmpfile = tempfile.mkstemp()
+        os.close(fd)
         try:
             faiss.write_index(index_new, tmpfile)
             index_st = faiss.read_index(tmpfile)
