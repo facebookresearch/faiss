@@ -7,6 +7,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <random>
 
 #undef FINTEGER
 #define FINTEGER long
@@ -31,8 +32,10 @@ int sgeqrf_ (FINTEGER *m, FINTEGER *n, float *a, FINTEGER *lda,
 float *new_random_vec(int size)
 {
     float *x = new float[size];
+    std::mt19937 rng;
+    std::uniform_real_distribution<> distrib;
     for (int i = 0; i < size; i++)
-        x[i] = drand48();
+        x[i] = distrib(rng);
     return x;
 }
 

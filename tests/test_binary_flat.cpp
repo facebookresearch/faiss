@@ -23,8 +23,6 @@ TEST(BinaryFlat, accuracy) {
   // make the index object and train it
   faiss::IndexBinaryFlat index(d);
 
-  srand(35);
-
   std::vector<uint8_t> database(nb * (d / 8));
   for (size_t i = 0; i < nb * (d / 8); i++) {
     database[i] = rand() % 0x100;

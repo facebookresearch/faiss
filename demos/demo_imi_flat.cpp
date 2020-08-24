@@ -10,6 +10,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <random>
 
 #include <sys/time.h>
 
@@ -77,6 +78,8 @@ int main ()
     // Use 4-1024 depending on the trade-off speed accuracy that you want
     index.nprobe = 2048;
 
+    std::mt19937 rng;
+    std::uniform_real_distribution<> distrib;
 
     { // training
         printf ("[%.3f s] Generating %ld vectors in %dD for training\n",
@@ -84,7 +87,7 @@ int main ()
 
         std::vector <float> trainvecs (nt * d);
         for (size_t i = 0; i < nt * d; i++) {
-            trainvecs[i] = drand48();
+            trainvecs[i] = distrib(rng);
         }
 
         printf ("[%.3f s] Training the index\n", elapsed() - t0);
@@ -101,7 +104,7 @@ int main ()
 
         std::vector <float> database (nb * d);
         for (size_t i = 0; i < nb * d; i++) {
-            database[i] = drand48();
+            database[i] = distrib(rng);
         }
 
         printf ("[%.3f s] Adding the vectors to the index\n", elapsed() - t0);
