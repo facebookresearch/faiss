@@ -14,9 +14,16 @@
 #include <cstring>
 #include <cmath>
 
-#include <sys/time.h>
 #include <sys/types.h>
+
+#ifdef _MSC_VER
+#define NOMINMAX
+#include <windows.h>
+#undef NOMINMAX
+#else
+#include <sys/time.h>
 #include <unistd.h>
+#endif // !_MSC_VER
 
 #include <omp.h>
 
@@ -65,11 +72,22 @@ int sgemv_(const char *trans, FINTEGER *m, FINTEGER *n, float *alpha,
 
 namespace faiss {
 
+#ifdef _MSC_VER
+double getmillisecs() {
+    LARGE_INTEGER ts;
+    LARGE_INTEGER freq;
+    QueryPerformanceFrequency(&freq);
+    QueryPerformanceCounter(&ts);
+
+    return (ts.QuadPart * 1e3) / freq.QuadPart;
+}
+#else // _MSC_VER
 double getmillisecs () {
     struct timeval tv;
     gettimeofday (&tv, nullptr);
     return tv.tv_sec * 1e3 + tv.tv_usec * 1e-3;
 }
+#endif // _MSC_VER
 
 uint64_t get_cycles () {
 #ifdef  __x86_64__
