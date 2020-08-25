@@ -15,7 +15,7 @@
 
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexPQ.h>
-#include <faiss/impl/macros.h>
+#include <faiss/impl/platform_macros.h>
 
 
 namespace faiss {

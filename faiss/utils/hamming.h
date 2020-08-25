@@ -32,7 +32,7 @@
 #define __builtin_popcountl __popcnt64
 #endif // _MSC_VER
 
-#include <faiss/impl/macros.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 
 
