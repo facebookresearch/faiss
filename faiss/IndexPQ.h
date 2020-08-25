@@ -17,7 +17,7 @@
 #include <faiss/Index.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/PolysemousTraining.h>
-#include <faiss/impl/macros.h>
+#include <faiss/impl/platform_macros.h>
 
 
 namespace faiss {
