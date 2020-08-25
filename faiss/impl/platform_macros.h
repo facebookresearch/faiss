@@ -8,11 +8,17 @@
 #pragma once
 
 #ifdef _MSC_VER
+
 #ifdef FAISS_MAIN_LIB
 #define FAISS_API __declspec(dllexport)
 #else // _FAISS_MAIN_LIB
 #define FAISS_API __declspec(dllimport)
 #endif // FAISS_MAIN_LIB
+
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+
 #else
+
 #define FAISS_API
+
 #endif // _MSC_VER
