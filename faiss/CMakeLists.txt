@@ -129,9 +129,10 @@ endif()
 target_include_directories(faiss PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 
-# NOTE: This is needed for building faiss as a static library that will then be
-# linked into a shared library.
-set_property(TARGET faiss PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_target_properties(faiss PROPERTIES
+  POSITION_INDEPENDENT_CODE ON
+  WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
 
 target_compile_definitions(faiss PRIVATE FINTEGER=int)
 
@@ -151,6 +152,9 @@ endif()
 
 install(TARGETS faiss
   EXPORT faiss-targets
+  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
   INCLUDES DESTINATION include
 )
 foreach(header ${FAISS_HEADERS})
