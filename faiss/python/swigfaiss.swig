@@ -16,6 +16,14 @@
 
 %module swigfaiss;
 
+// NOTE: While parsing the headers to generate the interface, SWIG does not know
+// about `_MSC_VER`.
+// TODO: Remove the need for this hack.
+#ifdef SWIGWIN
+#define _MSC_VER
+%include <windows.i>
+#endif // SWIGWIN
+
 // fbode SWIG fails on warnings, so make them non fatal
 #pragma SWIG nowarn=321
 #pragma SWIG nowarn=403
@@ -230,6 +238,7 @@ namespace std {
  * Parse headers
  *******************************************************************/
 
+%include <faiss/impl/platform_macros.h>
 
 %ignore *::cmp;
 

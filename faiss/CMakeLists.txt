@@ -107,6 +107,7 @@ set(FAISS_HEADERS
   impl/io.h
   impl/io_macros.h
   impl/lattice_Zn.h
+  impl/platform_macros.h
   utils/Heap.h
   utils/WorkerThread.h
   utils/distances.h
@@ -133,6 +134,10 @@ set_target_properties(faiss PROPERTIES
   POSITION_INDEPENDENT_CODE ON
   WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
+
+if(WIN32)
+  target_compile_definitions(faiss PRIVATE FAISS_MAIN_LIB)
+endif()
 
 target_compile_definitions(faiss PRIVATE FINTEGER=int)
 

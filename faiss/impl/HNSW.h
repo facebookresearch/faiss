@@ -19,6 +19,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/Heap.h>
+#include <faiss/impl/platform_macros.h>
 
 
 namespace faiss {
@@ -276,7 +277,7 @@ struct HNSWStats {
 };
 
 // global var that collects them all
-extern HNSWStats hnsw_stats;
+FAISS_API extern HNSWStats hnsw_stats;
 
 
 }  // namespace faiss

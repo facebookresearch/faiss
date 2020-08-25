@@ -19,6 +19,7 @@
 #include <faiss/InvertedLists.h>
 #include <faiss/DirectMap.h>
 #include <faiss/Clustering.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 
 
@@ -364,7 +365,7 @@ struct IndexIVFStats {
 };
 
 // global var that collects them all
-extern IndexIVFStats indexIVF_stats;
+FAISS_API extern IndexIVFStats indexIVF_stats;
 
 
 } // namespace faiss

@@ -15,6 +15,7 @@
 
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexPQ.h>
+#include <faiss/impl/platform_macros.h>
 
 
 namespace faiss {
@@ -30,7 +31,7 @@ struct IVFPQSearchParameters: IVFSearchParameters {
 /** Inverted file with Product Quantizer encoding. Each residual
  * vector is encoded as a product quantizer code.
  */
-struct IndexIVFPQ: IndexIVF {
+struct FAISS_API IndexIVFPQ: IndexIVF {
     bool by_residual;              ///< Encode residual or plain vector?
 
     ProductQuantizer pq;           ///< produces the codes
@@ -150,7 +151,7 @@ struct IndexIVFPQStats {
 };
 
 // global var that collects them all
-extern IndexIVFPQStats indexIVFPQ_stats;
+FAISS_API extern IndexIVFPQStats indexIVFPQ_stats;
 
 
 

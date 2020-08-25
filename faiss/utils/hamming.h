@@ -32,6 +32,7 @@
 #define __builtin_popcountl __popcnt64
 #endif // _MSC_VER
 
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 
 
@@ -114,7 +115,7 @@ struct BitstringReader {
 
 
 
-extern size_t hamming_batch_size;
+FAISS_API extern size_t hamming_batch_size;
 
 inline int popcount64(uint64_t x) {
     return __builtin_popcountl(x);

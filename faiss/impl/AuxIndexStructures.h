@@ -21,6 +21,8 @@
 #include <mutex>
 
 #include <faiss/Index.h>
+#include <faiss/impl/platform_macros.h>
+
 
 namespace faiss {
 
@@ -218,7 +220,7 @@ struct DistanceComputer {
  * Interrupt callback
  ***********************************************************/
 
-struct InterruptCallback {
+struct FAISS_API InterruptCallback {
     virtual bool want_interrupt () = 0;
     virtual ~InterruptCallback() {}
 

@@ -17,6 +17,8 @@
 #include <faiss/Index.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/PolysemousTraining.h>
+#include <faiss/impl/platform_macros.h>
+
 
 namespace faiss {
 
@@ -138,7 +140,7 @@ struct IndexPQStats {
     void reset ();
 };
 
-extern IndexPQStats indexPQ_stats;
+FAISS_API extern IndexPQStats indexPQ_stats;
 
 
 

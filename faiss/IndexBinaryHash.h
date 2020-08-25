@@ -17,6 +17,7 @@
 
 #include <faiss/IndexBinary.h>
 #include <faiss/IndexBinaryFlat.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 
 
@@ -71,7 +72,7 @@ struct IndexBinaryHashStats {
     void reset ();
 };
 
-extern IndexBinaryHashStats indexBinaryHash_stats;
+FAISS_API extern IndexBinaryHashStats indexBinaryHash_stats;
 
 
 /** just uses the b first bits as a hash value */
