@@ -19,7 +19,7 @@
 #include <faiss/InvertedLists.h>
 #include <faiss/DirectMap.h>
 #include <faiss/Clustering.h>
-#include <faiss/impl/macros.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 
 
