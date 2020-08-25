@@ -25,7 +25,8 @@ source:
 
 outputs:
   - name: libfaiss
-    script: build-lib.sh
+    script: build-lib.sh   # [not win]
+    script: build-lib.bat  # [win]
     build:
       string: "h{{ PKG_HASH }}_{{ number }}_cpu"
       run_exports:
@@ -33,10 +34,11 @@ outputs:
     requirements:
       build:
         - {{ compiler('cxx') }}
-        - llvm-openmp  # [osx]
-        - cmake-local
+        - llvm-openmp   # [osx]
+        - cmake >=3.17  # [win]
+        - cmake-local   # [not win]
       host:
-        - mkl >=2018
+        - mkl-devel >=2018
         - blas =*=mkl
       run:
         - mkl >=2018
@@ -49,14 +51,16 @@ outputs:
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
   - name: faiss-cpu
-    script: build-pkg.sh
+    script: build-pkg.sh   # [not win]
+    script: build-pkg.bat  # [win]
     build:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu"
     requirements:
       build:
         - {{ compiler('cxx') }}
         - swig
-        - cmake-local
+        - cmake >=3.17  # [win]
+        - cmake-local   # [not win]
       host:
         - python {{ python }}
         - numpy 1.11.*
@@ -77,6 +81,8 @@ outputs:
   - name: cmake-local
     version: 3.17
     script: install-cmake.sh
+    build:
+      skip: True  # [win]
     requirements:
       build:
         - {{ compiler('cxx') }}
