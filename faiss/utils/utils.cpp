@@ -435,7 +435,7 @@ namespace {
         }
 
         // compute sub-ranges for each thread
-        SegmentS s1s[nt], s2s[nt], sws[nt];
+        std::vector<SegmentS> s1s(nt), s2s(nt), sws(nt);
         s2s[0].i0 = s2.i0;
         s2s[nt - 1].i1 = s2.i1;
 
@@ -528,7 +528,7 @@ void fvec_argsort_parallel (size_t n, const float *vals,
 
     ArgsortComparator comp = {vals};
 
-    SegmentS segs[nt];
+    std::vector<SegmentS> segs(nt);
 
     // independent sorts
 #pragma omp parallel for

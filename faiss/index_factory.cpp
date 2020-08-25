@@ -82,15 +82,14 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
 
     ScopeDeleter1<Index> del_coarse_quantizer, del_index;
 
-    char description[strlen(description_in) + 1];
+    std::string description(description_in);
     char *ptr;
-    memcpy (description, description_in, strlen(description_in) + 1);
 
     int64_t ncentroids = -1;
     bool use_2layer = false;
     int hnsw_M = -1;
 
-    for (char *tok = strtok_r (description, " ,", &ptr);
+    for (char *tok = strtok_r (&description[0], " ,", &ptr);
          tok;
          tok = strtok_r (nullptr, " ,", &ptr)) {
         int d_out, opq_M, nbit, M, M2, pq_m, ncent, r2;

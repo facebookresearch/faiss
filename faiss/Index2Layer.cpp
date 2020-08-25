@@ -173,14 +173,14 @@ void Index2Layer::search(
 
 void Index2Layer::reconstruct_n(idx_t i0, idx_t ni, float* recons) const
 {
-    float recons1[d];
+    std::vector<float> recons1(d);
     FAISS_THROW_IF_NOT (i0 >= 0 && i0 + ni <= ntotal);
     const uint8_t *rp = &codes[i0 * code_size];
 
     for (idx_t i = 0; i < ni; i++) {
         idx_t key = 0;
         memcpy (&key, rp, code_size_1);
-        q1.quantizer->reconstruct (key, recons1);
+        q1.quantizer->reconstruct (key, recons1.data());
         rp += code_size_1;
         pq.decode (rp, recons);
         for (idx_t j = 0; j < d; j++) {
