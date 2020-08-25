@@ -27,6 +27,11 @@
 
 #include <stdint.h>
 
+#ifdef _MSC_VER
+#include <intrin.h>
+#define __builtin_popcountl __popcnt64
+#endif // _MSC_VER
+
 #include <faiss/utils/Heap.h>
 
 
