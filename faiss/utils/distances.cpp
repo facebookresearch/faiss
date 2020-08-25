@@ -761,5 +761,19 @@ void pairwise_L2sqr (int64_t d,
 
 }
 
+void inner_product_to_L2sqr(float* __restrict dis,
+    const float* nr1,
+    const float* nr2,
+    size_t n1, size_t n2)
+{
+
+#pragma omp parallel for
+    for (int64_t j = 0; j < n1; j++) {
+        float* disj = dis + j * n2;
+        for (size_t i = 0; i < n2; i++)
+            disj[i] = nr1[j] + nr2[i] - 2 * disj[i];
+    }
+}
+
 
 } // namespace faiss
