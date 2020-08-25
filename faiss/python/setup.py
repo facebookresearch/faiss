@@ -2,13 +2,7 @@ from __future__ import print_function
 from setuptools import setup, find_packages
 import os
 import shutil
-
-here = os.path.abspath(os.path.dirname(__file__))
-
-check_fpath = os.path.join("_swigfaiss.so")
-if not os.path.exists(check_fpath):
-    print("Could not find {}".format(check_fpath))
-    print("Have you run `make` and `make -C python`?")
+import platform
 
 # make the faiss python package dir
 shutil.rmtree("faiss", ignore_errors=True)
@@ -17,12 +11,16 @@ shutil.copytree("contrib", "faiss/contrib")
 shutil.copyfile("__init__.py", "faiss/__init__.py")
 shutil.copyfile("loader.py", "faiss/loader.py")
 shutil.copyfile("swigfaiss.py", "faiss/swigfaiss.py")
-shutil.copyfile("_swigfaiss.so", "faiss/_swigfaiss.so")
-try:
-    shutil.copyfile("swigfaiss_avx2.py", "faiss/swigfaiss_avx2.py")
-    shutil.copyfile("_swigfaiss_avx2.so", "faiss/_swigfaiss_avx2.so")
-except:
-    pass
+if platform.system() == 'Windows':
+    shutil.copyfile("Release/_swigfaiss.pyd", "faiss/_swigfaiss.pyd")
+
+else:
+    shutil.copyfile("_swigfaiss.so", "faiss/_swigfaiss.so")
+    try:
+        shutil.copyfile("swigfaiss_avx2.py", "faiss/swigfaiss_avx2.py")
+        shutil.copyfile("_swigfaiss_avx2.so", "faiss/_swigfaiss_avx2.so")
+    except:
+        pass
 
 long_description="""
 Faiss is a library for efficient similarity search and clustering of dense
@@ -46,7 +44,7 @@ setup(
     install_requires=['numpy'],
     packages=['faiss', 'faiss.contrib'],
     package_data={
-        'faiss': ['*.so'],
+        'faiss': ['*.so', '*.pyd'],
     },
 
 )
