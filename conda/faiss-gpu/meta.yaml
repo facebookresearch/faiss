@@ -1,37 +1,17 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+{% set version = environ.get('GIT_DESCRIBE_TAG') %}
+{% set number = environ.get('GIT_DESCRIBE_NUMBER') %}
+
 package:
-  name: faiss-gpu
-  version: "{{ FAISS_BUILD_VERSION }}"
-
-source:
-  git_url: ../../
-
-requirements:
-  build:
-    - {{ compiler('cxx') }}
-    - llvm-openmp # [osx]
-    - setuptools
-    - swig
-
-  host:
-    - python {{ python }}
-    - intel-openmp # [osx]
-    - numpy 1.11.*
-    - mkl >=2018
-    - cudatoolkit {{ cudatoolkit }}
-
-  run:
-    - python {{ python }}
-    - intel-openmp # [osx]
-    - numpy >=1.11
-    - mkl >=2018
-    - blas=*=mkl
-    - {{ pin_compatible('cudatoolkit') }}
+  name: faiss-pkg
+  version: {{ version }}
 
 build:
-  number: {{ FAISS_BUILD_NUMBER }}
-  script_env:
-    - CUDA_ROOT
-    - CUDA_ARCH
+  number: {{ number }}
 
 about:
   home: https://github.com/facebookresearch/faiss
@@ -39,3 +19,67 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: A library for efficient similarity search and clustering of dense vectors.
+
+source:
+  git_url: ../../
+
+outputs:
+  - name: libfaiss
+    script: build-lib.sh
+    build:
+      string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}"
+      run_exports:
+        - {{ pin_compatible('libfaiss', exact=True) }}
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - llvm-openmp  # [osx]
+        - cmake-local
+      host:
+        - mkl >=2018
+        - blas =*=mkl
+        - cudatoolkit {{ cudatoolkit }}
+      run:
+        - mkl >=2018
+        - blas =*=mkl
+        - {{ pin_compatible('cudatoolkit') }}
+    test:
+      commands:
+        - test -f $PREFIX/lib/libfaiss.so              # [linux]
+        - test -f $PREFIX/lib/libfaiss.dylib           # [osx]
+        - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
+        - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
+
+  - name: faiss-gpu
+    script: build-pkg.sh
+    build:
+      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}"
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - swig
+        - cmake-local
+      host:
+        - python {{ python }}
+        - numpy 1.11.*
+        - {{ pin_subpackage('libfaiss', exact=True) }}
+      run:
+        - python {{ python }}
+        - {{ pin_compatible('numpy') }}
+        - {{ pin_subpackage('libfaiss', exact=True) }}
+    test:
+      requires:
+        - numpy
+        - scipy
+      commands:
+        - python -m unittest discover tests/
+        - python -m unittest discover faiss/gpu/test/
+      source_files:
+        - tests/
+
+  - name: cmake-local
+    version: 3.17
+    script: install-cmake.sh
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
