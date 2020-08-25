@@ -15,7 +15,7 @@
 #include <stdint.h>
 
 #include <faiss/utils/Heap.h>
-#include <faiss/impl/macros.h>
+#include <faiss/impl/platform_macros.h>
 
 
 namespace faiss {

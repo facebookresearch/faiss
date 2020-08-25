@@ -238,7 +238,7 @@ namespace std {
  * Parse headers
  *******************************************************************/
 
-%include <faiss/impl/macros.h>
+%include <faiss/impl/platform_macros.h>
 
 %ignore *::cmp;
 
