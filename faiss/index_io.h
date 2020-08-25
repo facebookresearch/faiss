@@ -76,6 +76,7 @@ void write_InvertedLists (const InvertedLists *ils, IOWriter *f);
 InvertedLists *read_InvertedLists (IOReader *reader, int io_flags = 0);
 
 
+#ifndef _MSC_VER
 /** Callbacks to handle other types of InvertedList objects.
  *
  * The callbacks should be registered with add_callback before calling
@@ -119,6 +120,7 @@ struct InvertedListsIOHook {
 
 };
 
+#endif // !_MSC_VER
 
 
 } // namespace faiss

@@ -34,7 +34,6 @@ add_library(faiss
   InvertedLists.cpp
   MatrixStats.cpp
   MetaIndexes.cpp
-  OnDiskInvertedLists.cpp
   VectorTransform.cpp
   clone_index.cpp
   index_factory.cpp
@@ -89,7 +88,6 @@ set(FAISS_HEADERS
   MatrixStats.h
   MetaIndexes.h
   MetricType.h
-  OnDiskInvertedLists.h
   VectorTransform.h
   clone_index.h
   index_factory.h
@@ -117,6 +115,11 @@ set(FAISS_HEADERS
   utils/random.h
   utils/utils.h
 )
+
+if(NOT WIN32)
+  target_sources(faiss PRIVATE OnDiskInvertedLists.cpp)
+  list(APPEND FAISS_HEADERS OnDiskInvertedLists.h)
+endif()
 
 if(FAISS_OPT_LEVEL STREQUAL "avx2")
   target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mpopcnt>)
