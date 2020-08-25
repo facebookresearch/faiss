@@ -10,7 +10,7 @@
 #ifdef _MSC_VER
 #ifdef FAISS_MAIN_LIB
 #define FAISS_API __declspec(dllexport)
-#else // _MSC_VER
+#else // _FAISS_MAIN_LIB
 #define FAISS_API __declspec(dllimport)
 #endif // FAISS_MAIN_LIB
 #else
