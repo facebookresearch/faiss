@@ -217,7 +217,7 @@ class Merge(unittest.TestCase):
         print('ref search ntotal=%d' % index.ntotal)
         Dref, Iref = index.search(xq, k)
 
-        toremove = np.zeros(nq * k, dtype=int)
+        toremove = np.zeros(nq * k, dtype=np.int64)
         nr = 0
         for i in range(nq):
             for j in range(k):

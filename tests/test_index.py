@@ -601,7 +601,7 @@ class TestReconsHash(unittest.TestCase):
             self.assertTrue(np.all(recons == ref_recons[i]))
 
         # remove
-        toremove = np.ascontiguousarray(ids[0:200:3])
+        toremove = np.ascontiguousarray(ids[0:200:3], dtype=np.int64)
 
         sel = faiss.IDSelectorArray(50, faiss.swig_ptr(toremove[:50]))
 

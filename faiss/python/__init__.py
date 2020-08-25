@@ -83,6 +83,7 @@ def handle_Quantizer(the_class):
     def replacement_decode(self, codes):
         n, cs = codes.shape
         assert cs == self.code_size
+        codes = np.ascontiguousarray(codes, np.uint8)
         x = np.empty((n, self.d), dtype='float32')
         self.decode_c(swig_ptr(codes), swig_ptr(x), n)
         return x
@@ -108,6 +109,7 @@ def handle_Index(the_class):
         n, d = x.shape
         assert d == self.d
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
+        ids = np.ascontiguousarray(ids, dtype=np.int64)
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
     def replacement_assign(self, x, k):
@@ -151,6 +153,7 @@ def handle_Index(the_class):
         else:
             assert x.ndim == 1
             index_ivf = try_extract_index_ivf (self)
+            x = np.ascontiguousarray(x, dtype=np.int64)
             if index_ivf and index_ivf.direct_map.type == DirectMap.Hashtable:
                 sel = IDSelectorArray(x.size, swig_ptr(x))
             else:
@@ -170,6 +173,7 @@ def handle_Index(the_class):
     def replacement_update_vectors(self, keys, x):
         n = keys.size
         assert keys.shape == (n, )
+        keys = np.ascontiguousarray(keys, dtype=np.int64)
         assert x.shape == (n, self.d)
         self.update_vectors_c(n, swig_ptr(keys), swig_ptr(x))
 
@@ -227,6 +231,7 @@ def handle_IndexBinary(the_class):
         n, d = x.shape
         assert d * 8 == self.d
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
+        ids = np.ascontiguousarray(ids, dtype=np.int64)
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
     def replacement_train(self, x):
@@ -267,6 +272,7 @@ def handle_IndexBinary(the_class):
             sel = x
         else:
             assert x.ndim == 1
+            x = np.ascontiguousarray(x, dtype=np.int64)
             sel = IDSelectorBatch(x.size, swig_ptr(x))
         return self.remove_ids_c(sel)
 
@@ -651,10 +657,13 @@ def normalize_L2(x):
 def replacement_map_add(self, keys, vals):
     n, = keys.shape
     assert (n,) == keys.shape
+    keys = np.ascontiguousarray(keys, dtype=np.int64)
+    vals = np.ascontiguousarray(vals, dtype=np.int64)
     self.add_c(n, swig_ptr(keys), swig_ptr(vals))
 
 def replacement_map_search_multiple(self, keys):
     n, = keys.shape
+    keys = np.ascontiguousarray(keys, dtype=np.int64)
     vals = np.empty(n, dtype='int64')
     self.search_multiple_c(n, swig_ptr(keys), swig_ptr(vals))
     return vals
