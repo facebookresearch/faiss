@@ -95,7 +95,7 @@ size_t PyCallbackIOReader::operator()(void *ptrv, size_t size, size_t nitems)
         nb += sz;
         if (sz > rs) {
             Py_DECREF(result);
-            FAISS_THROW_FMT("read callback returned %ld bytes (asked %ld)",
+            FAISS_THROW_FMT("read callback returned %zd bytes (asked %zd)",
                             sz, rs);
         }
         memcpy(ptr, PyBytes_AsString(result), sz);
