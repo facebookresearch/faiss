@@ -100,8 +100,9 @@ IVFPQ::isSupportedNoPrecomputedSubDimSize(int dims) {
 void
 IVFPQ::setPrecomputedCodes(bool enable) {
   if (enable && metric_ == MetricType::METRIC_INNER_PRODUCT) {
-    FAISS_THROW_MSG("Precomputed codes are not needed for GpuIndexIVFPQ "
+    fprintf(stderr, "Precomputed codes are not needed for GpuIndexIVFPQ "
                     "with METRIC_INNER_PRODUCT");
+    return;
   }
 
   if (precomputedCodes_ != enable) {
