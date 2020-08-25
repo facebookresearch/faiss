@@ -336,7 +336,7 @@ void compute_code(const ProductQuantizer& pq, const float *x, uint8_t *code) {
     uint64_t idxm = 0;
     const float * xsub = x + m * pq.dsub;
 
-    fvec_L2sqr_ny(distances, xsub, pq.get_centroids(m, 0), pq.dsub, pq.ksub);
+    fvec_L2sqr_ny(distances.data(), xsub, pq.get_centroids(m, 0), pq.dsub, pq.ksub);
 
     /* Find best centroid */
     for (size_t i = 0; i < pq.ksub; i++) {
