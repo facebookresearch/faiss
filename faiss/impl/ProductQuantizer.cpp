@@ -329,14 +329,14 @@ void ProductQuantizer::train (int n, const float * x)
 
 template<class PQEncoder>
 void compute_code(const ProductQuantizer& pq, const float *x, uint8_t *code) {
-  float distances [pq.ksub];
+  std::vector<float> distances(pq.ksub);
   PQEncoder encoder(code, pq.nbits);
   for (size_t m = 0; m < pq.M; m++) {
     float mindis = 1e20;
     uint64_t idxm = 0;
     const float * xsub = x + m * pq.dsub;
 
-    fvec_L2sqr_ny(distances, xsub, pq.get_centroids(m, 0), pq.dsub, pq.ksub);
+    fvec_L2sqr_ny(distances.data(), xsub, pq.get_centroids(m, 0), pq.dsub, pq.ksub);
 
     /* Find best centroid */
     for (size_t i = 0; i < pq.ksub; i++) {

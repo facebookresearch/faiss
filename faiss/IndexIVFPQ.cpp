@@ -141,9 +141,9 @@ void IndexIVFPQ::train_residual_o (idx_t n, const float *x, float *residuals_2)
 void IndexIVFPQ::encode (idx_t key, const float * x, uint8_t * code) const
 {
     if (by_residual) {
-        float residual_vec[d];
-        quantizer->compute_residual (x, residual_vec, key);
-        pq.compute_code (residual_vec, code);
+        std::vector<float> residual_vec(d);
+        quantizer->compute_residual (x, residual_vec.data(), key);
+        pq.compute_code (residual_vec.data(), code);
     }
     else pq.compute_code (x, code);
 }
