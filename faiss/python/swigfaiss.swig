@@ -975,17 +975,6 @@ int * cast_integer_to_int_ptr (long x) {
 %ignore faiss::InterruptCallback::lock;
 %include  <faiss/impl/AuxIndexStructures.h>
 
-%{
-// may be useful for lua code launched in background from shell
-
-#include <signal.h>
-void ignore_SIGTTIN() {
-    signal(SIGTTIN, SIG_IGN);
-}
-%}
-
-void ignore_SIGTTIN();
-
 
 %inline %{
 
