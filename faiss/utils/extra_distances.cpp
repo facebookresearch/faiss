@@ -246,7 +246,7 @@ void pairwise_extra_distances (
     switch(mt) {
 #define HANDLE_VAR(kw)                                          \
      case METRIC_ ## kw: {                                      \
-        VectorDistance ## kw vd({(size_t)d});                   \
+        VectorDistance ## kw vd = {(size_t)d};                  \
         pairwise_extra_distances_template (vd, nq, xq, nb, xb,  \
                                            dis, ldq, ldb, ldd); \
         break;                                                  \
@@ -259,7 +259,7 @@ void pairwise_extra_distances (
         HANDLE_VAR(JensenShannon);
 #undef HANDLE_VAR
     case METRIC_Lp: {
-        VectorDistanceLp vd({(size_t)d, metric_arg});
+        VectorDistanceLp vd = {(size_t)d, metric_arg};
         pairwise_extra_distances_template (vd, nq, xq, nb, xb,
                                            dis, ldq, ldb, ldd);
         break;
@@ -281,7 +281,7 @@ void knn_extra_metrics (
     switch(mt) {
 #define HANDLE_VAR(kw)                                          \
      case METRIC_ ## kw: {                                      \
-        VectorDistance ## kw vd({(size_t)d});                   \
+        VectorDistance ## kw vd = {(size_t)d};                  \
         knn_extra_metrics_template (vd, x, y, nx, ny, res);     \
         break;                                                  \
     }
@@ -293,7 +293,7 @@ void knn_extra_metrics (
         HANDLE_VAR(JensenShannon);
 #undef HANDLE_VAR
     case METRIC_Lp: {
-        VectorDistanceLp vd({(size_t)d, metric_arg});
+        VectorDistanceLp vd = {(size_t)d, metric_arg};
         knn_extra_metrics_template (vd, x, y, nx, ny, res);
         break;
     }
@@ -312,7 +312,7 @@ DistanceComputer *get_extra_distance_computer (
     switch(mt) {
 #define HANDLE_VAR(kw)                                                  \
      case METRIC_ ## kw: {                                              \
-        VectorDistance ## kw vd({(size_t)d});                           \
+        VectorDistance ## kw vd = {(size_t)d};                          \
         return new ExtraDistanceComputer<VectorDistance ## kw>(vd, xb, nb); \
     }
         HANDLE_VAR(L2);
@@ -323,7 +323,7 @@ DistanceComputer *get_extra_distance_computer (
         HANDLE_VAR(JensenShannon);
 #undef HANDLE_VAR
     case METRIC_Lp: {
-        VectorDistanceLp vd({(size_t)d, metric_arg});
+        VectorDistanceLp vd = {(size_t)d, metric_arg};
         return new ExtraDistanceComputer<VectorDistanceLp> (vd, xb, nb);
         break;
     }
