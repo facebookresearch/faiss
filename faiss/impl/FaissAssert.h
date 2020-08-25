@@ -11,7 +11,7 @@
 #define FAISS_ASSERT_INCLUDED
 
 #include <faiss/impl/FaissException.h>
-#include <faiss/impl/macros.h>
+#include <faiss/impl/platform_macros.h>
 #include <cstdlib>
 #include <cstdio>
 #include <string>

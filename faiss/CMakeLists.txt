@@ -105,7 +105,7 @@ set(FAISS_HEADERS
   impl/io.h
   impl/io_macros.h
   impl/lattice_Zn.h
-  impl/macros.h
+  impl/platform_macros.h
   utils/Heap.h
   utils/WorkerThread.h
   utils/distances.h
