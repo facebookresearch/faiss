@@ -22,7 +22,8 @@ class TestIOVariants(unittest.TestCase):
         x = np.random.uniform(size=(n, d)).astype('float32')
         index = faiss.IndexFlatL2(d)
         index.add(x)
-        _, fname = tempfile.mkstemp()
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
         try:
             faiss.write_index(index, fname)
 
