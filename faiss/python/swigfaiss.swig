@@ -114,7 +114,10 @@ extern "C" {
 #include <faiss/utils/random.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/impl/AuxIndexStructures.h>
+
+#ifndef _MSC_VER
 #include <faiss/OnDiskInvertedLists.h>
+#endif // !_MSC_VER
 
 #include <faiss/Clustering.h>
 
@@ -225,7 +228,10 @@ namespace std {
 %template(InvertedListsPtrVector) std::vector<faiss::InvertedLists*>;
 %template(RepeatVector) std::vector<faiss::Repeat>;
 %template(ClusteringIterationStatsVector) std::vector<faiss::ClusteringIterationStats>;
+
+#ifndef SWIGWIN
 %template(OnDiskOneListVector) std::vector<faiss::OnDiskOneList>;
+#endif // !SWIGWIN
 
 #ifdef GPU_WRAPPER
 %template(GpuResourcesVector) std::vector<faiss::gpu::GpuResourcesProvider*>;
@@ -366,9 +372,11 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexHNSW.h>
 %include  <faiss/IndexIVFFlat.h>
 
+#ifndef SWIGWIN
 %warnfilter(401) faiss::OnDiskInvertedListsIOHook;
 %ignore OnDiskInvertedListsIOHook;
 %include  <faiss/OnDiskInvertedLists.h>
+#endif // !SWIGWIN
 
 %include  <faiss/impl/lattice_Zn.h>
 %include  <faiss/IndexLattice.h>
@@ -670,7 +678,9 @@ struct AsyncIndexSearchC {
 
 %typemap(out) faiss::InvertedLists * {
     DOWNCAST (ArrayInvertedLists)
+#ifndef SWIGWIN
     DOWNCAST (OnDiskInvertedLists)
+#endif // !SWIGWIN
     DOWNCAST (VStackInvertedLists)
     DOWNCAST (HStackInvertedLists)
     DOWNCAST (MaskedInvertedLists)
@@ -707,7 +717,6 @@ faiss::InvertedLists * downcast_InvertedLists (faiss::InvertedLists *il)
 %include  <faiss/impl/io.h>
 %include  <faiss/index_io.h>
 %include  <faiss/clone_index.h>
-
 %newobject index_factory;
 %newobject index_binary_factory;
 
@@ -1029,3 +1038,4 @@ struct MapLong2Long {
  %}
 
 // End of file...
+ 

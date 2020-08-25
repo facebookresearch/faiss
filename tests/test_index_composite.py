@@ -12,6 +12,7 @@ import faiss
 import os
 import shutil
 import tempfile
+import platform
 
 from common import get_dataset_2
 
@@ -63,6 +64,8 @@ class TestRemove(unittest.TestCase):
     def test_remove_regular(self):
         self.do_merge_then_remove(False)
 
+    @unittest.skipIf(platform.system() == 'Windows',
+                     'OnDiskInvertedLists is unsupported on Windows.')
     def test_remove_ondisk(self):
         self.do_merge_then_remove(True)
 
@@ -306,6 +309,8 @@ class TestTransformChain(unittest.TestCase):
 
         assert np.all(I == I2)
 
+@unittest.skipIf(platform.system() == 'Windows', \
+                 'Mmap not supported on Windows.')
 class TestRareIO(unittest.TestCase):
 
     def compare_results(self, index1, index2, xq):
@@ -476,7 +481,8 @@ class TestSerialize(unittest.TestCase):
         Dnew, Inew = index3.search(xq, 5)
         assert np.all(Dnew == Dref) and np.all(Inew == Iref)
 
-
+@unittest.skipIf(platform.system() == 'Windows',
+                 'OnDiskInvertedLists is unsupported on Windows.')
 class TestRenameOndisk(unittest.TestCase):
 
     def test_rename(self):

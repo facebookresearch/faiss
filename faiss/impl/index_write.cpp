@@ -12,9 +12,12 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#ifndef _MSC_VER
+#include <sys/mman.h>
+#endif // !_MSC_VER
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/io.h>
@@ -37,13 +40,15 @@
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexLattice.h>
 
-#include <faiss/OnDiskInvertedLists.h>
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryFromFloat.h>
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexBinaryHash.h>
 
+#ifndef _MSC_VER
+#include <faiss/OnDiskInvertedLists.h>
+#endif // !_MSC_VER
 
 
 /*************************************************************
@@ -211,6 +216,7 @@ void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
                 WRITEANDCHECK (ails->ids[i].data(), n);
             }
         }
+#ifndef _MSC_VER
     } else {
 
         InvertedListsIOHook::lookup_classname(
@@ -222,6 +228,7 @@ void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
         uint32_t h = fourcc ("il00");
         WRITE1 (h);
         */
+#endif // !_MSC_VER
     }
 }
 
