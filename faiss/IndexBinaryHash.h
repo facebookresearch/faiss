@@ -17,7 +17,7 @@
 
 #include <faiss/IndexBinary.h>
 #include <faiss/IndexBinaryFlat.h>
-#include <faiss/impl/macros.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 
 
