@@ -36,6 +36,12 @@ if(WIN32)
   )
 endif()
 
+if(FAISS_ENABLE_GPU)
+  set_source_files_properties(swigfaiss.swig PROPERTIES
+    COMPILE_DEFINITIONS GPU_WRAPPER
+  )
+endif()
+
 swig_add_library(swigfaiss
   TYPE SHARED
   LANGUAGE python
@@ -50,9 +56,6 @@ endif()
 if(FAISS_ENABLE_GPU)
   find_package(CUDAToolkit REQUIRED)
   target_link_libraries(swigfaiss PRIVATE CUDA::cudart)
-  set_source_files_properties(swigfaiss.swig PROPERTIES
-    COMPILE_DEFINITIONS GPU_WRAPPER
-  )
 endif()
 
 if(NOT TARGET faiss)
