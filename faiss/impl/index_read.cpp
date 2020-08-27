@@ -217,8 +217,9 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
                 f, io_flags, nlist, code_size, sizes);
     } else {
         return InvertedListsIOHook::lookup(h)->read(f, io_flags);
-#endif // !_MSC_VER
     }
+#endif // !_MSC_VER
+
 }
 
 
