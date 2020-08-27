@@ -18,7 +18,7 @@ namespace faiss { namespace gpu {
 #endif
 
 #ifdef __CUDA_ARCH__
-#if __CUDA_ARCH__ <= 750
+#if __CUDA_ARCH__ <= 800
 constexpr int kWarpSize = 32;
 #else
 #error Unknown __CUDA_ARCH__; please define parameters for compute capability
