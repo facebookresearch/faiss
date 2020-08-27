@@ -317,8 +317,8 @@ class TestException(unittest.TestCase):
 class TestMapLong2Long(unittest.TestCase):
 
     def test_maplong2long(self):
-        keys = np.array([13, 45, 67])
-        vals = np.array([3, 8, 2])
+        keys = np.array([13, 45, 67], dtype=np.int64)
+        vals = np.array([3, 8, 2], dtype=np.int64)
 
         m = faiss.MapLong2Long()
         m.add(keys, vals)
