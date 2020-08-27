@@ -210,7 +210,7 @@ class Merge(unittest.TestCase):
             index.add(xb)
         else:
             gen = np.random.RandomState(1234)
-            id_list = gen.permutation(nb * 7)[:nb]
+            id_list = gen.permutation(nb * 7)[:nb].astype('int64')
             index.add_with_ids(xb, id_list)
 
 

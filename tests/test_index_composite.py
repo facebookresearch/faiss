@@ -76,7 +76,7 @@ class TestRemove(unittest.TestCase):
         xb = np.zeros((10, 5), dtype='float32')
         xb[:, 0] = np.arange(10, dtype='int64') + 1000
         index.add(xb)
-        index.remove_ids(np.arange(5) * 2)
+        index.remove_ids(np.arange(5, dtype='int64') * 2)
         xb2 = faiss.vector_float_to_array(index.xb).reshape(5, 5)
         assert np.all(xb2[:, 0] == xb[np.arange(5) * 2 + 1, 0])
 
@@ -87,7 +87,7 @@ class TestRemove(unittest.TestCase):
         index = faiss.IndexIDMap2(sub_index)
         index.add_with_ids(xb, np.arange(10, dtype='int64') + 100)
         assert index.reconstruct(104)[0] == 1004
-        index.remove_ids(np.array([103]))
+        index.remove_ids(np.array([103], dtype='int64'))
         assert index.reconstruct(104)[0] == 1004
         try:
             index.reconstruct(103)
@@ -123,7 +123,7 @@ class TestRemove(unittest.TestCase):
         index = faiss.IndexBinaryIDMap2(sub_index)
         index.add_with_ids(xb, np.arange(10, dtype='int64') + 1000)
         assert index.reconstruct(1004)[0] == 104
-        index.remove_ids(np.array([1003]))
+        index.remove_ids(np.array([1003], dtype='int64'))
         assert index.reconstruct(1004)[0] == 104
         try:
             index.reconstruct(1003)

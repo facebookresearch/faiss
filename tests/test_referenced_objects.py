@@ -73,7 +73,7 @@ class TestReferenced(unittest.TestCase):
         index.add_with_ids(xb, np.arange(len(xb), dtype='int64'))
         del sub_index
         gc.collect()
-        index.add_with_ids(xb, np.arange(len(xb)))
+        index.add_with_ids(xb, np.arange(len(xb), dtype='int64'))
 
     def test_shards(self):
         index = faiss.IndexShards(d)
