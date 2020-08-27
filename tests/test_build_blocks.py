@@ -317,8 +317,8 @@ class TestException(unittest.TestCase):
 class TestMapLong2Long(unittest.TestCase):
 
     def test_maplong2long(self):
-        keys = np.array([13, 45, 67])
-        vals = np.array([3, 8, 2])
+        keys = np.array([13, 45, 67], dtype=np.int64)
+        vals = np.array([3, 8, 2], dtype=np.int64)
 
         m = faiss.MapLong2Long()
         m.add(keys, vals)
@@ -503,7 +503,7 @@ class TestScalarQuantizer(unittest.TestCase):
                 D, I = index.search(x[3:], 1)
 
                 # assert D[0, 0] == Dref[0, 0]
-                print(D[0, 0], ((x[3] - x[2]) ** 2).sum())
+                # print(D[0, 0], ((x[3] - x[2]) ** 2).sum())
                 assert D[0, 0] == ((x[3] - x[2]) ** 2).sum()
 
     def test_6bit_equiv(self):
@@ -533,7 +533,7 @@ class TestScalarQuantizer(unittest.TestCase):
             for i in range(20):
                 for j in range(10):
                     dis = ((y[i] - x2[I[i, j]]) ** 2).sum()
-                    print(dis, D[i, j])
+                    # print(dis, D[i, j])
                     assert abs(D[i, j] - dis) / dis < 1e-5
 
 class TestRandom(unittest.TestCase):

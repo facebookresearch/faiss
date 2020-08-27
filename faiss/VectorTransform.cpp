@@ -271,7 +271,7 @@ void RandomRotationMatrix::init (int seed)
     is_trained = true;
 }
 
-void RandomRotationMatrix::train (Index::idx_t /*n*/, const float */*x*/)
+void RandomRotationMatrix::train (Index::idx_t /*n*/, const float * /*x*/)
 {
     // initialize with some arbitrary seed
     init (12345);

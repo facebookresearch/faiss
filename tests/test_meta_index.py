@@ -34,7 +34,7 @@ class IDRemap(unittest.TestCase):
         _Dref, Iref = index.search(xq, k)
 
         # try a remapping
-        ids = np.arange(nb)[::-1].copy()
+        ids = np.arange(nb)[::-1].copy().astype('int64')
 
         sub_index = faiss.IndexPQ(d, 8, 8)
         index2 = faiss.IndexIDMap(sub_index)
@@ -62,7 +62,7 @@ class IDRemap(unittest.TestCase):
         _Dref, Iref = index.search(xq, k)
 
         # try a remapping
-        ids = np.arange(nb)[::-1].copy()
+        ids = np.arange(nb)[::-1].copy().astype('int64')
 
         index2 = faiss.IndexIVFPQ(coarse_quantizer, d,
                                         ncentroids, 8, 8)
@@ -210,14 +210,14 @@ class Merge(unittest.TestCase):
             index.add(xb)
         else:
             gen = np.random.RandomState(1234)
-            id_list = gen.permutation(nb * 7)[:nb]
+            id_list = gen.permutation(nb * 7)[:nb].astype('int64')
             index.add_with_ids(xb, id_list)
 
 
         print('ref search ntotal=%d' % index.ntotal)
         Dref, Iref = index.search(xq, k)
 
-        toremove = np.zeros(nq * k, dtype=int)
+        toremove = np.zeros(nq * k, dtype='int64')
         nr = 0
         for i in range(nq):
             for j in range(k):

@@ -199,7 +199,11 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
         }
         return ails;
 
-#ifndef _MSC_VER
+#ifdef _MSC_VER
+    } else {
+        FAISS_THROW_MSG("Unsupported inverted list format for Windows");
+    }
+#else
     } else if (h == fourcc ("ilar") && (io_flags & IO_FLAG_SKIP_IVF_DATA)) {
         // code is always ilxx where xx is specific to the type of invlists we want
         // so we get the 16 high bits from the io_flag and the 16 low bits as "il"
@@ -213,8 +217,9 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
                 f, io_flags, nlist, code_size, sizes);
     } else {
         return InvertedListsIOHook::lookup(h)->read(f, io_flags);
-#endif // !_MSC_VER
     }
+#endif // !_MSC_VER
+
 }
 
 

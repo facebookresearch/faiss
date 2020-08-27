@@ -74,9 +74,9 @@ class TestRemove(unittest.TestCase):
 
         index = faiss.IndexFlat(5)
         xb = np.zeros((10, 5), dtype='float32')
-        xb[:, 0] = np.arange(10) + 1000
+        xb[:, 0] = np.arange(10, dtype='int64') + 1000
         index.add(xb)
-        index.remove_ids(np.arange(5) * 2)
+        index.remove_ids(np.arange(5, dtype='int64') * 2)
         xb2 = faiss.vector_float_to_array(index.xb).reshape(5, 5)
         assert np.all(xb2[:, 0] == xb[np.arange(5) * 2 + 1, 0])
 
@@ -85,9 +85,9 @@ class TestRemove(unittest.TestCase):
         xb = np.zeros((10, 5), dtype='float32')
         xb[:, 0] = np.arange(10) + 1000
         index = faiss.IndexIDMap2(sub_index)
-        index.add_with_ids(xb, np.arange(10) + 100)
+        index.add_with_ids(xb, np.arange(10, dtype='int64') + 100)
         assert index.reconstruct(104)[0] == 1004
-        index.remove_ids(np.array([103]))
+        index.remove_ids(np.array([103], dtype='int64'))
         assert index.reconstruct(104)[0] == 1004
         try:
             index.reconstruct(103)
@@ -121,9 +121,9 @@ class TestRemove(unittest.TestCase):
         xb = np.zeros((10, 5), dtype='uint8')
         xb[:, 0] = np.arange(10) + 100
         index = faiss.IndexBinaryIDMap2(sub_index)
-        index.add_with_ids(xb, np.arange(10) + 1000)
+        index.add_with_ids(xb, np.arange(10, dtype='int64') + 1000)
         assert index.reconstruct(1004)[0] == 104
-        index.remove_ids(np.array([1003]))
+        index.remove_ids(np.array([1003], dtype='int64'))
         assert index.reconstruct(1004)[0] == 104
         try:
             index.reconstruct(1003)
@@ -158,7 +158,7 @@ class TestRangeSearch(unittest.TestCase):
         xb = np.zeros((10, 5), dtype='float32')
         xb[:, 0] = np.arange(10) + 1000
         index = faiss.IndexIDMap2(sub_index)
-        index.add_with_ids(xb, np.arange(10) + 100)
+        index.add_with_ids(xb, np.arange(10, dtype=np.int64) + 100)
         dist = float(np.linalg.norm(xb[3] - xb[0])) * 0.99
         res_subindex = sub_index.range_search(xb[[0], :], dist)
         res_index = index.range_search(xb[[0], :], dist)
@@ -189,7 +189,8 @@ class TestUpdate(unittest.TestCase):
 
         # revert order of the 200 first vectors
         nu = 200
-        index.update_vectors(np.arange(nu), xb[nu - 1::-1].copy())
+        index.update_vectors(np.arange(nu).astype('int64'),
+                             xb[nu - 1::-1].copy())
 
         recons_after = np.vstack([index.reconstruct(i) for i in range(nb)])
 
@@ -432,6 +433,7 @@ class TestIVFFlatDedup(unittest.TestCase):
 
         # test remove
         toremove = np.hstack((np.arange(3, 1000, 5), np.arange(850, 950)))
+        toremove = toremove.astype(np.int64)
         index_ref.remove_ids(toremove)
         index_new.remove_ids(toremove)
 
