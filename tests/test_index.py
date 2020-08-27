@@ -581,7 +581,7 @@ class TestReconsHash(unittest.TestCase):
         # with lookup
         index.reset()
         rs = np.random.RandomState(123)
-        ids = rs.choice(10000, size=200, replace=False)
+        ids = rs.choice(10000, size=200, replace=False).astype(np.int64)
         index.add_with_ids(faiss.randn((100, d), 345), ids[:100])
         index.set_direct_map_type(faiss.DirectMap.Hashtable)
         index.add_with_ids(faiss.randn((100, d), 678), ids[100:])

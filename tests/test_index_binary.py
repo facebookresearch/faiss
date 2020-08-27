@@ -241,7 +241,7 @@ class TestBinaryIVF(unittest.TestCase):
         # try w/ hashtable
         index = faiss.IndexBinaryIVF(quantizer, d, 8)
         rs = np.random.RandomState(123)
-        ids = rs.choice(10000, size=len(self.xb), replace=False)
+        ids = rs.choice(10000, size=len(self.xb), replace=False).astype(np.int64)
         index.add_with_ids(self.xb, ids)
         index.set_direct_map_type(faiss.DirectMap.Hashtable)
 
