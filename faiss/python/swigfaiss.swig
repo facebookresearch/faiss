@@ -210,6 +210,7 @@ namespace std {
 %include <std_pair.i>
 %include <std_map.i>
 
+// primitive array types
 %template(FloatVector) std::vector<float>;
 %template(DoubleVector) std::vector<double>;
 %template(ByteVector) std::vector<uint8_t>;
@@ -220,6 +221,10 @@ namespace std {
 %template(LongVector) std::vector<long>;
 %template(LongLongVector) std::vector<long long>;
 %template(IntVector) std::vector<int>;
+%template(UInt32Vector) std::vector<uint32_t>;
+%template(Int16Vector) std::vector<int16_t>;
+%template(UInt16Vector) std::vector<uint16_t>;
+
 %template(FloatVectorVector) std::vector<std::vector<float> >;
 %template(ByteVectorVector) std::vector<std::vector<unsigned char> >;
 %template(LongVectorVector) std::vector<std::vector<long> >;
@@ -799,14 +804,23 @@ PyObject *swig_ptr (PyObject *a)
     if(PyArray_TYPE(ao) == NPY_FLOAT64) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_double, 0);
     }
-    if(PyArray_TYPE(ao) == NPY_INT32) {
-        return SWIG_NewPointerObj(data, SWIGTYPE_p_int, 0);
-    }
     if(PyArray_TYPE(ao) == NPY_UINT8) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_char, 0);
     }
     if(PyArray_TYPE(ao) == NPY_INT8) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_char, 0);
+    }
+    if(PyArray_TYPE(ao) == NPY_UINT16) {
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_short, 0);
+    }
+    if(PyArray_TYPE(ao) == NPY_INT16) {
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_short, 0);
+    }
+    if(PyArray_TYPE(ao) == NPY_UINT32) {
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_int, 0);
+    }
+    if(PyArray_TYPE(ao) == NPY_INT32) {
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_int, 0);
     }
     if(PyArray_TYPE(ao) == NPY_UINT64) {
 #ifdef SWIGWORDSIZE64
@@ -870,8 +884,13 @@ PyObject * rev_swig_ptr(ctype *src, size_t size);
 %enddef
 
 REV_SWIG_PTR(float, NPY_FLOAT32);
-REV_SWIG_PTR(int, NPY_INT32);
+REV_SWIG_PTR(double, NPY_FLOAT64);
 REV_SWIG_PTR(unsigned char, NPY_UINT8);
+REV_SWIG_PTR(char, NPY_INT8);
+REV_SWIG_PTR(unsigned short, NPY_UINT16);
+REV_SWIG_PTR(short, NPY_INT16);
+REV_SWIG_PTR(int, NPY_INT32);
+REV_SWIG_PTR(unsigned int, NPY_UINT32);
 REV_SWIG_PTR(int64_t, NPY_INT64);
 REV_SWIG_PTR(uint64_t, NPY_UINT64);
 
@@ -1038,4 +1057,3 @@ struct MapLong2Long {
  %}
 
 // End of file...
- 

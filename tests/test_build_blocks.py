@@ -628,5 +628,25 @@ class TestSWIGWrap(unittest.TestCase):
 
         assert isinstance(index2, faiss.IndexRefineFlat)
 
+    def do_test_array_type(self, dtype):
+        """ tests swig_ptr and rev_swig_ptr for this type of array """
+        a = np.arange(12).astype(dtype)
+        ptr = faiss.swig_ptr(a)
+        print(ptr)
+        a2 = faiss.rev_swig_ptr(ptr, 12)
+        np.testing.assert_array_equal(a, a2)
+
+    def test_all_array_types(self):
+        self.do_test_array_type('float32')
+        self.do_test_array_type('float64')
+        self.do_test_array_type('int8')
+        self.do_test_array_type('uint8')
+        self.do_test_array_type('int16')
+        self.do_test_array_type('uint16')
+        self.do_test_array_type('int32')
+        self.do_test_array_type('uint32')
+        self.do_test_array_type('int64')
+        self.do_test_array_type('uint64')
+
 if __name__ == '__main__':
     unittest.main()
