@@ -10,7 +10,7 @@ find_package(CUDAToolkit REQUIRED)
 include(GoogleTest)
 
 add_library(faiss_gpu_test_helper TestUtils.cpp)
-target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cuda_driver)
+target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart)
 
 macro(faiss_gpu_test file)
   get_filename_component(test_name ${file} NAME_WE)
