@@ -325,10 +325,14 @@ StandardGpuResourcesImpl::initializeForDevice(int device) {
   blasHandles_[device] = blasHandle;
 
   // Enable tensor core support if available
-#if CUDA_VERSION >= 9000
+#if CUDA_VERSION >= 9000 && CUDA_VERSION < 11000
+  // This flag was deprecated in CUDA 11
   if (getTensorCoreSupport(device)) {
     cublasSetMathMode(blasHandle, CUBLAS_TENSOR_OP_MATH);
   }
+#endif
+#if CUDA_VERSION >= 11000
+  cublasSetMathMode(blasHandle, CUBLAS_MATH_DISALLOW_REDUCED_PRECISION_REDUCTION);
 #endif
 
   FAISS_ASSERT(allocs_.count(device) == 0);
