@@ -11,7 +11,7 @@
 #include "Index_c.h"
 #include "Clustering_c.h"
 #include "IndexIVFFlat_c.h"
-#include "IndexIVFFlat.h"
+#include <faiss/IndexIVFFlat.h>
 #include "macros_impl.h"
 
 using faiss::Index;
@@ -47,7 +47,7 @@ int faiss_IndexIVFFlat_new_with_metric(
     } CATCH_AND_HANDLE
 }
 
-int faiss_IndexIVFFlat_add_core(FaissIndexIVFFlat* index, idx_t n, 
+int faiss_IndexIVFFlat_add_core(FaissIndexIVFFlat* index, idx_t n,
     const float * x, const idx_t *xids, const int64_t *precomputed_idx)
 {
     try {

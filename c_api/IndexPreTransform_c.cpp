@@ -9,7 +9,7 @@
 // -*- c++ -*-
 
 #include "IndexPreTransform_c.h"
-#include "IndexPreTransform.h"
+#include <faiss/IndexPreTransform.h>
 #include "macros_impl.h"
 
 using faiss::Index;

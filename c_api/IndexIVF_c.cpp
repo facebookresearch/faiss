@@ -11,7 +11,7 @@
 #include "Index_c.h"
 #include "Clustering_c.h"
 #include "IndexIVF_c.h"
-#include "IndexIVF.h"
+#include <faiss/IndexIVF.h>
 #include "macros_impl.h"
 
 using faiss::IndexIVF;
@@ -95,5 +95,5 @@ void faiss_IndexIVF_invlists_get_ids (const FaissIndexIVF* index, size_t list_no
 }
 
 void faiss_IndexIVFStats_reset(FaissIndexIVFStats* stats) {
-    reinterpret_cast<IndexIVFStats*>(stats)->reset();    
+    reinterpret_cast<IndexIVFStats*>(stats)->reset();
 }

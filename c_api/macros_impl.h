@@ -14,7 +14,7 @@
 #define MACROS_IMPL_H
 
 #include "faiss_c.h"
-#include "FaissException.h"
+#include <faiss/impl/FaissException.h>
 #include "error_impl.h"
 #include <stdexcept>
 #include <iostream>

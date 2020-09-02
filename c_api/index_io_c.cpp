@@ -10,7 +10,7 @@
 // I/O code for indexes
 
 #include "index_io_c.h"
-#include "index_io.h"
+#include <faiss/index_io.h>
 #include "macros_impl.h"
 
 using faiss::Index;

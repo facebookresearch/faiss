@@ -10,7 +10,7 @@
 
 #include "error_c.h"
 #include "error_impl.h"
-#include "FaissException.h"
+#include <faiss/impl/FaissException.h>
 #include <exception>
 
 thread_local std::exception_ptr faiss_last_exception;

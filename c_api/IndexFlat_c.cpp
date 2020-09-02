@@ -9,8 +9,7 @@
 // -*- c++ -*-
 
 #include "IndexFlat_c.h"
-#include "IndexFlat.h"
-#include "Index.h"
+#include <faiss/IndexFlat.h>
 #include "macros_impl.h"
 
 extern "C" {

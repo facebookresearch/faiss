@@ -9,7 +9,7 @@
 // -*- c++ -*-
 
 #include "MetaIndexes_c.h"
-#include "MetaIndexes.h"
+#include <faiss/MetaIndexes.h>
 #include "macros_impl.h"
 
 using faiss::Index;
@@ -46,4 +46,3 @@ int faiss_IndexIDMap2_construct_rev_map(FaissIndexIDMap2* index) {
         reinterpret_cast<IndexIDMap2*>(index)->construct_rev_map();
     } CATCH_AND_HANDLE
 }
-

@@ -9,8 +9,8 @@
 // -*- c++ -*-
 
 #include "Clustering_c.h"
-#include "Clustering.h"
-#include "Index.h"
+#include <faiss/Clustering.h>
+#include <faiss/Index.h>
 #include <vector>
 #include "macros_impl.h"
 
@@ -55,7 +55,7 @@ void faiss_ClusteringParameters_init(FaissClusteringParameters* params) {
     params->seed = d.seed;
     params->spherical = d.spherical;
     params->update_index = d.update_index;
-    params->verbose = d.verbose;   
+    params->verbose = d.verbose;
 }
 
 // This conversion is required because the two types are not memory-compatible

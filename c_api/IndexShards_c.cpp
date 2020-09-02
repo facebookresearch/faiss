@@ -1,5 +1,5 @@
 #include "IndexShards_c.h"
-#include "IndexShards.h"
+#include <faiss/IndexShards.h>
 #include "macros_impl.h"
 
 using faiss::Index;

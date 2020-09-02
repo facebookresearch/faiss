@@ -9,7 +9,7 @@
 // -*- c++ -*-
 
 #include "Index_c.h"
-#include "Index.h"
+#include <faiss/Index.h>
 #include "macros_impl.h"
 
 extern "C" {
