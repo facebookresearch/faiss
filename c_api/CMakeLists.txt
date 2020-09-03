@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+project(faiss_c_library LANGUAGES C CXX)
+
 add_library(faiss_c)
 
 target_sources(faiss_c PRIVATE
@@ -44,7 +46,7 @@ set(FAISS_C_API_HEADERS
 )
 
 add_dependencies(faiss_c faiss)
-target_include_directories(faiss_c PRIVATE ${PROJECT_SOURCE_DIR})
+target_include_directories(faiss_c PRIVATE ${CMAKE_SOURCE_DIR})
 
 foreach(header ${FAISS_C_API_HEADERS})
   get_filename_component(dir ${header} DIRECTORY )
@@ -55,5 +57,6 @@ endforeach()
 
 add_executable(example_c)
 target_sources(example_c PRIVATE example_c.c)
-target_link_libraries(example_c PRIVATE faiss_c)
 set_target_properties(example_c PROPERTIES LANGUAGE C)
+target_link_libraries(example_c PRIVATE faiss_c)
+target_link_libraries(example_c PRIVATE faiss)
