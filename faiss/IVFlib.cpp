@@ -14,7 +14,7 @@
 #include <faiss/IndexPreTransform.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/MetaIndexes.h>
-
+#include <faiss/utils/utils.h>
 
 
 namespace faiss { namespace ivflib {
