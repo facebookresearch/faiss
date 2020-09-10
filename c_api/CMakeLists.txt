@@ -45,18 +45,14 @@ set(FAISS_C_API_HEADERS
   MetaIndexes_c.h
 )
 
-add_dependencies(faiss_c faiss)
-target_include_directories(faiss_c PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(faiss_c PRIVATE faiss)
 
 foreach(header ${FAISS_C_API_HEADERS})
-  get_filename_component(dir ${header} DIRECTORY )
+  get_filename_component(dir ${header} DIRECTORY)
   install(FILES ${header}
     DESTINATION include/faiss/c_api/${dir}
   )
 endforeach()
 
-add_executable(example_c)
-target_sources(example_c PRIVATE example_c.c)
-set_target_properties(example_c PROPERTIES LANGUAGE C)
+add_executable(example_c example_c.c)
 target_link_libraries(example_c PRIVATE faiss_c)
-target_link_libraries(example_c PRIVATE faiss)
