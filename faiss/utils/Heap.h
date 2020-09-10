@@ -57,10 +57,8 @@ struct CMin {
     inline static bool cmp (T a, T b) {
         return a < b;
     }
-    // value that will be popped first -> must be smaller than all others
-    // for int types this is not strictly the smallest val (-max - 1)
     inline static T neutral () {
-        return -std::numeric_limits<T>::max();
+        return std::numeric_limits<T>::lowest();
     }
 };
 
