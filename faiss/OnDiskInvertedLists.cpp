@@ -275,6 +275,7 @@ void OnDiskInvertedLists::prefetch_lists (const idx_t *list_nos, int n) const
 
 void OnDiskInvertedLists::do_mmap ()
 {
+    if (totsize == 0) return;
     const char *rw_flags = read_only ? "r" : "r+";
     int prot = read_only ? PROT_READ : PROT_WRITE | PROT_READ;
     FILE *f = fopen (filename.c_str(), rw_flags);
