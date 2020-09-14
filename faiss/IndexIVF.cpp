@@ -255,6 +255,8 @@ void IndexIVF::make_direct_map (bool b)
     }
 }
 
+
+
 void IndexIVF::set_direct_map_type (DirectMap::Type type)
 {
     direct_map.set_type (type, invlists, ntotal);
@@ -280,7 +282,6 @@ void IndexIVF::search (idx_t n, const float *x, idx_t k,
 }
 
 
-
 void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
                                    const idx_t *keys,
                                    const float *coarse_dis ,
@@ -297,6 +298,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
     using HeapForL2 = CMax<float, idx_t>;
 
     bool interrupt = false;
+    std::string exception_string;
 
     int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
     bool do_heap_init = !(this->parallel_mode & PARALLEL_MODE_NO_HEAP_INIT);
@@ -306,6 +308,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
             pmode == 0 ? n > 1 :
             pmode == 1 ? nprobe > 1 :
             nprobe * n > 1);
+
 
 #pragma omp parallel if(do_parallel) reduction(+: nlistv, ndis, nheap)
     {
@@ -375,18 +378,25 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
 
             nlistv++;
 
-            InvertedLists::ScopedCodes scodes (invlists, key);
+            try {
+                InvertedLists::ScopedCodes scodes (invlists, key);
 
-            std::unique_ptr<InvertedLists::ScopedIds> sids;
-            const Index::idx_t * ids = nullptr;
+                std::unique_ptr<InvertedLists::ScopedIds> sids;
+                const Index::idx_t * ids = nullptr;
 
-            if (!store_pairs)  {
-                sids.reset (new InvertedLists::ScopedIds (invlists, key));
-                ids = sids->get();
+                if (!store_pairs)  {
+                    sids.reset (new InvertedLists::ScopedIds (invlists, key));
+                    ids = sids->get();
+                }
+
+                nheap += scanner->scan_codes (list_size, scodes.get(),
+                                              ids, simi, idxi, k);
+
+            } catch(const std::exception & e) {
+                exception_string = demangle_cpp_symbol(typeid(e).name()) + "  " + e.what();
+                interrupt = true;
+                return size_t(0);
             }
-
-            nheap += scanner->scan_codes (list_size, scodes.get(),
-                                          ids, simi, idxi, k);
 
             return list_size;
         };
@@ -505,7 +515,11 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
     } // parallel section
 
     if (interrupt) {
-        FAISS_THROW_MSG ("computation interrupted");
+        if (!exception_string.empty()) {
+            FAISS_THROW_FMT ("search interrupted with: %s", exception_string.c_str());
+        } else {
+            FAISS_THROW_MSG ("computation interrupted");
+        }
     }
 
     indexIVF_stats.nq += n;
@@ -546,6 +560,9 @@ void IndexIVF::range_search_preassigned (
     size_t nlistv = 0, ndis = 0;
     bool store_pairs = false;
 
+    bool interrupt = false;
+    std::string exception_string;
+
     std::vector<RangeSearchPartialResult *> all_pres (omp_get_max_threads());
 
 #pragma omp parallel reduction(+: nlistv, ndis)
@@ -570,14 +587,22 @@ void IndexIVF::range_search_preassigned (
 
             if (list_size == 0) return;
 
-            InvertedLists::ScopedCodes scodes (invlists, key);
-            InvertedLists::ScopedIds ids (invlists, key);
+            try {
 
-            scanner->set_list (key, coarse_dis[i * nprobe + ik]);
-            nlistv++;
-            ndis += list_size;
-            scanner->scan_codes_range (list_size, scodes.get(),
-                                       ids.get(), radius, qres);
+                InvertedLists::ScopedCodes scodes (invlists, key);
+                InvertedLists::ScopedIds ids (invlists, key);
+
+                scanner->set_list (key, coarse_dis[i * nprobe + ik]);
+                nlistv++;
+                ndis += list_size;
+                scanner->scan_codes_range (list_size, scodes.get(),
+                                        ids.get(), radius, qres);
+
+            } catch(const std::exception & e) {
+                exception_string = demangle_cpp_symbol(typeid(e).name()) + "  " + e.what();
+                interrupt = true;
+            }
+
         };
 
         if (parallel_mode == 0) {
@@ -634,6 +659,15 @@ void IndexIVF::range_search_preassigned (
 
         }
     }
+
+    if (interrupt) {
+        if (!exception_string.empty()) {
+            FAISS_THROW_FMT ("search interrupted with: %s", exception_string.c_str());
+        } else {
+            FAISS_THROW_MSG ("computation interrupted");
+        }
+    }
+
     indexIVF_stats.nq += nx;
     indexIVF_stats.nlist += nlistv;
     indexIVF_stats.ndis += ndis;

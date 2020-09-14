@@ -10,6 +10,10 @@
 #include <faiss/impl/FaissException.h>
 #include <sstream>
 
+#ifdef  __GNUG__
+#include <cxxabi.h>
+#endif
+
 namespace faiss {
 
 FaissException::FaissException(const std::string& m)
@@ -63,4 +67,30 @@ void handleExceptions(
   }
 }
 
+
+// From
+// https://stackoverflow.com/questions/281818/unmangling-the-result-of-stdtype-infoname
+
+std::string demangle_cpp_symbol(const char* name) {
+#ifdef __GNUG__
+
+    int status = -1; // some arbitrary value to eliminate the compiler warning
+
+    // enable c++11 by passing the flag -std=c++11 to g++
+    const char * res = abi::__cxa_demangle(name, NULL, NULL, &status);
+
+    std::string sres;
+    if (status == 0) {
+        sres = res;
+    }
+    free((void*)res);
+    return sres;
+
+#else
+    return std::string(name);
+#endif
 }
+
+
+
+} // namespace
