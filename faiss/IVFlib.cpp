@@ -180,9 +180,9 @@ SlidingIndexWindow::SlidingIndexWindow (Index *index): index (index) {
     n_slice = 0;
     IndexIVF* index_ivf = const_cast<IndexIVF*>(extract_index_ivf (index));
     ils = dynamic_cast<ArrayInvertedLists *> (index_ivf->invlists);
-    nlist = ils->nlist;
     FAISS_THROW_IF_NOT_MSG (ils,
                "only supports indexes with ArrayInvertedLists");
+    nlist = ils->nlist;
     sizes.resize(nlist);
 }
 
