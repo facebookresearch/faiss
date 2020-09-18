@@ -11,6 +11,7 @@
 
 
 #include <omp.h>
+#include <mutex>
 
 #include <algorithm>
 #include <cinttypes>
@@ -298,6 +299,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
     using HeapForL2 = CMax<float, idx_t>;
 
     bool interrupt = false;
+    std::mutex exception_mutex;
     std::string exception_string;
 
     int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
@@ -393,7 +395,9 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
                                               ids, simi, idxi, k);
 
             } catch(const std::exception & e) {
-                exception_string = demangle_cpp_symbol(typeid(e).name()) + "  " + e.what();
+                std::lock_guard<std::mutex> lock(exception_mutex);
+                exception_string =
+                    demangle_cpp_symbol(typeid(e).name()) + "  " + e.what();
                 interrupt = true;
                 return size_t(0);
             }
@@ -516,7 +520,8 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
 
     if (interrupt) {
         if (!exception_string.empty()) {
-            FAISS_THROW_FMT ("search interrupted with: %s", exception_string.c_str());
+            FAISS_THROW_FMT ("search interrupted with: %s",
+                             exception_string.c_str());
         } else {
             FAISS_THROW_MSG ("computation interrupted");
         }
@@ -561,6 +566,7 @@ void IndexIVF::range_search_preassigned (
     bool store_pairs = false;
 
     bool interrupt = false;
+    std::mutex exception_mutex;
     std::string exception_string;
 
     std::vector<RangeSearchPartialResult *> all_pres (omp_get_max_threads());
@@ -599,7 +605,9 @@ void IndexIVF::range_search_preassigned (
                                         ids.get(), radius, qres);
 
             } catch(const std::exception & e) {
-                exception_string = demangle_cpp_symbol(typeid(e).name()) + "  " + e.what();
+                std::lock_guard<std::mutex> lock(exception_mutex);
+                exception_string =
+                    demangle_cpp_symbol(typeid(e).name()) + "  " + e.what();
                 interrupt = true;
             }
 
@@ -662,7 +670,8 @@ void IndexIVF::range_search_preassigned (
 
     if (interrupt) {
         if (!exception_string.empty()) {
-            FAISS_THROW_FMT ("search interrupted with: %s", exception_string.c_str());
+            FAISS_THROW_FMT ("search interrupted with: %s",
+                             exception_string.c_str());
         } else {
             FAISS_THROW_MSG ("computation interrupted");
         }
