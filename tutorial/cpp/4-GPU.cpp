@@ -79,7 +79,7 @@ int main() {
     // Using an IVF index
 
     int nlist = 100;
-    faiss::gpu::GpuIndexIVFFlat index_ivf(&res, d, nlist);
+    faiss::gpu::GpuIndexIVFFlat index_ivf(&res, d, nlist, faiss::METRIC_L2);
 
     assert(!index_ivf.is_trained);
     index_ivf.train(nb, xb);

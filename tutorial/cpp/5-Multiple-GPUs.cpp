@@ -44,7 +44,7 @@ int main() {
 
     printf("Number of GPUs: %d\n", ngpus);
 
-    std::vector<faiss::gpu::GpuResources*> res;
+    std::vector<faiss::gpu::GpuResourcesProvider*> res;
     std::vector<int> devs;
     for(int i = 0; i < ngpus; i++) {
         res.push_back(new faiss::gpu::StandardGpuResources);
