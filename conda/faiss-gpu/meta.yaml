@@ -30,11 +30,13 @@ outputs:
       string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
+      script_env:
+        - CUDA_ARCHS
     requirements:
       build:
         - {{ compiler('cxx') }}
         - llvm-openmp  # [osx]
-        - cmake-local
+        - cmake >=3.18
       host:
         - mkl >=2018
         - blas =*=mkl
@@ -42,7 +44,7 @@ outputs:
       run:
         - mkl >=2018
         - blas =*=mkl
-        - {{ pin_compatible('cudatoolkit') }}
+        - {{ pin_compatible('cudatoolkit', max_pin='x') }}
     test:
       commands:
         - test -f $PREFIX/lib/libfaiss.so              # [linux]
@@ -58,7 +60,7 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - swig
-        - cmake-local
+        - cmake >=3.17
       host:
         - python {{ python }}
         - numpy 1.11.*
@@ -76,10 +78,3 @@ outputs:
         - python -m unittest discover faiss/gpu/test/
       source_files:
         - tests/
-
-  - name: cmake-local
-    version: 3.17
-    script: install-cmake.sh
-    requirements:
-      build:
-        - {{ compiler('cxx') }}
