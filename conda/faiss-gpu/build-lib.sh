@@ -13,6 +13,7 @@ cmake -B _build_avx2 \
       -DBUILD_TESTING=OFF \
       -DFAISS_OPT_LEVEL=avx2 \
       -DFAISS_ENABLE_GPU=ON \
+      -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHS}" \
       -DFAISS_ENABLE_PYTHON=OFF \
       -DBLA_VENDOR=Intel10_64lp \
       -DCMAKE_BUILD_TYPE=Release .
@@ -28,6 +29,7 @@ cmake -B _build_generic \
       -DBUILD_SHARED_LIBS=ON \
       -DBUILD_TESTING=OFF \
       -DFAISS_ENABLE_GPU=ON \
+      -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHS}" \
       -DFAISS_ENABLE_PYTHON=OFF \
       -DBLA_VENDOR=Intel10_64lp \
       -DCMAKE_BUILD_TYPE=Release .

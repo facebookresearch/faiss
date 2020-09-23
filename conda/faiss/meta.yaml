@@ -35,8 +35,7 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - llvm-openmp   # [osx]
-        - cmake >=3.17  # [win]
-        - cmake-local   # [not win]
+        - cmake >=3.17
       host:
         - mkl-devel >=2018
         - blas =*=mkl
@@ -59,8 +58,7 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - swig
-        - cmake >=3.17  # [win]
-        - cmake-local   # [not win]
+        - cmake >=3.17
       host:
         - python {{ python }}
         - numpy 1.11.*
@@ -77,12 +75,3 @@ outputs:
         - python -m unittest discover tests/
       source_files:
         - tests/
-
-  - name: cmake-local
-    version: 3.17
-    script: install-cmake.sh
-    build:
-      skip: True  # [win]
-    requirements:
-      build:
-        - {{ compiler('cxx') }}
