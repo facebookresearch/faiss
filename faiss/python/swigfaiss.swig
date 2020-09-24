@@ -7,10 +7,10 @@
 
 // -*- C++ -*-
 
-// This file describes the C++-scripting language bridge for both Lua
-// and Python It contains mainly includes and a few macros. There are
-// 3 preprocessor macros of interest:
-// SWIGLUA: Lua-specific code
+// This file describes the C++-scripting language bridge for Python (and formerly Lua).
+// It contains mainly includes and a few macros. There are
+// 2 preprocessor macros of interest:
+
 // SWIGPYTHON: Python-specific code
 // GPU_WRAPPER: also compile interfaces for GPU.
 
@@ -50,20 +50,6 @@ typedef uint64_t size_t;
 #include <stdint.h>
 #include <omp.h>
 
-
-#ifdef SWIGLUA
-
-#include <pthread.h>
-
-extern "C" {
-
-#include <TH/TH.h>
-#include <luaT.h>
-#undef THTensor
-
-}
-
-#endif
 
 
 #ifdef SWIGPYTHON
@@ -166,19 +152,6 @@ extern "C" {
         SWIG_fail;
     }
     Py_END_ALLOW_THREADS
-}
-
-#endif
-
-#ifdef SWIGLUA
-
-%exception {
-    try {
-        $action
-    } catch(faiss::FaissException & e) {
-        SWIG_Lua_pushferrstring(L, "C++ exception: %s", e.what());       \
-        goto fail;
-    }
 }
 
 #endif
@@ -432,100 +405,12 @@ void gpu_sync_all_devices()
 %include  <faiss/gpu/GpuIndexBinaryFlat.h>
 %include  <faiss/gpu/GpuDistance.h>
 
-#ifdef SWIGLUA
-
-/// in Lua, swigfaiss_gpu is known as swigfaiss
-%luacode {
-local swigfaiss = swigfaiss_gpu
-}
-
-#endif
-
 
 #endif
 
 
 
 
-/*******************************************************************
- * Lua-specific: support async execution of searches in an index
- * Python equivalent is just to use Python threads.
- *******************************************************************/
-
-
-#ifdef SWIGLUA
-
-%{
-
-
-namespace faiss {
-
-struct AsyncIndexSearchC {
-    typedef Index::idx_t idx_t;
-    const Index * index;
-
-    idx_t n;
-    const float *x;
-    idx_t k;
-    float *distances;
-    idx_t *labels;
-
-    bool is_finished;
-
-    pthread_t thread;
-
-
-    AsyncIndexSearchC (const Index *index,
-                      idx_t n, const float *x, idx_t k,
-                      float *distances, idx_t *labels):
-        index(index), n(n), x(x), k(k), distances(distances),
-        labels(labels)
-    {
-        is_finished = false;
-        pthread_create (&thread, NULL, &AsyncIndexSearchC::callback,
-                        this);
-    }
-
-    static void *callback (void *arg)
-    {
-        AsyncIndexSearchC *aidx = (AsyncIndexSearchC *)arg;
-        aidx->do_search();
-        return NULL;
-    }
-
-    void do_search ()
-    {
-        index->search (n, x, k, distances, labels);
-    }
-    void join ()
-    {
-        pthread_join (thread, NULL);
-    }
-
-};
-
-}
-
-%}
-
-// re-decrlare only what we need
-namespace faiss {
-
-struct AsyncIndexSearchC {
-    typedef Index::idx_t idx_t;
-    bool is_finished;
-    AsyncIndexSearchC (const Index *index,
-                      idx_t n, const float *x, idx_t k,
-                       float *distances, idx_t *labels);
-
-
-    void join ();
-};
-
-}
-
-
-#endif
 
 
 
@@ -534,28 +419,6 @@ struct AsyncIndexSearchC {
  * downcast return of some functions so that the sub-class is used
  * instead of the generic upper-class.
  *******************************************************************/
-
-#ifdef SWIGLUA
-
-%define DOWNCAST(subclass)
-    if (dynamic_cast<faiss::subclass *> ($1)) {
-      SWIG_NewPointerObj(L,$1,SWIGTYPE_p_faiss__ ## subclass, $owner);
-    } else
-%enddef
-
-%define DOWNCAST2(subclass, longname)
-    if (dynamic_cast<faiss::subclass *> ($1)) {
-      SWIG_NewPointerObj(L,$1,SWIGTYPE_p_faiss__ ## longname, $owner);
-    } else
-%enddef
-
-%define DOWNCAST_GPU(subclass)
-    if (dynamic_cast<faiss::gpu::subclass *> ($1)) {
-      SWIG_NewPointerObj(L,$1,SWIGTYPE_p_faiss__gpu__ ## subclass, $owner);
-    } else
-%enddef
-
-#endif
 
 
 #ifdef SWIGPYTHON
@@ -626,13 +489,9 @@ struct AsyncIndexSearchC {
 #ifdef SWIGPYTHON
         $result = SWIG_Py_Void();
 #endif
-        // Lua does not need a push for nil
     } else {
         assert(false);
     }
-#ifdef SWIGLUA
-    SWIG_arg++;
-#endif
 }
 
 %typemap(out) faiss::IndexBinary * {
@@ -655,13 +514,9 @@ struct AsyncIndexSearchC {
 #ifdef SWIGPYTHON
         $result = SWIG_Py_Void();
 #endif
-        // Lua does not need a push for nil
     } else {
         assert(false);
     }
-#ifdef SWIGLUA
-    SWIG_arg++;
-#endif
 }
 
 %typemap(out) faiss::VectorTransform * {
@@ -676,9 +531,6 @@ struct AsyncIndexSearchC {
     {
         assert(false);
     }
-#ifdef SWIGLUA
-    SWIG_arg++;
-#endif
 }
 
 %typemap(out) faiss::InvertedLists * {
@@ -693,9 +545,6 @@ struct AsyncIndexSearchC {
     {
         assert(false);
     }
-#ifdef SWIGLUA
-    SWIG_arg++;
-#endif
 }
 
 // just to downcast pointers that come from elsewhere (eg. direct
@@ -897,58 +746,6 @@ REV_SWIG_PTR(uint64_t, NPY_UINT64);
 #endif
 
 
-
-/*******************************************************************
- * Lua specific: Torch tensor <-> C++ pointer interface
- *******************************************************************/
-
-#ifdef SWIGLUA
-
-
-// provide a XXX_ptr function to convert Lua XXXTensor -> C++ XXX*
-
-%define TYPE_CONVERSION(ctype, tensortype)
-
-// typemap for the *_ptr_from_cdata function
-%typemap(in) ctype** {
-    if(lua_type(L, $input) != 10) {
-        fprintf(stderr, "not cdata input\n");
-        SWIG_fail;
-    }
-    $1 = (ctype**)lua_topointer(L, $input);
-}
-
-
-// SWIG and C declaration for the *_ptr_from_cdata function
-%{
-ctype * ctype ## _ptr_from_cdata(ctype **x, long ofs) {
-     return *x + ofs;
-}
-%}
-ctype * ctype ## _ptr_from_cdata(ctype **x, long ofs);
-
-// the *_ptr function
-%luacode {
-
-function swigfaiss. ctype ## _ptr(tensor)
-   assert(tensor:type() == "torch." .. # tensortype, "need a " .. # tensortype)
-   assert(tensor:isContiguous(), "requires contiguous tensor")
-   return swigfaiss. ctype ## _ptr_from_cdata(
-         tensor:storage():data(),
-         tensor:storageOffset() - 1)
-end
-
-}
-
-%enddef
-
-TYPE_CONVERSION (int, IntTensor)
-TYPE_CONVERSION (float, FloatTensor)
-TYPE_CONVERSION (long, LongTensor)
-TYPE_CONVERSION (uint64_t, LongTensor)
-TYPE_CONVERSION (uint8_t, ByteTensor)
-
-#endif
 
 /*******************************************************************
  * How should the template objects apprear in the scripting language?
