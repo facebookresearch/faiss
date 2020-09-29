@@ -31,9 +31,6 @@ int faiss_IndexShards_new_with_options(FaissIndexShards** p_index, idx_t d, int 
 
 int faiss_IndexShards_add_shard(FaissIndexShards* index, FaissIndex* shard);
 
-/// update metric_type and ntotal
-int faiss_IndexShards_sync_with_shard_indexes(FaissIndexShards* index);
-
 FaissIndex* faiss_IndexShards_at(FaissIndexShards* index, int i);
 
 #ifdef __cplusplus
