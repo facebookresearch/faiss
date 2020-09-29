@@ -66,6 +66,10 @@ struct ScopeDeleter1 {
     }
 };
 
+/// make typeids more readable
+std::string demangle_cpp_symbol(const char* name);
+
+
 }
 
 #endif

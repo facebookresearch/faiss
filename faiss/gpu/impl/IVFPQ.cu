@@ -27,6 +27,7 @@
 #include <faiss/gpu/utils/Transpose.cuh>
 #include <limits>
 #include <thrust/host_vector.h>
+#include <type_traits>
 #include <unordered_map>
 
 namespace faiss { namespace gpu {
@@ -506,15 +507,33 @@ IVFPQ::precomputeCodesT_() {
       makeTempAlloc(AllocType::QuantizerPrecomputedCodes, stream),
       {numSubQuantizers_, coarseCentroids.getSize(0), dimPerSubQuantizer_});
 
-    runTransposeAny(centroidView, 0, 1, centroidsTransposed,
-                    stream);
+    runTransposeAny(centroidView, 0, 1, centroidsTransposed, stream);
 
-    runIteratedMatrixMult(coarsePQProduct, false,
-                          centroidsTransposed, false,
-                          pqCentroidsMiddleCode_, true,
-                          2.0f, 0.0f,
-                          resources_->getBlasHandleCurrentDevice(),
-                          stream);
+    if (std::is_same<CentroidT, half>::value) {
+      // cuBLAS does not support f32 x f16 = f32, convert CentroidT to f32 if
+      // necessary
+      DeviceTensor<float, 3, true> centroidsTransposedF32(
+        resources_,
+        makeTempAlloc(AllocType::QuantizerPrecomputedCodes, stream),
+        {numSubQuantizers_, coarseCentroids.getSize(0), dimPerSubQuantizer_});
+
+      convertTensor(stream, centroidsTransposed, centroidsTransposedF32);
+
+      runIteratedMatrixMult(coarsePQProduct, false,
+                            centroidsTransposedF32, false,
+                            pqCentroidsMiddleCode_, true,
+                            2.0f, 0.0f,
+                            resources_->getBlasHandleCurrentDevice(),
+                            stream);
+    } else {
+      // All in f32
+      runIteratedMatrixMult(coarsePQProduct, false,
+                            centroidsTransposed, false,
+                            pqCentroidsMiddleCode_, true,
+                            2.0f, 0.0f,
+                            resources_->getBlasHandleCurrentDevice(),
+                            stream);
+    }
   }
 
   // Transpose (sub q)(centroid id)(code id) to
