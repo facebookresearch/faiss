@@ -44,27 +44,59 @@ IndexReplicasTemplate<IndexT>::onAfterAddIndex(IndexT* index) {
     FAISS_THROW_IF_NOT_MSG(index->is_trained == existing->is_trained,
                            "IndexReplicas: newly added index does "
                            "not have same train status as prior index");
+
+    FAISS_THROW_IF_NOT_MSG(index->d == existing->d,
+                           "IndexReplicas: newly added index does "
+                           "not have same dimension as prior index");
   } else {
-    // Set our parameters based on the first index we're adding
-    // (dimension is handled in ThreadedIndex)
-    this->ntotal = index->ntotal;
-    this->verbose = index->verbose;
-    this->is_trained = index->is_trained;
-    this->metric_type = index->metric_type;
+    syncWithSubIndexes();
   }
 }
 
 template <typename IndexT>
 void
+IndexReplicasTemplate<IndexT>::onAfterRemoveIndex(IndexT* index) {
+  syncWithSubIndexes();
+}
+
+template <typename IndexT>
+void
 IndexReplicasTemplate<IndexT>::train(idx_t n, const component_t* x) {
-  this->runOnIndex([n, x](int, IndexT* index){ index->train(n, x); });
+  auto fn =
+    [n, x](int i, IndexT* index) {
+      if (index->verbose) {
+        printf("begin train replica %d on %" PRId64 " points\n", i, n);
+      }
+
+      index->train(n, x);
+
+      if (index->verbose) {
+        printf("end train replica %d\n", i);
+      }
+    };
+
+  this->runOnIndex(fn);
+  syncWithSubIndexes();
 }
 
 template <typename IndexT>
 void
 IndexReplicasTemplate<IndexT>::add(idx_t n, const component_t* x) {
-  this->runOnIndex([n, x](int, IndexT* index){ index->add(n, x); });
-  this->ntotal += n;
+  auto fn =
+    [n, x](int i, IndexT* index) {
+      if (index->verbose) {
+        printf("begin add replica %d on %" PRId64 " points\n", i, n);
+      }
+
+      index->add(n, x);
+
+      if (index->verbose) {
+        printf("end add replica %d\n", i);
+      }
+    };
+
+  this->runOnIndex(fn);
+  syncWithSubIndexes();
 }
 
 template <typename IndexT>
@@ -107,15 +139,73 @@ IndexReplicasTemplate<IndexT>::search(idx_t n,
       if (base < n) {
         auto numForIndex = std::min(queriesPerIndex, n - base);
 
+        if (index->verbose) {
+          printf("begin search replica %d on %" PRId64 " points\n",
+                 i, numForIndex);
+        }
+
         index->search(numForIndex,
                       x + base * componentsPerVec,
                       k,
                       distances + base * k,
                       labels + base * k);
+
+        if (index->verbose) {
+          printf("end search replica %d\n", i);
+        }
       }
     };
 
   this->runOnIndex(fn);
+}
+
+// FIXME: assumes that nothing is currently running on the sub-indexes, which is
+// true with the normal API, but should use the runOnIndex API instead
+template <typename IndexT>
+void
+IndexReplicasTemplate<IndexT>::syncWithSubIndexes() {
+  if (!this->count()) {
+    this->is_trained = false;
+    this->ntotal = 0;
+
+    return;
+  }
+
+  auto firstIndex = this->at(0);
+  this->metric_type = firstIndex->metric_type;
+  this->is_trained = firstIndex->is_trained;
+  this->ntotal = firstIndex->ntotal;
+
+  for (int i = 1; i < this->count(); ++i) {
+    auto index = this->at(i);
+    FAISS_THROW_IF_NOT(this->metric_type == index->metric_type);
+    FAISS_THROW_IF_NOT(this->d == index->d);
+    FAISS_THROW_IF_NOT(this->is_trained == index->is_trained);
+    FAISS_THROW_IF_NOT(this->ntotal == index->ntotal);
+  }
+}
+
+// No metric_type for IndexBinary
+template <>
+void
+IndexReplicasTemplate<IndexBinary>::syncWithSubIndexes() {
+  if (!this->count()) {
+    this->is_trained = false;
+    this->ntotal = 0;
+
+    return;
+  }
+
+  auto firstIndex = this->at(0);
+  this->is_trained = firstIndex->is_trained;
+  this->ntotal = firstIndex->ntotal;
+
+  for (int i = 1; i < this->count(); ++i) {
+    auto index = this->at(i);
+    FAISS_THROW_IF_NOT(this->d == index->d);
+    FAISS_THROW_IF_NOT(this->is_trained == index->is_trained);
+    FAISS_THROW_IF_NOT(this->ntotal == index->ntotal);
+  }
 }
 
 // explicit instantiations

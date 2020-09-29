@@ -79,11 +79,10 @@ struct IndexShardsTemplate : public ThreadedIndex<IndexT> {
 
   void train(idx_t n, const component_t* x) override;
 
-  // update metric_type and ntotal. Call if you changes something in
-  // the shard indexes.
-  void sync_with_shard_indexes();
-
   bool successive_ids;
+
+  /// Synchronize the top-level index (IndexShards) with data in the sub-indices
+  void syncWithSubIndexes();
 
  protected:
   /// Called just after an index is added

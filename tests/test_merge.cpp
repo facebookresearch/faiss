@@ -114,7 +114,7 @@ int compare_merged (faiss::IndexShards *index_shards, bool shift_ids,
                    shift_ids);
         }
 
-        index_shards->sync_with_shard_indexes();
+        index_shards->syncWithSubIndexes();
     } else {
         std::vector<const faiss::InvertedLists *> lists;
         faiss::IndexIVF *index0 = nullptr;

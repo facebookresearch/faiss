@@ -531,6 +531,63 @@ class TestDistancesPositive(unittest.TestCase):
         assert np.all(D >= 0)
 
 
+class TestShardReplicas(unittest.TestCase):
+    def test_shard_flag_propagation(self):
+        d = 64                           # dimension
+        nb = 1000
+        rs = np.random.RandomState(1234)
+        xb = rs.rand(nb, d).astype('float32')
+        nlist = 10
+        quantizer1 = faiss.IndexFlatL2(d)
+        quantizer2 = faiss.IndexFlatL2(d)
+        index1 = faiss.IndexIVFFlat(quantizer1, d, nlist)
+        index2 = faiss.IndexIVFFlat(quantizer2, d, nlist)
+
+        index = faiss.IndexShards(d, True)
+        index.add_shard(index1)
+        index.add_shard(index2)
+
+        self.assertFalse(index.is_trained)
+        index.train(xb)
+        self.assertTrue(index.is_trained)
+
+        self.assertEqual(index.ntotal, 0)
+        index.add(xb)
+        self.assertEqual(index.ntotal, nb)
+
+        index.remove_shard(index2)
+        self.assertEqual(index.ntotal, nb / 2)
+        index.remove_shard(index1)
+        self.assertEqual(index.ntotal, 0)
+
+    def test_replica_flag_propagation(self):
+        d = 64                           # dimension
+        nb = 1000
+        rs = np.random.RandomState(1234)
+        xb = rs.rand(nb, d).astype('float32')
+        nlist = 10
+        quantizer1 = faiss.IndexFlatL2(d)
+        quantizer2 = faiss.IndexFlatL2(d)
+        index1 = faiss.IndexIVFFlat(quantizer1, d, nlist)
+        index2 = faiss.IndexIVFFlat(quantizer2, d, nlist)
+
+        index = faiss.IndexReplicas(d, True)
+        index.add_replica(index1)
+        index.add_replica(index2)
+
+        self.assertFalse(index.is_trained)
+        index.train(xb)
+        self.assertTrue(index.is_trained)
+
+        self.assertEqual(index.ntotal, 0)
+        index.add(xb)
+        self.assertEqual(index.ntotal, nb)
+
+        index.remove_replica(index2)
+        self.assertEqual(index.ntotal, nb)
+        index.remove_replica(index1)
+        self.assertEqual(index.ntotal, 0)
+
 class TestReconsException(unittest.TestCase):
 
     def test_recons_exception(self):

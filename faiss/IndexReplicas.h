@@ -65,9 +65,15 @@ class IndexReplicasTemplate : public ThreadedIndex<IndexT> {
   /// reconstructs from the first index
   void reconstruct(idx_t, component_t *v) const override;
 
+  /// Synchronize the top-level index (IndexShards) with data in the sub-indices
+  void syncWithSubIndexes();
+
  protected:
   /// Called just after an index is added
   void onAfterAddIndex(IndexT* index) override;
+
+  /// Called just after an index is removed
+  void onAfterRemoveIndex(IndexT* index) override;
 };
 
 using IndexReplicas = IndexReplicasTemplate<Index>;

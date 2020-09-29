@@ -133,18 +133,20 @@ IndexShardsTemplate<IndexT>::IndexShardsTemplate(bool threaded,
 template <typename IndexT>
 void
 IndexShardsTemplate<IndexT>::onAfterAddIndex(IndexT* index /* unused */) {
-  sync_with_shard_indexes();
+  syncWithSubIndexes();
 }
 
 template <typename IndexT>
 void
 IndexShardsTemplate<IndexT>::onAfterRemoveIndex(IndexT* index /* unused */) {
-  sync_with_shard_indexes();
+  syncWithSubIndexes();
 }
 
+// FIXME: assumes that nothing is currently running on the sub-indexes, which is
+// true with the normal API, but should use the runOnIndex API instead
 template <typename IndexT>
 void
-IndexShardsTemplate<IndexT>::sync_with_shard_indexes() {
+IndexShardsTemplate<IndexT>::syncWithSubIndexes() {
   if (!this->count()) {
     this->is_trained = false;
     this->ntotal = 0;
@@ -161,6 +163,31 @@ IndexShardsTemplate<IndexT>::sync_with_shard_indexes() {
     auto index = this->at(i);
     FAISS_THROW_IF_NOT(this->metric_type == index->metric_type);
     FAISS_THROW_IF_NOT(this->d == index->d);
+    FAISS_THROW_IF_NOT(this->is_trained == index->is_trained);
+
+    this->ntotal += index->ntotal;
+  }
+}
+
+// No metric_type for IndexBinary
+template <>
+void
+IndexShardsTemplate<IndexBinary>::syncWithSubIndexes() {
+  if (!this->count()) {
+    this->is_trained = false;
+    this->ntotal = 0;
+
+    return;
+  }
+
+  auto firstIndex = this->at(0);
+  this->is_trained = firstIndex->is_trained;
+  this->ntotal = firstIndex->ntotal;
+
+  for (int i = 1; i < this->count(); ++i) {
+    auto index = this->at(i);
+    FAISS_THROW_IF_NOT(this->d == index->d);
+    FAISS_THROW_IF_NOT(this->is_trained == index->is_trained);
 
     this->ntotal += index->ntotal;
   }
@@ -184,7 +211,7 @@ IndexShardsTemplate<IndexT>::train(idx_t n,
     };
 
   this->runOnIndex(fn);
-  sync_with_shard_indexes();
+  syncWithSubIndexes();
 }
 
 template <typename IndexT>
@@ -253,10 +280,7 @@ IndexShardsTemplate<IndexT>::add_with_ids(idx_t n,
     };
 
   this->runOnIndex(fn);
-
-  // This is safe to do here because the current thread controls execution in
-  // all threads, and nothing else is happening
-  this->ntotal += n;
+  syncWithSubIndexes();
 }
 
 template <typename IndexT>
