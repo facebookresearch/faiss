@@ -32,7 +32,8 @@ class TestComputeGT(unittest.TestCase):
         Dnew, Inew = knn_ground_truth(xq, matrix_iterator(xb, 1000), 10)
 
         np.testing.assert_array_equal(Iref, Inew)
-        np.testing.assert_almost_equal(Dref, Dnew, decimal=5)
+        # decimal = 4 required when run on GPU
+        np.testing.assert_almost_equal(Dref, Dnew, decimal=4)
 
 
 class TestDatasets(unittest.TestCase):
