@@ -89,24 +89,9 @@ GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
                            nullptr, // no scalar quantizer
                            ivfFlatConfig_.indicesOptions,
                            memorySpace_));
-  InvertedLists *ivf = index->invlists;
 
-  for (size_t i = 0; i < ivf->nlist; ++i) {
-    auto numVecs = ivf->list_size(i);
-
-    // GPU index can only support max int entries per list
-    FAISS_THROW_IF_NOT_FMT(numVecs <=
-                       (size_t) std::numeric_limits<int>::max(),
-                       "GPU inverted list can only support "
-                       "%zu entries; %zu found",
-                       (size_t) std::numeric_limits<int>::max(),
-                       numVecs);
-
-    index_->addCodeVectorsFromCpu(i,
-                                  (const unsigned char*)(ivf->get_codes(i)),
-                                  ivf->get_ids(i),
-                                  numVecs);
-  }
+  // Copy all of the IVF data
+  index_->copyInvertedListsFrom(index->invlists);
 }
 
 void
@@ -121,20 +106,12 @@ GpuIndexIVFFlat::copyTo(faiss::IndexIVFFlat* index) const {
   GpuIndexIVF::copyTo(index);
   index->code_size = this->d * sizeof(float);
 
-  InvertedLists *ivf = new ArrayInvertedLists(nlist, index->code_size);
+  auto ivf = new ArrayInvertedLists(nlist, index->code_size);
   index->replace_invlists(ivf, true);
 
-  // Copy the inverted lists
   if (index_) {
-    for (int i = 0; i < nlist; ++i) {
-      auto listIndices = index_->getListIndices(i);
-      auto listData = index_->getListVectors(i);
-
-      ivf->add_entries(i,
-                       listIndices.size(),
-                       listIndices.data(),
-                       (const uint8_t*) listData.data());
-    }
+    // Copy IVF lists
+    index_->copyInvertedListsTo(ivf);
   }
 }
 
@@ -208,7 +185,7 @@ GpuIndexIVFFlat::addImpl_(int n,
   Tensor<long, 1, true> labels(const_cast<long*>(xids), {n});
 
   // Not all vectors may be able to be added (some may contain NaNs etc)
-  index_->classifyAndAddVectors(data, labels);
+  index_->addVectors(data, labels);
 
   // but keep the ntotal based on the total number of vectors that we attempted
   // to add

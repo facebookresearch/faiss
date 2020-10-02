@@ -48,6 +48,10 @@ class StandardGpuResourcesImpl : public GpuResources {
   /// for all devices
   void setDefaultNullStreamAllDevices();
 
+  /// If enabled, will print every GPU memory allocation and deallocation to
+  /// standard output
+  void setLogMemoryAllocations(bool enable);
+
  public:
   /// Internal system calls
 
@@ -119,8 +123,8 @@ class StandardGpuResourcesImpl : public GpuResources {
   /// Amount of pinned memory we should allocate
   size_t pinnedMemSize_;
 
-  /// Whether or not a warning upon cudaMalloc is generated
-  bool cudaMallocWarning_;
+  /// Whether or not we log every GPU memory allocation and deallocation
+  bool allocLogging_;
 };
 
 /// Default implementation of GpuResources that allocates a cuBLAS
@@ -166,6 +170,10 @@ class StandardGpuResources : public GpuResourcesProvider {
 
   /// Synchronize our default stream with the CPU
   void syncDefaultStreamCurrentDevice();
+
+  /// If enabled, will print every GPU memory allocation and deallocation to
+  /// standard output
+  void setLogMemoryAllocations(bool enable);
 
  private:
   std::shared_ptr<StandardGpuResourcesImpl> res_;

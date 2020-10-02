@@ -73,6 +73,9 @@ enum MemorySpace {
   Unified = 2,
 };
 
+/// Convert a MemorySpace to string
+std::string memorySpaceToString(MemorySpace s);
+
 /// Information on what/where an allocation is
 struct AllocInfo {
   inline AllocInfo()
@@ -91,6 +94,9 @@ struct AllocInfo {
         space(sp),
         stream(st) {
   }
+
+  /// Returns a string representation of this info
+  std::string toString() const;
 
   /// The internal category of the allocation
   AllocType type;
@@ -142,6 +148,9 @@ struct AllocRequest : public AllocInfo {
       : AllocInfo(at, dev, sp, st),
         size(sz) {
   }
+
+  /// Returns a string representation of this request
+  std::string toString() const;
 
   /// The size in bytes of the allocation
   size_t size;

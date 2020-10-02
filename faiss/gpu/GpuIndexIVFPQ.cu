@@ -100,6 +100,7 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
                          quantizer->getGpuData(),
                          subQuantizers_,
                          bitsPerCode_,
+                         ivfpqConfig_.alternativeLayout,
                          (float*) index->pq.centroids.data(),
                          ivfpqConfig_.indicesOptions,
                          ivfpqConfig_.useFloat16LookupTables,
@@ -107,23 +108,8 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
   // Doesn't make sense to reserve memory here
   index_->setPrecomputedCodes(ivfpqConfig_.usePrecomputedTables);
 
-  // Copy database vectors, if any
-  const InvertedLists *ivf = index->invlists;
-  size_t nlist = ivf ? ivf->nlist : 0;
-  for (size_t i = 0; i < nlist; ++i) {
-    size_t list_size = ivf->list_size(i);
-
-    // GPU index can only support max int entries per list
-    FAISS_THROW_IF_NOT_FMT(list_size <=
-                       (size_t) std::numeric_limits<int>::max(),
-                       "GPU inverted list can only support "
-                       "%zu entries; %zu found",
-                       (size_t) std::numeric_limits<int>::max(),
-                       list_size);
-
-    index_->addCodeVectorsFromCpu(
-      i, ivf->get_codes(i), ivf->get_ids(i), list_size);
-  }
+  // Copy all of the IVF data
+  index_->copyInvertedListsFrom(index->invlists);
 }
 
 void
@@ -153,16 +139,12 @@ GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
   index->polysemous_ht = 0;
   index->precomputed_table.clear();
 
-  InvertedLists *ivf = new ArrayInvertedLists(nlist, index->code_size);
+  auto ivf = new ArrayInvertedLists(nlist, index->code_size);
   index->replace_invlists(ivf, true);
 
   if (index_) {
-    // Copy the inverted lists
-    for (int i = 0; i < nlist; ++i) {
-      auto ids = getListIndices(i);
-      auto codes = getListCodes(i);
-      index->invlists->add_entries (i, ids.size(), ids.data(), codes.data());
-    }
+    // Copy IVF lists
+    index_->copyInvertedListsTo(ivf);
 
     // Copy PQ centroids
     auto devPQCentroids = index_->getPQCentroids();
@@ -276,6 +258,7 @@ GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
                          quantizer->getGpuData(),
                          subQuantizers_,
                          bitsPerCode_,
+                         ivfpqConfig_.alternativeLayout,
                          pq.centroids.data(),
                          ivfpqConfig_.indicesOptions,
                          ivfpqConfig_.useFloat16LookupTables,
@@ -330,7 +313,7 @@ GpuIndexIVFPQ::addImpl_(int n,
   Tensor<long, 1, true> labels(const_cast<long*>(xids), {n});
 
   // Not all vectors may be able to be added (some may contain NaNs etc)
-  index_->classifyAndAddVectors(data, labels);
+  index_->addVectors(data, labels);
 
   // but keep the ntotal based on the total number of vectors that we attempted
   // to add

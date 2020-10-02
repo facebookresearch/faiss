@@ -16,6 +16,8 @@
 #include <thrust/device_vector.h>
 #include <vector>
 
+namespace faiss { struct InvertedLists; }
+
 namespace faiss { namespace gpu {
 
 class GpuResources;
@@ -29,7 +31,6 @@ class IVFBase {
           float metricArg,
           /// We do not own this reference
           FlatIndex* quantizer,
-          int bytesPerVector,
           IndicesOptions indicesOptions,
           MemorySpace space);
 
@@ -62,7 +63,53 @@ class IVFBase {
   /// Return the encoded vectors of a particular list back to the CPU
   std::vector<unsigned char> getListVectors(int listId) const;
 
+  /// Copy all inverted lists from a CPU representation to ourselves
+  void copyInvertedListsFrom(const InvertedLists* ivf);
+
+  /// Copy all inverted lists from ourselves to a CPU representation
+  void copyInvertedListsTo(InvertedLists* ivf);
+
+  /// Classify and encode/add vectors to our IVF lists.
+  /// The input data must be on our current device.
+  /// Returns the number of vectors successfully added. Vectors may
+  /// not be able to be added because they contain NaNs.
+  int addVectors(Tensor<float, 2, true>& vecs,
+                 Tensor<long, 1, true>& indices);
+
  protected:
+  /// Adds a set of codes and indices to a list, with the representation coming
+  /// from the CPU equivalent
+  void addEncodedVectorsToList_(int listId,
+                                // resident on the host
+                                const void* codes,
+                                // resident on the host
+                                const long* indices,
+                                size_t numVecs);
+
+  /// Returns the number of bytes in which an IVF list containing numVecs
+  /// vectors is encoded on the device. Note that due to padding this is not the
+  /// same as the encoding size for a subset of vectors in an IVF list; this is
+  /// the size for an entire IVF list
+  virtual size_t getGpuVectorsEncodingSize_(int numVecs) const = 0;
+  virtual size_t getCpuVectorsEncodingSize_(int numVecs) const = 0;
+
+  /// Translate to our preferred GPU encoding
+  virtual std::vector<unsigned char> translateCodesToGpu_(
+    std::vector<unsigned char> codes,
+    size_t numVecs) const = 0;
+
+  /// Translate from our preferred GPU encoding
+  virtual std::vector<unsigned char> translateCodesFromGpu_(
+    std::vector<unsigned char> codes,
+    size_t numVecs) const = 0;
+
+  /// Append vectors to our on-device lists
+  virtual void appendVectors_(Tensor<float, 2, true>& vecs,
+                              Tensor<long, 1, true>& indices,
+                              Tensor<int, 1, true>& listIds,
+                              Tensor<int, 1, true>& listOffset,
+                              cudaStream_t stream) = 0;
+
   /// Reclaim memory consumed on the device for our inverted lists
   /// `exact` means we trim exactly to the memory needed
   size_t reclaimMemory_(bool exact);
@@ -99,9 +146,6 @@ class IVFBase {
   /// Number of inverted lists we maintain
   const int numLists_;
 
-  /// Number of bytes per vector in the list
-  const int bytesPerVector_;
-
   /// How are user indices stored on the GPU?
   const IndicesOptions indicesOptions_;
 
@@ -123,12 +167,23 @@ class IVFBase {
   /// Maximum list length seen
   int maxListLength_;
 
+  struct DeviceIVFList {
+    DeviceIVFList(GpuResources* res, const AllocInfo& info);
+
+    /// The on-device memory for this particular IVF list
+    DeviceVector<unsigned char> data;
+
+    /// The number of vectors encoded in this list, which may be unrelated to
+    /// the above allocated data size
+    int numVecs;
+  };
+
   /// Device memory for each separate list, as managed by the host.
   /// Device memory as stored in DeviceVector is stored as unique_ptr
-  /// since deviceListSummary_ pointers must remain valid despite
-  /// resizing of deviceLists_
-  std::vector<std::unique_ptr<DeviceVector<unsigned char>>> deviceListData_;
-  std::vector<std::unique_ptr<DeviceVector<unsigned char>>> deviceListIndices_;
+  /// since deviceList*Pointers_ must remain valid despite
+  /// resizing (and potential re-allocation) of deviceList*_
+  std::vector<std::unique_ptr<DeviceIVFList>> deviceListData_;
+  std::vector<std::unique_ptr<DeviceIVFList>> deviceListIndices_;
 
   /// If we are storing indices on the CPU (indicesOptions_ is
   /// INDICES_CPU), then this maintains a CPU-side map of what

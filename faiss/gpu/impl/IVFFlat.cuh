@@ -29,20 +29,6 @@ class IVFFlat : public IVFBase {
 
   ~IVFFlat() override;
 
-  /// Add vectors to a specific list; the input data can be on the
-  /// host or on our current device
-  void addCodeVectorsFromCpu(int listId,
-                             const unsigned char* vecs,
-                             const long* indices,
-                             size_t numVecs);
-
-  /// Adds the given vectors to this index.
-  /// The input data must be on our current device.
-  /// Returns the number of vectors successfully added. Vectors may
-  /// not be able to be added because they contain NaNs.
-  int classifyAndAddVectors(Tensor<float, 2, true>& vecs,
-                            Tensor<long, 1, true>& indices);
-
   /// Find the approximate k nearest neigbors for `queries` against
   /// our database
   void query(Tensor<float, 2, true>& queries,
@@ -51,11 +37,32 @@ class IVFFlat : public IVFBase {
              Tensor<float, 2, true>& outDistances,
              Tensor<long, 2, true>& outIndices);
 
- private:
-  /// Returns the size of our stored vectors, in bytes
-  size_t getVectorMemorySize() const;
+ protected:
+  /// Returns the number of bytes in which an IVF list containing numVecs
+  /// vectors is encoded on the device. Note that due to padding this is not the
+  /// same as the encoding size for a subset of vectors in an IVF list; this is
+  /// the size for an entire IVF list
+  size_t getGpuVectorsEncodingSize_(int numVecs) const override;
+  size_t getCpuVectorsEncodingSize_(int numVecs) const override;
 
- private:
+  /// Translate to our preferred GPU encoding
+  std::vector<unsigned char> translateCodesToGpu_(
+    std::vector<unsigned char> codes,
+    size_t numVecs) const override;
+
+  /// Translate from our preferred GPU encoding
+  std::vector<unsigned char> translateCodesFromGpu_(
+    std::vector<unsigned char> codes,
+    size_t numVecs) const override;
+
+  /// Encode the vectors that we're adding and append to our IVF lists
+  void appendVectors_(Tensor<float, 2, true>& vecs,
+                      Tensor<long, 1, true>& indices,
+                      Tensor<int, 1, true>& listIds,
+                      Tensor<int, 1, true>& listOffset,
+                      cudaStream_t stream) override;
+
+ protected:
   /// Do we encode the residual from a coarse quantizer or not?
   bool useResidual_;
 

@@ -38,6 +38,7 @@ IVFPQ::IVFPQ(GpuResources* resources,
              FlatIndex* quantizer,
              int numSubQuantizers,
              int bitsPerSubQuantizer,
+             bool layoutBy32,
              float* pqCentroidData,
              IndicesOptions indicesOptions,
              bool useFloat16LookupTables,
@@ -46,27 +47,26 @@ IVFPQ::IVFPQ(GpuResources* resources,
             metric,
             metricArg,
             quantizer,
-            numSubQuantizers,
             indicesOptions,
             space),
     numSubQuantizers_(numSubQuantizers),
     bitsPerSubQuantizer_(bitsPerSubQuantizer),
     numSubQuantizerCodes_(utils::pow2(bitsPerSubQuantizer_)),
     dimPerSubQuantizer_(dim_ / numSubQuantizers),
+    layoutBy32_(layoutBy32),
     useFloat16LookupTables_(useFloat16LookupTables),
     precomputedCodes_(false) {
   FAISS_ASSERT(pqCentroidData);
 
   FAISS_ASSERT(bitsPerSubQuantizer_ <= 8);
   FAISS_ASSERT(dim_ % numSubQuantizers_ == 0);
-  FAISS_ASSERT(isSupportedPQCodeLength(bytesPerVector_));
+  FAISS_ASSERT(isSupportedPQCodeLength(numSubQuantizers_));
 
   setPQCentroids_(pqCentroidData);
 }
 
 IVFPQ::~IVFPQ() {
 }
-
 
 bool
 IVFPQ::isSupportedPQCodeLength(int size) {
@@ -119,302 +119,171 @@ IVFPQ::setPrecomputedCodes(bool enable) {
   }
 }
 
-int
-IVFPQ::classifyAndAddVectors(Tensor<float, 2, true>& vecs,
-                             Tensor<long, 1, true>& indices) {
-  FAISS_ASSERT(vecs.getSize(0) == indices.getSize(0));
-  FAISS_ASSERT(vecs.getSize(1) == dim_);
+void
+IVFPQ::appendVectors_(Tensor<float, 2, true>& vecs,
+                      Tensor<long, 1, true>& indices,
+                      Tensor<int, 1, true>& listIds,
+                      Tensor<int, 1, true>& listOffset,
+                      cudaStream_t stream) {
+  //
+  // Determine the encodings of the vectors
+  //
 
-  auto stream = resources_->getDefaultStreamCurrentDevice();
-
-  // Number of valid vectors that we actually add; we return this
-  int numAdded = 0;
-
-  // We don't actually need this
-  DeviceTensor<float, 2, true> listDistance(
-    resources_, makeTempAlloc(AllocType::Other, stream),
-    {vecs.getSize(0), 1});
-  // We use this
-  DeviceTensor<int, 2, true> listIds2d(
-    resources_, makeTempAlloc(AllocType::Other, stream),
-    {vecs.getSize(0), 1});
-  auto listIds = listIds2d.view<1>({vecs.getSize(0)});
-
-  quantizer_->query(vecs,
-                    1,
-                    metric_,
-                    metricArg_,
-                    listDistance,
-                    listIds2d,
-                    false);
-
-  // Copy the lists that we wish to append to back to the CPU
-  // FIXME: really this can be into pinned memory and a true async
-  // copy on a different stream; we can start the copy early, but it's
-  // tiny
-  HostTensor<int, 1, true> listIdsHost(listIds, stream);
-
-  // Calculate the residual for each closest centroid
-  DeviceTensor<float, 2, true> residuals(
-    resources_, makeTempAlloc(AllocType::Other, stream),
-    {vecs.getSize(0), vecs.getSize(1)});
-
-  if (quantizer_->getUseFloat16()) {
-    auto& coarseCentroids = quantizer_->getVectorsFloat16Ref();
-    runCalcResidual(vecs, coarseCentroids, listIds, residuals, stream);
-  } else {
-    auto& coarseCentroids = quantizer_->getVectorsFloat32Ref();
-    runCalcResidual(vecs, coarseCentroids, listIds, residuals, stream);
-  }
-
-  // Residuals are in the form
-  // (vec x numSubQuantizer x dimPerSubQuantizer)
-  // transpose to
-  // (numSubQuantizer x vec x dimPerSubQuantizer)
-  auto residualsView = residuals.view<3>(
-    {residuals.getSize(0), numSubQuantizers_, dimPerSubQuantizer_});
-
-  DeviceTensor<float, 3, true> residualsTranspose(
-    resources_, makeTempAlloc(AllocType::Other, stream),
-    {numSubQuantizers_, residuals.getSize(0), dimPerSubQuantizer_});
-
-  runTransposeAny(residualsView, 0, 1, residualsTranspose, stream);
-
-  // Get the product quantizer centroids in the form
-  // (numSubQuantizer x numSubQuantizerCodes x dimPerSubQuantizer)
-  // which is pqCentroidsMiddleCode_
-
-  // We now have a batch operation to find the top-1 distances:
-  // batch size: numSubQuantizer
-  // centroids: (numSubQuantizerCodes x dimPerSubQuantizer)
-  // residuals: (vec x dimPerSubQuantizer)
-  // => (numSubQuantizer x vec x 1)
-
-  DeviceTensor<float, 3, true> closestSubQDistance(
-    resources_, makeTempAlloc(AllocType::Other, stream),
-    {numSubQuantizers_, residuals.getSize(0), 1});
-  DeviceTensor<int, 3, true> closestSubQIndex(
-    resources_, makeTempAlloc(AllocType::Other, stream),
-    {numSubQuantizers_, residuals.getSize(0), 1});
-
-  for (int subQ = 0; subQ < numSubQuantizers_; ++subQ) {
-    auto closestSubQDistanceView = closestSubQDistance[subQ].view();
-    auto closestSubQIndexView = closestSubQIndex[subQ].view();
-
-    auto pqCentroidsMiddleCodeView = pqCentroidsMiddleCode_[subQ].view();
-    auto residualsTransposeView = residualsTranspose[subQ].view();
-
-    runL2Distance(resources_,
-                  pqCentroidsMiddleCodeView,
-                  true, // pqCentroidsMiddleCodeView is row major
-                  nullptr, // no precomputed norms
-                  residualsTransposeView,
-                  true, // residualsTransposeView is row major
-                  1,
-                  closestSubQDistanceView,
-                  closestSubQIndexView,
-                  // We don't care about distances
-                  true);
-  }
-
-  // Now, we have the nearest sub-q centroid for each slice of the
-  // residual vector.
-  auto closestSubQIndexView = closestSubQIndex.view<2>(
-    {numSubQuantizers_, residuals.getSize(0)});
-
-  // Transpose this for easy use
   DeviceTensor<int, 2, true> encodings(
     resources_, makeTempAlloc(AllocType::Other, stream),
-    {residuals.getSize(0), numSubQuantizers_});
+    {vecs.getSize(0), numSubQuantizers_});
 
-  runTransposeAny(closestSubQIndexView, 0, 1, encodings, stream);
-
-  // Now we add the encoded vectors to the individual lists
-  // First, make sure that there is space available for adding the new
-  // encoded vectors and indices
-
-  // list id -> # being added
-  std::unordered_map<int, int> assignCounts;
-
-  // vector id -> offset in list
-  // (we already have vector id -> list id in listIds)
-  HostTensor<int, 1, true> listOffsetHost({listIdsHost.getSize(0)});
-
-  for (int i = 0; i < listIdsHost.getSize(0); ++i) {
-    int listId = listIdsHost[i];
-
-    // Add vector could be invalid (contains NaNs etc)
-    if (listId < 0) {
-      listOffsetHost[i] = -1;
-      continue;
-    }
-
-    FAISS_ASSERT(listId < numLists_);
-    ++numAdded;
-
-    int offset = deviceListData_[listId]->size() / bytesPerVector_;
-
-    auto it = assignCounts.find(listId);
-    if (it != assignCounts.end()) {
-      offset += it->second;
-      it->second++;
-    } else {
-      assignCounts[listId] = 1;
-    }
-
-    listOffsetHost[i] = offset;
-  }
-
-  // If we didn't add anything (all invalid vectors), no need to
-  // continue
-  if (numAdded == 0) {
-    return 0;
-  }
-
-  // We need to resize the data structures for the inverted lists on
-  // the GPUs, which means that they might need reallocation, which
-  // means that their base address may change. Figure out the new base
-  // addresses, and update those in a batch on the device
   {
-    // Resize all of the lists that we are appending to
-    for (auto& counts : assignCounts) {
-      auto& codes = deviceListData_[counts.first];
-      codes->resize(codes->size() + counts.second * bytesPerVector_,
-                    stream);
-      int newNumVecs = (int) (codes->size() / bytesPerVector_);
-
-      auto& indices = deviceListIndices_[counts.first];
-      if ((indicesOptions_ == INDICES_32_BIT) ||
-          (indicesOptions_ == INDICES_64_BIT)) {
-        size_t indexSize =
-          (indicesOptions_ == INDICES_32_BIT) ? sizeof(int) : sizeof(long);
-
-        indices->resize(indices->size() + counts.second * indexSize, stream);
-      } else if (indicesOptions_ == INDICES_CPU) {
-        // indices are stored on the CPU side
-        FAISS_ASSERT(counts.first < listOffsetToUserIndex_.size());
-
-        auto& userIndices = listOffsetToUserIndex_[counts.first];
-        userIndices.resize(newNumVecs);
-      } else {
-        // indices are not stored on the GPU or CPU side
-        FAISS_ASSERT(indicesOptions_ == INDICES_IVF);
-      }
-
-      // This is used by the multi-pass query to decide how much scratch
-      // space to allocate for intermediate results
-      maxListLength_ = std::max(maxListLength_, newNumVecs);
-    }
-
-    // Update all pointers and sizes on the device for lists that we
-    // appended to
-    {
-      std::vector<int> listIds(assignCounts.size());
-      int i = 0;
-      for (auto& counts : assignCounts) {
-        listIds[i++] = counts.first;
-      }
-
-      updateDeviceListInfo_(listIds, stream);
-    }
-  }
-
-  // If we're maintaining the indices on the CPU side, update our
-  // map. We already resized our map above.
-  if (indicesOptions_ == INDICES_CPU) {
-    // We need to maintain the indices on the CPU side
-    HostTensor<long, 1, true> hostIndices(indices, stream);
-
-    for (int i = 0; i < hostIndices.getSize(0); ++i) {
-      int listId = listIdsHost[i];
-
-      // Add vector could be invalid (contains NaNs etc)
-      if (listId < 0) {
-        continue;
-      }
-
-      int offset = listOffsetHost[i];
-
-      FAISS_ASSERT(listId < listOffsetToUserIndex_.size());
-      auto& userIndices = listOffsetToUserIndex_[listId];
-
-      FAISS_ASSERT(offset < userIndices.size());
-      userIndices[offset] = hostIndices[i];
-    }
-  }
-
-  // We similarly need to actually append the new encoded vectors
-  {
-    DeviceTensor<int, 1, true> listOffset(
+    // Calculate the residual for each closest centroid
+    DeviceTensor<float, 2, true> residuals(
       resources_, makeTempAlloc(AllocType::Other, stream),
-      listOffsetHost);
+      {vecs.getSize(0), vecs.getSize(1)});
 
-    // This kernel will handle appending each encoded vector + index to
-    // the appropriate list
-    runIVFPQInvertedListAppend(listIds,
-                               listOffset,
-                               encodings,
-                               indices,
-                               deviceListDataPointers_,
-                               deviceListIndexPointers_,
-                               indicesOptions_,
-                               stream);
+    if (quantizer_->getUseFloat16()) {
+      auto& coarseCentroids = quantizer_->getVectorsFloat16Ref();
+      runCalcResidual(vecs, coarseCentroids, listIds, residuals, stream);
+    } else {
+      auto& coarseCentroids = quantizer_->getVectorsFloat32Ref();
+      runCalcResidual(vecs, coarseCentroids, listIds, residuals, stream);
+    }
+
+    // Residuals are in the form
+    // (vec x numSubQuantizer x dimPerSubQuantizer)
+    // transpose to
+    // (numSubQuantizer x vec x dimPerSubQuantizer)
+    auto residualsView = residuals.view<3>(
+      {residuals.getSize(0), numSubQuantizers_, dimPerSubQuantizer_});
+
+    DeviceTensor<float, 3, true> residualsTranspose(
+      resources_, makeTempAlloc(AllocType::Other, stream),
+      {numSubQuantizers_, residuals.getSize(0), dimPerSubQuantizer_});
+
+    runTransposeAny(residualsView, 0, 1, residualsTranspose, stream);
+
+    // Get the product quantizer centroids in the form
+    // (numSubQuantizer x numSubQuantizerCodes x dimPerSubQuantizer)
+    // which is pqCentroidsMiddleCode_
+
+    // We now have a batch operation to find the top-1 distances:
+    // batch size: numSubQuantizer
+    // centroids: (numSubQuantizerCodes x dimPerSubQuantizer)
+    // residuals: (vec x dimPerSubQuantizer)
+    // => (numSubQuantizer x vec x 1)
+    DeviceTensor<float, 3, true> closestSubQDistance(
+      resources_, makeTempAlloc(AllocType::Other, stream),
+      {numSubQuantizers_, residuals.getSize(0), 1});
+    DeviceTensor<int, 3, true> closestSubQIndex(
+      resources_, makeTempAlloc(AllocType::Other, stream),
+      {numSubQuantizers_, residuals.getSize(0), 1});
+
+    for (int subQ = 0; subQ < numSubQuantizers_; ++subQ) {
+      auto closestSubQDistanceView = closestSubQDistance[subQ].view();
+      auto closestSubQIndexView = closestSubQIndex[subQ].view();
+
+      auto pqCentroidsMiddleCodeView = pqCentroidsMiddleCode_[subQ].view();
+      auto residualsTransposeView = residualsTranspose[subQ].view();
+
+      runL2Distance(resources_,
+                    pqCentroidsMiddleCodeView,
+                    true, // pqCentroidsMiddleCodeView is row major
+                    nullptr, // no precomputed norms
+                    residualsTransposeView,
+                    true, // residualsTransposeView is row major
+                    1,
+                    closestSubQDistanceView,
+                    closestSubQIndexView,
+                    // We don't care about distances
+                    true);
+    }
+
+    // Now, we have the nearest sub-q centroid for each slice of the
+    // residual vector.
+    auto closestSubQIndexView = closestSubQIndex.view<2>(
+      {numSubQuantizers_, residuals.getSize(0)});
+
+    // The encodings are finally a transpose of this data
+    runTransposeAny(closestSubQIndexView, 0, 1, encodings, stream);
   }
 
-  return numAdded;
+  // Append the new encodings
+  // This kernel will handle appending each encoded vector + index to
+  // the appropriate list
+  runIVFPQInvertedListAppend(listIds,
+                             listOffset,
+                             encodings,
+                             indices,
+                             layoutBy32_,
+                             deviceListDataPointers_,
+                             deviceListIndexPointers_,
+                             indicesOptions_,
+                             stream);
 }
 
-void
-IVFPQ::addCodeVectorsFromCpu(int listId,
-                             const void* codes,
-                             const long* indices,
-                             size_t numVecs) {
-  // This list must already exist
-  FAISS_ASSERT(listId < deviceListData_.size());
-  auto stream = resources_->getDefaultStreamCurrentDevice();
+size_t
+IVFPQ::getGpuVectorsEncodingSize_(int numVecs) const {
+  if (layoutBy32_) {
+    return utils::roundUp(
+      (size_t) numVecs, (size_t) 32) * numSubQuantizers_;
+  } else {
+    return (size_t) numVecs * numSubQuantizers_;
+  }
+}
 
-  // If there's nothing to add, then there's nothing we have to do
-  if (numVecs == 0) {
-    return;
+size_t
+IVFPQ::getCpuVectorsEncodingSize_(int numVecs) const {
+  return (size_t) numVecs * numSubQuantizers_;
+}
+
+// Convert the CPU layout to the GPU layout
+std::vector<unsigned char>
+IVFPQ::translateCodesToGpu_(std::vector<unsigned char> codes,
+                            size_t numVecs) const {
+  if (!layoutBy32_) {
+    return codes;
   }
 
-  size_t lengthInBytes = numVecs * bytesPerVector_;
+  auto totalSize = getGpuVectorsEncodingSize_(numVecs);
+  std::vector<unsigned char> out(totalSize);
 
-  auto& listCodes = deviceListData_[listId];
-  auto prevCodeData = listCodes->data();
+  for (int i = 0; i < numVecs; ++i) {
+    for (int j = 0; j < numSubQuantizers_; ++j) {
+      int block = (i / 32) * numSubQuantizers_ + j;
+      int withinBlock = i % 32;
 
-  // We only have int32 length representations on the GPU per each
-  // list; the length is in sizeof(char)
-  FAISS_ASSERT(listCodes->size() % bytesPerVector_ == 0);
-  FAISS_ASSERT(listCodes->size() + lengthInBytes <=
-               (size_t) std::numeric_limits<int>::max());
+      size_t srcOffset = (size_t) i * numSubQuantizers_ + j;
+      size_t dstOffset = (size_t) block * 32 + withinBlock;
 
-  listCodes->append((unsigned char*) codes,
-                    lengthInBytes,
-                    stream,
-                    true /* exact reserved size */);
-
-  // Handle the indices as well
-  addIndicesFromCpu_(listId, indices, numVecs);
-
-  // This list address may have changed due to vector resizing, but
-  // only bother updating it on the device if it has changed
-  if (prevCodeData != listCodes->data()) {
-    deviceListDataPointers_[listId] = listCodes->data();
+      out[dstOffset] = codes[srcOffset];
+    }
   }
 
-  // And our size has changed too
-  int listLength = listCodes->size() / bytesPerVector_;
-  deviceListLengths_[listId] = listLength;
+  return out;
+}
 
-  // We update this as well, since the multi-pass algorithm uses it
-  maxListLength_ = std::max(maxListLength_, listLength);
-
-  // device_vector add is potentially happening on a different stream
-  // than our default stream
-  if (resources_->getDefaultStreamCurrentDevice() != 0) {
-    streamWait({stream}, {0});
+// Conver the GPU layout to the CPU layout
+std::vector<unsigned char>
+IVFPQ::translateCodesFromGpu_(std::vector<unsigned char> codes,
+                              size_t numVecs) const {
+  if (!layoutBy32_) {
+    return codes;
   }
+
+  auto totalSize = getCpuVectorsEncodingSize_(numVecs);
+  std::vector<unsigned char> out(totalSize);
+
+  for (int i = 0; i < numVecs; ++i) {
+    for (int j = 0; j < numSubQuantizers_; ++j) {
+      int block = (i / 32) * numSubQuantizers_ + j;
+      int withinBlock = i % 32;
+
+      size_t srcOffset = (size_t) block * 32 + withinBlock;
+      size_t dstOffset = (size_t) i * numSubQuantizers_ + j;
+
+      out[dstOffset] = codes[srcOffset];
+    }
+  }
+
+  return out;
 }
 
 void
@@ -675,7 +544,7 @@ std::vector<unsigned char>
 IVFPQ::getListCodes(int listId) const {
   FAISS_ASSERT(listId < deviceListData_.size());
 
-  return deviceListData_[listId]->copyToHost<unsigned char>(
+  return deviceListData_[listId]->data.copyToHost<unsigned char>(
     resources_->getDefaultStreamCurrentDevice());
 }
 
@@ -750,7 +619,7 @@ IVFPQ::runPQPrecomputedCodes_(
                                 term3, // term 3
                                 coarseIndices,
                                 useFloat16LookupTables_,
-                                bytesPerVector_,
+                                layoutBy32_,
                                 numSubQuantizers_,
                                 numSubQuantizerCodes_,
                                 deviceListDataPointers_,
@@ -780,7 +649,7 @@ IVFPQ::runPQNoPrecomputedCodesT_(
                                   pqCentroidsInnermostCode_,
                                   coarseIndices,
                                   useFloat16LookupTables_,
-                                  bytesPerVector_,
+                                  layoutBy32_,
                                   numSubQuantizers_,
                                   numSubQuantizerCodes_,
                                   deviceListDataPointers_,

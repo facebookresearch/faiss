@@ -61,27 +61,6 @@ std::string allocsToString(const std::unordered_map<void*, AllocRequest>& map) {
 
 }
 
-std::string allocTypeToString(AllocType t) {
-  switch (t) {
-    case AllocType::Other:
-      return "Other";
-    case AllocType::FlatData:
-      return "FlatData";
-    case AllocType::IVFLists:
-      return "IVFLists";
-    case AllocType::Quantizer:
-      return "Quantizer";
-    case AllocType::QuantizerPrecomputedCodes:
-      return "QuantizerPrecomputedCodes";
-    case AllocType::TemporaryMemoryBuffer:
-      return "TemporaryMemoryBuffer";
-    case AllocType::TemporaryMemoryOverflow:
-      return "TemporaryMemoryOverflow";
-    default:
-      return "Unknown";
-  }
-}
-
 //
 // StandardGpuResourcesImpl
 //
@@ -94,7 +73,7 @@ StandardGpuResourcesImpl::StandardGpuResourcesImpl() :
     tempMemSize_(getDefaultTempMemForGPU(-1,
                                          std::numeric_limits<size_t>::max())),
     pinnedMemSize_(kDefaultPinnedMemoryAllocation),
-    cudaMallocWarning_(true) {
+    allocLogging_(false) {
 }
 
 StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
@@ -248,6 +227,11 @@ StandardGpuResourcesImpl::setDefaultNullStreamAllDevices() {
   }
 }
 
+void
+StandardGpuResourcesImpl::setLogMemoryAllocations(bool enable) {
+  allocLogging_ = enable;
+}
+
 bool
 StandardGpuResourcesImpl::isInitialized(int device) const {
   // Use default streams as a marker for whether or not a certain
@@ -393,6 +377,10 @@ StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
 
   void* p = nullptr;
 
+  if (allocLogging_) {
+    std::cout << "StandardGpuResources: alloc " << adjReq.toString() << "\n";
+  }
+
   if (adjReq.space == MemorySpace::Temporary) {
     // If we don't have enough space in our temporary memory manager, we need
     // to allocate this request separately
@@ -459,11 +447,13 @@ StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
 
   auto& a = allocs_[device];
   auto it = a.find(p);
-  if (it == a.end()) {
-    FAISS_ASSERT(it != a.end());
-  }
+  FAISS_ASSERT(it != a.end());
 
   auto& req = it->second;
+
+  if (allocLogging_) {
+    std::cout << "StandardGpuResources: dealloc " << req.toString() << "\n";
+  }
 
   if (req.space == MemorySpace::Temporary) {
     tempMemory_[device]->deallocMemory(device, req.stream, req.size, p);
@@ -574,5 +564,9 @@ StandardGpuResources::syncDefaultStreamCurrentDevice() {
   res_->syncDefaultStreamCurrentDevice();
 }
 
+void
+StandardGpuResources::setLogMemoryAllocations(bool enable) {
+  res_->setLogMemoryAllocations(enable);
+}
 
 } } // namespace

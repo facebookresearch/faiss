@@ -21,6 +21,69 @@
 
 namespace faiss { namespace gpu {
 
+// A basic implementation that works for the interleaved by vector layout for
+// any number of sub-quantizers
+template <typename LookupT>
+__global__ void
+pqScanPrecomputedInterleaved(Tensor<float, 2, true> queries,
+                             // (query id)(probe id)
+                             Tensor<float, 2, true> precompTerm1,
+                             // (centroid id)(sub q)(code id)
+                             Tensor<LookupT, 3, true> precompTerm2,
+                             // (query id)(sub q)(code id)
+                             Tensor<LookupT, 3, true> precompTerm3,
+                             Tensor<int, 2, true> topQueryToCentroid,
+                             void** listCodes,
+                             int* listLengths,
+                             Tensor<int, 2, true> prefixSumOffsets,
+                             Tensor<float, 1, true> distance) {
+  // Each block handles a single query versus single list
+  auto queryId = blockIdx.y;
+  auto probeId = blockIdx.x;
+  auto numSubQuantizers = precompTerm2.getSize(1);
+  auto codesPerSubQuantizer = precompTerm2.getSize(2);
+
+  // This is where we start writing out data
+  // We ensure that before the array (at offset -1), there is a 0 value
+  int outBase = *(prefixSumOffsets[queryId][probeId].data() - 1);
+  float* distanceOut = distance[outBase].data();
+
+  auto listId = topQueryToCentroid[queryId][probeId];
+  // Safety guard in case NaNs in input cause no list ID to be generated
+  if (listId == -1) {
+    return;
+  }
+
+  auto* codes = (unsigned char*) listCodes[listId];
+  int numVecs = listLengths[listId];
+
+  float term1 = precompTerm1[queryId][probeId];
+
+  for (int vec = threadIdx.x; vec < numVecs; vec += blockDim.x) {
+    float dist = term1;
+
+    // This is where we start for this vector with the first sub-quantizer
+    int startCode = (vec / 32) * numSubQuantizers * 32 + (vec % 32);
+    auto term2Base = precompTerm2[listId].data();
+    auto term3Base = precompTerm3[queryId].data();
+
+    for (int sq = 0; sq < numSubQuantizers; ++sq) {
+      unsigned char code = codes[startCode + sq * 32];
+
+      float term2 = ConvertTo<float>::to(term2Base[code]);
+      float term3 = ConvertTo<float>::to(term3Base[code]);
+
+      term2Base += codesPerSubQuantizer;
+      term3Base += codesPerSubQuantizer;
+
+      dist += term2 + term3;
+    }
+
+    // We're done with this vector
+    distanceOut[vec] = dist;
+  }
+}
+
 // For precomputed codes, this calculates and loads code distances
 // into smem
 template <typename LookupT, typename LookupVecT>
@@ -221,7 +284,7 @@ runMultiPassTile(GpuResources* res,
                  NoTypeTensor<3, true>& precompTerm3,
                  Tensor<int, 2, true>& topQueryToCentroid,
                  bool useFloat16Lookup,
-                 int bytesPerCode,
+                 bool interleavedCodeLayout,
                  int numSubQuantizers,
                  int numSubQuantizerCodes,
                  thrust::device_vector<void*>& listCodes,
@@ -242,9 +305,48 @@ runMultiPassTile(GpuResources* res,
   runCalcListOffsets(res, topQueryToCentroid, listLengths, prefixSumOffsets,
                      thrustMem, stream);
 
-  // Convert all codes to a distance, and write out (distance,
-  // index) values for all intermediate results
-  {
+  // The vector interleaved layout implementation
+  if (interleavedCodeLayout) {
+    auto kThreadsPerBlock = 256;
+
+    auto grid = dim3(topQueryToCentroid.getSize(1),
+                     topQueryToCentroid.getSize(0));
+    auto block = dim3(kThreadsPerBlock);
+
+    if (useFloat16Lookup) {
+      auto precompTerm2T = precompTerm2.toTensor<half>();
+      auto precompTerm3T = precompTerm3.toTensor<half>();
+
+      pqScanPrecomputedInterleaved<half>
+        <<<grid, block, 0, stream>>>(
+        queries,
+        precompTerm1,
+        precompTerm2T,
+        precompTerm3T,
+        topQueryToCentroid,
+        listCodes.data().get(),
+        listLengths.data().get(),
+        prefixSumOffsets,
+        allDistances);
+    } else {
+      auto precompTerm2T = precompTerm2.toTensor<float>();
+      auto precompTerm3T = precompTerm3.toTensor<float>();
+
+      pqScanPrecomputedInterleaved<float>
+        <<<grid, block, 0, stream>>>(
+        queries,
+        precompTerm1,
+        precompTerm2T,
+        precompTerm3T,
+        topQueryToCentroid,
+        listCodes.data().get(),
+        listLengths.data().get(),
+        prefixSumOffsets,
+        allDistances);
+    }
+  } else {
+    // Convert all codes to a distance, and write out (distance,
+    // index) values for all intermediate results
     auto kThreadsPerBlock = 256;
 
     auto grid = dim3(topQueryToCentroid.getSize(1),
@@ -284,7 +386,7 @@ runMultiPassTile(GpuResources* res,
       }                                         \
     } while (0)
 
-    switch (bytesPerCode) {
+    switch (numSubQuantizers) {
       case 1:
         RUN_PQ(1);
         break;
@@ -374,12 +476,15 @@ runMultiPassTile(GpuResources* res,
 }
 
 void runPQScanMultiPassPrecomputed(Tensor<float, 2, true>& queries,
+                                   // (query id)(probe id)
                                    Tensor<float, 2, true>& precompTerm1,
+                                   // (centroid id)(sub q)(code id)
                                    NoTypeTensor<3, true>& precompTerm2,
+                                   // (query id)(sub q)(code id)
                                    NoTypeTensor<3, true>& precompTerm3,
                                    Tensor<int, 2, true>& topQueryToCentroid,
                                    bool useFloat16Lookup,
-                                   int bytesPerCode,
+                                   bool interleavedCodeLayout,
                                    int numSubQuantizers,
                                    int numSubQuantizerCodes,
                                    thrust::device_vector<void*>& listCodes,
@@ -539,7 +644,7 @@ void runPQScanMultiPassPrecomputed(Tensor<float, 2, true>& queries,
                      term3View,
                      coarseIndicesView,
                      useFloat16Lookup,
-                     bytesPerCode,
+                     interleavedCodeLayout,
                      numSubQuantizers,
                      numSubQuantizerCodes,
                      listCodes,

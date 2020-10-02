@@ -65,12 +65,13 @@ runUpdateListPointers(Tensor<int, 1, true>& listIds,
 // IVF PQ append
 //
 
-template <IndicesOptions Opt>
 __global__ void
 ivfpqInvertedListAppend(Tensor<int, 1, true> listIds,
                         Tensor<int, 1, true> listOffset,
                         Tensor<int, 2, true> encodings,
                         Tensor<long, 1, true> indices,
+                        IndicesOptions opt,
+                        bool layoutBy32,
                         void** listCodes,
                         void** listIndices) {
   int encodingToAdd = blockIdx.x * blockDim.x + threadIdx.x;
@@ -80,31 +81,47 @@ ivfpqInvertedListAppend(Tensor<int, 1, true> listIds,
   }
 
   int listId = listIds[encodingToAdd];
-  int offset = listOffset[encodingToAdd];
+  int vectorNumInList = listOffset[encodingToAdd];
 
   // Add vector could be invalid (contains NaNs etc)
-  if (listId == -1 || offset == -1) {
+  if (listId == -1 || vectorNumInList == -1) {
     return;
   }
 
   auto encoding = encodings[encodingToAdd];
   long index = indices[encodingToAdd];
 
-  if (Opt == INDICES_32_BIT) {
+  if (opt == INDICES_32_BIT) {
     // FIXME: there could be overflow here, but where should we check this?
-    ((int*) listIndices[listId])[offset] = (int) index;
-  } else if (Opt == INDICES_64_BIT) {
-    ((long*) listIndices[listId])[offset] = (long) index;
+    ((int*) listIndices[listId])[vectorNumInList] = (int) index;
+  } else if (opt == INDICES_64_BIT) {
+    ((long*) listIndices[listId])[vectorNumInList] = (long) index;
   } else {
     // INDICES_CPU or INDICES_IVF; no indices are being stored
   }
 
-  unsigned char* codeStart =
-    ((unsigned char*) listCodes[listId]) + offset * encodings.getSize(1);
+  if (layoutBy32) {
+    // Layout with 32 vectors interleaved
+    int fullBlockSize = 32 * encodings.getSize(1);
 
-  // FIXME: slow
-  for (int i = 0; i < encodings.getSize(1); ++i) {
-    codeStart[i] = (unsigned char) encoding[i];
+    int blockStart = (vectorNumInList / 32) * fullBlockSize;
+    int start = blockStart + (vectorNumInList % 32);
+
+    unsigned char* codeStart = ((unsigned char*) listCodes[listId]) + start;
+
+    for (int i = 0; i < encodings.getSize(1); ++i) {
+      codeStart[i * 32] = (unsigned char) encoding[i];
+    }
+  } else {
+    // Layout with dimensions innermost
+    unsigned char* codeStart =
+      ((unsigned char*) listCodes[listId]) +
+      vectorNumInList * encodings.getSize(1);
+
+    // FIXME: slow
+    for (int i = 0; i < encodings.getSize(1); ++i) {
+      codeStart[i] = (unsigned char) encoding[i];
+    }
   }
 }
 
@@ -113,6 +130,7 @@ runIVFPQInvertedListAppend(Tensor<int, 1, true>& listIds,
                            Tensor<int, 1, true>& listOffset,
                            Tensor<int, 2, true>& encodings,
                            Tensor<long, 1, true>& indices,
+                           bool layoutBy32,
                            thrust::device_vector<void*>& listCodes,
                            thrust::device_vector<void*>& listIndices,
                            IndicesOptions indicesOptions,
@@ -123,29 +141,18 @@ runIVFPQInvertedListAppend(Tensor<int, 1, true>& listIds,
   dim3 grid(numBlocks);
   dim3 block(numThreads);
 
-#define RUN_APPEND(IND)                                         \
-  do {                                                          \
-    ivfpqInvertedListAppend<IND><<<grid, block, 0, stream>>>(   \
-      listIds, listOffset, encodings, indices,                  \
-      listCodes.data().get(),                                   \
-      listIndices.data().get());                                \
-  } while (0)
+  FAISS_ASSERT(indicesOptions == INDICES_CPU ||
+               indicesOptions == INDICES_IVF ||
+               indicesOptions == INDICES_32_BIT ||
+               indicesOptions == INDICES_64_BIT);
 
-  if ((indicesOptions == INDICES_CPU) || (indicesOptions == INDICES_IVF)) {
-    // no need to maintain indices on the GPU
-    RUN_APPEND(INDICES_IVF);
-  } else if (indicesOptions == INDICES_32_BIT) {
-    RUN_APPEND(INDICES_32_BIT);
-  } else if (indicesOptions == INDICES_64_BIT) {
-    RUN_APPEND(INDICES_64_BIT);
-  } else {
-    // unknown index storage type
-    FAISS_ASSERT(false);
-  }
+  ivfpqInvertedListAppend<<<grid, block, 0, stream>>>(
+    listIds, listOffset, encodings, indices,
+    indicesOptions, layoutBy32,
+    listCodes.data().get(),
+    listIndices.data().get());
 
   CUDA_TEST_ERROR();
-
-#undef RUN_APPEND
 }
 
 //

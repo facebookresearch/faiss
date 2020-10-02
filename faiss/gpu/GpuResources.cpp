@@ -8,8 +8,62 @@
 
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <sstream>
 
 namespace faiss { namespace gpu {
+
+std::string allocTypeToString(AllocType t) {
+  switch (t) {
+    case AllocType::Other:
+      return "Other";
+    case AllocType::FlatData:
+      return "FlatData";
+    case AllocType::IVFLists:
+      return "IVFLists";
+    case AllocType::Quantizer:
+      return "Quantizer";
+    case AllocType::QuantizerPrecomputedCodes:
+      return "QuantizerPrecomputedCodes";
+    case AllocType::TemporaryMemoryBuffer:
+      return "TemporaryMemoryBuffer";
+    case AllocType::TemporaryMemoryOverflow:
+      return "TemporaryMemoryOverflow";
+    default:
+      return "Unknown";
+  }
+}
+
+std::string memorySpaceToString(MemorySpace s) {
+  switch (s) {
+    case MemorySpace::Temporary:
+      return "Temporary";
+    case MemorySpace::Device:
+      return "Device";
+    case MemorySpace::Unified:
+      return "Unified";
+    default:
+      return "Unknown";
+  }
+}
+
+std::string
+AllocInfo::toString() const {
+  std::stringstream ss;
+  ss << "type " << allocTypeToString(type)
+     << " dev " << device
+     << " space " << memorySpaceToString(space)
+     << " stream " << (void*) stream;
+
+  return ss.str();
+}
+
+std::string
+AllocRequest::toString() const {
+  std::stringstream ss;
+  ss << AllocInfo::toString() << " size " << size << " bytes";
+
+  return ss.str();
+}
 
 AllocInfo makeDevAlloc(AllocType at, cudaStream_t st) {
   return AllocInfo(at, getCurrentDevice(), MemorySpace::Device, st);

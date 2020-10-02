@@ -22,7 +22,8 @@ class IVFPQ;
 struct GpuIndexIVFPQConfig : public GpuIndexIVFConfig {
   inline GpuIndexIVFPQConfig()
       : useFloat16LookupTables(false),
-        usePrecomputedTables(false) {
+        usePrecomputedTables(false),
+        alternativeLayout(false) {
   }
 
   /// Whether or not float16 residual distance tables are used in the
@@ -33,6 +34,10 @@ struct GpuIndexIVFPQConfig : public GpuIndexIVFConfig {
   /// Whether or not we enable the precomputed table option for
   /// search, which can substantially increase the memory requirement.
   bool usePrecomputedTables;
+
+  /// Use the alternative memory layout for the IVF lists
+  /// WARNING: this is a feature under development, do not use!
+  bool alternativeLayout;
 };
 
 /// IVFPQ index for the GPU

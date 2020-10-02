@@ -24,6 +24,7 @@ class IVFPQ : public IVFBase {
         FlatIndex* quantizer,
         int numSubQuantizers,
         int bitsPerSubQuantizer,
+        bool layoutBy32,
         float* pqCentroidData,
         IndicesOptions indicesOptions,
         bool useFloat16LookupTables,
@@ -42,21 +43,6 @@ class IVFPQ : public IVFBase {
   /// Enable or disable pre-computed codes
   void setPrecomputedCodes(bool enable);
 
-  /// Adds a set of codes and indices to a list; the data can be
-  /// resident on either the host or the device
-  void addCodeVectorsFromCpu(int listId,
-                             const void* codes,
-                             const long* indices,
-                             size_t numVecs);
-
-  /// Calcuates the residual and quantizes the vectors, adding them to
-  /// this index
-  /// The input data must be on our current device.
-  /// Returns the number of vectors successfully added. Vectors may
-  /// not be able to be added because they contain NaNs.
-  int classifyAndAddVectors(Tensor<float, 2, true>& vecs,
-                            Tensor<long, 1, true>& indices);
-
   /// Find the approximate k nearest neigbors for `queries` against
   /// our database
   void query(Tensor<float, 2, true>& queries,
@@ -72,7 +58,28 @@ class IVFPQ : public IVFBase {
   /// (sub q)(code id)(sub dim)
   Tensor<float, 3, true> getPQCentroids();
 
- private:
+ protected:
+  /// Returns the encoding size for a PQ-encoded IVF list
+  size_t getGpuVectorsEncodingSize_(int numVecs) const override;
+  size_t getCpuVectorsEncodingSize_(int numVecs) const override;
+
+  /// Translate to our preferred GPU encoding
+  std::vector<unsigned char> translateCodesToGpu_(
+    std::vector<unsigned char> codes,
+    size_t numVecs) const override;
+
+  /// Translate from our preferred GPU encoding
+  std::vector<unsigned char> translateCodesFromGpu_(
+    std::vector<unsigned char> codes,
+    size_t numVecs) const override;
+
+  /// Encode the vectors that we're adding and append to our IVF lists
+  void appendVectors_(Tensor<float, 2, true>& vecs,
+                      Tensor<long, 1, true>& indices,
+                      Tensor<int, 1, true>& listIds,
+                      Tensor<int, 1, true>& listOffset,
+                      cudaStream_t stream) override;
+
   /// Sets the current product quantizer centroids; the data can be
   /// resident on either the host or the device. It will be transposed
   /// into our preferred data layout
@@ -126,6 +133,16 @@ class IVFPQ : public IVFBase {
 
   /// Number of dimensions per each sub-quantizer
   const int dimPerSubQuantizer_;
+
+  /// The default memory layout is [vector][PQ component]:
+  /// (v0 d0) (v0 d1) ... (v0 dD-1) (v1 d0) (v1 d1) ...
+  ///
+  /// An alternative memory layout (layoutBy32) is
+  /// [vector / 32][PQ component][vector % 32] with padding:
+  /// (v0 d0) (v1 d0) ... (v31 d0) (v0 d1) (v1 d1) ... (v31 dD-1) (v32 d0) (v33
+  /// d0) ...
+  /// so the list length is always a multiple of numSubQuantizers * 32
+  const bool layoutBy32_;
 
   /// Do we maintain precomputed terms and lookup tables in float16
   /// form?

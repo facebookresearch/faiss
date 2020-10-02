@@ -22,6 +22,60 @@
 
 namespace faiss { namespace gpu {
 
+// A basic implementation that works for the interleaved by vector layout for
+// any number of sub-quantizers
+template <typename CodeDistanceT>
+__global__ void
+pqScanInterleaved(Tensor<float, 2, true> queries,
+                  Tensor<float, 3, true> pqCentroids,
+                  Tensor<int, 2, true> topQueryToCentroid,
+                  Tensor<CodeDistanceT, 4, true> codeDistances,
+                  void** listCodes,
+                  int* listLengths,
+                  Tensor<int, 2, true> prefixSumOffsets,
+                  Tensor<float, 1, true> distance) {
+  // Each block handles a single query
+  auto queryId = blockIdx.y;
+  auto probeId = blockIdx.x;
+
+  int numSubQuantizers = codeDistances.getSize(2);
+
+  // This is where we start writing out data
+  // We ensure that before the array (at offset -1), there is a 0 value
+  int outBase = *(prefixSumOffsets[queryId][probeId].data() - 1);
+  float* distanceOut = distance[outBase].data();
+
+  auto listId = topQueryToCentroid[queryId][probeId];
+  // Safety guard in case NaNs in input cause no list ID to be generated
+  if (listId == -1) {
+    return;
+  }
+
+  // This is how many vecs we have to scan for this particular list
+  int numVecs = listLengths[listId];
+
+  // This is where the codes for our list start
+  auto codes = (unsigned char*) listCodes[listId];
+
+  auto localCodeDistances = codeDistances[queryId][probeId];
+
+  for (int vec = threadIdx.x; vec < numVecs; vec += blockDim.x) {
+    float dist = 0;
+
+    // This is where we start for this vector with the first sub-quantizer
+    int startCode = (vec / 32) * numSubQuantizers * 32 + (vec % 32);
+
+    for (int sq = 0; sq < numSubQuantizers; ++sq) {
+      unsigned char code = codes[startCode + sq * 32];
+
+      dist += ConvertTo<float>::to(localCodeDistances[sq][code]);
+    }
+
+    // We're done with this vector
+    distanceOut[vec] = dist;
+  }
+}
+
 // This must be kept in sync with PQCodeDistances.cu
 inline bool isSupportedNoPrecomputedSubDimSize(int dims) {
   switch (dims) {
@@ -226,7 +280,7 @@ runMultiPassTile(GpuResources* res,
                  NoTypeTensor<4, true>& codeDistances,
                  Tensor<int, 2, true>& topQueryToCentroid,
                  bool useFloat16Lookup,
-                 int bytesPerCode,
+                 bool interleavedCodeLayout,
                  int numSubQuantizers,
                  int numSubQuantizerCodes,
                  thrust::device_vector<void*>& listCodes,
@@ -265,9 +319,42 @@ runMultiPassTile(GpuResources* res,
                      useFloat16Lookup,
                      stream);
 
-  // Convert all codes to a distance, and write out (distance,
-  // index) values for all intermediate results
-  {
+  if (interleavedCodeLayout) {
+    // The vector interleaved layout implementation
+    auto kThreadsPerBlock = 256;
+
+    auto grid = dim3(topQueryToCentroid.getSize(1),
+                     topQueryToCentroid.getSize(0));
+    auto block = dim3(kThreadsPerBlock);
+
+    if (useFloat16Lookup) {
+      auto codeDistancesT = codeDistances.toTensor<half>();
+
+      pqScanInterleaved<half>
+        <<<grid, block, 0, stream>>>(queries,
+                                     pqCentroidsInnermostCode,
+                                     topQueryToCentroid,
+                                     codeDistancesT,
+                                     listCodes.data().get(),
+                                     listLengths.data().get(),
+                                     prefixSumOffsets,
+                                     allDistances);
+    } else {
+      auto codeDistancesT = codeDistances.toTensor<float>();
+
+      pqScanInterleaved<float>
+        <<<grid, block, 0, stream>>>(queries,
+                                     pqCentroidsInnermostCode,
+                                     topQueryToCentroid,
+                                     codeDistancesT,
+                                     listCodes.data().get(),
+                                     listLengths.data().get(),
+                                     prefixSumOffsets,
+                                     allDistances);
+    }
+  } else {
+    // Convert all codes to a distance, and write out (distance,
+    // index) values for all intermediate results
     auto kThreadsPerBlock = 256;
 
     auto grid = dim3(topQueryToCentroid.getSize(1),
@@ -305,7 +392,7 @@ runMultiPassTile(GpuResources* res,
       }                                         \
     } while (0)
 
-    switch (bytesPerCode) {
+    switch (numSubQuantizers) {
       case 1:
         RUN_PQ(1);
         break;
@@ -399,7 +486,7 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
                                 Tensor<float, 3, true>& pqCentroidsInnermostCode,
                                 Tensor<int, 2, true>& topQueryToCentroid,
                                 bool useFloat16Lookup,
-                                int bytesPerCode,
+                                bool interleavedCodeLayout,
                                 int numSubQuantizers,
                                 int numSubQuantizerCodes,
                                 thrust::device_vector<void*>& listCodes,
@@ -585,7 +672,7 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
                      codeDistancesView,
                      coarseIndicesView,
                      useFloat16Lookup,
-                     bytesPerCode,
+                     interleavedCodeLayout,
                      numSubQuantizers,
                      numSubQuantizerCodes,
                      listCodes,

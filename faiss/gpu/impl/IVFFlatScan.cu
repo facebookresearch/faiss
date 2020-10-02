@@ -77,7 +77,7 @@ struct IVFFlatScan {
     for (int vec = vecStart; vec < vecEnd; ++vec) {
       Metric dist = metric.zero();
 
-      // Scan the dimensions availabe that have whole units for the decoder,
+      // Scan the dimensions available that have whole units for the decoder,
       // as the decoder may handle more than one dimension at once (leaving the
       // remainder to be handled separately)
       for (int d = laneId; d < limit; d += kWarpSize) {

@@ -102,7 +102,7 @@ class CublasHandleScope {
 class CudaEvent {
  public:
   /// Creates an event and records it in this stream
-  explicit CudaEvent(cudaStream_t stream);
+  explicit CudaEvent(cudaStream_t stream, bool timer = false);
   CudaEvent(const CudaEvent& event) = delete;
   CudaEvent(CudaEvent&& event) noexcept;
   ~CudaEvent();

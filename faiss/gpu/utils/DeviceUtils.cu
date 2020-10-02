@@ -180,9 +180,11 @@ CublasHandleScope::~CublasHandleScope() {
   FAISS_ASSERT(blasStatus == CUBLAS_STATUS_SUCCESS);
 }
 
-CudaEvent::CudaEvent(cudaStream_t stream)
+CudaEvent::CudaEvent(cudaStream_t stream, bool timer)
     : event_(0) {
-  CUDA_VERIFY(cudaEventCreateWithFlags(&event_, cudaEventDisableTiming));
+  CUDA_VERIFY(cudaEventCreateWithFlags(
+                &event_,
+                timer ? cudaEventDefault : cudaEventDisableTiming));
   CUDA_VERIFY(cudaEventRecord(event_, stream));
 }
 
