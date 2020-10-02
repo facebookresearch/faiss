@@ -559,11 +559,14 @@ void IndexIVF::range_search (idx_t nx, const float *x, float radius,
 void IndexIVF::range_search_preassigned (
          idx_t nx, const float *x, float radius,
          const idx_t *keys, const float *coarse_dis,
-         RangeSearchResult *result) const
+         RangeSearchResult *result,
+         bool store_pairs,
+         const IVFSearchParameters *params) const
 {
+    long nprobe = params ? params->nprobe : this->nprobe;
+    long max_codes = params ? params->max_codes : this->max_codes;
 
     size_t nlistv = 0, ndis = 0;
-    bool store_pairs = false;
 
     bool interrupt = false;
     std::mutex exception_mutex;

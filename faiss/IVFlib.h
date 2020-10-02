@@ -120,14 +120,32 @@ ArrayInvertedLists * get_invlist_range (const Index *index,
 void set_invlist_range (Index *index, long i0, long i1,
                         ArrayInvertedLists * src);
 
-// search an IndexIVF, possibly embedded in an IndexPreTransform with
-// given parameters. Optionally returns the number of distances
-// computed
-void search_with_parameters (const Index *index,
-                             idx_t n, const float *x, idx_t k,
-                             float *distances, idx_t *labels,
-                             IVFSearchParameters *params,
-                             size_t *nb_dis = nullptr);
+/** search an IndexIVF, possibly embedded in an IndexPreTransform with
+ * given parameters. This is a way to set the nprobe and get
+ * statdistics in a thread-safe way.
+ *
+ * Optionally returns (if non-nullptr):
+ * - nb_dis: number of distances computed
+ * - ms_per_stage: [0]: preprocessing time
+ *                 [1]: coarse quantization,
+ *                 [2]: list scanning
+ */
+void search_with_parameters (
+        const Index *index,
+        idx_t n, const float *x, idx_t k,
+        float *distances, idx_t *labels,
+        const IVFSearchParameters *params,
+        size_t *nb_dis = nullptr,
+        double *ms_per_stage = nullptr);
+
+/** same as search_with_parameters but for range search */
+void range_search_with_parameters (
+        const Index *index,
+        idx_t n, const float *x, float radius,
+        RangeSearchResult *result,
+        const IVFSearchParameters *params,
+        size_t *nb_dis = nullptr,
+        double *ms_per_stage = nullptr);
 
 
 
