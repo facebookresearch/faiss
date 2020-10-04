@@ -662,6 +662,72 @@ def replacement_map_search_multiple(self, keys):
 replace_method(MapLong2Long, 'add', replacement_map_add)
 replace_method(MapLong2Long, 'search_multiple', replacement_map_search_multiple)
 
+search_with_parameters_c = search_with_parameters
+
+def search_with_parameters(index, x, k, params=None, output_stats=False):
+    n, d = x.shape
+    assert d == index.d
+    if not params:
+        # if not provided use the ones set in the IVF object
+        params = IVFSearchParameters()
+        index_ivf = extract_index_ivf(index)
+        params.nprobe = index_ivf.nprobe
+        params.max_codes = index_ivf.max_codes
+    nb_dis = np.empty(1, 'uint64')
+    ms_per_stage = np.empty(3, 'float64')
+    distances = np.empty((n, k), dtype=np.float32)
+    labels = np.empty((n, k), dtype=np.int64)
+    search_with_parameters_c(
+        index, n, swig_ptr(x),
+        k, swig_ptr(distances),
+        swig_ptr(labels),
+        params, swig_ptr(nb_dis), swig_ptr(ms_per_stage)
+    )
+    if not output_stats:
+        return distances, labels
+    else:
+        stats = {
+            'ndis': nb_dis[0],
+            'pre_transform_ms': ms_per_stage[0],
+            'coarse_quantizer_ms': ms_per_stage[1],
+            'invlist_scan_ms': ms_per_stage[2],
+        }
+        return distances, labels, stats
+
+range_search_with_parameters_c = range_search_with_parameters
+
+def range_search_with_parameters(index, x, radius, params=None, output_stats=False):
+    n, d = x.shape
+    assert d == index.d
+    if not params:
+        # if not provided use the ones set in the IVF object
+        params = IVFSearchParameters()
+        index_ivf = extract_index_ivf(index)
+        params.nprobe = index_ivf.nprobe
+        params.max_codes = index_ivf.max_codes
+    nb_dis = np.empty(1, 'uint64')
+    ms_per_stage = np.empty(3, 'float64')
+    res = RangeSearchResult(n)
+    range_search_with_parameters_c(
+        index, n, swig_ptr(x),
+        radius, res,
+        params, swig_ptr(nb_dis), swig_ptr(ms_per_stage)
+    )
+    lims = rev_swig_ptr(res.lims, n + 1).copy()
+    nd = int(lims[-1])
+    Dout = rev_swig_ptr(res.distances, nd).copy()
+    Iout = rev_swig_ptr(res.labels, nd).copy()
+    if not output_stats:
+        return lims, Dout, Iout
+    else:
+        stats = {
+            'ndis': nb_dis[0],
+            'pre_transform_ms': ms_per_stage[0],
+            'coarse_quantizer_ms': ms_per_stage[1],
+            'invlist_scan_ms': ms_per_stage[2],
+        }
+        return lims, Dout, Iout, stats
+
 
 ###########################################
 # Kmeans object

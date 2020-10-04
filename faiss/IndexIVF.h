@@ -196,7 +196,9 @@ struct IndexIVF: Index, Level1Quantizer {
 
     void range_search_preassigned(idx_t nx, const float *x, float radius,
                                   const idx_t *keys, const float *coarse_dis,
-                                  RangeSearchResult *result) const;
+                                  RangeSearchResult *result,
+                                  bool store_pairs=false,
+                                  const IVFSearchParameters *params=nullptr) const;
 
     /// get a scanner for this index (store_pairs means ignore labels)
     virtual InvertedListScanner *get_InvertedListScanner (

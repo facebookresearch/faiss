@@ -14,6 +14,7 @@
 #include <faiss/IndexPreTransform.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/MetaIndexes.h>
+#include <faiss/utils/utils.h>
 
 
 
@@ -310,16 +311,33 @@ void set_invlist_range (Index *index, long i0, long i1,
     ivf->ntotal = index->ntotal = ntotal;
 }
 
+static size_t count_ndis(const IndexIVF * index_ivf, size_t n_list_scan,
+                         const idx_t *Iq)
+{
+    size_t nb_dis = 0;
+    const InvertedLists *il = index_ivf->invlists;
+    for (idx_t i = 0; i < n_list_scan; i++) {
+        if (Iq[i] >= 0) {
+            nb_dis += il->list_size(Iq[i]);
+        }
+    }
+    return nb_dis;
+}
+
+
 
 void search_with_parameters (const Index *index,
                              idx_t n, const float *x, idx_t k,
                              float *distances, idx_t *labels,
-                             IVFSearchParameters *params,
-                             size_t *nb_dis_ptr)
+                             const IVFSearchParameters *params,
+                             size_t *nb_dis_ptr,
+                             double *ms_per_stage)
 {
     FAISS_THROW_IF_NOT (params);
     const float *prev_x = x;
     ScopeDeleter<float> del;
+
+    double t0 = getmillisecs();
 
     if (auto ip = dynamic_cast<const IndexPreTransform *> (index)) {
         x = ip->apply_chain (n, x);
@@ -328,6 +346,8 @@ void search_with_parameters (const Index *index,
         }
         index = ip->index;
     }
+
+    double t1 = getmillisecs();
 
     std::vector<idx_t> Iq(params->nprobe * n);
     std::vector<float> Dq(params->nprobe * n);
@@ -339,20 +359,75 @@ void search_with_parameters (const Index *index,
                                  Dq.data(), Iq.data());
 
     if (nb_dis_ptr) {
-        size_t nb_dis = 0;
-        const InvertedLists *il = index_ivf->invlists;
-        for (idx_t i = 0; i < n * params->nprobe; i++) {
-          if (Iq[i] >= 0) {
-              nb_dis += il->list_size(Iq[i]);
-          }
-        }
-        *nb_dis_ptr = nb_dis;
+        *nb_dis_ptr = count_ndis (index_ivf,  n * params->nprobe, Iq.data());
     }
+
+    double t2 = getmillisecs();
 
     index_ivf->search_preassigned(n, x, k, Iq.data(), Dq.data(),
                                   distances, labels,
                                   false, params);
+    double t3 = getmillisecs();
+    if (ms_per_stage) {
+        ms_per_stage[0] = t1 - t0;
+        ms_per_stage[1] = t2 - t1;
+        ms_per_stage[2] = t3 - t2;
+    }
 }
+
+void range_search_with_parameters (const Index *index,
+                                   idx_t n, const float *x, float radius,
+                                   RangeSearchResult *result,
+                                   const IVFSearchParameters *params,
+                                   size_t *nb_dis_ptr,
+                                   double *ms_per_stage)
+{
+    FAISS_THROW_IF_NOT (params);
+    const float *prev_x = x;
+    ScopeDeleter<float> del;
+
+    double t0 = getmillisecs();
+
+    if (auto ip = dynamic_cast<const IndexPreTransform *> (index)) {
+        x = ip->apply_chain (n, x);
+        if (x != prev_x) {
+            del.set(x);
+        }
+        index = ip->index;
+    }
+
+    double t1 = getmillisecs();
+
+    std::vector<idx_t> Iq(params->nprobe * n);
+    std::vector<float> Dq(params->nprobe * n);
+
+    const IndexIVF *index_ivf = dynamic_cast<const IndexIVF *>(index);
+    FAISS_THROW_IF_NOT (index_ivf);
+
+    index_ivf->quantizer->search(n, x, params->nprobe,
+                                 Dq.data(), Iq.data());
+
+    if (nb_dis_ptr) {
+        *nb_dis_ptr = count_ndis (index_ivf,  n * params->nprobe, Iq.data());
+    }
+
+    double t2 = getmillisecs();
+
+    index_ivf->range_search_preassigned(
+            n, x, radius, Iq.data(), Dq.data(),
+            result, false, params
+    );
+
+    double t3 = getmillisecs();
+    if (ms_per_stage) {
+        ms_per_stage[0] = t1 - t0;
+        ms_per_stage[1] = t2 - t1;
+        ms_per_stage[2] = t3 - t2;
+    }
+}
+
+
+
 
 
 
