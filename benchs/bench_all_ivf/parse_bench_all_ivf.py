@@ -5,6 +5,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+from __future__ import print_function
 import os
 import numpy as np
 from matplotlib import pyplot
@@ -137,7 +138,7 @@ for fname in fnames:
             errorline = errorline[-1]
         else:
             errorline = 'NO STDERR'
-        print fname, stats['CHRONOS_JOB_INSTANCE_ID'], errorline
+        print(fname, stats['CHRONOS_JOB_INSTANCE_ID'], errorline)
 
     else:
         if indexkey in allres:
@@ -186,7 +187,7 @@ def plot_tradeoffs(allres, code_size, recall_rank):
                         np.unique(bigtab[0, selection].astype(int))]
     not_selected = list(set(names) - set(selected_methods))
 
-    print "methods without an optimal OP: ", not_selected
+    print("methods without an optimal OP: ", not_selected)
 
     nq = 10000
     pyplot.title('database ' + db + ' code_size=%d' % code_size)
