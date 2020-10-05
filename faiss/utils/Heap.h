@@ -60,6 +60,7 @@ struct CMin {
     inline static T neutral () {
         return std::numeric_limits<T>::lowest();
     }
+    static const bool is_max_heap = false;
 };
 
 
@@ -74,6 +75,7 @@ struct CMax {
     inline static T neutral () {
         return std::numeric_limits<T>::max();
     }
+    static const bool is_max_heap = true;
 };
 
 
