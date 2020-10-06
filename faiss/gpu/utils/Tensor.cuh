@@ -112,7 +112,7 @@ class Tensor {
                              const IndexT strides[Dim]);
 
   /// Copies a tensor into ourselves; sizes must match
-  __host__ void copyFrom(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
+  __host__ void copyFrom(const Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
                          cudaStream_t stream);
 
   /// Copies ourselves into a tensor; sizes must match

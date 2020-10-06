@@ -214,7 +214,9 @@ __global__ void sumAlongRows(Tensor<T, 1, true> input,
   for (int i = threadIdx.x; i < output.getSize(1); i += blockDim.x) {
     T out = output[row][i];
     out = Math<T>::add(out, val);
-    out = Math<T>::lt(out, Math<T>::zero()) ? Math<T>::zero() : out;
+    if (ZeroClamp) {
+      out = Math<T>::lt(out, Math<T>::zero()) ? Math<T>::zero() : out;
+    }
 
     output[row][i] = out;
   }

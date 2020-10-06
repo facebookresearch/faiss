@@ -100,10 +100,11 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
                          quantizer->getGpuData(),
                          subQuantizers_,
                          bitsPerCode_,
+                         ivfpqConfig_.useFloat16LookupTables,
+                         ivfpqConfig_.useMMCodeDistance,
                          ivfpqConfig_.alternativeLayout,
                          (float*) index->pq.centroids.data(),
                          ivfpqConfig_.indicesOptions,
-                         ivfpqConfig_.useFloat16LookupTables,
                          memorySpace_));
   // Doesn't make sense to reserve memory here
   index_->setPrecomputedCodes(ivfpqConfig_.usePrecomputedTables);
@@ -258,10 +259,11 @@ GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
                          quantizer->getGpuData(),
                          subQuantizers_,
                          bitsPerCode_,
+                         ivfpqConfig_.useFloat16LookupTables,
+                         ivfpqConfig_.useMMCodeDistance,
                          ivfpqConfig_.alternativeLayout,
                          pq.centroids.data(),
                          ivfpqConfig_.indicesOptions,
-                         ivfpqConfig_.useFloat16LookupTables,
                          memorySpace_));
   if (reserveMemoryVecs_) {
     index_->reserveMemory(reserveMemoryVecs_);
@@ -406,20 +408,6 @@ GpuIndexIVFPQ::verifySettings_() const {
                      "reduce parameters",
                      device_, smemPerBlock, bitsPerCode_, subQuantizers_,
                      requiredSmemSize);
-
-  // If precomputed codes are disabled, we have an extra limitation in
-  // terms of the number of dimensions per subquantizer
-  FAISS_THROW_IF_NOT_FMT(ivfpqConfig_.usePrecomputedTables ||
-                     IVFPQ::isSupportedNoPrecomputedSubDimSize(
-                       this->d / subQuantizers_),
-                     "Number of dimensions per sub-quantizer (%d) "
-                     "is not currently supported without precomputed codes. "
-                     "Only 1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32 dims "
-                     "per sub-quantizer are currently supported with no "
-                     "precomputed codes. "
-                     "Precomputed codes supports any number of dimensions, but "
-                     "will involve memory overheads.",
-                     this->d / subQuantizers_);
 }
 
 } } // namespace

@@ -56,7 +56,7 @@ class HostTensor : public Tensor<T, Dim, InnerContig, IndexT, PtrTraits> {
   /// Copies a tensor into ourselves, allocating memory for it
   /// locally. If the tensor is on the GPU, then we will copy it to
   /// ourselves wrt the given stream.
-  __host__ HostTensor(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
+  __host__ HostTensor(const Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
                       cudaStream_t stream);
 
   /// Call to zero out memory

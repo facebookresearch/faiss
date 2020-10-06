@@ -38,10 +38,11 @@ IVFPQ::IVFPQ(GpuResources* resources,
              FlatIndex* quantizer,
              int numSubQuantizers,
              int bitsPerSubQuantizer,
-             bool layoutBy32,
+             bool useFloat16LookupTables,
+             bool useMMCodeDistance,
+             bool alternativeLayout,
              float* pqCentroidData,
              IndicesOptions indicesOptions,
-             bool useFloat16LookupTables,
              MemorySpace space) :
     IVFBase(resources,
             metric,
@@ -53,8 +54,9 @@ IVFPQ::IVFPQ(GpuResources* resources,
     bitsPerSubQuantizer_(bitsPerSubQuantizer),
     numSubQuantizerCodes_(utils::pow2(bitsPerSubQuantizer_)),
     dimPerSubQuantizer_(dim_ / numSubQuantizers),
-    layoutBy32_(layoutBy32),
     useFloat16LookupTables_(useFloat16LookupTables),
+    useMMCodeDistance_(useMMCodeDistance),
+    alternativeLayout_(alternativeLayout),
     precomputedCodes_(false) {
   FAISS_ASSERT(pqCentroidData);
 
@@ -91,11 +93,6 @@ IVFPQ::isSupportedPQCodeLength(int size) {
     default:
       return false;
   }
-}
-
-bool
-IVFPQ::isSupportedNoPrecomputedSubDimSize(int dims) {
-  return faiss::gpu::isSupportedNoPrecomputedSubDimSize(dims);
 }
 
 void
@@ -212,7 +209,7 @@ IVFPQ::appendVectors_(Tensor<float, 2, true>& vecs,
                              listOffset,
                              encodings,
                              indices,
-                             layoutBy32_,
+                             alternativeLayout_,
                              deviceListDataPointers_,
                              deviceListIndexPointers_,
                              indicesOptions_,
@@ -221,7 +218,7 @@ IVFPQ::appendVectors_(Tensor<float, 2, true>& vecs,
 
 size_t
 IVFPQ::getGpuVectorsEncodingSize_(int numVecs) const {
-  if (layoutBy32_) {
+  if (alternativeLayout_) {
     return utils::roundUp(
       (size_t) numVecs, (size_t) 32) * numSubQuantizers_;
   } else {
@@ -238,7 +235,7 @@ IVFPQ::getCpuVectorsEncodingSize_(int numVecs) const {
 std::vector<unsigned char>
 IVFPQ::translateCodesToGpu_(std::vector<unsigned char> codes,
                             size_t numVecs) const {
-  if (!layoutBy32_) {
+  if (!alternativeLayout_) {
     return codes;
   }
 
@@ -264,7 +261,7 @@ IVFPQ::translateCodesToGpu_(std::vector<unsigned char> codes,
 std::vector<unsigned char>
 IVFPQ::translateCodesFromGpu_(std::vector<unsigned char> codes,
                               size_t numVecs) const {
-  if (!layoutBy32_) {
+  if (!alternativeLayout_) {
     return codes;
   }
 
@@ -388,20 +385,20 @@ IVFPQ::precomputeCodesT_() {
 
       convertTensor(stream, centroidsTransposed, centroidsTransposedF32);
 
-      runIteratedMatrixMult(coarsePQProduct, false,
-                            centroidsTransposedF32, false,
-                            pqCentroidsMiddleCode_, true,
-                            2.0f, 0.0f,
-                            resources_->getBlasHandleCurrentDevice(),
-                            stream);
+      runBatchMatrixMult(coarsePQProduct, false,
+                         centroidsTransposedF32, false,
+                         pqCentroidsMiddleCode_, true,
+                         2.0f, 0.0f,
+                         resources_->getBlasHandleCurrentDevice(),
+                         stream);
     } else {
       // All in f32
-      runIteratedMatrixMult(coarsePQProduct, false,
-                            centroidsTransposed, false,
-                            pqCentroidsMiddleCode_, true,
-                            2.0f, 0.0f,
-                            resources_->getBlasHandleCurrentDevice(),
-                            stream);
+      runBatchMatrixMult(coarsePQProduct, false,
+                         centroidsTransposed, false,
+                         pqCentroidsMiddleCode_, true,
+                         2.0f, 0.0f,
+                         resources_->getBlasHandleCurrentDevice(),
+                         stream);
     }
   }
 
@@ -587,12 +584,12 @@ IVFPQ::runPQPrecomputedCodes_(
       resources_, makeTempAlloc(AllocType::Other, stream),
       {numSubQuantizers_, queries.getSize(0), numSubQuantizerCodes_});
 
-    runIteratedMatrixMult(term3, false,
-                          queriesTransposed, false,
-                          pqCentroidsMiddleCode_, true,
-                          -2.0f, 0.0f,
-                          resources_->getBlasHandleCurrentDevice(),
-                          stream);
+    runBatchMatrixMult(term3, false,
+                       queriesTransposed, false,
+                       pqCentroidsMiddleCode_, true,
+                       -2.0f, 0.0f,
+                       resources_->getBlasHandleCurrentDevice(),
+                       stream);
 
     runTransposeAny(term3, 0, 1, term3Transposed, stream);
   }
@@ -619,7 +616,7 @@ IVFPQ::runPQPrecomputedCodes_(
                                 term3, // term 3
                                 coarseIndices,
                                 useFloat16LookupTables_,
-                                layoutBy32_,
+                                alternativeLayout_,
                                 numSubQuantizers_,
                                 numSubQuantizerCodes_,
                                 deviceListDataPointers_,
@@ -647,9 +644,11 @@ IVFPQ::runPQNoPrecomputedCodesT_(
   runPQScanMultiPassNoPrecomputed(queries,
                                   coarseCentroids,
                                   pqCentroidsInnermostCode_,
+                                  coarseDistances,
                                   coarseIndices,
                                   useFloat16LookupTables_,
-                                  layoutBy32_,
+                                  useMMCodeDistance_,
+                                  alternativeLayout_,
                                   numSubQuantizers_,
                                   numSubQuantizerCodes_,
                                   deviceListDataPointers_,

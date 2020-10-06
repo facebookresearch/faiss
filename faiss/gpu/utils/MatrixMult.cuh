@@ -42,18 +42,6 @@ void runIteratedMatrixMult(Tensor<float, 3, true>& c, bool transC,
                            cublasHandle_t handle,
                            cudaStream_t stream);
 
-/// C_i = alpha * A_i * B_i + beta * C_i
-/// where `i` is the outermost dimension, via batched gemm
-/// Expects row major layout, not fortran/blas column major!
-void runBatchMatrixMult(Tensor<float, 3, true>& c, bool transC,
-                        Tensor<float, 3, true>& a, bool transA,
-                        Tensor<float, 3, true>& b, bool transB,
-                        float alpha,
-                        float beta,
-                        GpuResources* res,
-                        cublasHandle_t handle,
-                        cudaStream_t stream);
-
 } } // namespace
 
 #include <faiss/gpu/utils/MatrixMult-inl.cuh>

@@ -40,7 +40,6 @@ target_sources(faiss PRIVATE
   utils/BlockSelectHalf.cu
   utils/DeviceUtils.cu
   utils/Float16.cu
-  utils/MatrixMult.cu
   utils/StackDeviceMemory.cpp
   utils/Timer.cpp
   utils/WarpSelectFloat.cu

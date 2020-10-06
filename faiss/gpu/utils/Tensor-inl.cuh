@@ -128,7 +128,7 @@ template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ void
 Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyFrom(
-  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
+  const Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
   cudaStream_t stream) {
   // The tensor must be fully contiguous
   GPU_FAISS_ASSERT(this->isContiguous());

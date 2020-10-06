@@ -23,7 +23,8 @@ struct GpuIndexIVFPQConfig : public GpuIndexIVFConfig {
   inline GpuIndexIVFPQConfig()
       : useFloat16LookupTables(false),
         usePrecomputedTables(false),
-        alternativeLayout(false) {
+        alternativeLayout(false),
+        useMMCodeDistance(false) {
   }
 
   /// Whether or not float16 residual distance tables are used in the
@@ -38,6 +39,16 @@ struct GpuIndexIVFPQConfig : public GpuIndexIVFConfig {
   /// Use the alternative memory layout for the IVF lists
   /// WARNING: this is a feature under development, do not use!
   bool alternativeLayout;
+
+  /// Use GEMM-backed computation of PQ code distances for the no precomputed
+  /// table version of IVFPQ.
+  /// This is for debugging purposes, it should not substantially affect the
+  /// results one way for another.
+  ///
+  /// Note that MM code distance is enabled automatically if one uses a number
+  /// of dimensions per sub-quantizer that is not natively specialized (an odd
+  /// number like 7 or so).
+  bool useMMCodeDistance;
 };
 
 /// IVFPQ index for the GPU

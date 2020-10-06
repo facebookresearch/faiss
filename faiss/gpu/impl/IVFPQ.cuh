@@ -24,19 +24,15 @@ class IVFPQ : public IVFBase {
         FlatIndex* quantizer,
         int numSubQuantizers,
         int bitsPerSubQuantizer,
-        bool layoutBy32,
+        bool useFloat16LookupTables,
+        bool useMMCodeDistance,
+        bool alternativeLayout,
         float* pqCentroidData,
         IndicesOptions indicesOptions,
-        bool useFloat16LookupTables,
         MemorySpace space);
 
   /// Returns true if we support PQ in this size
   static bool isSupportedPQCodeLength(int size);
-
-  /// For no precomputed codes, is this a supported sub-dimension
-  /// size?
-  /// FIXME: get MM implementation working again
-  static bool isSupportedNoPrecomputedSubDimSize(int dims);
 
   ~IVFPQ() override;
 
@@ -134,6 +130,15 @@ class IVFPQ : public IVFBase {
   /// Number of dimensions per each sub-quantizer
   const int dimPerSubQuantizer_;
 
+  /// Do we maintain precomputed terms and lookup tables in float16
+  /// form?
+  const bool useFloat16LookupTables_;
+
+  /// For usage without precomputed codes, do we force usage of the
+  /// general-purpose MM code distance computation? This is for testing
+  /// purposes.
+  const bool useMMCodeDistance_;
+
   /// The default memory layout is [vector][PQ component]:
   /// (v0 d0) (v0 d1) ... (v0 dD-1) (v1 d0) (v1 d1) ...
   ///
@@ -142,11 +147,7 @@ class IVFPQ : public IVFBase {
   /// (v0 d0) (v1 d0) ... (v31 d0) (v0 d1) (v1 d1) ... (v31 dD-1) (v32 d0) (v33
   /// d0) ...
   /// so the list length is always a multiple of numSubQuantizers * 32
-  const bool layoutBy32_;
-
-  /// Do we maintain precomputed terms and lookup tables in float16
-  /// form?
-  const bool useFloat16LookupTables_;
+  const bool alternativeLayout_;
 
   /// On the GPU, we prefer different PQ centroid data layouts for
   /// different purposes.

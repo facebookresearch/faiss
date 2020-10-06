@@ -97,8 +97,7 @@ StackDeviceMemory::Stack::getAlloc(size_t size,
 
     if (stream != prevUser.stream_) {
       // Synchronization required
-      // FIXME
-      FAISS_ASSERT(false);
+      streamWait({stream}, {prevUser.stream_});
     }
 
     if (endAlloc < prevUser.end_) {

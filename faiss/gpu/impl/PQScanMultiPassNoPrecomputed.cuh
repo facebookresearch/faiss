@@ -17,16 +17,14 @@ namespace faiss { namespace gpu {
 
 class GpuResources;
 
-/// For no precomputed codes, is this a supported number of dimensions
-/// per subquantizer?
-inline bool isSupportedNoPrecomputedSubDimSize(int dims);
-
 template <typename CentroidT>
 void runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
                                      Tensor<CentroidT, 2, true>& centroids,
                                      Tensor<float, 3, true>& pqCentroidsInnermostCode,
-                                     Tensor<int, 2, true>& topQueryToCentroid,
+                                     Tensor<float, 2, true>& coarseDistances,
+                                     Tensor<int, 2, true>& coarseIndices,
                                      bool useFloat16Lookup,
+                                     bool useMMCodeDistance,
                                      bool interleavedCodeLayout,
                                      int numSubQuantizers,
                                      int numSubQuantizerCodes,

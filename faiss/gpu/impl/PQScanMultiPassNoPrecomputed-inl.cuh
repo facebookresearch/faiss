@@ -76,30 +76,6 @@ pqScanInterleaved(Tensor<float, 2, true> queries,
   }
 }
 
-// This must be kept in sync with PQCodeDistances.cu
-inline bool isSupportedNoPrecomputedSubDimSize(int dims) {
-  switch (dims) {
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 6:
-    case 8:
-    case 10:
-    case 12:
-    case 16:
-    case 20:
-    case 24:
-    case 28:
-    case 32:
-      return true;
-    default:
-      // FIXME: larger sizes require too many registers - we need the
-      // MM implementation working
-      return false;
-  }
-}
-
 template <typename LookupT, typename LookupVecT>
 struct LoadCodeDistances {
   static inline __device__ void load(LookupT* smem,
@@ -278,8 +254,10 @@ runMultiPassTile(GpuResources* res,
                  Tensor<CentroidT, 2, true>& centroids,
                  Tensor<float, 3, true>& pqCentroidsInnermostCode,
                  NoTypeTensor<4, true>& codeDistances,
-                 Tensor<int, 2, true>& topQueryToCentroid,
+                 Tensor<float, 2, true>& coarseDistances,
+                 Tensor<int, 2, true>& coarseIndices,
                  bool useFloat16Lookup,
+                 bool useMMCodeDistance,
                  bool interleavedCodeLayout,
                  int numSubQuantizers,
                  int numSubQuantizerCodes,
@@ -305,16 +283,19 @@ runMultiPassTile(GpuResources* res,
 
   // Calculate offset lengths, so we know where to write out
   // intermediate results
-  runCalcListOffsets(res, topQueryToCentroid, listLengths, prefixSumOffsets,
+  runCalcListOffsets(res, coarseIndices, listLengths, prefixSumOffsets,
                      thrustMem, stream);
 
   // Calculate residual code distances, since this is without
   // precomputed codes
-  runPQCodeDistances(pqCentroidsInnermostCode,
+  runPQCodeDistances(res,
+                     pqCentroidsInnermostCode,
                      queries,
                      centroids,
-                     topQueryToCentroid,
+                     coarseDistances,
+                     coarseIndices,
                      codeDistances,
+                     useMMCodeDistance,
                      l2Distance,
                      useFloat16Lookup,
                      stream);
@@ -323,8 +304,8 @@ runMultiPassTile(GpuResources* res,
     // The vector interleaved layout implementation
     auto kThreadsPerBlock = 256;
 
-    auto grid = dim3(topQueryToCentroid.getSize(1),
-                     topQueryToCentroid.getSize(0));
+    auto grid = dim3(coarseIndices.getSize(1),
+                     coarseIndices.getSize(0));
     auto block = dim3(kThreadsPerBlock);
 
     if (useFloat16Lookup) {
@@ -333,7 +314,7 @@ runMultiPassTile(GpuResources* res,
       pqScanInterleaved<half>
         <<<grid, block, 0, stream>>>(queries,
                                      pqCentroidsInnermostCode,
-                                     topQueryToCentroid,
+                                     coarseIndices,
                                      codeDistancesT,
                                      listCodes.data().get(),
                                      listLengths.data().get(),
@@ -345,7 +326,7 @@ runMultiPassTile(GpuResources* res,
       pqScanInterleaved<float>
         <<<grid, block, 0, stream>>>(queries,
                                      pqCentroidsInnermostCode,
-                                     topQueryToCentroid,
+                                     coarseIndices,
                                      codeDistancesT,
                                      listCodes.data().get(),
                                      listLengths.data().get(),
@@ -357,8 +338,8 @@ runMultiPassTile(GpuResources* res,
     // index) values for all intermediate results
     auto kThreadsPerBlock = 256;
 
-    auto grid = dim3(topQueryToCentroid.getSize(1),
-                     topQueryToCentroid.getSize(0));
+    auto grid = dim3(coarseIndices.getSize(1),
+                     coarseIndices.getSize(0));
     auto block = dim3(kThreadsPerBlock);
 
     // pq centroid distances
@@ -375,7 +356,7 @@ runMultiPassTile(GpuResources* res,
         <<<grid, block, smem, stream>>>(                                \
           queries,                                                      \
           pqCentroidsInnermostCode,                                     \
-          topQueryToCentroid,                                           \
+          coarseIndices,                                           \
           codeDistancesT,                                               \
           listCodes.data().get(),                                       \
           listLengths.data().get(),                                     \
@@ -455,7 +436,7 @@ runMultiPassTile(GpuResources* res,
   // k-select the output in chunks, to increase parallelism
   runPass1SelectLists(prefixSumOffsets,
                       allDistances,
-                      topQueryToCentroid.getSize(1),
+                      coarseIndices.getSize(1),
                       k,
                       !l2Distance, // L2 distance chooses smallest
                       heapDistances,
@@ -471,7 +452,7 @@ runMultiPassTile(GpuResources* res,
                       listIndices,
                       indicesOptions,
                       prefixSumOffsets,
-                      topQueryToCentroid,
+                      coarseIndices,
                       k,
                       !l2Distance, // L2 distance chooses smallest
                       outDistances,
@@ -484,8 +465,10 @@ void
 runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
                                 Tensor<CentroidT, 2, true>& centroids,
                                 Tensor<float, 3, true>& pqCentroidsInnermostCode,
-                                Tensor<int, 2, true>& topQueryToCentroid,
+                                Tensor<float, 2, true>& coarseDistances,
+                                Tensor<int, 2, true>& coarseIndices,
                                 bool useFloat16Lookup,
+                                bool useMMCodeDistance,
                                 bool interleavedCodeLayout,
                                 int numSubQuantizers,
                                 int numSubQuantizerCodes,
@@ -505,7 +488,7 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
   constexpr int kMaxQueryTileSize = 128;
   constexpr int kThrustMemSize = 16384;
 
-  int nprobe = topQueryToCentroid.getSize(1);
+  int nprobe = coarseIndices.getSize(1);
 
   auto stream = res->getDefaultStreamCurrentDevice();
 
@@ -650,8 +633,10 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
 
     auto codeDistancesView =
       codeDistances[curStream]->narrowOutermost(0, numQueriesInTile);
+    auto coarseDistancesView =
+      coarseDistances.narrowOutermost(query, numQueriesInTile);
     auto coarseIndicesView =
-      topQueryToCentroid.narrowOutermost(query, numQueriesInTile);
+      coarseIndices.narrowOutermost(query, numQueriesInTile);
     auto queryView =
       queries.narrowOutermost(query, numQueriesInTile);
 
@@ -670,8 +655,10 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
                      centroids,
                      pqCentroidsInnermostCode,
                      codeDistancesView,
+                     coarseDistancesView,
                      coarseIndicesView,
                      useFloat16Lookup,
+                     useMMCodeDistance,
                      interleavedCodeLayout,
                      numSubQuantizers,
                      numSubQuantizerCodes,

@@ -19,27 +19,18 @@ class DeviceMemory;
 /// pqCentroids is of the form (sub q)(sub dim)(code id)
 /// Calculates the distance from the (query - centroid) residual to
 /// each sub-code vector, for the given list of query results in
-/// topQueryToCentroid
+/// coarseIndices
 template <typename CentroidT>
-void runPQCodeDistances(Tensor<float, 3, true>& pqCentroids,
+void runPQCodeDistances(GpuResources* res,
+                        Tensor<float, 3, true>& pqCentroids,
                         Tensor<float, 2, true>& queries,
                         Tensor<CentroidT, 2, true>& coarseCentroids,
-                        Tensor<int, 2, true>& topQueryToCentroid,
+                        Tensor<float, 2, true>& coarseDistances,
+                        Tensor<int, 2, true>& coarseIndices,
                         NoTypeTensor<4, true>& outCodeDistances,
+                        bool useMMImplementation,
                         bool l2Distance,
-                        bool useFloat16Lookup,
-                        cudaStream_t stream);
-
-template <typename CentroidT>
-void runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
-                          Tensor<float, 2, true>& queries,
-                          Tensor<CentroidT, 2, true>& coarseCentroids,
-                          Tensor<int, 2, true>& topQueryToCentroid,
-                          NoTypeTensor<4, true>& outCodeDistances,
-                          bool useFloat16Lookup,
-                          GpuResources* res,
-                          cublasHandle_t handle,
-                          cudaStream_t stream);
+                        bool useFloat16Lookup);
 
 } } // namespace
 

@@ -38,9 +38,9 @@ rawGemm(cublasHandle_t handle,
         int n,
         int k,
         const float fAlpha,
-        const AT *A,
+        const void *A,
         int lda,
-        const BT *B,
+        const void *B,
         int ldb,
         const float fBeta,
         float *C,
@@ -54,6 +54,37 @@ rawGemm(cublasHandle_t handle,
                        B, cBT, ldb,
                        &fBeta,
                        C, CUDA_R_32F, ldc);
+}
+
+template <typename AT, typename BT>
+cublasStatus_t
+rawBatchGemm(cublasHandle_t handle,
+             cublasOperation_t transa,
+             cublasOperation_t transb,
+             int m,
+             int n,
+             int k,
+             const float fAlpha,
+             const void* A,
+             int lda,
+             long long int strideA,
+             const void* B,
+             int ldb,
+             long long int strideB,
+             const float fBeta,
+             float* C,
+             int ldc,
+             long long int strideC,
+             int batchCount) {
+  auto cAT = GetCudaType<AT>::Type;
+  auto cBT = GetCudaType<BT>::Type;
+
+  // Always accumulate in f32
+  return cublasGemmStridedBatchedEx(handle, transa, transb, m, n, k,
+                                    &fAlpha, A, cAT, lda, strideA,
+                                    B, cBT, ldb, strideB, &fBeta,
+                                    C, CUDA_R_32F, ldc, strideC, batchCount,
+                                    CUDA_R_32F, CUBLAS_GEMM_DEFAULT);
 }
 
 template <typename AT, typename BT>
@@ -109,17 +140,17 @@ runMatrixMult(Tensor<float, 2, true>& c, bool transC,
   cublasStatus_t err;
 
   if (transC) {
-    err = rawGemm(handle,
-                  gemmTrA, gemmTrB,
-                  m, n, k, alpha,
-                  a.data(), lda, b.data(), ldb, beta,
-                  pC, ldc);
+    err = rawGemm<AT, BT>(handle,
+                          gemmTrA, gemmTrB,
+                          m, n, k, alpha,
+                          a.data(), lda, b.data(), ldb, beta,
+                          pC, ldc);
   } else {
-    err = rawGemm(handle,
-                  gemmTrA, gemmTrB,
-                  m, n, k, alpha,
-                  b.data(), lda, a.data(), ldb, beta,
-                  pC, ldc);
+    err = rawGemm<AT, BT>(handle,
+                          gemmTrA, gemmTrB,
+                          m, n, k, alpha,
+                          b.data(), lda, a.data(), ldb, beta,
+                          pC, ldc);
   }
 
   FAISS_ASSERT_FMT(err == CUBLAS_STATUS_SUCCESS,
@@ -133,26 +164,76 @@ runMatrixMult(Tensor<float, 2, true>& c, bool transC,
 }
 
 template <typename AT, typename BT>
-void runIteratedMatrixMult(Tensor<float, 3, true>& c, bool transC,
-                           Tensor<AT, 3, true>& a, bool transA,
-                           Tensor<BT, 3, true>& b, bool transB,
-                           float alpha,
-                           float beta,
-                           cublasHandle_t handle,
-                           cudaStream_t stream) {
+void
+runBatchMatrixMult(Tensor<float, 3, true>& c, bool transC,
+                   Tensor<AT, 3, true>& a, bool transA,
+                   Tensor<BT, 3, true>& b, bool transB,
+                   float alpha,
+                   float beta,
+                   cublasHandle_t handle,
+                   cudaStream_t stream) {
   FAISS_ASSERT(c.getSize(0) == a.getSize(0));
   FAISS_ASSERT(a.getSize(0) == b.getSize(0));
 
-  for (int i = 0; i < a.getSize(0); ++i) {
-    auto cView = c[i].view();
-    auto aView = a[i].view();
-    auto bView = b[i].view();
+  // This uses the strided batch MM, which assumes a uniform stride
+  FAISS_ASSERT(a.getStride(0) == a.getSize(1) * a.getSize(2));
+  FAISS_ASSERT(b.getStride(0) == b.getSize(1) * b.getSize(2));
+  FAISS_ASSERT(c.getStride(0) == c.getSize(1) * c.getSize(2));
 
-    runMatrixMult(cView, transC,
-                  aView, transA,
-                  bView, transB,
-                  alpha, beta, handle, stream);
+  cublasSetStream(handle, stream);
+
+  // Check that we have (m x k) * (k x n) = (m x n)
+  // using the input row-major layout
+  int aM = transA ? a.getSize(2) : a.getSize(1);
+  int aK = transA ? a.getSize(1) : a.getSize(2);
+
+  int bK = transB ? b.getSize(2) : b.getSize(1);
+  int bN = transB ? b.getSize(1) : b.getSize(2);
+
+  int cM = transC ? c.getSize(2) : c.getSize(1);
+  int cN = transC ? c.getSize(1) : c.getSize(2);
+
+  FAISS_ASSERT(aM == cM);
+  FAISS_ASSERT(aK == bK);
+  FAISS_ASSERT(bN == cN);
+
+  // Now, we have to represent the matrix multiplication in
+  // column-major layout
+  void* pA = transC ? (void*) a.data() : (void*) b.data();
+  void* pB = transC ? (void*) b.data() : (void*) a.data();
+  float* pC = c.data();
+
+  int m = c.getSize(2); // stride 1 size
+  int n = c.getSize(1); // other size
+  int k = transA ? a.getSize(1) : a.getSize(2);
+
+  int lda = transC ? a.getStride(1) : b.getStride(1);
+  int ldb = transC ? b.getStride(1) : a.getStride(1);
+  int ldc = c.getStride(1);
+
+  auto gemmTrA = transB ? CUBLAS_OP_T : CUBLAS_OP_N;
+  auto gemmTrB = transA ? CUBLAS_OP_T : CUBLAS_OP_N;
+
+  if (transC) {
+    gemmTrA = transA ? CUBLAS_OP_N : CUBLAS_OP_T;
+    gemmTrB = transB ? CUBLAS_OP_N : CUBLAS_OP_T;
   }
+
+  long long int gemmStrideA = transC ? a.getStride(0) : b.getStride(0);
+  long long int gemmStrideB = transC ? b.getStride(0) : a.getStride(0);
+  long long int gemmStrideC = c.getStride(0);
+
+  auto err =
+    rawBatchGemm<AT, BT>(handle,
+                         gemmTrA, gemmTrB,
+                         m, n, k, alpha,
+                         pA, lda, gemmStrideA,
+                         pB, ldb, gemmStrideB, beta,
+                         pC, ldc, gemmStrideC, a.getSize(0));
+
+  FAISS_ASSERT_FMT(err == CUBLAS_STATUS_SUCCESS,
+                   "cublasGemmStridedBatchedEx failed (%d)", (int) err);
+  CUDA_TEST_ERROR();
 }
 
 } } // namespace

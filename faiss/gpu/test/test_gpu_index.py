@@ -21,7 +21,7 @@ class EvalIVFPQAccuracy(unittest.TestCase):
             nq = 2000
         else:
             d = 32
-            nb = 1000
+            nb = 10000
             nt = 1000
             nq = 200
         np.random.seed(123)
@@ -66,7 +66,7 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         ts.append(time.time())
 
         index.nprobe = 4
-        D, Iref = index.search(xq, 10)
+        Dref, Iref = index.search(xq, 10)
         ts.append(time.time())
 
         res = faiss.StandardGpuResources()
@@ -83,7 +83,7 @@ class EvalIVFPQAccuracy(unittest.TestCase):
 
         gpu_index.setNumProbes(4)
 
-        D, Inew = gpu_index.search(xq, 10)
+        Dnew, Inew = gpu_index.search(xq, 10)
         ts.append(time.time())
         print('times:', [t - ts[0] for t in ts])
 
@@ -105,7 +105,7 @@ class EvalIVFPQAccuracy(unittest.TestCase):
             faiss.GpuParameterSpace().set_index_parameter(
                 gpu_index, 'nprobe', 4)
 
-            D, Inew = gpu_index.search(xq, 10)
+            Dnew, Inew = gpu_index.search(xq, 10)
 
             # 0.99: allow some tolerance in results otherwise test
             # fails occasionally (not reproducible)

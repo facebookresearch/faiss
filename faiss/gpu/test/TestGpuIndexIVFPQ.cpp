@@ -51,7 +51,7 @@ struct Options {
     //   support non-multiple of 8 subcodes for IVFPQ.
     bitsPerCode = 8;
     nprobe = std::min(faiss::gpu::randVal(40, 1000), numCentroids);
-    numQuery = faiss::gpu::randVal(1, 8);
+    numQuery = faiss::gpu::randVal(4, 8);
 
     // Due to the approximate nature of the query and of floating point
     // differences between GPU and CPU, to stay within our error bounds, only
@@ -91,7 +91,7 @@ struct Options {
   }
 
   float getCompareEpsilon() const {
-    return 0.032f;
+    return 0.035f;
   }
 
   float getPctMaxDiff1() const {
@@ -136,7 +136,7 @@ TEST(TestGpuIndexIVFPQ, Query_L2) {
 
     faiss::gpu::GpuIndexIVFPQConfig config;
     config.device = opt.device;
-    config.usePrecomputedTables = opt.usePrecomputed;
+    config.usePrecomputedTables = (tries % 2 == 0);
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
 
@@ -149,6 +149,93 @@ TEST(TestGpuIndexIVFPQ, Query_L2) {
                                opt.getPctMaxDiff1(),
                                opt.getPctMaxDiffN());
   }
+}
+
+void testMMCodeDistance(faiss::MetricType mt) {
+  // Explicitly test the code distance via batch matrix multiplication route
+  // (even for dimension sizes that would otherwise be handled by the
+  // specialized route (via enabling `useMMCodeDistance`)
+  for (int tries = 0; tries < 2; ++tries) {
+    Options opt;
+
+    std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
+    std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+
+    faiss::IndexFlat coarseQuantizer(opt.dim, mt);
+    faiss::IndexIVFPQ cpuIndex(&coarseQuantizer, opt.dim, opt.numCentroids,
+                               opt.codes, opt.bitsPerCode);
+    cpuIndex.nprobe = opt.nprobe;
+    cpuIndex.train(opt.numTrain, trainVecs.data());
+    cpuIndex.add(opt.numAdd, addVecs.data());
+
+    // Use the default temporary memory management to test the memory manager
+    faiss::gpu::StandardGpuResources res;
+
+    faiss::gpu::GpuIndexIVFPQConfig config;
+    config.device = opt.device;
+    config.usePrecomputedTables = false;
+    config.useMMCodeDistance = true;
+    config.indicesOptions = opt.indicesOpt;
+
+    // Make sure that the float16 version works as well
+    config.useFloat16LookupTables = (tries % 2 == 0);
+    config.flatConfig.useFloat16 = (tries % 2 == 1);
+
+    faiss::gpu::GpuIndexIVFPQ gpuIndex(&res, &cpuIndex, config);
+    gpuIndex.setNumProbes(opt.nprobe);
+
+    faiss::gpu::compareIndices(cpuIndex, gpuIndex,
+                               opt.numQuery, opt.dim, opt.k, opt.toString(),
+                               opt.getCompareEpsilon(),
+                               opt.getPctMaxDiff1(),
+                               opt.getPctMaxDiffN());
+  }
+
+  // These sizes are not specialized, they will fall back to the MM version
+  for (int dimPerSubQ : {7, 11}) {
+    Options opt;
+
+    opt.codes = 12;
+    opt.dim = dimPerSubQ * opt.codes;
+
+    std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
+    std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+
+    faiss::IndexFlat coarseQuantizer(opt.dim, mt);
+    faiss::IndexIVFPQ cpuIndex(&coarseQuantizer, opt.dim, opt.numCentroids,
+                               opt.codes, opt.bitsPerCode);
+    cpuIndex.nprobe = opt.nprobe;
+    cpuIndex.train(opt.numTrain, trainVecs.data());
+    cpuIndex.add(opt.numAdd, addVecs.data());
+
+    // Use the default temporary memory management to test the memory manager
+    faiss::gpu::StandardGpuResources res;
+
+    faiss::gpu::GpuIndexIVFPQConfig config;
+    config.device = opt.device;
+    config.usePrecomputedTables = false;
+    config.indicesOptions = opt.indicesOpt;
+
+    // Make sure that the float16 version works as well
+    config.useFloat16LookupTables = (dimPerSubQ == 7);
+
+    faiss::gpu::GpuIndexIVFPQ gpuIndex(&res, &cpuIndex, config);
+    gpuIndex.setNumProbes(opt.nprobe);
+
+    faiss::gpu::compareIndices(cpuIndex, gpuIndex,
+                               opt.numQuery, opt.dim, opt.k, opt.toString(),
+                               opt.getCompareEpsilon(),
+                               opt.getPctMaxDiff1(),
+                               opt.getPctMaxDiffN());
+  }
+}
+
+TEST(TestGpuIndexIVFPQ, Query_L2_MMCodeDistance) {
+  testMMCodeDistance(faiss::MetricType::METRIC_L2);
+}
+
+TEST(TestGpuIndexIVFPQ, Query_IP_MMCodeDistance) {
+  testMMCodeDistance(faiss::MetricType::METRIC_INNER_PRODUCT);
 }
 
 TEST(TestGpuIndexIVFPQ, Query_IP) {
@@ -296,54 +383,56 @@ TEST(TestGpuIndexIVFPQ, Add_IP) {
 }
 
 TEST(TestGpuIndexIVFPQ, CopyTo) {
-  Options opt;
-  std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
-  std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+  for (int tries = 0; tries < 2; ++tries) {
+    Options opt;
+    std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
+    std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
 
-  // Use the default temporary memory management to test the memory manager
-  faiss::gpu::StandardGpuResources res;
+    // Use the default temporary memory management to test the memory manager
+    faiss::gpu::StandardGpuResources res;
 
-  faiss::gpu::GpuIndexIVFPQConfig config;
-  config.device = opt.device;
-  config.usePrecomputedTables = opt.usePrecomputed;
-  config.indicesOptions = opt.indicesOpt;
-  config.useFloat16LookupTables = opt.useFloat16;
+    faiss::gpu::GpuIndexIVFPQConfig config;
+    config.device = opt.device;
+    config.usePrecomputedTables = (tries % 2 == 0);
+    config.indicesOptions = opt.indicesOpt;
+    config.useFloat16LookupTables = opt.useFloat16;
 
-  faiss::gpu::GpuIndexIVFPQ gpuIndex(&res,
-                                     opt.dim,
-                                     opt.numCentroids,
-                                     opt.codes,
-                                     opt.bitsPerCode,
-                                     faiss::METRIC_L2,
-                                     config);
-  gpuIndex.setNumProbes(opt.nprobe);
-  gpuIndex.train(opt.numTrain, trainVecs.data());
-  gpuIndex.add(opt.numAdd, addVecs.data());
+    faiss::gpu::GpuIndexIVFPQ gpuIndex(&res,
+                                       opt.dim,
+                                       opt.numCentroids,
+                                       opt.codes,
+                                       opt.bitsPerCode,
+                                       faiss::METRIC_L2,
+                                       config);
+    gpuIndex.setNumProbes(opt.nprobe);
+    gpuIndex.train(opt.numTrain, trainVecs.data());
+    gpuIndex.add(opt.numAdd, addVecs.data());
 
-  // Use garbage values to see if we overwrite them
-  faiss::IndexFlatL2 cpuQuantizer(1);
-  faiss::IndexIVFPQ cpuIndex(&cpuQuantizer, 1, 1, 1, 1);
+    // Use garbage values to see if we overwrite them
+    faiss::IndexFlatL2 cpuQuantizer(1);
+    faiss::IndexIVFPQ cpuIndex(&cpuQuantizer, 1, 1, 1, 1);
 
-  gpuIndex.copyTo(&cpuIndex);
+    gpuIndex.copyTo(&cpuIndex);
 
-  EXPECT_EQ(cpuIndex.ntotal, gpuIndex.ntotal);
-  EXPECT_EQ(gpuIndex.ntotal, opt.numAdd);
+    EXPECT_EQ(cpuIndex.ntotal, gpuIndex.ntotal);
+    EXPECT_EQ(gpuIndex.ntotal, opt.numAdd);
 
-  EXPECT_EQ(cpuIndex.d, gpuIndex.d);
-  EXPECT_EQ(cpuIndex.d, opt.dim);
-  EXPECT_EQ(cpuIndex.nlist, gpuIndex.getNumLists());
-  EXPECT_EQ(cpuIndex.nprobe, gpuIndex.getNumProbes());
-  EXPECT_EQ(cpuIndex.pq.M, gpuIndex.getNumSubQuantizers());
-  EXPECT_EQ(gpuIndex.getNumSubQuantizers(), opt.codes);
-  EXPECT_EQ(cpuIndex.pq.nbits, gpuIndex.getBitsPerCode());
-  EXPECT_EQ(gpuIndex.getBitsPerCode(), opt.bitsPerCode);
+    EXPECT_EQ(cpuIndex.d, gpuIndex.d);
+    EXPECT_EQ(cpuIndex.d, opt.dim);
+    EXPECT_EQ(cpuIndex.nlist, gpuIndex.getNumLists());
+    EXPECT_EQ(cpuIndex.nprobe, gpuIndex.getNumProbes());
+    EXPECT_EQ(cpuIndex.pq.M, gpuIndex.getNumSubQuantizers());
+    EXPECT_EQ(gpuIndex.getNumSubQuantizers(), opt.codes);
+    EXPECT_EQ(cpuIndex.pq.nbits, gpuIndex.getBitsPerCode());
+    EXPECT_EQ(gpuIndex.getBitsPerCode(), opt.bitsPerCode);
 
-  // Query both objects; results should be equivalent
-  faiss::gpu::compareIndices(cpuIndex, gpuIndex,
-                             opt.numQuery, opt.dim, opt.k, opt.toString(),
-                             opt.getCompareEpsilon(),
-                             opt.getPctMaxDiff1(),
-                             opt.getPctMaxDiffN());
+    // Query both objects; results should be equivalent
+    faiss::gpu::compareIndices(cpuIndex, gpuIndex,
+                               opt.numQuery, opt.dim, opt.k, opt.toString(),
+                               opt.getCompareEpsilon(),
+                               opt.getPctMaxDiff1(),
+                               opt.getPctMaxDiffN());
+  }
 }
 
 TEST(TestGpuIndexIVFPQ, CopyFrom) {

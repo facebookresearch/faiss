@@ -115,7 +115,7 @@ template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__
 HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
-  Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
+  const Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
   cudaStream_t stream) :
     Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, t.sizes(), t.strides()),
     state_(AllocState::Owner) {

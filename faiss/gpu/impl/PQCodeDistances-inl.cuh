@@ -32,7 +32,7 @@ pqCodeDistances(Tensor<float, 2, true> queries,
                 int queriesPerBlock,
                 Tensor<CentroidT, 2, true> coarseCentroids,
                 Tensor<float, 3, true> pqCentroids,
-                Tensor<int, 2, true> topQueryToCentroid,
+                Tensor<int, 2, true> coarseIndices,
                 // (query id)(coarse)(subquantizer)(code) -> dist
                 Tensor<OutCodeT, 4, true> outCodeDistances) {
   const auto numSubQuantizers = pqCentroids.getSize(0);
@@ -53,9 +53,12 @@ pqCodeDistances(Tensor<float, 2, true> queries,
 
   // Each thread will load the pq centroid data for the code that it
   // is processing
+  // The loading threads are out of bounds for the number of codes available
+  if (!isLoadingThread) {
 #pragma unroll
-  for (int i = 0; i < DimsPerSubQuantizer; ++i) {
-    subQuantizerData[i] = pqCentroids[subQuantizer][i][code].ldg();
+    for (int i = 0; i < DimsPerSubQuantizer; ++i) {
+      subQuantizerData[i] = pqCentroids[subQuantizer][i][code].ldg();
+    }
   }
 
   // Where we store our query vector
@@ -91,9 +94,8 @@ pqCodeDistances(Tensor<float, 2, true> queries,
     }
 
     // Load list of coarse centroids found
-    for (int i = threadIdx.x;
-         i < topQueryToCentroid.getSize(1); i += blockDim.x) {
-      coarseIds[i] = topQueryToCentroid[queryId][i];
+    for (int i = threadIdx.x; i < coarseIndices.getSize(1); i += blockDim.x) {
+      coarseIds[i] = coarseIndices[queryId][i];
     }
 
     // We need coarseIds below
@@ -122,7 +124,7 @@ pqCodeDistances(Tensor<float, 2, true> queries,
     }
 
     // The block walks the list for a single query
-    for (int coarse = 0; coarse < topQueryToCentroid.getSize(1); ++coarse) {
+    for (int coarse = 0; coarse < coarseIndices.getSize(1); ++coarse) {
       // Wait for smemResidual1 to be loaded
       __syncthreads();
 
@@ -133,7 +135,7 @@ pqCodeDistances(Tensor<float, 2, true> queries,
              i += blockDim.x - codesPerSubQuantizer) {
           // FIXME: try always making this centroid id 0 so we can
           // terminate
-          if (coarse != (topQueryToCentroid.getSize(1) - 1)) {
+          if (coarse != (coarseIndices.getSize(1) - 1)) {
             auto coarseId = coarseIds[coarse + 1];
             // In case NaNs were in the original query data
             coarseId = coarseId == -1 ? 0 : coarseId;
@@ -268,123 +270,131 @@ pqCodeDistances(Tensor<float, 2, true> queries,
   }
 }
 
-template <typename CentroidT>
+template <typename CentroidT, bool L2Residual>
 __global__ void
-residualVector(Tensor<float, 2, true> queries,
-               Tensor<CentroidT, 2, true> coarseCentroids,
-               Tensor<int, 2, true> topQueryToCentroid,
-               int numSubDim,
-               // output is transposed:
-               // (sub q)(query id)(centroid id)(sub dim)
-               Tensor<float, 4, true> residual) {
-  // block x is query id
-  // block y is centroid id
-  // thread x is dim
+pqResidualVector(Tensor<float, 2, true> queries,
+                 Tensor<CentroidT, 2, true> coarseCentroids,
+                 Tensor<int, 2, true> coarseIndices,
+                 int numSubDim,
+                 // output is transposed:
+                 // (sub q)(query id)(centroid id)(sub dim)
+                 Tensor<float, 4, true> residual) {
   auto queryId = blockIdx.x;
   auto centroidId = blockIdx.y;
 
-  int realCentroidId = topQueryToCentroid[queryId][centroidId];
+  int realCentroidId = coarseIndices[queryId][centroidId];
 
   for (int dim = threadIdx.x; dim < queries.getSize(1); dim += blockDim.x) {
     float q = queries[queryId][dim];
     float c = ConvertTo<float>::to(coarseCentroids[realCentroidId][dim]);
 
-    residual[dim / numSubDim][queryId][centroidId][dim % numSubDim] = q - c;
+    float r;
+
+    if (L2Residual) {
+      r = q - c;
+    } else {
+      // IP does not use a residual. Instead, the estimated distance is
+      // (query . (centroid + sub quantizer centroid).
+      //
+      // This kernel is used to calculate (query . sub quantizer centroid),
+      // providing the query value replicated across all of the sub
+      // quantizers. The batch matrix multiplication in runPQCodeDistancesMM
+      // will perform this inner product. The adjustment (query . centroid) is
+      // added later.
+      r = q;
+    }
+
+    residual[dim / numSubDim][queryId][centroidId][dim % numSubDim] = r;
   }
 }
 
 template <typename CentroidT>
 void
-runResidualVector(Tensor<float, 3, true>& pqCentroids,
-                  Tensor<float, 2, true>& queries,
-                  Tensor<CentroidT, 2, true>& coarseCentroids,
-                  Tensor<int, 2, true>& topQueryToCentroid,
-                  Tensor<float, 4, true>& residual,
-                  cudaStream_t stream) {
-  auto grid =
-    dim3(topQueryToCentroid.getSize(0), topQueryToCentroid.getSize(1));
+runPQResidualVector(Tensor<float, 3, true>& pqCentroids,
+                    Tensor<float, 2, true>& queries,
+                    Tensor<CentroidT, 2, true>& coarseCentroids,
+                    Tensor<int, 2, true>& coarseIndices,
+                    Tensor<float, 4, true>& residual,
+                    bool l2Residual,
+                    cudaStream_t stream) {
+  auto grid = dim3(coarseIndices.getSize(0), coarseIndices.getSize(1));
   auto block = dim3(std::min(queries.getSize(1), getMaxThreadsCurrentDevice()));
 
-  residualVector<<<grid, block, 0, stream>>>(
-    queries, coarseCentroids, topQueryToCentroid, pqCentroids.getSize(1),
-    residual);
+  if (l2Residual) {
+    pqResidualVector<CentroidT, true><<<grid, block, 0, stream>>>(
+      queries, coarseCentroids,
+      coarseIndices, pqCentroids.getSize(1), residual);
+  } else {
+    pqResidualVector<CentroidT, false><<<grid, block, 0, stream>>>(
+      queries, coarseCentroids,
+      coarseIndices, pqCentroids.getSize(1), residual);
+  }
 
   CUDA_TEST_ERROR();
 }
 
+template <typename T>
+__global__ void
+pqDistanceIPCorrection(Tensor<T, 3, true> codeDistances,
+                       Tensor<T, 2, true> coarseDistances,
+                       int numSubQ) {
+  int centroid = blockIdx.x;
+  int query = blockIdx.y;
+
+  // We need to add the (query . centroid) correction factor (coarseDistances)
+  // to all output code distances (q)(c)(sub q)(code).
+  // However, there are numSubQ code distance sums per each approximated
+  // distance, so we need to divide this correction by numSubQ since we will be
+  // adding it numSubQ times.
+  auto d = coarseDistances[query][centroid] / (float) numSubQ;
+
+  auto base = codeDistances[query][centroid].data();
+
+  for (int i = threadIdx.x; i < codeDistances.getSize(2); i += blockDim.x) {
+    base[i] += d;
+  }
+}
+
+// We have previously calculated (query . sub quantizer centroid), but we
+// need to calculate (query . (centroid + sub quantizer centroid). This will add
+// in the correction factor to each calculated code distance.
+template <typename T>
+void
+runPQDistanceIPCorrection(Tensor<T, 4, true>& codeDistances,
+                          Tensor<T, 2, true>& coarseDistances,
+                          cudaStream_t stream) {
+  auto grid = dim3(coarseDistances.getSize(1), coarseDistances.getSize(0));
+  auto block = 512;
+
+  auto codeView = codeDistances.template downcastInner<3>();
+
+  pqDistanceIPCorrection<<<grid, block, 0, stream>>>(codeView,
+                                                     coarseDistances,
+                                                     codeDistances.getSize(2));
+}
+
+// This is a general purpose implementation that leverages GEMM to calculate
+// code distances for PQ codes for any number of dimensions per sub-quantizer /
+// number of sub-quantizers
 template <typename CentroidT>
 void
-runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
+runPQCodeDistancesMM(GpuResources* res,
+                     Tensor<float, 3, true>& pqCentroids,
                      Tensor<float, 2, true>& queries,
                      Tensor<CentroidT, 2, true>& coarseCentroids,
-                     Tensor<int, 2, true>& topQueryToCentroid,
+                     Tensor<float, 2, true>& coarseDistances,
+                     Tensor<int, 2, true>& coarseIndices,
+                     // Output is (query)(centroid)(sub q)(code)
                      NoTypeTensor<4, true>& outCodeDistances,
+                     bool l2Distance,
                      bool useFloat16Lookup,
-                     GpuResources* res,
-                     cublasHandle_t handle,
                      cudaStream_t stream) {
-  // Calculate (q - c) residual vector
-  // (sub q)(query id)(centroid id)(sub dim)
-  DeviceTensor<float, 4, true> residual(
-    res, makeTempAlloc(AllocType::Other, stream),
-    {pqCentroids.getSize(0),
-     topQueryToCentroid.getSize(0),
-     topQueryToCentroid.getSize(1),
-     pqCentroids.getSize(1)});
-
-  runResidualVector(pqCentroids, queries,
-                    coarseCentroids, topQueryToCentroid,
-                    residual, stream);
-
-  // Calculate ||q - c||^2
-  DeviceTensor<float, 1, true> residualNorms(
-    res, makeTempAlloc(AllocType::Other, stream),
-    {pqCentroids.getSize(0) *
-     topQueryToCentroid.getSize(0) *
-     topQueryToCentroid.getSize(1)});
-
-  auto residualView2 = residual.view<2>(
-    {pqCentroids.getSize(0) *
-        topQueryToCentroid.getSize(0) *
-        topQueryToCentroid.getSize(1),
-        pqCentroids.getSize(1)});
-
-  runL2Norm(residualView2, true, residualNorms, true, stream);
-
-  // Perform a batch MM:
-  // (sub q) x {(q * c)(sub dim) x (sub dim)(code)} =>
-  // (sub q) x {(q * c)(code)}
-  auto residualView3 = residual.view<3>(
-    {pqCentroids.getSize(0),
-        topQueryToCentroid.getSize(0) * topQueryToCentroid.getSize(1),
-        pqCentroids.getSize(1)});
-
-  DeviceTensor<float, 3, true> residualDistance(
-    res, makeTempAlloc(AllocType::Other, stream),
-    {pqCentroids.getSize(0),
-     topQueryToCentroid.getSize(0) * topQueryToCentroid.getSize(1),
-     pqCentroids.getSize(2)});
-
-  runIteratedMatrixMult(residualDistance, false,
-                        residualView3, false,
-                        pqCentroids, false,
-                        -2.0f, 0.0f,
-                        handle,
-                        stream);
-
-  // Sum ||q - c||^2 along rows
-  auto residualDistanceView2 = residualDistance.view<2>(
-    {pqCentroids.getSize(0) *
-        topQueryToCentroid.getSize(0) *
-        topQueryToCentroid.getSize(1),
-        pqCentroids.getSize(2)});
-
-  runSumAlongRows(residualNorms, residualDistanceView2, false, stream);
-
+  // We construct our float32 output in outCodeDistancesF
   Tensor<float, 4, true> outCodeDistancesF;
   DeviceTensor<float, 4, true> outCodeDistancesFloatMem;
 
   if (useFloat16Lookup) {
+    // outCodeDistances has half memory, we need to allocate a buffer for float
     outCodeDistancesFloatMem = DeviceTensor<float, 4, true>(
       res, makeTempAlloc(AllocType::Other, stream),
       {outCodeDistances.getSize(0),
@@ -394,47 +404,123 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
 
     outCodeDistancesF = outCodeDistancesFloatMem;
   } else {
+    // We can use the memory that we were given
     outCodeDistancesF = outCodeDistances.toTensor<float>();
   }
 
-  // Transpose -2(sub q)(q * c)(code) to -2(q * c)(sub q)(code) (which
-  // is where we build our output distances)
+  // Calculate (q - c) residual vector if L2. Otherwise, for IP, this kernel
+  // will just replicate q
+  //
+  // (sub q)(query id)(centroid id)(sub dim)
+  DeviceTensor<float, 4, true> residual(
+    res, makeTempAlloc(AllocType::Other, stream),
+    {pqCentroids.getSize(0),
+     coarseIndices.getSize(0),
+     coarseIndices.getSize(1),
+     pqCentroids.getSize(1)});
+
+  runPQResidualVector(pqCentroids, queries,
+                      coarseCentroids, coarseIndices,
+                      residual, l2Distance, stream);
+
+  // Perform a batch MM:
+  // (sub q) x {(q * c)(sub dim) x (sub dim)(code)} =>
+  // (sub q) x {(q * c)(code)}
+  auto residualView3 = residual.view<3>(
+    {pqCentroids.getSize(0),
+     coarseIndices.getSize(0) * coarseIndices.getSize(1),
+     pqCentroids.getSize(1)});
+
+  DeviceTensor<float, 3, true> residualDistance(
+    res, makeTempAlloc(AllocType::Other, stream),
+    {pqCentroids.getSize(0),
+     coarseIndices.getSize(0) * coarseIndices.getSize(1),
+     pqCentroids.getSize(2)});
+
+  runBatchMatrixMult(residualDistance, false,
+                     residualView3, false,
+                     pqCentroids, false,
+                     l2Distance ? -2.0f : 1.0f, 0.0f,
+                     res->getBlasHandleCurrentDevice(),
+                     stream);
+
+  if (l2Distance) {
+    // Calculate ||q - c||^2
+    DeviceTensor<float, 1, true> residualNorms(
+      res, makeTempAlloc(AllocType::Other, stream),
+      {pqCentroids.getSize(0) *
+       coarseIndices.getSize(0) *
+       coarseIndices.getSize(1)});
+
+    auto residualView2 = residual.view<2>(
+      {pqCentroids.getSize(0) *
+       coarseIndices.getSize(0) *
+       coarseIndices.getSize(1),
+       pqCentroids.getSize(1)});
+
+    runL2Norm(residualView2, true, residualNorms, true, stream);
+
+    // Sum ||q - c||^2 along rows
+    auto residualDistanceView2 = residualDistance.view<2>(
+      {pqCentroids.getSize(0) *
+       coarseIndices.getSize(0) *
+       coarseIndices.getSize(1),
+       pqCentroids.getSize(2)});
+
+    runSumAlongRows(residualNorms, residualDistanceView2, false, stream);
+  }
+
+  // Transpose (sub q)(q * c)(code) to (q * c)(sub q)(code) (which
+  // is where we build our output distances). L2 version of this has an added -2
+  // multiplicative factor
   auto outCodeDistancesView = outCodeDistancesF.view<3>(
-    {topQueryToCentroid.getSize(0) * topQueryToCentroid.getSize(1),
-        outCodeDistances.getSize(2),
-        outCodeDistances.getSize(3)});
+    {coarseIndices.getSize(0) * coarseIndices.getSize(1),
+     outCodeDistances.getSize(2),
+     outCodeDistances.getSize(3)});
 
   runTransposeAny(residualDistance, 0, 1, outCodeDistancesView, stream);
 
-  // Calculate code norms per each sub-dim
-  // (sub q)(sub dim)(code) is pqCentroids
-  // transpose to (sub q)(code)(sub dim)
-  DeviceTensor<float, 3, true> pqCentroidsTranspose(
-    res, makeTempAlloc(AllocType::Other, stream),
-    {pqCentroids.getSize(0), pqCentroids.getSize(2), pqCentroids.getSize(1)});
+  if (l2Distance) {
+    // Calculate code norms per each sub-dim
+    // (sub q)(sub dim)(code) is pqCentroids
+    // transpose to (sub q)(code)(sub dim)
+    DeviceTensor<float, 3, true> pqCentroidsTranspose(
+      res, makeTempAlloc(AllocType::Other, stream),
+      {pqCentroids.getSize(0), pqCentroids.getSize(2), pqCentroids.getSize(1)});
 
-  runTransposeAny(pqCentroids, 1, 2, pqCentroidsTranspose, stream);
+    runTransposeAny(pqCentroids, 1, 2, pqCentroidsTranspose, stream);
 
-  auto pqCentroidsTransposeView = pqCentroidsTranspose.view<2>(
-    {pqCentroids.getSize(0) * pqCentroids.getSize(2),
-        pqCentroids.getSize(1)});
+    auto pqCentroidsTransposeView = pqCentroidsTranspose.view<2>(
+      {pqCentroids.getSize(0) * pqCentroids.getSize(2),
+       pqCentroids.getSize(1)});
 
-  DeviceTensor<float, 1, true> pqCentroidsNorm(
-    res, makeTempAlloc(AllocType::Other, stream),
-    {pqCentroids.getSize(0) * pqCentroids.getSize(2)});
+    // The norm of each (sub q)(code)
+    DeviceTensor<float, 1, true> pqCentroidsNorm(
+      res, makeTempAlloc(AllocType::Other, stream),
+      {pqCentroids.getSize(0) * pqCentroids.getSize(2)});
 
-  runL2Norm(pqCentroidsTransposeView, true, pqCentroidsNorm, true, stream);
+    runL2Norm(pqCentroidsTransposeView, true, pqCentroidsNorm, true, stream);
 
-  // View output as (q * c)(sub q * code), and add centroid norm to
-  // each row
-  auto outDistancesCodeViewCols = outCodeDistancesView.view<2>(
-    {topQueryToCentroid.getSize(0) * topQueryToCentroid.getSize(1),
-        outCodeDistances.getSize(2) * outCodeDistances.getSize(3)});
+    // View output as (q * c)(sub q * code), and add centroid norm to
+    // each row
+    auto outDistancesCodeViewCols = outCodeDistancesView.view<2>(
+      {coarseIndices.getSize(0) * coarseIndices.getSize(1),
+       outCodeDistances.getSize(2) * outCodeDistances.getSize(3)});
 
-  runSumAlongColumns(pqCentroidsNorm, outDistancesCodeViewCols, stream);
+    runSumAlongColumns(pqCentroidsNorm, outDistancesCodeViewCols, stream);
+  } else {
+    // We have previously calculated (query . sub quantizer centroid), but we
+    // need to calculate (query . (centroid + sub quantizer centroid).
+    //
+    // We need to add the (query . centroid) correction factor (coarseDistances)
+    // to all output code distances (q)(c)(sub q)(code).
+    runPQDistanceIPCorrection(outCodeDistancesF, coarseDistances, stream);
+  }
+
+  HostTensor<float, 4, true> debugT(outCodeDistancesF, stream);
 
   if (useFloat16Lookup) {
-    // Need to convert back
+    // Need to convert back to half in the output memory
     auto outCodeDistancesH = outCodeDistances.toTensor<half>();
     convertTensor<float, half, 4>(stream,
                                   outCodeDistancesF,
@@ -442,19 +528,65 @@ runPQCodeDistancesMM(Tensor<float, 3, true>& pqCentroids,
   }
 }
 
+// Must be kept in sync with runPQDistances
+inline bool isSpecializedPQCodeDistanceDims(int dims) {
+  switch (dims) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 8:
+    case 10:
+    case 12:
+    case 16:
+    case 20:
+    case 24:
+    case 28:
+    case 32:
+      return true;
+    default:
+      return false;
+  }
+}
+
 template <typename CentroidT>
 void
-runPQCodeDistances(Tensor<float, 3, true>& pqCentroids,
+runPQCodeDistances(GpuResources* res,
+                   Tensor<float, 3, true>& pqCentroids,
                    Tensor<float, 2, true>& queries,
                    Tensor<CentroidT, 2, true>& coarseCentroids,
-                   Tensor<int, 2, true>& topQueryToCentroid,
+                   Tensor<float, 2, true>& coarseDistances,
+                   Tensor<int, 2, true>& coarseIndices,
                    NoTypeTensor<4, true>& outCodeDistances,
+                   bool useMMImplementation,
                    bool l2Distance,
                    bool useFloat16Lookup,
                    cudaStream_t stream) {
   const auto numSubQuantizers = pqCentroids.getSize(0);
   const auto dimsPerSubQuantizer = pqCentroids.getSize(1);
   const auto codesPerSubQuantizer = pqCentroids.getSize(2);
+
+  // Only a certain number of dimensions per sub quantizer are supported by the
+  // specialized implementation. Every other value falls back to the generalized
+  // MM implementation.
+  if (!isSpecializedPQCodeDistanceDims(dimsPerSubQuantizer) ||
+      useMMImplementation) {
+    // Use the general purpose matrix multiplication implementation which
+    // handles any number of sub-quantizers and dimensions per sub-quantizer
+    runPQCodeDistancesMM<CentroidT>(res,
+                                    pqCentroids,
+                                    queries,
+                                    coarseCentroids,
+                                    coarseDistances,
+                                    coarseIndices,
+                                    outCodeDistances,
+                                    l2Distance,
+                                    useFloat16Lookup,
+                                    stream);
+    return;
+  }
 
   // FIXME: tune
   // Reuse of pq centroid data is based on both # of queries * nprobe,
@@ -470,7 +602,7 @@ runPQCodeDistances(Tensor<float, 3, true>& pqCentroids,
   auto block = dim3(codesPerSubQuantizer + loadingThreads);
 
   auto smem = (3 * dimsPerSubQuantizer) * sizeof(float)
-    + topQueryToCentroid.getSize(1) * sizeof(int);
+    + coarseIndices.getSize(1) * sizeof(int);
 
 #define RUN_CODE(DIMS, L2)                                              \
   do {                                                                  \
@@ -480,14 +612,14 @@ runPQCodeDistances(Tensor<float, 3, true>& pqCentroids,
       pqCodeDistances<half, CentroidT, DIMS, L2><<<grid, block, smem, stream>>>( \
         queries, kQueriesPerBlock,                                      \
         coarseCentroids, pqCentroids,                                   \
-        topQueryToCentroid, outCodeDistancesT);                         \
+        coarseIndices, outCodeDistancesT);                              \
     } else {                                                            \
       auto outCodeDistancesT = outCodeDistances.toTensor<float>();      \
                                                                         \
       pqCodeDistances<float, CentroidT, DIMS, L2><<<grid, block, smem, stream>>>( \
         queries, kQueriesPerBlock,                                      \
         coarseCentroids, pqCentroids,                                   \
-        topQueryToCentroid, outCodeDistancesT);                         \
+        coarseIndices, outCodeDistancesT);                              \
     }                                                                   \
   } while (0)
 
@@ -512,6 +644,9 @@ runPQCodeDistances(Tensor<float, 3, true>& pqCentroids,
       break;
     case 4:
       CODE_L2(4);
+      break;
+    case 5:
+      CODE_L2(5);
       break;
     case 6:
       CODE_L2(6);
@@ -540,11 +675,11 @@ runPQCodeDistances(Tensor<float, 3, true>& pqCentroids,
     case 32:
       CODE_L2(32);
       break;
-      // FIXME: larger sizes require too many registers - we need the
-      // MM implementation working
     default:
-      FAISS_THROW_MSG("Too many dimensions (>32) per subquantizer "
-                      "not currently supported");
+      // This should not be reached, we should fall back to the MM
+      // implementation
+      FAISS_ASSERT(false);
+      break;
   }
 
 #undef RUN_CODE
