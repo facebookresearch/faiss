@@ -19,6 +19,24 @@ namespace faiss { namespace gpu {
 
 template <typename T>
 void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
+  // Validate the input data
+  FAISS_THROW_IF_NOT_MSG(args.k > 0,
+                         "bfKnn: k must be > 0");
+  FAISS_THROW_IF_NOT_MSG(args.dims > 0,
+                         "bfKnn: dims must be > 0");
+  FAISS_THROW_IF_NOT_MSG(args.numVectors > 0,
+                         "bfKnn: numVectors must be > 0");
+  FAISS_THROW_IF_NOT_MSG(args.vectors,
+                         "bfKnn: vectors must be provided (passed null)");
+  FAISS_THROW_IF_NOT_MSG(args.numQueries > 0,
+                         "bfKnn: numQUeries must be > 0");
+  FAISS_THROW_IF_NOT_MSG(args.queries,
+                         "bfKnn: queries must be provided (passed null)");
+  FAISS_THROW_IF_NOT_MSG(args.outDistances,
+                         "bfKnn: outDistances must be provided (passed null)");
+  FAISS_THROW_IF_NOT_MSG(args.outIndices,
+                         "bfKnn: outIndices must be provided (passed null)");
+
   // Don't let the resources go out of scope
   auto resImpl = prov->getResources();
   auto res = resImpl.get();
@@ -59,45 +77,88 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                                 stream,
                                 {args.numQueries, args.k});
 
-  // The brute-force API only supports an interface for integer indices
-  DeviceTensor<int, 2, true>
-    tOutIntIndices(res,
-                   makeTempAlloc(AllocType::Other, stream),
-                   {args.numQueries, args.k});
+  if (args.outIndicesType == IndicesDataType::I64) {
+    // The brute-force API only supports an interface for i32 indices only, so
+    // we must create an output i32 buffer then convert back
+    DeviceTensor<int, 2, true>
+      tOutIntIndices(res,
+                     makeTempAlloc(AllocType::Other, stream),
+                     {args.numQueries, args.k});
 
-  // Since we've guaranteed that all arguments are on device, call the
-  // implementation
-  bfKnnOnDevice<T>(res,
-                   device,
-                   stream,
-                   tVectors,
-                   args.vectorsRowMajor,
-                   args.vectorNorms ? &tVectorNorms : nullptr,
-                   tQueries,
-                   args.queriesRowMajor,
-                   args.k,
-                   args.metric,
-                   args.metricArg,
-                   tOutDistances,
-                   tOutIntIndices,
-                   args.ignoreOutDistances);
+    // Since we've guaranteed that all arguments are on device, call the
+    // implementation
+    bfKnnOnDevice<T>(res,
+                     device,
+                     stream,
+                     tVectors,
+                     args.vectorsRowMajor,
+                     args.vectorNorms ? &tVectorNorms : nullptr,
+                     tQueries,
+                     args.queriesRowMajor,
+                     args.k,
+                     args.metric,
+                     args.metricArg,
+                     tOutDistances,
+                     tOutIntIndices,
+                     args.ignoreOutDistances);
 
-  // Convert and copy int indices out
-  auto tOutIndices =
-    toDeviceTemporary<faiss::Index::idx_t, 2>(res,
-                                              device,
-                                              args.outIndices,
-                                              stream,
-                                              {args.numQueries, args.k});
+    // Convert and copy int indices out
+    auto tOutIndices =
+      toDeviceTemporary<faiss::Index::idx_t, 2>(
+        res,
+        device,
+        (faiss::Index::idx_t*) args.outIndices,
+        stream,
+        {args.numQueries, args.k});
 
-  // Convert int to idx_t
-  convertTensor<int, faiss::Index::idx_t, 2>(stream,
-                                             tOutIntIndices,
-                                             tOutIndices);
+    // Convert int to idx_t
+    convertTensor<int, faiss::Index::idx_t, 2>(stream,
+                                               tOutIntIndices,
+                                               tOutIndices);
 
-  // Copy back if necessary
+    // Copy back if necessary
+    fromDevice<faiss::Index::idx_t, 2>(tOutIndices,
+                                       (faiss::Index::idx_t*) args.outIndices,
+                                       stream);
+  } else if (args.outIndicesType == IndicesDataType::I32) {
+    // We can use the brute-force API directly, as it takes i32 indices
+    // FIXME: convert to int32_t everywhere?
+    static_assert(sizeof(int) == 4, "");
+
+    auto tOutIntIndices =
+      toDeviceTemporary<int, 2>(res,
+                                device,
+                                (int*) args.outIndices,
+                                stream,
+                                {args.numQueries, args.k});
+
+    // Since we've guaranteed that all arguments are on device, call the
+    // implementation
+    bfKnnOnDevice<T>(res,
+                     device,
+                     stream,
+                     tVectors,
+                     args.vectorsRowMajor,
+                     args.vectorNorms ? &tVectorNorms : nullptr,
+                     tQueries,
+                     args.queriesRowMajor,
+                     args.k,
+                     args.metric,
+                     args.metricArg,
+                     tOutDistances,
+                     tOutIntIndices,
+                     args.ignoreOutDistances);
+
+    // Copy back if necessary
+    fromDevice<int, 2>(tOutIntIndices,
+                       (int*) args.outIndices,
+                       stream);
+  } else {
+    FAISS_THROW_MSG("unknown outIndicesType");
+  }
+
+  // Copy distances back if necessary
   fromDevice<float, 2>(tOutDistances, args.outDistances, stream);
-  fromDevice<faiss::Index::idx_t, 2>(tOutIndices, args.outIndices, stream);
 }
 
 void

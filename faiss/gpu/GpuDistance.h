@@ -20,6 +20,12 @@ enum class DistanceDataType {
   F16,
 };
 
+// Scalar type of the indices data
+enum class IndicesDataType {
+  I64 = 1,
+  I32,
+};
+
 /// Arguments to brute-force GPU k-nearest neighbor searching
 struct GpuDistanceParams {
   GpuDistanceParams()
@@ -38,6 +44,7 @@ struct GpuDistanceParams {
         numQueries(0),
         outDistances(nullptr),
         ignoreOutDistances(false),
+        outIndicesType(IndicesDataType::I64),
         outIndices(nullptr) {
   }
 
@@ -101,7 +108,8 @@ struct GpuDistanceParams {
 
   // A region of memory size numQueries x k, with k
   // innermost (row major)
-  faiss::Index::idx_t* outIndices;
+  IndicesDataType outIndicesType;
+  void* outIndices;
 };
 
 /// A wrapper for gpu/impl/Distance.cuh to expose direct brute-force k-nearest
