@@ -1,5 +1,3 @@
-#! /usr/bin/env python2
-
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -10,6 +8,7 @@ This is the training code for the link and code. Especially the
 neighbors_kmeans function implements the EM-algorithm to find the
 appropriate weightings and cluster them.
 """
+from __future__ import print_function
 
 import time
 import numpy as np
@@ -57,7 +56,7 @@ def train_kmeans(x, k, ngpu, max_points_per_centroid=256):
     centroids = faiss.vector_float_to_array(clus.centroids)
 
     obj = faiss.vector_float_to_array(clus.obj)
-    print "final objective: %.4g" % obj[-1]
+    print("final objective: %.4g" % obj[-1])
 
     return centroids.reshape(k, d)
 
@@ -91,7 +90,7 @@ def regress_from_neighbors (x, x_coded, Inn):
     (N, knn) = get_Inn_shape(Inn)
     betas = np.zeros((N,knn))
     t0 = time.time()
-    for i in xrange (N):
+    for i in range (N):
         xi = x[i,:]
         NNi = get_neighbor_table(x_coded, Inn, i)
         betas[i,:] = np.linalg.lstsq(NNi.transpose(), xi, rcond=0.01)[0]
@@ -109,7 +108,7 @@ def regress_opt_beta (x, x_coded, Inn):
     # construct the linear system to be solved
     X = np.zeros ((d*N))
     Y = np.zeros ((d*N, knn))
-    for i in xrange (N):
+    for i in range (N):
         X[i*d:(i+1)*d] = x[i,:]
         neighbor_table = get_neighbor_table(x_coded, Inn, i)
         Y[i*d:(i+1)*d, :] = neighbor_table.transpose()
@@ -125,7 +124,7 @@ def assign_beta (beta_centroids, x, x_coded, Inn, verbose=True):
     (N, knn) = Inn.shape
     x_ibeta = np.zeros ((N), dtype='int32')
     t0= time.time()
-    for i in xrange (N):
+    for i in range (N):
         NNi = x_coded[Inn[i,:]]
         # Consider all possible betas for the encoding and compute the
         # encoding error
@@ -145,7 +144,7 @@ def recons_from_neighbors (beta_centroids, x_ibeta, x_coded, Inn):
     (N, knn) = Inn.shape
     x_rec = np.zeros(x_coded.shape)
     t0= time.time()
-    for i in xrange (N):
+    for i in range (N):
         NNi = x_coded[Inn[i,:]]
         x_rec[i, :] = np.dot (beta_centroids[x_ibeta[i]], NNi)
         if i % (N / 10) == 0:
@@ -165,16 +164,16 @@ def neighbors_kmeans (x, x_coded, Inn, K, ngpus=1, niter=5):
 
     rs = np.random.RandomState()
     for iter in range(niter):
-        print 'iter', iter
+        print('iter', iter)
         idx = assign_beta (beta_centroids, x, x_coded, Inn, verbose=False)
 
         hist = np.bincount(idx)
         for cl0 in np.where(hist == 0)[0]:
-            print "  cluster %d empty, split" % cl0,
+            print("  cluster %d empty, split" % cl0, end=' ')
             cl1 = idx[np.random.randint(idx.size)]
             pos = np.nonzero (idx == cl1)[0]
             pos = rs.choice(pos, pos.size / 2)
-            print "   cl %d -> %d + %d" % (cl1, len(pos), hist[cl1] - len(pos))
+            print("   cl %d -> %d + %d" % (cl1, len(pos), hist[cl1] - len(pos)))
             idx[pos] = cl0
             hist = np.bincount(idx)
 
@@ -194,7 +193,7 @@ def neighbors_kmeans (x, x_coded, Inn, K, ngpus=1, niter=5):
             if residuals.size > 0:
                 tot_err += residuals.sum()
             beta_centroids[k, :] = sol
-        print '  err=%g' % tot_err
+        print('  err=%g' % tot_err)
     return beta_centroids
 
 
@@ -226,8 +225,8 @@ def train_beta_codebook(rfn, xb_full, niter=10):
     beta_centroids = []
     for sq in range(rfn.nsq):
         d0, d1 = sq * rfn.dsub, (sq + 1) * rfn.dsub
-        print "training subquantizer %d/%d on dimensions %d:%d" % (
-            sq, rfn.nsq, d0, d1)
+        print("training subquantizer %d/%d on dimensions %d:%d" % (
+            sq, rfn.nsq, d0, d1))
         beta_centroids_i = neighbors_kmeans(
             xb_full[:, d0:d1], rfn, (xb_full.shape[0], rfn.M + 1, sq),
             rfn.k,

@@ -8,6 +8,7 @@
 """
 Common functions to load datasets and compute their ground-truth
 """
+from __future__ import print_function
 
 import time
 import numpy as np
@@ -102,7 +103,7 @@ class ResultHeap:
 
 
 def compute_GT_sliced(xb, xq, k):
-    print "compute GT"
+    print("compute GT")
     t0 = time.time()
     nb, d = xb.shape
     nq, d = xq.shape
@@ -121,24 +122,24 @@ def compute_GT_sliced(xb, xq, k):
         D, I = db_gt.search(xqs, k)
         rh.add_batch_result(D, I, i0)
         db_gt.reset()
-        print "\r   %d/%d, %.3f s" % (i0, nb, time.time() - t0),
+        print("\r   %d/%d, %.3f s" % (i0, nb, time.time() - t0), end=' ')
         sys.stdout.flush()
-    print
+    print()
     rh.finalize()
     gt_I = rh.I
 
-    print "GT time: %.3f s" % (time.time() - t0)
+    print("GT time: %.3f s" % (time.time() - t0))
     return gt_I
 
 
 def do_compute_gt(xb, xq, k):
-    print "computing GT"
+    print("computing GT")
     nb, d = xb.shape
     index = faiss.index_cpu_to_all_gpus(faiss.IndexFlatL2(d))
     if nb < 100 * 1000:
-        print "   add"
+        print("   add")
         index.add(np.ascontiguousarray(xb, dtype='float32'))
-        print "   search"
+        print("   search")
         D, I = index.search(np.ascontiguousarray(xq, dtype='float32'), k)
     else:
         I = compute_GT_sliced(xb, xq, k)
@@ -148,7 +149,7 @@ def do_compute_gt(xb, xq, k):
 
 def load_data(dataset='deep1M', compute_gt=False):
 
-    print "load data", dataset
+    print("load data", dataset)
 
     if dataset == 'sift1M':
         basedir = simdir + 'sift1M/'
@@ -190,7 +191,7 @@ def load_data(dataset='deep1M', compute_gt=False):
         gt_fname = basedir + "%s_groundtruth.ivecs" % dataset
         if compute_gt:
             gt = do_compute_gt(xb, xq, 100)
-            print "store", gt_fname
+            print("store", gt_fname)
             ivecs_write(gt_fname, gt)
 
         gt = ivecs_read(gt_fname)
@@ -198,8 +199,8 @@ def load_data(dataset='deep1M', compute_gt=False):
     else:
         assert False
 
-    print "dataset %s sizes: B %s Q %s T %s" % (
-        dataset, xb.shape, xq.shape, xt.shape)
+    print("dataset %s sizes: B %s Q %s T %s" % (
+        dataset, xb.shape, xq.shape, xt.shape))
 
     return xt, xb, xq, gt
 
@@ -214,7 +215,7 @@ def evaluate_DI(D, I, gt):
     rank = 1
     while rank <= k:
         recall = (I[:, :rank] == gt[:, :1]).sum() / float(nq)
-        print "R@%d: %.4f" % (rank, recall),
+        print("R@%d: %.4f" % (rank, recall), end=' ')
         rank *= 10
 
 
@@ -223,13 +224,13 @@ def evaluate(xq, gt, index, k=100, endl=True):
     D, I = index.search(xq, k)
     t1 = time.time()
     nq = xq.shape[0]
-    print "\t %8.4f ms per query, " % (
-        (t1 - t0) * 1000.0 / nq),
+    print("\t %8.4f ms per query, " % (
+        (t1 - t0) * 1000.0 / nq), end=' ')
     rank = 1
     while rank <= k:
         recall = (I[:, :rank] == gt[:, :1]).sum() / float(nq)
-        print "R@%d: %.4f" % (rank, recall),
+        print("R@%d: %.4f" % (rank, recall), end=' ')
         rank *= 10
     if endl:
-        print
+        print()
     return D, I

@@ -1,10 +1,9 @@
-#!/usr/bin/env python2
-
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+from __future__ import print_function
 import os
 import sys
 import time
@@ -73,7 +72,7 @@ aa('--efSearch', default='', type=str,
 
 args = parser.parse_args()
 
-print "args:", args
+print("args:", args)
 
 
 ######################################################
@@ -93,7 +92,7 @@ nb, d = xb.shape
 
 if os.path.exists(args.indexfile):
 
-    print "reading", args.indexfile
+    print("reading", args.indexfile)
     index = faiss.read_index(args.indexfile)
 
     if isinstance(index, faiss.IndexPreTransform):
@@ -108,7 +107,7 @@ if os.path.exists(args.indexfile):
 
 else:
 
-    print "build index, key=", args.indexkey
+    print("build index, key=", args.indexkey)
 
     index = faiss.index_factory(d, args.indexkey)
 
@@ -127,29 +126,29 @@ else:
     index_hnsw.storage.verbose = True
 
     if args.M0 != -1:
-        print "set level 0 nb of neighbors to", args.M0
+        print("set level 0 nb of neighbors to", args.M0)
         hnsw.set_nb_neighbors(0, args.M0)
 
     xt2 = sanitize(xt[:args.maxtrain])
     assert np.all(np.isfinite(xt2))
 
-    print "train, size", xt.shape
+    print("train, size", xt.shape)
     t0 = time.time()
     index.train(xt2)
-    print "  train in %.3f s" % (time.time() - t0)
+    print("  train in %.3f s" % (time.time() - t0))
 
-    print "adding"
+    print("adding")
     t0 = time.time()
     if args.add_bs == -1:
         index.add(sanitize(xb))
     else:
         for i0 in range(0, nb, args.add_bs):
             i1 = min(nb, i0 + args.add_bs)
-            print "  adding %d:%d / %d" % (i0, i1, nb)
+            print("  adding %d:%d / %d" % (i0, i1, nb))
             index.add(sanitize(xb[i0:i1]))
 
-    print "  add in %.3f s" % (time.time() - t0)
-    print "storing", args.indexfile
+    print("  add in %.3f s" % (time.time() - t0))
+    print("storing", args.indexfile)
     faiss.write_index(index, args.indexfile)
 
 
@@ -158,18 +157,18 @@ else:
 ######################################################
 
 if args.beta_centroids:
-    print "reordering links"
+    print("reordering links")
     index_hnsw.reorder_links()
 
     if os.path.exists(args.beta_centroids):
-        print "load", args.beta_centroids
+        print("load", args.beta_centroids)
         beta_centroids = np.load(args.beta_centroids)
         nsq, k, M1 = beta_centroids.shape
         assert M1 == hnsw.nb_neighbors(0) + 1
 
         rfn = faiss.ReconstructFromNeighbors(index_hnsw, k, nsq)
     else:
-        print "train beta centroids"
+        print("train beta centroids")
         rfn = faiss.ReconstructFromNeighbors(
             index_hnsw, args.beta_k, args.beta_nsq)
 
@@ -178,7 +177,7 @@ if args.beta_centroids:
         beta_centroids = neighbor_codec.train_beta_codebook(
             rfn, xb_full, niter=args.beta_niter)
 
-        print "  storing", args.beta_centroids
+        print("  storing", args.beta_centroids)
         np.save(args.beta_centroids, beta_centroids)
 
 
@@ -189,28 +188,28 @@ if args.beta_centroids:
     if rfn.k == 1:
         pass     # no codes to take care of
     elif os.path.exists(args.neigh_recons_codes):
-        print "loading neigh codes", args.neigh_recons_codes
+        print("loading neigh codes", args.neigh_recons_codes)
         codes = np.load(args.neigh_recons_codes)
         assert codes.size == rfn.code_size * index.ntotal
         faiss.copy_array_to_vector(codes.astype('uint8'),
                                    rfn.codes)
         rfn.ntotal = index.ntotal
     else:
-        print "encoding neigh codes"
+        print("encoding neigh codes")
         t0 = time.time()
 
         bs = 1000000 if args.add_bs == -1 else args.add_bs
 
         for i0 in range(0, nb, bs):
             i1 = min(i0 + bs, nb)
-            print "   encode %d:%d / %d [%.3f s]\r" % (
-                i0, i1, nb, time.time() - t0),
+            print("   encode %d:%d / %d [%.3f s]\r" % (
+                i0, i1, nb, time.time() - t0), end=' ')
             sys.stdout.flush()
             xbatch = vec_transform(sanitize(xb[i0:i1]))
             rfn.add_codes(i1 - i0, faiss.swig_ptr(xbatch))
-        print
+        print()
 
-        print "storing %s" % args.neigh_recons_codes
+        print("storing %s" % args.neigh_recons_codes)
         codes = faiss.vector_to_array(rfn.codes)
         np.save(args.neigh_recons_codes, codes)
 
@@ -219,13 +218,13 @@ if args.beta_centroids:
 ######################################################
 
 if args.exhaustive:
-    print "exhaustive evaluation"
+    print("exhaustive evaluation")
     xq_tr = vec_transform(sanitize(xq))
     index2 = faiss.IndexFlatL2(index_hnsw.d)
     accu_recons_error = 0.0
 
     if faiss.get_num_gpus() > 0:
-        print "do eval on GPU"
+        print("do eval on GPU")
         co = faiss.GpuMultipleClonerOptions()
         co.shard = False
         index2 = faiss.index_cpu_to_all_gpus(index2, co)
@@ -236,7 +235,7 @@ if args.exhaustive:
     bs = 500000
     for i0 in range(0, nb, bs):
         i1 = min(nb, i0 + bs)
-        print '  handling batch %d:%d' % (i0, i1)
+        print('  handling batch %d:%d' % (i0, i1))
 
         xb_recons = np.empty(
             (i1 - i0, index_hnsw.d), dtype='float32')
@@ -254,9 +253,9 @@ if args.exhaustive:
     rh.finalize()
     del index2
     t1 = time.time()
-    print "done in %.3f s" % (t1 - t0)
-    print "total reconstruction error: ", accu_recons_error
-    print "eval retrieval:"
+    print("done in %.3f s" % (t1 - t0))
+    print("total reconstruction error: ", accu_recons_error)
+    print("eval retrieval:")
     datasets.evaluate_DI(rh.D, rh.I, gt)
 
 
@@ -276,12 +275,12 @@ def get_neighbors(hnsw, i, level):
 xq = sanitize(xq)
 
 if args.searchthreads != -1:
-    print "Setting nb of threads to", args.searchthreads
+    print("Setting nb of threads to", args.searchthreads)
     faiss.omp_set_num_threads(args.searchthreads)
 
 
 if gt is None:
-    print "no valid groundtruth -- exit"
+    print("no valid groundtruth -- exit")
     sys.exit()
 
 
@@ -292,13 +291,13 @@ efSearchs = [int(x) for x in args.efSearch.split(',')]
 for k_reorder in k_reorders:
 
     if index_hnsw.reconstruct_from_neighbors:
-        print "setting k_reorder=%d" % k_reorder
+        print("setting k_reorder=%d" % k_reorder)
         index_hnsw.reconstruct_from_neighbors.k_reorder = k_reorder
 
     for efSearch in efSearchs:
-        print "efSearch=%-4d" % efSearch,
+        print("efSearch=%-4d" % efSearch, end=' ')
         hnsw.efSearch = efSearch
         hnsw_stats.reset()
         datasets.evaluate(xq, gt, index, k=args.k, endl=False)
 
-        print "ndis %d nreorder %d" % (hnsw_stats.ndis, hnsw_stats.nreorder)
+        print("ndis %d nreorder %d" % (hnsw_stats.ndis, hnsw_stats.nreorder))

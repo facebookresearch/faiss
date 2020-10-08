@@ -5,6 +5,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+from __future__ import print_function
 import numpy as np
 import time
 import faiss
@@ -19,24 +20,26 @@ ngpu = int(sys.argv[2])
 # Load Leon's file format
 
 def load_mnist(fname):
-    print "load", fname
+    print("load", fname)
     f = open(fname)
 
     header = np.fromfile(f, dtype='int8', count=4*4)
     header = header.reshape(4, 4)[:, ::-1].copy().view('int32')
-    print header
+    print(header)
     nim, xd, yd = [int(x) for x in header[1:]]
 
     data = np.fromfile(f, count=nim * xd * yd,
                        dtype='uint8')
 
-    print data.shape, nim, xd, yd
+    print(data.shape, nim, xd, yd)
     data = data.reshape(nim, xd, yd)
     return data
 
+basedir = "/path/to/mnist/data"
+
 x = load_mnist(basedir + 'mnist8m/mnist8m-patterns-idx3-ubyte')
 
-print "reshape"
+print("reshape")
 
 x = x.reshape(x.shape[0], -1).astype('float32')
 
@@ -74,13 +77,13 @@ def train_kmeans(x, k, ngpu):
     centroids = faiss.vector_float_to_array(clus.centroids)
 
     obj = faiss.vector_float_to_array(clus.obj)
-    print "final objective: %.4g" % obj[-1]
+    print("final objective: %.4g" % obj[-1])
 
     return centroids.reshape(k, d)
 
-print "run"
+print("run")
 t0 = time.time()
 train_kmeans(x, k, ngpu)
 t1 = time.time()
 
-print "total runtime: %.3f s" % (t1 - t0)
+print("total runtime: %.3f s" % (t1 - t0))
