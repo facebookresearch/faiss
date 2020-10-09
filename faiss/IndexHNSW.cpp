@@ -14,6 +14,7 @@
 #include <cassert>
 #include <cstring>
 #include <cstdio>
+#include <cinttypes>
 #include <cmath>
 #include <omp.h>
 
@@ -643,7 +644,7 @@ void IndexHNSW::link_singletons()
         }
     }
 
-    printf("  Found %d / %zd singletons (%d appear in a level above)\n",
+    printf("  Found %d / %" PRId64 " singletons (%d appear in a level above)\n",
            n_sing, ntotal, n_sing_l1);
 
     std::vector<float>recons(singletons.size() * d);

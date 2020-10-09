@@ -333,7 +333,7 @@ struct IVFBinaryScannerL2: BinaryInvertedListScanner {
                            const uint8_t *codes,
                            const idx_t *ids,
                            int radius,
-                           RangeQueryResult &result) const
+                           RangeQueryResult &result) const override
     {
         size_t nup = 0;
         for (size_t j = 0; j < n; j++) {
