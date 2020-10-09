@@ -653,6 +653,9 @@ PyObject *swig_ptr (PyObject *a)
     if(PyArray_TYPE(ao) == NPY_FLOAT64) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_double, 0);
     }
+    if(PyArray_TYPE(ao) == NPY_FLOAT16) {
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_short, 0);
+    }
     if(PyArray_TYPE(ao) == NPY_UINT8) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_char, 0);
     }

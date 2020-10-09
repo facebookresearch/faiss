@@ -473,5 +473,87 @@ class TestInterleavedIVFPQLayout(unittest.TestCase):
         self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
         self.assertTrue(np.allclose(d_g, d_c))
 
+def make_t(num, d, clamp=False, seed=None):
+    rs = None
+    if seed is None:
+        rs = np.random.RandomState(123)
+    else:
+        rs = np.random.RandomState(seed)
+
+    x = rs.rand(num, d).astype(np.float32)
+    if clamp:
+        x = (x * 255).astype('uint8').astype('float32')
+    return x
+
+class TestBruteForceDistance(unittest.TestCase):
+    def test_bf_input_types(self):
+        d = 33
+        k = 5
+        nb = 1000
+        nq = 10
+
+        xs = make_t(nb, d)
+        qs = make_t(nq, d)
+
+        res = faiss.StandardGpuResources()
+
+        # Get ground truth using IndexFlat
+        index = faiss.IndexFlatL2(d)
+        index.add(xs)
+        ref_d, ref_i = index.search(qs, k)
+
+        out_d = np.empty((nq, k), dtype=np.float32)
+        out_i = np.empty((nq, k), dtype=np.int64)
+
+        # Try f32 data/queries, i64 out indices
+        params = faiss.GpuDistanceParams()
+        params.k = k
+        params.dims = d
+        params.vectors = faiss.swig_ptr(xs)
+        params.numVectors = nb
+        params.queries = faiss.swig_ptr(qs)
+        params.numQueries = nq
+        params.outDistances = faiss.swig_ptr(out_d)
+        params.outIndices = faiss.swig_ptr(out_i)
+
+        faiss.bfKnn(res, params)
+
+        self.assertTrue(np.allclose(ref_d, out_d, atol=1e-5))
+        self.assertGreaterEqual((out_i == ref_i).sum(), ref_i.size)
+
+        # Try int32 out indices
+        out_i32 = np.empty((nq, k), dtype=np.int32)
+        params.outIndices = faiss.swig_ptr(out_i32)
+        params.outIndicesType = faiss.IndicesDataType_I32
+
+        faiss.bfKnn(res, params)
+        self.assertEqual((out_i32 == ref_i).sum(), ref_i.size)
+
+        # Try float16 data/queries, i64 out indices
+        xs_f16 = xs.astype(np.float16)
+        qs_f16 = qs.astype(np.float16)
+        xs_f16_f32 = xs_f16.astype(np.float32)
+        qs_f16_f32 = qs_f16.astype(np.float32)
+        index.reset()
+        index.add(xs_f16_f32)
+        ref_d_f16, ref_i_f16 = index.search(qs_f16_f32, k)
+
+        params.vectors = faiss.swig_ptr(xs_f16)
+        params.vectorType = faiss.DistanceDataType_F16
+        params.queries = faiss.swig_ptr(qs_f16)
+        params.queryType = faiss.DistanceDataType_F16
+
+        out_d_f16 = np.empty((nq, k), dtype=np.float32)
+        out_i_f16 = np.empty((nq, k), dtype=np.int64)
+
+        params.outDistances = faiss.swig_ptr(out_d_f16)
+        params.outIndices = faiss.swig_ptr(out_i_f16)
+        params.outIndicesType = faiss.IndicesDataType_I64
+
+        faiss.bfKnn(res, params)
+
+        self.assertGreaterEqual((out_i_f16 == ref_i_f16).sum(), ref_i_f16.size - 5)
+        self.assertTrue(np.allclose(ref_d_f16, out_d_f16, atol = 2e-3))
+
 if __name__ == '__main__':
     unittest.main()

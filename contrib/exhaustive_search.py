@@ -2,6 +2,7 @@
 
 import faiss
 import time
+import numpy as np
 
 import logging
 
@@ -37,3 +38,75 @@ def knn_ground_truth(xq, db_iterator, k):
     LOG.info("GT time: %.3f s (%d vectors)" % (time.time() - t0, i0))
 
     return rh.D, rh.I
+
+# Brute-force k-nearest neighbor on the GPU using CPU-resident numpy arrays
+def knn_numpy_gpu(res, xb, xq, k, D=None, I=None, metric=faiss.METRIC_L2):
+    if xb.ndim != 2 or xq.ndim != 2:
+        raise TypeError('xb and xq must be matrices')
+
+    nb, d = xb.shape
+    nq, d2 = xq.shape
+    if d != d2:
+        raise TypeError('xq not the same dimension as xb')
+
+    if xb.flags.c_contiguous:
+        xb_row_major = True
+    elif xb.flags.f_contiguous:
+        xb = xb.T
+        xb_row_major = False
+    else:
+        raise TypeError('xb must be either C or Fortran contiguous')
+
+    if xq.flags.c_contiguous:
+        xq_row_major = True
+    elif xq.flags.f_contiguous:
+        xq = xq.T
+        xq_row_major = False
+    else:
+        raise TypeError('xq must be either C or Fortran contiguous')
+
+    if xb.dtype == np.float32 and xq.dtype == np.float32:
+        xb_xq_type = faiss.DistanceDataType_F32
+    elif xb.dtype == np.float16 and xq.dtype == np.float16:
+        xb_xq_type = faiss.DistanceDataType_F16
+    else:
+        raise TypeError('xb and xq must both be np.float32 or np.float16')
+
+    if D is None:
+        D = np.empty((nq, k), dtype=np.float32)
+    else:
+        assert D.shape == (nq, k)
+        assert D.dtype == np.float32
+
+    if I is None:
+        I = np.empty((nq, k), dtype=np.int64)
+        indices_type = faiss.IndicesDataType_I64
+    else:
+        assert I.shape == (nq, k)
+        if I.dtype == np.int64:
+            indices_type = faiss.IndicesDataType_I64
+        elif I.dtype == np.int32:
+            indices_type = faiss.IndicesDataType_I32
+        else:
+            raise TypeError('I must be either np.int64 or np.int32')
+
+    print('row major', xb_row_major, xq_row_major)
+
+    args = faiss.GpuDistanceParams()
+    args.metric = metric
+    args.k = k
+    args.dims = d
+    args.vectors = faiss.swig_ptr(xb)
+    args.vectorType = xb_xq_type
+    args.vectorsRowMajor = xb_row_major
+    args.numVectors = nb
+    args.queries = faiss.swig_ptr(xq)
+    args.queryType = xb_xq_type
+    args.queriesRowMajor = xq_row_major
+    args.numQueries = nq
+    args.outDistances = faiss.swig_ptr(D)
+    args.outIndices = faiss.swig_ptr(I)
+    args.outIndicesType = indices_type
+    faiss.bfKnn(res, args)
+
+    return D, I
