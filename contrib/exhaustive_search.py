@@ -39,8 +39,42 @@ def knn_ground_truth(xq, db_iterator, k):
 
     return rh.D, rh.I
 
-# Brute-force k-nearest neighbor on the GPU using CPU-resident numpy arrays
-def knn_numpy_gpu(res, xb, xq, k, D=None, I=None, metric=faiss.METRIC_L2):
+def knn(xq, xb, k, distance_type=faiss.METRIC_L2):
+    """ wrapper around the faiss knn functions without index """
+    nq, d = xq.shape
+    nb, d2 = xb.shape
+    assert d == d2
+
+    I = np.empty((nq, k), dtype='int64')
+    D = np.empty((nq, k), dtype='float32')
+
+    if distance_type == faiss.METRIC_L2:
+        heaps = faiss.float_maxheap_array_t()
+        heaps.k = k
+        heaps.nh = nq
+        heaps.val = faiss.swig_ptr(D)
+        heaps.ids = faiss.swig_ptr(I)
+        faiss.knn_L2sqr(
+            faiss.swig_ptr(xq), faiss.swig_ptr(xb),
+            d, nq, nb, heaps
+        )
+    elif distance_type == faiss.METRIC_INNER_PRODUCT:
+        heaps = faiss.float_minheap_array_t()
+        heaps.k = k
+        heaps.nh = nq
+        heaps.val = faiss.swig_ptr(D)
+        heaps.ids = faiss.swig_ptr(I)
+        faiss.knn_inner_product(
+            faiss.swig_ptr(xq), faiss.swig_ptr(xb),
+            d, nq, nb, heaps
+        )
+    return D, I
+
+
+def knn_gpu(res, xb, xq, k, D=None, I=None, metric=faiss.METRIC_L2):
+    """Brute-force k-nearest neighbor on the GPU using CPU-resident numpy arrays
+    Supports float16 arrays and Fortran-order arrays.
+    """
     if xb.ndim != 2 or xq.ndim != 2:
         raise TypeError('xb and xq must be matrices')
 

@@ -7,7 +7,8 @@ from faiss.contrib import datasets
 
 from common import get_dataset_2
 try:
-    from faiss.contrib.exhaustive_search import knn_ground_truth
+    from faiss.contrib.exhaustive_search import knn_ground_truth, knn
+
 except:
     pass  # Submodule import broken in python 2.
 
@@ -58,3 +59,31 @@ class TestDatasets(unittest.TestCase):
             xb2.append(xbi)
         xb2 = np.vstack(xb2)
         np.testing.assert_array_equal(xb, xb2)
+
+
+class TestExhaustiveSearch(unittest.TestCase):
+
+    def test_knn_cpu(self):
+
+        xb = np.random.rand(200, 32).astype('float32')
+        xq = np.random.rand(100, 32).astype('float32')
+
+
+        index = faiss.IndexFlatL2(32)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+
+        Dnew, Inew = knn(xq, xb, 10)
+
+        assert np.all(Inew == Iref)
+        assert np.allclose(Dref, Dnew)
+
+
+        index = faiss.IndexFlatIP(32)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+
+        Dnew, Inew = knn(xq, xb, 10, distance_type=faiss.METRIC_INNER_PRODUCT)
+
+        assert np.all(Inew == Iref)
+        assert np.allclose(Dref, Dnew)

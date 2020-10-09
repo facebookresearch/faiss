@@ -351,12 +351,6 @@ struct IVFBinaryScannerL2: BinaryInvertedListScanner {
 };
 
 
-template <bool store_pairs>
-BinaryInvertedListScanner *select_IVFBinaryScannerL2 (size_t code_size) {
-
-}
-
-
 void search_knn_hamming_heap(const IndexBinaryIVF& ivf,
                              size_t n,
                              const uint8_t *x,
