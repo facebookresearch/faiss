@@ -64,20 +64,22 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
 {
     size_t d = quantizer->d;
     if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
-        if (verbose)
+        if (verbose) {
             printf ("IVF quantizer does not need training.\n");
+        }
     } else if (quantizer_trains_alone == 1) {
-        if (verbose)
+        if (verbose) {
             printf ("IVF quantizer trains alone...\n");
+        }
         quantizer->train (n, x);
         quantizer->verbose = verbose;
         FAISS_THROW_IF_NOT_MSG (quantizer->ntotal == nlist,
                           "nlist not consistent with quantizer size");
     } else if (quantizer_trains_alone == 0) {
-        if (verbose)
+        if (verbose) {
             printf ("Training level-1 quantizer on %zd vectors in %zdD\n",
                     n, d);
-
+        }
         Clustering clus (d, nlist, cp);
         quantizer->reset();
         if (clustering_index) {
@@ -88,11 +90,12 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
         }
         quantizer->is_trained = true;
     } else if (quantizer_trains_alone == 2) {
-        if (verbose)
+        if (verbose) {
             printf (
                 "Training L2 quantizer on %zd vectors in %zdD%s\n",
                 n, d,
                 clustering_index ? "(user provided index)" : "");
+        }
         FAISS_THROW_IF_NOT (metric_type == METRIC_L2);
         Clustering clus (d, nlist, cp);
         if (!clustering_index) {
@@ -101,8 +104,9 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
         } else {
             clus.train(n, x, *clustering_index);
         }
-        if (verbose)
+        if (verbose) {
             printf ("Adding centroids to quantizer\n");
+        }
         quantizer->add (nlist, clus.centroids.data());
     }
 }
@@ -831,22 +835,23 @@ void IndexIVF::update_vectors (int n, const idx_t *new_ids, const float *x)
 
 void IndexIVF::train (idx_t n, const float *x)
 {
-    if (verbose)
+    if (verbose) {
         printf ("Training level-1 quantizer\n");
-
+    }
     train_q1 (n, x, verbose, metric_type);
 
-    if (verbose)
+    if (verbose) {
         printf ("Training IVF residual\n");
-
+    }
     train_residual (n, x);
     is_trained = true;
 
 }
 
 void IndexIVF::train_residual(idx_t /*n*/, const float* /*x*/) {
-  if (verbose)
+  if (verbose) {
     printf("IndexIVF: no residual training\n");
+  }
   // does nothing by default
 }
 
