@@ -22,6 +22,7 @@ jobs:
           name: Test faiss library
           command: |
             make -C build -j faiss_test
+            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
             make -C build test
       - run:
           name: Build python extension
@@ -32,8 +33,11 @@ jobs:
       - run:
           name: Test python extension
           command: |
+            pip3 install pytest
             export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            python3 -m unittest discover ./tests
+            pytest --junitxml=test-results/pytest/results.xml ./tests
+      - store_test_results:
+          path: test-results
 
   build_osx:
     macos:
@@ -64,6 +68,7 @@ jobs:
           name: Test faiss library
           command: |
             make -C build -j faiss_test
+            export GTEST_OUTPUT="xml:$PWD/test-results/googletest/"
             make -C build test
       - run:
           name: Build python extension
@@ -74,7 +79,11 @@ jobs:
       - run:
           name: Test python extension
           command: |
-            PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)" python3 -m unittest discover ./tests
+            pip3 install pytest
+            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
+            pytest --junitxml=test-results/pytest/results.xml ./tests
+      - store_test_results:
+          path: test-results
 
   build_windows:
     executor:
