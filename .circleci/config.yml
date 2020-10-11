@@ -102,6 +102,83 @@ jobs:
             docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
             docker run --gpus all faiss make -C build test
 
+  deploy_linux:
+    parameters:
+      nightly:
+        type: boolean
+        default: false
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - checkout
+      - run:
+          name: Install conda-build/anaconda-client
+          command: |
+            conda install -y -q conda-build anaconda-client
+            conda config --set anaconda_upload yes
+      - run: |
+            cd conda
+            if [ "<<parameters.nightly>>" = "true" ]; then
+              FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --labels nightly
+            else
+              conda build faiss --user pytorch
+            fi
+
+  deploy_osx:
+    parameters:
+      nightly:
+        type: boolean
+        default: false
+    macos:
+      xcode: 11.6.0
+    steps:
+      - checkout
+      - run: echo $TEST_VAR
+      - run:
+          name: Install conda
+          command: |
+            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh --output miniconda.sh
+            bash miniconda.sh -b -p $HOME/miniconda
+            $HOME/miniconda/bin/conda install -y -q conda-build anaconda-client
+            $HOME/miniconda/bin/conda config --set anaconda_upload yes
+      - run:
+          name: Install MacOSX10.9 SDK
+          command: |
+            curl -L -o - https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.9.sdk.tar.xz | sudo tar xJf - -C /opt
+      - run: |
+          export PATH=~/miniconda/bin:$PATH
+          anaconda auth -i
+          exit
+          cd conda
+          if [ "<<parameters.nightly>>" = "true" ]; then
+            FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --labels nightly
+          else
+            conda build faiss --user pytorch
+          fi
+
+  deploy_windows:
+    parameters:
+      nightly:
+        type: boolean
+        default: false
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+          name: Install conda-build/anaconda-client
+          command: |
+            conda install -y -q conda-build anaconda-client
+            conda config --set anaconda_upload yes
+      - run: |
+            cd conda
+            if [ "<<parameters.nightly>>" = "true" ]; then
+              FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --labels nightly
+            else
+              conda build faiss --user pytorch
+            fi
+
 workflows:
   version: 2
   build:
@@ -112,3 +189,43 @@ workflows:
             - build_linux
       - build_osx
       - build_windows
+      - deploy_linux:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - build_linux_gpu
+      - deploy_windows:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - build_windows
+      - deploy_osx:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - build_osx
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - deploy_linux:
+          nightly: true
+      - deploy_windows:
+          nightly: true
+      - deploy_osx:
+          nightly: true
