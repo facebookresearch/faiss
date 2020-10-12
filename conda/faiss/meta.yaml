@@ -3,8 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-{% set version = environ.get('GIT_DESCRIBE_TAG') %}
-{% set number = environ.get('GIT_DESCRIBE_NUMBER') %}
+{% set version = environ.get('FAISS_VERSION', GIT_DESCRIBE_TAG) %}
+{% set number = '0' if environ.get('FAISS_VERSION') else GIT_DESCRIBE_NUMBER %}
 
 package:
   name: faiss-pkg
@@ -31,11 +31,14 @@ outputs:
       string: "h{{ PKG_HASH }}_{{ number }}_cpu"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
+      ignore_run_exports:
+        - mkl  # [osx]
     requirements:
       build:
         - {{ compiler('cxx') }}
-        - llvm-openmp   # [osx]
+        - llvm-openmp  # [osx]
         - cmake >=3.17
+        - make  # [not win]
       host:
         - mkl-devel >=2018
         - blas =*=mkl
@@ -59,6 +62,7 @@ outputs:
         - {{ compiler('cxx') }}
         - swig
         - cmake >=3.17
+        - make  # [not win]
       host:
         - python {{ python }}
         - numpy 1.11.*
