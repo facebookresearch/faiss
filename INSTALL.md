@@ -56,6 +56,7 @@ This generates the system-dependent configuration/build files.
 
 A few useful options:
 - `-DFAISS_ENABLE_GPU=OFF` in order to build the CPU part only.
+- `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the MKL BLAS implementation (otherwise it uses the system BLAS that is usually slow).
 - `-DCUDAToolkit_ROOT=/path/to/cuda-10.1` in order to hint to the path of
 the cudatoolkit.
 - `-DCMAKE_CUDA_ARCHITECTURES="75;72"` for specifying which GPU architectures to build against.
@@ -71,13 +72,13 @@ found, or the CPU part only otherwise).
 
 This installs the headers and libraries.
 
-Faiss is supported on x86_64 machines on Linux and Mac OS.
+Faiss is supported on x86_64 machines on Linux, Mac OS and Windows.
 It has been found to run on other platforms as well, see [other platforms](https://github.com/facebookresearch/faiss/wiki/Related-projects#bindings-to-other-languages-and-porting-to-other-platforms)
 
 Faiss requires a C++ compiler that understands:
 - the Intel intrinsics for SSE instructions,
-- the GCC intrinsic for the popcount instruction,
-- basic OpenMP.
+- the GCC intrinsic for the popcount and a few other instruction,
+- basic OpenMP (2.x).
 
 There are indications for specific configurations in the
 troubleshooting section of the wiki.
@@ -99,16 +100,8 @@ thus does not need an include path.
 
 There are several BLAS implementations, depending on the OS and
 machine. To have reasonable performance, the BLAS library should be
-multithreaded.
-
-To check that the link flags are correct, and verify whether the
-implementation uses 32 or 64 bit integers, you can
-
-  `make test_blas`
-
-and run
-
-  `./misc/test_blas`
+multithreaded. On Intel platforms, MKL is the fastest BLAS implementation, 
+see flags above on how to enable it.
 
 
 Testing Faiss
@@ -116,10 +109,11 @@ Testing Faiss
 
 A basic usage example is in
 
-  `demos/demo_ivfpq_indexing`
+  `demos/demo_ivfpq_indexing.cpp`
 
-which you can build by calling
-  `make demo_ivfpq_indexing`
+which you can build by calling 
+
+** how to run cmake in the demos subdirectory **
 
 It makes a small index, stores it and performs some searches. A normal
 runtime is around 20s. With a fast machine and Intel MKL's BLAS it
@@ -127,7 +121,7 @@ runs in 2.5s.
 
 To run the whole test suite:
 
-   `make test` (for the CPU part)
+** how to run the C++ tests **
 
 
 A real-life benchmark
@@ -143,10 +137,7 @@ directory for this repository.
 
 Then compile and run the following (after ensuring you have installed faiss):
 
-```
-make demos
-./demos/demo_sift1M
-```
+** how to compile demo_sift1M **
 
 This is a demonstration of the high-level auto-tuning API. You can try
 setting a different index_key to find the indexing structure that
@@ -159,8 +150,9 @@ Python Interface
 The Python interface is provided via SWIG (Simple Wrapper and
 Interface Generator) and an additional level of manual wrappers (in faiss/python/faiss.py).
 
-SWIG generates two wrapper files: a Python file (`faiss/python/swigfaiss.py`) and a
-C++ file that must be compiled to a dynamic library (`faiss/python/_swigfaiss.so`).
+SWIG generates two wrapper files: a Python file `swigfaiss.py` and a
+C++ file that must be compiled to a dynamic library (`_swigfaiss.so`).
+There is an AVX2 variant of the files, suffixed with `_avx2`. 
 
 Testing the Python wrapper
 --------------------------
@@ -231,13 +223,14 @@ nvcc, except some of them that are not recognized and that should be
 escaped by prefixing them with -Xcompiler. Also link flags that are
 prefixed with -Wl, should be passed with -Xlinker.
 
-You may want to add `-j 10` to use 10 threads during compile.
+You may want to add `-j 10` to the `make` command to use 10 threads during compile.
 
 Testing the GPU implementation
 ------------------------------
 
 Compile the example with
 
+** update ** 
   `make demo_ivfpq_indexing_gpu`
 
 This produce the GPU code equivalent to the CPU
@@ -258,6 +251,7 @@ use_gpu = True
 
 and you can run
 
+** update ** 
 ```
 export PYTHONPATH=.
 python demos/demo_auto_tune.py
@@ -309,6 +303,8 @@ libfaiss.so (or libfaiss.dylib)
 
 the executable should be linked to one of these. If you use
 the static version (.a), add the LDFLAGS used in the Makefile.
+
+** is this up-to-date? Does cmake generate dynamic libs? ** 
 
 For binary-only distributions, the headers should be under
 a `faiss/` directory, so that they can be included as
