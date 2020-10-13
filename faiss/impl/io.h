@@ -50,7 +50,7 @@ struct IOWriter {
     // return a file number that can be memory-mapped
     virtual int fileno ();
 
-    virtual ~IOWriter() {}
+    virtual ~IOWriter() noexcept(false) {}
 };
 
 
@@ -139,7 +139,7 @@ struct BufferedIOWriter: IOWriter {
     size_t operator()(const void *ptr, size_t size, size_t nitems) override;
 
     // flushes
-    ~BufferedIOWriter();
+    ~BufferedIOWriter() override;
 };
 
 /// cast a 4-character string to a uint32_t that can be written and read easily
