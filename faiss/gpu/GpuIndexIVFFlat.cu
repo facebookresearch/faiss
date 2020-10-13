@@ -57,14 +57,14 @@ void
 GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
   reserveMemoryVecs_ = numVecs;
   if (index_) {
-    DeviceScope scope(device_);
+    DeviceScope scope(config_.device);
     index_->reserveMemory(numVecs);
   }
 }
 
 void
 GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   GpuIndexIVF::copyFrom(index);
 
@@ -88,7 +88,7 @@ GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
                            false, // no residual
                            nullptr, // no scalar quantizer
                            ivfFlatConfig_.indicesOptions,
-                           memorySpace_));
+                           config_.memorySpace));
 
   // Copy all of the IVF data
   index_->copyInvertedListsFrom(index->invlists);
@@ -96,7 +96,7 @@ GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
 
 void
 GpuIndexIVFFlat::copyTo(faiss::IndexIVFFlat* index) const {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   // We must have the indices in order to copy to ourselves
   FAISS_THROW_IF_NOT_MSG(ivfFlatConfig_.indicesOptions != INDICES_IVF,
@@ -118,7 +118,7 @@ GpuIndexIVFFlat::copyTo(faiss::IndexIVFFlat* index) const {
 size_t
 GpuIndexIVFFlat::reclaimMemory() {
   if (index_) {
-    DeviceScope scope(device_);
+    DeviceScope scope(config_.device);
 
     return index_->reclaimMemory();
   }
@@ -129,7 +129,7 @@ GpuIndexIVFFlat::reclaimMemory() {
 void
 GpuIndexIVFFlat::reset() {
   if (index_) {
-    DeviceScope scope(device_);
+    DeviceScope scope(config_.device);
 
     index_->reset();
     this->ntotal = 0;
@@ -140,7 +140,7 @@ GpuIndexIVFFlat::reset() {
 
 void
 GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   if (this->is_trained) {
     FAISS_ASSERT(quantizer->is_trained);
@@ -161,7 +161,7 @@ GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
                            false, // no residual
                            nullptr, // no scalar quantizer
                            ivfFlatConfig_.indicesOptions,
-                           memorySpace_));
+                           config_.memorySpace));
 
   if (reserveMemoryVecs_) {
     index_->reserveMemory(reserveMemoryVecs_);

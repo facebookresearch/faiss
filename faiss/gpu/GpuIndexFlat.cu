@@ -27,7 +27,7 @@ GpuIndexFlat::GpuIndexFlat(GpuResourcesProvider* provider,
              index->metric_type,
              index->metric_arg,
              config),
-    config_(std::move(config)) {
+    flatConfig_(config) {
   // Flat index doesn't need training
   this->is_trained = true;
 
@@ -42,7 +42,7 @@ GpuIndexFlat::GpuIndexFlat(std::shared_ptr<GpuResources> resources,
              index->metric_type,
              index->metric_arg,
              config),
-    config_(std::move(config)) {
+    flatConfig_(config) {
   // Flat index doesn't need training
   this->is_trained = true;
 
@@ -58,17 +58,17 @@ GpuIndexFlat::GpuIndexFlat(GpuResourcesProvider* provider,
              metric,
              0,
              config),
-    config_(std::move(config)) {
+    flatConfig_(config) {
   // Flat index doesn't need training
   this->is_trained = true;
 
   // Construct index
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
   data_.reset(new FlatIndex(resources_.get(),
                             dims,
-                            config_.useFloat16,
-                            config_.storeTransposed,
-                            memorySpace_));
+                            flatConfig_.useFloat16,
+                            flatConfig_.storeTransposed,
+                            config_.memorySpace));
 }
 
 GpuIndexFlat::GpuIndexFlat(std::shared_ptr<GpuResources> resources,
@@ -76,17 +76,17 @@ GpuIndexFlat::GpuIndexFlat(std::shared_ptr<GpuResources> resources,
                            faiss::MetricType metric,
                            GpuIndexFlatConfig config) :
     GpuIndex(resources, dims, metric, 0, config),
-    config_(std::move(config)) {
+    flatConfig_(config) {
   // Flat index doesn't need training
   this->is_trained = true;
 
   // Construct index
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
   data_.reset(new FlatIndex(resources_.get(),
                             dims,
-                            config_.useFloat16,
-                            config_.storeTransposed,
-                            memorySpace_));
+                            flatConfig_.useFloat16,
+                            flatConfig_.storeTransposed,
+                            config_.memorySpace));
 }
 
 GpuIndexFlat::~GpuIndexFlat() {
@@ -94,7 +94,7 @@ GpuIndexFlat::~GpuIndexFlat() {
 
 void
 GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   GpuIndex::copyFrom(index);
 
@@ -109,21 +109,21 @@ GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
   data_.reset();
   data_.reset(new FlatIndex(resources_.get(),
                             this->d,
-                            config_.useFloat16,
-                            config_.storeTransposed,
-                            memorySpace_));
+                            flatConfig_.useFloat16,
+                            flatConfig_.storeTransposed,
+                            config_.memorySpace));
 
   // The index could be empty
   if (index->ntotal > 0) {
     data_->add(index->xb.data(),
                index->ntotal,
-               resources_->getDefaultStream(device_));
+               resources_->getDefaultStream(config_.device));
   }
 }
 
 void
 GpuIndexFlat::copyTo(faiss::IndexFlat* index) const {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   GpuIndex::copyTo(index);
 
@@ -131,10 +131,10 @@ GpuIndexFlat::copyTo(faiss::IndexFlat* index) const {
   FAISS_ASSERT(data_->getSize() == this->ntotal);
   index->xb.resize(this->ntotal * this->d);
 
-  auto stream = resources_->getDefaultStream(device_);
+  auto stream = resources_->getDefaultStream(config_.device);
 
   if (this->ntotal > 0) {
-    if (config_.useFloat16) {
+    if (flatConfig_.useFloat16) {
       auto vecFloat32 = data_->getVectorsFloat32Copy(stream);
       fromDevice(vecFloat32, index->xb.data(), stream);
     } else {
@@ -150,7 +150,7 @@ GpuIndexFlat::getNumVecs() const {
 
 void
 GpuIndexFlat::reset() {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   // Free the underlying memory
   data_->reset();
@@ -176,15 +176,15 @@ GpuIndexFlat::add(Index::idx_t n, const float* x) {
     return;
   }
 
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   // To avoid multiple re-allocations, ensure we have enough storage
   // available
-  data_->reserve(n, resources_->getDefaultStream(device_));
+  data_->reserve(n, resources_->getDefaultStream(config_.device));
 
   // If we're not operating in float16 mode, we don't need the input
   // data to be resident on our device; we can add directly.
-  if (!config_.useFloat16) {
+  if (!flatConfig_.useFloat16) {
     addImpl_(n, x, nullptr);
   } else {
     // Otherwise, perform the paging
@@ -214,7 +214,7 @@ GpuIndexFlat::addImpl_(int n,
                          "GPU index only supports up to %zu indices",
                          (size_t) std::numeric_limits<int>::max());
 
-  data_->add(x, n, resources_->getDefaultStream(device_));
+  data_->add(x, n, resources_->getDefaultStream(config_.device));
   this->ntotal += n;
 }
 
@@ -224,7 +224,7 @@ GpuIndexFlat::searchImpl_(int n,
                           int k,
                           float* distances,
                           Index::idx_t* labels) const {
-  auto stream = resources_->getDefaultStream(device_);
+  auto stream = resources_->getDefaultStream(config_.device);
 
   // Input and output data are already resident on the GPU
   Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int) this->d});
@@ -249,12 +249,12 @@ GpuIndexFlat::searchImpl_(int n,
 void
 GpuIndexFlat::reconstruct(faiss::Index::idx_t key,
                           float* out) const {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   FAISS_THROW_IF_NOT_MSG(key < this->ntotal, "index out of bounds");
-  auto stream = resources_->getDefaultStream(device_);
+  auto stream = resources_->getDefaultStream(config_.device);
 
-  if (config_.useFloat16) {
+  if (flatConfig_.useFloat16) {
     // FIXME jhj: kernel for copy
     auto vec = data_->getVectorsFloat32Copy(key, 1, stream);
     fromDevice(vec.data(), out, this->d, stream);
@@ -268,13 +268,13 @@ void
 GpuIndexFlat::reconstruct_n(faiss::Index::idx_t i0,
                             faiss::Index::idx_t num,
                             float* out) const {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   FAISS_THROW_IF_NOT_MSG(i0 < this->ntotal, "index out of bounds");
   FAISS_THROW_IF_NOT_MSG(i0 + num - 1 < this->ntotal, "num out of bounds");
-  auto stream = resources_->getDefaultStream(device_);
+  auto stream = resources_->getDefaultStream(config_.device);
 
-  if (config_.useFloat16) {
+  if (flatConfig_.useFloat16) {
     // FIXME jhj: kernel for copy
     auto vec = data_->getVectorsFloat32Copy(i0, num, stream);
     fromDevice(vec.data(), out, num * this->d, stream);
@@ -301,23 +301,24 @@ GpuIndexFlat::compute_residual_n(faiss::Index::idx_t n,
                          "GPU index only supports up to %zu indices",
                          (size_t) std::numeric_limits<int>::max());
 
-  auto stream = resources_->getDefaultStream(device_);
+  auto stream = resources_->getDefaultStream(config_.device);
 
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   auto vecsDevice =
-    toDeviceTemporary<float, 2>(resources_.get(), device_,
+    toDeviceTemporary<float, 2>(resources_.get(), config_.device,
                                 const_cast<float*>(xs), stream,
                                 {(int) n, (int) this->d});
   auto idsDevice =
     toDeviceTemporary<faiss::Index::idx_t, 1>(
-      resources_.get(), device_,
+      resources_.get(), config_.device,
       const_cast<faiss::Index::idx_t*>(keys),
       stream,
       {(int) n});
 
   auto residualDevice =
-    toDeviceTemporary<float, 2>(resources_.get(), device_, residuals, stream,
+    toDeviceTemporary<float, 2>(resources_.get(),
+                                config_.device, residuals, stream,
                                 {(int) n, (int) this->d});
 
   // Convert idx_t to int

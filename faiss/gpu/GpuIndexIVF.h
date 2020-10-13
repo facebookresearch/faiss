@@ -83,7 +83,8 @@ class GpuIndexIVF : public GpuIndex {
   GpuIndexFlat* quantizer;
 
  protected:
-  GpuIndexIVFConfig ivfConfig_;
+  /// Our configuration options
+  const GpuIndexIVFConfig ivfConfig_;
 };
 
 } } // namespace

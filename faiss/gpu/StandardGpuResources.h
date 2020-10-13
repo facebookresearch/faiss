@@ -41,8 +41,22 @@ class StandardGpuResourcesImpl : public GpuResources {
   /// transfers
   void setPinnedMemory(size_t size);
 
-  /// Called to change the stream for work ordering
+  /// Called to change the stream for work ordering. We do not own `stream`;
+  /// i.e., it will not be destroyed when the GpuResources object gets cleaned
+  /// up.
+  /// We are guaranteed that all Faiss GPU work is ordered with respect to
+  /// this stream upon exit from an index or other Faiss GPU call.
   void setDefaultStream(int device, cudaStream_t stream);
+
+  /// Revert the default stream to the original stream managed by this resources
+  /// object, in case someone called `setDefaultStream`.
+  void revertDefaultStream(int device);
+
+  /// Returns the stream for the given device on which all Faiss GPU work is
+  /// ordered.
+  /// We are guaranteed that all Faiss GPU work is ordered with respect to
+  /// this stream upon exit from an index or other Faiss GPU call.
+  cudaStream_t getDefaultStream(int device) override;
 
   /// Called to change the work ordering streams to the null stream
   /// for all devices
@@ -59,8 +73,6 @@ class StandardGpuResourcesImpl : public GpuResources {
   void initializeForDevice(int device) override;
 
   cublasHandle_t getBlasHandle(int device) override;
-
-  cudaStream_t getDefaultStream(int device) override;
 
   std::vector<cudaStream_t> getAlternateStreams(int device) override;
 
@@ -128,7 +140,9 @@ class StandardGpuResourcesImpl : public GpuResources {
 };
 
 /// Default implementation of GpuResources that allocates a cuBLAS
-/// stream and 2 streams for use, as well as temporary memory
+/// stream and 2 streams for use, as well as temporary memory.
+/// Internally, the Faiss GPU code uses the instance managed by getResources,
+/// but this is the user-facing object that is internally reference counted.
 class StandardGpuResources : public GpuResourcesProvider {
  public:
   StandardGpuResources();
@@ -151,8 +165,16 @@ class StandardGpuResources : public GpuResourcesProvider {
   /// transfers
   void setPinnedMemory(size_t size);
 
-  /// Called to change the stream for work ordering
+  /// Called to change the stream for work ordering. We do not own `stream`;
+  /// i.e., it will not be destroyed when the GpuResources object gets cleaned
+  /// up.
+  /// We are guaranteed that all Faiss GPU work is ordered with respect to
+  /// this stream upon exit from an index or other Faiss GPU call.
   void setDefaultStream(int device, cudaStream_t stream);
+
+  /// Revert the default stream to the original stream managed by this resources
+  /// object, in case someone called `setDefaultStream`.
+  void revertDefaultStream(int device);
 
   /// Called to change the work ordering streams to the null stream
   /// for all devices

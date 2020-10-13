@@ -22,12 +22,11 @@ GpuIndexIVF::GpuIndexIVF(GpuResourcesProvider* provider,
                          float metricArg,
                          int nlistIn,
                          GpuIndexIVFConfig config) :
-    GpuIndex(provider->getResources(),
-             dims, metric, metricArg, config),
+    GpuIndex(provider->getResources(), dims, metric, metricArg, config),
     nlist(nlistIn),
     nprobe(1),
     quantizer(nullptr),
-    ivfConfig_(std::move(config)) {
+    ivfConfig_(config) {
   init_();
 
   // Only IP and L2 are supported for now
@@ -55,7 +54,7 @@ GpuIndexIVF::init_() {
     // Construct an empty quantizer
     GpuIndexFlatConfig config = ivfConfig_.flatConfig;
     // FIXME: inherit our same device
-    config.device = device_;
+    config.device = config_.device;
 
     if (metric_type == faiss::METRIC_L2) {
       quantizer = new GpuIndexFlatL2(resources_, d, config);
@@ -79,7 +78,7 @@ GpuIndexIVF::getQuantizer() {
 
 void
 GpuIndexIVF::copyFrom(const faiss::IndexIVF* index) {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   GpuIndex::copyFrom(index);
 
@@ -105,7 +104,7 @@ GpuIndexIVF::copyFrom(const faiss::IndexIVF* index) {
   // Construct an empty quantizer
   GpuIndexFlatConfig config = ivfConfig_.flatConfig;
   // FIXME: inherit our same device
-  config.device = device_;
+  config.device = config_.device;
 
   if (index->metric_type == faiss::METRIC_L2) {
     // FIXME: 2 different float16 options?
@@ -143,7 +142,7 @@ GpuIndexIVF::copyFrom(const faiss::IndexIVF* index) {
 
 void
 GpuIndexIVF::copyTo(faiss::IndexIVF* index) const {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   //
   // Index information
@@ -228,7 +227,7 @@ GpuIndexIVF::trainQuantizer_(faiss::Index::idx_t n, const float* x) {
     printf ("Training IVF quantizer on %ld vectors in %dD\n", n, d);
   }
 
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   // leverage the CPU-side k-means code, which works for the GPU
   // flat index as well

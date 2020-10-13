@@ -73,8 +73,9 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
                    float* distances,
                    Index::idx_t* labels) const override;
 
- private:
-  GpuIndexIVFFlatConfig ivfFlatConfig_;
+ protected:
+  /// Our configuration options
+  const GpuIndexIVFFlatConfig ivfFlatConfig_;
 
   /// Desired inverted list memory reservation
   size_t reserveMemoryVecs_;

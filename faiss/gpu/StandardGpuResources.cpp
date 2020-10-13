@@ -101,12 +101,8 @@ StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
   for (auto& entry : defaultStreams_) {
     DeviceScope scope(entry.first);
 
-    auto it = userDefaultStreams_.find(entry.first);
-    if (it == userDefaultStreams_.end()) {
-      // The user did not specify this stream, thus we are the ones
-      // who have created it
-      CUDA_VERIFY(cudaStreamDestroy(entry.second));
-    }
+    // We created these streams, so are responsible for destroying them
+    CUDA_VERIFY(cudaStreamDestroy(entry.second));
   }
 
   for (auto& entry : alternateStreams_) {
@@ -210,14 +206,12 @@ StandardGpuResourcesImpl::setPinnedMemory(size_t size) {
 
 void
 StandardGpuResourcesImpl::setDefaultStream(int device, cudaStream_t stream) {
-  auto it = defaultStreams_.find(device);
-  if (it != defaultStreams_.end()) {
-    // Replace this stream with the user stream
-    CUDA_VERIFY(cudaStreamDestroy(it->second));
-    it->second = stream;
-  }
-
   userDefaultStreams_[device] = stream;
+}
+
+void
+StandardGpuResourcesImpl::revertDefaultStream(int device) {
+  userDefaultStreams_.erase(device);
 }
 
 void
@@ -274,14 +268,8 @@ StandardGpuResourcesImpl::initializeForDevice(int device) {
 
   // Create streams
   cudaStream_t defaultStream = 0;
-  auto it = userDefaultStreams_.find(device);
-  if (it != userDefaultStreams_.end()) {
-    // We already have a stream provided by the user
-    defaultStream = it->second;
-  } else {
-    CUDA_VERIFY(cudaStreamCreateWithFlags(&defaultStream,
-                                          cudaStreamNonBlocking));
-  }
+  CUDA_VERIFY(cudaStreamCreateWithFlags(&defaultStream,
+                                        cudaStreamNonBlocking));
 
   defaultStreams_[device] = defaultStream;
 
@@ -341,6 +329,14 @@ StandardGpuResourcesImpl::getBlasHandle(int device) {
 cudaStream_t
 StandardGpuResourcesImpl::getDefaultStream(int device) {
   initializeForDevice(device);
+
+  auto it = userDefaultStreams_.find(device);
+  if (it != userDefaultStreams_.end()) {
+    // There is a user override stream set
+    return it->second;
+  }
+
+  // Otherwise, our base default stream
   return defaultStreams_[device];
 }
 
@@ -537,6 +533,11 @@ StandardGpuResources::setPinnedMemory(size_t size) {
 void
 StandardGpuResources::setDefaultStream(int device, cudaStream_t stream) {
   res_->setDefaultStream(device, stream);
+}
+
+void
+StandardGpuResources::revertDefaultStream(int device) {
+  res_->revertDefaultStream(device);
 }
 
 void

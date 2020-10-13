@@ -66,7 +66,7 @@ void
 GpuIndexIVFScalarQuantizer::reserveMemory(size_t numVecs) {
   reserveMemoryVecs_ = numVecs;
   if (index_) {
-    DeviceScope scope(device_);
+    DeviceScope scope(config_.device);
     index_->reserveMemory(numVecs);
   }
 }
@@ -74,7 +74,7 @@ GpuIndexIVFScalarQuantizer::reserveMemory(size_t numVecs) {
 void
 GpuIndexIVFScalarQuantizer::copyFrom(
   const faiss::IndexIVFScalarQuantizer* index) {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   // Clear out our old data
   index_.reset();
@@ -101,7 +101,7 @@ GpuIndexIVFScalarQuantizer::copyFrom(
                            by_residual,
                            &sq,
                            ivfSQConfig_.indicesOptions,
-                           memorySpace_));
+                           config_.memorySpace));
 
   // Copy all of the IVF data
   index_->copyInvertedListsFrom(index->invlists);
@@ -110,7 +110,7 @@ GpuIndexIVFScalarQuantizer::copyFrom(
 void
 GpuIndexIVFScalarQuantizer::copyTo(
   faiss::IndexIVFScalarQuantizer* index) const {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   // We must have the indices in order to copy to ourselves
   FAISS_THROW_IF_NOT_MSG(
@@ -135,7 +135,7 @@ GpuIndexIVFScalarQuantizer::copyTo(
 size_t
 GpuIndexIVFScalarQuantizer::reclaimMemory() {
   if (index_) {
-    DeviceScope scope(device_);
+    DeviceScope scope(config_.device);
 
     return index_->reclaimMemory();
   }
@@ -146,7 +146,7 @@ GpuIndexIVFScalarQuantizer::reclaimMemory() {
 void
 GpuIndexIVFScalarQuantizer::reset() {
   if (index_) {
-    DeviceScope scope(device_);
+    DeviceScope scope(config_.device);
 
     index_->reset();
     this->ntotal = 0;
@@ -163,7 +163,7 @@ GpuIndexIVFScalarQuantizer::trainResiduals_(Index::idx_t n, const float* x) {
 
 void
 GpuIndexIVFScalarQuantizer::train(Index::idx_t n, const float* x) {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   if (this->is_trained) {
     FAISS_ASSERT(quantizer->is_trained);
@@ -178,7 +178,7 @@ GpuIndexIVFScalarQuantizer::train(Index::idx_t n, const float* x) {
   // First, make sure that the data is resident on the CPU, if it is not on the
   // CPU, as we depend upon parts of the CPU code
   auto hostData = toHost<float, 2>((float*) x,
-                                   resources_->getDefaultStream(device_),
+                                   resources_->getDefaultStream(config_.device),
                                    {(int) n, (int) this->d});
 
   trainQuantizer_(n, hostData.data());
@@ -192,7 +192,7 @@ GpuIndexIVFScalarQuantizer::train(Index::idx_t n, const float* x) {
                            by_residual,
                            &sq,
                            ivfSQConfig_.indicesOptions,
-                           memorySpace_));
+                           config_.memorySpace));
 
   if (reserveMemoryVecs_) {
     index_->reserveMemory(reserveMemoryVecs_);

@@ -42,25 +42,29 @@ GpuIndex::GpuIndex(std::shared_ptr<GpuResources> resources,
                    GpuIndexConfig config) :
     Index(dims, metric),
     resources_(resources),
-    device_(config.device),
-    memorySpace_(config.memorySpace),
+    config_(config),
     minPagedSize_(kMinPageSize) {
-  FAISS_THROW_IF_NOT_FMT(device_ < getNumDevices(),
-                     "Invalid GPU device %d", device_);
+  FAISS_THROW_IF_NOT_FMT(config_.device < getNumDevices(),
+                     "Invalid GPU device %d", config_.device);
 
   FAISS_THROW_IF_NOT_MSG(dims > 0, "Invalid number of dimensions");
 
   FAISS_THROW_IF_NOT_FMT(
-    memorySpace_ == MemorySpace::Device ||
-    (memorySpace_ == MemorySpace::Unified &&
-     getFullUnifiedMemSupport(device_)),
+    config_.memorySpace == MemorySpace::Device ||
+    (config_.memorySpace == MemorySpace::Unified &&
+     getFullUnifiedMemSupport(config_.device)),
     "Device %d does not support full CUDA 8 Unified Memory (CC 6.0+)",
     config.device);
 
   metric_arg = metricArg;
 
   FAISS_ASSERT((bool) resources_);
-  resources_->initializeForDevice(device_);
+  resources_->initializeForDevice(config_.device);
+}
+
+int
+GpuIndex::getDevice() const {
+  return config_.device;
 }
 
 void
@@ -124,7 +128,7 @@ GpuIndex::add_with_ids(Index::idx_t n,
     }
   }
 
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
   addPaged_((int) n, x, ids ? ids : generatedIds.data());
 }
 
@@ -171,7 +175,7 @@ GpuIndex::addPage_(int n,
 
   auto vecs =
     toDeviceTemporary<float, 2>(resources_.get(),
-                                device_,
+                                config_.device,
                                 const_cast<float*>(x),
                                 stream,
                                 {n, this->d});
@@ -179,7 +183,7 @@ GpuIndex::addPage_(int n,
   if (ids) {
     auto indices =
       toDeviceTemporary<Index::idx_t, 1>(resources_.get(),
-                                         device_,
+                                         config_.device,
                                          const_cast<Index::idx_t*>(ids),
                                          stream,
                                          {n});
@@ -214,8 +218,8 @@ GpuIndex::search(Index::idx_t n,
     return;
   }
 
-  DeviceScope scope(device_);
-  auto stream = resources_->getDefaultStream(device_);
+  DeviceScope scope(config_.device);
+  auto stream = resources_->getDefaultStream(config_.device);
 
   // We guarantee that the searchImpl_ will be called with device-resident
   // pointers.
@@ -228,12 +232,12 @@ GpuIndex::search(Index::idx_t n,
   // another level of tiling.
   auto outDistances =
     toDeviceTemporary<float, 2>(
-      resources_.get(), device_, distances, stream,
+      resources_.get(), config_.device, distances, stream,
       {(int) n, (int) k});
 
   auto outLabels =
     toDeviceTemporary<faiss::Index::idx_t, 2>(
-      resources_.get(), device_, labels, stream,
+      resources_.get(), config_.device, labels, stream,
       {(int) n, (int) k});
 
   bool usePaged = false;
@@ -272,12 +276,12 @@ GpuIndex::searchNonPaged_(int n,
                           int k,
                           float* outDistancesData,
                           Index::idx_t* outIndicesData) const {
-  auto stream = resources_->getDefaultStream(device_);
+  auto stream = resources_->getDefaultStream(config_.device);
 
   // Make sure arguments are on the device we desire; use temporary
   // memory allocations to move it if necessary
   auto vecs = toDeviceTemporary<float, 2>(resources_.get(),
-                                          device_,
+                                          config_.device,
                                           const_cast<float*>(x),
                                           stream,
                                           {n, (int) this->d});
@@ -335,8 +339,8 @@ GpuIndex::searchFromCpuPaged_(int n,
   //     1 2 3 1 ...   (pinned buf A)
   // time ->
   //
-  auto defaultStream = resources_->getDefaultStream(device_);
-  auto copyStream = resources_->getAsyncCopyStream(device_);
+  auto defaultStream = resources_->getDefaultStream(config_.device);
+  auto copyStream = resources_->getAsyncCopyStream(config_.device);
 
   FAISS_ASSERT((size_t) pageSizeInVecs * this->d <=
                (size_t) std::numeric_limits<int>::max());

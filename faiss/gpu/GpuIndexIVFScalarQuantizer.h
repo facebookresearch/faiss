@@ -88,8 +88,9 @@ class GpuIndexIVFScalarQuantizer : public GpuIndexIVF {
   /// Exposed like the CPU version
   bool by_residual;
 
- private:
-  GpuIndexIVFScalarQuantizerConfig ivfSQConfig_;
+protected:
+  /// Our configuration options
+  const GpuIndexIVFScalarQuantizerConfig ivfSQConfig_;
 
   /// Desired inverted list memory reservation
   size_t reserveMemoryVecs_;

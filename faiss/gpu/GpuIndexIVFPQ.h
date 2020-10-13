@@ -135,13 +135,16 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
                    float* distances,
                    Index::idx_t* labels) const override;
 
- private:
   void verifySettings_() const;
 
   void trainResidualQuantizer_(Index::idx_t n, const float* x);
 
- private:
-  GpuIndexIVFPQConfig ivfpqConfig_;
+ protected:
+  /// Our configuration options that we were initialized with
+  const GpuIndexIVFPQConfig ivfpqConfig_;
+
+  /// Runtime override: whether or not we use precomputed tables
+  bool usePrecomputedTables_;
 
   /// Number of sub-quantizers per encoded vector
   int subQuantizers_;

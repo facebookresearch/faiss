@@ -36,9 +36,8 @@ class GpuIndex : public faiss::Index {
            float metricArg,
            GpuIndexConfig config);
 
-  inline int getDevice() const {
-    return device_;
-  }
+  /// Returns the device that this index is resident on
+  int getDevice() const;
 
   /// Set the minimum data size for searches (in MiB) for which we use
   /// CPU -> GPU paging
@@ -136,11 +135,8 @@ private:
   /// Manages streams, cuBLAS handles and scratch memory for devices
   std::shared_ptr<GpuResources> resources_;
 
-  /// The GPU device we are resident on
-  const int device_;
-
-  /// The memory space of our primary storage on the GPU
-  const MemorySpace memorySpace_;
+  /// Our configuration options
+  const GpuIndexConfig config_;
 
   /// Size above which we page copies from the CPU to GPU
   size_t minPagedSize_;

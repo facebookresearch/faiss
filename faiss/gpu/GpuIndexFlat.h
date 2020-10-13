@@ -129,8 +129,8 @@ class GpuIndexFlat : public GpuIndex {
                    faiss::Index::idx_t* labels) const override;
 
  protected:
-  /// Our config object
-  const GpuIndexFlatConfig config_;
+  /// Our configuration options
+  const GpuIndexFlatConfig flatConfig_;
 
   /// Holds our GPU data containing the list of vectors
   std::unique_ptr<FlatIndex> data_;

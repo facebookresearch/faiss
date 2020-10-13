@@ -1,5 +1,6 @@
 import faiss
 import torch
+import contextlib
 
 def swig_ptr_from_FloatTensor(x):
     """ gets a Faiss SWIG pointer from a pytorch trensor (on CPU or GPU) """
@@ -15,9 +16,33 @@ def swig_ptr_from_LongTensor(x):
     return faiss.cast_integer_to_long_ptr(
         x.storage().data_ptr() + x.storage_offset() * 8)
 
+@contextlib.contextmanager
+def using_stream(res, pytorch_stream=None):
+    r""" Creates a scoping object to make Faiss GPU use the same stream
+         as pytorch, based on torch.cuda.current_stream().
+         Or, a specific pytorch stream can be passed in as a second
+         argument, in which case we will use that stream.
+    """
 
+    if pytorch_stream is None:
+        pytorch_stream = torch.cuda.current_stream()
 
-def search_index_pytorch(index, x, k, D=None, I=None):
+    # This is the cudaStream_t that we wish to use
+    cuda_stream_s = faiss.cast_integer_to_cudastream_t(pytorch_stream.cuda_stream)
+
+    # So we can revert GpuResources stream state upon exit
+    prior_dev = torch.cuda.current_device()
+    prior_stream = res.getDefaultStream(torch.cuda.current_device())
+
+    res.setDefaultStream(torch.cuda.current_device(), cuda_stream_s)
+
+    # Do the user work
+    try:
+        yield
+    finally:
+        res.setDefaultStream(prior_dev, prior_stream)
+
+def search_index_pytorch(res, index, x, k, D=None, I=None):
     """call the search function of an index with pytorch tensor I/O (CPU
     and GPU supported)"""
     assert x.is_contiguous()
@@ -33,13 +58,13 @@ def search_index_pytorch(index, x, k, D=None, I=None):
         I = torch.empty((n, k), dtype=torch.int64, device=x.device)
     else:
         assert I.size() == (n, k)
-    torch.cuda.synchronize()
-    xptr = swig_ptr_from_FloatTensor(x)
-    Iptr = swig_ptr_from_LongTensor(I)
-    Dptr = swig_ptr_from_FloatTensor(D)
-    index.search_c(n, xptr,
-                   k, Dptr, Iptr)
-    torch.cuda.synchronize()
+
+    with using_stream(res):
+        xptr = swig_ptr_from_FloatTensor(x)
+        Iptr = swig_ptr_from_LongTensor(I)
+        Dptr = swig_ptr_from_FloatTensor(D)
+        index.search_c(n, xptr, k, Dptr, Iptr)
+
     return D, I
 
 
@@ -97,6 +122,8 @@ def search_raw_array_pytorch(res, xb, xq, k, D=None, I=None,
     args.numQueries = nq
     args.outDistances = D_ptr
     args.outIndices = I_ptr
-    faiss.bfKnn(res, args)
+
+    with using_stream(res):
+        faiss.bfKnn(res, args)
 
     return D, I

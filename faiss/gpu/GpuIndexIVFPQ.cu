@@ -30,6 +30,7 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResourcesProvider* provider,
                 index->nlist,
                 config),
     ivfpqConfig_(config),
+    usePrecomputedTables_(config.usePrecomputedTables),
     subQuantizers_(0),
     bitsPerCode_(0),
     reserveMemoryVecs_(0) {
@@ -50,6 +51,7 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResourcesProvider* provider,
                 nlist,
                 config),
     ivfpqConfig_(config),
+    usePrecomputedTables_(config.usePrecomputedTables),
     subQuantizers_(subQuantizers),
     bitsPerCode_(bitsPerCode),
     reserveMemoryVecs_(0) {
@@ -64,7 +66,7 @@ GpuIndexIVFPQ::~GpuIndexIVFPQ() {
 
 void
 GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   GpuIndexIVF::copyFrom(index);
 
@@ -105,9 +107,9 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
                          ivfpqConfig_.alternativeLayout,
                          (float*) index->pq.centroids.data(),
                          ivfpqConfig_.indicesOptions,
-                         memorySpace_));
+                         config_.memorySpace));
   // Doesn't make sense to reserve memory here
-  index_->setPrecomputedCodes(ivfpqConfig_.usePrecomputedTables);
+  index_->setPrecomputedCodes(usePrecomputedTables_);
 
   // Copy all of the IVF data
   index_->copyInvertedListsFrom(index->invlists);
@@ -115,7 +117,7 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
 
 void
 GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   // We must have the indices in order to copy to ourselves
   FAISS_THROW_IF_NOT_MSG(ivfpqConfig_.indicesOptions != INDICES_IVF,
@@ -153,9 +155,9 @@ GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
 
     fromDevice<float, 3>(devPQCentroids,
                          index->pq.centroids.data(),
-                         resources_->getDefaultStream(device_));
+                         resources_->getDefaultStream(config_.device));
 
-    if (ivfpqConfig_.usePrecomputedTables) {
+    if (usePrecomputedTables_) {
       index->precompute_table();
     }
   }
@@ -165,16 +167,16 @@ void
 GpuIndexIVFPQ::reserveMemory(size_t numVecs) {
   reserveMemoryVecs_ = numVecs;
   if (index_) {
-    DeviceScope scope(device_);
+    DeviceScope scope(config_.device);
     index_->reserveMemory(numVecs);
   }
 }
 
 void
 GpuIndexIVFPQ::setPrecomputedCodes(bool enable) {
-  ivfpqConfig_.usePrecomputedTables = enable;
+  usePrecomputedTables_ = enable;
   if (index_) {
-    DeviceScope scope(device_);
+    DeviceScope scope(config_.device);
     index_->setPrecomputedCodes(enable);
   }
 
@@ -183,7 +185,7 @@ GpuIndexIVFPQ::setPrecomputedCodes(bool enable) {
 
 bool
 GpuIndexIVFPQ::getPrecomputedCodes() const {
-  return ivfpqConfig_.usePrecomputedTables;
+  return usePrecomputedTables_;
 }
 
 int
@@ -204,7 +206,7 @@ GpuIndexIVFPQ::getCentroidsPerSubQuantizer() const {
 size_t
 GpuIndexIVFPQ::reclaimMemory() {
   if (index_) {
-    DeviceScope scope(device_);
+    DeviceScope scope(config_.device);
     return index_->reclaimMemory();
   }
 
@@ -214,7 +216,7 @@ GpuIndexIVFPQ::reclaimMemory() {
 void
 GpuIndexIVFPQ::reset() {
   if (index_) {
-    DeviceScope scope(device_);
+    DeviceScope scope(config_.device);
 
     index_->reset();
     this->ntotal = 0;
@@ -264,17 +266,17 @@ GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
                          ivfpqConfig_.alternativeLayout,
                          pq.centroids.data(),
                          ivfpqConfig_.indicesOptions,
-                         memorySpace_));
+                         config_.memorySpace));
   if (reserveMemoryVecs_) {
     index_->reserveMemory(reserveMemoryVecs_);
   }
 
-  index_->setPrecomputedCodes(ivfpqConfig_.usePrecomputedTables);
+  index_->setPrecomputedCodes(usePrecomputedTables_);
 }
 
 void
 GpuIndexIVFPQ::train(Index::idx_t n, const float* x) {
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   if (this->is_trained) {
     FAISS_ASSERT(quantizer->is_trained);
@@ -289,7 +291,7 @@ GpuIndexIVFPQ::train(Index::idx_t n, const float* x) {
   // First, make sure that the data is resident on the CPU, if it is not on the
   // CPU, as we depend upon parts of the CPU code
   auto hostData = toHost<float, 2>((float*) x,
-                                   resources_->getDefaultStream(device_),
+                                   resources_->getDefaultStream(config_.device),
                                    {(int) n, (int) this->d});
 
   trainQuantizer_(n, hostData.data());
@@ -351,7 +353,7 @@ GpuIndexIVFPQ::getListLength(int listId) const {
 std::vector<unsigned char>
 GpuIndexIVFPQ::getListCodes(int listId) const {
   FAISS_ASSERT(index_);
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   return index_->getListCodes(listId);
 }
@@ -359,7 +361,7 @@ GpuIndexIVFPQ::getListCodes(int listId) const {
 std::vector<long>
 GpuIndexIVFPQ::getListIndices(int listId) const {
   FAISS_ASSERT(index_);
-  DeviceScope scope(device_);
+  DeviceScope scope(config_.device);
 
   return index_->getListIndices(listId);
 }
@@ -398,15 +400,15 @@ GpuIndexIVFPQ::verifySettings_() const {
   // codes per subquantizer
   size_t requiredSmemSize =
     lookupTableSize * subQuantizers_ * utils::pow2(bitsPerCode_);
-  size_t smemPerBlock = getMaxSharedMemPerBlock(device_);
+  size_t smemPerBlock = getMaxSharedMemPerBlock(config_.device);
 
   FAISS_THROW_IF_NOT_FMT(requiredSmemSize
-                     <= getMaxSharedMemPerBlock(device_),
+                     <= getMaxSharedMemPerBlock(config_.device),
                      "Device %d has %zu bytes of shared memory, while "
                      "%d bits per code and %d sub-quantizers requires %zu "
                      "bytes. Consider useFloat16LookupTables and/or "
                      "reduce parameters",
-                     device_, smemPerBlock, bitsPerCode_, subQuantizers_,
+                     config_.device, smemPerBlock, bitsPerCode_, subQuantizers_,
                      requiredSmemSize);
 }
 

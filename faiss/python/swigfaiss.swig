@@ -274,7 +274,6 @@ void gpu_sync_all_devices()
 
 %}
 
-
 %template() std::pair<int, unsigned long>;
 %template() std::map<std::string, std::pair<int, unsigned long> >;
 %template() std::map<int, std::map<std::string, std::pair<int, unsigned long> > >;
@@ -286,6 +285,21 @@ void gpu_sync_all_devices()
 
 %include  <faiss/gpu/GpuResources.h>
 %include  <faiss/gpu/StandardGpuResources.h>
+
+typedef CUstream_st* cudaStream_t;
+
+%inline %{
+
+// interop between pytorch exposed cudaStream_t and faiss
+cudaStream_t cast_integer_to_cudastream_t(long x) {
+  return (cudaStream_t) x;
+}
+
+long cast_cudastream_t_to_integer(cudaStream_t x) {
+  return (long) x;
+}
+
+%}
 
 #else
 
