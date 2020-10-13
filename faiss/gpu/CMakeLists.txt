@@ -39,7 +39,6 @@ target_sources(faiss PRIVATE
   utils/BlockSelectFloat.cu
   utils/BlockSelectHalf.cu
   utils/DeviceUtils.cu
-  utils/Float16.cu
   utils/StackDeviceMemory.cpp
   utils/Timer.cpp
   utils/WarpSelectFloat.cu
@@ -66,7 +65,6 @@ target_sources(faiss PRIVATE
   utils/blockselect/BlockSelectHalfT1024.cu
   utils/blockselect/BlockSelectHalfT2048.cu
   utils/blockselect/BlockSelectHalfT512.cu
-  utils/nvidia/fp16_emu.cu
   utils/warpselect/WarpSelectFloat1.cu
   utils/warpselect/WarpSelectFloat128.cu
   utils/warpselect/WarpSelectFloat256.cu

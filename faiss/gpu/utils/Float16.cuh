@@ -10,7 +10,7 @@
 
 #include <cuda.h>
 #include <faiss/gpu/GpuResources.h>
-#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/DeviceUtils.h>
 
 // Some compute capabilities have full float16 ALUs.
 #if __CUDA_ARCH__ >= 530
@@ -63,8 +63,11 @@ struct Half8 {
 };
 
 /// Returns true if the given device supports native float16 math
-bool getDeviceSupportsFloat16Math(int device);
+inline bool getDeviceSupportsFloat16Math(int device) {
+  const auto& prop = getDeviceProperties(device);
 
-__half hostFloat2Half(float v);
+  return (prop.major >= 6 ||
+          (prop.major == 5 && prop.minor >= 3));
+}
 
 } } // namespace
