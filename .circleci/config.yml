@@ -204,24 +204,18 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-          requires:
-            - build_linux_gpu
       - deploy_windows:
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-          requires:
-            - build_windows
       - deploy_osx:
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-          requires:
-            - build_osx
 
   nightly:
     triggers:
