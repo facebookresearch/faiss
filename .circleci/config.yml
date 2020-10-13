@@ -128,7 +128,7 @@ jobs:
       - run: |
             cd conda
             if [ "<<parameters.nightly>>" = "true" ]; then
-              FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --labels nightly
+              FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --label nightly
             else
               conda build faiss --user pytorch
             fi
@@ -160,7 +160,7 @@ jobs:
           exit
           cd conda
           if [ "<<parameters.nightly>>" = "true" ]; then
-            FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --labels nightly
+            FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --label nightly
           else
             conda build faiss --user pytorch
           fi
@@ -183,7 +183,7 @@ jobs:
       - run: |
             cd conda
             if [ "<<parameters.nightly>>" = "true" ]; then
-              FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --labels nightly
+              FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --label nightly
             else
               conda build faiss --user pytorch
             fi
