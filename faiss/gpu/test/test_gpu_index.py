@@ -221,6 +221,9 @@ class ReferencedObject(unittest.TestCase):
 class TestShardedFlat(unittest.TestCase):
 
     def test_sharded(self):
+        if faiss.get_num_gpus() == 1:
+            return
+        
         d = 32
         nb = 1000
         nq = 200
