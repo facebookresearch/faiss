@@ -142,7 +142,6 @@ jobs:
       xcode: 11.6.0
     steps:
       - checkout
-      - run: echo $TEST_VAR
       - run:
           name: Install conda
           command: |
@@ -156,8 +155,6 @@ jobs:
             curl -L -o - https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.9.sdk.tar.xz | sudo tar xJf - -C /opt
       - run: |
           export PATH=~/miniconda/bin:$PATH
-          anaconda auth -i
-          exit
           cd conda
           if [ "<<parameters.nightly>>" = "true" ]; then
             FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --label nightly
