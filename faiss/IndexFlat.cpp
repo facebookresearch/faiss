@@ -29,21 +29,12 @@ IndexFlat::IndexFlat (idx_t d, MetricType metric):
 
 void IndexFlat::add (idx_t n, const float *x) {
     xb.insert(xb.end(), x, x + n * d);
-    if (metric_type == METRIC_L2) {
-        xb_norms.resize(ntotal + n);
-        fvec_norms_L2sqr(
-                xb_norms.data() + ntotal,
-                x, d, n
-        );
-
-    }
     ntotal += n;
 }
 
 
 void IndexFlat::reset() {
     xb.clear();
-    xb_norms.clear();
     ntotal = 0;
 }
 
@@ -60,10 +51,7 @@ void IndexFlat::search (idx_t n, const float *x, idx_t k,
     } else if (metric_type == METRIC_L2) {
         float_maxheap_array_t res = {
             size_t(n), size_t(k), labels, distances};
-        knn_L2sqr (
-                x, xb.data(), d, n, ntotal, &res,
-                xb_norms.size() > 0 ? xb_norms.data() : nullptr
-        );
+        knn_L2sqr (x, xb.data(), d, n, ntotal, &res);
     } else {
         float_maxheap_array_t res = {
             size_t(n), size_t(k), labels, distances};
@@ -123,9 +111,6 @@ size_t IndexFlat::remove_ids (const IDSelector & sel)
         } else {
             if (i > j) {
                 memmove (&xb[d * j], &xb[d * i], sizeof(xb[0]) * d);
-                if (xb_norms.size() > 0) {
-                    xb_norms[j] = xb_norms[i];
-                }
             }
             j++;
         }
@@ -134,9 +119,6 @@ size_t IndexFlat::remove_ids (const IDSelector & sel)
     if (nremove > 0) {
         ntotal = j;
         xb.resize (ntotal * d);
-        if (xb_norms.size() > 0) {
-            xb_norms.resize(ntotal);
-        }
     }
     return nremove;
 }
