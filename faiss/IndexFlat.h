@@ -22,8 +22,6 @@ struct IndexFlat: Index {
 
     /// database vectors, size ntotal * d
     std::vector<float> xb;
-    /// norms of the stored vectors (used for BLAS distance computations)
-    std::vector<float> xb_norms;
 
     explicit IndexFlat (idx_t d, MetricType metric = METRIC_L2);
 
