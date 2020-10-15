@@ -273,7 +273,8 @@ static void knn_L2sqr_blas (const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
         float_maxheap_array_t * res,
-        const DistanceCorrection &corr)
+        const DistanceCorrection &corr,
+        const float *y_norms = nullptr)
 {
     res->heapify ();
 
@@ -287,12 +288,16 @@ static void knn_L2sqr_blas (const float * x,
     // const size_t bs_x = 16, bs_y = 16;
     float *ip_block = new float[bs_x * bs_y];
     float *x_norms = new float[nx];
-    float *y_norms = new float[ny];
-    ScopeDeleter<float> del1(ip_block), del3(x_norms), del2(y_norms);
+    ScopeDeleter<float> del1(ip_block), del3(x_norms), del2;
 
     fvec_norms_L2sqr (x_norms, x, d, nx);
-    fvec_norms_L2sqr (y_norms, y, d, ny);
 
+    if (!y_norms) {
+        float *y_norms2 = new float[ny];
+        del2.set(y_norms2);
+        fvec_norms_L2sqr (y_norms2, y, d, ny);
+        y_norms = y_norms2;
+    }
 
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
         size_t i1 = i0 + bs_x;
@@ -375,16 +380,18 @@ struct NopDistanceCorrection {
     }
 };
 
-void knn_L2sqr (const float * x,
-                const float * y,
-                size_t d, size_t nx, size_t ny,
-                float_maxheap_array_t * res)
-{
+void knn_L2sqr (
+        const float * x,
+        const float * y,
+        size_t d, size_t nx, size_t ny,
+        float_maxheap_array_t * res,
+        const float *y_norm2
+) {
     if (nx < distance_compute_blas_threshold) {
         knn_L2sqr_sse (x, y, d, nx, ny, res);
     } else {
         NopDistanceCorrection nop;
-        knn_L2sqr_blas (x, y, d, nx, ny, res, nop);
+        knn_L2sqr_blas (x, y, d, nx, ny, res, nop, y_norm2);
     }
 }
 
