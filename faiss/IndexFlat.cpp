@@ -35,6 +35,7 @@ void IndexFlat::add (idx_t n, const float *x) {
                 xb_norms.data() + ntotal,
                 x, d, n
         );
+
     }
     ntotal += n;
 }
@@ -59,7 +60,10 @@ void IndexFlat::search (idx_t n, const float *x, idx_t k,
     } else if (metric_type == METRIC_L2) {
         float_maxheap_array_t res = {
             size_t(n), size_t(k), labels, distances};
-        knn_L2sqr (x, xb.data(), d, n, ntotal, &res);
+        knn_L2sqr (
+                x, xb.data(), d, n, ntotal, &res,
+                xb_norms.size() > 0 ? xb_norms.data() : nullptr
+        );
     } else {
         float_maxheap_array_t res = {
             size_t(n), size_t(k), labels, distances};
