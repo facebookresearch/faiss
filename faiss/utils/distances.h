@@ -169,12 +169,15 @@ void knn_inner_product (
         size_t d, size_t nx, size_t ny,
         float_minheap_array_t * res);
 
-/** Same as knn_inner_product, for the L2 distance */
+/** Same as knn_inner_product, for the L2 distance
+ *  @param y_norm2    norms for the y vectors (nullptr or size ny)
+ */
 void knn_L2sqr (
         const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
-        float_maxheap_array_t * res);
+        float_maxheap_array_t * res,
+        const float *y_norm2 = nullptr);
 
 
 

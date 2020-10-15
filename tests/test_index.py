@@ -23,6 +23,34 @@ class TestModuleInterface(unittest.TestCase):
         assert hasattr(faiss, '__version__')
         assert re.match('^\\d+\\.\\d+\\.\\d+$', faiss.__version__)
 
+class TestIndexFlat(unittest.TestCase):
+
+    def do_test_FlatL2(self, nq):
+        d = 32
+        nb = 1000
+        nt = 0
+        # nq = 200
+
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
+
+        index = faiss.IndexFlatL2(d)
+
+        k = 10
+        index.add(xb)
+        D2, I2 = index.search(xq, k)
+
+        Dref = np.zeros_like(D2)
+        for i in range(nq):
+            Dref[i] = ((xq[i] - xb[I2[i]]) ** 2).sum(1)
+
+        np.testing.assert_almost_equal(Dref, D2, decimal=5)
+
+    def test_allclose_blas(self):
+        self.do_test_FlatL2(200)
+
+    def test_allclose_noblas(self):
+        self.do_test_FlatL2(10)
+
 
 class EvalIVFPQAccuracy(unittest.TestCase):
 
@@ -33,7 +61,6 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         nq = 200
 
         (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
-        d = xt.shape[1]
 
         gt_index = faiss.IndexFlatL2(d)
         gt_index.add(xb)

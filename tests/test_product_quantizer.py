@@ -76,3 +76,31 @@ class TestProductQuantizer(unittest.TestCase):
         for i in range(16):
             print("Testing nbits=%d" % (i + 1))
             self.do_test_codec(i + 1)
+
+
+"""
+class TestPQTables(unittest.TestCase):
+
+    def do_test(self, d, dsub, nbit, metric):
+        M = d // dsub
+        pq = faiss.ProductQuantizer(d, M, nbit)
+        pq.train(faiss.randn((1000, d), 123))
+
+        assert pq.dsub == 2
+        nx = 100
+        x = faiss.randn((nx, d), 555)
+        sp = faiss.swig_ptr
+        ref_tab = np.zeros((nx, M, pq.ksub), "float32")
+
+        new_tab = fast_scan.AlignedTableFloat32(nx * M * pq.ksub)
+        # new_tab = np.zeros((nx, M, pq.ksub), "float32")
+        pq.compute_inner_prod_tables(nx, sp(x), sp(ref_tab))
+
+        fast_scan.compute_inner_prod_tables(pq, nx, sp(x), new_tab.get())
+
+        new_tab = fast_scan.AlignedTable_to_array(new_tab)
+        new_tab = new_tab.reshape(nx, M, pq.ksub)
+
+        np.testing.assert_array_equal(ref_tab, new_tab)
+"""
+
