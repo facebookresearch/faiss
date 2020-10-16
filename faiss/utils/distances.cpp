@@ -142,13 +142,19 @@ void fvec_renorm_L2 (size_t d, size_t nx, float * __restrict x)
  * KNN functions
  ***************************************************************************/
 
+namespace {
+
+
+
+
 
 
 /* Find the nearest neighbors for nx queries in a set of ny vectors */
-static void knn_inner_product_sse (const float * x,
-                        const float * y,
-                        size_t d, size_t nx, size_t ny,
-                        float_minheap_array_t * res)
+void knn_inner_product_sse (
+        const float * x,
+        const float * y,
+        size_t d, size_t nx, size_t ny,
+        float_minheap_array_t * res)
 {
     size_t k = res->k;
     size_t check_period = InterruptCallback::get_period_hint (ny * d);
@@ -184,7 +190,7 @@ static void knn_inner_product_sse (const float * x,
 
 }
 
-static void knn_L2sqr_sse (
+void knn_L2sqr_sse (
                 const float * x,
                 const float * y,
                 size_t d, size_t nx, size_t ny,
@@ -225,7 +231,7 @@ static void knn_L2sqr_sse (
 
 
 /** Find the nearest neighbors for nx queries in a set of ny vectors */
-static void knn_inner_product_blas (
+void knn_inner_product_blas (
         const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
@@ -269,7 +275,7 @@ static void knn_inner_product_blas (
 // distance correction is an operator that can be applied to transform
 // the distances
 template<class DistanceCorrection>
-static void knn_L2sqr_blas (const float * x,
+void knn_L2sqr_blas (const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
         float_maxheap_array_t * res,
@@ -348,7 +354,7 @@ static void knn_L2sqr_blas (const float * x,
 
 
 
-
+} // anonymous namespace
 
 
 

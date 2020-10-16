@@ -25,7 +25,7 @@ class TestModuleInterface(unittest.TestCase):
 
 class TestIndexFlat(unittest.TestCase):
 
-    def do_test_FlatL2(self, nq):
+    def do_test_FlatL2(self, nq, metric_type=faiss.METRIC_L2):
         d = 32
         nb = 1000
         nt = 0
@@ -33,23 +33,36 @@ class TestIndexFlat(unittest.TestCase):
 
         (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
 
-        index = faiss.IndexFlatL2(d)
+        index = faiss.IndexFlat(d, metric_type)
 
         k = 10
         index.add(xb)
         D2, I2 = index.search(xq, k)
 
-        Dref = np.zeros_like(D2)
-        for i in range(nq):
-            Dref[i] = ((xq[i] - xb[I2[i]]) ** 2).sum(1)
+        if metric_type == faiss.METRIC_L2:
+            all_dis = ((xq.reshape(nq, 1, d) - xb.reshape(1, nb, d)) ** 2).sum(2)
+            Iref = all_dis.argsort(axis=1)[:, :k]
+        else:
+            all_dis = np.dot(xq, xb.T)
+            Iref = all_dis.argsort(axis=1)[:, ::-1][:, :k]
 
+        Dref = all_dis[np.arange(nq)[:, None], Iref]
+        np.testing.assert_equal(Iref, I2)
         np.testing.assert_almost_equal(Dref, D2, decimal=5)
 
-    def test_allclose_blas(self):
+    def test_with_blas(self):
         self.do_test_FlatL2(200)
 
-    def test_allclose_noblas(self):
+    def test_noblas(self):
         self.do_test_FlatL2(10)
+
+    def test_with_blas_ip(self):
+        self.do_test_FlatL2(200, faiss.METRIC_INNER_PRODUCT)
+
+    def test_noblas_ip(self):
+        self.do_test_FlatL2(10, faiss.METRIC_INNER_PRODUCT)
+
+
 
 
 class EvalIVFPQAccuracy(unittest.TestCase):
