@@ -37,7 +37,7 @@ class TestIndexFlat(unittest.TestCase):
 
         k = 10
         index.add(xb)
-        D2, I2 = index.search(xq, k)
+        D1, I1 = index.search(xq, k)
 
         if metric_type == faiss.METRIC_L2:
             all_dis = ((xq.reshape(nq, 1, d) - xb.reshape(1, nb, d)) ** 2).sum(2)
@@ -47,8 +47,28 @@ class TestIndexFlat(unittest.TestCase):
             Iref = all_dis.argsort(axis=1)[:, ::-1][:, :k]
 
         Dref = all_dis[np.arange(nq)[:, None], Iref]
-        np.testing.assert_equal(Iref, I2)
-        np.testing.assert_almost_equal(Dref, D2, decimal=5)
+        np.testing.assert_equal(Iref, I1)
+        np.testing.assert_almost_equal(Dref, D1, decimal=5)
+
+        radius = float(np.median(Dref[:, -1]))
+        #  print("radius=", radius)
+
+        lims, D2, I2 = index.range_search(xq, radius)
+
+        for i in range(nq):
+            l0, l1 = lims[i:i + 2]
+            Dl, Il = D2[l0:l1], I2[l0:l1]
+            if metric_type == faiss.METRIC_L2:
+                Ilref, = np.where(all_dis[i] < radius)
+            else:
+                Ilref, = np.where(all_dis[i] > radius)
+            Il.sort()
+            Ilref.sort()
+            np.testing.assert_equal(Il, Ilref)
+            np.testing.assert_almost_equal(
+                all_dis[i, Ilref], D2[l0:l1],
+                decimal=5
+            )
 
     def test_with_blas(self):
         self.do_test(200)
