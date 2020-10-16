@@ -245,7 +245,7 @@ struct HeapResultHandler {
 
 /* Find the nearest neighbors for nx queries in a set of ny vectors */
 template<class ResultHandler>
-void knn_inner_product_sse (
+void exhaustive_inner_product_sse (
         const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
@@ -281,7 +281,7 @@ void knn_inner_product_sse (
 }
 
 template<class ResultHandler>
-void knn_L2sqr_sse (
+void exhaustive_L2sqr_sse (
                 const float * x,
                 const float * y,
                 size_t d, size_t nx, size_t ny,
@@ -319,7 +319,7 @@ void knn_L2sqr_sse (
 
 /** Find the nearest neighbors for nx queries in a set of ny vectors */
 template<class ResultHandler>
-void knn_inner_product_blas (
+void exhaustive_inner_product_blas (
         const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
@@ -364,7 +364,7 @@ void knn_inner_product_blas (
 // distance correction is an operator that can be applied to transform
 // the distances
 template<class ResultHandler>
-void knn_L2sqr_blas (const float * x,
+void exhaustive_L2sqr_blas (const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
         ResultHandler & res,
@@ -452,9 +452,9 @@ void knn_inner_product (const float * x,
     HeapResultHandler<CMin<float, int64_t>> res(
         ha->nh, ha->val, ha->ids, ha->k);
     if (nx < distance_compute_blas_threshold) {
-        knn_inner_product_sse (x, y, d, nx, ny, res);
+        exhaustive_inner_product_sse (x, y, d, nx, ny, res);
     } else {
-        knn_inner_product_blas (x, y, d, nx, ny, res);
+        exhaustive_inner_product_blas (x, y, d, nx, ny, res);
     }
 }
 
@@ -472,9 +472,9 @@ void knn_L2sqr (
         ha->nh, ha->val, ha->ids, ha->k);
 
     if (nx < distance_compute_blas_threshold) {
-        knn_L2sqr_sse (x, y, d, nx, ny, res);
+        exhaustive_L2sqr_sse (x, y, d, nx, ny, res);
     } else {
-        knn_L2sqr_blas (x, y, d, nx, ny, res, y_norm2);
+        exhaustive_L2sqr_blas (x, y, d, nx, ny, res, y_norm2);
     }
 }
 
