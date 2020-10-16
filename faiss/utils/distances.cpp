@@ -160,7 +160,8 @@ struct HeapResultHandler {
     }
 
     /******************************************************
-     * API for 1 result at a time (can be called from mutliple threads)
+     * API for 1 result at a time (each SingleResultHandler is
+     * called from 1 thread)
      ******************************************************/
 
     struct SingleResultHandler {
@@ -241,11 +242,60 @@ struct HeapResultHandler {
 };
 
 
+template<class C>
+struct RangeSearchResultHandler {
+    using T = typename C::T;
+    using TI = typename C::TI;
+
+    RangeSearchResult *res;
+    float radius;
+
+    RangeSearchResultHandler(RangeSearchResult *res, float radius):
+        res(res), radius(radius)
+    {}
+
+    struct SingleResultHandler {
+        // almost the same interface as RangeSearchResultHandler
+        RangeSearchPartialResult pres;
+        float radius;
+        RangeQueryResult *qr = nullptr;
+
+        SingleResultHandler(RangeSearchResultHandler &rh):
+            pres(rh.res), radius(rh.radius)
+        {}
+
+        /// begin results for query # i
+        void begin(size_t i) {
+            qr = &pres.new_result(i);
+        }
+
+        /// add one result for query i
+        void add_result(T dis, TI idx) {
+
+            if (C::cmp(radius, dis)) {
+                qr->add(dis, idx);
+            }
+        }
+
+        /// series of results for query i is done
+        void end() {
+        }
+
+        ~SingleResultHandler() {
+            pres.finalize();
+        }
+    };
+
+
+};
+
+
+
 
 
 /* Find the nearest neighbors for nx queries in a set of ny vectors */
 template<class ResultHandler>
-void exhaustive_inner_product_sse (
+void exhaustive_inner_product_seq (
         const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
@@ -260,20 +310,23 @@ void exhaustive_inner_product_sse (
     for (size_t i0 = 0; i0 < nx; i0 += check_period) {
         size_t i1 = std::min(i0 + check_period, nx);
 
-#pragma omp parallel for
-        for (int64_t i = i0; i < i1; i++) {
-            const float * x_i = x + i * d;
-            const float * y_j = y;
-
+#pragma omp parallel
+        {
             SingleResultHandler resi(res);
-            resi.begin(i);
+#pragma omp for
+            for (int64_t i = i0; i < i1; i++) {
+                const float * x_i = x + i * d;
+                const float * y_j = y;
 
-            for (size_t j = 0; j < ny; j++) {
-                float ip = fvec_inner_product (x_i, y_j, d);
-                resi.add_result(ip, j);
-                y_j += d;
+                resi.begin(i);
+
+                for (size_t j = 0; j < ny; j++) {
+                    float ip = fvec_inner_product (x_i, y_j, d);
+                    resi.add_result(ip, j);
+                    y_j += d;
+                }
+                resi.end();
             }
-            resi.end();
         }
         InterruptCallback::check ();
     }
@@ -281,7 +334,7 @@ void exhaustive_inner_product_sse (
 }
 
 template<class ResultHandler>
-void exhaustive_L2sqr_sse (
+void exhaustive_L2sqr_seq (
                 const float * x,
                 const float * y,
                 size_t d, size_t nx, size_t ny,
@@ -295,18 +348,21 @@ void exhaustive_L2sqr_sse (
     for (size_t i0 = 0; i0 < nx; i0 += check_period) {
         size_t i1 = std::min(i0 + check_period, nx);
 
-#pragma omp parallel for
-        for (int64_t i = i0; i < i1; i++) {
-            const float * x_i = x + i * d;
-            const float * y_j = y;
+#pragma omp parallel
+        {
             SingleResultHandler resi(res);
-            resi.begin(i);
-            for (size_t j = 0; j < ny; j++) {
-                float disij = fvec_L2sqr (x_i, y_j, d);
-                resi.add_result(disij, j);
-                y_j += d;
+#pragma omp for
+            for (int64_t i = i0; i < i1; i++) {
+                const float * x_i = x + i * d;
+                const float * y_j = y;
+                resi.begin(i);
+                for (size_t j = 0; j < ny; j++) {
+                    float disij = fvec_L2sqr (x_i, y_j, d);
+                    resi.add_result(disij, j);
+                    y_j += d;
+                }
+                resi.end();
             }
-            resi.end();
         }
         InterruptCallback::check ();
     }
@@ -364,7 +420,8 @@ void exhaustive_inner_product_blas (
 // distance correction is an operator that can be applied to transform
 // the distances
 template<class ResultHandler>
-void exhaustive_L2sqr_blas (const float * x,
+void exhaustive_L2sqr_blas (
+        const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
         ResultHandler & res,
@@ -452,7 +509,7 @@ void knn_inner_product (const float * x,
     HeapResultHandler<CMin<float, int64_t>> res(
         ha->nh, ha->val, ha->ids, ha->k);
     if (nx < distance_compute_blas_threshold) {
-        exhaustive_inner_product_sse (x, y, d, nx, ny, res);
+        exhaustive_inner_product_seq (x, y, d, nx, ny, res);
     } else {
         exhaustive_inner_product_blas (x, y, d, nx, ny, res);
     }
@@ -472,7 +529,7 @@ void knn_L2sqr (
         ha->nh, ha->val, ha->ids, ha->k);
 
     if (nx < distance_compute_blas_threshold) {
-        exhaustive_L2sqr_sse (x, y, d, nx, ny, res);
+        exhaustive_L2sqr_seq (x, y, d, nx, ny, res);
     } else {
         exhaustive_L2sqr_blas (x, y, d, nx, ny, res, y_norm2);
     }
@@ -708,52 +765,6 @@ static void range_search_blas (
 }
 
 
-template <bool compute_l2>
-static void range_search_sse (const float * x,
-                const float * y,
-                size_t d, size_t nx, size_t ny,
-                float radius,
-                RangeSearchResult *res)
-{
-
-#pragma omp parallel
-    {
-        RangeSearchPartialResult pres (res);
-
-#pragma omp for
-        for (int64_t i = 0; i < nx; i++) {
-            const float * x_ = x + i * d;
-            const float * y_ = y;
-            size_t j;
-
-            RangeQueryResult & qres = pres.new_result (i);
-
-            for (j = 0; j < ny; j++) {
-                if (compute_l2) {
-                    float disij = fvec_L2sqr (x_, y_, d);
-                    if (disij < radius) {
-                        qres.add (disij, j);
-                    }
-                } else {
-                    float ip = fvec_inner_product (x_, y_, d);
-                    if (ip > radius) {
-                        qres.add (ip, j);
-                    }
-                }
-                y_ += d;
-            }
-
-        }
-        pres.finalize ();
-    }
-
-    // check just at the end because the use case is typically just
-    // when the nb of queries is low.
-    InterruptCallback::check();
-}
-
-
-
 
 
 void range_search_L2sqr (
@@ -765,7 +776,8 @@ void range_search_L2sqr (
 {
 
     if (nx < distance_compute_blas_threshold) {
-        range_search_sse<true> (x, y, d, nx, ny, radius, res);
+        RangeSearchResultHandler<CMax<float, int64_t>> resh(res, radius);
+        exhaustive_L2sqr_seq (x, y, d, nx, ny, resh);
     } else {
         range_search_blas<true> (x, y, d, nx, ny, radius, res);
     }
@@ -780,7 +792,8 @@ void range_search_inner_product (
 {
 
     if (nx < distance_compute_blas_threshold) {
-        range_search_sse<false> (x, y, d, nx, ny, radius, res);
+        RangeSearchResultHandler<CMin<float, int64_t>> resh(res, radius);
+        exhaustive_inner_product_seq (x, y, d, nx, ny, resh);
     } else {
         range_search_blas<false> (x, y, d, nx, ny, radius, res);
     }

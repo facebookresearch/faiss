@@ -55,6 +55,7 @@ class TestIndexFlat(unittest.TestCase):
 
         lims, D2, I2 = index.range_search(xq, radius)
 
+        # print("lims=", lims)
         for i in range(nq):
             l0, l1 = lims[i:i + 2]
             Dl, Il = D2[l0:l1], I2[l0:l1]
