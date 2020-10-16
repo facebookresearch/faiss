@@ -254,6 +254,11 @@ struct RangeSearchResultHandler {
         res(res), radius(radius)
     {}
 
+    /******************************************************
+     * API for 1 result at a time (each SingleResultHandler is
+     * called from 1 thread)
+     ******************************************************/
+
     struct SingleResultHandler {
         // almost the same interface as RangeSearchResultHandler
         RangeSearchPartialResult pres;
@@ -286,6 +291,62 @@ struct RangeSearchResultHandler {
         }
     };
 
+    /******************************************************
+     * API for multiple results (called from 1 thread)
+     ******************************************************/
+
+    size_t i0, i1;
+
+    std::vector <RangeSearchPartialResult *> partial_results;
+    std::vector <size_t> j0s;
+    int pr = 0;
+
+    /// begin
+    void begin_multiple(size_t i0, size_t i1) {
+        this->i0 = i0;
+        this->i1 = i1;
+    }
+
+    /// add results for query i0..i1 and j0..j1
+    void add_results(size_t j0, size_t j1, const T *dis_tab) {
+        RangeSearchPartialResult *pres;
+        if (pr < j0s.size() && j0 == j0s[pr]) {
+            pres = partial_results[pr];
+            pr++;
+        } else if (j0 == 0 && j0s.size() > 0) {
+            pr = 0;
+            pres = partial_results[pr];
+            pr++;
+        } else { // did not find this j0
+            pres = new RangeSearchPartialResult (res);
+            partial_results.push_back(pres);
+            j0s.push_back(j0);
+            pr = partial_results.size();
+        }
+
+        for (size_t i = i0; i < i1; i++) {
+            const float *ip_line = dis_tab + (i - i0) * (j1 - j0);
+            RangeQueryResult & qres = pres->new_result (i);
+
+            for (size_t j = j0; j < j1; j++) {
+                float dis = *ip_line++;
+                if (C::cmp(radius, dis)) {
+                    qres.add (dis, j);
+                }
+            }
+        }
+    }
+
+    /// series of results for query i is done
+    void end_multiple() {
+
+    }
+
+    ~RangeSearchResultHandler() {
+        if (partial_results.size() > 0) {
+            RangeSearchPartialResult::merge (partial_results);
+        }
+    }
 
 };
 
@@ -385,8 +446,8 @@ void exhaustive_inner_product_blas (
     if (nx == 0 || ny == 0) return;
 
     /* block sizes */
-    const size_t bs_x = 4096, bs_y = 1024;
-    // const size_t bs_x = 16, bs_y = 16;
+    const size_t bs_x = distance_compute_blas_query_bs;
+    const size_t bs_y = distance_compute_blas_database_bs;
     std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
 
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
@@ -417,6 +478,9 @@ void exhaustive_inner_product_blas (
     }
 }
 
+
+
+
 // distance correction is an operator that can be applied to transform
 // the distances
 template<class ResultHandler>
@@ -431,7 +495,8 @@ void exhaustive_L2sqr_blas (
     if (nx == 0 || ny == 0) return;
 
     /* block sizes */
-    const size_t bs_x = 4096, bs_y = 1024;
+    const size_t bs_x = distance_compute_blas_query_bs;
+    const size_t bs_y = distance_compute_blas_database_bs;
     // const size_t bs_x = 16, bs_y = 16;
     std::unique_ptr<float []> ip_block(new float[bs_x * bs_y]);
     std::unique_ptr<float []> x_norms(new float[nx]);
@@ -500,6 +565,9 @@ void exhaustive_L2sqr_blas (
  *******************************************************/
 
 int distance_compute_blas_threshold = 20;
+int distance_compute_blas_query_bs = 4096;
+int distance_compute_blas_database_bs = 1024;
+
 
 void knn_inner_product (const float * x,
         const float * y,
@@ -532,6 +600,45 @@ void knn_L2sqr (
         exhaustive_L2sqr_seq (x, y, d, nx, ny, res);
     } else {
         exhaustive_L2sqr_blas (x, y, d, nx, ny, res, y_norm2);
+    }
+}
+
+
+/***************************************************************************
+ * Range search
+ ***************************************************************************/
+
+
+
+
+void range_search_L2sqr (
+        const float * x,
+        const float * y,
+        size_t d, size_t nx, size_t ny,
+        float radius,
+        RangeSearchResult *res)
+{
+    RangeSearchResultHandler<CMax<float, int64_t>> resh(res, radius);
+    if (nx < distance_compute_blas_threshold) {
+        exhaustive_L2sqr_seq (x, y, d, nx, ny, resh);
+    } else {
+        exhaustive_L2sqr_blas (x, y, d, nx, ny, resh);
+    }
+}
+
+void range_search_inner_product (
+        const float * x,
+        const float * y,
+        size_t d, size_t nx, size_t ny,
+        float radius,
+        RangeSearchResult *res)
+{
+
+    RangeSearchResultHandler<CMin<float, int64_t>> resh(res, radius);
+    if (nx < distance_compute_blas_threshold) {
+        exhaustive_inner_product_seq (x, y, d, nx, ny, resh);
+    } else {
+        exhaustive_inner_product_blas (x, y, d, nx, ny, resh);
     }
 }
 
@@ -676,128 +783,6 @@ void knn_L2sqr_by_idx (const float * x,
 
 
 
-
-
-/***************************************************************************
- * Range search
- ***************************************************************************/
-
-/** Find the nearest neighbors for nx queries in a set of ny vectors
- * compute_l2 = compute pairwise squared L2 distance rather than inner prod
- */
-template <bool compute_l2>
-static void range_search_blas (
-        const float * x,
-        const float * y,
-        size_t d, size_t nx, size_t ny,
-        float radius,
-        RangeSearchResult *result)
-{
-
-    // BLAS does not like empty matrices
-    if (nx == 0 || ny == 0) return;
-
-    /* block sizes */
-    const size_t bs_x = 4096, bs_y = 1024;
-    // const size_t bs_x = 16, bs_y = 16;
-    float *ip_block = new float[bs_x * bs_y];
-    ScopeDeleter<float> del0(ip_block);
-
-    float *x_norms = nullptr, *y_norms = nullptr;
-    ScopeDeleter<float> del1, del2;
-    if (compute_l2) {
-        x_norms = new float[nx];
-        del1.set (x_norms);
-        fvec_norms_L2sqr (x_norms, x, d, nx);
-
-        y_norms = new float[ny];
-        del2.set (y_norms);
-        fvec_norms_L2sqr (y_norms, y, d, ny);
-    }
-
-    std::vector <RangeSearchPartialResult *> partial_results;
-
-    for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
-        size_t j1 = j0 + bs_y;
-        if (j1 > ny) j1 = ny;
-        RangeSearchPartialResult * pres = new RangeSearchPartialResult (result);
-        partial_results.push_back (pres);
-
-        for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
-            size_t i1 = i0 + bs_x;
-            if(i1 > nx) i1 = nx;
-
-            /* compute the actual dot products */
-            {
-                float one = 1, zero = 0;
-                FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
-                sgemm_ ("Transpose", "Not transpose", &nyi, &nxi, &di, &one,
-                        y + j0 * d, &di,
-                        x + i0 * d, &di, &zero,
-                        ip_block, &nyi);
-            }
-
-
-            for (size_t i = i0; i < i1; i++) {
-                const float *ip_line = ip_block + (i - i0) * (j1 - j0);
-
-                RangeQueryResult & qres = pres->new_result (i);
-
-                for (size_t j = j0; j < j1; j++) {
-                    float ip = *ip_line++;
-                    if (compute_l2) {
-                        float dis =  x_norms[i] + y_norms[j] - 2 * ip;
-                        if (dis < radius) {
-                            qres.add (dis, j);
-                        }
-                    } else {
-                        if (ip > radius) {
-                            qres.add (ip, j);
-                        }
-                    }
-                }
-            }
-        }
-        InterruptCallback::check ();
-    }
-
-    RangeSearchPartialResult::merge (partial_results);
-}
-
-
-
-
-void range_search_L2sqr (
-        const float * x,
-        const float * y,
-        size_t d, size_t nx, size_t ny,
-        float radius,
-        RangeSearchResult *res)
-{
-
-    if (nx < distance_compute_blas_threshold) {
-        RangeSearchResultHandler<CMax<float, int64_t>> resh(res, radius);
-        exhaustive_L2sqr_seq (x, y, d, nx, ny, resh);
-    } else {
-        range_search_blas<true> (x, y, d, nx, ny, radius, res);
-    }
-}
-
-void range_search_inner_product (
-        const float * x,
-        const float * y,
-        size_t d, size_t nx, size_t ny,
-        float radius,
-        RangeSearchResult *res)
-{
-
-    if (nx < distance_compute_blas_threshold) {
-        RangeSearchResultHandler<CMin<float, int64_t>> resh(res, radius);
-        exhaustive_inner_product_seq (x, y, d, nx, ny, resh);
-    } else {
-        range_search_blas<false> (x, y, d, nx, ny, radius, res);
-    }
-}
 
 
 void pairwise_L2sqr (int64_t d,
