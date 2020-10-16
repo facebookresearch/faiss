@@ -231,7 +231,7 @@ struct HeapResultHandler {
         }
     }
 
-    /// series of results for query i is done
+    /// series of results for queries i0..i1 is done
     void end_multiple() {
         // maybe parallel for
         for(size_t i = i0; i < i1; i++) {
@@ -308,8 +308,14 @@ struct RangeSearchResultHandler {
     }
 
     /// add results for query i0..i1 and j0..j1
+
     void add_results(size_t j0, size_t j1, const T *dis_tab) {
         RangeSearchPartialResult *pres;
+        // there is one RangeSearchPartialResult structure per j0
+        // (= block of columns of the large distance matrix)
+        // it is a bit tricky to find the poper PartialResult structure
+        // because the inner loop is on db not on queries.
+
         if (pr < j0s.size() && j0 == j0s[pr]) {
             pres = partial_results[pr];
             pr++;
@@ -337,7 +343,6 @@ struct RangeSearchResultHandler {
         }
     }
 
-    /// series of results for query i is done
     void end_multiple() {
 
     }
