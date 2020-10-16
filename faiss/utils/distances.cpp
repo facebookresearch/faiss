@@ -36,14 +36,6 @@ int sgemm_ (const char *transa, const char *transb, FINTEGER *m, FINTEGER *
             FINTEGER *lda, const float *b, FINTEGER *
             ldb, float *beta, float *c, FINTEGER *ldc);
 
-/* Lapack functions, see http://www.netlib.org/clapack/old/single/sgeqrf.c */
-
-int sgeqrf_ (FINTEGER *m, FINTEGER *n, float *a, FINTEGER *lda,
-                 float *tau, float *work, FINTEGER *lwork, FINTEGER *info);
-
-int sgemv_(const char *trans, FINTEGER *m, FINTEGER *n, float *alpha,
-           const float *a, FINTEGER *lda, const float *x, FINTEGER *incx,
-           float *beta, float *y, FINTEGER *incy);
 
 }
 
@@ -145,21 +137,125 @@ void fvec_renorm_L2 (size_t d, size_t nx, float * __restrict x)
 namespace {
 
 
+template<class C>
+struct HeapResultHandler {
+
+    using T = typename C::T;
+    using TI = typename C::TI;
+
+    int nq;
+    T *heap_dis_tab;
+    TI *heap_ids_tab;
+
+    int64_t k;  // number of results to keep
+
+    HeapResultHandler(
+        size_t nq,
+        T * heap_dis_tab, TI * heap_ids_tab,
+        size_t k):
+        nq(nq),
+        heap_dis_tab(heap_dis_tab), heap_ids_tab(heap_ids_tab), k(k)
+    {
+
+    }
+
+    /******************************************************
+     * API for 1 result at a time (can be called from mutliple threads)
+     ******************************************************/
+
+    struct SingleResultHandler {
+        HeapResultHandler & hr;
+        size_t k;
+
+        T *heap_dis;
+        TI *heap_ids;
+        T thresh;
+
+        SingleResultHandler(HeapResultHandler &hr): hr(hr), k(hr.k) {}
+
+        /// begin results for query # i
+        void begin(size_t i) {
+            heap_dis = hr.heap_dis_tab + i * k;
+            heap_ids = hr.heap_ids_tab + i * k;
+            heap_heapify<C> (k, heap_dis, heap_ids);
+            thresh = heap_dis[0];
+        }
+
+        /// add one result for query i
+        void add_result(T dis, TI idx) {
+            if (C::cmp(heap_dis[0], dis)) {
+                heap_pop<C>(k, heap_dis, heap_ids);
+                heap_push<C>(k, heap_dis, heap_ids, dis, idx);
+                thresh = heap_dis[0];
+            }
+        }
+
+        /// series of results for query i is done
+        void end() {
+            heap_reorder<C> (k, heap_dis, heap_ids);
+        }
+    };
+
+
+    /******************************************************
+     * API for multiple results (called from 1 thread)
+     ******************************************************/
+
+    size_t i0, i1;
+
+    /// begin
+    void begin_multiple(size_t i0, size_t i1) {
+        this->i0 = i0;
+        this->i1 = i1;
+        for(size_t i = i0; i < i1; i++) {
+            heap_heapify<C> (k, heap_dis_tab + i * k, heap_ids_tab + i * k);
+        }
+    }
+
+    /// add results for query i0..i1 and j0..j1
+    void add_results(size_t j0, size_t j1, const T *dis_tab) {
+        // maybe parallel for
+        for (size_t i = i0; i < i1; i++) {
+            T * heap_dis = heap_dis_tab + i * k;
+            TI * heap_ids = heap_ids_tab + i * k;
+            T thresh = heap_dis[0];
+            for (size_t j = j0; j < j1; j++) {
+                T dis = *dis_tab++;
+                if (C::cmp(thresh, dis)) {
+                    heap_pop<C>(k, heap_dis, heap_ids);
+                    heap_push<C>(k, heap_dis, heap_ids, dis, j);
+                    thresh = heap_dis[0];
+                }
+            }
+        }
+    }
+
+    /// series of results for query i is done
+    void end_multiple() {
+        // maybe parallel for
+        for(size_t i = i0; i < i1; i++) {
+            heap_reorder<C> (k, heap_dis_tab + i * k, heap_ids_tab + i * k);
+        }
+    }
+
+};
 
 
 
 
 /* Find the nearest neighbors for nx queries in a set of ny vectors */
+template<class ResultHandler>
 void knn_inner_product_sse (
         const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
-        float_minheap_array_t * res)
+        ResultHandler &res)
 {
-    size_t k = res->k;
     size_t check_period = InterruptCallback::get_period_hint (ny * d);
 
     check_period *= omp_get_max_threads();
+
+    using SingleResultHandler = typename ResultHandler::SingleResultHandler;
 
     for (size_t i0 = 0; i0 < nx; i0 += check_period) {
         size_t i1 = std::min(i0 + check_period, nx);
@@ -169,37 +265,32 @@ void knn_inner_product_sse (
             const float * x_i = x + i * d;
             const float * y_j = y;
 
-            float * __restrict simi = res->get_val(i);
-            int64_t * __restrict idxi = res->get_ids (i);
-
-            minheap_heapify (k, simi, idxi);
+            SingleResultHandler resi(res);
+            resi.begin(i);
 
             for (size_t j = 0; j < ny; j++) {
                 float ip = fvec_inner_product (x_i, y_j, d);
-
-                if (ip > simi[0]) {
-                    minheap_pop (k, simi, idxi);
-                    minheap_push (k, simi, idxi, ip, j);
-                }
+                resi.add_result(ip, j);
                 y_j += d;
             }
-            minheap_reorder (k, simi, idxi);
+            resi.end();
         }
         InterruptCallback::check ();
     }
 
 }
 
+template<class ResultHandler>
 void knn_L2sqr_sse (
                 const float * x,
                 const float * y,
                 size_t d, size_t nx, size_t ny,
-                float_maxheap_array_t * res)
+                ResultHandler & res)
 {
-    size_t k = res->k;
 
     size_t check_period = InterruptCallback::get_period_hint (ny * d);
     check_period *= omp_get_max_threads();
+    using SingleResultHandler = typename ResultHandler::SingleResultHandler;
 
     for (size_t i0 = 0; i0 < nx; i0 += check_period) {
         size_t i1 = std::min(i0 + check_period, nx);
@@ -208,37 +299,32 @@ void knn_L2sqr_sse (
         for (int64_t i = i0; i < i1; i++) {
             const float * x_i = x + i * d;
             const float * y_j = y;
-            size_t j;
-            float * simi = res->get_val(i);
-            int64_t * idxi = res->get_ids (i);
-
-            maxheap_heapify (k, simi, idxi);
-            for (j = 0; j < ny; j++) {
+            SingleResultHandler resi(res);
+            resi.begin(i);
+            for (size_t j = 0; j < ny; j++) {
                 float disij = fvec_L2sqr (x_i, y_j, d);
-
-                if (disij < simi[0]) {
-                    maxheap_pop (k, simi, idxi);
-                    maxheap_push (k, simi, idxi, disij, j);
-                }
+                resi.add_result(disij, j);
                 y_j += d;
             }
-            maxheap_reorder (k, simi, idxi);
+            resi.end();
         }
         InterruptCallback::check ();
     }
 
-}
+};
+
+
+
 
 
 /** Find the nearest neighbors for nx queries in a set of ny vectors */
+template<class ResultHandler>
 void knn_inner_product_blas (
         const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
-        float_minheap_array_t * res)
+        ResultHandler & res)
 {
-    res->heapify ();
-
     // BLAS does not like empty matrices
     if (nx == 0 || ny == 0) return;
 
@@ -250,6 +336,8 @@ void knn_inner_product_blas (
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
         size_t i1 = i0 + bs_x;
         if(i1 > nx) i1 = nx;
+
+        res.begin_multiple(i0, i1);
 
         for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
             size_t j1 = j0 + bs_y;
@@ -264,43 +352,39 @@ void knn_inner_product_blas (
                         ip_block.get(), &nyi);
             }
 
-            /* collect maxima */
-            res->addn (j1 - j0, ip_block.get(), j0, i0, i1 - i0);
+            res.add_results(j0, j1, ip_block.get());
+
         }
+        res.end_multiple();
         InterruptCallback::check ();
+
     }
-    res->reorder ();
 }
 
 // distance correction is an operator that can be applied to transform
 // the distances
-template<class DistanceCorrection>
+template<class ResultHandler>
 void knn_L2sqr_blas (const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
-        float_maxheap_array_t * res,
-        const DistanceCorrection &corr,
+        ResultHandler & res,
         const float *y_norms = nullptr)
 {
-    res->heapify ();
-
     // BLAS does not like empty matrices
     if (nx == 0 || ny == 0) return;
-
-    size_t k = res->k;
 
     /* block sizes */
     const size_t bs_x = 4096, bs_y = 1024;
     // const size_t bs_x = 16, bs_y = 16;
-    float *ip_block = new float[bs_x * bs_y];
-    float *x_norms = new float[nx];
-    ScopeDeleter<float> del1(ip_block), del3(x_norms), del2;
+    std::unique_ptr<float []> ip_block(new float[bs_x * bs_y]);
+    std::unique_ptr<float []> x_norms(new float[nx]);
+    std::unique_ptr<float []> del2;
 
-    fvec_norms_L2sqr (x_norms, x, d, nx);
+    fvec_norms_L2sqr (x_norms.get(), x, d, nx);
 
     if (!y_norms) {
         float *y_norms2 = new float[ny];
-        del2.set(y_norms2);
+        del2.reset(y_norms2);
         fvec_norms_L2sqr (y_norms2, y, d, ny);
         y_norms = y_norms2;
     }
@@ -308,6 +392,8 @@ void knn_L2sqr_blas (const float * x,
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
         size_t i1 = i0 + bs_x;
         if(i1 > nx) i1 = nx;
+
+        res.begin_multiple(i0, i1);
 
         for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
             size_t j1 = j0 + bs_y;
@@ -319,37 +405,29 @@ void knn_L2sqr_blas (const float * x,
                 sgemm_ ("Transpose", "Not transpose", &nyi, &nxi, &di, &one,
                         y + j0 * d, &di,
                         x + i0 * d, &di, &zero,
-                        ip_block, &nyi);
+                        ip_block.get(), &nyi);
             }
 
-            /* collect minima */
-#pragma omp parallel for
             for (int64_t i = i0; i < i1; i++) {
-                float * __restrict simi = res->get_val(i);
-                int64_t * __restrict idxi = res->get_ids (i);
-                const float *ip_line = ip_block + (i - i0) * (j1 - j0);
+                float *ip_line = ip_block.get() + (i - i0) * (j1 - j0);
 
                 for (size_t j = j0; j < j1; j++) {
-                    float ip = *ip_line++;
+                    float ip = *ip_line;
                     float dis = x_norms[i] + y_norms[j] - 2 * ip;
 
                     // negative values can occur for identical vectors
                     // due to roundoff errors
                     if (dis < 0) dis = 0;
 
-                    dis = corr (dis, i, j);
-
-                    if (dis < simi[0]) {
-                        maxheap_pop (k, simi, idxi);
-                        maxheap_push (k, simi, idxi, dis, j);
-                    }
+                    *ip_line = dis;
+                    ip_line++;
                 }
             }
+            res.add_results(j0, j1, ip_block.get());
         }
+        res.end_multiple();
         InterruptCallback::check ();
     }
-    res->reorder ();
-
 }
 
 
@@ -369,8 +447,10 @@ int distance_compute_blas_threshold = 20;
 void knn_inner_product (const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
-        float_minheap_array_t * res)
+        float_minheap_array_t * ha)
 {
+    HeapResultHandler<CMin<float, int64_t>> res(
+        ha->nh, ha->val, ha->ids, ha->k);
     if (nx < distance_compute_blas_threshold) {
         knn_inner_product_sse (x, y, d, nx, ny, res);
     } else {
@@ -380,45 +460,23 @@ void knn_inner_product (const float * x,
 
 
 
-struct NopDistanceCorrection {
-  float operator()(float dis, size_t /*qno*/, size_t /*bno*/) const {
-    return dis;
-    }
-};
 
 void knn_L2sqr (
         const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
-        float_maxheap_array_t * res,
+        float_maxheap_array_t * ha,
         const float *y_norm2
 ) {
+    HeapResultHandler<CMax<float, int64_t>> res(
+        ha->nh, ha->val, ha->ids, ha->k);
+
     if (nx < distance_compute_blas_threshold) {
         knn_L2sqr_sse (x, y, d, nx, ny, res);
     } else {
-        NopDistanceCorrection nop;
-        knn_L2sqr_blas (x, y, d, nx, ny, res, nop, y_norm2);
+        knn_L2sqr_blas (x, y, d, nx, ny, res, y_norm2);
     }
 }
-
-struct BaseShiftDistanceCorrection {
-    const float *base_shift;
-    float operator()(float dis, size_t /*qno*/, size_t bno) const {
-      return dis - base_shift[bno];
-    }
-};
-
-void knn_L2sqr_base_shift (
-         const float * x,
-         const float * y,
-         size_t d, size_t nx, size_t ny,
-         float_maxheap_array_t * res,
-         const float *base_shift)
-{
-    BaseShiftDistanceCorrection corr = {base_shift};
-    knn_L2sqr_blas (x, y, d, nx, ny, res, corr);
-}
-
 
 
 /***************************************************************************

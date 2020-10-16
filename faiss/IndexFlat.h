@@ -93,20 +93,6 @@ struct IndexFlatL2:IndexFlat {
 };
 
 
-// same as an IndexFlatL2 but a value is subtracted from each distance
-struct IndexFlatL2BaseShift: IndexFlatL2 {
-    std::vector<float> shift;
-
-    IndexFlatL2BaseShift (idx_t d, size_t nshift, const float *shift);
-
-    void search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const override;
-};
-
 
 /** Index that queries in a base_index (a fast one) and refines the
  *  results with an exact search, hopefully improving the results.
