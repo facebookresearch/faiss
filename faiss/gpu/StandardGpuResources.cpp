@@ -296,15 +296,14 @@ StandardGpuResourcesImpl::initializeForDevice(int device) {
   FAISS_ASSERT(blasStatus == CUBLAS_STATUS_SUCCESS);
   blasHandles_[device] = blasHandle;
 
-  // Enable tensor core support if available
-#if CUDA_VERSION >= 9000 && CUDA_VERSION < 11000
-  // This flag was deprecated in CUDA 11
-  if (getTensorCoreSupport(device)) {
-    cublasSetMathMode(blasHandle, CUBLAS_TENSOR_OP_MATH);
-  }
-#endif
+  // For CUDA 10 on V100, enabling tensor core usage would enable automatic
+  // rounding down of inputs to f16 (though accumulate in f32) which results in
+  // unacceptable loss of precision in general.
+  // For CUDA 11 / A100, only enable tensor core support if it doesn't result in
+  // a loss of precision.
 #if CUDA_VERSION >= 11000
-  cublasSetMathMode(blasHandle, CUBLAS_MATH_DISALLOW_REDUCED_PRECISION_REDUCTION);
+  cublasSetMathMode(blasHandle, CUBLAS_DEFAULT_MATH |
+                    CUBLAS_MATH_DISALLOW_REDUCED_PRECISION_REDUCTION);
 #endif
 
   FAISS_ASSERT(allocs_.count(device) == 0);
