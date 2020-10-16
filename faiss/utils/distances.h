@@ -155,6 +155,9 @@ void pairwise_indexed_inner_product (
 
 // threshold on nx above which we switch to BLAS to compute distances
 FAISS_API extern int distance_compute_blas_threshold;
+FAISS_API extern int distance_compute_blas_query_bs;
+FAISS_API extern int distance_compute_blas_database_bs;
+
 
 /** Return the k nearest neighors of each of the nx vectors x among the ny
  *  vector y, w.r.t to max inner product

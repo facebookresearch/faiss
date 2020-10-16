@@ -29,11 +29,11 @@ class TestIndexFlat(unittest.TestCase):
         d = 32
         nb = 1000
         nt = 0
-        # nq = 200
 
         (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
-
         index = faiss.IndexFlat(d, metric_type)
+
+        ### k-NN search
 
         k = 10
         index.add(xb)
@@ -50,12 +50,12 @@ class TestIndexFlat(unittest.TestCase):
         np.testing.assert_equal(Iref, I1)
         np.testing.assert_almost_equal(Dref, D1, decimal=5)
 
+        ### Range search
+
         radius = float(np.median(Dref[:, -1]))
-        #  print("radius=", radius)
 
         lims, D2, I2 = index.range_search(xq, radius)
 
-        # print("lims=", lims)
         for i in range(nq):
             l0, l1 = lims[i:i + 2]
             Dl, Il = D2[l0:l1], I2[l0:l1]
@@ -71,14 +71,26 @@ class TestIndexFlat(unittest.TestCase):
                 decimal=5
             )
 
+    def set_blas_blocks(self, small):
+        if small:
+            faiss.cvar.distance_compute_blas_query_bs = 16
+            faiss.cvar.distance_compute_blas_database_bs = 12
+        else:
+            faiss.cvar.distance_compute_blas_query_bs = 4096
+            faiss.cvar.distance_compute_blas_database_bs = 1024
+
     def test_with_blas(self):
+        self.set_blas_blocks(small=True)
         self.do_test(200)
+        self.set_blas_blocks(small=False)
 
     def test_noblas(self):
         self.do_test(10)
 
     def test_with_blas_ip(self):
+        self.set_blas_blocks(small=True)
         self.do_test(200, faiss.METRIC_INNER_PRODUCT)
+        self.set_blas_blocks(small=False)
 
     def test_noblas_ip(self):
         self.do_test(10, faiss.METRIC_INNER_PRODUCT)
