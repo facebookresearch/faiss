@@ -180,19 +180,6 @@ void knn_L2sqr (
         const float *y_norm2 = nullptr);
 
 
-
-/** same as knn_L2sqr, but base_shift[bno] is subtracted to all
- * computed distances.
- *
- * @param base_shift   size ny
- */
-void knn_L2sqr_base_shift (
-         const float * x,
-         const float * y,
-         size_t d, size_t nx, size_t ny,
-         float_maxheap_array_t * res,
-         const float *base_shift);
-
 /* Find the nearest neighbors for nx queries in a set of ny vectors
  * indexed by ids. May be useful for re-ranking a pre-selected vector list
  */

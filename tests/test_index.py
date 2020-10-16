@@ -25,7 +25,7 @@ class TestModuleInterface(unittest.TestCase):
 
 class TestIndexFlat(unittest.TestCase):
 
-    def do_test_FlatL2(self, nq, metric_type=faiss.METRIC_L2):
+    def do_test(self, nq, metric_type=faiss.METRIC_L2):
         d = 32
         nb = 1000
         nt = 0
@@ -51,16 +51,16 @@ class TestIndexFlat(unittest.TestCase):
         np.testing.assert_almost_equal(Dref, D2, decimal=5)
 
     def test_with_blas(self):
-        self.do_test_FlatL2(200)
+        self.do_test(200)
 
     def test_noblas(self):
-        self.do_test_FlatL2(10)
+        self.do_test(10)
 
     def test_with_blas_ip(self):
-        self.do_test_FlatL2(200, faiss.METRIC_INNER_PRODUCT)
+        self.do_test(200, faiss.METRIC_INNER_PRODUCT)
 
     def test_noblas_ip(self):
-        self.do_test_FlatL2(10, faiss.METRIC_INNER_PRODUCT)
+        self.do_test(10, faiss.METRIC_INNER_PRODUCT)
 
 
 
