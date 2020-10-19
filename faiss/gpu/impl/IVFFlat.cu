@@ -49,19 +49,15 @@ IVFFlat::~IVFFlat() {
 size_t
 IVFFlat::getGpuVectorsEncodingSize_(int numVecs) const {
   return (size_t) numVecs *
-    // scalar size per dimension
-    (scalarQ_ ? scalarQ_->code_size : sizeof(float)) *
-    // number of dimensions
-    getDim();
+    // size per encoded vector
+    (scalarQ_ ? scalarQ_->code_size : sizeof(float) * getDim());
 }
 
 size_t
 IVFFlat::getCpuVectorsEncodingSize_(int numVecs) const {
   return (size_t) numVecs *
-    // scalar size per dimension
-    (scalarQ_ ? scalarQ_->code_size : sizeof(float)) *
-    // number of dimensions
-    getDim();
+    // size per encoded vector
+    (scalarQ_ ? scalarQ_->code_size : sizeof(float) * getDim());
 }
 
 std::vector<unsigned char>
