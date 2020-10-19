@@ -151,7 +151,6 @@ set(FAISS_GPU_HEADERS
   utils/MergeNetworkUtils.cuh
   utils/MergeNetworkWarp.cuh
   utils/NoTypeTensor.cuh
-  utils/nvidia/fp16_emu.cuh
   utils/Pair.cuh
   utils/PtxUtils.cuh
   utils/ReductionOperators.cuh
