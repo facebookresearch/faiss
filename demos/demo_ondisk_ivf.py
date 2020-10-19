@@ -8,7 +8,7 @@
 import sys
 import numpy as np
 import faiss
-from faiss_contrib.ondisk import merge_ondisk
+from faiss.contrib.ondisk import merge_ondisk
 
 #################################################################
 # Small I/O functions
