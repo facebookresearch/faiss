@@ -616,6 +616,77 @@ void MaskedInvertedLists::prefetch_lists (
     il1->prefetch_lists (list1.data(), list1.size());
 }
 
+/*****************************************
+ * MaskedInvertedLists implementation
+ ******************************************/
+
+
+StopWordsInvertedLists::StopWordsInvertedLists (
+        const InvertedLists *il0, size_t maxsize):
+    ReadOnlyInvertedLists (il0->nlist, il0->code_size),
+    il0 (il0), maxsize (maxsize)
+{
+
+}
+
+size_t StopWordsInvertedLists::list_size(size_t list_no) const
+{
+    size_t sz = il0->list_size(list_no);
+    return sz < maxsize ? sz : 0;
+}
+
+const uint8_t * StopWordsInvertedLists::get_codes (size_t list_no) const
+{
+    return il0->list_size(list_no) < maxsize ? il0->get_codes(list_no) : nullptr;
+}
+
+const idx_t * StopWordsInvertedLists::get_ids (size_t list_no) const
+{
+    return il0->list_size(list_no) < maxsize ? il0->get_ids(list_no) : nullptr;
+}
+
+void StopWordsInvertedLists::release_codes (
+      size_t list_no, const uint8_t *codes) const
+{
+    if (il0->list_size (list_no) < maxsize) {
+        il0->release_codes (list_no, codes);
+    }
+}
+
+void StopWordsInvertedLists::release_ids (size_t list_no, const idx_t *ids) const
+{
+    if (il0->list_size (list_no) < maxsize) {
+        il0->release_ids (list_no, ids);
+    }
+}
+
+idx_t StopWordsInvertedLists::get_single_id (size_t list_no, size_t offset) const
+{
+    FAISS_THROW_IF_NOT(il0->list_size (list_no) < maxsize);
+    return il0->get_single_id (list_no, offset);
+}
+
+const uint8_t * StopWordsInvertedLists::get_single_code (
+           size_t list_no, size_t offset) const
+{
+    FAISS_THROW_IF_NOT(il0->list_size (list_no) < maxsize);
+    return il0->get_single_code (list_no, offset);
+}
+
+void StopWordsInvertedLists::prefetch_lists (
+       const idx_t *list_nos, int nlist) const
+{
+    std::vector<idx_t> list0;
+    for (int i = 0; i < nlist; i++) {
+        idx_t list_no = list_nos[i];
+        if (list_no < 0) continue;
+        if (il0->list_size(list_no) < maxsize) {
+            list0.push_back(list_no);
+        }
+    }
+    il0->prefetch_lists (list0.data(), list0.size());
+}
+
 
 
 } // namespace faiss
