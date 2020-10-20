@@ -302,7 +302,7 @@ StandardGpuResourcesImpl::initializeForDevice(int device) {
   // For CUDA 11 / A100, only enable tensor core support if it doesn't result in
   // a loss of precision.
 #if CUDA_VERSION >= 11000
-  cublasSetMathMode(blasHandle, CUBLAS_DEFAULT_MATH |
+  cublasSetMathMode(blasHandle,
                     CUBLAS_MATH_DISALLOW_REDUCED_PRECISION_REDUCTION);
 #endif
 
