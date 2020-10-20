@@ -8,7 +8,7 @@ import sys
 import numpy as np
 import faiss
 
-from faiss_contrib.client_server import run_index_server, ClientIndex
+from faiss.contrib.client_server import run_index_server, ClientIndex
 
 
 #################################################################
