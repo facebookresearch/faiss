@@ -312,9 +312,7 @@ GpuIndexIVFPQ::addImpl_(int n,
 
   // Data is already resident on the GPU
   Tensor<float, 2, true> data(const_cast<float*>(x), {n, (int) this->d});
-
-  static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
-  Tensor<long, 1, true> labels(const_cast<long*>(xids), {n});
+  Tensor<Index::idx_t, 1, true> labels(const_cast<Index::idx_t*>(xids), {n});
 
   // Not all vectors may be able to be added (some may contain NaNs etc)
   index_->addVectors(data, labels);
@@ -337,9 +335,7 @@ GpuIndexIVFPQ::searchImpl_(int n,
   // Data is already resident on the GPU
   Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int) this->d});
   Tensor<float, 2, true> outDistances(distances, {n, k});
-
-  static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
-  Tensor<long, 2, true> outLabels(const_cast<long*>(labels), {n, k});
+  Tensor<Index::idx_t, 2, true> outLabels(const_cast<Index::idx_t*>(labels), {n, k});
 
   index_->query(queries, nprobe, k, outDistances, outLabels);
 }
@@ -347,18 +343,20 @@ GpuIndexIVFPQ::searchImpl_(int n,
 int
 GpuIndexIVFPQ::getListLength(int listId) const {
   FAISS_ASSERT(index_);
+  DeviceScope scope(config_.device);
+
   return index_->getListLength(listId);
 }
 
-std::vector<unsigned char>
-GpuIndexIVFPQ::getListCodes(int listId) const {
+std::vector<uint8_t>
+GpuIndexIVFPQ::getListVectorData(int listId) const {
   FAISS_ASSERT(index_);
   DeviceScope scope(config_.device);
 
-  return index_->getListCodes(listId);
+  return index_->getListVectorData(listId);
 }
 
-std::vector<long>
+std::vector<Index::idx_t>
 GpuIndexIVFPQ::getListIndices(int listId) const {
   FAISS_ASSERT(index_);
   DeviceScope scope(config_.device);

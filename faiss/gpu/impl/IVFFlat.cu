@@ -60,15 +60,15 @@ IVFFlat::getCpuVectorsEncodingSize_(int numVecs) const {
     (scalarQ_ ? scalarQ_->code_size : sizeof(float) * getDim());
 }
 
-std::vector<unsigned char>
-IVFFlat::translateCodesToGpu_(std::vector<unsigned char> codes,
+std::vector<uint8_t>
+IVFFlat::translateCodesToGpu_(std::vector<uint8_t> codes,
                               size_t numVecs) const {
   // nothing to do
   return codes;
 }
 
-std::vector<unsigned char>
-IVFFlat::translateCodesFromGpu_(std::vector<unsigned char> codes,
+std::vector<uint8_t>
+IVFFlat::translateCodesFromGpu_(std::vector<uint8_t> codes,
                                 size_t numVecs) const {
   // nothing to do
   return codes;
@@ -76,7 +76,7 @@ IVFFlat::translateCodesFromGpu_(std::vector<unsigned char> codes,
 
 void
 IVFFlat::appendVectors_(Tensor<float, 2, true>& vecs,
-                        Tensor<long, 1, true>& indices,
+                        Tensor<Index::idx_t, 1, true>& indices,
                         Tensor<int, 1, true>& listIds,
                         Tensor<int, 1, true>& listOffset,
                         cudaStream_t stream) {
@@ -111,7 +111,7 @@ IVFFlat::query(Tensor<float, 2, true>& queries,
                int nprobe,
                int k,
                Tensor<float, 2, true>& outDistances,
-               Tensor<long, 2, true>& outIndices) {
+               Tensor<Index::idx_t, 2, true>& outIndices) {
   auto stream = resources_->getDefaultStreamCurrentDevice();
 
   // These are caught at a higher level
@@ -170,7 +170,7 @@ IVFFlat::query(Tensor<float, 2, true>& queries,
   // FIXME: we might ultimately be calling this function with inputs
   // from the CPU, these are unnecessary copies
   if (indicesOptions_ == INDICES_CPU) {
-    HostTensor<long, 2, true> hostOutIndices(outIndices, stream);
+    HostTensor<Index::idx_t, 2, true> hostOutIndices(outIndices, stream);
 
     ivfOffsetToUserIndex(hostOutIndices.data(),
                          numLists_,

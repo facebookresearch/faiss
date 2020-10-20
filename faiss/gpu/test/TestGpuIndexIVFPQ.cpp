@@ -426,6 +426,8 @@ TEST(TestGpuIndexIVFPQ, CopyTo) {
     EXPECT_EQ(cpuIndex.pq.nbits, gpuIndex.getBitsPerCode());
     EXPECT_EQ(gpuIndex.getBitsPerCode(), opt.bitsPerCode);
 
+    testIVFEquality(cpuIndex, gpuIndex);
+
     // Query both objects; results should be equivalent
     faiss::gpu::compareIndices(cpuIndex, gpuIndex,
                                opt.numQuery, opt.dim, opt.k, opt.toString(),
@@ -475,6 +477,8 @@ TEST(TestGpuIndexIVFPQ, CopyFrom) {
   EXPECT_EQ(gpuIndex.getNumSubQuantizers(), opt.codes);
   EXPECT_EQ(cpuIndex.pq.nbits, gpuIndex.getBitsPerCode());
   EXPECT_EQ(gpuIndex.getBitsPerCode(), opt.bitsPerCode);
+
+  testIVFEquality(cpuIndex, gpuIndex);
 
   // Query both objects; results should be equivalent
   faiss::gpu::compareIndices(cpuIndex, gpuIndex,

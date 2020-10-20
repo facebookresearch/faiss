@@ -87,27 +87,27 @@ class GpuIndexFlat : public GpuIndex {
   void train(Index::idx_t n, const float* x) override;
 
   /// Overrides to avoid excessive copies
-  void add(faiss::Index::idx_t, const float* x) override;
+  void add(Index::idx_t, const float* x) override;
 
   /// Reconstruction methods; prefer the batch reconstruct as it will
   /// be more efficient
-  void reconstruct(faiss::Index::idx_t key, float* out) const override;
+  void reconstruct(Index::idx_t key, float* out) const override;
 
   /// Batch reconstruction method
-  void reconstruct_n(faiss::Index::idx_t i0,
-                     faiss::Index::idx_t num,
+  void reconstruct_n(Index::idx_t i0,
+                     Index::idx_t num,
                      float* out) const override;
 
   /// Compute residual
   void compute_residual(const float* x,
                         float* residual,
-                        faiss::Index::idx_t key) const override;
+                        Index::idx_t key) const override;
 
   /// Compute residual (batch mode)
-  void compute_residual_n(faiss::Index::idx_t n,
+  void compute_residual_n(Index::idx_t n,
                           const float* xs,
                           float* residuals,
-                          const faiss::Index::idx_t* keys) const override;
+                          const Index::idx_t* keys) const override;
 
   /// For internal access
   inline FlatIndex* getGpuData() { return data_.get(); }
@@ -126,7 +126,7 @@ class GpuIndexFlat : public GpuIndex {
                    const float* x,
                    int k,
                    float* distances,
-                   faiss::Index::idx_t* labels) const override;
+                   Index::idx_t* labels) const override;
 
  protected:
   /// Our configuration options

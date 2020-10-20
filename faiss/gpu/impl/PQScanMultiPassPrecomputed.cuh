@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <faiss/Index.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/utils/Tensor.cuh>
 #include <faiss/gpu/utils/NoTypeTensor.cuh>
@@ -35,7 +36,7 @@ void runPQScanMultiPassPrecomputed(Tensor<float, 2, true>& queries,
                                    // output
                                    Tensor<float, 2, true>& outDistances,
                                    // output
-                                   Tensor<long, 2, true>& outIndices,
+                                   Tensor<Index::idx_t, 2, true>& outIndices,
                                    GpuResources* res);
 
 } } // namespace
