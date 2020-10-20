@@ -110,6 +110,7 @@ jobs:
           command: |
             docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
             docker run --gpus all faiss make -C build test
+            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && python3 -m unittest discover faiss/gpu/test'
 
   deploy_linux:
     parameters:
