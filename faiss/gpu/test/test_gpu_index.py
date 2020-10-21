@@ -219,8 +219,8 @@ class ReferencedObject(unittest.TestCase):
 
 
 class TestShardedFlat(unittest.TestCase):
-    
-    unittest.skipIf(faiss.get_num_gpus() == 1,"relevant for multiple GPU only")
+
+    @unittest.skipIf(faiss.get_num_gpus() < 2, "Relevant for multiple GPU only.")
     def test_sharded(self):
         d = 32
         nb = 1000
