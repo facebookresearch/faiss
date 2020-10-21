@@ -555,5 +555,110 @@ class TestBruteForceDistance(unittest.TestCase):
         self.assertGreaterEqual((out_i_f16 == ref_i_f16).sum(), ref_i_f16.size - 5)
         self.assertTrue(np.allclose(ref_d_f16, out_d_f16, atol = 2e-3))
 
+# Make sure indices are properly stored in the IVF lists
+class TestIVFIndices(unittest.TestCase):
+    def test_indices_ivfflat(self):
+        res = faiss.StandardGpuResources()
+        d = 128
+        nb = 5000
+        nq = 10
+        nlist = 10
+
+        rs = np.random.RandomState(567)
+        xb = rs.rand(nb, d).astype('float32')
+        xb_indices_base = np.arange(nb, dtype=np.int64)
+
+        # Force values to not be representable in int32
+        xb_indices = (xb_indices_base + 4294967296).astype('int64')
+
+        config = faiss.GpuIndexIVFFlatConfig()
+        idx = faiss.GpuIndexIVFFlat(res, d, nlist, faiss.METRIC_L2, config)
+        idx.train(xb)
+        idx.add_with_ids(xb, xb_indices)
+
+        _, I = idx.search(xb[10:20], 5)
+        self.assertTrue(np.array_equal(xb_indices[10:20], I[:, 0]))
+
+        # Store values using 32-bit indices instead
+        config.indicesOptions = faiss.INDICES_32_BIT
+        idx = faiss.GpuIndexIVFFlat(res, d, nlist, faiss.METRIC_L2, config)
+        idx.train(xb)
+        idx.add_with_ids(xb, xb_indices)
+
+        _, I = idx.search(xb[10:20], 5)
+        # This will strip the high bit
+        self.assertTrue(np.array_equal(xb_indices_base[10:20], I[:, 0]))
+
+    def test_indices_ivfpq(self):
+        res = faiss.StandardGpuResources()
+        d = 128
+        nb = 5000
+        nq = 10
+        nlist = 10
+        M = 4
+        nbits = 6
+
+        rs = np.random.RandomState(567)
+        xb = rs.rand(nb, d).astype('float32')
+        xb_indices_base = np.arange(nb, dtype=np.int64)
+
+        # Force values to not be representable in int32
+        xb_indices = (xb_indices_base + 4294967296).astype('int64')
+
+        config = faiss.GpuIndexIVFPQConfig()
+        idx = faiss.GpuIndexIVFPQ(res, d, nlist, M, nbits,
+                                  faiss.METRIC_L2, config)
+        idx.train(xb)
+        idx.add_with_ids(xb, xb_indices)
+
+        _, I = idx.search(xb[10:20], 5)
+        self.assertTrue(np.array_equal(xb_indices[10:20], I[:, 0]))
+
+        # Store values using 32-bit indices instead
+        config.indicesOptions = faiss.INDICES_32_BIT
+        idx = faiss.GpuIndexIVFPQ(res, d, nlist, M, nbits,
+                                  faiss.METRIC_L2, config)
+        idx.train(xb)
+        idx.add_with_ids(xb, xb_indices)
+
+        _, I = idx.search(xb[10:20], 5)
+        # This will strip the high bit
+        self.assertTrue(np.array_equal(xb_indices_base[10:20], I[:, 0]))
+
+    def test_indices_ivfsq(self):
+        res = faiss.StandardGpuResources()
+        d = 128
+        nb = 5000
+        nq = 10
+        nlist = 10
+        qtype = faiss.ScalarQuantizer.QT_4bit
+
+        rs = np.random.RandomState(567)
+        xb = rs.rand(nb, d).astype('float32')
+        xb_indices_base = np.arange(nb, dtype=np.int64)
+
+        # Force values to not be representable in int32
+        xb_indices = (xb_indices_base + 4294967296).astype('int64')
+
+        config = faiss.GpuIndexIVFScalarQuantizerConfig()
+        idx = faiss.GpuIndexIVFScalarQuantizer(res, d, nlist, qtype,
+                                               faiss.METRIC_L2, True, config)
+        idx.train(xb)
+        idx.add_with_ids(xb, xb_indices)
+
+        _, I = idx.search(xb[10:20], 5)
+        self.assertTrue(np.array_equal(xb_indices[10:20], I[:, 0]))
+
+        # Store values using 32-bit indices instead
+        config.indicesOptions = faiss.INDICES_32_BIT
+        idx = faiss.GpuIndexIVFScalarQuantizer(res, d, nlist, qtype,
+                                               faiss.METRIC_L2, True, config)
+        idx.train(xb)
+        idx.add_with_ids(xb, xb_indices)
+
+        _, I = idx.search(xb[10:20], 5)
+        # This will strip the high bit
+        self.assertTrue(np.array_equal(xb_indices_base[10:20], I[:, 0]))
+
 if __name__ == '__main__':
     unittest.main()

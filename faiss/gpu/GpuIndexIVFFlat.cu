@@ -170,6 +170,30 @@ GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
   this->is_trained = true;
 }
 
+int
+GpuIndexIVFFlat::getListLength(int listId) const {
+  FAISS_ASSERT(index_);
+  DeviceScope scope(config_.device);
+
+  return index_->getListLength(listId);
+}
+
+std::vector<uint8_t>
+GpuIndexIVFFlat::getListVectorData(int listId) const {
+  FAISS_ASSERT(index_);
+  DeviceScope scope(config_.device);
+
+  return index_->getListVectorData(listId);
+}
+
+std::vector<Index::idx_t>
+GpuIndexIVFFlat::getListIndices(int listId) const {
+  FAISS_ASSERT(index_);
+  DeviceScope scope(config_.device);
+
+  return index_->getListIndices(listId);
+}
+
 void
 GpuIndexIVFFlat::addImpl_(int n,
                           const float* x,
@@ -180,9 +204,7 @@ GpuIndexIVFFlat::addImpl_(int n,
 
   // Data is already resident on the GPU
   Tensor<float, 2, true> data(const_cast<float*>(x), {n, (int) this->d});
-
-  static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
-  Tensor<long, 1, true> labels(const_cast<long*>(xids), {n});
+  Tensor<Index::idx_t, 1, true> labels(const_cast<Index::idx_t*>(xids), {n});
 
   // Not all vectors may be able to be added (some may contain NaNs etc)
   index_->addVectors(data, labels);
@@ -205,9 +227,7 @@ GpuIndexIVFFlat::searchImpl_(int n,
   // Data is already resident on the GPU
   Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int) this->d});
   Tensor<float, 2, true> outDistances(distances, {n, k});
-
-  static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
-  Tensor<long, 2, true> outLabels(const_cast<long*>(labels), {n, k});
+  Tensor<Index::idx_t, 2, true> outLabels(const_cast<Index::idx_t*>(labels), {n, k});
 
   index_->query(queries, nprobe, k, outDistances, outLabels);
 }

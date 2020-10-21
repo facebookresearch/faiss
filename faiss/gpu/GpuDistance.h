@@ -148,6 +148,6 @@ void bruteForceKnn(GpuResourcesProvider* resources,
                    float* outDistances,
                    // A region of memory size numQueries x k, with k
                    // innermost (row major)
-                   faiss::Index::idx_t* outIndices);
+                   Index::idx_t* outIndices);
 
 } } // namespace

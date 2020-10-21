@@ -100,7 +100,7 @@ GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
 
   // GPU code has 32 bit indices
   FAISS_THROW_IF_NOT_FMT(index->ntotal <=
-                         (faiss::Index::idx_t) std::numeric_limits<int>::max(),
+                         (Index::idx_t) std::numeric_limits<int>::max(),
                          "GPU index only supports up to %zu indices; "
                          "attempting to copy CPU index with %zu parameters",
                          (size_t) std::numeric_limits<int>::max(),
@@ -210,7 +210,7 @@ GpuIndexFlat::addImpl_(int n,
   // Due to GPU indexing in int32, we can't store more than this
   // number of vectors on a GPU
   FAISS_THROW_IF_NOT_FMT(this->ntotal + n <=
-                         (faiss::Index::idx_t) std::numeric_limits<int>::max(),
+                         (Index::idx_t) std::numeric_limits<int>::max(),
                          "GPU index only supports up to %zu indices",
                          (size_t) std::numeric_limits<int>::max());
 
@@ -241,14 +241,13 @@ GpuIndexFlat::searchImpl_(int n,
                outDistances, outIntLabels, true);
 
   // Convert int to idx_t
-  convertTensor<int, faiss::Index::idx_t, 2>(stream,
+  convertTensor<int, Index::idx_t, 2>(stream,
                                              outIntLabels,
                                              outLabels);
 }
 
 void
-GpuIndexFlat::reconstruct(faiss::Index::idx_t key,
-                          float* out) const {
+GpuIndexFlat::reconstruct(Index::idx_t key, float* out) const {
   DeviceScope scope(config_.device);
 
   FAISS_THROW_IF_NOT_MSG(key < this->ntotal, "index out of bounds");
@@ -265,8 +264,8 @@ GpuIndexFlat::reconstruct(faiss::Index::idx_t key,
 }
 
 void
-GpuIndexFlat::reconstruct_n(faiss::Index::idx_t i0,
-                            faiss::Index::idx_t num,
+GpuIndexFlat::reconstruct_n(Index::idx_t i0,
+                            Index::idx_t num,
                             float* out) const {
   DeviceScope scope(config_.device);
 
@@ -287,17 +286,17 @@ GpuIndexFlat::reconstruct_n(faiss::Index::idx_t i0,
 void
 GpuIndexFlat::compute_residual(const float* x,
                                float* residual,
-                               faiss::Index::idx_t key) const {
+                               Index::idx_t key) const {
   compute_residual_n(1, x, residual, &key);
 }
 
 void
-GpuIndexFlat::compute_residual_n(faiss::Index::idx_t n,
+GpuIndexFlat::compute_residual_n(Index::idx_t n,
                                  const float* xs,
                                  float* residuals,
-                                 const faiss::Index::idx_t* keys) const {
+                                 const Index::idx_t* keys) const {
   FAISS_THROW_IF_NOT_FMT(n <=
-                         (faiss::Index::idx_t) std::numeric_limits<int>::max(),
+                         (Index::idx_t) std::numeric_limits<int>::max(),
                          "GPU index only supports up to %zu indices",
                          (size_t) std::numeric_limits<int>::max());
 
@@ -310,9 +309,9 @@ GpuIndexFlat::compute_residual_n(faiss::Index::idx_t n,
                                 const_cast<float*>(xs), stream,
                                 {(int) n, (int) this->d});
   auto idsDevice =
-    toDeviceTemporary<faiss::Index::idx_t, 1>(
+    toDeviceTemporary<Index::idx_t, 1>(
       resources_.get(), config_.device,
-      const_cast<faiss::Index::idx_t*>(keys),
+      const_cast<Index::idx_t*>(keys),
       stream,
       {(int) n});
 
@@ -323,7 +322,7 @@ GpuIndexFlat::compute_residual_n(faiss::Index::idx_t n,
 
   // Convert idx_t to int
   auto keysInt =
-    convertTensorTemporary<faiss::Index::idx_t, int, 1>(
+    convertTensorTemporary<Index::idx_t, int, 1>(
       resources_.get(), stream, idsDevice);
 
   FAISS_ASSERT(data_);

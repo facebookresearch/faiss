@@ -35,7 +35,7 @@ class IVFFlat : public IVFBase {
              int nprobe,
              int k,
              Tensor<float, 2, true>& outDistances,
-             Tensor<long, 2, true>& outIndices);
+             Tensor<Index::idx_t, 2, true>& outIndices);
 
  protected:
   /// Returns the number of bytes in which an IVF list containing numVecs
@@ -46,18 +46,16 @@ class IVFFlat : public IVFBase {
   size_t getCpuVectorsEncodingSize_(int numVecs) const override;
 
   /// Translate to our preferred GPU encoding
-  std::vector<unsigned char> translateCodesToGpu_(
-    std::vector<unsigned char> codes,
-    size_t numVecs) const override;
+  std::vector<uint8_t> translateCodesToGpu_(std::vector<uint8_t> codes,
+                                            size_t numVecs) const override;
 
   /// Translate from our preferred GPU encoding
-  std::vector<unsigned char> translateCodesFromGpu_(
-    std::vector<unsigned char> codes,
-    size_t numVecs) const override;
+  std::vector<uint8_t> translateCodesFromGpu_(std::vector<uint8_t> codes,
+                                              size_t numVecs) const override;
 
   /// Encode the vectors that we're adding and append to our IVF lists
   void appendVectors_(Tensor<float, 2, true>& vecs,
-                      Tensor<long, 1, true>& indices,
+                      Tensor<Index::idx_t, 1, true>& indices,
                       Tensor<int, 1, true>& listIds,
                       Tensor<int, 1, true>& listOffset,
                       cudaStream_t stream) override;

@@ -54,7 +54,7 @@ pqScanPrecomputedInterleaved(Tensor<float, 2, true> queries,
     return;
   }
 
-  auto* codes = (unsigned char*) listCodes[listId];
+  auto* codes = (uint8_t*) listCodes[listId];
   int numVecs = listLengths[listId];
 
   float term1 = precompTerm1[queryId][probeId];
@@ -68,7 +68,7 @@ pqScanPrecomputedInterleaved(Tensor<float, 2, true> queries,
     auto term3Base = precompTerm3[queryId].data();
 
     for (int sq = 0; sq < numSubQuantizers; ++sq) {
-      unsigned char code = codes[startCode + sq * 32];
+      auto code = codes[startCode + sq * 32];
 
       float term2 = ConvertTo<float>::to(term2Base[code]);
       float term3 = ConvertTo<float>::to(term3Base[code]);
@@ -205,7 +205,7 @@ pqScanPrecomputedMultiPass(Tensor<float, 2, true> queries,
     return;
   }
 
-  unsigned char* codeList = (unsigned char*) listCodes[listId];
+  uint8_t* codeList = (uint8_t*) listCodes[listId];
   int limit = listLengths[listId];
 
   constexpr int kNumCode32 = NumSubQuantizers <= 4 ? 1 :
@@ -298,7 +298,7 @@ runMultiPassTile(GpuResources* res,
                  Tensor<int, 3, true>& heapIndices,
                  int k,
                  Tensor<float, 2, true>& outDistances,
-                 Tensor<long, 2, true>& outIndices,
+                 Tensor<Index::idx_t, 2, true>& outIndices,
                  cudaStream_t stream) {
   // Calculate offset lengths, so we know where to write out
   // intermediate results
@@ -496,7 +496,7 @@ void runPQScanMultiPassPrecomputed(Tensor<float, 2, true>& queries,
                                    // output
                                    Tensor<float, 2, true>& outDistances,
                                    // output
-                                   Tensor<long, 2, true>& outIndices,
+                                   Tensor<Index::idx_t, 2, true>& outIndices,
                                    GpuResources* res) {
   constexpr int kMinQueryTileSize = 8;
   constexpr int kMaxQueryTileSize = 128;
