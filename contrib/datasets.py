@@ -8,7 +8,7 @@ import numpy as np
 import faiss
 
 from .vecs_io import fvecs_read, ivecs_read, bvecs_mmap, fvecs_mmap
-
+from .exhaustive_search import knn
 
 class Dataset:
     """ Generic abstract class for a test dataset """
@@ -69,12 +69,12 @@ class Dataset:
         assert self.get_groundtruth(k=13).shape == (self.nq, 13)
 
 
-class SynteticDataset(Dataset):
+class SyntheticDataset(Dataset):
     """A dataset that is not completely random but still challenging to
     index
     """
 
-    def __init__(self, d, nt, nb, nq):
+    def __init__(self, d, nt, nb, nq, metric='L2'):
         Dataset.__init__(self)
         self.d, self.nt, self.nb, self.nq = d, nt, nb, nq
         d1 = 10     # intrinsic dimension (more or less)
@@ -87,6 +87,7 @@ class SynteticDataset(Dataset):
         x = x * (rs.rand(d) * 4 + 0.1)
         x = np.sin(x)
         x = x.astype('float32')
+        self.metric = metric
         self.xt = x[:nt]
         self.xb = x[nt:nt + nb]
         self.xq = x[nt + nb:]
@@ -102,9 +103,10 @@ class SynteticDataset(Dataset):
         return self.xb
 
     def get_groundtruth(self, k=100):
-        gt_index = faiss.IndexFlatL2(self.d)
-        gt_index.add(self.xb)
-        return gt_index.search(self.xq, k)[1]
+        return knn(
+            self.xq, self.xb, k,
+            faiss.METRIC_L2 if self.metric == 'L2' else faiss.METRIC_INNER_PRODUCT
+        )[1]
 
 
 ############################################################################

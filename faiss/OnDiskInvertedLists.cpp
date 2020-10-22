@@ -678,6 +678,18 @@ void OnDiskInvertedLists::crop_invlists(size_t l0, size_t l1)
     nlist = l1 - l0;
 }
 
+
+void OnDiskInvertedLists::set_all_lists_sizes(const size_t *sizes)
+{
+    size_t ofs = 0;
+    for (size_t i = 0; i < nlist; i++) {
+        lists[i].offset = ofs;
+        lists[i].capacity = lists[i].size = sizes[i];
+        ofs += sizes[i] * (sizeof(idx_t) + code_size);
+    }
+
+}
+
 /*******************************************************
  * I/O support via callbacks
  *******************************************************/
@@ -755,7 +767,9 @@ InvertedLists * OnDiskInvertedListsIOHook::read(IOReader *f, int io_flags) const
 
     }
     READ1(od->totsize);
-    od->do_mmap();
+    if (!(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
+        od->do_mmap();
+    }
     return od;
 }
 

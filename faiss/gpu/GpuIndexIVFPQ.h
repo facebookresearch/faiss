@@ -108,19 +108,20 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
   /// product centroid information
   void reset() override;
 
+  /// Trains the coarse and product quantizer based on the given vector data
   void train(Index::idx_t n, const float* x) override;
 
-  /// For debugging purposes, return the list length of a particular
-  /// list
-  int getListLength(int listId) const;
+  /// Returns the number of vectors present in a particular inverted list
+  int getListLength(int listId) const override;
 
-  /// For debugging purposes, return the list codes of a particular
-  /// list
-  std::vector<unsigned char> getListCodes(int listId) const;
+  /// Return the encoded vector data contained in a particular inverted list,
+  /// for debugging purposes. This is represented in a CPU Faiss (IndexIVF*)
+  /// compliant format, while the native GPU format may differ.
+  std::vector<uint8_t> getListVectorData(int listId) const override;
 
-  /// For debugging purposes, return the list indices of a particular
-  /// list
-  std::vector<long> getListIndices(int listId) const;
+  /// Return the vector indices contained in a particular inverted list, for
+  /// debugging purposes.
+  std::vector<Index::idx_t> getListIndices(int listId) const override;
 
  protected:
   /// Called from GpuIndex for add/add_with_ids
@@ -135,8 +136,10 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
                    float* distances,
                    Index::idx_t* labels) const override;
 
+  /// Throws errors if configuration settings are improper
   void verifySettings_() const;
 
+  /// Trains the PQ quantizer based on the given vector data
   void trainResidualQuantizer_(Index::idx_t n, const float* x);
 
  protected:

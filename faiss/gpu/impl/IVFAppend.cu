@@ -69,7 +69,7 @@ __global__ void
 ivfpqInvertedListAppend(Tensor<int, 1, true> listIds,
                         Tensor<int, 1, true> listOffset,
                         Tensor<int, 2, true> encodings,
-                        Tensor<long, 1, true> indices,
+                        Tensor<Index::idx_t, 1, true> indices,
                         IndicesOptions opt,
                         bool layoutBy32,
                         void** listCodes,
@@ -89,13 +89,13 @@ ivfpqInvertedListAppend(Tensor<int, 1, true> listIds,
   }
 
   auto encoding = encodings[encodingToAdd];
-  long index = indices[encodingToAdd];
+  auto index = indices[encodingToAdd];
 
   if (opt == INDICES_32_BIT) {
     // FIXME: there could be overflow here, but where should we check this?
     ((int*) listIndices[listId])[vectorNumInList] = (int) index;
   } else if (opt == INDICES_64_BIT) {
-    ((long*) listIndices[listId])[vectorNumInList] = (long) index;
+    ((Index::idx_t*) listIndices[listId])[vectorNumInList] = index;
   } else {
     // INDICES_CPU or INDICES_IVF; no indices are being stored
   }
@@ -107,20 +107,20 @@ ivfpqInvertedListAppend(Tensor<int, 1, true> listIds,
     int blockStart = (vectorNumInList / 32) * fullBlockSize;
     int start = blockStart + (vectorNumInList % 32);
 
-    unsigned char* codeStart = ((unsigned char*) listCodes[listId]) + start;
+    uint8_t* codeStart = ((uint8_t*) listCodes[listId]) + start;
 
     for (int i = 0; i < encodings.getSize(1); ++i) {
-      codeStart[i * 32] = (unsigned char) encoding[i];
+      codeStart[i * 32] = (uint8_t) encoding[i];
     }
   } else {
     // Layout with dimensions innermost
-    unsigned char* codeStart =
-      ((unsigned char*) listCodes[listId]) +
+    uint8_t* codeStart =
+      ((uint8_t*) listCodes[listId]) +
       vectorNumInList * encodings.getSize(1);
 
     // FIXME: slow
     for (int i = 0; i < encodings.getSize(1); ++i) {
-      codeStart[i] = (unsigned char) encoding[i];
+      codeStart[i] = (uint8_t) encoding[i];
     }
   }
 }
@@ -129,7 +129,7 @@ void
 runIVFPQInvertedListAppend(Tensor<int, 1, true>& listIds,
                            Tensor<int, 1, true>& listOffset,
                            Tensor<int, 2, true>& encodings,
-                           Tensor<long, 1, true>& indices,
+                           Tensor<Index::idx_t, 1, true>& indices,
                            bool layoutBy32,
                            thrust::device_vector<void*>& listCodes,
                            thrust::device_vector<void*>& listIndices,
@@ -162,7 +162,7 @@ runIVFPQInvertedListAppend(Tensor<int, 1, true>& listIds,
 __global__ void
 ivfFlatIndicesAppend(Tensor<int, 1, true> listIds,
                      Tensor<int, 1, true> listOffset,
-                     Tensor<long, 1, true> indices,
+                     Tensor<Index::idx_t, 1, true> indices,
                      IndicesOptions opt,
                      void** listIndices) {
   int vec = blockIdx.x * blockDim.x + threadIdx.x;
@@ -179,13 +179,13 @@ ivfFlatIndicesAppend(Tensor<int, 1, true> listIds,
     return;
   }
 
-  long index = indices[vec];
+  auto index = indices[vec];
 
   if (opt == INDICES_32_BIT) {
     // FIXME: there could be overflow here, but where should we check this?
     ((int*) listIndices[listId])[offset] = (int) index;
   } else if (opt == INDICES_64_BIT) {
-    ((long*) listIndices[listId])[offset] = (long) index;
+    ((Index::idx_t*) listIndices[listId])[offset] = index;
   }
 }
 
@@ -250,7 +250,7 @@ void
 runIVFFlatInvertedListAppend(Tensor<int, 1, true>& listIds,
                              Tensor<int, 1, true>& listOffset,
                              Tensor<float, 2, true>& vecs,
-                             Tensor<long, 1, true>& indices,
+                             Tensor<Index::idx_t, 1, true>& indices,
                              bool useResidual,
                              Tensor<float, 2, true>& residuals,
                              GpuScalarQuantizer* scalarQ,

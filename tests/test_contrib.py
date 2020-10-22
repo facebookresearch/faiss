@@ -49,15 +49,25 @@ class TestDatasets(unittest.TestCase):
     """
 
     def test_synthetic(self):
-        ds = datasets.SynteticDataset(32, 1000, 2000, 10)
+        ds = datasets.SyntheticDataset(32, 1000, 2000, 10)
         xq = ds.get_queries()
         self.assertEqual(xq.shape, (10, 32))
         xb = ds.get_database()
         self.assertEqual(xb.shape, (2000, 32))
         ds.check_sizes()
 
+    def test_synthetic_ip(self):
+        ds = datasets.SyntheticDataset(32, 1000, 2000, 10, "IP")
+        index = faiss.IndexFlatIP(32)
+        index.add(ds.get_database())
+        np.testing.assert_array_equal(
+            ds.get_groundtruth(100),
+            index.search(ds.get_queries(), 100)[1]
+        )
+
+
     def test_synthetic_iterator(self):
-        ds = datasets.SynteticDataset(32, 1000, 2000, 10)
+        ds = datasets.SyntheticDataset(32, 1000, 2000, 10)
         xb = ds.get_database()
         xb2 = []
         for xbi in ds.database_iterator():

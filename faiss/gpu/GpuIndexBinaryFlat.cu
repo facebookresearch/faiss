@@ -72,7 +72,7 @@ GpuIndexBinaryFlat::copyFrom(const faiss::IndexBinaryFlat* index) {
 
   // GPU code has 32 bit indices
   FAISS_THROW_IF_NOT_FMT(index->ntotal <=
-                         (faiss::Index::idx_t) std::numeric_limits<int>::max(),
+                         (Index::idx_t) std::numeric_limits<int>::max(),
                          "GPU index only supports up to %zu indices; "
                          "attempting to copy CPU index with %zu parameters",
                          (size_t) std::numeric_limits<int>::max(),
@@ -122,7 +122,7 @@ GpuIndexBinaryFlat::add(faiss::IndexBinary::idx_t n,
   // Due to GPU indexing in int32, we can't store more than this
   // number of vectors on a GPU
   FAISS_THROW_IF_NOT_FMT(this->ntotal + n <=
-                         (faiss::Index::idx_t) std::numeric_limits<int>::max(),
+                         (Index::idx_t) std::numeric_limits<int>::max(),
                          "GPU index only supports up to %zu indices",
                          (size_t) std::numeric_limits<int>::max());
 
@@ -207,20 +207,18 @@ GpuIndexBinaryFlat::search(faiss::IndexBinary::idx_t n,
 
   // Convert and copy int indices out
   auto outIndices =
-    toDeviceTemporary<faiss::Index::idx_t, 2>(resources_.get(),
-                                              binaryFlatConfig_.device,
-                                              labels,
-                                              stream,
-                                              {(int) n, (int) k});
+    toDeviceTemporary<Index::idx_t, 2>(resources_.get(),
+                                       binaryFlatConfig_.device,
+                                       labels,
+                                       stream,
+                                       {(int) n, (int) k});
 
-  // Convert int to long
-  convertTensor<int, faiss::Index::idx_t, 2>(stream,
-                                             outIntIndices,
-                                             outIndices);
+  // Convert int to idx_t
+  convertTensor<int, Index::idx_t, 2>(stream, outIntIndices, outIndices);
 
   // Copy back if necessary
   fromDevice<int32_t, 2>(outDistances, distances, stream);
-  fromDevice<faiss::Index::idx_t, 2>(outIndices, labels, stream);
+  fromDevice<Index::idx_t, 2>(outIndices, labels, stream);
 }
 
 void

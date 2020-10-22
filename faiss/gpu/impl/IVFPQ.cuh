@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <faiss/Index.h>
 #include <faiss/MetricType.h>
 #include <faiss/gpu/impl/IVFBase.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
@@ -45,10 +46,7 @@ class IVFPQ : public IVFBase {
              int nprobe,
              int k,
              Tensor<float, 2, true>& outDistances,
-             Tensor<long, 2, true>& outIndices);
-
-  /// Return the list codes of a particular list back to the CPU
-  std::vector<unsigned char> getListCodes(int listId) const;
+             Tensor<Index::idx_t, 2, true>& outIndices);
 
   /// Returns our set of sub-quantizers of the form
   /// (sub q)(code id)(sub dim)
@@ -60,18 +58,16 @@ class IVFPQ : public IVFBase {
   size_t getCpuVectorsEncodingSize_(int numVecs) const override;
 
   /// Translate to our preferred GPU encoding
-  std::vector<unsigned char> translateCodesToGpu_(
-    std::vector<unsigned char> codes,
-    size_t numVecs) const override;
+  std::vector<uint8_t> translateCodesToGpu_(std::vector<uint8_t> codes,
+                                            size_t numVecs) const override;
 
   /// Translate from our preferred GPU encoding
-  std::vector<unsigned char> translateCodesFromGpu_(
-    std::vector<unsigned char> codes,
-    size_t numVecs) const override;
+  std::vector<uint8_t> translateCodesFromGpu_(std::vector<uint8_t> codes,
+                                              size_t numVecs) const override;
 
   /// Encode the vectors that we're adding and append to our IVF lists
   void appendVectors_(Tensor<float, 2, true>& vecs,
-                      Tensor<long, 1, true>& indices,
+                      Tensor<Index::idx_t, 1, true>& indices,
                       Tensor<int, 1, true>& listIds,
                       Tensor<int, 1, true>& listOffset,
                       cudaStream_t stream) override;
@@ -97,7 +93,7 @@ class IVFPQ : public IVFBase {
                               DeviceTensor<int, 2, true>& coarseIndices,
                               int k,
                               Tensor<float, 2, true>& outDistances,
-                              Tensor<long, 2, true>& outIndices);
+                              Tensor<Index::idx_t, 2, true>& outIndices);
 
   /// Runs kernels for scanning inverted lists without precomputed codes
   void runPQNoPrecomputedCodes_(Tensor<float, 2, true>& queries,
@@ -105,7 +101,7 @@ class IVFPQ : public IVFBase {
                                 DeviceTensor<int, 2, true>& coarseIndices,
                                 int k,
                                 Tensor<float, 2, true>& outDistances,
-                                Tensor<long, 2, true>& outIndices);
+                                Tensor<Index::idx_t, 2, true>& outIndices);
 
   /// Runs kernels for scanning inverted lists without precomputed codes (for
   /// different coarse centroid type)
@@ -115,7 +111,7 @@ class IVFPQ : public IVFBase {
                                  DeviceTensor<int, 2, true>& coarseIndices,
                                  int k,
                                  Tensor<float, 2, true>& outDistances,
-                                 Tensor<long, 2, true>& outIndices);
+                                 Tensor<Index::idx_t, 2, true>& outIndices);
 
  private:
   /// Number of sub-quantizers per vector

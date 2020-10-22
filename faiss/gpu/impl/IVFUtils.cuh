@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <faiss/Index.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/utils/Tensor.cuh>
 #include <thrust/device_vector.h>
@@ -48,7 +49,7 @@ void runPass2SelectLists(Tensor<float, 2, true>& heapDistances,
                          int k,
                          bool chooseLargest,
                          Tensor<float, 2, true>& outDistances,
-                         Tensor<long, 2, true>& outIndices,
+                         Tensor<Index::idx_t, 2, true>& outIndices,
                          cudaStream_t stream);
 
 } } // namespace

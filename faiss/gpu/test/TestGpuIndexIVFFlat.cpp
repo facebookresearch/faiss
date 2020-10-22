@@ -206,6 +206,8 @@ void copyToTest(bool useFloat16CoarseQuantizer) {
   EXPECT_EQ(cpuIndex.nlist, gpuIndex.getNumLists());
   EXPECT_EQ(cpuIndex.nprobe, gpuIndex.getNumProbes());
 
+  testIVFEquality(cpuIndex, gpuIndex);
+
   // Query both objects; results should be equivalent
   bool compFloat16 = useFloat16CoarseQuantizer;
   faiss::gpu::compareIndices(cpuIndex, gpuIndex,
@@ -254,6 +256,8 @@ void copyFromTest(bool useFloat16CoarseQuantizer) {
   EXPECT_EQ(cpuIndex.d, opt.dim);
   EXPECT_EQ(cpuIndex.nlist, gpuIndex.getNumLists());
   EXPECT_EQ(cpuIndex.nprobe, gpuIndex.getNumProbes());
+
+  testIVFEquality(cpuIndex, gpuIndex);
 
   // Query both objects; results should be equivalent
   bool compFloat16 = useFloat16CoarseQuantizer;

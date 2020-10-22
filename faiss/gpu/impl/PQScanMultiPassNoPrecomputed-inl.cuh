@@ -55,7 +55,7 @@ pqScanInterleaved(Tensor<float, 2, true> queries,
   int numVecs = listLengths[listId];
 
   // This is where the codes for our list start
-  auto codes = (unsigned char*) listCodes[listId];
+  auto codes = (uint8_t*) listCodes[listId];
 
   auto localCodeDistances = codeDistances[queryId][probeId];
 
@@ -66,7 +66,7 @@ pqScanInterleaved(Tensor<float, 2, true> queries,
     int startCode = (vec / 32) * numSubQuantizers * 32 + (vec % 32);
 
     for (int sq = 0; sq < numSubQuantizers; ++sq) {
-      unsigned char code = codes[startCode + sq * 32];
+      auto code = codes[startCode + sq * 32];
 
       dist += ConvertTo<float>::to(localCodeDistances[sq][code]);
     }
@@ -178,7 +178,7 @@ pqScanNoPrecomputedMultiPass(Tensor<float, 2, true> queries,
     return;
   }
 
-  unsigned char* codeList = (unsigned char*) listCodes[listId];
+  uint8_t* codeList = (uint8_t*) listCodes[listId];
   int limit = listLengths[listId];
 
   constexpr int kNumCode32 = NumSubQuantizers <= 4 ? 1 :
@@ -226,8 +226,7 @@ pqScanNoPrecomputedMultiPass(Tensor<float, 2, true> queries,
         for (int byte = 0; byte < kBytesPerCode32; ++byte) {
           auto code = getByte(code32[word], byte * 8, 8);
 
-          auto offset =
-            codesPerSubQuantizer * (word * kBytesPerCode32 + byte);
+          auto offset = codesPerSubQuantizer * (word * kBytesPerCode32 + byte);
 
           dist += ConvertTo<float>::to(codeDist[offset + code]);
         }
@@ -273,7 +272,7 @@ runMultiPassTile(GpuResources* res,
                  int k,
                  faiss::MetricType metric,
                  Tensor<float, 2, true>& outDistances,
-                 Tensor<long, 2, true>& outIndices,
+                 Tensor<Index::idx_t, 2, true>& outIndices,
                  cudaStream_t stream) {
   // We only support two metrics at the moment
   FAISS_ASSERT(metric == MetricType::METRIC_INNER_PRODUCT ||
@@ -482,7 +481,7 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
                                 // output
                                 Tensor<float, 2, true>& outDistances,
                                 // output
-                                Tensor<long, 2, true>& outIndices,
+                                Tensor<Index::idx_t, 2, true>& outIndices,
                                 GpuResources* res) {
   constexpr int kMinQueryTileSize = 8;
   constexpr int kMaxQueryTileSize = 128;

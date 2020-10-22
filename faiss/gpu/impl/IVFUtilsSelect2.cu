@@ -61,7 +61,7 @@ pass2SelectLists(Tensor<float, 2, true> heapDistances,
                  int k,
                  IndicesOptions opt,
                  Tensor<float, 2, true> outDistances,
-                 Tensor<long, 2, true> outIndices) {
+                 Tensor<Index::idx_t, 2, true> outIndices) {
   constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
   __shared__ float smemK[kNumWarps * NumWarpQ];
@@ -106,7 +106,7 @@ pass2SelectLists(Tensor<float, 2, true> heapDistances,
     // is the very last step and it is happening a small number of
     // times (#queries x k).
     int v = smemV[i];
-    long index = -1;
+    Index::idx_t index = -1;
 
     if (v != -1) {
       // `offset` is the offset of the intermediate result, as
@@ -131,11 +131,11 @@ pass2SelectLists(Tensor<float, 2, true> heapDistances,
 
       // This gives us our final index
       if (opt == INDICES_32_BIT) {
-        index = (long) ((int*) listIndices[listId])[listOffset];
+        index = (Index::idx_t) ((int*) listIndices[listId])[listOffset];
       } else if (opt == INDICES_64_BIT) {
-        index = ((long*) listIndices[listId])[listOffset];
+        index = ((Index::idx_t*) listIndices[listId])[listOffset];
       } else {
-        index = ((long) listId << 32 | (long) listOffset);
+        index = ((Index::idx_t) listId << 32 | (Index::idx_t) listOffset);
       }
     }
 
@@ -153,7 +153,7 @@ runPass2SelectLists(Tensor<float, 2, true>& heapDistances,
                     int k,
                     bool chooseLargest,
                     Tensor<float, 2, true>& outDistances,
-                    Tensor<long, 2, true>& outIndices,
+                    Tensor<Index::idx_t, 2, true>& outIndices,
                     cudaStream_t stream) {
   auto grid = dim3(topQueryToCentroid.getSize(0));
 
