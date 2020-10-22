@@ -75,6 +75,7 @@ outputs:
       requires:
         - numpy
         - scipy
+        - pytorch
       commands:
         - python -m unittest discover tests/
         - python -m unittest discover faiss/gpu/test/

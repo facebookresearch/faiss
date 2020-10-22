@@ -5,6 +5,7 @@ orbs:
 
 jobs:
   build_linux:
+    name: Linux
     docker:
       - image: beauby/faiss-circleci:cpu
     environment:
@@ -40,6 +41,7 @@ jobs:
           path: test-results
 
   build_osx:
+    name: OSX
     macos:
       xcode: 11.6.0
     environment:
@@ -86,6 +88,7 @@ jobs:
           path: test-results
 
   build_windows:
+    name: Windows
     executor:
       name: win/default
       shell: bash.exe
@@ -99,6 +102,7 @@ jobs:
             conda build faiss --python 3.7
 
   build_linux_gpu:
+    name: Linux GPU
     machine:
       resource_class: gpu.nvidia.small
       image: ubuntu-1604-cuda-10.1:201909-23
@@ -113,10 +117,11 @@ jobs:
             docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && python3 -m unittest discover faiss/gpu/test'
 
   deploy_linux:
+    name: Deploy Linux
     parameters:
-      nightly:
-        type: boolean
-        default: false
+      label:
+        type: string
+        default: main
     docker:
       - image: continuumio/miniconda3
     steps:
@@ -126,19 +131,42 @@ jobs:
           command: |
             conda install -y -q conda-build anaconda-client
             conda config --set anaconda_upload yes
-      - run: |
+      - run:
+          name: Build packages
+          command: |
             cd conda
-            if [ "<<parameters.nightly>>" = "true" ]; then
-              FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --label nightly
-            else
-              conda build faiss --user pytorch
-            fi
+            conda build faiss --user pytorch --label <<parameters.label>>
+
+  deploy_linux_gpu:
+    name: Deploy Linux GPU
+    parameters:
+      label:
+        type: string
+        default: main
+      cuda:
+        type: string
+    machine:
+      resource_class: gpu.nvidia.small
+      image: ubuntu-1604-cuda-10.1:201909-23
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - run:
+          name: Build packages
+          command: |
+            docker build -t faiss -f conda/Dockerfile.cuda<<parameters.cuda>>
+            docker run --gpus all \
+              -e CUDA_ARCHS="35;52;60;61;70;72;75" \
+              -e ANACONDA_API_TOKEN=$ANACONDA_API_TOKEN \
+              conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>" }' \
+                --user pytorch --label <<parameters.label>>
 
   deploy_osx:
+    name: Deploy OSX
     parameters:
-      nightly:
-        type: boolean
-        default: false
+      label:
+        type: string
+        default: main
     macos:
       xcode: 11.6.0
     steps:
@@ -154,20 +182,19 @@ jobs:
           name: Install MacOSX10.9 SDK
           command: |
             curl -L -o - https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.9.sdk.tar.xz | sudo tar xJf - -C /opt
-      - run: |
-          export PATH=~/miniconda/bin:$PATH
-          cd conda
-          if [ "<<parameters.nightly>>" = "true" ]; then
-            FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --label nightly
-          else
-            conda build faiss --user pytorch
-          fi
+      - run:
+          name: Build packages
+          command: |
+            export PATH=~/miniconda/bin:$PATH
+            cd conda
+            conda build faiss --user pytorch --label <<parameters.label>>
 
   deploy_windows:
+    name: Deploy Windows
     parameters:
-      nightly:
-        type: boolean
-        default: false
+      label:
+        type: string
+        default: main
     executor:
       name: win/default
       shell: bash.exe
@@ -178,13 +205,11 @@ jobs:
           command: |
             conda install -y -q conda-build anaconda-client
             conda config --set anaconda_upload yes
-      - run: |
+      - run:
+          name: Build packages
+          command: |
             cd conda
-            if [ "<<parameters.nightly>>" = "true" ]; then
-              FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --label nightly
-            else
-              conda build faiss --user pytorch
-            fi
+            conda build faiss --user pytorch --label <<parameters.label>>
 
 workflows:
   version: 2
@@ -197,6 +222,20 @@ workflows:
       - build_osx
       - build_windows
       - deploy_linux:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy_linux_gpu:
+          cuda: 10.1
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy_linux_gpu:
+          cuda: 10.2
           filters:
             tags:
               only: /^v.*/
@@ -225,8 +264,14 @@ workflows:
                 - master
     jobs:
       - deploy_linux:
-          nightly: true
+          label: nightly
+      - deploy_linux_gpu:
+          cuda: 10.1
+          label: nightly
+      - deploy_linux_gpu:
+          cuda: 10.2
+          label: nightly
       - deploy_windows:
-          nightly: true
+          label: nightly
       - deploy_osx:
-          nightly: true
+          label: nightly
