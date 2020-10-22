@@ -212,7 +212,7 @@ workflows:
       - build_linux_gpu:
           name: Linux GPU
           requires:
-            - build_linux
+            - Linux
       - build_osx:
           name: OSX
       - build_windows:
