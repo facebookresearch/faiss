@@ -118,7 +118,7 @@ IVFPQ::setPrecomputedCodes(bool enable) {
 
 void
 IVFPQ::appendVectors_(Tensor<float, 2, true>& vecs,
-                      Tensor<long, 1, true>& indices,
+                      Tensor<Index::idx_t, 1, true>& indices,
                       Tensor<int, 1, true>& listIds,
                       Tensor<int, 1, true>& listOffset,
                       cudaStream_t stream) {
@@ -232,15 +232,15 @@ IVFPQ::getCpuVectorsEncodingSize_(int numVecs) const {
 }
 
 // Convert the CPU layout to the GPU layout
-std::vector<unsigned char>
-IVFPQ::translateCodesToGpu_(std::vector<unsigned char> codes,
+std::vector<uint8_t>
+IVFPQ::translateCodesToGpu_(std::vector<uint8_t> codes,
                             size_t numVecs) const {
   if (!alternativeLayout_) {
     return codes;
   }
 
   auto totalSize = getGpuVectorsEncodingSize_(numVecs);
-  std::vector<unsigned char> out(totalSize);
+  std::vector<uint8_t> out(totalSize);
 
   for (int i = 0; i < numVecs; ++i) {
     for (int j = 0; j < numSubQuantizers_; ++j) {
@@ -258,15 +258,15 @@ IVFPQ::translateCodesToGpu_(std::vector<unsigned char> codes,
 }
 
 // Conver the GPU layout to the CPU layout
-std::vector<unsigned char>
-IVFPQ::translateCodesFromGpu_(std::vector<unsigned char> codes,
+std::vector<uint8_t>
+IVFPQ::translateCodesFromGpu_(std::vector<uint8_t> codes,
                               size_t numVecs) const {
   if (!alternativeLayout_) {
     return codes;
   }
 
   auto totalSize = getCpuVectorsEncodingSize_(numVecs);
-  std::vector<unsigned char> out(totalSize);
+  std::vector<uint8_t> out(totalSize);
 
   for (int i = 0; i < numVecs; ++i) {
     for (int j = 0; j < numSubQuantizers_; ++j) {
@@ -468,7 +468,7 @@ IVFPQ::query(Tensor<float, 2, true>& queries,
              int nprobe,
              int k,
              Tensor<float, 2, true>& outDistances,
-             Tensor<long, 2, true>& outIndices) {
+             Tensor<Index::idx_t, 2, true>& outIndices) {
   // These are caught at a higher level
   FAISS_ASSERT(nprobe <= GPU_MAX_SELECTION_K);
   FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
@@ -523,7 +523,7 @@ IVFPQ::query(Tensor<float, 2, true>& queries,
   // FIXME: we might ultimately be calling this function with inputs
   // from the CPU, these are unnecessary copies
   if (indicesOptions_ == INDICES_CPU) {
-    HostTensor<long, 2, true> hostOutIndices(outIndices, stream);
+    HostTensor<Index::idx_t, 2, true> hostOutIndices(outIndices, stream);
 
     ivfOffsetToUserIndex(hostOutIndices.data(),
                          numLists_,
@@ -535,14 +535,6 @@ IVFPQ::query(Tensor<float, 2, true>& queries,
     // GPU
     outIndices.copyFrom(hostOutIndices, stream);
   }
-}
-
-std::vector<unsigned char>
-IVFPQ::getListCodes(int listId) const {
-  FAISS_ASSERT(listId < deviceListData_.size());
-
-  return deviceListData_[listId]->data.copyToHost<unsigned char>(
-    resources_->getDefaultStreamCurrentDevice());
 }
 
 Tensor<float, 3, true>
@@ -557,7 +549,7 @@ IVFPQ::runPQPrecomputedCodes_(
   DeviceTensor<int, 2, true>& coarseIndices,
   int k,
   Tensor<float, 2, true>& outDistances,
-  Tensor<long, 2, true>& outIndices) {
+  Tensor<Index::idx_t, 2, true>& outIndices) {
   FAISS_ASSERT(metric_ == MetricType::METRIC_L2);
 
   auto stream = resources_->getDefaultStreamCurrentDevice();
@@ -638,7 +630,7 @@ IVFPQ::runPQNoPrecomputedCodesT_(
   DeviceTensor<int, 2, true>& coarseIndices,
   int k,
   Tensor<float, 2, true>& outDistances,
-  Tensor<long, 2, true>& outIndices) {
+  Tensor<Index::idx_t, 2, true>& outIndices) {
   auto& coarseCentroids = quantizer_->template getVectorsRef<CentroidT>();
 
   runPQScanMultiPassNoPrecomputed(queries,
@@ -670,7 +662,7 @@ IVFPQ::runPQNoPrecomputedCodes_(
   DeviceTensor<int, 2, true>& coarseIndices,
   int k,
   Tensor<float, 2, true>& outDistances,
-  Tensor<long, 2, true>& outIndices) {
+  Tensor<Index::idx_t, 2, true>& outIndices) {
   if (quantizer_->getUseFloat16()) {
     runPQNoPrecomputedCodesT_<half>(queries,
                                     coarseDistances,

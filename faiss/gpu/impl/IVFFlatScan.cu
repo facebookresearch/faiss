@@ -194,7 +194,7 @@ runIVFFlatScanTile(GpuResources* res,
                    Tensor<float, 3, true>& residualBase,
                    GpuScalarQuantizer* scalarQ,
                    Tensor<float, 2, true>& outDistances,
-                   Tensor<long, 2, true>& outIndices,
+                   Tensor<Index::idx_t, 2, true>& outIndices,
                    cudaStream_t stream) {
   int dim = queries.getSize(1);
 
@@ -377,7 +377,7 @@ runIVFFlatScan(Tensor<float, 2, true>& queries,
                // output
                Tensor<float, 2, true>& outDistances,
                // output
-               Tensor<long, 2, true>& outIndices,
+               Tensor<Index::idx_t, 2, true>& outIndices,
                GpuResources* res) {
   constexpr int kMinQueryTileSize = 8;
   constexpr int kMaxQueryTileSize = 128;

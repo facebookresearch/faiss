@@ -10,7 +10,10 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/Index.h>
+#include <faiss/InvertedLists.h>
 #include <initializer_list>
+#include <gtest/gtest.h>
+#include <cstring>
 #include <memory>
 #include <string>
 #include <vector>
@@ -89,5 +92,33 @@ void compareLists(const float* refDist,
                   float maxRelativeError = 6e-5f,
                   float pctMaxDiff1 = 0.1f,
                   float pctMaxDiffN = 0.005f);
+
+/// Compare IVF lists between a CPU and GPU index
+template <typename A, typename B>
+void testIVFEquality(A& cpuIndex, B& gpuIndex) {
+  // Ensure equality of the inverted lists
+  EXPECT_EQ(cpuIndex.nlist, gpuIndex.nlist);
+
+  for (int i = 0; i < cpuIndex.nlist; ++i) {
+    auto cpuLists = cpuIndex.invlists;
+
+    // Code equality
+    EXPECT_EQ(cpuLists->list_size(i), gpuIndex.getListLength(i));
+    std::vector<uint8_t> cpuCodes(cpuLists->list_size(i) * cpuLists->code_size);
+
+    auto sc = faiss::InvertedLists::ScopedCodes(cpuLists, i);
+    std::memcpy(cpuCodes.data(), sc.get(),
+                cpuLists->list_size(i) * cpuLists->code_size);
+    EXPECT_EQ(cpuCodes, gpuIndex.getListVectorData(i));
+
+    // Index equality
+    std::vector<Index::idx_t> cpuIndices(cpuLists->list_size(i));
+
+    auto si = faiss::InvertedLists::ScopedIds(cpuLists, i);
+    std::memcpy(cpuIndices.data(), si.get(),
+                cpuLists->list_size(i) * sizeof(faiss::Index::idx_t));
+    EXPECT_EQ(cpuIndices, gpuIndex.getListIndices(i));
+  }
+}
 
 } }

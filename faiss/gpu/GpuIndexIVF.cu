@@ -84,7 +84,7 @@ GpuIndexIVF::copyFrom(const faiss::IndexIVF* index) {
 
   FAISS_ASSERT(index->nlist > 0);
   FAISS_THROW_IF_NOT_FMT(index->nlist <=
-                     (faiss::Index::idx_t) std::numeric_limits<int>::max(),
+                     (Index::idx_t) std::numeric_limits<int>::max(),
                      "GPU index only supports %zu inverted lists",
                      (size_t) std::numeric_limits<int>::max());
   nlist = index->nlist;
@@ -209,7 +209,7 @@ GpuIndexIVF::addImplRequiresIDs_() const {
 }
 
 void
-GpuIndexIVF::trainQuantizer_(faiss::Index::idx_t n, const float* x) {
+GpuIndexIVF::trainQuantizer_(Index::idx_t n, const float* x) {
   if (n == 0) {
     // nothing to do
     return;

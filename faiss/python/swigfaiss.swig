@@ -174,7 +174,9 @@ namespace std {
         T * data();
         size_t size();
         T at (size_t n) const;
+        T & operator [] (size_t n);
         void resize (size_t n);
+
         void swap (vector<T> & other);
     };
 };

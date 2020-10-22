@@ -236,7 +236,7 @@ GpuIndex::search(Index::idx_t n,
       {(int) n, (int) k});
 
   auto outLabels =
-    toDeviceTemporary<faiss::Index::idx_t, 2>(
+    toDeviceTemporary<Index::idx_t, 2>(
       resources_.get(), config_.device, labels, stream,
       {(int) n, (int) k});
 
@@ -267,7 +267,7 @@ GpuIndex::search(Index::idx_t n,
 
   // Copy back if necessary
   fromDevice<float, 2>(outDistances, distances, stream);
-  fromDevice<faiss::Index::idx_t, 2>(outLabels, labels, stream);
+  fromDevice<Index::idx_t, 2>(outLabels, labels, stream);
 }
 
 void

@@ -61,7 +61,7 @@ struct LoadCode32 {};
 template<>
 struct LoadCode32<1> {
   static inline __device__ void load(unsigned int code32[1],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 1;
     asm("ld.global.cs.u8 {%0}, [%1];" :
@@ -72,7 +72,7 @@ struct LoadCode32<1> {
 template<>
 struct LoadCode32<2> {
   static inline __device__ void load(unsigned int code32[1],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 2;
     asm("ld.global.cs.u16 {%0}, [%1];" :
@@ -83,7 +83,7 @@ struct LoadCode32<2> {
 template<>
 struct LoadCode32<3> {
   static inline __device__ void load(unsigned int code32[1],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 3;
     unsigned int a;
@@ -108,7 +108,7 @@ struct LoadCode32<3> {
 template<>
 struct LoadCode32<4> {
   static inline __device__ void load(unsigned int code32[1],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 4;
     asm("ld.global.cs.u32 {%0}, [%1];" :
@@ -119,7 +119,7 @@ struct LoadCode32<4> {
 template<>
 struct LoadCode32<8> {
   static inline __device__ void load(unsigned int code32[2],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 8;
     asm("ld.global.cs.v2.u32 {%0, %1}, [%2];" :
@@ -130,7 +130,7 @@ struct LoadCode32<8> {
 template<>
 struct LoadCode32<12> {
   static inline __device__ void load(unsigned int code32[3],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 12;
     // FIXME: this is a non-coalesced, unaligned, non-vectorized load
@@ -147,7 +147,7 @@ struct LoadCode32<12> {
 template<>
 struct LoadCode32<16> {
   static inline __device__ void load(unsigned int code32[4],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 16;
     asm("ld.global.cs.v4.u32 {%0, %1, %2, %3}, [%4];" :
@@ -159,7 +159,7 @@ struct LoadCode32<16> {
 template<>
 struct LoadCode32<20> {
   static inline __device__ void load(unsigned int code32[5],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 20;
     // FIXME: this is a non-coalesced, unaligned, non-vectorized load
@@ -180,7 +180,7 @@ struct LoadCode32<20> {
 template<>
 struct LoadCode32<24> {
   static inline __device__ void load(unsigned int code32[6],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 24;
     // FIXME: this is a non-coalesced, unaligned, 2-vectorized load
@@ -197,7 +197,7 @@ struct LoadCode32<24> {
 template<>
 struct LoadCode32<28> {
   static inline __device__ void load(unsigned int code32[7],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 28;
     // FIXME: this is a non-coalesced, unaligned, non-vectorized load
@@ -222,7 +222,7 @@ struct LoadCode32<28> {
 template<>
 struct LoadCode32<32> {
   static inline __device__ void load(unsigned int code32[8],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 32;
     // FIXME: this is a non-coalesced load
@@ -239,7 +239,7 @@ struct LoadCode32<32> {
 template<>
 struct LoadCode32<40> {
   static inline __device__ void load(unsigned int code32[10],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 40;
     // FIXME: this is a non-coalesced, unaligned, 2-vectorized load
@@ -260,7 +260,7 @@ struct LoadCode32<40> {
 template<>
 struct LoadCode32<48> {
   static inline __device__ void load(unsigned int code32[12],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 48;
     // FIXME: this is a non-coalesced load
@@ -280,7 +280,7 @@ struct LoadCode32<48> {
 template<>
 struct LoadCode32<56> {
   static inline __device__ void load(unsigned int code32[14],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 56;
     // FIXME: this is a non-coalesced, unaligned, 2-vectorized load
@@ -305,7 +305,7 @@ struct LoadCode32<56> {
 template<>
 struct LoadCode32<64> {
   static inline __device__ void load(unsigned int code32[16],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 64;
     // FIXME: this is a non-coalesced load
@@ -328,7 +328,7 @@ struct LoadCode32<64> {
 template<>
 struct LoadCode32<96> {
   static inline __device__ void load(unsigned int code32[24],
-                                     unsigned char* p,
+                                     uint8_t* p,
                                      int offset) {
     p += offset * 96;
     // FIXME: this is a non-coalesced load

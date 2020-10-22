@@ -56,6 +56,18 @@ class GpuIndexIVF : public GpuIndex {
   /// Returns the number of inverted lists we're managing
   int getNumLists() const;
 
+  /// Returns the number of vectors present in a particular inverted list
+  virtual int getListLength(int listId) const = 0;
+
+  /// Return the encoded vector data contained in a particular inverted list,
+  /// for debugging purposes. This is represented in a CPU Faiss (IndexIVF*)
+  /// compliant format, while the native GPU format may differ.
+  virtual std::vector<uint8_t> getListVectorData(int listId) const = 0;
+
+  /// Return the vector indices contained in a particular inverted list, for
+  /// debugging purposes.
+  virtual std::vector<Index::idx_t> getListIndices(int listId) const = 0;
+
   /// Return the quantizer we're using
   GpuIndexFlat* getQuantizer();
 
@@ -67,7 +79,7 @@ class GpuIndexIVF : public GpuIndex {
 
  protected:
   bool addImplRequiresIDs_() const override;
-  void trainQuantizer_(faiss::Index::idx_t n, const float* x);
+  void trainQuantizer_(Index::idx_t n, const float* x);
 
  public:
   /// Exposing this like the CPU version for manipulation
