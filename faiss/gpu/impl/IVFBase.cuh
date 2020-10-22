@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <faiss/Index.h>
 #include <faiss/MetricType.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/utils/DeviceVector.cuh>
@@ -58,10 +59,10 @@ class IVFBase {
   int getListLength(int listId) const;
 
   /// Return the list indices of a particular list back to the CPU
-  std::vector<long> getListIndices(int listId) const;
+  std::vector<Index::idx_t> getListIndices(int listId) const;
 
   /// Return the encoded vectors of a particular list back to the CPU
-  std::vector<unsigned char> getListVectors(int listId) const;
+  std::vector<uint8_t> getListVectorData(int listId) const;
 
   /// Copy all inverted lists from a CPU representation to ourselves
   void copyInvertedListsFrom(const InvertedLists* ivf);
@@ -74,7 +75,7 @@ class IVFBase {
   /// Returns the number of vectors successfully added. Vectors may
   /// not be able to be added because they contain NaNs.
   int addVectors(Tensor<float, 2, true>& vecs,
-                 Tensor<long, 1, true>& indices);
+                 Tensor<Index::idx_t, 1, true>& indices);
 
  protected:
   /// Adds a set of codes and indices to a list, with the representation coming
@@ -83,7 +84,7 @@ class IVFBase {
                                 // resident on the host
                                 const void* codes,
                                 // resident on the host
-                                const long* indices,
+                                const Index::idx_t* indices,
                                 size_t numVecs);
 
   /// Returns the number of bytes in which an IVF list containing numVecs
@@ -94,18 +95,16 @@ class IVFBase {
   virtual size_t getCpuVectorsEncodingSize_(int numVecs) const = 0;
 
   /// Translate to our preferred GPU encoding
-  virtual std::vector<unsigned char> translateCodesToGpu_(
-    std::vector<unsigned char> codes,
-    size_t numVecs) const = 0;
+  virtual std::vector<uint8_t> translateCodesToGpu_(std::vector<uint8_t> codes,
+                                                    size_t numVecs) const = 0;
 
   /// Translate from our preferred GPU encoding
-  virtual std::vector<unsigned char> translateCodesFromGpu_(
-    std::vector<unsigned char> codes,
-    size_t numVecs) const = 0;
+  virtual std::vector<uint8_t> translateCodesFromGpu_(std::vector<uint8_t> codes,
+                                                      size_t numVecs) const = 0;
 
   /// Append vectors to our on-device lists
   virtual void appendVectors_(Tensor<float, 2, true>& vecs,
-                              Tensor<long, 1, true>& indices,
+                              Tensor<Index::idx_t, 1, true>& indices,
                               Tensor<int, 1, true>& listIds,
                               Tensor<int, 1, true>& listOffset,
                               cudaStream_t stream) = 0;
@@ -124,7 +123,7 @@ class IVFBase {
 
   /// Shared function to copy indices from CPU to GPU
   void addIndicesFromCpu_(int listId,
-                          const long* indices,
+                          const Index::idx_t* indices,
                           size_t numVecs);
 
  protected:
@@ -161,7 +160,7 @@ class IVFBase {
   thrust::device_vector<void*> deviceListIndexPointers_;
 
   /// Device representation of all inverted list lengths
-  /// id -> length
+  /// id -> length in number of vectors
   thrust::device_vector<int> deviceListLengths_;
 
   /// Maximum list length seen
@@ -171,7 +170,7 @@ class IVFBase {
     DeviceIVFList(GpuResources* res, const AllocInfo& info);
 
     /// The on-device memory for this particular IVF list
-    DeviceVector<unsigned char> data;
+    DeviceVector<uint8_t> data;
 
     /// The number of vectors encoded in this list, which may be unrelated to
     /// the above allocated data size
@@ -188,7 +187,7 @@ class IVFBase {
   /// If we are storing indices on the CPU (indicesOptions_ is
   /// INDICES_CPU), then this maintains a CPU-side map of what
   /// (inverted list id, offset) maps to which user index
-  std::vector<std::vector<long>> listOffsetToUserIndex_;
+  std::vector<std::vector<Index::idx_t>> listOffsetToUserIndex_;
 };
 
 } } // namespace

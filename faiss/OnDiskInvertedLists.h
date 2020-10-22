@@ -126,6 +126,9 @@ struct OnDiskInvertedLists: InvertedLists {
     size_t allocate_slot (size_t capacity);
     void free_slot (size_t offset, size_t capacity);
 
+    /// override all list sizes and make a packed storage
+    void set_all_lists_sizes(const size_t *sizes);
+
     // empty constructor for the I/O functions
     OnDiskInvertedLists ();
 };

@@ -104,22 +104,20 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
 
     // Convert and copy int indices out
     auto tOutIndices =
-      toDeviceTemporary<faiss::Index::idx_t, 2>(
+      toDeviceTemporary<Index::idx_t, 2>(
         res,
         device,
-        (faiss::Index::idx_t*) args.outIndices,
+        (Index::idx_t*) args.outIndices,
         stream,
         {args.numQueries, args.k});
 
     // Convert int to idx_t
-    convertTensor<int, faiss::Index::idx_t, 2>(stream,
-                                               tOutIntIndices,
-                                               tOutIndices);
+    convertTensor<int, Index::idx_t, 2>(stream, tOutIntIndices, tOutIndices);
 
     // Copy back if necessary
-    fromDevice<faiss::Index::idx_t, 2>(tOutIndices,
-                                       (faiss::Index::idx_t*) args.outIndices,
-                                       stream);
+    fromDevice<Index::idx_t, 2>(
+      tOutIndices, (Index::idx_t*) args.outIndices, stream);
+
   } else if (args.outIndicesType == IndicesDataType::I32) {
     // We can use the brute-force API directly, as it takes i32 indices
     // FIXME: convert to int32_t everywhere?
@@ -199,7 +197,7 @@ bruteForceKnn(GpuResourcesProvider* res,
               float* outDistances,
               // A region of memory size numQueries x k, with k
               // innermost
-              faiss::Index::idx_t* outIndices) {
+              Index::idx_t* outIndices) {
   std::cerr << "bruteForceKnn is deprecated; call bfKnn instead" << std::endl;
 
   GpuDistanceParams args;

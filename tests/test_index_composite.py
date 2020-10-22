@@ -574,6 +574,48 @@ class TestInvlistMeta(unittest.TestCase):
         assert np.all(D == Dref)
         assert np.all(I == Iref)
 
+    def test_stop_words(self):
+        d = 10
+        nb = 1000
+        nq = 1
+        nt = 200
+
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
+
+        index = faiss.index_factory(d, "IVF32,Flat")
+        index.nprobe = 4
+        index.train(xt)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+
+        il = index.invlists
+        maxsz = max(il.list_size(i) for i in range(il.nlist))
+
+        il2 = faiss.StopWordsInvertedLists(il, maxsz + 1)
+        index.own_invlists
+        index.own_invlists = False
+
+        index.replace_invlists(il2, False)
+        D1, I1 = index.search(xq, 10)
+        np.testing.assert_array_equal(Dref, D1)
+        np.testing.assert_array_equal(Iref, I1)
+
+        # cleanup to avoid segfault on exit
+        index.replace_invlists(il, False)
+
+        # voluntarily unbalance one invlist
+        i = int(I1[0, 0])
+        index.add(np.vstack([xb[i]] * (maxsz + 10)))
+
+        # introduce stopwords again
+        index.replace_invlists(il2, False)
+
+        D2, I2 = index.search(xq, 10)
+        self.assertFalse(i in list(I2.ravel()))
+
+        # avoid mem leak
+        index.replace_invlists(il, True)
+
 
 
 

@@ -329,6 +329,33 @@ struct MaskedInvertedLists: ReadOnlyInvertedLists {
 
 };
 
+
+/** if the inverted list in il is smaller than maxsize then return it,
+ *  otherwise return an empty invlist */
+struct StopWordsInvertedLists: ReadOnlyInvertedLists {
+
+    const InvertedLists *il0;
+    size_t maxsize;
+
+    StopWordsInvertedLists (const InvertedLists *il, size_t maxsize);
+
+    size_t list_size(size_t list_no) const override;
+    const uint8_t * get_codes (size_t list_no) const override;
+    const idx_t * get_ids (size_t list_no) const override;
+
+    void release_codes (size_t list_no, const uint8_t *codes) const override;
+    void release_ids (size_t list_no, const idx_t *ids) const override;
+
+    idx_t get_single_id (size_t list_no, size_t offset) const override;
+
+    const uint8_t * get_single_code (
+           size_t list_no, size_t offset) const override;
+
+    void prefetch_lists (const idx_t *list_nos, int nlist) const override;
+
+};
+
+
 } // namespace faiss
 
 
