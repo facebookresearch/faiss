@@ -3,8 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-{% set version = environ.get('GIT_DESCRIBE_TAG') %}
-{% set number = environ.get('GIT_DESCRIBE_NUMBER') %}
+{% set version = environ.get('FAISS_VERSION', GIT_DESCRIBE_TAG) %}
+{% set number = '0' if environ.get('FAISS_VERSION') else GIT_DESCRIBE_NUMBER %}
 
 package:
   name: faiss-pkg
@@ -37,14 +37,15 @@ outputs:
         - {{ compiler('cxx') }}
         - llvm-openmp  # [osx]
         - cmake >=3.18
+        - make  # [not win]
       host:
-        - mkl >=2018
+        - mkl-devel >=2018
         - blas =*=mkl
         - cudatoolkit {{ cudatoolkit }}
       run:
         - mkl >=2018
         - blas =*=mkl
-        - {{ pin_compatible('cudatoolkit', max_pin='x') }}
+        - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
     test:
       commands:
         - test -f $PREFIX/lib/libfaiss.so              # [linux]
@@ -61,6 +62,7 @@ outputs:
         - {{ compiler('cxx') }}
         - swig
         - cmake >=3.17
+        - make  # [not win]
       host:
         - python {{ python }}
         - numpy 1.11.*
@@ -78,3 +80,4 @@ outputs:
         - python -m unittest discover faiss/gpu/test/
       source_files:
         - tests/
+        - faiss/gpu/test/
