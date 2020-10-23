@@ -79,7 +79,7 @@ jobs:
       - run:
           name: Test python extension
           command: |
-            pip3 install pytest
+            pip3 install pytest torch
             export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
             pytest --junitxml=test-results/pytest/results.xml ./tests
       - store_test_results:
@@ -95,6 +95,7 @@ jobs:
           name: Build/test
           command: |
             conda install conda-build
+            conda install -c pytorch pytorch
             cd conda
             conda build faiss --python 3.7
 
