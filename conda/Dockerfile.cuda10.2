@@ -11,11 +11,8 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh &
         bash Miniconda3-latest-Linux-x86_64.sh -b -p ~/miniconda3
 ENV PATH="/root/miniconda3/condabin:${PATH}"
 
-RUN conda install conda-build
+RUN conda install -y -q conda-build anaconda-client
+RUN conda config --set anaconda_upload yes
 
 COPY ./ faiss
 WORKDIR /faiss/conda
-
-RUN CUDA_ARCHS="35;52;60;61;70;72;75" \
-        conda build faiss-gpu --variants '{ "cudatoolkit": "10.2" }' \
-        --no-anaconda-upload -c pytorch --no-test

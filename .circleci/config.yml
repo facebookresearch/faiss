@@ -114,9 +114,9 @@ jobs:
 
   deploy_linux:
     parameters:
-      nightly:
-        type: boolean
-        default: false
+      label:
+        type: string
+        default: main
     docker:
       - image: continuumio/miniconda3
     steps:
@@ -126,19 +126,40 @@ jobs:
           command: |
             conda install -y -q conda-build anaconda-client
             conda config --set anaconda_upload yes
-      - run: |
+      - run:
+          name: Build packages
+          command: |
             cd conda
-            if [ "<<parameters.nightly>>" = "true" ]; then
-              FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --label nightly
-            else
-              conda build faiss --user pytorch
-            fi
+            conda build faiss --user pytorch --label <<parameters.label>>
+
+  deploy_linux_gpu:
+    parameters:
+      label:
+        type: string
+        default: main
+      cuda:
+        type: string
+    machine:
+      resource_class: gpu.nvidia.small
+      image: ubuntu-1604-cuda-10.1:201909-23
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - run:
+          name: Build packages
+          command: |
+            docker build -t faiss -f conda/Dockerfile.cuda<<parameters.cuda>>
+            docker run --gpus all \
+              -e CUDA_ARCHS="35;52;60;61;70;72;75" \
+              -e ANACONDA_API_TOKEN=$ANACONDA_API_TOKEN \
+              conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>" }' \
+                --user pytorch --label <<parameters.label>>
 
   deploy_osx:
     parameters:
-      nightly:
-        type: boolean
-        default: false
+      label:
+        type: string
+        default: main
     macos:
       xcode: 11.6.0
     steps:
@@ -154,20 +175,18 @@ jobs:
           name: Install MacOSX10.9 SDK
           command: |
             curl -L -o - https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.9.sdk.tar.xz | sudo tar xJf - -C /opt
-      - run: |
-          export PATH=~/miniconda/bin:$PATH
-          cd conda
-          if [ "<<parameters.nightly>>" = "true" ]; then
-            FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --label nightly
-          else
-            conda build faiss --user pytorch
-          fi
+      - run:
+          name: Build packages
+          command: |
+            export PATH=~/miniconda/bin:$PATH
+            cd conda
+            conda build faiss --user pytorch --label <<parameters.label>>
 
   deploy_windows:
     parameters:
-      nightly:
-        type: boolean
-        default: false
+      label:
+        type: string
+        default: main
     executor:
       name: win/default
       shell: bash.exe
@@ -178,37 +197,58 @@ jobs:
           command: |
             conda install -y -q conda-build anaconda-client
             conda config --set anaconda_upload yes
-      - run: |
+      - run:
+          name: Build packages
+          command: |
             cd conda
-            if [ "<<parameters.nightly>>" = "true" ]; then
-              FAISS_VERSION="1.0.0_nightly_$(date '+%Y%m%d')" conda build faiss --user pytorch --label nightly
-            else
-              conda build faiss --user pytorch
-            fi
+            conda build faiss --user pytorch --label <<parameters.label>>
 
 workflows:
   version: 2
   build:
     jobs:
-      - build_linux
+      - build_linux:
+          name: Linux
       - build_linux_gpu:
+          name: Linux GPU
           requires:
-            - build_linux
-      - build_osx
-      - build_windows
+            - Linux
+      - build_osx:
+          name: OSX
+      - build_windows:
+          name: Windows
       - deploy_linux:
+          name: Linux packages
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy_linux_gpu:
+          name: Linux GPU packages (CUDA 10.1)
+          cuda: "10.1"
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy_linux_gpu:
+          name: Linux GPU packages (CUDA 10.2)
+          cuda: "10.2"
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
       - deploy_windows:
+          name: Windows packages
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
       - deploy_osx:
+          name: OSX packages
           filters:
             tags:
               only: /^v.*/
@@ -225,8 +265,19 @@ workflows:
                 - master
     jobs:
       - deploy_linux:
-          nightly: true
+          name: Linux nightlies
+          label: nightly
+      - deploy_linux_gpu:
+          name: Linux GPU nightlies (CUDA 10.1)
+          cuda: "10.1"
+          label: nightly
+      - deploy_linux_gpu:
+          name: Linux GPU nightlies (CUDA 10.2)
+          cuda: "10.2"
+          label: nightly
       - deploy_windows:
-          nightly: true
+          name: Windows nightlies
+          label: nightly
       - deploy_osx:
-          nightly: true
+          name: OSX nightlies
+          label: nightly

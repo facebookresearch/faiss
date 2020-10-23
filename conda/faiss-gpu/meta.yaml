@@ -3,8 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-{% set version = environ.get('FAISS_VERSION', GIT_DESCRIBE_TAG) %}
-{% set number = '0' if environ.get('FAISS_VERSION') else GIT_DESCRIBE_NUMBER %}
+{% set version = GIT_DESCRIBE_TAG %}
+{% set number = GIT_DESCRIBE_NUMBER %}
 
 package:
   name: faiss-pkg
@@ -75,6 +75,7 @@ outputs:
       requires:
         - numpy
         - scipy
+        - pytorch
       commands:
         - python -m unittest discover tests/
         - python -m unittest discover faiss/gpu/test/
