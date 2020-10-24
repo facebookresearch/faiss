@@ -29,7 +29,7 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
   FAISS_THROW_IF_NOT_MSG(args.vectors,
                          "bfKnn: vectors must be provided (passed null)");
   FAISS_THROW_IF_NOT_MSG(args.numQueries > 0,
-                         "bfKnn: numQUeries must be > 0");
+                         "bfKnn: numQueries must be > 0");
   FAISS_THROW_IF_NOT_MSG(args.queries,
                          "bfKnn: queries must be provided (passed null)");
   FAISS_THROW_IF_NOT_MSG(args.outDistances,

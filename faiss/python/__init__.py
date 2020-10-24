@@ -40,7 +40,6 @@ def replace_method(the_class, name, replacement, ignore_missing=False):
     setattr(the_class, name + '_c', orig_method)
     setattr(the_class, name, replacement)
 
-
 def handle_Clustering():
     def replacement_train(self, x, index, weights=None):
         n, d = x.shape
@@ -99,7 +98,6 @@ handle_Quantizer(ScalarQuantizer)
 def handle_Index(the_class):
 
     def replacement_add(self, x):
-        assert x.flags.contiguous
         n, d = x.shape
         assert d == self.d
         self.add_c(n, swig_ptr(x))
@@ -107,43 +105,68 @@ def handle_Index(the_class):
     def replacement_add_with_ids(self, x, ids):
         n, d = x.shape
         assert d == self.d
+
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
-    def replacement_assign(self, x, k):
+    def replacement_assign(self, x, k, labels=None):
         n, d = x.shape
         assert d == self.d
-        labels = np.empty((n, k), dtype=np.int64)
+
+        if labels is None:
+            labels = np.empty((n, k), dtype=np.int64)
+        else:
+            assert labels.shape == (n, k)
+
         self.assign_c(n, swig_ptr(x), swig_ptr(labels), k)
         return labels
 
     def replacement_train(self, x):
-        assert x.flags.contiguous
         n, d = x.shape
         assert d == self.d
         self.train_c(n, swig_ptr(x))
 
-    def replacement_search(self, x, k):
+    def replacement_search(self, x, k, D=None, I=None):
         n, d = x.shape
         assert d == self.d
-        distances = np.empty((n, k), dtype=np.float32)
-        labels = np.empty((n, k), dtype=np.int64)
-        self.search_c(n, swig_ptr(x),
-                      k, swig_ptr(distances),
-                      swig_ptr(labels))
-        return distances, labels
 
-    def replacement_search_and_reconstruct(self, x, k):
+        if D is None:
+            D = np.empty((n, k), dtype=np.float32)
+        else:
+            assert D.shape == (n, k)
+
+        if I is None:
+            I = np.empty((n, k), dtype=np.int64)
+        else:
+            assert I.shape == (n, k)
+
+        self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I))
+        return D, I
+
+    def replacement_search_and_reconstruct(self, x, k, D=None, I=None, R=None):
         n, d = x.shape
         assert d == self.d
-        distances = np.empty((n, k), dtype=np.float32)
-        labels = np.empty((n, k), dtype=np.int64)
-        recons = np.empty((n, k, d), dtype=np.float32)
+
+        if D is None:
+            D = np.empty((n, k), dtype=np.float32)
+        else:
+            assert D.shape == (n, k)
+
+        if I is None:
+            I = np.empty((n, k), dtype=np.int64)
+        else:
+            assert I.shape == (n, k)
+
+        if R is None:
+            R = np.empty((n, k, d), dtype=np.float32)
+        else:
+            assert R.shape == (n, k, d)
+
         self.search_and_reconstruct_c(n, swig_ptr(x),
-                                      k, swig_ptr(distances),
-                                      swig_ptr(labels),
-                                      swig_ptr(recons))
-        return distances, labels, recons
+                                      k, swig_ptr(D),
+                                      swig_ptr(I),
+                                      swig_ptr(R))
+        return D, I, R
 
     def replacement_remove_ids(self, x):
         if isinstance(x, IDSelector):
@@ -157,13 +180,21 @@ def handle_Index(the_class):
                 sel = IDSelectorBatch(x.size, swig_ptr(x))
         return self.remove_ids_c(sel)
 
-    def replacement_reconstruct(self, key):
-        x = np.empty(self.d, dtype=np.float32)
+    def replacement_reconstruct(self, key, x=None):
+        if x is None:
+            x = np.empty(self.d, dtype=np.float32)
+        else:
+            assert x.shape == (self.d, )
+
         self.reconstruct_c(key, swig_ptr(x))
         return x
 
-    def replacement_reconstruct_n(self, n0, ni):
-        x = np.empty((ni, self.d), dtype=np.float32)
+    def replacement_reconstruct_n(self, n0, ni, x=None):
+        if x is None:
+            x = np.empty((ni, self.d), dtype=np.float32)
+        else:
+            assert x.shape == (ni, self.d)
+
         self.reconstruct_n_c(n0, ni, swig_ptr(x))
         return x
 
@@ -171,11 +202,14 @@ def handle_Index(the_class):
         n = keys.size
         assert keys.shape == (n, )
         assert x.shape == (n, self.d)
+
         self.update_vectors_c(n, swig_ptr(keys), swig_ptr(x))
 
+    # The CPU does not support passed-in output buffers
     def replacement_range_search(self, x, thresh):
         n, d = x.shape
         assert d == self.d
+
         res = RangeSearchResult(n)
         self.range_search_c(n, swig_ptr(x), thresh, res)
         # get pointers and copy them
@@ -185,17 +219,27 @@ def handle_Index(the_class):
         I = rev_swig_ptr(res.labels, nd).copy()
         return lims, D, I
 
-    def replacement_sa_encode(self, x):
+    def replacement_sa_encode(self, x, codes=None):
         n, d = x.shape
         assert d == self.d
-        codes = np.empty((n, self.sa_code_size()), dtype='uint8')
+
+        if codes is None:
+            codes = np.empty((n, self.sa_code_size()), dtype=np.uint8)
+        else:
+            assert codes.shape == (n, self.sa_code_size())
+
         self.sa_encode_c(n, swig_ptr(x), swig_ptr(codes))
         return codes
 
-    def replacement_sa_decode(self, codes):
+    def replacement_sa_decode(self, codes, x=None):
         n, cs = codes.shape
         assert cs == self.sa_code_size()
-        x = np.empty((n, self.d), dtype='float32')
+
+        if x is None:
+            x = np.empty((n, self.d), dtype=np.float32)
+        else:
+            assert x.shape == (n, self.d)
+
         self.sa_decode_c(n, swig_ptr(codes), swig_ptr(x))
         return x
 
@@ -218,7 +262,6 @@ def handle_Index(the_class):
 def handle_IndexBinary(the_class):
 
     def replacement_add(self, x):
-        assert x.flags.contiguous
         n, d = x.shape
         assert d * 8 == self.d
         self.add_c(n, swig_ptr(x))
@@ -230,7 +273,6 @@ def handle_IndexBinary(the_class):
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
     def replacement_train(self, x):
-        assert x.flags.contiguous
         n, d = x.shape
         assert d * 8 == self.d
         self.train_c(n, swig_ptr(x))
@@ -282,7 +324,6 @@ def handle_IndexBinary(the_class):
 def handle_VectorTransform(the_class):
 
     def apply_method(self, x):
-        assert x.flags.contiguous
         n, d = x.shape
         assert d == self.d_in
         y = np.empty((n, self.d_out), dtype=np.float32)
@@ -297,7 +338,6 @@ def handle_VectorTransform(the_class):
         return y
 
     def replacement_vt_train(self, x):
-        assert x.flags.contiguous
         n, d = x.shape
         assert d == self.d_in
         self.train_c(n, swig_ptr(x))
@@ -503,6 +543,89 @@ def index_cpu_to_gpus_list(index, co=None, gpus=None, ngpu=-1):
     index_gpu = index_cpu_to_gpu_multiple_py(res, index, co, gpus)
     return index_gpu
 
+# allows numpy ndarray usage with bfKnn
+def knn_gpu(res, xb, xq, k, D=None, I=None, metric=METRIC_L2):
+    nq, d = xq.shape
+    if xq.flags.c_contiguous:
+        xq_row_major = True
+    elif xq.flags.f_contiguous:
+        xq = xq.T
+        xq_row_major = False
+    else:
+        raise TypeError('matrix should be row (C) or column-major (Fortran)')
+
+    xq_ptr = swig_ptr(xq)
+
+    if xq.dtype == np.float32:
+        xq_type = DistanceDataType_F32
+    elif xq.dtype == np.float16:
+        xq_type = DistanceDataType_F16
+    else:
+        raise TypeError('xq must be f32 or f16')
+
+    nb, d2 = xb.shape
+    assert d2 == d
+    if xb.flags.c_contiguous:
+        xb_row_major = True
+    elif xb.flags.f_contiguous:
+        xb = xb.T
+        xb_row_major = False
+    else:
+        raise TypeError('matrix should be row (C) or column-major (Fortran)')
+
+    xb_ptr = swig_ptr(xb)
+
+    if xb.dtype == np.float32:
+        xb_type = DistanceDataType_F32
+    elif xb.dtype == np.float16:
+        xb_type = DistanceDataType_F16
+    else:
+        raise TypeError('xb must be f32 or f16')
+
+    if D is None:
+        D = np.empty((nq, k), dtype=np.float32)
+    else:
+        assert D.shape == (nq, k)
+        # interface takes void*, we need to check this
+        assert D.dtype == np.float32
+
+    D_ptr = swig_ptr(D)
+
+    if I is None:
+        I = np.empty((nq, k), dtype=np.int64)
+    else:
+        assert I.shape == (nq, k)
+
+    I_ptr = swig_ptr(I)
+
+    if I.dtype == np.int64:
+        I_type = IndicesDataType_I64
+    elif I.dtype == I.dtype == np.int32:
+        I_type = IndicesDataType_I32
+    else:
+        raise TypeError('I must be i64 or i32')
+
+    args = GpuDistanceParams()
+    args.metric = metric
+    args.k = k
+    args.dims = d
+    args.vectors = xb_ptr
+    args.vectorsRowMajor = xb_row_major
+    args.vectorType = xb_type
+    args.numVectors = nb
+    args.queries = xq_ptr
+    args.queriesRowMajor = xq_row_major
+    args.queryType = xq_type
+    args.numQueries = nq
+    args.outDistances = D_ptr
+    args.outIndices = I_ptr
+    args.outIndicesType = I_type
+
+    # no stream synchronization needed, inputs and outputs are guaranteed to
+    # be on the CPU (numpy arrays)
+    bfKnn(res, args)
+
+    return D, I
 
 ###########################################
 # numpy array / std::vector conversions

@@ -26,10 +26,9 @@ void IndexBinary::range_search(idx_t, const uint8_t *, int,
   FAISS_THROW_MSG("range search not implemented");
 }
 
-void IndexBinary::assign(idx_t n, const uint8_t *x, idx_t *labels, idx_t k) {
-  int *distances = new int[n * k];
-  ScopeDeleter<int> del(distances);
-  search(n, x, k, distances, labels);
+void IndexBinary::assign(idx_t n, const uint8_t *x, idx_t *labels, idx_t k) const {
+  std::vector<int> distances(n * k);
+  search(n, x, k, distances.data(), labels);
 }
 
 void IndexBinary::add_with_ids(idx_t, const uint8_t *, const idx_t *) {

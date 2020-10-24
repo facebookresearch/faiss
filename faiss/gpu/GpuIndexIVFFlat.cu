@@ -140,6 +140,11 @@ GpuIndexIVFFlat::reset() {
 
 void
 GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
+  // For now, only support <= max int results
+  FAISS_THROW_IF_NOT_FMT(n <= (Index::idx_t) std::numeric_limits<int>::max(),
+                         "GPU index only supports up to %d indices",
+                         std::numeric_limits<int>::max());
+
   DeviceScope scope(config_.device);
 
   if (this->is_trained) {
@@ -151,7 +156,14 @@ GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
 
   FAISS_ASSERT(!index_);
 
-  trainQuantizer_(n, x);
+  // FIXME: GPUize more of this
+  // First, make sure that the data is resident on the CPU, if it is not on the
+  // CPU, as we depend upon parts of the CPU code
+  auto hostData = toHost<float, 2>((float*) x,
+                                   resources_->getDefaultStream(config_.device),
+                                   {(int) n, (int) this->d});
+
+  trainQuantizer_(n, hostData.data());
 
   // The quantizer is now trained; construct the IVF index
   index_.reset(new IVFFlat(resources_.get(),

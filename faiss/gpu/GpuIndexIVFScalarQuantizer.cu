@@ -187,6 +187,11 @@ GpuIndexIVFScalarQuantizer::trainResiduals_(Index::idx_t n, const float* x) {
 
 void
 GpuIndexIVFScalarQuantizer::train(Index::idx_t n, const float* x) {
+  // For now, only support <= max int results
+  FAISS_THROW_IF_NOT_FMT(n <= (Index::idx_t) std::numeric_limits<int>::max(),
+                         "GPU index only supports up to %d indices",
+                         std::numeric_limits<int>::max());
+
   DeviceScope scope(config_.device);
 
   if (this->is_trained) {

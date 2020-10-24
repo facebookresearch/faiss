@@ -198,6 +198,10 @@ class GpuResources {
   /// given device
   virtual cudaStream_t getDefaultStream(int device) = 0;
 
+  /// Overrides the default stream for a device to the user-supplied stream. The
+  /// resources object does not own this stream (i.e., it will not destroy it).
+  virtual void setDefaultStream(int device, cudaStream_t stream) = 0;
+
   /// Returns the set of alternative streams that we use for the given device
   virtual std::vector<cudaStream_t> getAlternateStreams(int device) = 0;
 
