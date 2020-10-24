@@ -184,6 +184,7 @@ namespace std {
 %include <std_string.i>
 %include <std_pair.i>
 %include <std_map.i>
+%include <std_shared_ptr.i>
 
 // primitive array types
 %template(FloatVector) std::vector<float>;
@@ -237,6 +238,9 @@ void gpu_profiler_stop();
 void gpu_sync_all_devices();
 
 #ifdef GPU_WRAPPER
+
+%shared_ptr(faiss::gpu::GpuResources);
+%shared_ptr(faiss::gpu::StandardGpuResourcesImpl);
 
 %{
 
@@ -293,11 +297,11 @@ typedef CUstream_st* cudaStream_t;
 %inline %{
 
 // interop between pytorch exposed cudaStream_t and faiss
-cudaStream_t cast_integer_to_cudastream_t(long x) {
+cudaStream_t cast_integer_to_cudastream_t(long long x) {
   return (cudaStream_t) x;
 }
 
-long cast_cudastream_t_to_integer(cudaStream_t x) {
+long long cast_cudastream_t_to_integer(cudaStream_t x) {
   return (long) x;
 }
 
@@ -799,16 +803,24 @@ void *memcpy(void *dest, const void *src, size_t n);
  *******************************************************************/
 
 %inline %{
-float * cast_integer_to_float_ptr (long x) {
+uint8_t * cast_integer_to_uint8_ptr (long long x) {
+    return (uint8_t*)x;
+}
+
+float * cast_integer_to_float_ptr (long long x) {
     return (float*)x;
 }
 
-long * cast_integer_to_long_ptr (long x) {
-    return (long*)x;
+faiss::Index::idx_t* cast_integer_to_idx_t_ptr (long long x) {
+    return (faiss::Index::idx_t*)x;
 }
 
-int * cast_integer_to_int_ptr (long x) {
+int * cast_integer_to_int_ptr (long long x) {
     return (int*)x;
+}
+
+void * cast_integer_to_void_ptr (long long x) {
+    return (void*)x;
 }
 
 %}

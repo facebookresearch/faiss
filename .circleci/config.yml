@@ -35,7 +35,8 @@ jobs:
           command: |
             pip3 install pytest
             export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            pytest --junitxml=test-results/pytest/results.xml ./tests
+            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
       - store_test_results:
           path: test-results
 
@@ -81,7 +82,8 @@ jobs:
           command: |
             pip3 install pytest torch
             export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            pytest --junitxml=test-results/pytest/results.xml ./tests
+            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
       - store_test_results:
           path: test-results
 
@@ -111,7 +113,8 @@ jobs:
           command: |
             docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
             docker run --gpus all faiss make -C build test
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && python3 -m unittest discover faiss/gpu/test'
+            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
+            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
 
   deploy_linux:
     parameters:

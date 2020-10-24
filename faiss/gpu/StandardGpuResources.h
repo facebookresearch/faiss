@@ -46,7 +46,7 @@ class StandardGpuResourcesImpl : public GpuResources {
   /// up.
   /// We are guaranteed that all Faiss GPU work is ordered with respect to
   /// this stream upon exit from an index or other Faiss GPU call.
-  void setDefaultStream(int device, cudaStream_t stream);
+  void setDefaultStream(int device, cudaStream_t stream) override;
 
   /// Revert the default stream to the original stream managed by this resources
   /// object, in case someone called `setDefaultStream`.

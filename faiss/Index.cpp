@@ -34,11 +34,10 @@ void Index::range_search (idx_t , const float *, float,
   FAISS_THROW_MSG ("range search not implemented");
 }
 
-void Index::assign (idx_t n, const float * x, idx_t * labels, idx_t k)
+void Index::assign (idx_t n, const float * x, idx_t * labels, idx_t k) const
 {
-  float * distances = new float[n * k];
-  ScopeDeleter<float> del(distances);
-  search (n, x, k, distances, labels);
+  std::vector<float> distances(n * k);
+  search (n, x, k, distances.data(), labels);
 }
 
 void Index::add_with_ids(

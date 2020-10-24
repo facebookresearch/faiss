@@ -195,6 +195,38 @@ GpuIndex::addPage_(int n,
 }
 
 void
+GpuIndex::assign(Index::idx_t n,
+                 const float* x,
+                 Index::idx_t* labels,
+                 Index::idx_t k) const {
+  FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
+
+  // For now, only support <= max int results
+  FAISS_THROW_IF_NOT_FMT(n <= (Index::idx_t) std::numeric_limits<int>::max(),
+                         "GPU index only supports up to %d indices",
+                         std::numeric_limits<int>::max());
+
+  // Maximum k-selection supported is based on the CUDA SDK
+  FAISS_THROW_IF_NOT_FMT(k <= (Index::idx_t) getMaxKSelection(),
+                         "GPU index only supports k <= %d (requested %d)",
+                         getMaxKSelection(),
+                         (int) k); // select limitation
+
+  DeviceScope scope(config_.device);
+  auto stream = resources_->getDefaultStream(config_.device);
+
+  // We need to create a throw-away buffer for distances, which we don't use but
+  // which we do need for the search call
+  DeviceTensor<float, 2, true> distances(
+    resources_.get(),
+    makeTempAlloc(AllocType::Other, stream),
+    {(int) n, (int) k});
+
+  // Forward to search
+  search(n, x, k, distances.data(), labels);
+}
+
+void
 GpuIndex::search(Index::idx_t n,
                  const float* x,
                  Index::idx_t k,
@@ -474,6 +506,11 @@ GpuIndex::compute_residual_n(Index::idx_t n,
                              float* residuals,
                              const Index::idx_t* keys) const {
   FAISS_THROW_MSG("compute_residual_n not implemented for this type of index");
+}
+
+std::shared_ptr<GpuResources>
+GpuIndex::getResources() {
+  return resources_;
 }
 
 } } // namespace

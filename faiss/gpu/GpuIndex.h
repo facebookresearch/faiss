@@ -39,6 +39,10 @@ class GpuIndex : public faiss::Index {
   /// Returns the device that this index is resident on
   int getDevice() const;
 
+  /// Returns a reference to our GpuResources object that manages memory, stream
+  /// and handle resources on the GPU
+  std::shared_ptr<GpuResources> getResources();
+
   /// Set the minimum data size for searches (in MiB) for which we use
   /// CPU -> GPU paging
   void setMinPagingSize(size_t size);
@@ -57,6 +61,13 @@ class GpuIndex : public faiss::Index {
   void add_with_ids(Index::idx_t n,
                     const float* x,
                     const Index::idx_t* ids) override;
+
+  /// `x` and `labels` can be resident on the CPU or any GPU; copies are
+  /// performed as needed
+  void assign(Index::idx_t n,
+              const float* x,
+              Index::idx_t* labels,
+              Index::idx_t k = 1) const override;
 
   /// `x`, `distances` and `labels` can be resident on the CPU or any
   /// GPU; copies are performed as needed

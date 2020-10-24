@@ -120,7 +120,7 @@ struct IndexBinary {
    * @param x           input vectors to search, size n * d / 8
    * @param labels      output labels of the NNs, size n*k
    */
-  void assign(idx_t n, const uint8_t *x, idx_t *labels, idx_t k = 1);
+  void assign(idx_t n, const uint8_t *x, idx_t *labels, idx_t k = 1) const;
 
   /// Removes all elements from the database.
   virtual void reset() = 0;

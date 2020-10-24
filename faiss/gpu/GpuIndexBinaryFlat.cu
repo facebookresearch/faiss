@@ -64,6 +64,11 @@ GpuIndexBinaryFlat::getDevice() const {
   return binaryFlatConfig_.device;
 }
 
+std::shared_ptr<GpuResources>
+GpuIndexBinaryFlat::getResources() {
+  return resources_;
+}
+
 void
 GpuIndexBinaryFlat::copyFrom(const faiss::IndexBinaryFlat* index) {
   DeviceScope scope(binaryFlatConfig_.device);

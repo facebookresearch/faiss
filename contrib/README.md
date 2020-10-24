@@ -31,12 +31,13 @@ See [On-disk storage](https://github.com/facebookresearch/faiss/wiki/Indexes-tha
 Computes the ground-truth search results for a dataset that possibly does not fit in RAM. Uses GPU if available.
 Tested in `tests/test_contrib.TestComputeGT`
 
-### gpu.py
+### torch_utils.py
 
-(requires GPU Faiss)
+Interoperability functions for pytorch and Faiss: Importing this will allow pytorch Tensors (CPU or GPU) to be used as arguments to Faiss indexes and other functions. Torch GPU tensors can only be used with Faiss GPU indexes. If this is imported with a package that supports Faiss GPU, the necessary stream synchronization with the current pytorch stream will be automatically performed.
 
-Interoperability functions for pytorch and Faiss: pass GPU data without copying back to CPU.
-Tested in `gpu/test/test_pytorch_faiss`
+Numpy ndarrays can continue to be used in the Faiss python interface after importing this file. All arguments must be uniformly either numpy ndarrays or Torch tensors; no mixing is allowed.
+
+Tested in `tests/test_contrib_torch.py` (CPU) and `gpu/test/test_contrib_torch_gpu.py` (GPU).
 
 ### datasets.py
 
