@@ -160,6 +160,9 @@ FAISS_API extern int distance_compute_blas_threshold;
 FAISS_API extern int distance_compute_blas_query_bs;
 FAISS_API extern int distance_compute_blas_database_bs;
 
+// above this number of results we switch to a reservoir to collect results
+// rather than a heap
+FAISS_API extern int distance_compute_min_k_reservoir;
 
 /** Return the k nearest neighors of each of the nx vectors x among the ny
  *  vector y, w.r.t to max inner product
