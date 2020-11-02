@@ -22,7 +22,7 @@ namespace faiss {
  *******************************************************************/
 
 /** The C object gives the type T of the values of a key-value storage, the type
- *  of the keys, TI and the comparison that is done: CMax for the decreasing
+ *  of the keys, TI and the comparison that is done: CMax for a decreasing
  *  series and CMin for increasing series. In other words, for a given threshold
  *  threshold, an incoming value x is kept if
  *

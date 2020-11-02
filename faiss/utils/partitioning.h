@@ -28,4 +28,3 @@ typename C::T partition_fuzzy(
 
 } // namespace faiss
 
-#include <faiss/utils/partitioning-inl.h>
