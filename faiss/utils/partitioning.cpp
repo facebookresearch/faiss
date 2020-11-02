@@ -130,7 +130,7 @@ typename C::T partition_fuzzy_median3(
 
     // here we use bissection with a median of 3 to find the threshold and
     // compress the arrays afterwards. So it's a n*log(n) algoirithm rather than
-    // qselect's O(n)
+    // qselect's O(n) but it avoids compressing the array.
 
     FAISS_THROW_IF_NOT(n >= 3);
 
