@@ -5,25 +5,62 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/utils/partitioning.h>
+
 #include <cmath>
+#include <cassert>
+
+#include <faiss/impl/FaissAssert.h>
+
+#include <faiss/utils/partitioning.h>
+#include <faiss/utils/ordered_key_value.h>
 
 namespace faiss {
 
 namespace partitioning {
 
+template<typename T>
+T median3(T a, T b, T c) {
+    if (a > b) {
+        std::swap(a, b);
+    }
+    if (c > b) {
+        return b;
+    }
+    if (c > a) {
+        return c;
+    }
+    return a;
+}
+
 
 template<class C>
-void find_minimax(
+typename C::T sample_threshold_median3(
     const typename C::T * vals, int n,
-    typename C::T & smin, typename C::T & smax
+    typename C::T thresh_inf, typename C::T thresh_sup
 ) {
-    smin = C::neutral();
-    smax = C::Crev::neutral();
+    using T = typename C::T;
+    size_t big_prime = 6700417;
+    T val3[3];
+    int vi = 0;
 
     for (size_t i = 0; i < n; i++) {
-        typename C::T v = vals[i];
-        if (C::cmp(smin, v)) smin = v;
-        if (C::cmp(v, smax)) smax = v;
+        T v = vals[(i * big_prime) % n];
+        // thresh_inf < v < thresh_sup (for CMax)
+        if (C::cmp(v, thresh_inf) && C::cmp(thresh_sup, v)) {
+            val3[vi++] = v;
+            if (vi == 3) {
+                break;
+            }
+        }
+    }
+
+    if (vi == 3) {
+        return median3(val3[0], val3[1], val3[2]);
+    } else if (vi != 0) {
+        return val3[0];
+    } else {
+        FAISS_THROW_MSG("too few values to compute a median");
     }
 }
 
@@ -68,13 +105,12 @@ size_t compress_array(
 }
 
 
-#define IFV if(true)
+#define IFV if(false)
 
 template<class C>
-typename C::T partition_fuzzy_with_bounds(
+typename C::T partition_fuzzy_median3(
     typename C::T *vals, typename C::TI * ids, size_t n,
-    size_t q_min, size_t q_max, size_t * q_out,
-    typename C::T s0i, typename C::T s1i)
+    size_t q_min, size_t q_max, size_t * q_out)
 {
 
     if (q_min == 0) {
@@ -89,52 +125,52 @@ typename C::T partition_fuzzy_with_bounds(
         }
         return C::neutral();
     }
-    if (s0i == s1i) {
-        if (q_out) {
-            *q_out = q_min;
-        }
-        return s0i;
-    }
 
     using T = typename C::T;
 
-    // lower bound inclusive, upper exclusive
-    T s0 = s0i, s1 = C::nextafter(s1i);
+    // here we use bissection with a median of 3 to find the threshold and
+    // compress the arrays afterwards. So it's a n*log(n) algoirithm rather than
+    // qselect's O(n)
 
-    IFV printf("bounds: %g %g\n", s0, s1);
+    FAISS_THROW_IF_NOT(n >= 3);
 
-    T thresh;
+    T thresh_inf = C::Crev::neutral();
+    T thresh_sup = C::neutral();
+    T thresh = median3(vals[0], vals[n / 2], vals[n - 1]);
+
     size_t n_eq = 0, n_lt = 0;
     size_t q = 0;
 
-    while(s0 + 1 < s1) {
-        thresh = (s0 + s1) / 2;
+    for(int it = 0; it < 200; it++) {
         count_lt_and_eq<C>(vals, n, thresh, n_lt, n_eq);
 
-        IFV  printf("   [%g %g] thresh=%g n_lt=%ld n_eq=%ld, q=%ld:%ld/%ld\n",
-            s0, s1, thresh, n_lt, n_eq, q_min, q_max, n);
+        IFV  printf("   thresh=%g [%g %g] n_lt=%ld n_eq=%ld, q=%ld:%ld/%ld\n",
+            thresh, thresh_inf, thresh_sup, n_lt, n_eq, q_min, q_max, n);
 
         if (n_lt <= q_min) {
             if (n_lt + n_eq >= q_min) {
                 q = q_min;
                 break;
             } else {
-                s0 = thresh;
+                thresh_inf = thresh;
             }
         } else if (n_lt <= q_max) {
             q = n_lt;
             break;
         } else {
-            s1  = thresh;
+            thresh_sup = thresh;
         }
+
+        // FIXME avoid a second pass over the array to sample the threshold
+        IFV  printf("     sample thresh in [%g %g]\n", thresh_inf, thresh_sup);
+        thresh = sample_threshold_median3<C>(vals, n, thresh_inf, thresh_sup);
     }
 
-    size_t n_eq_1 = q - n_lt;
+    int64_t n_eq_1 = q - n_lt;
 
     IFV printf("shrink: thresh=%g n_eq_1=%ld\n", thresh, n_eq_1);
 
     if (n_eq_1 < 0) { // happens when > q elements are at lower bound
-        assert(s0 + 1 == s1);
         q = q_min;
         thresh = C::Crev::nextafter(thresh);
         n_eq_1 = q;
@@ -161,15 +197,21 @@ typename C::T partition_fuzzy(
     typename C::T *vals, typename C::TI * ids, size_t n,
     size_t q_min, size_t q_max, size_t * q_out)
 {
-    typename C::T s0i, s1i;
 
-    partitioning::find_minimax<C>(vals, n, s0i, s1i);
-
-    return partitioning::partition_fuzzy_with_bounds<C>(
-        vals, ids, n, q_min, q_max, q_out, s0i, s1i);
+    return partitioning::partition_fuzzy_median3<C>(
+        vals, ids, n, q_min, q_max, q_out);
 }
 
 
+// explicit template instanciations
+
+template float partition_fuzzy<CMin<float, int64_t>> (
+    float *vals, int64_t * ids, size_t n,
+    size_t q_min, size_t q_max, size_t * q_out);
+
+template float partition_fuzzy<CMax<float, int64_t>> (
+    float *vals, int64_t * ids, size_t n,
+    size_t q_min, size_t q_max, size_t * q_out);
 
 
 

@@ -603,9 +603,9 @@ class TestPartitioning(unittest.TestCase):
         ids = (rs.permutation(n) + 12345).astype('int64')
         dic = dict(zip(ids, vals))
 
-        print("seed=", seed, "q=", q, "n=", n)
-        print(vals)
-        print(ids)
+        #print("seed=", seed, "q=", q, "n=", n)
+        #print(vals)
+        #print(ids)
 
         vals_orig = vals.copy()
 
@@ -624,7 +624,7 @@ class TestPartitioning(unittest.TestCase):
             )
             q = q[0]
             assert q_min <= q <= q_max
-        print("thresh2=", thresh2)
+        #print("thresh2=", thresh2)
         o = vals_orig.argsort()
         thresh = vals_orig[o[q]]
         n_eq = (vals_orig[o[:q]] == thresh).sum()
