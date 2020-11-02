@@ -99,6 +99,7 @@ typedef uint64_t size_t;
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/partitioning.h>
 #include <faiss/impl/AuxIndexStructures.h>
 
 #ifndef _MSC_VER
@@ -226,7 +227,9 @@ namespace std {
 
 %ignore *::cmp;
 
+%include  <faiss/utils/ordered_key_value.h>
 %include  <faiss/utils/Heap.h>
+%include  <faiss/utils/partitioning.h>
 %include  <faiss/utils/hamming.h>
 
 int get_num_gpus();
@@ -765,7 +768,7 @@ REV_SWIG_PTR(uint64_t, NPY_UINT64);
 
 
 /*******************************************************************
- * How should the template objects apprear in the scripting language?
+ * How should the template objects appear in the scripting language?
  *******************************************************************/
 
 // answer: the same as the C++ typedefs, but we still have to redefine them
@@ -781,6 +784,10 @@ REV_SWIG_PTR(uint64_t, NPY_UINT64);
 %template(float_maxheap_array_t) faiss::HeapArray<faiss::CMax<float, int64_t> >;
 %template(int_maxheap_array_t) faiss::HeapArray<faiss::CMax<int, int64_t> >;
 
+%template(CMin_float_partition_fuzzy)
+    faiss::partition_fuzzy<faiss::CMin<float, int64_t> >;
+%template(CMax_float_partition_fuzzy)
+    faiss::partition_fuzzy<faiss::CMax<float, int64_t> >;
 
 /*******************************************************************
  * Expose a few basic functions

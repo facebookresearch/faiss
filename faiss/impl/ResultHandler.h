@@ -14,11 +14,17 @@
 
 
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/partitioning.h>
 #include <faiss/impl/AuxIndexStructures.h>
 
 
 namespace faiss {
 
+
+
+/*****************************************************************
+ * Heap based result handler
+ *****************************************************************/
 
 
 template<class C>
@@ -46,7 +52,7 @@ struct HeapResultHandler {
     /******************************************************
      * API for 1 result at a time (each SingleResultHandler is
      * called from 1 thread)
-     ******************************************************/
+     */
 
     struct SingleResultHandler {
         HeapResultHandler & hr;
@@ -84,7 +90,7 @@ struct HeapResultHandler {
 
     /******************************************************
      * API for multiple results (called from 1 thread)
-     ******************************************************/
+     */
 
     size_t i0, i1;
 
@@ -124,6 +130,154 @@ struct HeapResultHandler {
     }
 
 };
+
+/*****************************************************************
+ * Reservoir result handler
+ *
+ * A reservoir is a result array of size capacity > n (number of requested
+ * results) all results below a threshold are stored in an arbitrary order. When
+ * the capacity is reached, a new threshold is chosen by partitionning the
+ * distance array.
+ *****************************************************************/
+
+
+
+/// Reservoir for a single query
+template<class C>
+struct ReservoirTopN {
+    using T = typename C::T;
+    using TI = typename C::TI;
+
+    T *vals;
+    TI *ids;
+
+    size_t i; // number of stored elements
+    size_t n; // number of requested elements
+    size_t capacity;  // size of storage
+
+    T threshold; // current threshold
+
+    ReservoirTopN(
+        size_t n, size_t capacity,
+        T *vals, TI *ids
+    ):
+        vals(vals), ids(ids),
+        i(0), n(n), capacity(capacity) {
+        assert(n < capacity);
+        threshold = C::neutral();
+    }
+
+    void add(T val, TI id) {
+        if (C::cmp(threshold, val)) {
+            if (i == capacity) {
+                shrink_fuzzy();
+            }
+            vals[i] = val;
+            ids[i] = id;
+            i++;
+        }
+    }
+
+    // reduce storage from capacity to anything
+    // between n and (capacity + n) / 2
+    void shrink_fuzzy() {
+        assert(i == capacity);
+
+        threshold = partition_fuzzy(
+            vals, ids, capacity, n, (capacity + n) / 2,
+            &i);
+    }
+
+};
+
+
+
+template<class C>
+struct ReservoirResultHandler {
+
+    using T = typename C::T;
+    using TI = typename C::TI;
+
+    int nq;
+    T *heap_dis_tab;
+    TI *heap_ids_tab;
+
+    int64_t k;  // number of results to keep
+
+    ReservoirResultHandler(
+        size_t nq,
+        T * heap_dis_tab, TI * heap_ids_tab,
+        size_t k):
+        nq(nq),
+        heap_dis_tab(heap_dis_tab), heap_ids_tab(heap_ids_tab), k(k)
+    {
+
+    }
+
+    /******************************************************
+     * API for 1 result at a time (each SingleResultHandler is
+     * called from 1 thread)
+     */
+
+    struct SingleResultHandler {
+        ReservoirResultHandler & hr;
+        size_t k;
+        size_t capacity;
+
+        std::vector<T> reservoir_dis;
+        std::vector<TI> reservoir_ids;
+
+        ReservoirTopN<C> res1;
+
+        SingleResultHandler(ReservoirResultHandler &hr):
+            hr(hr), k(hr.k), capacity((2 * hr.k + 15) & ~15),
+            reservoir_dis(capacity),
+            reservoir_ids(capacity)
+        {
+        }
+
+        size_t i;
+
+        /// begin results for query # i
+        void begin(size_t i) {
+            res1 = ReservoirTopN<T>(
+                k, capacity, reservoir_dis.data(), reservoir_ids.data());
+            this->i = i;
+        }
+
+        /// add one result for query i
+        void add_result(T dis, TI idx) {
+            res1.add(dis, idx);
+        }
+
+        /// series of results for query i is done
+        void end() {
+            T * heap_dis = hr.heap_dis_tab + i * k;
+            TI * heap_ids = hr.heap_ids_tab + i * k;
+
+            for (int j = 0; j < res1.i; j++) {
+                heap_push<C>(
+                    j + 1, heap_dis, heap_ids,
+                    res1.vals[j], res1.ids[j]
+                );
+            }
+
+            heap_reorder<C> (res1.i, heap_dis, heap_ids);
+
+            // possibly add empty results
+            heap_heapify<C> (k - res1.i, heap_dis + res1.i, heap_ids + res1.i);
+        }
+    };
+
+
+
+};
+
+
+/*****************************************************************
+ * Result handler for range searches
+ *****************************************************************/
+
 
 
 template<class C>
