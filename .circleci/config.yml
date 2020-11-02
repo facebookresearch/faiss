@@ -152,7 +152,7 @@ jobs:
       - run:
           name: Build packages
           command: |
-            docker build -t faiss -f conda/Dockerfile.cuda<<parameters.cuda>>
+            docker build -t faiss -f conda/Dockerfile.cuda<<parameters.cuda>> .
             docker run --gpus all \
               -e CUDA_ARCHS="35;52;60;61;70;72;75" \
               -e ANACONDA_API_TOKEN=$ANACONDA_API_TOKEN \
