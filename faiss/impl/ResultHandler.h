@@ -157,6 +157,8 @@ struct ReservoirTopN {
 
     T threshold; // current threshold
 
+    ReservoirTopN() {}
+
     ReservoirTopN(
         size_t n, size_t capacity,
         T *vals, TI *ids
@@ -183,7 +185,7 @@ struct ReservoirTopN {
     void shrink_fuzzy() {
         assert(i == capacity);
 
-        threshold = partition_fuzzy(
+        threshold = partition_fuzzy<C>(
             vals, ids, capacity, n, (capacity + n) / 2,
             &i);
     }
@@ -240,7 +242,7 @@ struct ReservoirResultHandler {
 
         /// begin results for query # i
         void begin(size_t i) {
-            res1 = ReservoirTopN<T>(
+            res1 = ReservoirTopN<C>(
                 k, capacity, reservoir_dis.data(), reservoir_ids.data());
             this->i = i;
         }
@@ -255,17 +257,26 @@ struct ReservoirResultHandler {
             T * heap_dis = hr.heap_dis_tab + i * k;
             TI * heap_ids = hr.heap_ids_tab + i * k;
 
-            for (int j = 0; j < res1.i; j++) {
+            for (int j = 0; j < std::min(res1.i, k); j++) {
                 heap_push<C>(
                     j + 1, heap_dis, heap_ids,
                     res1.vals[j], res1.ids[j]
                 );
             }
 
-            heap_reorder<C> (res1.i, heap_dis, heap_ids);
-
-            // possibly add empty results
-            heap_heapify<C> (k - res1.i, heap_dis + res1.i, heap_ids + res1.i);
+            if (res1.i < k) {
+                heap_reorder<C> (res1.i, heap_dis, heap_ids);
+                // add empty results
+                heap_heapify<C> (k - res1.i, heap_dis + res1.i, heap_ids + res1.i);
+            } else {
+                // add remaining elements
+                heap_addn <C>(
+                    k, heap_dis, heap_ids,
+                    res1.vals + k, res1.ids + k,
+                    res1.i - k
+                );
+                heap_reorder<C> (k, heap_dis, heap_ids);
+            }
         }
     };
 

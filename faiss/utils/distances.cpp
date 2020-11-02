@@ -352,7 +352,7 @@ void exhaustive_L2sqr_blas (
 int distance_compute_blas_threshold = 20;
 int distance_compute_blas_query_bs = 4096;
 int distance_compute_blas_database_bs = 1024;
-
+int distance_compute_min_k_reservoir = 100;
 
 void knn_inner_product (const float * x,
         const float * y,
@@ -378,11 +378,19 @@ void knn_L2sqr (
         float_maxheap_array_t * ha,
         const float *y_norm2
 ) {
+
     HeapResultHandler<CMax<float, int64_t>> res(
         ha->nh, ha->val, ha->ids, ha->k);
 
     if (nx < distance_compute_blas_threshold) {
-        exhaustive_L2sqr_seq (x, y, d, nx, ny, res);
+
+        if (ha->k < distance_compute_min_k_reservoir) {
+            exhaustive_L2sqr_seq (x, y, d, nx, ny, res);
+        } else {
+            ReservoirResultHandler<CMax<float, int64_t>> rr(
+                ha->nh, ha->val, ha->ids, ha->k);
+            exhaustive_L2sqr_seq (x, y, d, nx, ny, rr);
+        }
     } else {
         exhaustive_L2sqr_blas (x, y, d, nx, ny, res, y_norm2);
     }

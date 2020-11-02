@@ -25,7 +25,7 @@ class TestModuleInterface(unittest.TestCase):
 
 class TestIndexFlat(unittest.TestCase):
 
-    def do_test(self, nq, metric_type=faiss.METRIC_L2):
+    def do_test(self, nq, metric_type=faiss.METRIC_L2, k=10):
         d = 32
         nb = 1000
         nt = 0
@@ -35,7 +35,6 @@ class TestIndexFlat(unittest.TestCase):
 
         ### k-NN search
 
-        k = 10
         index.add(xb)
         D1, I1 = index.search(xq, k)
 
@@ -94,6 +93,10 @@ class TestIndexFlat(unittest.TestCase):
 
     def test_noblas_ip(self):
         self.do_test(10, faiss.METRIC_INNER_PRODUCT)
+
+    def test_noblas_reservoir(self):
+        self.do_test(10, k=200)
+
 
 
 
