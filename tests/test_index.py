@@ -95,7 +95,16 @@ class TestIndexFlat(unittest.TestCase):
         self.do_test(10, faiss.METRIC_INNER_PRODUCT)
 
     def test_noblas_reservoir(self):
-        self.do_test(10, k=200)
+        self.do_test(10, k=150)
+
+    def test_with_blas_reservoir(self):
+        self.do_test(200, k=150)
+
+    def test_noblas_reservoir_ip(self):
+        self.do_test(10, faiss.METRIC_INNER_PRODUCT, k=150)
+
+    def test_with_blas_reservoir_ip(self):
+        self.do_test(200, faiss.METRIC_INNER_PRODUCT, k=150)
 
 
 

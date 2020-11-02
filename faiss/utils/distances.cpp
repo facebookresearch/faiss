@@ -359,12 +359,22 @@ void knn_inner_product (const float * x,
         size_t d, size_t nx, size_t ny,
         float_minheap_array_t * ha)
 {
-    HeapResultHandler<CMin<float, int64_t>> res(
-        ha->nh, ha->val, ha->ids, ha->k);
-    if (nx < distance_compute_blas_threshold) {
-        exhaustive_inner_product_seq (x, y, d, nx, ny, res);
+    if (ha->k < distance_compute_min_k_reservoir) {
+        HeapResultHandler<CMin<float, int64_t>> res(
+            ha->nh, ha->val, ha->ids, ha->k);
+        if (nx < distance_compute_blas_threshold) {
+            exhaustive_inner_product_seq (x, y, d, nx, ny, res);
+        } else {
+            exhaustive_inner_product_blas (x, y, d, nx, ny, res);
+        }
     } else {
-        exhaustive_inner_product_blas (x, y, d, nx, ny, res);
+        ReservoirResultHandler<CMin<float, int64_t>> res(
+            ha->nh, ha->val, ha->ids, ha->k);
+        if (nx < distance_compute_blas_threshold) {
+            exhaustive_inner_product_seq (x, y, d, nx, ny, res);
+        } else {
+            exhaustive_inner_product_blas (x, y, d, nx, ny, res);
+        }
     }
 }
 
@@ -379,20 +389,23 @@ void knn_L2sqr (
         const float *y_norm2
 ) {
 
-    HeapResultHandler<CMax<float, int64_t>> res(
-        ha->nh, ha->val, ha->ids, ha->k);
+    if (ha->k < distance_compute_min_k_reservoir) {
+        HeapResultHandler<CMax<float, int64_t>> res(
+            ha->nh, ha->val, ha->ids, ha->k);
 
-    if (nx < distance_compute_blas_threshold) {
-
-        if (ha->k < distance_compute_min_k_reservoir) {
+        if (nx < distance_compute_blas_threshold) {
             exhaustive_L2sqr_seq (x, y, d, nx, ny, res);
         } else {
-            ReservoirResultHandler<CMax<float, int64_t>> rr(
-                ha->nh, ha->val, ha->ids, ha->k);
-            exhaustive_L2sqr_seq (x, y, d, nx, ny, rr);
+            exhaustive_L2sqr_blas (x, y, d, nx, ny, res, y_norm2);
         }
     } else {
-        exhaustive_L2sqr_blas (x, y, d, nx, ny, res, y_norm2);
+        ReservoirResultHandler<CMax<float, int64_t>> res(
+            ha->nh, ha->val, ha->ids, ha->k);
+        if (nx < distance_compute_blas_threshold) {
+            exhaustive_L2sqr_seq (x, y, d, nx, ny, res);
+        } else {
+            exhaustive_L2sqr_blas (x, y, d, nx, ny, res, y_norm2);
+        }
     }
 }
 

@@ -190,6 +190,27 @@ struct ReservoirTopN {
             &i);
     }
 
+    void to_result(T *heap_dis, TI *heap_ids) const {
+
+        for (int j = 0; j < std::min(i, n); j++) {
+            heap_push<C>(
+                j + 1, heap_dis, heap_ids,
+                vals[j], ids[j]
+            );
+        }
+
+        if (i < n) {
+            heap_reorder<C> (i, heap_dis, heap_ids);
+            // add empty results
+            heap_heapify<C> (n - i, heap_dis + i, heap_ids + i);
+        } else {
+            // add remaining elements
+            heap_addn<C> (n, heap_dis, heap_ids, vals + n, ids + n, i - n);
+            heap_reorder<C> (n, heap_dis, heap_ids);
+        }
+
+    }
+
 };
 
 
@@ -205,6 +226,7 @@ struct ReservoirResultHandler {
     TI *heap_ids_tab;
 
     int64_t k;  // number of results to keep
+    size_t capacity; // capacity of the reservoirs
 
     ReservoirResultHandler(
         size_t nq,
@@ -213,7 +235,8 @@ struct ReservoirResultHandler {
         nq(nq),
         heap_dis_tab(heap_dis_tab), heap_ids_tab(heap_ids_tab), k(k)
     {
-
+        // double then round up to multiple of 16 (for SIMD alignment)
+        capacity = (2 * k + 15) & ~15;
     }
 
     /******************************************************
@@ -223,18 +246,13 @@ struct ReservoirResultHandler {
 
     struct SingleResultHandler {
         ReservoirResultHandler & hr;
-        size_t k;
-        size_t capacity;
 
         std::vector<T> reservoir_dis;
         std::vector<TI> reservoir_ids;
-
         ReservoirTopN<C> res1;
 
         SingleResultHandler(ReservoirResultHandler &hr):
-            hr(hr), k(hr.k), capacity((2 * hr.k + 15) & ~15),
-            reservoir_dis(capacity),
-            reservoir_ids(capacity)
+            hr(hr), reservoir_dis(hr.capacity), reservoir_ids(hr.capacity)
         {
         }
 
@@ -243,7 +261,7 @@ struct ReservoirResultHandler {
         /// begin results for query # i
         void begin(size_t i) {
             res1 = ReservoirTopN<C>(
-                k, capacity, reservoir_dis.data(), reservoir_ids.data());
+                hr.k, hr.capacity, reservoir_dis.data(), reservoir_ids.data());
             this->i = i;
         }
 
@@ -254,33 +272,58 @@ struct ReservoirResultHandler {
 
         /// series of results for query i is done
         void end() {
-            T * heap_dis = hr.heap_dis_tab + i * k;
-            TI * heap_ids = hr.heap_ids_tab + i * k;
-
-            for (int j = 0; j < std::min(res1.i, k); j++) {
-                heap_push<C>(
-                    j + 1, heap_dis, heap_ids,
-                    res1.vals[j], res1.ids[j]
-                );
-            }
-
-            if (res1.i < k) {
-                heap_reorder<C> (res1.i, heap_dis, heap_ids);
-                // add empty results
-                heap_heapify<C> (k - res1.i, heap_dis + res1.i, heap_ids + res1.i);
-            } else {
-                // add remaining elements
-                heap_addn <C>(
-                    k, heap_dis, heap_ids,
-                    res1.vals + k, res1.ids + k,
-                    res1.i - k
-                );
-                heap_reorder<C> (k, heap_dis, heap_ids);
-            }
+            T * heap_dis = hr.heap_dis_tab + i * hr.k;
+            TI * heap_ids = hr.heap_ids_tab + i * hr.k;
+            res1.to_result(heap_dis, heap_ids);
         }
     };
 
+    /******************************************************
+     * API for multiple results (called from 1 thread)
+     */
 
+    size_t i0, i1;
+
+    std::vector<T> reservoir_dis;
+    std::vector<TI> reservoir_ids;
+    std::vector<ReservoirTopN<C>> reservoirs;
+
+    /// begin
+    void begin_multiple(size_t i0, size_t i1) {
+        this->i0 = i0;
+        this->i1 = i1;
+        reservoir_dis.resize((i1 - i0) * capacity);
+        reservoir_ids.resize((i1 - i0) * capacity);
+        reservoirs.clear();
+        for (size_t i = i0; i < i1; i++) {
+            reservoirs.emplace_back(
+                k, capacity,
+                reservoir_dis.data() + (i - i0) * capacity,
+                reservoir_ids.data() + (i - i0) * capacity
+            );
+        }
+    }
+
+    /// add results for query i0..i1 and j0..j1
+    void add_results(size_t j0, size_t j1, const T *dis_tab) {
+        // maybe parallel for
+        for (size_t i = i0; i < i1; i++) {
+            ReservoirTopN<C> & reservoir = reservoirs[i - i0];
+            for (size_t j = j0; j < j1; j++) {
+                T dis = *dis_tab++;
+                reservoir.add(dis, j);
+            }
+        }
+    }
+
+    /// series of results for queries i0..i1 is done
+    void end_multiple() {
+        // maybe parallel for
+        for(size_t i = i0; i < i1; i++) {
+            reservoirs[i].to_result(
+                heap_dis_tab + i * k, heap_ids_tab + i * k);
+        }
+    }
 
 };
 
