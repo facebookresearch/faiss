@@ -7,12 +7,14 @@ import faiss
 from faiss.contrib.datasets import SynteticDataset
 
 
-os.system("cat /proc/cpuinfo | grep -m1 'model name' ")
+os.system("grep -m1 'model name' < /proc/cpuinfo")
 
 
 def format_tab(x):
     return "\n".join("\t".join("%g" % xi for xi in row) for row in x)
 
+
+faiss.cvar.distance_compute_min_k_reservoir = 5
 
 # for have_threads in True, False:
 for have_threads in False, :

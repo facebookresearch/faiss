@@ -320,7 +320,7 @@ struct ReservoirResultHandler {
     void end_multiple() {
         // maybe parallel for
         for(size_t i = i0; i < i1; i++) {
-            reservoirs[i].to_result(
+            reservoirs[i - i0].to_result(
                 heap_dis_tab + i * k, heap_ids_tab + i * k);
         }
     }
