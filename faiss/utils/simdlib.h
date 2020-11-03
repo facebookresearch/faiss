@@ -406,9 +406,10 @@ inline simd8float32 fmadd(simd8float32 a, simd8float32 b, simd8float32 c) {
 
 #else
 
-/***********************
- * scalar implementation of SIMD registers
- */
+/*********************************************************************
+ * Eventullay it would be good to have a scalar emulation of SIMD
+ * registers. Leave empty for now.
+ *********************************************************************/
 
 
 #endif

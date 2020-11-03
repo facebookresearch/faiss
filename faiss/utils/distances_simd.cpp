@@ -866,6 +866,8 @@ int fvec_madd_and_argmin (size_t n, const float *a,
  * PQ tables computations
  ***************************************************************************/
 
+#ifdef __AVX2__
+
 namespace {
 
 
@@ -993,6 +995,19 @@ void compute_PQ_dis_tables_dsub2(
     }
 
 }
+
+#else
+
+void compute_PQ_dis_tables_dsub2(
+        size_t d, size_t ksub, const float *all_centroids,
+        size_t nx, const float * x,
+        bool is_inner_product,
+        float * dis_tables)
+{
+    FAISS_THROW_MSG("only implemented for AVX2");
+}
+
+#endif
 
 
 } // namespace faiss
