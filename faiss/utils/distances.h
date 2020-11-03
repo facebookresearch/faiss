@@ -198,11 +198,12 @@ void knn_inner_products_by_idx (
         size_t d, size_t nx, size_t ny,
         float_minheap_array_t * res);
 
-void knn_L2sqr_by_idx (const float * x,
-                       const float * y,
-                       const int64_t * ids,
-                       size_t d, size_t nx, size_t ny,
-                       float_maxheap_array_t * res);
+void knn_L2sqr_by_idx (
+        const float * x,
+        const float * y,
+        const int64_t * ids,
+        size_t d, size_t nx, size_t ny,
+        float_maxheap_array_t * res);
 
 /***************************************************************************
  * Range search
@@ -237,6 +238,15 @@ void range_search_inner_product (
         RangeSearchResult *result);
 
 
+/***************************************************************************
+ * PQ tables computations
+ ***************************************************************************/
 
+/// specialized function for PQ2
+void compute_PQ_dis_tables_dsub2(
+        size_t d, size_t ksub, const float *centroids,
+        size_t nx, const float * x,
+        bool is_inner_product,
+        float * dis_tables);
 
 } // namespace faiss

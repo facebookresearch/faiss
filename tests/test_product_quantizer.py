@@ -127,6 +127,9 @@ class TestPQTables(unittest.TestCase):
     def test_dsub2(self):
         self.do_test(16, 2)
 
+    def test_dsub5(self):
+        self.do_test(20, 5)
+
     def test_dsub2_odd(self):
         self.do_test(18, 2)
 

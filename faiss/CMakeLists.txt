@@ -116,6 +116,7 @@ set(FAISS_HEADERS
   utils/ordered_key_value.h
   utils/partitioning.h
   utils/random.h
+  utils/simdlib.h
   utils/utils.h
 )
 

@@ -14,6 +14,9 @@
 #include <cstring>
 #include <cmath>
 
+#include <faiss/utils/simdlib.h>
+#include <faiss/impl/FaissAssert.h>
+
 #ifdef __SSE3__
 #include <immintrin.h>
 #endif
@@ -803,6 +806,137 @@ int fvec_madd_and_argmin (size_t n, const float *a,
 #endif
 
 
+/***************************************************************************
+ * PQ tables computations
+ ***************************************************************************/
+
+namespace {
+
+
+// get even float32's of a and b, interleaved
+simd8float32 geteven(simd8float32 a, simd8float32 b) {
+    return simd8float32(
+        _mm256_shuffle_ps(a.f, b.f, 0 << 0 | 2 << 2 | 0 << 4 | 2 << 6)
+    );
+}
+
+// get odd float32's of a and b, interleaved
+simd8float32 getodd(simd8float32 a, simd8float32 b) {
+    return simd8float32(
+        _mm256_shuffle_ps(a.f, b.f, 1 << 0 | 3 << 2 | 1 << 4 | 3 << 6)
+    );
+}
+
+// 3 cycles
+// if the lanes are a = [a0 a1] and b = [b0 b1], return [a0 b0]
+simd8float32 getlow128(simd8float32 a, simd8float32 b) {
+    return simd8float32(
+        _mm256_permute2f128_ps(a.f, b.f, 0 | 2 << 4)
+    );
+}
+
+simd8float32 gethigh128(simd8float32 a, simd8float32 b) {
+    return simd8float32(
+        _mm256_permute2f128_ps(a.f, b.f, 1 | 3 << 4)
+    );
+}
+
+/// compute the IP for dsub = 2 for 8 centroids and 4 sub-vectors at a time
+template<bool is_inner_product>
+void pq2_8cents_table(
+        const simd8float32 centroids[8],
+        const simd8float32 x,
+        float *out, size_t ldo, size_t nout = 4
+) {
+
+    simd8float32 ips[4];
+
+    for(int i = 0; i < 4; i++) {
+        simd8float32 p1, p2;
+        if (is_inner_product) {
+            p1 = x * centroids[2 * i];
+            p2 = x * centroids[2 * i + 1];
+        } else {
+            p1 = (x - centroids[2 * i]);
+            p1 = p1 * p1;
+            p2 = (x - centroids[2 * i + 1]);
+            p2 = p2 * p2;
+        }
+        ips[i] = hadd(p1, p2);
+    }
+
+    simd8float32 ip02a = geteven(ips[0], ips[1]);
+    simd8float32 ip02b = geteven(ips[2], ips[3]);
+    simd8float32 ip0 = getlow128(ip02a, ip02b);
+    simd8float32 ip2 = gethigh128(ip02a, ip02b);
+
+    simd8float32 ip13a = getodd(ips[0], ips[1]);
+    simd8float32 ip13b = getodd(ips[2], ips[3]);
+    simd8float32 ip1 = getlow128(ip13a, ip13b);
+    simd8float32 ip3 = gethigh128(ip13a, ip13b);
+
+    switch(nout) {
+    case 4:
+        ip3.storeu(out + 3 * ldo);
+    case 3:
+        ip2.storeu(out + 2 * ldo);
+    case 2:
+        ip1.storeu(out + 1 * ldo);
+    case 1:
+        ip0.storeu(out);
+    }
+}
+
+
+} // anonymous namespace
+
+
+void compute_PQ_dis_tables_dsub2(
+        size_t d, size_t ksub, const float *all_centroids,
+        size_t nx, const float * x,
+        bool is_inner_product,
+        float * dis_tables)
+{
+    size_t M = d / 2;
+    FAISS_THROW_IF_NOT(ksub % 8 == 0);
+
+    for(size_t m0 = 0; m0 < M; m0 += 4) {
+        int m1 = std::min(M, m0 + 4);
+        for(int k0 = 0; k0 < ksub; k0 += 8) {
+
+            simd8float32 centroids[8];
+            for (int k = 0; k < 8; k++) {
+                float centroid[8] __attribute__((aligned(32)));
+                size_t wp = 0;
+                size_t rp = (m0 * ksub + k + k0) * 2;
+                for (int m = m0; m < m1; m++) {
+                    centroid[wp++] = all_centroids[rp];
+                    centroid[wp++] = all_centroids[rp + 1];
+                    rp += 2 * ksub;
+                }
+                centroids[k] = simd8float32(centroid);
+            }
+            for(size_t i = 0; i < nx; i++) {
+                simd8float32 xi;
+                xi.loadu(x + i * d + m0 * 2);
+                if(is_inner_product) {
+                    pq2_8cents_table<true>(
+                        centroids, xi,
+                        dis_tables + (i * M + m0) * ksub + k0,
+                        ksub, m1 - m0
+                    );
+                } else {
+                    pq2_8cents_table<false>(
+                        centroids, xi,
+                        dis_tables + (i * M + m0) * ksub + k0,
+                        ksub, m1 - m0
+                    );
+                }
+            }
+        }
+    }
+
+}
 
 
 } // namespace faiss

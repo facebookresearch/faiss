@@ -549,7 +549,12 @@ void ProductQuantizer::compute_distance_tables (
            float * dis_tables) const
 {
 
-    if (dsub < 16) {
+    if (dsub == 2) {
+        compute_PQ_dis_tables_dsub2(
+            d, ksub, centroids.data(),
+            nx, x, false, dis_tables
+        );
+    } else if (dsub < 16) {
 
 #pragma omp parallel for
         for (int64_t i = 0; i < nx; i++) {
@@ -573,8 +578,12 @@ void ProductQuantizer::compute_inner_prod_tables (
            const float * x,
            float * dis_tables) const
 {
-
-    if (dsub < 16) {
+    if (dsub == 2) {
+        compute_PQ_dis_tables_dsub2(
+            d, ksub, centroids.data(),
+            nx, x, true, dis_tables
+        );
+    } else if (dsub < 16) {
 
 #pragma omp parallel for
         for (int64_t i = 0; i < nx; i++) {
