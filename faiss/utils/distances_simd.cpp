@@ -703,6 +703,11 @@ void fvec_L2sqr_ny (float * dis, const float * x,
     fvec_L2sqr_ny_ref (dis, x, y, d, ny);
 }
 
+void fvec_inner_products_ny (float * dis, const float * x,
+                        const float * y, size_t d, size_t ny) {
+    fvec_inner_products_ny_ref (dis, x, y, d, ny);
+}
+
 
 #endif
 
