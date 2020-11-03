@@ -78,29 +78,67 @@ class TestProductQuantizer(unittest.TestCase):
             self.do_test_codec(i + 1)
 
 
-"""
 class TestPQTables(unittest.TestCase):
 
-    def do_test(self, d, dsub, nbit, metric):
+    def do_test(self, d, dsub, nbit=8, metric=None):
+        if metric is None:
+            self.do_test(d, dsub, nbit, faiss.METRIC_INNER_PRODUCT)
+            self.do_test(d, dsub, nbit, faiss.METRIC_L2)
+            return
+
         M = d // dsub
         pq = faiss.ProductQuantizer(d, M, nbit)
-        pq.train(faiss.randn((1000, d), 123))
+        pq.train(faiss.randn((max(1000, pq.ksub * 50), d), 123))
 
-        assert pq.dsub == 2
+        centroids = faiss.vector_to_array(pq.centroids)
+        centroids = centroids.reshape(pq.M, pq.ksub, pq.dsub)
+
         nx = 100
         x = faiss.randn((nx, d), 555)
-        sp = faiss.swig_ptr
+
         ref_tab = np.zeros((nx, M, pq.ksub), "float32")
 
-        new_tab = fast_scan.AlignedTableFloat32(nx * M * pq.ksub)
-        # new_tab = np.zeros((nx, M, pq.ksub), "float32")
-        pq.compute_inner_prod_tables(nx, sp(x), sp(ref_tab))
+        # computation of tables in numpy
+        for sq in range(M):
+            i0, i1 = sq * dsub, (sq + 1) * dsub
+            xsub = x[:, i0:i1]
+            centsq = centroids[sq, :, :]
+            if metric == faiss.METRIC_INNER_PRODUCT:
+                ref_tab[:, sq, :] = xsub @ centsq.T
+            elif metric == faiss.METRIC_L2:
+                xsub3 = xsub.reshape(nx, 1, dsub)
+                cent3 = centsq.reshape(1, pq.ksub, dsub)
+                ref_tab[:, sq, :] = ((xsub3 - cent3) ** 2).sum(2)
+            else:
+                assert False
 
-        fast_scan.compute_inner_prod_tables(pq, nx, sp(x), new_tab.get())
+        sp = faiss.swig_ptr
 
-        new_tab = fast_scan.AlignedTable_to_array(new_tab)
-        new_tab = new_tab.reshape(nx, M, pq.ksub)
+        new_tab = np.zeros((nx, M, pq.ksub), "float32")
+        if metric == faiss.METRIC_INNER_PRODUCT:
+            pq.compute_inner_prod_tables(nx, sp(x), sp(new_tab))
+        elif metric == faiss.METRIC_L2:
+            pq.compute_distance_tables(nx, sp(x), sp(new_tab))
+        else:
+            assert False
 
-        np.testing.assert_array_equal(ref_tab, new_tab)
-"""
+        np.testing.assert_array_almost_equal(ref_tab, new_tab, decimal=5)
 
+    def test_dsub2(self):
+        self.do_test(16, 2)
+
+    def test_dsub2_odd(self):
+        self.do_test(18, 2)
+
+    def test_dsub4(self):
+        self.do_test(32, 4)
+
+    def test_dsub4_odd(self):
+        self.do_test(36, 4)
+
+    # too slow
+    #def test_12bit(self):
+    #    self.do_test(32, 4, nbit=12)
+
+    def test_4bit(self):
+        self.do_test(32, 4, nbit=4)
