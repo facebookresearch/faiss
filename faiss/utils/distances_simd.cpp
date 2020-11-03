@@ -130,6 +130,29 @@ void fvec_L2sqr_ny_ref (float * dis,
 }
 
 
+void fvec_inner_products_ny_ref (float * ip,
+                             const float * x,
+                             const float * y,
+                             size_t d, size_t ny)
+{
+    // BLAS slower for the use cases here
+#if 0
+    {
+        FINTEGER di = d;
+        FINTEGER nyi = ny;
+        float one = 1.0, zero = 0.0;
+        FINTEGER onei = 1;
+        sgemv_ ("T", &di, &nyi, &one, y, &di, x, &onei, &zero, ip, &onei);
+    }
+#endif
+    for (size_t i = 0; i < ny; i++) {
+        ip[i] = fvec_inner_product (x, y, d);
+        y += d;
+    }
+}
+
+
+
 
 
 /*********************************************************
@@ -181,8 +204,30 @@ float sqr (float x) {
     return x * x;
 }
 
+struct ElementOpL2 {
 
-void fvec_L2sqr_ny_D1 (float * dis, const float * x,
+    static float op (float x, float y) {
+        float tmp = x - y;
+        return tmp * tmp;
+    }
+    static __m128 op (__m128 x, __m128 y) {
+        __m128 tmp = x - y;
+        return tmp * tmp;
+    }
+};
+
+struct ElementOpIP {
+
+    static float op (float x, float y) {
+        return x * y;
+    }
+    static __m128 op (__m128 x, __m128 y) {
+        return x * y;
+    }
+};
+
+template<class ElementOp>
+void fvec_op_ny_D1 (float * dis, const float * x,
                        const float * y, size_t ny)
 {
     float x0s = x[0];
@@ -190,11 +235,9 @@ void fvec_L2sqr_ny_D1 (float * dis, const float * x,
 
     size_t i;
     for (i = 0; i + 3 < ny; i += 4) {
-        __m128 tmp, accu;
-        tmp = x0 - _mm_loadu_ps (y); y += 4;
-        accu = tmp * tmp;
+        __m128 accu = ElementOp::op(x0, _mm_loadu_ps (y)); y += 4;
         dis[i] = _mm_cvtss_f32 (accu);
-        tmp = _mm_shuffle_ps (accu, accu, 1);
+        __m128 tmp = _mm_shuffle_ps (accu, accu, 1);
         dis[i + 1] = _mm_cvtss_f32 (tmp);
         tmp = _mm_shuffle_ps (accu, accu, 2);
         dis[i + 2] = _mm_cvtss_f32 (tmp);
@@ -202,69 +245,63 @@ void fvec_L2sqr_ny_D1 (float * dis, const float * x,
         dis[i + 3] = _mm_cvtss_f32 (tmp);
     }
     while (i < ny) { // handle non-multiple-of-4 case
-        dis[i++] = sqr(x0s - *y++);
+        dis[i++] = ElementOp::op(x0s, *y++);
     }
 }
 
-
-void fvec_L2sqr_ny_D2 (float * dis, const float * x,
+template<class ElementOp>
+void fvec_op_ny_D2 (float * dis, const float * x,
                        const float * y, size_t ny)
 {
     __m128 x0 = _mm_set_ps (x[1], x[0], x[1], x[0]);
 
     size_t i;
     for (i = 0; i + 1 < ny; i += 2) {
-        __m128 tmp, accu;
-        tmp = x0 - _mm_loadu_ps (y); y += 4;
-        accu = tmp * tmp;
+        __m128 accu = ElementOp::op(x0, _mm_loadu_ps (y)); y += 4;
         accu = _mm_hadd_ps (accu, accu);
         dis[i] = _mm_cvtss_f32 (accu);
         accu = _mm_shuffle_ps (accu, accu, 3);
         dis[i + 1] = _mm_cvtss_f32 (accu);
     }
     if (i < ny) { // handle odd case
-        dis[i] = sqr(x[0] - y[0]) + sqr(x[1] - y[1]);
+        dis[i] = ElementOp::op(x[0], y[0]) + ElementOp::op(x[1], y[1]);
     }
 }
 
 
 
-void fvec_L2sqr_ny_D4 (float * dis, const float * x,
+template<class ElementOp>
+void fvec_op_ny_D4 (float * dis, const float * x,
                         const float * y, size_t ny)
 {
     __m128 x0 = _mm_loadu_ps(x);
 
     for (size_t i = 0; i < ny; i++) {
-        __m128 tmp, accu;
-        tmp = x0 - _mm_loadu_ps (y); y += 4;
-        accu = tmp * tmp;
+        __m128 accu = ElementOp::op(x0, _mm_loadu_ps (y)); y += 4;
         accu = _mm_hadd_ps (accu, accu);
         accu = _mm_hadd_ps (accu, accu);
         dis[i] = _mm_cvtss_f32 (accu);
     }
 }
 
-
-void fvec_L2sqr_ny_D8 (float * dis, const float * x,
+template<class ElementOp>
+void fvec_op_ny_D8 (float * dis, const float * x,
                         const float * y, size_t ny)
 {
     __m128 x0 = _mm_loadu_ps(x);
     __m128 x1 = _mm_loadu_ps(x + 4);
 
     for (size_t i = 0; i < ny; i++) {
-        __m128 tmp, accu;
-        tmp = x0 - _mm_loadu_ps (y); y += 4;
-        accu = tmp * tmp;
-        tmp = x1 - _mm_loadu_ps (y); y += 4;
-        accu += tmp * tmp;
+        __m128 accu = ElementOp::op(x0, _mm_loadu_ps (y)); y += 4;
+        accu       += ElementOp::op(x1, _mm_loadu_ps (y)); y += 4;
         accu = _mm_hadd_ps (accu, accu);
         accu = _mm_hadd_ps (accu, accu);
         dis[i] = _mm_cvtss_f32 (accu);
     }
 }
 
-
-void fvec_L2sqr_ny_D12 (float * dis, const float * x,
+template<class ElementOp>
+void fvec_op_ny_D12 (float * dis, const float * x,
                         const float * y, size_t ny)
 {
     __m128 x0 = _mm_loadu_ps(x);
@@ -272,13 +309,9 @@ void fvec_L2sqr_ny_D12 (float * dis, const float * x,
     __m128 x2 = _mm_loadu_ps(x + 8);
 
     for (size_t i = 0; i < ny; i++) {
-        __m128 tmp, accu;
-        tmp = x0 - _mm_loadu_ps (y); y += 4;
-        accu = tmp * tmp;
-        tmp = x1 - _mm_loadu_ps (y); y += 4;
-        accu += tmp * tmp;
-        tmp = x2 - _mm_loadu_ps (y); y += 4;
-        accu += tmp * tmp;
+        __m128 accu = ElementOp::op(x0, _mm_loadu_ps (y)); y += 4;
+        accu       += ElementOp::op(x1, _mm_loadu_ps (y)); y += 4;
+        accu       += ElementOp::op(x2, _mm_loadu_ps (y)); y += 4;
         accu = _mm_hadd_ps (accu, accu);
         accu = _mm_hadd_ps (accu, accu);
         dis[i] = _mm_cvtss_f32 (accu);
@@ -286,31 +319,54 @@ void fvec_L2sqr_ny_D12 (float * dis, const float * x,
 }
 
 
+
+
+
 } // anonymous namespace
 
 void fvec_L2sqr_ny (float * dis, const float * x,
                         const float * y, size_t d, size_t ny) {
     // optimized for a few special cases
+
+#define DISPATCH(dval) \
+    case dval:\
+        fvec_op_ny_D ## dval <ElementOpL2> (dis, x, y, ny); \
+        return;
+
     switch(d) {
-    case 1:
-        fvec_L2sqr_ny_D1 (dis, x, y, ny);
-        return;
-    case 2:
-        fvec_L2sqr_ny_D2 (dis, x, y, ny);
-        return;
-    case 4:
-        fvec_L2sqr_ny_D4 (dis, x, y, ny);
-        return;
-    case 8:
-        fvec_L2sqr_ny_D8 (dis, x, y, ny);
-        return;
-    case 12:
-        fvec_L2sqr_ny_D12 (dis, x, y, ny);
-        return;
+        DISPATCH(1)
+        DISPATCH(2)
+        DISPATCH(4)
+        DISPATCH(8)
+        DISPATCH(12)
     default:
         fvec_L2sqr_ny_ref (dis, x, y, d, ny);
         return;
     }
+#undef DISPATCH
+
+}
+
+void fvec_inner_products_ny (float * dis, const float * x,
+                        const float * y, size_t d, size_t ny) {
+
+#define DISPATCH(dval) \
+    case dval:\
+        fvec_op_ny_D ## dval <ElementOpIP> (dis, x, y, ny); \
+        return;
+
+    switch(d) {
+        DISPATCH(1)
+        DISPATCH(2)
+        DISPATCH(4)
+        DISPATCH(8)
+        DISPATCH(12)
+    default:
+        fvec_inner_products_ny_ref (dis, x, y, d, ny);
+        return;
+    }
+#undef DISPATCH
+
 }
 
 

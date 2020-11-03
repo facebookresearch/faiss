@@ -51,34 +51,6 @@ namespace faiss {
 
 
 
-/* Compute the inner product between a vector x and
-   a set of ny vectors y.
-   These functions are not intended to replace BLAS matrix-matrix, as they
-   would be significantly less efficient in this case. */
-void fvec_inner_products_ny (float * ip,
-                             const float * x,
-                             const float * y,
-                             size_t d, size_t ny)
-{
-    // Not sure which one is fastest
-#if 0
-    {
-        FINTEGER di = d;
-        FINTEGER nyi = ny;
-        float one = 1.0, zero = 0.0;
-        FINTEGER onei = 1;
-        sgemv_ ("T", &di, &nyi, &one, y, &di, x, &onei, &zero, ip, &onei);
-    }
-#endif
-    for (size_t i = 0; i < ny; i++) {
-        ip[i] = fvec_inner_product (x, y, d);
-        y += d;
-    }
-}
-
-
-
-
 
 /* Compute the L2 norm of a set of nx vectors */
 void fvec_norms_L2 (float * __restrict nr,
