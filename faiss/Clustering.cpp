@@ -350,8 +350,9 @@ void Clustering::train_encoded (idx_t nx, const uint8_t *x_in,
     std::unique_ptr<float []> dis(new float[nx]);
 
     // remember best iteration for redo
-    float best_err = HUGE_VALF;
-    std::vector<ClusteringIterationStats> best_obj;
+    bool lower_is_better = index.metric_type != METRIC_INNER_PRODUCT;
+    float best_obj = lower_is_better ? HUGE_VALF : -HUGE_VALF;
+    std::vector<ClusteringIterationStats> best_iteration_stats;
     std::vector<float> best_centroids;
 
     // support input centroids
@@ -417,7 +418,7 @@ void Clustering::train_encoded (idx_t nx, const uint8_t *x_in,
 
         // k-means iterations
 
-        float err = 0;
+        float obj = 0;
         for (int i = 0; i < niter; i++) {
             double t0s = getmillisecs();
 
@@ -440,10 +441,10 @@ void Clustering::train_encoded (idx_t nx, const uint8_t *x_in,
             InterruptCallback::check();
             t_search_tot += getmillisecs() - t0s;
 
-            // accumulate error
-            err = 0;
+            // accumulate objective
+            obj = 0;
             for (int j = 0; j < nx; j++) {
-                err += dis[j];
+                obj += dis[j];
             }
 
             // update the centroids
@@ -463,8 +464,9 @@ void Clustering::train_encoded (idx_t nx, const uint8_t *x_in,
 
             // collect statistics
             ClusteringIterationStats stats =
-                { err, (getmillisecs() - t0) / 1000.0,
-                  t_search_tot / 1000, imbalance_factor (nx, k, assign.get()),
+                { obj, (getmillisecs() - t0) / 1000.0,
+                  t_search_tot / 1000,
+                  imbalance_factor (nx, k, assign.get()),
                   nsplit };
             iteration_stats.push_back(stats);
 
@@ -491,20 +493,21 @@ void Clustering::train_encoded (idx_t nx, const uint8_t *x_in,
 
         if (verbose) printf("\n");
         if (nredo > 1) {
-            if (err < best_err) {
+            if ((lower_is_better && obj < best_obj) ||
+                (!lower_is_better && obj > best_obj)) {
                 if (verbose) {
                     printf ("Objective improved: keep new clusters\n");
                 }
                 best_centroids = centroids;
-                best_obj = iteration_stats;
-                best_err = err;
+                best_iteration_stats = iteration_stats;
+                best_obj = obj;
             }
             index.reset ();
         }
     }
     if (nredo > 1) {
         centroids = best_centroids;
-        iteration_stats = best_obj;
+        iteration_stats = best_iteration_stats;
         index.reset();
         index.add(k, best_centroids.data());
     }

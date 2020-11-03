@@ -79,6 +79,31 @@ class TestClustering(unittest.TestCase):
 
         self.assertGreater(obj1, obj10)
 
+    def test_redo_cosine(self):
+        # test redo with cosine distance (inner prod, so objectives are reversed)
+        d = 64
+        n = 1000
+
+        rs = np.random.RandomState(123)
+        x = rs.uniform(size=(n, d)).astype('float32')
+        faiss.normalize_L2(x)
+
+        # make sure that doing 10 redos yields a better objective than just 1
+        # for cosine distance, it is IP so higher is better
+
+        clus = faiss.Clustering(d, 20)
+        clus.nredo = 1
+        clus.train(x, faiss.IndexFlatIP(d))
+        obj1 = clus.iteration_stats.at(clus.iteration_stats.size() - 1).obj
+
+        clus = faiss.Clustering(d, 20)
+        clus.nredo = 10
+        clus.train(x, faiss.IndexFlatIP(d))
+        obj10 = clus.iteration_stats.at(clus.iteration_stats.size() - 1).obj
+
+        self.assertGreater(obj10, obj1)
+
+
     def test_1ptpercluster(self):
         # https://github.com/facebookresearch/faiss/issues/842
         X = np.random.randint(0, 1, (5, 10)).astype('float32')
