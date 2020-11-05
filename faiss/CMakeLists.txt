@@ -53,6 +53,7 @@ add_library(faiss
   utils/distances_simd.cpp
   utils/extra_distances.cpp
   utils/hamming.cpp
+  utils/partitioning.cpp
   utils/random.cpp
   utils/utils.cpp
 )
@@ -112,7 +113,10 @@ set(FAISS_HEADERS
   utils/extra_distances.h
   utils/hamming-inl.h
   utils/hamming.h
+  utils/ordered_key_value.h
+  utils/partitioning.h
   utils/random.h
+  utils/simdlib.h
   utils/utils.h
 )
 

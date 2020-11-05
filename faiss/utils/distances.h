@@ -156,6 +156,14 @@ void pairwise_indexed_inner_product (
 // threshold on nx above which we switch to BLAS to compute distances
 FAISS_API extern int distance_compute_blas_threshold;
 
+// block sizes for BLAS distance computations
+FAISS_API extern int distance_compute_blas_query_bs;
+FAISS_API extern int distance_compute_blas_database_bs;
+
+// above this number of results we switch to a reservoir to collect results
+// rather than a heap
+FAISS_API extern int distance_compute_min_k_reservoir;
+
 /** Return the k nearest neighors of each of the nx vectors x among the ny
  *  vector y, w.r.t to max inner product
  *
@@ -169,26 +177,16 @@ void knn_inner_product (
         size_t d, size_t nx, size_t ny,
         float_minheap_array_t * res);
 
-/** Same as knn_inner_product, for the L2 distance */
+/** Same as knn_inner_product, for the L2 distance
+ *  @param y_norm2    norms for the y vectors (nullptr or size ny)
+ */
 void knn_L2sqr (
         const float * x,
         const float * y,
         size_t d, size_t nx, size_t ny,
-        float_maxheap_array_t * res);
+        float_maxheap_array_t * res,
+        const float *y_norm2 = nullptr);
 
-
-
-/** same as knn_L2sqr, but base_shift[bno] is subtracted to all
- * computed distances.
- *
- * @param base_shift   size ny
- */
-void knn_L2sqr_base_shift (
-         const float * x,
-         const float * y,
-         size_t d, size_t nx, size_t ny,
-         float_maxheap_array_t * res,
-         const float *base_shift);
 
 /* Find the nearest neighbors for nx queries in a set of ny vectors
  * indexed by ids. May be useful for re-ranking a pre-selected vector list
@@ -200,11 +198,12 @@ void knn_inner_products_by_idx (
         size_t d, size_t nx, size_t ny,
         float_minheap_array_t * res);
 
-void knn_L2sqr_by_idx (const float * x,
-                       const float * y,
-                       const int64_t * ids,
-                       size_t d, size_t nx, size_t ny,
-                       float_maxheap_array_t * res);
+void knn_L2sqr_by_idx (
+        const float * x,
+        const float * y,
+        const int64_t * ids,
+        size_t d, size_t nx, size_t ny,
+        float_maxheap_array_t * res);
 
 /***************************************************************************
  * Range search
@@ -239,6 +238,15 @@ void range_search_inner_product (
         RangeSearchResult *result);
 
 
+/***************************************************************************
+ * PQ tables computations
+ ***************************************************************************/
 
+/// specialized function for PQ2
+void compute_PQ_dis_tables_dsub2(
+        size_t d, size_t ksub, const float *centroids,
+        size_t nx, const float * x,
+        bool is_inner_product,
+        float * dis_tables);
 
 } // namespace faiss

@@ -23,6 +23,93 @@ class TestModuleInterface(unittest.TestCase):
         assert hasattr(faiss, '__version__')
         assert re.match('^\\d+\\.\\d+\\.\\d+$', faiss.__version__)
 
+class TestIndexFlat(unittest.TestCase):
+
+    def do_test(self, nq, metric_type=faiss.METRIC_L2, k=10):
+        d = 32
+        nb = 1000
+        nt = 0
+
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
+        index = faiss.IndexFlat(d, metric_type)
+
+        ### k-NN search
+
+        index.add(xb)
+        D1, I1 = index.search(xq, k)
+
+        if metric_type == faiss.METRIC_L2:
+            all_dis = ((xq.reshape(nq, 1, d) - xb.reshape(1, nb, d)) ** 2).sum(2)
+            Iref = all_dis.argsort(axis=1)[:, :k]
+        else:
+            all_dis = np.dot(xq, xb.T)
+            Iref = all_dis.argsort(axis=1)[:, ::-1][:, :k]
+
+        Dref = all_dis[np.arange(nq)[:, None], Iref]
+        self.assertLessEqual((Iref != I1).sum(), Iref.size * 0.0001)
+        #  np.testing.assert_equal(Iref, I1)
+        np.testing.assert_almost_equal(Dref, D1, decimal=5)
+
+        ### Range search
+
+        radius = float(np.median(Dref[:, -1]))
+
+        lims, D2, I2 = index.range_search(xq, radius)
+
+        for i in range(nq):
+            l0, l1 = lims[i:i + 2]
+            Dl, Il = D2[l0:l1], I2[l0:l1]
+            if metric_type == faiss.METRIC_L2:
+                Ilref, = np.where(all_dis[i] < radius)
+            else:
+                Ilref, = np.where(all_dis[i] > radius)
+            Il.sort()
+            Ilref.sort()
+            np.testing.assert_equal(Il, Ilref)
+            np.testing.assert_almost_equal(
+                all_dis[i, Ilref], D2[l0:l1],
+                decimal=5
+            )
+
+    def set_blas_blocks(self, small):
+        if small:
+            faiss.cvar.distance_compute_blas_query_bs = 16
+            faiss.cvar.distance_compute_blas_database_bs = 12
+        else:
+            faiss.cvar.distance_compute_blas_query_bs = 4096
+            faiss.cvar.distance_compute_blas_database_bs = 1024
+
+    def test_with_blas(self):
+        self.set_blas_blocks(small=True)
+        self.do_test(200)
+        self.set_blas_blocks(small=False)
+
+    def test_noblas(self):
+        self.do_test(10)
+
+    def test_with_blas_ip(self):
+        self.set_blas_blocks(small=True)
+        self.do_test(200, faiss.METRIC_INNER_PRODUCT)
+        self.set_blas_blocks(small=False)
+
+    def test_noblas_ip(self):
+        self.do_test(10, faiss.METRIC_INNER_PRODUCT)
+
+    def test_noblas_reservoir(self):
+        self.do_test(10, k=150)
+
+    def test_with_blas_reservoir(self):
+        self.do_test(200, k=150)
+
+    def test_noblas_reservoir_ip(self):
+        self.do_test(10, faiss.METRIC_INNER_PRODUCT, k=150)
+
+    def test_with_blas_reservoir_ip(self):
+        self.do_test(200, faiss.METRIC_INNER_PRODUCT, k=150)
+
+
+
+
 
 class EvalIVFPQAccuracy(unittest.TestCase):
 
@@ -33,7 +120,6 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         nq = 200
 
         (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
-        d = xt.shape[1]
 
         gt_index = faiss.IndexFlatL2(d)
         gt_index.add(xb)

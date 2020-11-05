@@ -14,6 +14,9 @@
 #include <cstring>
 #include <cmath>
 
+#include <faiss/utils/simdlib.h>
+#include <faiss/impl/FaissAssert.h>
+
 #ifdef __SSE3__
 #include <immintrin.h>
 #endif
@@ -127,6 +130,29 @@ void fvec_L2sqr_ny_ref (float * dis,
 }
 
 
+void fvec_inner_products_ny_ref (float * ip,
+                             const float * x,
+                             const float * y,
+                             size_t d, size_t ny)
+{
+    // BLAS slower for the use cases here
+#if 0
+    {
+        FINTEGER di = d;
+        FINTEGER nyi = ny;
+        float one = 1.0, zero = 0.0;
+        FINTEGER onei = 1;
+        sgemv_ ("T", &di, &nyi, &one, y, &di, x, &onei, &zero, ip, &onei);
+    }
+#endif
+    for (size_t i = 0; i < ny; i++) {
+        ip[i] = fvec_inner_product (x, y, d);
+        y += d;
+    }
+}
+
+
+
 
 
 /*********************************************************
@@ -174,12 +200,39 @@ float fvec_norm_L2sqr (const float *  x,
 
 namespace {
 
-float sqr (float x) {
-    return x * x;
-}
+/// Function that does a component-wise operation between x and y
+/// to compute L2 distances. ElementOp can then be used in the fvec_op_ny
+/// functions below
+struct ElementOpL2 {
 
+    static float op (float x, float y) {
+        float tmp = x - y;
+        return tmp * tmp;
+    }
 
-void fvec_L2sqr_ny_D1 (float * dis, const float * x,
+    static __m128 op (__m128 x, __m128 y) {
+        __m128 tmp = x - y;
+        return tmp * tmp;
+    }
+
+};
+
+/// Function that does a component-wise operation between x and y
+/// to compute inner products
+struct ElementOpIP {
+
+    static float op (float x, float y) {
+        return x * y;
+    }
+
+    static __m128 op (__m128 x, __m128 y) {
+        return x * y;
+    }
+
+};
+
+template<class ElementOp>
+void fvec_op_ny_D1 (float * dis, const float * x,
                        const float * y, size_t ny)
 {
     float x0s = x[0];
@@ -187,11 +240,9 @@ void fvec_L2sqr_ny_D1 (float * dis, const float * x,
 
     size_t i;
     for (i = 0; i + 3 < ny; i += 4) {
-        __m128 tmp, accu;
-        tmp = x0 - _mm_loadu_ps (y); y += 4;
-        accu = tmp * tmp;
+        __m128 accu = ElementOp::op(x0, _mm_loadu_ps (y)); y += 4;
         dis[i] = _mm_cvtss_f32 (accu);
-        tmp = _mm_shuffle_ps (accu, accu, 1);
+        __m128 tmp = _mm_shuffle_ps (accu, accu, 1);
         dis[i + 1] = _mm_cvtss_f32 (tmp);
         tmp = _mm_shuffle_ps (accu, accu, 2);
         dis[i + 2] = _mm_cvtss_f32 (tmp);
@@ -199,69 +250,63 @@ void fvec_L2sqr_ny_D1 (float * dis, const float * x,
         dis[i + 3] = _mm_cvtss_f32 (tmp);
     }
     while (i < ny) { // handle non-multiple-of-4 case
-        dis[i++] = sqr(x0s - *y++);
+        dis[i++] = ElementOp::op(x0s, *y++);
     }
 }
 
-
-void fvec_L2sqr_ny_D2 (float * dis, const float * x,
+template<class ElementOp>
+void fvec_op_ny_D2 (float * dis, const float * x,
                        const float * y, size_t ny)
 {
     __m128 x0 = _mm_set_ps (x[1], x[0], x[1], x[0]);
 
     size_t i;
     for (i = 0; i + 1 < ny; i += 2) {
-        __m128 tmp, accu;
-        tmp = x0 - _mm_loadu_ps (y); y += 4;
-        accu = tmp * tmp;
+        __m128 accu = ElementOp::op(x0, _mm_loadu_ps (y)); y += 4;
         accu = _mm_hadd_ps (accu, accu);
         dis[i] = _mm_cvtss_f32 (accu);
         accu = _mm_shuffle_ps (accu, accu, 3);
         dis[i + 1] = _mm_cvtss_f32 (accu);
     }
     if (i < ny) { // handle odd case
-        dis[i] = sqr(x[0] - y[0]) + sqr(x[1] - y[1]);
+        dis[i] = ElementOp::op(x[0], y[0]) + ElementOp::op(x[1], y[1]);
     }
 }
 
 
 
-void fvec_L2sqr_ny_D4 (float * dis, const float * x,
+template<class ElementOp>
+void fvec_op_ny_D4 (float * dis, const float * x,
                         const float * y, size_t ny)
 {
     __m128 x0 = _mm_loadu_ps(x);
 
     for (size_t i = 0; i < ny; i++) {
-        __m128 tmp, accu;
-        tmp = x0 - _mm_loadu_ps (y); y += 4;
-        accu = tmp * tmp;
+        __m128 accu = ElementOp::op(x0, _mm_loadu_ps (y)); y += 4;
         accu = _mm_hadd_ps (accu, accu);
         accu = _mm_hadd_ps (accu, accu);
         dis[i] = _mm_cvtss_f32 (accu);
     }
 }
 
-
-void fvec_L2sqr_ny_D8 (float * dis, const float * x,
+template<class ElementOp>
+void fvec_op_ny_D8 (float * dis, const float * x,
                         const float * y, size_t ny)
 {
     __m128 x0 = _mm_loadu_ps(x);
     __m128 x1 = _mm_loadu_ps(x + 4);
 
     for (size_t i = 0; i < ny; i++) {
-        __m128 tmp, accu;
-        tmp = x0 - _mm_loadu_ps (y); y += 4;
-        accu = tmp * tmp;
-        tmp = x1 - _mm_loadu_ps (y); y += 4;
-        accu += tmp * tmp;
+        __m128 accu = ElementOp::op(x0, _mm_loadu_ps (y)); y += 4;
+        accu       += ElementOp::op(x1, _mm_loadu_ps (y)); y += 4;
         accu = _mm_hadd_ps (accu, accu);
         accu = _mm_hadd_ps (accu, accu);
         dis[i] = _mm_cvtss_f32 (accu);
     }
 }
 
-
-void fvec_L2sqr_ny_D12 (float * dis, const float * x,
+template<class ElementOp>
+void fvec_op_ny_D12 (float * dis, const float * x,
                         const float * y, size_t ny)
 {
     __m128 x0 = _mm_loadu_ps(x);
@@ -269,13 +314,9 @@ void fvec_L2sqr_ny_D12 (float * dis, const float * x,
     __m128 x2 = _mm_loadu_ps(x + 8);
 
     for (size_t i = 0; i < ny; i++) {
-        __m128 tmp, accu;
-        tmp = x0 - _mm_loadu_ps (y); y += 4;
-        accu = tmp * tmp;
-        tmp = x1 - _mm_loadu_ps (y); y += 4;
-        accu += tmp * tmp;
-        tmp = x2 - _mm_loadu_ps (y); y += 4;
-        accu += tmp * tmp;
+        __m128 accu = ElementOp::op(x0, _mm_loadu_ps (y)); y += 4;
+        accu       += ElementOp::op(x1, _mm_loadu_ps (y)); y += 4;
+        accu       += ElementOp::op(x2, _mm_loadu_ps (y)); y += 4;
         accu = _mm_hadd_ps (accu, accu);
         accu = _mm_hadd_ps (accu, accu);
         dis[i] = _mm_cvtss_f32 (accu);
@@ -283,31 +324,52 @@ void fvec_L2sqr_ny_D12 (float * dis, const float * x,
 }
 
 
+
 } // anonymous namespace
 
 void fvec_L2sqr_ny (float * dis, const float * x,
                         const float * y, size_t d, size_t ny) {
     // optimized for a few special cases
+
+#define DISPATCH(dval) \
+    case dval:\
+        fvec_op_ny_D ## dval <ElementOpL2> (dis, x, y, ny); \
+        return;
+
     switch(d) {
-    case 1:
-        fvec_L2sqr_ny_D1 (dis, x, y, ny);
-        return;
-    case 2:
-        fvec_L2sqr_ny_D2 (dis, x, y, ny);
-        return;
-    case 4:
-        fvec_L2sqr_ny_D4 (dis, x, y, ny);
-        return;
-    case 8:
-        fvec_L2sqr_ny_D8 (dis, x, y, ny);
-        return;
-    case 12:
-        fvec_L2sqr_ny_D12 (dis, x, y, ny);
-        return;
+        DISPATCH(1)
+        DISPATCH(2)
+        DISPATCH(4)
+        DISPATCH(8)
+        DISPATCH(12)
     default:
         fvec_L2sqr_ny_ref (dis, x, y, d, ny);
         return;
     }
+#undef DISPATCH
+
+}
+
+void fvec_inner_products_ny (float * dis, const float * x,
+                        const float * y, size_t d, size_t ny) {
+
+#define DISPATCH(dval) \
+    case dval:\
+        fvec_op_ny_D ## dval <ElementOpIP> (dis, x, y, ny); \
+        return;
+
+    switch(d) {
+        DISPATCH(1)
+        DISPATCH(2)
+        DISPATCH(4)
+        DISPATCH(8)
+        DISPATCH(12)
+    default:
+        fvec_inner_products_ny_ref (dis, x, y, d, ny);
+        return;
+    }
+#undef DISPATCH
+
 }
 
 
@@ -644,6 +706,11 @@ void fvec_L2sqr_ny (float * dis, const float * x,
     fvec_L2sqr_ny_ref (dis, x, y, d, ny);
 }
 
+void fvec_inner_products_ny (float * dis, const float * x,
+                        const float * y, size_t d, size_t ny) {
+    fvec_inner_products_ny_ref (dis, x, y, d, ny);
+}
+
 
 #endif
 
@@ -803,6 +870,152 @@ int fvec_madd_and_argmin (size_t n, const float *a,
 #endif
 
 
+/***************************************************************************
+ * PQ tables computations
+ ***************************************************************************/
+
+#ifdef __AVX2__
+
+namespace {
+
+
+// get even float32's of a and b, interleaved
+simd8float32 geteven(simd8float32 a, simd8float32 b) {
+    return simd8float32(
+        _mm256_shuffle_ps(a.f, b.f, 0 << 0 | 2 << 2 | 0 << 4 | 2 << 6)
+    );
+}
+
+// get odd float32's of a and b, interleaved
+simd8float32 getodd(simd8float32 a, simd8float32 b) {
+    return simd8float32(
+        _mm256_shuffle_ps(a.f, b.f, 1 << 0 | 3 << 2 | 1 << 4 | 3 << 6)
+    );
+}
+
+// 3 cycles
+// if the lanes are a = [a0 a1] and b = [b0 b1], return [a0 b0]
+simd8float32 getlow128(simd8float32 a, simd8float32 b) {
+    return simd8float32(
+        _mm256_permute2f128_ps(a.f, b.f, 0 | 2 << 4)
+    );
+}
+
+simd8float32 gethigh128(simd8float32 a, simd8float32 b) {
+    return simd8float32(
+        _mm256_permute2f128_ps(a.f, b.f, 1 | 3 << 4)
+    );
+}
+
+/// compute the IP for dsub = 2 for 8 centroids and 4 sub-vectors at a time
+template<bool is_inner_product>
+void pq2_8cents_table(
+        const simd8float32 centroids[8],
+        const simd8float32 x,
+        float *out, size_t ldo, size_t nout = 4
+) {
+
+    simd8float32 ips[4];
+
+    for(int i = 0; i < 4; i++) {
+        simd8float32 p1, p2;
+        if (is_inner_product) {
+            p1 = x * centroids[2 * i];
+            p2 = x * centroids[2 * i + 1];
+        } else {
+            p1 = (x - centroids[2 * i]);
+            p1 = p1 * p1;
+            p2 = (x - centroids[2 * i + 1]);
+            p2 = p2 * p2;
+        }
+        ips[i] = hadd(p1, p2);
+    }
+
+    simd8float32 ip02a = geteven(ips[0], ips[1]);
+    simd8float32 ip02b = geteven(ips[2], ips[3]);
+    simd8float32 ip0 = getlow128(ip02a, ip02b);
+    simd8float32 ip2 = gethigh128(ip02a, ip02b);
+
+    simd8float32 ip13a = getodd(ips[0], ips[1]);
+    simd8float32 ip13b = getodd(ips[2], ips[3]);
+    simd8float32 ip1 = getlow128(ip13a, ip13b);
+    simd8float32 ip3 = gethigh128(ip13a, ip13b);
+
+    switch(nout) {
+    case 4:
+        ip3.storeu(out + 3 * ldo);
+    case 3:
+        ip2.storeu(out + 2 * ldo);
+    case 2:
+        ip1.storeu(out + 1 * ldo);
+    case 1:
+        ip0.storeu(out);
+    }
+}
+
+
+} // anonymous namespace
+
+
+void compute_PQ_dis_tables_dsub2(
+        size_t d, size_t ksub, const float *all_centroids,
+        size_t nx, const float * x,
+        bool is_inner_product,
+        float * dis_tables)
+{
+    size_t M = d / 2;
+    FAISS_THROW_IF_NOT(ksub % 8 == 0);
+
+    for(size_t m0 = 0; m0 < M; m0 += 4) {
+        int m1 = std::min(M, m0 + 4);
+        for(int k0 = 0; k0 < ksub; k0 += 8) {
+
+            simd8float32 centroids[8];
+            for (int k = 0; k < 8; k++) {
+                float centroid[8] __attribute__((aligned(32)));
+                size_t wp = 0;
+                size_t rp = (m0 * ksub + k + k0) * 2;
+                for (int m = m0; m < m1; m++) {
+                    centroid[wp++] = all_centroids[rp];
+                    centroid[wp++] = all_centroids[rp + 1];
+                    rp += 2 * ksub;
+                }
+                centroids[k] = simd8float32(centroid);
+            }
+            for(size_t i = 0; i < nx; i++) {
+                simd8float32 xi;
+                xi.loadu(x + i * d + m0 * 2);
+                if(is_inner_product) {
+                    pq2_8cents_table<true>(
+                        centroids, xi,
+                        dis_tables + (i * M + m0) * ksub + k0,
+                        ksub, m1 - m0
+                    );
+                } else {
+                    pq2_8cents_table<false>(
+                        centroids, xi,
+                        dis_tables + (i * M + m0) * ksub + k0,
+                        ksub, m1 - m0
+                    );
+                }
+            }
+        }
+    }
+
+}
+
+#else
+
+void compute_PQ_dis_tables_dsub2(
+        size_t d, size_t ksub, const float *all_centroids,
+        size_t nx, const float * x,
+        bool is_inner_product,
+        float * dis_tables)
+{
+    FAISS_THROW_MSG("only implemented for AVX2");
+}
+
+#endif
 
 
 } // namespace faiss

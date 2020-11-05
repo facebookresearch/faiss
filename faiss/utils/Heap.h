@@ -5,16 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
 
 /*
- * C++ support for heaps. The set of functions is tailored for
- * efficient similarity search.
+ * C++ support for heaps. The set of functions is tailored for efficient
+ * similarity search.
  *
- * There is no specific object for a heap, and the functions that
- * operate on a signle heap are inlined, because heaps are often
- * small. More complex functions are implemented in Heaps.cpp
+ * There is no specific object for a heap, and the functions that operate on a
+ * single heap are inlined, because heaps are often small. More complex
+ * functions are implemented in Heaps.cpp
  *
+ * All heap functions rely on a C template class that define the type of the
+ * keys and values and their ordering (increasing with CMax and decreasing with
+ * Cmin). The C types are defined in ordered_key_value.h
  */
 
 
@@ -31,50 +33,11 @@
 
 #include <limits>
 
+#include <faiss/utils/ordered_key_value.h>
 
 namespace faiss {
 
-/*******************************************************************
- * C object: uniform handling of min and max heap
- *******************************************************************/
 
-/** The C object gives the type T of the values in the heap, the type
- *  of the keys, TI and the comparison that is done: > for the minheap
- *  and < for the maxheap. The neutral value will always be dropped in
- *  favor of any other value in the heap.
- */
-
-template <typename T_, typename TI_>
-struct CMax;
-
-// traits of minheaps = heaps where the minimum value is stored on top
-// useful to find the *max* values of an array
-template <typename T_, typename TI_>
-struct CMin {
-    typedef T_ T;
-    typedef TI_ TI;
-    typedef CMax<T_, TI_> Crev;
-    inline static bool cmp (T a, T b) {
-        return a < b;
-    }
-    inline static T neutral () {
-        return std::numeric_limits<T>::lowest();
-    }
-};
-
-
-template <typename T_, typename TI_>
-struct CMax {
-    typedef T_ T;
-    typedef TI_ TI;
-    typedef CMin<T_, TI_> Crev;
-    inline static bool cmp (T a, T b) {
-        return a > b;
-    }
-    inline static T neutral () {
-        return std::numeric_limits<T>::max();
-    }
-};
 
 
 /*******************************************************************

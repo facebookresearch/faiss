@@ -239,68 +239,6 @@ class TestPCA(unittest.TestCase):
             prev = o
 
 
-class TestProductQuantizer(unittest.TestCase):
-
-    def test_pq(self):
-        d = 64
-        n = 2000
-        cs = 4
-        np.random.seed(123)
-        x = np.random.random(size=(n, d)).astype('float32')
-        pq = faiss.ProductQuantizer(d, cs, 8)
-        pq.train(x)
-        codes = pq.compute_codes(x)
-        x2 = pq.decode(codes)
-        diff = ((x - x2)**2).sum()
-
-        # print("diff=", diff)
-        # diff= 4418.0562
-        self.assertGreater(5000, diff)
-
-        pq10 = faiss.ProductQuantizer(d, cs, 10)
-        assert pq10.code_size == 5
-        pq10.verbose = True
-        pq10.cp.verbose = True
-        pq10.train(x)
-        codes = pq10.compute_codes(x)
-
-        x10 = pq10.decode(codes)
-        diff10 = ((x - x10)**2).sum()
-        self.assertGreater(diff, diff10)
-
-    def do_test_codec(self, nbit):
-        pq = faiss.ProductQuantizer(16, 2, nbit)
-
-        # simulate training
-        rs = np.random.RandomState(123)
-        centroids = rs.rand(2, 1 << nbit, 8).astype('float32')
-        faiss.copy_array_to_vector(centroids.ravel(), pq.centroids)
-
-        idx = rs.randint(1 << nbit, size=(100, 2))
-        # can be encoded exactly
-        x = np.hstack((
-            centroids[0, idx[:, 0]],
-            centroids[1, idx[:, 1]]
-        ))
-
-        # encode / decode
-        codes = pq.compute_codes(x)
-        xr = pq.decode(codes)
-        assert np.all(xr == x)
-
-        # encode w/ external index
-        assign_index = faiss.IndexFlatL2(8)
-        pq.assign_index = assign_index
-        codes2 = np.empty((100, pq.code_size), dtype='uint8')
-        pq.compute_codes_with_assign_index(
-            faiss.swig_ptr(x), faiss.swig_ptr(codes2), 100)
-        assert np.all(codes == codes2)
-
-    def test_codec(self):
-        for i in range(16):
-            print("Testing nbits=%d" % (i + 1))
-            self.do_test_codec(i + 1)
-
 
 class TestRevSwigPtr(unittest.TestCase):
 
@@ -672,6 +610,83 @@ class TestSWIGWrap(unittest.TestCase):
         self.do_test_array_type('uint32')
         self.do_test_array_type('int64')
         self.do_test_array_type('uint64')
+
+
+class TestPartitioning(unittest.TestCase):
+
+    def do_partition(self, n, q, maxval=None, seed=None):
+        if seed is None:
+            for i in range(50):
+                self.do_partition(n, q, maxval, i + 1234)
+        # print("seed=", seed)
+        rs = np.random.RandomState(seed)
+        if maxval is None:
+            vals = rs.rand(n).astype('float32')
+        else:
+            vals = rs.randint(maxval, size=n).astype('float32')
+
+        ids = (rs.permutation(n) + 12345).astype('int64')
+        dic = dict(zip(ids, vals))
+
+        #print("seed=", seed, "q=", q, "n=", n)
+        #print(vals)
+        #print(ids)
+
+        vals_orig = vals.copy()
+
+        sp = faiss.swig_ptr
+        if type(q) == int:
+            faiss.CMax_float_partition_fuzzy(
+                sp(vals), sp(ids), n,
+                q, q, None
+            )
+        else:
+            q_min, q_max = q
+            q = np.array([-1], dtype='uint64')
+            faiss.CMax_float_partition_fuzzy(
+                sp(vals), sp(ids), n,
+                q_min, q_max, sp(q)
+            )
+            q = q[0]
+            assert q_min <= q <= q_max
+
+        o = vals_orig.argsort()
+        thresh = vals_orig[o[q]]
+        n_eq = (vals_orig[o[:q]] == thresh).sum()
+
+        for i in range(q):
+            self.assertEqual(vals[i], dic[ids[i]])
+            self.assertLessEqual(vals[i], thresh)
+            if vals[i] == thresh:
+                n_eq -= 1
+        self.assertEqual(n_eq, 0)
+
+    def test_partition(self):
+        self.do_partition(160, 80)
+
+    def test_partition_manydups(self):
+        self.do_partition(160, 80, maxval=16)
+
+    def test_partition_lowq(self):
+        self.do_partition(160, 10, maxval=16)
+
+    def test_partition_highq(self):
+        self.do_partition(165, 155, maxval=16)
+
+    def test_partition_q10(self):
+        self.do_partition(32, 10, maxval=500)
+
+    def test_partition_q10_dups(self):
+        self.do_partition(32, 10, maxval=16)
+
+    def test_partition_q10_fuzzy(self):
+        self.do_partition(32, (10, 15), maxval=500)
+
+    def test_partition_fuzzy(self):
+        self.do_partition(160, (70, 80), maxval=500)
+
+    def test_partition_fuzzy_2(self):
+        self.do_partition(160, (70, 80))
 
 if __name__ == '__main__':
     unittest.main()

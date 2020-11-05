@@ -226,31 +226,6 @@ void IndexFlat::sa_decode (idx_t n, const uint8_t *bytes, float *x) const
 
 
 
-/***************************************************
- * IndexFlatL2BaseShift
- ***************************************************/
-
-IndexFlatL2BaseShift::IndexFlatL2BaseShift (idx_t d, size_t nshift, const float *shift):
-    IndexFlatL2 (d), shift (nshift)
-{
-    memcpy (this->shift.data(), shift, sizeof(float) * nshift);
-}
-
-void IndexFlatL2BaseShift::search (
-            idx_t n,
-            const float *x,
-            idx_t k,
-            float *distances,
-            idx_t *labels) const
-{
-    FAISS_THROW_IF_NOT (shift.size() == ntotal);
-
-    float_maxheap_array_t res = {
-        size_t(n), size_t(k), labels, distances};
-    knn_L2sqr_base_shift (x, xb.data(), d, n, ntotal, &res, shift.data());
-}
-
-
 
 /***************************************************
  * IndexRefineFlat

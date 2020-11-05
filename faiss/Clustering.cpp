@@ -269,6 +269,7 @@ void Clustering::train_encoded (idx_t nx, const uint8_t *x_in,
                                 const Index * codec, Index & index,
                                 const float *weights) {
 
+
     FAISS_THROW_IF_NOT_FMT (nx >= k,
              "Number of training points (%" PRId64 ") should be at least "
              "as large as number of clusters (%zd)", nx, k);

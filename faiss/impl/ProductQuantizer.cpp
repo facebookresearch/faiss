@@ -549,6 +549,14 @@ void ProductQuantizer::compute_distance_tables (
            float * dis_tables) const
 {
 
+#ifdef __AVX2__
+    if (dsub == 2 && nbits < 8) { // interesting for a narrow range of settings
+        compute_PQ_dis_tables_dsub2(
+            d, ksub, centroids.data(),
+            nx, x, false, dis_tables
+        );
+    } else
+#endif
     if (dsub < 16) {
 
 #pragma omp parallel for
@@ -573,7 +581,14 @@ void ProductQuantizer::compute_inner_prod_tables (
            const float * x,
            float * dis_tables) const
 {
-
+#ifdef __AVX2__
+    if (dsub == 2 && nbits < 8) {
+        compute_PQ_dis_tables_dsub2(
+            d, ksub, centroids.data(),
+            nx, x, true, dis_tables
+        );
+    } else
+#endif
     if (dsub < 16) {
 
 #pragma omp parallel for
