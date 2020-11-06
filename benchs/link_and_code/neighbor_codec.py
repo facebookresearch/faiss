@@ -55,7 +55,9 @@ def train_kmeans(x, k, ngpu, max_points_per_centroid=256):
     clus.train(x, index)
     centroids = faiss.vector_float_to_array(clus.centroids)
 
-    obj = faiss.vector_float_to_array(clus.obj)
+    stats = clus.iteration_stats
+    stats = [stats.at(i) for i in range(stats.size())]
+    obj = np.array([st.obj for st in stats])
     print("final objective: %.4g" % obj[-1])
 
     return centroids.reshape(k, d)
@@ -79,7 +81,8 @@ def get_neighbor_table(x_coded, Inn, i):
     rfn = x_coded
     M, d = rfn.M, rfn.index.d
     out = np.zeros((M + 1, d), dtype='float32')
-    rfn.get_neighbor_table(i, faiss.swig_ptr(out))
+    int_i = int(i)
+    rfn.get_neighbor_table(int_i, faiss.swig_ptr(out))
     _, _, sq = Inn
     return out[:, sq * rfn.dsub : (sq + 1) * rfn.dsub]
 
