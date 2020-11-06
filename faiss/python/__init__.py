@@ -493,7 +493,8 @@ add_ref_in_constructor(IndexIDMap2, 0)
 add_ref_in_constructor(IndexHNSW, 0)
 add_ref_in_method(IndexShards, 'add_shard', 0)
 add_ref_in_method(IndexBinaryShards, 'add_shard', 0)
-add_ref_in_constructor(IndexRefineFlat, 0)
+# add_ref_in_constructor(IndexRefineFlat, 0)
+
 add_ref_in_constructor(IndexBinaryIVF, 0)
 add_ref_in_constructor(IndexBinaryFromFloat, 0)
 add_ref_in_constructor(IndexBinaryIDMap, 0)
@@ -507,6 +508,24 @@ add_ref_in_constructor(BufferedIOReader, 0)
 
 # seems really marginal...
 # remove_ref_from_method(IndexReplicas, 'removeIndex', 0)
+
+def handle_IndexRefineFlat(the_class):
+
+    original_init = the_class.__init__
+
+    def replacement_init(self, *args):
+        if len(args) == 2:
+            index, xb = args
+            assert xb.shape == (index.ntotal, index.d)
+            xb = swig_ptr(xb)
+            args = (index, xb)
+
+        original_init(self, *args)
+        self.referenced_objects = [args[0]]
+
+    the_class.__init__ = replacement_init
+
+handle_IndexRefineFlat(IndexRefineFlat)
 
 ###########################################
 # GPU functions
@@ -859,6 +878,39 @@ def range_search_with_parameters(index, x, radius, params=None, output_stats=Fal
             'invlist_scan_ms': ms_per_stage[2],
         }
         return lims, Dout, Iout, stats
+
+
+
+def knn(xq, xb, k, distance_type=METRIC_L2):
+    """ wrapper around the faiss knn functions without index """
+    nq, d = xq.shape
+    nb, d2 = xb.shape
+    assert d == d2
+
+    I = np.empty((nq, k), dtype='int64')
+    D = np.empty((nq, k), dtype='float32')
+
+    if distance_type == METRIC_L2:
+        heaps = float_maxheap_array_t()
+        heaps.k = k
+        heaps.nh = nq
+        heaps.val = swig_ptr(D)
+        heaps.ids = swig_ptr(I)
+        knn_L2sqr(
+            swig_ptr(xq), swig_ptr(xb),
+            d, nq, nb, heaps
+        )
+    elif distance_type == METRIC_INNER_PRODUCT:
+        heaps = float_minheap_array_t()
+        heaps.k = k
+        heaps.nh = nq
+        heaps.val = swig_ptr(D)
+        heaps.ids = swig_ptr(I)
+        knn_inner_product(
+            swig_ptr(xq), swig_ptr(xb),
+            d, nq, nb, heaps
+        )
+    return D, I
 
 
 ###########################################

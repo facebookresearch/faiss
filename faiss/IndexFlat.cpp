@@ -242,6 +242,20 @@ IndexRefineFlat::IndexRefineFlat (Index *base_index):
                       "base_index should be empty in the beginning");
 }
 
+
+IndexRefineFlat::IndexRefineFlat (Index *base_index, const float *xb):
+    Index (base_index->d, base_index->metric_type),
+    refine_index (base_index->d, base_index->metric_type),
+    base_index (base_index), own_fields (false),
+    k_factor (1)
+{
+    is_trained = base_index->is_trained;
+    refine_index.add (base_index->ntotal, xb);
+    ntotal = base_index->ntotal;
+}
+
+
+
 IndexRefineFlat::IndexRefineFlat () {
     base_index = nullptr;
     own_fields = false;
@@ -270,6 +284,7 @@ void IndexRefineFlat::reset ()
 }
 
 namespace {
+
 typedef faiss::Index::idx_t idx_t;
 
 template<class C>
@@ -294,7 +309,7 @@ static void reorder_2_heaps (
 }
 
 
-}
+} // anonymous namespace
 
 
 void IndexRefineFlat::search (
