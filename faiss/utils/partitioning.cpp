@@ -393,7 +393,7 @@ static uint64_t get_cy () {
 #endif
 }
 
-#define IFV if(true)
+#define IFV if(false)
 
 template<class C>
 uint16_t simd_partition_fuzzy_with_bounds(
@@ -431,7 +431,8 @@ uint16_t simd_partition_fuzzy_with_bounds(
     size_t n_eq = 0, n_lt = 0;
     size_t q = 0;
 
-    while(s0 + 1 < s1) {
+    for(int it = 0; it < 200; it++) {
+        // while(s0 + 1 < s1) {
         thresh = (s0 + s1) / 2;
         count_lt_and_eq<C>(vals, n, thresh, n_lt, n_eq);
 
@@ -458,13 +459,15 @@ uint16_t simd_partition_fuzzy_with_bounds(
                 s0 = thresh;
             }
         }
+
     }
 
     uint64_t t1 = get_cy();
 
+    // number of equal values to keep
     int64_t n_eq_1 = q - n_lt;
 
-    IFV printf("shrink: thresh=%d n_eq_1=%ld\n", thresh, n_eq_1);
+    IFV printf("shrink: thresh=%d q=%ld n_eq_1=%ld\n", thresh, q, n_eq_1);
     if (n_eq_1 < 0) { // happens when > q elements are at lower bound
         assert(s0 + 1 == s1);
         q = q_min;

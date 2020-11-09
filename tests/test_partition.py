@@ -190,11 +190,11 @@ class TestPartitioningUint16(unittest.TestCase, PartitionTests):
 class TestPartitioningUint16Min(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=65536, seed=None):
-        seed = 1235
+        #seed = 1235
         if seed is None:
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
-        print("seed=", seed)
+        # print("seed=", seed)
         rs = np.random.RandomState(seed)
         vals = rs.randint(maxval, size=n).astype('uint16')
         ids = (rs.permutation(n) + 12345).astype('int64')
