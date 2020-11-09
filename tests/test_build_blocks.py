@@ -612,7 +612,38 @@ class TestSWIGWrap(unittest.TestCase):
         self.do_test_array_type('uint64')
 
 
-class TestPartitioning(unittest.TestCase):
+class PartitionTests:
+
+    def test_partition(self):
+        self.do_partition(160, 80)
+
+    def test_partition_manydups(self):
+        self.do_partition(160, 80, maxval=16)
+
+    def test_partition_lowq(self):
+        self.do_partition(160, 10, maxval=16)
+
+    def test_partition_highq(self):
+        self.do_partition(165, 155, maxval=16)
+
+    def test_partition_q10(self):
+        self.do_partition(32, 10, maxval=500)
+
+    def test_partition_q10_dups(self):
+        self.do_partition(32, 10, maxval=16)
+
+    def test_partition_q10_fuzzy(self):
+        self.do_partition(32, (10, 15), maxval=500)
+
+    def test_partition_fuzzy(self):
+        self.do_partition(160, (70, 80), maxval=500)
+
+    def test_partition_fuzzy_2(self):
+        self.do_partition(160, (70, 80))
+
+
+
+class TestPartitioningFloat(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=None, seed=None):
         if seed is None:
@@ -661,32 +692,6 @@ class TestPartitioning(unittest.TestCase):
                 n_eq -= 1
         self.assertEqual(n_eq, 0)
 
-    def test_partition(self):
-        self.do_partition(160, 80)
-
-    def test_partition_manydups(self):
-        self.do_partition(160, 80, maxval=16)
-
-    def test_partition_lowq(self):
-        self.do_partition(160, 10, maxval=16)
-
-    def test_partition_highq(self):
-        self.do_partition(165, 155, maxval=16)
-
-    def test_partition_q10(self):
-        self.do_partition(32, 10, maxval=500)
-
-    def test_partition_q10_dups(self):
-        self.do_partition(32, 10, maxval=16)
-
-    def test_partition_q10_fuzzy(self):
-        self.do_partition(32, (10, 15), maxval=500)
-
-    def test_partition_fuzzy(self):
-        self.do_partition(160, (70, 80), maxval=500)
-
-    def test_partition_fuzzy_2(self):
-        self.do_partition(160, (70, 80))
 
 if __name__ == '__main__':
     unittest.main()
