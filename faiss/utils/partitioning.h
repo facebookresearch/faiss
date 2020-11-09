@@ -24,6 +24,14 @@ typename C::T partition_fuzzy(
     typename C::T *vals, typename C::TI * ids, size_t n,
     size_t q_min, size_t q_max, size_t * q_out);
 
+template<class C>
+inline typename C::T partition(
+    typename C::T *vals, typename C::TI * ids, size_t n,
+    size_t q)
+{
+    return partition_fuzzy<C>(vals, ids, n, q, q, nullptr);
+}
+
 
 
 } // namespace faiss
