@@ -108,6 +108,7 @@ set(FAISS_HEADERS
   impl/lattice_Zn.h
   impl/platform_macros.h
   utils/Heap.h
+  utils/AlignedTable.h
   utils/WorkerThread.h
   utils/distances.h
   utils/extra_distances.h
