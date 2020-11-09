@@ -720,7 +720,7 @@ class TestRefine(unittest.TestCase):
         # check that with refinement, the recall@10 is the same as
         # the original recall@100
         recall2 = (I2 == Iref[:, :1]).sum()
-        print("recalls", recall1, recall2)
+        # print("recalls", recall1, recall2)
         self.assertEquals(recall1, recall2)
 
     def test_IP(self):
