@@ -587,6 +587,14 @@ template uint16_t partition_fuzzy<CMax<uint16_t, int64_t>> (
     uint16_t *vals, int64_t * ids, size_t n,
     size_t q_min, size_t q_max, size_t * q_out);
 
+template uint16_t partition_fuzzy<CMin<uint16_t, int>> (
+    uint16_t *vals, int * ids, size_t n,
+    size_t q_min, size_t q_max, size_t * q_out);
+
+template uint16_t partition_fuzzy<CMax<uint16_t, int>> (
+    uint16_t *vals, int * ids, size_t n,
+    size_t q_min, size_t q_max, size_t * q_out);
+
 
 
 } // namespace faiss
