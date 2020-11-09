@@ -36,6 +36,7 @@
 
 typedef uint64_t size_t;
 
+
 #define __restrict
 
 
@@ -99,6 +100,7 @@ typedef uint64_t size_t;
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/partitioning.h>
 #include <faiss/impl/AuxIndexStructures.h>
 
@@ -230,10 +232,11 @@ namespace std {
 
 %ignore *::cmp;
 
-%include  <faiss/utils/ordered_key_value.h>
-%include  <faiss/utils/Heap.h>
-%include  <faiss/utils/partitioning.h>
-%include  <faiss/utils/hamming.h>
+%include <faiss/utils/ordered_key_value.h>
+%include <faiss/utils/Heap.h>
+%include <faiss/utils/AlignedTable.h>
+%include <faiss/utils/partitioning.h>
+%include <faiss/utils/hamming.h>
 
 int get_num_gpus();
 void gpu_profiler_start();
@@ -794,6 +797,32 @@ REV_SWIG_PTR(uint64_t, NPY_UINT64);
     faiss::partition_fuzzy<faiss::CMin<float, int64_t> >;
 %template(CMax_float_partition_fuzzy)
     faiss::partition_fuzzy<faiss::CMax<float, int64_t> >;
+
+%template(AlignedTableUint8) faiss::AlignedTable<uint8_t>;
+%template(AlignedTableUint16) faiss::AlignedTable<uint16_t>;
+%template(AlignedTableFloat32) faiss::AlignedTable<float>;
+
+%inline %{
+
+// SWIG seems to have has some trouble resolving the template type here, so
+// declare explicitly
+uint16_t CMax_uint16_partition_fuzzy(
+        uint16_t *vals, int64_t *ids, size_t n,
+        size_t q_min, size_t q_max, size_t * q_out)
+{
+    return faiss::partition_fuzzy<faiss::CMax<unsigned short, int64_t> >(
+        vals, ids, n, q_min, q_max, q_out);
+}
+
+uint16_t CMin_uint16_partition_fuzzy(
+        uint16_t *vals, int64_t *ids, size_t n,
+        size_t q_min, size_t q_max, size_t * q_out)
+{
+    return faiss::partition_fuzzy<faiss::CMin<unsigned short, int64_t> >(
+        vals, ids, n, q_min, q_max, q_out);
+}
+
+%}
 
 /*******************************************************************
  * Expose a few basic functions

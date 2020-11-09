@@ -689,6 +689,35 @@ def copy_array_to_vector(a, v):
     if n > 0:
         memcpy(v.data(), swig_ptr(a), a.nbytes)
 
+# same for AlignedTable
+
+def copy_array_to_AlignedTable(a, v):
+    n, = a.shape
+    # TODO check class name
+    assert v.itemsize() == a.itemsize
+    v.resize(n)
+    if n > 0:
+        memcpy(v.get(), swig_ptr(a), a.nbytes)
+
+def array_to_AlignedTable(a):
+    if a.dtype == 'uint16':
+        v = AlignedTableUint16(a.size)
+    elif a.dtype == 'uint8':
+        v = AlignedTableUint8(a.size)
+    else:
+        assert False
+    copy_array_to_AlignedTable(a, v)
+    return v
+
+def AlignedTable_to_array(v):
+    """ convert an AlignedTable to a numpy array """
+    classname = v.__class__.__name__
+    assert classname.startswith('AlignedTable')
+    dtype = classname[12:].lower()
+    a = np.empty(v.size(), dtype=dtype)
+    if a.size > 0:
+        memcpy(swig_ptr(a), v.ptr, a.nbytes)
+    return a
 
 ###########################################
 # Wrapper for a few functions
@@ -788,7 +817,9 @@ def eval_intersection(I1, I2):
 def normalize_L2(x):
     fvec_renorm_L2(x.shape[1], x.shape[0], swig_ptr(x))
 
+######################################################
 # MapLong2Long interface
+######################################################
 
 def replacement_map_add(self, keys, vals):
     n, = keys.shape
@@ -803,6 +834,10 @@ def replacement_map_search_multiple(self, keys):
 
 replace_method(MapLong2Long, 'add', replacement_map_add)
 replace_method(MapLong2Long, 'search_multiple', replacement_map_search_multiple)
+
+######################################################
+# search_with_parameters interface
+######################################################
 
 search_with_parameters_c = search_with_parameters
 
@@ -871,6 +906,9 @@ def range_search_with_parameters(index, x, radius, params=None, output_stats=Fal
         return lims, Dout, Iout, stats
 
 
+######################################################
+# KNN function
+######################################################
 
 def knn(xq, xb, k, distance_type=METRIC_L2):
     """ wrapper around the faiss knn functions without index """
