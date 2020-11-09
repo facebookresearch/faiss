@@ -82,10 +82,13 @@ class TestPQTables(unittest.TestCase):
             self.do_test(d, dsub, nbit, faiss.METRIC_INNER_PRODUCT)
             self.do_test(d, dsub, nbit, faiss.METRIC_L2)
             return
+        # faiss.cvar.distance_compute_blas_threshold = 1000000
 
         M = d // dsub
         pq = faiss.ProductQuantizer(d, M, nbit)
-        pq.train(faiss.randn((max(1000, pq.ksub * 50), d), 123))
+        xt = faiss.randn((max(1000, pq.ksub * 50), d), 123)
+        pq.cp.niter = 4    # to avoid timeouts in tests
+        pq.train(xt)
 
         centroids = faiss.vector_to_array(pq.centroids)
         centroids = centroids.reshape(pq.M, pq.ksub, pq.dsub)
