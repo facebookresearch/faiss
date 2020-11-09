@@ -69,7 +69,8 @@ typename C::T sample_threshold_median3(
     } else if (vi != 0) {
         return val3[0];
     } else {
-        FAISS_THROW_MSG("too few values to compute a median");
+        return thresh_inf;
+        //   FAISS_THROW_MSG("too few values to compute a median");
     }
 }
 
@@ -139,7 +140,7 @@ typename C::T partition_fuzzy_median3(
 
     // here we use bissection with a median of 3 to find the threshold and
     // compress the arrays afterwards. So it's a n*log(n) algoirithm rather than
-    // qselect's O(n) but it avoids compressing the array.
+    // qselect's O(n) but it avoids shuffling around the array.
 
     FAISS_THROW_IF_NOT(n >= 3);
 
@@ -154,7 +155,8 @@ typename C::T partition_fuzzy_median3(
         count_lt_and_eq<C>(vals, n, thresh, n_lt, n_eq);
 
         IFV  printf("   thresh=%g [%g %g] n_lt=%ld n_eq=%ld, q=%ld:%ld/%ld\n",
-            thresh, thresh_inf, thresh_sup, n_lt, n_eq, q_min, q_max, n);
+            float(thresh), float(thresh_inf), float(thresh_sup),
+            n_lt, n_eq, q_min, q_max, n);
 
         if (n_lt <= q_min) {
             if (n_lt + n_eq >= q_min) {
@@ -171,13 +173,18 @@ typename C::T partition_fuzzy_median3(
         }
 
         // FIXME avoid a second pass over the array to sample the threshold
-        IFV  printf("     sample thresh in [%g %g]\n", thresh_inf, thresh_sup);
-        thresh = sample_threshold_median3<C>(vals, n, thresh_inf, thresh_sup);
+        IFV  printf("     sample thresh in [%g %g]\n", float(thresh_inf), float(thresh_sup));
+        T new_thresh = sample_threshold_median3<C>(vals, n, thresh_inf, thresh_sup);
+        if (new_thresh == thresh_inf) {
+            // then there is nothing between thresh_inf and thresh_sup
+            break;
+        }
+        thresh = new_thresh;
     }
 
     int64_t n_eq_1 = q - n_lt;
 
-    IFV printf("shrink: thresh=%g n_eq_1=%ld\n", thresh, n_eq_1);
+    IFV printf("shrink: thresh=%g n_eq_1=%ld\n", float(thresh), n_eq_1);
 
     if (n_eq_1 < 0) { // happens when > q elements are at lower bound
         q = q_min;
@@ -244,6 +251,18 @@ void find_minimax(
 }
 
 
+// max func differentiates between CMin and CMax (keep lowest or largest)
+template<class C>
+simd16uint16 max_func(simd16uint16 v, simd16uint16 thr16) {
+    constexpr bool is_max = C::is_max;
+    if (is_max) {
+        return simd16uint16(_mm256_max_epu16(v.i, thr16.i));
+    } else {
+        return simd16uint16(_mm256_min_epu16(v.i, thr16.i));
+    }
+}
+
+template<class C>
 void count_lt_and_eq(
     const uint16_t * vals, int n, uint16_t thresh,
     size_t & n_lt, size_t & n_eq
@@ -257,7 +276,7 @@ void count_lt_and_eq(
         simd16uint16 v(vals);
         vals += 16;
         simd16uint16 eqmask = (v == thr16);
-        simd16uint16 max2 = simd16uint16(_mm256_max_epu16(v.i, thr16.i));
+        simd16uint16 max2 = max_func<C>(v, thr16);
         simd16uint16 gemask = (v == max2);
         uint32_t bits = _mm256_movemask_epi8(
             _mm256_packs_epi16(eqmask.i, gemask.i)
@@ -270,7 +289,7 @@ void count_lt_and_eq(
 
     for(size_t i = n1 * 16; i < n; i++) {
         uint16_t v = *vals++;
-        if(v < thresh) {
+        if(C::cmp(thresh, v)) {
             n_lt++;
         } else if(v == thresh) {
             n_eq++;
@@ -279,41 +298,12 @@ void count_lt_and_eq(
 }
 
 
-template<typename TI>
-uint16_t simd_partition(uint16_t *vals, TI * ids, size_t n, size_t q) {
-
-    assert(is_aligned_pointer(vals));
-
-    if (q == 0) {
-        return 0;
-    }
-    if (q >= n) {
-        return 0xffff;
-    }
-
-    uint16_t s0i, s1i;
-    find_minimax(vals, n, s0i, s1i);
-
-    return simd_partition_fuzzy_with_bounds(
-        vals, ids, n, q, q, nullptr, s0i, s1i);
-}
-
-template<typename TI>
-uint16_t simd_partition_with_bounds(
-    uint16_t *vals, TI * ids, size_t n, size_t q,
-    uint16_t s0i, uint16_t s1i)
-{
-    return simd_partition_fuzzy_with_bounds(
-        vals, ids, n, q, q, nullptr, s0i, s1i);
-}
-
 
 /* compress separated values and ids table, keeping all values < thresh and at
  * most n_eq equal values */
-
-template<typename TI>
+template<class C>
 int simd_compress_array(
-    uint16_t *vals, TI * ids, size_t n, uint16_t thresh, int n_eq
+    uint16_t *vals, typename C::TI * ids, size_t n, uint16_t thresh, int n_eq
 ) {
     simd16uint16 thr16(thresh);
     simd16uint16 mixmask(0xff00);
@@ -324,7 +314,7 @@ int simd_compress_array(
     // loop while there are eqs to collect
     for (i0 = 0; i0 + 15 < n && n_eq > 0; i0 += 16) {
         simd16uint16 v(vals + i0);
-        simd16uint16 max2 = simd16uint16(_mm256_max_epu16(v.i, thr16.i));
+        simd16uint16 max2 = max_func<C>(v, thr16);
         simd16uint16 gemask = (v == max2);
         simd16uint16 eqmask = (v == thr16);
         uint32_t bits = _mm256_movemask_epi8(
@@ -357,7 +347,7 @@ int simd_compress_array(
     // handle remaining, only striclty lt ones.
     for (; i0 + 15 < n; i0 += 16) {
         simd16uint16 v(vals + i0);
-        simd16uint16 max2 = simd16uint16(_mm256_max_epu16(v.i, thr16.i));
+        simd16uint16 max2 = max_func<C>(v, thr16);
         simd16uint16 gemask = (v == max2);
         uint32_t bits = ~_mm256_movemask_epi8(gemask.i);
 
@@ -373,7 +363,7 @@ int simd_compress_array(
     }
 
     for(int i = (n & ~15); i < n; i++) {
-        if (vals[i] < thresh) {
+        if (C::cmp(thresh, vals[i])) {
             vals[wp] = vals[i];
             ids[wp] = ids[i];
             wp++;
@@ -403,11 +393,11 @@ static uint64_t get_cy () {
 #endif
 }
 
-#define IFV if(false)
+#define IFV if(true)
 
-template<typename TI>
+template<class C>
 uint16_t simd_partition_fuzzy_with_bounds(
-    uint16_t *vals, TI * ids, size_t n,
+    uint16_t *vals, typename C::TI * ids, size_t n,
     size_t q_min, size_t q_max, size_t * q_out,
     uint16_t s0i, uint16_t s1i)
 {
@@ -443,7 +433,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
 
     while(s0 + 1 < s1) {
         thresh = (s0 + s1) / 2;
-        count_lt_and_eq(vals, n, thresh, n_lt, n_eq);
+        count_lt_and_eq<C>(vals, n, thresh, n_lt, n_eq);
 
         IFV  printf("   [%ld %ld] thresh=%d n_lt=%ld n_eq=%ld, q=%ld:%ld/%ld\n",
             s0, s1, thresh, n_lt, n_eq, q_min, q_max, n);
@@ -452,13 +442,21 @@ uint16_t simd_partition_fuzzy_with_bounds(
                 q = q_min;
                 break;
             } else {
-                s0 = thresh;
+                if (C::is_max) {
+                    s0 = thresh;
+                } else {
+                    s1 = thresh;
+                }
             }
         } else if (n_lt <= q_max) {
             q = n_lt;
             break;
         } else {
-            s1  = thresh;
+            if (C::is_max) {
+                s1 = thresh;
+            } else {
+                s0 = thresh;
+            }
         }
     }
 
@@ -470,14 +468,18 @@ uint16_t simd_partition_fuzzy_with_bounds(
     if (n_eq_1 < 0) { // happens when > q elements are at lower bound
         assert(s0 + 1 == s1);
         q = q_min;
-        thresh--;
+        if (C::is_max) {
+            thresh--;
+        } else {
+            thresh++;
+        }
         n_eq_1 = q;
         IFV printf("  override: thresh=%d n_eq_1=%ld\n", thresh, n_eq_1);
     } else {
         assert(n_eq_1 <= n_eq);
     }
 
-    size_t wp = simd_compress_array(vals, ids, n, thresh, n_eq_1);
+    size_t wp = simd_compress_array<C>(vals, ids, n, thresh, n_eq_1);
 
     IFV printf("wp=%ld\n", wp);
     assert(wp == q);
@@ -492,9 +494,9 @@ uint16_t simd_partition_fuzzy_with_bounds(
 }
 
 
-template<typename TI>
+template<class C>
 uint16_t simd_partition_fuzzy(
-    uint16_t *vals, TI * ids, size_t n,
+    uint16_t *vals, typename C::TI * ids, size_t n,
     size_t q_min, size_t q_max, size_t * q_out
 ) {
 
@@ -505,10 +507,39 @@ uint16_t simd_partition_fuzzy(
     find_minimax(vals, n, s0i, s1i);
     // QSelect_stats.t0 += get_cy() - t0;
 
-    return simd_partition_fuzzy_with_bounds(
+    return simd_partition_fuzzy_with_bounds<C>(
         vals, ids, n, q_min, q_max, q_out, s0i, s1i);
 }
 
+
+
+template<class C>
+uint16_t simd_partition(uint16_t *vals, typename C::TI * ids, size_t n, size_t q) {
+
+    assert(is_aligned_pointer(vals));
+
+    if (q == 0) {
+        return 0;
+    }
+    if (q >= n) {
+        return 0xffff;
+    }
+
+    uint16_t s0i, s1i;
+    find_minimax(vals, n, s0i, s1i);
+
+    return simd_partition_fuzzy_with_bounds<C>(
+        vals, ids, n, q, q, nullptr, s0i, s1i);
+}
+
+template<class C>
+uint16_t simd_partition_with_bounds(
+    uint16_t *vals, typename C::TI * ids, size_t n, size_t q,
+    uint16_t s0i, uint16_t s1i)
+{
+    return simd_partition_fuzzy_with_bounds<C>(
+        vals, ids, n, q, q, nullptr, s0i, s1i);
+}
 
 } // namespace simd_partitioning
 
@@ -526,7 +557,7 @@ typename C::T partition_fuzzy(
 #ifdef __AVX2__
     constexpr bool is_uint16 = std::is_same<typename C::T, uint16_t>::value;
     if (is_uint16 && is_aligned_pointer(vals)) {
-        return simd_partitioning::simd_partition_fuzzy(
+        return simd_partitioning::simd_partition_fuzzy<C>(
             (uint16_t*)vals, ids, n, q_min, q_max, q_out);
     }
 #endif
