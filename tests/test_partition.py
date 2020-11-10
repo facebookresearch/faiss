@@ -235,3 +235,80 @@ class TestPartitioningUint16Min(unittest.TestCase, PartitionTests):
                 n_eq -= 1
         self.assertEqual(n_eq, 0)
 
+
+class TestHistograms(unittest.TestCase):
+
+    def do_test(self, nbin, n):
+        rs = np.random.RandomState(123)
+        tab = rs.randint(nbin, size=n).astype('uint16')
+        ref_histogram = np.bincount(tab, minlength=nbin)
+
+        tab_a = faiss.AlignedTableUint16()
+        faiss.copy_array_to_AlignedTable(tab, tab_a)
+
+        sp = faiss.swig_ptr
+        hist = np.zeros(nbin, 'int32')
+        if nbin == 8:
+            faiss.simd_histogram_8(tab_a.get(), n, 0, -1, sp(hist))
+        elif nbin == 16:
+            faiss.simd_histogram_16(tab_a.get(), n, 0, -1, sp(hist))
+        else:
+            assert False
+        np.testing.assert_array_equal(hist, ref_histogram)
+
+    def test_8bin_even(self):
+        self.do_test(8, 5 * 16)
+
+    def test_8bin_odd(self):
+        self.do_test(8, 123)
+
+    def test_16bin_even(self):
+        self.do_test(16, 5 * 16)
+
+    def test_16bin_odd(self):
+        self.do_test(16, 123)
+
+    def do_test_bounded(self, nbin, n):
+        rs = np.random.RandomState(123)
+        minv = 500
+        shift = 2
+        tab = rs.randint(nbin * 6, size=n).astype('uint16')
+        tab += minv - nbin
+        bc = np.bincount(tab, minlength=minv + nbin * 5)
+
+        ref_histogram = bc [minv : minv + 4 * nbin].reshape(-1, 1<<shift).sum(1)
+
+        tab_a = faiss.AlignedTableUint16()
+        faiss.copy_array_to_AlignedTable(tab, tab_a)
+        sp = faiss.swig_ptr
+
+        hist = np.zeros(nbin, 'int32')
+        if nbin == 8:
+            faiss.simd_histogram_8(
+                tab_a.get(), n,
+                minv, shift,
+                sp(hist)
+            )
+        elif nbin == 16:
+            faiss.simd_histogram_16(
+                tab_a.get(), n,
+                minv, shift,
+                sp(hist)
+            )
+        else:
+            assert False
+
+        np.testing.assert_array_equal(hist, ref_histogram)
+
+    def test_8bin_even_bounded(self):
+        self.do_test_bounded(8, 22 * 16)
+
+    def test_8bin_odd_bounded(self):
+        self.do_test_bounded(8, 1000)
+
+    def test_16bin_even_bounded(self):
+        self.do_test_bounded(16, 22 * 16)
+
+    def test_16bin_odd_bounded(self):
+        self.do_test_bounded(16, 1000)
+

@@ -213,7 +213,7 @@ typename C::T partition_fuzzy_median3(
  * SIMD routines when vals is an aligned array of uint16_t
  ******************************************************************/
 
-
+#ifdef __AVX2__
 
 namespace simd_partitioning {
 
@@ -489,10 +489,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
     if (q_out) {
         *q_out = q;
     }
-/*
-    QSelect_stats.t1 += t1 - t0;
-    QSelect_stats.t2 += get_cy() - t1;
-*/
+
     return thresh;
 }
 
@@ -546,6 +543,7 @@ uint16_t simd_partition_with_bounds(
 
 } // namespace simd_partitioning
 
+#endif
 
 /******************************************************************
  * Driver routine
@@ -595,6 +593,438 @@ template uint16_t partition_fuzzy<CMax<uint16_t, int>> (
     uint16_t *vals, int * ids, size_t n,
     size_t q_min, size_t q_max, size_t * q_out);
 
+
+
+/******************************************************************
+ * Histogram subroutines
+ ******************************************************************/
+
+
+
+namespace  {
+
+/************************************************************
+ * 8 bins
+ ************************************************************/
+
+simd32uint8 accu4to8(simd16uint16 a4) {
+    simd16uint16 mask4(0x0f0f);
+
+    simd16uint16 a8_0 = a4 & mask4;
+    simd16uint16 a8_1 = (a4 >> 4) & mask4;
+
+    return simd32uint8(_mm256_hadd_epi16(a8_0.i, a8_1.i));
+}
+
+
+simd16uint16 accu8to16(simd32uint8 a8) {
+    simd16uint16 mask8(0x00ff);
+
+    simd16uint16 a8_0 = simd16uint16(a8) & mask8;
+    simd16uint16 a8_1 = (simd16uint16(a8) >> 8) & mask8;
+
+    return simd16uint16(_mm256_hadd_epi16(a8_0.i, a8_1.i));
+}
+
+
+static const simd32uint8 shifts(_mm256_setr_epi8(
+    1, 16, 0, 0,  4, 64, 0, 0,
+    0, 0, 1, 16,  0, 0, 4, 64,
+    1, 16, 0, 0,  4, 64, 0, 0,
+    0, 0, 1, 16,  0, 0, 4, 64
+));
+
+// 2-bit accumulator: we can add only up to 3 elements
+// on output we return 2*4-bit results
+// preproc returns either an index in 0..7 or a value with the high bit set
+// that yeilds a 0 when used in the table look-up
+template<int N, class Preproc>
+void compute_accu2(
+        const uint16_t * & data,
+        Preproc & pp,
+        simd16uint16 & a4lo, simd16uint16 & a4hi
+) {
+    simd16uint16 mask2(0x3333);
+    simd16uint16 a2((uint16_t)0); // 2-bit accu
+    for (int j = 0; j < N; j ++) {
+        simd16uint16 v(data);
+        data += 16;
+        v = pp(v);
+        simd16uint16 idx = v | (v << 8) | simd16uint16(0x800);
+        a2 += simd16uint16(shifts.lookup_2_lanes(simd32uint8(idx)));
+    }
+    a4lo += a2 & mask2;
+    a4hi += (a2 >> 2) & mask2;
+}
+
+
+template<class Preproc>
+simd16uint16 histogram_8(
+        const uint16_t * data, Preproc pp,
+        size_t n_in) {
+
+    assert (n_in % 16 == 0);
+    int n = n_in / 16;
+
+    simd32uint8 a8lo(0);
+    simd32uint8 a8hi(0);
+
+    for(int i0 = 0; i0 < n; i0 += 15) {
+        simd16uint16 a4lo(0);  // 4-bit accus
+        simd16uint16 a4hi(0);
+
+        int i1 = std::min(i0 + 15, n);
+        int i;
+        for(i = i0; i + 2 < i1; i += 3) {
+            compute_accu2<3>(data, pp, a4lo, a4hi); // adds 3 max
+        }
+        switch (i1 - i) {
+        case 2:
+            compute_accu2<2>(data, pp, a4lo, a4hi);
+            break;
+        case 1:
+            compute_accu2<1>(data, pp, a4lo, a4hi);
+            break;
+        }
+
+        a8lo += accu4to8(a4lo);
+        a8hi += accu4to8(a4hi);
+    }
+
+    // move to 16-bit accu
+    simd16uint16 a16lo = accu8to16(a8lo);
+    simd16uint16 a16hi = accu8to16(a8hi);
+
+    simd16uint16 a16 = simd16uint16(_mm256_hadd_epi16(a16lo.i, a16hi.i));
+
+    // the 2 lanes must still be combined
+    return a16;
+}
+
+
+/************************************************************
+ * 16 bins
+ ************************************************************/
+
+
+
+static const simd32uint8 shifts2(_mm256_setr_epi8(
+    1, 2, 4, 8, 16, 32, 64, (char)128,
+    1, 2, 4, 8, 16, 32, 64, (char)128,
+    1, 2, 4, 8, 16, 32, 64, (char)128,
+    1, 2, 4, 8, 16, 32, 64, (char)128
+));
+
+
+simd32uint8 shiftr_16(simd32uint8 x, int n)
+{
+    return simd32uint8(simd16uint16(x) >> n);
+}
+
+
+inline simd32uint8 combine_2x2(simd32uint8 a, simd32uint8 b) {
+
+    __m256i a1b0 = _mm256_permute2f128_si256(a.i, b.i, 0x21);
+    __m256i a0b1 = _mm256_blend_epi32(a.i, b.i, 0xF0);
+
+    return simd32uint8(a1b0) + simd32uint8(a0b1);
+}
+
+
+// 2-bit accumulator: we can add only up to 3 elements
+// on output we return 2*4-bit results
+template<int N, class Preproc>
+void compute_accu2_16(
+        const uint16_t * & data, Preproc pp,
+        simd32uint8 & a4_0, simd32uint8 & a4_1,
+        simd32uint8 & a4_2, simd32uint8 & a4_3
+) {
+    simd32uint8 mask1(0x55);
+    simd32uint8 a2_0; // 2-bit accu
+    simd32uint8 a2_1; // 2-bit accu
+    a2_0.clear(); a2_1.clear();
+
+    for (int j = 0; j < N; j ++) {
+        simd16uint16 v(data);
+        data += 16;
+        v = pp(v);
+
+        simd16uint16 idx = v | (v << 8);
+        simd32uint8 a1 = shifts2.lookup_2_lanes(simd32uint8(idx));
+
+        if (pp.do_clip()) {
+            simd16uint16 lt16 = (v >> 4) == simd16uint16(0);
+            a1 = a1 & lt16;
+        }
+
+        simd16uint16 lt8 = (v >> 3) == simd16uint16(0);
+        lt8.i = _mm256_xor_si256(lt8.i, _mm256_set1_epi16(0xff00));
+
+        a1 = a1 & lt8;
+
+        a2_0 += a1 & mask1;
+        a2_1 += shiftr_16(a1, 1) & mask1;
+    }
+    simd32uint8 mask2(0x33);
+
+    a4_0 += a2_0 & mask2;
+    a4_1 += a2_1 & mask2;
+    a4_2 += shiftr_16(a2_0, 2) & mask2;
+    a4_3 += shiftr_16(a2_1, 2) & mask2;
+
+}
+
+
+simd32uint8 accu4to8_2(simd32uint8 a4_0, simd32uint8 a4_1) {
+    simd32uint8 mask4(0x0f);
+
+    simd32uint8 a8_0 = combine_2x2(
+        a4_0 & mask4,
+        shiftr_16(a4_0, 4) & mask4
+    );
+
+    simd32uint8 a8_1 = combine_2x2(
+        a4_1 & mask4,
+        shiftr_16(a4_1, 4) & mask4
+    );
+
+    return simd32uint8(_mm256_hadd_epi16(a8_0.i, a8_1.i));
+}
+
+
+
+template<class Preproc>
+simd16uint16 histogram_16(const uint16_t * data, Preproc pp, size_t n_in) {
+
+    assert (n_in % 16 == 0);
+    int n = n_in / 16;
+
+    simd32uint8 a8lo((uint8_t)0);
+    simd32uint8 a8hi((uint8_t)0);
+
+    for(int i0 = 0; i0 < n; i0 += 7) {
+        simd32uint8 a4_0(0); // 0, 4, 8, 12
+        simd32uint8 a4_1(0); // 1, 5, 9, 13
+        simd32uint8 a4_2(0); // 2, 6, 10, 14
+        simd32uint8 a4_3(0); // 3, 7, 11, 15
+
+        int i1 = std::min(i0 + 7, n);
+        int i;
+        for(i = i0; i + 2 < i1; i += 3) {
+            compute_accu2_16<3>(data, pp, a4_0, a4_1, a4_2, a4_3);
+        }
+        switch (i1 - i) {
+        case 2:
+            compute_accu2_16<2>(data, pp, a4_0, a4_1, a4_2, a4_3);
+            break;
+        case 1:
+            compute_accu2_16<1>(data, pp, a4_0, a4_1, a4_2, a4_3);
+            break;
+        }
+
+        a8lo += accu4to8_2(a4_0, a4_1);
+        a8hi += accu4to8_2(a4_2, a4_3);
+    }
+
+    // move to 16-bit accu
+    simd16uint16 a16lo = accu8to16(a8lo);
+    simd16uint16 a16hi = accu8to16(a8hi);
+
+    simd16uint16 a16 = simd16uint16(_mm256_hadd_epi16(a16lo.i, a16hi.i));
+
+    __m256i perm32 = _mm256_setr_epi32(
+        0, 2, 4, 6, 1, 3, 5, 7
+    );
+    a16.i = _mm256_permutevar8x32_epi32(a16.i, perm32);
+
+    return a16;
+}
+
+struct PreprocNOP {
+    simd16uint16 operator () (simd16uint16 x)  {
+        return x;
+    }
+    static bool do_clip() {
+        return false;
+    }
+};
+
+
+template<int shift>
+struct PreprocMinShift {
+    simd16uint16 min16;
+
+    PreprocMinShift(uint16_t min) {
+        min16.set1(min);
+    }
+
+    simd16uint16 operator () (simd16uint16 x)  {
+        x = x - min16;
+        x.i = _mm256_srai_epi16(x.i, shift); // signed
+        return x;
+    }
+
+    static bool do_clip() {
+        return true;
+    }
+
+
+};
+
+/* unbounded versions of the functions */
+
+void simd_histogram_8_unbounded(
+    const uint16_t *data, int n,
+    int *hist)
+{
+    PreprocNOP pp;
+    simd16uint16 a16 = histogram_8(data, pp, (n & ~15));
+
+    uint16_t a16_tab[16] __attribute__ ((aligned (32)));
+    a16.store(a16_tab);
+
+    for(int i = 0; i < 8; i++) {
+        hist[i] = a16_tab[i] + a16_tab[i + 8];
+    }
+
+    for(int i = (n & ~15); i < n; i++) {
+        hist[data[i]]++;
+    }
+
+}
+
+
+void simd_histogram_16_unbounded(
+    const uint16_t *data, int n,
+    int *hist)
+{
+
+    simd16uint16 a16 = histogram_16(data, PreprocNOP(), (n & ~15));
+
+    uint16_t a16_tab[16] __attribute__ ((aligned (32)));
+    a16.store(a16_tab);
+
+    for(int i = 0; i < 16; i++) {
+        hist[i] = a16_tab[i];
+    }
+
+    for(int i = (n & ~15); i < n; i++) {
+        hist[data[i]]++;
+    }
+
+}
+
+
+
+} // anonymous namespace
+
+/************************************************************
+ * Driver routines
+ ************************************************************/
+
+void simd_histogram_8(
+    const uint16_t *data, int n,
+    uint16_t min, int shift,
+    int *hist)
+{
+    if (shift < 0) {
+        simd_histogram_8_unbounded(data, n, hist);
+        return;
+    }
+
+    simd16uint16 a16;
+
+#define DISPATCH(s)  \
+     case s: \
+        a16 = histogram_8(data, PreprocMinShift<s>(min), (n & ~15)); \
+        break
+
+    switch(shift) {
+        DISPATCH(0);
+        DISPATCH(1);
+        DISPATCH(2);
+        DISPATCH(3);
+        DISPATCH(4);
+        DISPATCH(5);
+        DISPATCH(6);
+        DISPATCH(7);
+        DISPATCH(8);
+    default:
+        FAISS_THROW_FMT("dispatch for shift=%d not instantiated", shift);
+    }
+#undef DISPATCH
+
+    uint16_t a16_tab[16] __attribute__ ((aligned (32)));
+    a16.store(a16_tab);
+
+    for(int i = 0; i < 8; i++) {
+        hist[i] = a16_tab[i] + a16_tab[i + 8];
+    }
+
+    // complete with remaining bins
+    for(int i = (n & ~15); i < n; i++) {
+        uint16_t v = (data[i] - min);
+        int16_t vs = v;
+        vs >>= shift;  // need signed shift
+        v = vs;
+        if (v < 8)  hist[v]++;
+    }
+
+}
+
+
+
+void simd_histogram_16(
+    const uint16_t *data, int n,
+    uint16_t min, int shift,
+    int *hist)
+{
+    if (shift < 0) {
+        simd_histogram_16_unbounded(data, n, hist);
+        return;
+    }
+
+    simd16uint16 a16;
+
+#define DISPATCH(s)  \
+     case s: \
+        a16 = histogram_16(data, PreprocMinShift<s>(min), (n & ~15)); \
+        break
+
+    switch(shift) {
+        DISPATCH(0);
+        DISPATCH(1);
+        DISPATCH(2);
+        DISPATCH(3);
+        DISPATCH(4);
+        DISPATCH(5);
+        DISPATCH(6);
+        DISPATCH(7);
+        DISPATCH(8);
+    default:
+        FAISS_THROW_FMT("dispatch for shift=%d not instantiated", shift);
+    }
+#undef DISPATCH
+
+    uint16_t a16_tab[16] __attribute__ ((aligned (32)));
+    a16.store(a16_tab);
+
+    for(int i = 0; i < 16; i++) {
+        hist[i] = a16_tab[i];
+    }
+
+    for(int i = (n & ~15); i < n; i++) {
+        uint16_t v = (data[i] - min);
+        int16_t vs = v;
+        vs >>= shift;  // need signed shift
+        v = vs;
+        if (v < 16)  hist[v]++;
+    }
+
+}
+
+// this code does not compile properly with GCC 7.4.0
+// FIXME make a scalar version
 
 
 } // namespace faiss
