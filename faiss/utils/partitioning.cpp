@@ -538,7 +538,8 @@ uint16_t simd_partition_fuzzy_with_bounds(
 
     // output of loop:
     int thresh; // final threshold
-    uint64_t n_eq = 0;   // total nb of equal values
+    uint64_t tot_eq = 0;   // total nb of equal values
+    uint64_t n_eq = 0;     // nb of equal values to keep
     size_t q;  // final quantile
 
     // buffer for the histograms
@@ -598,7 +599,6 @@ uint16_t simd_partition_fuzzy_with_bounds(
         IFV printf("    new bin: s0=%d s1=%d n_lt=%ld n_gt=%ld\n", s0, s1, n_lt, n_gt);
 
         if (s1 > s0) {
-
             if (n_lt >= q_min && q_max >= n_lt) {
                 IFV printf("    FOUND1\n");
                 thresh = s0;
@@ -609,34 +609,36 @@ uint16_t simd_partition_fuzzy_with_bounds(
             size_t n_lt_2 = n - n_gt;
             if (n_lt_2 >= q_min && q_max >= n_lt_2) {
                 thresh = s1 + 1;
-                n_lt = q = n_lt_2;
+                q = n_lt_2;
                 IFV printf("    FOUND2\n");
                 break;
             }
         } else {
             thresh = s0;
             q = q_min;
+            tot_eq = n - n_gt - n_lt;
             n_eq = q_min - n_lt;
-            // n_eq_1 = n - n_lt - n_gt - n_eq;
             IFV printf("    FOUND3\n");
             break;
         }
     }
 
-    IFV printf("end bissection: thresh=%d q=%ld n_lt=%ld n_eq=%ld\n", thresh, q, n_lt, n_eq);
+    IFV printf("end bissection: thresh=%d q=%ld n_eq=%ld\n", thresh, q, n_lt, n_eq);
 
-    if (!C::is_max) {/*
+    if (!C::is_max) {
+        if (n_eq == 0) {
+            thresh --;
+        } else {
+            // thresh unchanged
+            n_eq = tot_eq - n_eq;
+        }
         q = n - q;
-        n_lt = n - n_lt - ;
-        n_eq = n_eq_1;*/
-        IFV printf("revert due to CMin, q->%ld n_lt->%ld n_eq->%ld\n");
-        q_min = n - q_min;
-        q_max = n - q_max;
+        IFV printf("revert due to CMin, q->%ld n_eq->%ld\n", q, n_eq);
     }
 
     size_t wp = simd_compress_array<C>(vals, ids, n, thresh, n_eq);
-    IFV printf("wp=%ld\n", wp);
-
+    IFV printf("wp=%ld ?= %ld\n", wp, q);
+    assert(wp == q);
     if (q_out) {
         *q_out = wp;
     }
