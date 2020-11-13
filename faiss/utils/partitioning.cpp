@@ -397,7 +397,7 @@ static uint64_t get_cy () {
 #define IFV if(false)
 
 template<class C>
-uint16_t simd_partition_fuzzy_with_bounds_nohist(
+uint16_t simd_partition_fuzzy_with_bounds(
     uint16_t *vals, typename C::TI * ids, size_t n,
     size_t q_min, size_t q_max, size_t * q_out,
     uint16_t s0i, uint16_t s1i)
@@ -496,7 +496,7 @@ uint16_t simd_partition_fuzzy_with_bounds_nohist(
 
 
 template<class C>
-uint16_t simd_partition_fuzzy_with_bounds(
+uint16_t simd_partition_fuzzy_with_bounds_histogram(
     uint16_t *vals, typename C::TI * ids, size_t n,
     size_t q_min, size_t q_max, size_t * q_out,
     uint16_t s0i, uint16_t s1i)
@@ -576,6 +576,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
                 sum += hist[i];
             }
             printf("] n_gt=%ld sum=%d\n", n_gt, sum);
+            assert(sum == n);
         }
 
         size_t sum_below = n_lt;
@@ -1005,7 +1006,6 @@ template<int shift, int nbin>
 struct PreprocMinShift {
     simd16uint16 min16;
     simd16uint16 max16;
-
 
     PreprocMinShift(uint16_t min) {
         min16.set1(min);
