@@ -550,7 +550,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
 
         int shift = 0;
 
-        IFV printf("  it %d bounds: %ld %ld n_lt=%ld n_gt=%ld\n",
+        IFV printf("  it %d bounds: %d %d n_lt=%ld n_gt=%ld\n",
                 it, s0, s1, n_lt, n_gt);
 
         int maxval = s1 - s0;
@@ -623,7 +623,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
         }
     }
 
-    IFV printf("end bissection: thresh=%d q=%ld n_eq=%ld\n", thresh, q, n_lt, n_eq);
+    IFV printf("end bissection: thresh=%d q=%ld n_eq=%ld\n", thresh, q, n_eq);
 
     if (!C::is_max) {
         if (n_eq == 0) {
@@ -753,9 +753,9 @@ template uint16_t partition_fuzzy<CMax<uint16_t, int>> (
  * Histogram subroutines
  ******************************************************************/
 
-/// #ifdef __AVX2__
+#ifdef __AVX2__
 /// FIXME when MSB of uint16 is set
-#if 0
+// this code does not compile properly with GCC 7.4.0
 
 namespace  {
 
@@ -792,7 +792,7 @@ static const simd32uint8 shifts(_mm256_setr_epi8(
 
 // 2-bit accumulator: we can add only up to 3 elements
 // on output we return 2*4-bit results
-// preproc returns either an index in 0..7 or a value with the high bit set
+// preproc returns either an index in 0..7 or 0xffff
 // that yeilds a 0 when used in the table look-up
 template<int N, class Preproc>
 void compute_accu2(
@@ -806,6 +806,7 @@ void compute_accu2(
         simd16uint16 v(data);
         data += 16;
         v = pp(v);
+        // 0x800 -> force second half of table
         simd16uint16 idx = v | (v << 8) | simd16uint16(0x800);
         a2 += simd16uint16(shifts.lookup_2_lanes(simd32uint8(idx)));
     }
@@ -907,11 +908,7 @@ void compute_accu2_16(
 
         simd16uint16 idx = v | (v << 8);
         simd32uint8 a1 = shifts2.lookup_2_lanes(simd32uint8(idx));
-
-        if (pp.do_clip()) {
-            simd16uint16 lt16 = (v >> 4) == simd16uint16(0);
-            a1 = a1 & lt16;
-        }
+        // contains 0s for out-of-bounds elements
 
         simd16uint16 lt8 = (v >> 3) == simd16uint16(0);
         lt8.i = _mm256_xor_si256(lt8.i, _mm256_set1_epi16(0xff00));
@@ -1000,30 +997,28 @@ struct PreprocNOP {
     simd16uint16 operator () (simd16uint16 x)  {
         return x;
     }
-    static bool do_clip() {
-        return false;
-    }
+
 };
 
 
-template<int shift>
+template<int shift, int nbin>
 struct PreprocMinShift {
     simd16uint16 min16;
+    simd16uint16 max16;
+
 
     PreprocMinShift(uint16_t min) {
         min16.set1(min);
+        int vmax0 = std::min((nbin << shift) + min, 65536);
+        uint16_t vmax = uint16_t(vmax0 - 1 - min);
+        max16.set1(vmax); // vmax inclusive
     }
 
     simd16uint16 operator () (simd16uint16 x)  {
         x = x - min16;
-        x.i = _mm256_srai_epi16(x.i, shift); // signed
-        return x;
+        simd16uint16 mask = (x == max(x, max16)) - (x == max16);
+        return (x >> shift) | mask;
     }
-
-    static bool do_clip() {
-        return true;
-    }
-
 
 };
 
@@ -1092,7 +1087,7 @@ void simd_histogram_8(
 
 #define DISPATCH(s)  \
      case s: \
-        a16 = histogram_8(data, PreprocMinShift<s>(min), (n & ~15)); \
+        a16 = histogram_8(data, PreprocMinShift<s, 8>(min), (n & ~15)); \
         break
 
     switch(shift) {
@@ -1105,6 +1100,11 @@ void simd_histogram_8(
         DISPATCH(6);
         DISPATCH(7);
         DISPATCH(8);
+        DISPATCH(9);
+        DISPATCH(10);
+        DISPATCH(11);
+        DISPATCH(12);
+        DISPATCH(13);
     default:
         FAISS_THROW_FMT("dispatch for shift=%d not instantiated", shift);
     }
@@ -1119,11 +1119,10 @@ void simd_histogram_8(
 
     // complete with remaining bins
     for(int i = (n & ~15); i < n; i++) {
-        uint16_t v = (data[i] - min);
-        int16_t vs = v;
-        vs >>= shift;  // need signed shift
-        v = vs;
-        if (v < 8)  hist[v]++;
+        if (data[i] < min) continue;
+        uint16_t v = data[i] - min;
+        v >>= shift;
+        if (v < 8) hist[v]++;
     }
 
 }
@@ -1144,7 +1143,7 @@ void simd_histogram_16(
 
 #define DISPATCH(s)  \
      case s: \
-        a16 = histogram_16(data, PreprocMinShift<s>(min), (n & ~15)); \
+        a16 = histogram_16(data, PreprocMinShift<s, 16>(min), (n & ~15)); \
         break
 
     switch(shift) {
@@ -1174,11 +1173,10 @@ void simd_histogram_16(
     }
 
     for(int i = (n & ~15); i < n; i++) {
-        uint16_t v = (data[i] - min);
-        int16_t vs = v;
-        vs >>= shift;  // need signed shift
-        v = vs;
-        if (v < 16)  hist[v]++;
+        if (data[i] < min) continue;
+        uint16_t v = data[i] - min;
+        v >>= shift;
+        if (v < 16) hist[v]++;
     }
 
 }
@@ -1187,8 +1185,6 @@ void simd_histogram_16(
 // no AVX2
 #else
 
-// this code does not compile properly with GCC 7.4.0
-// FIXME make a scalar version
 
 
 void simd_histogram_16(
@@ -1202,11 +1198,23 @@ void simd_histogram_16(
             hist[data[i]]++;
         }
     } else {
+        int vmax0 = std::min((16 << shift) + min, 65536);
+        uint16_t vmax = uint16_t(vmax0 - 1 - min);
+
         for(size_t i = 0; i < n; i++) {
+            uint16_t v = data[i];
+            v -= min;
+            if (!(v <= vmax))
+                continue;
+            v >>= shift;
+            hist[v]++;
+
+            /*
             if (data[i] < min) continue;
             uint16_t v = data[i] - min;
             v >>= shift;
             if (v < 16) hist[v]++;
+            */
         }
     }
 

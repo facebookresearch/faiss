@@ -140,8 +140,13 @@ struct simd16uint16: simd256bit {
         return simd16uint16(_mm256_or_si256(i, other.i));
     }
 
+    // returns binary masks
     simd16uint16 operator == (simd256bit other) const {
         return simd16uint16(_mm256_cmpeq_epi16(i, other.i));
+    }
+
+    simd16uint16 operator ~() const {
+        return simd16uint16(_mm256_xor_si256(i, _mm256_set1_epi32(-1)));
     }
 
     // get scalar at index 0
@@ -185,8 +190,17 @@ struct simd16uint16: simd256bit {
         i = _mm256_max_epu16(i, incoming.i);
     }
 
-
 };
+
+// not really a std::min because it returns a binary mask
+inline simd16uint16 min(simd16uint16 a, simd16uint16 b) {
+    return simd16uint16(_mm256_max_epu16(a.i, b.i));
+}
+
+inline simd16uint16 max(simd16uint16 a, simd16uint16 b) {
+    return simd16uint16(_mm256_max_epu16(a.i, b.i));
+}
+
 
 // decompose in 128-lanes: a = (a0, a1), b = (b0, b1)
 // return (a0 + a1, b0 + b1)

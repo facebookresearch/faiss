@@ -268,15 +268,32 @@ class TestHistograms(unittest.TestCase):
     def test_16bin_odd(self):
         self.do_test(16, 123)
 
-    def do_test_bounded(self, nbin, n):
-        rs = np.random.RandomState(123)
-        minv = 500
-        shift = 2
-        tab = rs.randint(nbin * 6, size=n).astype('uint16')
-        tab += minv - nbin
-        bc = np.bincount(tab, minlength=minv + nbin * 5)
 
-        ref_histogram = bc [minv : minv + 4 * nbin].reshape(-1, 1<<shift).sum(1)
+    def do_test_bounded(self, nbin, n, shift=2, minv=500, rspan=None, seed=None):
+        if seed is None:
+            for run in range(50):
+                self.do_test_bounded(nbin, n, shift, minv, rspan, seed=123 + run)
+            return
+
+        if rspan is None:
+            rmin, rmax = 0, nbin * 6
+        else:
+            rmin, rmax = rspan
+
+        rs = np.random.RandomState(seed)
+        tab = rs.randint(rmin, rmax, size=n).astype('uint16')
+        bc = np.bincount(tab, minlength=65536)
+
+        binsize = 1 << shift
+        ref_histogram = bc[minv : minv + binsize * nbin]
+
+        def pad_and_reshape(x, m, n):
+            xout = np.zeros(m * n, dtype=x.dtype)
+            xout[:x.size] = x
+            return xout.reshape(m, n)
+
+        ref_histogram = pad_and_reshape(ref_histogram, nbin, binsize)
+        ref_histogram = ref_histogram.sum(1)
 
         tab_a = faiss.AlignedTableUint16()
         faiss.copy_array_to_AlignedTable(tab, tab_a)
@@ -285,15 +302,11 @@ class TestHistograms(unittest.TestCase):
         hist = np.zeros(nbin, 'int32')
         if nbin == 8:
             faiss.simd_histogram_8(
-                tab_a.get(), n,
-                minv, shift,
-                sp(hist)
+                tab_a.get(), n, minv, shift, sp(hist)
             )
         elif nbin == 16:
             faiss.simd_histogram_16(
-                tab_a.get(), n,
-                minv, shift,
-                sp(hist)
+                tab_a.get(), n, minv, shift, sp(hist)
             )
         else:
             assert False
@@ -304,11 +317,31 @@ class TestHistograms(unittest.TestCase):
         self.do_test_bounded(8, 22 * 16)
 
     def test_8bin_odd_bounded(self):
-        self.do_test_bounded(8, 1000)
+        self.do_test_bounded(8, 10000)
 
     def test_16bin_even_bounded(self):
         self.do_test_bounded(16, 22 * 16)
 
     def test_16bin_odd_bounded(self):
-        self.do_test_bounded(16, 1000)
+        self.do_test_bounded(16, 10000)
 
+    def test_16bin_bounded_bigrange(self):
+        self.do_test_bounded(16, 1000, shift=12, rspan=(10, 65500))
+
+    def test_8bin_bounded_bigrange(self):
+        self.do_test_bounded(8, 1000, shift=13, rspan=(10, 65500))
+
+    def test_16bin_bounded_bigrange_2(self):
+        self.do_test_bounded(16, 10, shift=12, rspan=(65000, 65500))
+
+    def test_16bin_bounded_shift0(self):
+        self.do_test_bounded(16, 10000, shift=0, rspan=(10, 65500))
+
+    def test_8bin_bounded_shift0(self):
+        self.do_test_bounded(8, 10000, shift=0, rspan=(10, 65500))
+
+    def test_16bin_bounded_ignore_out_range(self):
+        self.do_test_bounded(16, 10000, shift=5, rspan=(100, 20000), minv=300)
+
+    def test_8bin_bounded_ignore_out_range(self):
+        self.do_test_bounded(8, 10000, shift=5, rspan=(100, 20000), minv=300)
