@@ -22,6 +22,8 @@ def do_partition(n, qin, maxval=65536, seed=123):
 
     times = []
     nerr = 0
+    stats = faiss.cvar.partition_stats
+    stats.reset()
     for run in range(nrun):
         faiss.copy_array_to_AlignedTable(vals, tab_a)
         t0 = time.time()
@@ -48,8 +50,12 @@ def do_partition(n, qin, maxval=65536, seed=123):
 
     times = np.array(times[100:]) * 1000000
 
-    print(f"times {times.mean():.3f} µs (± {times.std():.4f} µs) nerr={nerr}")
 
+    print(
+        f"times {times.mean():.3f} µs (± {times.std():.4f} µs) nerr={nerr} "
+        f"bissect {stats.bissect_cycles / 1e6:.3f} Mcy "
+        f"compress {stats.compress_cycles / 1e6:.3f} Mcy"
+    )
 
 do_partition(200, (100, 100))
 do_partition(200, (100, 150))

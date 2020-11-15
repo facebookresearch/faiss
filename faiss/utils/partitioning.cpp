@@ -11,11 +11,8 @@
 #include <cassert>
 
 #include <faiss/impl/FaissAssert.h>
-
 #include <faiss/utils/AlignedTable.h>
-
 #include <faiss/utils/ordered_key_value.h>
-
 #include <faiss/utils/simdlib.h>
 
 namespace faiss {
@@ -380,8 +377,6 @@ int simd_compress_array(
 }
 
 
-
-
 static uint64_t get_cy () {
 #ifdef  MICRO_BENCHMARK
     uint32_t high, low;
@@ -393,6 +388,8 @@ static uint64_t get_cy () {
     return 0;
 #endif
 }
+
+
 
 #define IFV if(false)
 
@@ -490,6 +487,11 @@ uint16_t simd_partition_fuzzy_with_bounds(
     if (q_out) {
         *q_out = q;
     }
+
+    uint64_t t2 = get_cy();
+
+    partition_stats.bissect_cycles += t1 - t0;
+    partition_stats.compress_cycles += t2 - t1;
 
     return thresh;
 }
@@ -1243,6 +1245,14 @@ void simd_histogram_8(
 
 
 #endif
+
+
+void PartitionStats::reset() {
+    memset(this, 0, sizeof(*this));
+}
+
+PartitionStats partition_stats;
+
 
 
 } // namespace faiss
