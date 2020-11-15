@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <faiss/impl/platform_macros.h>
+
 namespace faiss {
 
 
@@ -50,6 +52,16 @@ void simd_histogram_16(
     int *hist);
 
 
+struct PartitionStats {
+    uint64_t bissect_cycles;
+    uint64_t compress_cycles;
+
+    PartitionStats () {reset (); }
+    void reset ();
+};
+
+// global var that collects them all
+FAISS_API extern PartitionStats partition_stats;
 
 
 
