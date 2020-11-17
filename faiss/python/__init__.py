@@ -11,6 +11,7 @@
 import numpy as np
 import sys
 import inspect
+import array
 
 # We import * so that the symbol foo can be accessed as faiss.foo.
 from .loader import *
@@ -637,10 +638,18 @@ vector_name_map = {
     'Byte': 'uint8',
     'Char': 'int8',
     'Uint64': 'uint64',
-    'Long': 'int64',
+    'LongLong': 'int64',
     'Int': 'int32',
     'Double': 'float64'
-    }
+}
+
+sizeof_long = array.array('l').itemsize
+if sizeof_long == 4:
+    vector_name_map["Long"] = 'int32'
+elif sizeof_long == 8:
+    vector_name_map["Long"] = 'int64'
+
+
 
 def vector_to_array(v):
     """ convert a C++ vector to a numpy array """

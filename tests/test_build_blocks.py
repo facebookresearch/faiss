@@ -9,6 +9,7 @@ import numpy as np
 
 import faiss
 import unittest
+import array
 
 from common import get_dataset_2
 
@@ -610,6 +611,30 @@ class TestSWIGWrap(unittest.TestCase):
         self.do_test_array_type('uint32')
         self.do_test_array_type('int64')
         self.do_test_array_type('uint64')
+
+    def test_int64(self):
+        # see https://github.com/facebookresearch/faiss/issues/1529
+        sizeof_long = array.array("l").itemsize
+        if sizeof_long == 4:
+            v = faiss.LongLongVector()
+        elif sizeof_long == 8:
+            v = faiss.LongVector()
+        else:
+            raise AssertionError("weird long size")
+
+        for i in range(10):
+            v.push_back(i)
+        a = faiss.vector_to_array(v)
+        assert a.dtype == 'int64'
+        np.testing.assert_array_equal(a, np.arange(10, dtype='int64'))
+
+        # check if it works in an IDMap
+        idx = faiss.IndexIDMap(faiss.IndexFlatL2(32))
+        idx.add_with_ids(
+            np.random.rand(10, 32).astype('float32'),
+            np.random.randint(1000, size=10, dtype='int64')
+        )
+        faiss.vector_to_array(idx.id_map)
 
 
 class TestPartitioning(unittest.TestCase):
