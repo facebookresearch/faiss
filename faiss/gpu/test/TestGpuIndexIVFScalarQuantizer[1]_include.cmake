@@ -1,0 +1,5 @@
+if(EXISTS "/home/lvtingxun/Project/tools/faiss/faiss/gpu/test/TestGpuIndexIVFScalarQuantizer[1]_tests.cmake")
+  include("/home/lvtingxun/Project/tools/faiss/faiss/gpu/test/TestGpuIndexIVFScalarQuantizer[1]_tests.cmake")
+else()
+  add_test(TestGpuIndexIVFScalarQuantizer_NOT_BUILT TestGpuIndexIVFScalarQuantizer_NOT_BUILT)
+endif()

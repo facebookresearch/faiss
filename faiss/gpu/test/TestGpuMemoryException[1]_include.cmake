@@ -1,0 +1,5 @@
+if(EXISTS "/home/lvtingxun/Project/tools/faiss/faiss/gpu/test/TestGpuMemoryException[1]_tests.cmake")
+  include("/home/lvtingxun/Project/tools/faiss/faiss/gpu/test/TestGpuMemoryException[1]_tests.cmake")
+else()
+  add_test(TestGpuMemoryException_NOT_BUILT TestGpuMemoryException_NOT_BUILT)
+endif()

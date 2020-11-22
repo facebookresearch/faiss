@@ -1,0 +1,3 @@
+/home/lvtingxun/Project/tools/faiss/_deps/googletest-subbuild/CMakeFiles/rebuild_cache.dir
+/home/lvtingxun/Project/tools/faiss/_deps/googletest-subbuild/CMakeFiles/googletest-populate.dir
+/home/lvtingxun/Project/tools/faiss/_deps/googletest-subbuild/CMakeFiles/edit_cache.dir

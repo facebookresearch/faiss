@@ -1,0 +1,5 @@
+if(EXISTS "/home/lvtingxun/Project/tools/faiss/faiss/gpu/test/TestGpuIndexIVFFlat[1]_tests.cmake")
+  include("/home/lvtingxun/Project/tools/faiss/faiss/gpu/test/TestGpuIndexIVFFlat[1]_tests.cmake")
+else()
+  add_test(TestGpuIndexIVFFlat_NOT_BUILT TestGpuIndexIVFFlat_NOT_BUILT)
+endif()

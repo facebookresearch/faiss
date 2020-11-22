@@ -1,0 +1,5 @@
+add_test( TestGpuIndexBinaryFlat.Test8 /home/lvtingxun/Project/tools/faiss/faiss/gpu/test/TestGpuIndexBinaryFlat [==[--gtest_filter=TestGpuIndexBinaryFlat.Test8]==] --gtest_also_run_disabled_tests)
+set_tests_properties( TestGpuIndexBinaryFlat.Test8 PROPERTIES WORKING_DIRECTORY /home/lvtingxun/Project/tools/faiss/faiss/gpu/test SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+add_test( TestGpuIndexBinaryFlat.Test32 /home/lvtingxun/Project/tools/faiss/faiss/gpu/test/TestGpuIndexBinaryFlat [==[--gtest_filter=TestGpuIndexBinaryFlat.Test32]==] --gtest_also_run_disabled_tests)
+set_tests_properties( TestGpuIndexBinaryFlat.Test32 PROPERTIES WORKING_DIRECTORY /home/lvtingxun/Project/tools/faiss/faiss/gpu/test SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+set( TestGpuIndexBinaryFlat_TESTS TestGpuIndexBinaryFlat.Test8 TestGpuIndexBinaryFlat.Test32)

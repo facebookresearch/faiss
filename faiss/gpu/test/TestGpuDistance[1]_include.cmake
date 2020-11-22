@@ -1,0 +1,5 @@
+if(EXISTS "/home/lvtingxun/Project/tools/faiss/faiss/gpu/test/TestGpuDistance[1]_tests.cmake")
+  include("/home/lvtingxun/Project/tools/faiss/faiss/gpu/test/TestGpuDistance[1]_tests.cmake")
+else()
+  add_test(TestGpuDistance_NOT_BUILT TestGpuDistance_NOT_BUILT)
+endif()

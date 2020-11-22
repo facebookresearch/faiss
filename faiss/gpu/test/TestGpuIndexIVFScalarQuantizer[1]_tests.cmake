@@ -1,0 +1,5 @@
+add_test( TestGpuIndexIVFScalarQuantizer.CopyTo /home/lvtingxun/Project/tools/faiss/faiss/gpu/test/TestGpuIndexIVFScalarQuantizer [==[--gtest_filter=TestGpuIndexIVFScalarQuantizer.CopyTo]==] --gtest_also_run_disabled_tests)
+set_tests_properties( TestGpuIndexIVFScalarQuantizer.CopyTo PROPERTIES WORKING_DIRECTORY /home/lvtingxun/Project/tools/faiss/faiss/gpu/test SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+add_test( TestGpuIndexIVFScalarQuantizer.CopyFrom /home/lvtingxun/Project/tools/faiss/faiss/gpu/test/TestGpuIndexIVFScalarQuantizer [==[--gtest_filter=TestGpuIndexIVFScalarQuantizer.CopyFrom]==] --gtest_also_run_disabled_tests)
+set_tests_properties( TestGpuIndexIVFScalarQuantizer.CopyFrom PROPERTIES WORKING_DIRECTORY /home/lvtingxun/Project/tools/faiss/faiss/gpu/test SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+set( TestGpuIndexIVFScalarQuantizer_TESTS TestGpuIndexIVFScalarQuantizer.CopyTo TestGpuIndexIVFScalarQuantizer.CopyFrom)

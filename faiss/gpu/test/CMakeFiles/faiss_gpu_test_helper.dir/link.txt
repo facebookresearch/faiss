@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfaiss_gpu_test_helper.a CMakeFiles/faiss_gpu_test_helper.dir/TestUtils.cpp.o
+/usr/bin/ranlib libfaiss_gpu_test_helper.a

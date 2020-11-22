@@ -1,0 +1,1 @@
+#define NUM_PRELINKED_OBJECTS 0
