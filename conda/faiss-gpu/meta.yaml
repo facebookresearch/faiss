@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-{% set version = GIT_DESCRIBE_TAG %}
+{% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
 {% set number = GIT_DESCRIBE_NUMBER %}
 
 package:
