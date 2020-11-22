@@ -13,7 +13,7 @@ import faiss
 import tempfile
 import os
 import re
-
+import warnings
 
 from common import get_dataset, get_dataset_2
 
@@ -22,6 +22,92 @@ class TestModuleInterface(unittest.TestCase):
     def test_version_attribute(self):
         assert hasattr(faiss, '__version__')
         assert re.match('^\\d+\\.\\d+\\.\\d+$', faiss.__version__)
+
+class TestIndexFlat(unittest.TestCase):
+
+    def do_test(self, nq, metric_type=faiss.METRIC_L2, k=10):
+        d = 32
+        nb = 1000
+        nt = 0
+
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
+        index = faiss.IndexFlat(d, metric_type)
+
+        ### k-NN search
+
+        index.add(xb)
+        D1, I1 = index.search(xq, k)
+
+        if metric_type == faiss.METRIC_L2:
+            all_dis = ((xq.reshape(nq, 1, d) - xb.reshape(1, nb, d)) ** 2).sum(2)
+            Iref = all_dis.argsort(axis=1)[:, :k]
+        else:
+            all_dis = np.dot(xq, xb.T)
+            Iref = all_dis.argsort(axis=1)[:, ::-1][:, :k]
+
+        Dref = all_dis[np.arange(nq)[:, None], Iref]
+        self.assertLessEqual((Iref != I1).sum(), Iref.size * 0.0001)
+        #  np.testing.assert_equal(Iref, I1)
+        np.testing.assert_almost_equal(Dref, D1, decimal=5)
+
+        ### Range search
+
+        radius = float(np.median(Dref[:, -1]))
+
+        lims, D2, I2 = index.range_search(xq, radius)
+
+        for i in range(nq):
+            l0, l1 = lims[i:i + 2]
+            Dl, Il = D2[l0:l1], I2[l0:l1]
+            if metric_type == faiss.METRIC_L2:
+                Ilref, = np.where(all_dis[i] < radius)
+            else:
+                Ilref, = np.where(all_dis[i] > radius)
+            Il.sort()
+            Ilref.sort()
+            np.testing.assert_equal(Il, Ilref)
+            np.testing.assert_almost_equal(
+                all_dis[i, Ilref], D2[l0:l1],
+                decimal=5
+            )
+
+    def set_blas_blocks(self, small):
+        if small:
+            faiss.cvar.distance_compute_blas_query_bs = 16
+            faiss.cvar.distance_compute_blas_database_bs = 12
+        else:
+            faiss.cvar.distance_compute_blas_query_bs = 4096
+            faiss.cvar.distance_compute_blas_database_bs = 1024
+
+    def test_with_blas(self):
+        self.set_blas_blocks(small=True)
+        self.do_test(200)
+        self.set_blas_blocks(small=False)
+
+    def test_noblas(self):
+        self.do_test(10)
+
+    def test_with_blas_ip(self):
+        self.set_blas_blocks(small=True)
+        self.do_test(200, faiss.METRIC_INNER_PRODUCT)
+        self.set_blas_blocks(small=False)
+
+    def test_noblas_ip(self):
+        self.do_test(10, faiss.METRIC_INNER_PRODUCT)
+
+    def test_noblas_reservoir(self):
+        self.do_test(10, k=150)
+
+    def test_with_blas_reservoir(self):
+        self.do_test(200, k=150)
+
+    def test_noblas_reservoir_ip(self):
+        self.do_test(10, faiss.METRIC_INNER_PRODUCT, k=150)
+
+    def test_with_blas_reservoir_ip(self):
+        self.do_test(200, faiss.METRIC_INNER_PRODUCT, k=150)
+
+
 
 
 
@@ -34,7 +120,6 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         nq = 200
 
         (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
-        d = xt.shape[1]
 
         gt_index = faiss.IndexFlatL2(d)
         gt_index.add(xb)
@@ -446,7 +531,8 @@ class TestHNSW(unittest.TestCase):
         self.io_and_retest(index, Dhnsw, Ihnsw)
 
     def io_and_retest(self, index, Dhnsw, Ihnsw):
-        _, tmpfile = tempfile.mkstemp()
+        fd, tmpfile = tempfile.mkstemp()
+        os.close(fd)
         try:
             faiss.write_index(index, tmpfile)
             index2 = faiss.read_index(tmpfile)
@@ -506,37 +592,6 @@ class TestHNSW(unittest.TestCase):
         assert np.allclose(Dref[mask, 0], Dhnsw[mask, 0])
 
 
-class TestIOError(unittest.TestCase):
-
-    def test_io_error(self):
-        d, n = 32, 1000
-        x = np.random.uniform(size=(n, d)).astype('float32')
-        index = faiss.IndexFlatL2(d)
-        index.add(x)
-        _, fname = tempfile.mkstemp()
-        try:
-            faiss.write_index(index, fname)
-
-            # should be fine
-            faiss.read_index(fname)
-
-            # now damage file
-            data = open(fname, 'rb').read()
-            data = data[:int(len(data) / 2)]
-            open(fname, 'wb').write(data)
-
-            # should make a nice readable exception that mentions the
-            try:
-                faiss.read_index(fname)
-            except RuntimeError as e:
-                if fname not in str(e):
-                    raise
-            else:
-                raise
-
-        finally:
-            if os.path.exists(fname):
-                os.unlink(fname)
 
 
 class TestDistancesPositive(unittest.TestCase):
@@ -561,6 +616,63 @@ class TestDistancesPositive(unittest.TestCase):
 
         assert np.all(D >= 0)
 
+
+class TestShardReplicas(unittest.TestCase):
+    def test_shard_flag_propagation(self):
+        d = 64                           # dimension
+        nb = 1000
+        rs = np.random.RandomState(1234)
+        xb = rs.rand(nb, d).astype('float32')
+        nlist = 10
+        quantizer1 = faiss.IndexFlatL2(d)
+        quantizer2 = faiss.IndexFlatL2(d)
+        index1 = faiss.IndexIVFFlat(quantizer1, d, nlist)
+        index2 = faiss.IndexIVFFlat(quantizer2, d, nlist)
+
+        index = faiss.IndexShards(d, True)
+        index.add_shard(index1)
+        index.add_shard(index2)
+
+        self.assertFalse(index.is_trained)
+        index.train(xb)
+        self.assertTrue(index.is_trained)
+
+        self.assertEqual(index.ntotal, 0)
+        index.add(xb)
+        self.assertEqual(index.ntotal, nb)
+
+        index.remove_shard(index2)
+        self.assertEqual(index.ntotal, nb / 2)
+        index.remove_shard(index1)
+        self.assertEqual(index.ntotal, 0)
+
+    def test_replica_flag_propagation(self):
+        d = 64                           # dimension
+        nb = 1000
+        rs = np.random.RandomState(1234)
+        xb = rs.rand(nb, d).astype('float32')
+        nlist = 10
+        quantizer1 = faiss.IndexFlatL2(d)
+        quantizer2 = faiss.IndexFlatL2(d)
+        index1 = faiss.IndexIVFFlat(quantizer1, d, nlist)
+        index2 = faiss.IndexIVFFlat(quantizer2, d, nlist)
+
+        index = faiss.IndexReplicas(d, True)
+        index.add_replica(index1)
+        index.add_replica(index2)
+
+        self.assertFalse(index.is_trained)
+        index.train(xb)
+        self.assertTrue(index.is_trained)
+
+        self.assertEqual(index.ntotal, 0)
+        index.add(xb)
+        self.assertEqual(index.ntotal, nb)
+
+        index.remove_replica(index2)
+        self.assertEqual(index.ntotal, nb)
+        index.remove_replica(index1)
+        self.assertEqual(index.ntotal, 0)
 
 class TestReconsException(unittest.TestCase):
 
@@ -612,7 +724,7 @@ class TestReconsHash(unittest.TestCase):
         # with lookup
         index.reset()
         rs = np.random.RandomState(123)
-        ids = rs.choice(10000, size=200, replace=False)
+        ids = rs.choice(10000, size=200, replace=False).astype(np.int64)
         index.add_with_ids(faiss.randn((100, d), 345), ids[:100])
         index.set_direct_map_type(faiss.DirectMap.Hashtable)
         index.add_with_ids(faiss.randn((100, d), 678), ids[100:])

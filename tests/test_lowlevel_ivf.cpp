@@ -5,12 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
 
 #include <memory>
 #include <vector>
 #include <thread>
+#include <random>
 
 #include <gtest/gtest.h>
 
@@ -22,6 +24,7 @@
 #include <faiss/index_io.h>
 #include <faiss/IVFlib.h>
 #include <faiss/VectorTransform.h>
+
 
 using namespace faiss;
 
@@ -44,12 +47,15 @@ size_t nq = 200;
 
 int k = 10;
 
+std::mt19937 rng;
+
 
 std::vector<float> make_data(size_t n)
 {
     std::vector <float> database (n * d);
+    std::uniform_real_distribution<> distrib;
     for (size_t i = 0; i < n * d; i++) {
-        database[i] = drand48();
+        database[i] = distrib(rng);
     }
     return database;
 }
@@ -273,8 +279,9 @@ std::vector<uint8_t> make_data_binary(size_t n)
 {
 
     std::vector <uint8_t> database (n * nbit / 8);
+    std::uniform_int_distribution<> distrib;
     for (size_t i = 0; i < n * d; i++) {
-        database[i] = lrand48();
+        database[i] = distrib(rng);
     }
     return database;
 }
@@ -376,7 +383,7 @@ void test_lowlevel_access_binary (const char *index_key) {
 
         printf("new before reroder: [");
         for (int j = 0; j < k; j++)
-            printf("%ld,%d ", I[j], D[j]);
+            printf("%" PRId64 ",%d ", I[j], D[j]);
         printf("]\n");
 
         // re-order heap
@@ -384,10 +391,10 @@ void test_lowlevel_access_binary (const char *index_key) {
 
         printf("ref: [");
         for (int j = 0; j < k; j++)
-            printf("%ld,%d ", I_ref[j], D_ref[j]);
+            printf("%" PRId64 ",%d ", I_ref[j], D_ref[j]);
         printf("]\nnew: [");
         for (int j = 0; j < k; j++)
-            printf("%ld,%d ", I[j], D[j]);
+            printf("%" PRId64 ",%d ", I[j], D[j]);
         printf("]\n");
 
         // check that we have the same results as the reference search

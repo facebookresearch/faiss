@@ -7,6 +7,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <random>
 
 #include <gtest/gtest.h>
 
@@ -51,8 +52,10 @@ double eval_codec_error (long ncentroids, long m, const std::vector<float> &v)
 TEST(IVFPQ, codec) {
 
     std::vector <float> database (nb * d);
+    std::mt19937 rng;
+    std::uniform_real_distribution<> distrib;
     for (size_t i = 0; i < nb * d; i++) {
-        database[i] = drand48();
+        database[i] = distrib(rng);
     }
 
     double err0 = eval_codec_error(16, 8, database);

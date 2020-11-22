@@ -9,6 +9,7 @@
 #include <cstdlib>
 
 #include <memory>
+#include <random>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -18,6 +19,7 @@
 #include <faiss/index_factory.h>
 #include <faiss/clone_index.h>
 #include <faiss/IVFlib.h>
+
 
 using namespace faiss;
 
@@ -47,8 +49,10 @@ int window_size = 10;
 std::vector<float> make_data(size_t n)
 {
     std::vector <float> database (n * d);
+    std::mt19937 rng;
+    std::uniform_real_distribution<> distrib;
     for (size_t i = 0; i < n * d; i++) {
-        database[i] = drand48();
+        database[i] = distrib(rng);
     }
     return database;
 }
@@ -92,8 +96,10 @@ void make_index_slices (const Index* trained_index,
 
         auto xb = make_data(nb * d);
         std::vector<faiss::Index::idx_t> ids (nb);
+        std::mt19937 rng;
+        std::uniform_int_distribution<> distrib;
         for (int j = 0; j < nb; j++) {
-            ids[j] = lrand48();
+            ids[j] = distrib(rng);
         }
         index->add_with_ids (nb, xb.data(), ids.data());
     }
@@ -192,7 +198,7 @@ int test_sliding_invlists (const char *index_key) {
         // will be deleted by the index
         index_ivf->replace_invlists (ci, true);
 
-        printf ("   nb invlists = %ld\n", ils.size());
+        printf ("   nb invlists = %zd\n", ils.size());
 
         auto new_res = search_index (index.get(), xq.data());
 
@@ -208,7 +214,7 @@ int test_sliding_invlists (const char *index_key) {
             if (ref_res[j] != new_res[j])
                 ndiff++;
         }
-        printf("  nb differences: %ld / %ld\n",
+        printf("  nb differences: %zd / %zd\n",
                ndiff, ref_res.size());
         EXPECT_EQ (ref_res, new_res);
     }

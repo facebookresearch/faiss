@@ -9,7 +9,7 @@
 // -*- c++ -*-
 
 #include "gpu/StandardGpuResources_c.h"
-#include "gpu/StandardGpuResources.h"
+#include <faiss/gpu/StandardGpuResources.h>
 #include "macros_impl.h"
 
 using faiss::gpu::StandardGpuResources;

@@ -70,10 +70,10 @@ class TestReferenced(unittest.TestCase):
     def test_IDMap(self):
         sub_index = faiss.IndexFlatL2(d)
         index = faiss.IndexIDMap(sub_index)
-        index.add_with_ids(xb, np.arange(len(xb)))
+        index.add_with_ids(xb, np.arange(len(xb), dtype='int64'))
         del sub_index
         gc.collect()
-        index.add_with_ids(xb, np.arange(len(xb)))
+        index.add_with_ids(xb, np.arange(len(xb), dtype='int64'))
 
     def test_shards(self):
         index = faiss.IndexShards(d)

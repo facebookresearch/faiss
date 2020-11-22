@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-#! /usr/bin/env python2
-
 """ test byte codecs """
 
 from __future__ import print_function
@@ -252,7 +250,7 @@ class LatticeTest(unittest.TestCase):
         codec = faiss.ZnSphereCodecAlt(dim, r2)
         rs = np.random.RandomState(123)
         n = 100
-        codes = rs.randint(codec.nv, size=n).astype('uint64')
+        codes = rs.randint(codec.nv, size=n, dtype='uint64')
         x = np.empty((n, dim), dtype='float32')
         codec.decode_multi(n, swig_ptr(codes), swig_ptr(x))
         codes2 = np.empty(n, dtype='uint64')
@@ -288,7 +286,7 @@ class TestBitstring(unittest.TestCase):
                 nbit = int(1 + 62 * rs.rand() ** 4)
                 if sz + nbit > nbyte * 8:
                     break
-                x = rs.randint(1 << nbit)
+                x = int(rs.randint(1 << nbit, dtype='int64'))
                 bw.write(x, nbit)
                 ctrl.append((nbit, x))
                 sz += nbit

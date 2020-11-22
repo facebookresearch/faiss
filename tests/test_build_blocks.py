@@ -9,6 +9,7 @@ import numpy as np
 
 import faiss
 import unittest
+import array
 
 from common import get_dataset_2
 
@@ -78,6 +79,31 @@ class TestClustering(unittest.TestCase):
         obj10 = clus.iteration_stats.at(clus.iteration_stats.size() - 1).obj
 
         self.assertGreater(obj1, obj10)
+
+    def test_redo_cosine(self):
+        # test redo with cosine distance (inner prod, so objectives are reversed)
+        d = 64
+        n = 1000
+
+        rs = np.random.RandomState(123)
+        x = rs.uniform(size=(n, d)).astype('float32')
+        faiss.normalize_L2(x)
+
+        # make sure that doing 10 redos yields a better objective than just 1
+        # for cosine distance, it is IP so higher is better
+
+        clus = faiss.Clustering(d, 20)
+        clus.nredo = 1
+        clus.train(x, faiss.IndexFlatIP(d))
+        obj1 = clus.iteration_stats.at(clus.iteration_stats.size() - 1).obj
+
+        clus = faiss.Clustering(d, 20)
+        clus.nredo = 10
+        clus.train(x, faiss.IndexFlatIP(d))
+        obj10 = clus.iteration_stats.at(clus.iteration_stats.size() - 1).obj
+
+        self.assertGreater(obj10, obj1)
+
 
     def test_1ptpercluster(self):
         # https://github.com/facebookresearch/faiss/issues/842
@@ -172,6 +198,26 @@ class TestClustering(unittest.TestCase):
         # It's the same operation, so should be bit-exact the same
         self.assertTrue(np.all(ref_centroids == new_centroids))
 
+    def test_init(self):
+        d = 32
+        k = 5
+        xt, xb, xq = get_dataset_2(d, 1000, 0, 0)
+        km = faiss.Kmeans(d, k, niter=4)
+        km.train(xt)
+
+        km2 = faiss.Kmeans(d, k, niter=4)
+        km2.train(xt, init_centroids=km.centroids)
+
+        # check that the initial objective is better for km2 than km
+        self.assertGreater(km.obj[0], km2.obj[0] * 1.01)
+
+    def test_stats(self):
+        d = 32
+        k = 5
+        xt, xb, xq = get_dataset_2(d, 1000, 0, 0)
+        km = faiss.Kmeans(d, k, niter=4)
+        km.train(xt)
+        assert list(km.obj) == [st['obj'] for st in km.iteration_stats]
 
 class TestPCA(unittest.TestCase):
 
@@ -193,68 +239,6 @@ class TestPCA(unittest.TestCase):
             self.assertGreater(prev, o)
             prev = o
 
-
-class TestProductQuantizer(unittest.TestCase):
-
-    def test_pq(self):
-        d = 64
-        n = 2000
-        cs = 4
-        np.random.seed(123)
-        x = np.random.random(size=(n, d)).astype('float32')
-        pq = faiss.ProductQuantizer(d, cs, 8)
-        pq.train(x)
-        codes = pq.compute_codes(x)
-        x2 = pq.decode(codes)
-        diff = ((x - x2)**2).sum()
-
-        # print("diff=", diff)
-        # diff= 4418.0562
-        self.assertGreater(5000, diff)
-
-        pq10 = faiss.ProductQuantizer(d, cs, 10)
-        assert pq10.code_size == 5
-        pq10.verbose = True
-        pq10.cp.verbose = True
-        pq10.train(x)
-        codes = pq10.compute_codes(x)
-
-        x10 = pq10.decode(codes)
-        diff10 = ((x - x10)**2).sum()
-        self.assertGreater(diff, diff10)
-
-    def do_test_codec(self, nbit):
-        pq = faiss.ProductQuantizer(16, 2, nbit)
-
-        # simulate training
-        rs = np.random.RandomState(123)
-        centroids = rs.rand(2, 1 << nbit, 8).astype('float32')
-        faiss.copy_array_to_vector(centroids.ravel(), pq.centroids)
-
-        idx = rs.randint(1 << nbit, size=(100, 2))
-        # can be encoded exactly
-        x = np.hstack((
-            centroids[0, idx[:, 0]],
-            centroids[1, idx[:, 1]]
-        ))
-
-        # encode / decode
-        codes = pq.compute_codes(x)
-        xr = pq.decode(codes)
-        assert np.all(xr == x)
-
-        # encode w/ external index
-        assign_index = faiss.IndexFlatL2(8)
-        pq.assign_index = assign_index
-        codes2 = np.empty((100, pq.code_size), dtype='uint8')
-        pq.compute_codes_with_assign_index(
-            faiss.swig_ptr(x), faiss.swig_ptr(codes2), 100)
-        assert np.all(codes == codes2)
-
-    def test_codec(self):
-        for i in range(16):
-            print("Testing nbits=%d" % (i + 1))
-            self.do_test_codec(i + 1)
 
 
 class TestRevSwigPtr(unittest.TestCase):
@@ -297,8 +281,8 @@ class TestException(unittest.TestCase):
 class TestMapLong2Long(unittest.TestCase):
 
     def test_maplong2long(self):
-        keys = np.array([13, 45, 67])
-        vals = np.array([3, 8, 2])
+        keys = np.array([13, 45, 67], dtype=np.int64)
+        vals = np.array([3, 8, 2], dtype=np.int64)
 
         m = faiss.MapLong2Long()
         m.add(keys, vals)
@@ -483,7 +467,7 @@ class TestScalarQuantizer(unittest.TestCase):
                 D, I = index.search(x[3:], 1)
 
                 # assert D[0, 0] == Dref[0, 0]
-                print(D[0, 0], ((x[3] - x[2]) ** 2).sum())
+                # print(D[0, 0], ((x[3] - x[2]) ** 2).sum())
                 assert D[0, 0] == ((x[3] - x[2]) ** 2).sum()
 
     def test_6bit_equiv(self):
@@ -513,7 +497,7 @@ class TestScalarQuantizer(unittest.TestCase):
             for i in range(20):
                 for j in range(10):
                     dis = ((y[i] - x2[I[i, j]]) ** 2).sum()
-                    print(dis, D[i, j])
+                    # print(dis, D[i, j])
                     assert abs(D[i, j] - dis) / dis < 1e-5
 
 class TestRandom(unittest.TestCase):
@@ -595,6 +579,139 @@ class TestSWIGWrap(unittest.TestCase):
 
         [index.id_map.at(int(i)) for i in range(index.ntotal)]
 
+    def test_downcast_Refine(self):
+
+        index = faiss.IndexRefineFlat(
+            faiss.IndexScalarQuantizer(10, faiss.ScalarQuantizer.QT_8bit)
+        )
+
+        # serialize and deserialize
+        index2 = faiss.deserialize_index(
+            faiss.serialize_index(index)
+        )
+
+        assert isinstance(index2, faiss.IndexRefineFlat)
+
+    def do_test_array_type(self, dtype):
+        """ tests swig_ptr and rev_swig_ptr for this type of array """
+        a = np.arange(12).astype(dtype)
+        ptr = faiss.swig_ptr(a)
+        print(ptr)
+        a2 = faiss.rev_swig_ptr(ptr, 12)
+        np.testing.assert_array_equal(a, a2)
+
+    def test_all_array_types(self):
+        self.do_test_array_type('float32')
+        self.do_test_array_type('float64')
+        self.do_test_array_type('int8')
+        self.do_test_array_type('uint8')
+        self.do_test_array_type('int16')
+        self.do_test_array_type('uint16')
+        self.do_test_array_type('int32')
+        self.do_test_array_type('uint32')
+        self.do_test_array_type('int64')
+        self.do_test_array_type('uint64')
+
+    def test_int64(self):
+        # see https://github.com/facebookresearch/faiss/issues/1529
+        sizeof_long = array.array("l").itemsize
+        if sizeof_long == 4:
+            v = faiss.LongLongVector()
+        elif sizeof_long == 8:
+            v = faiss.LongVector()
+        else:
+            raise AssertionError("weird long size")
+
+        for i in range(10):
+            v.push_back(i)
+        a = faiss.vector_to_array(v)
+        assert a.dtype == 'int64'
+        np.testing.assert_array_equal(a, np.arange(10, dtype='int64'))
+
+        # check if it works in an IDMap
+        idx = faiss.IndexIDMap(faiss.IndexFlatL2(32))
+        idx.add_with_ids(
+            np.random.rand(10, 32).astype('float32'),
+            np.random.randint(1000, size=10, dtype='int64')
+        )
+        faiss.vector_to_array(idx.id_map)
+
+
+class TestPartitioning(unittest.TestCase):
+
+    def do_partition(self, n, q, maxval=None, seed=None):
+        if seed is None:
+            for i in range(50):
+                self.do_partition(n, q, maxval, i + 1234)
+        # print("seed=", seed)
+        rs = np.random.RandomState(seed)
+        if maxval is None:
+            vals = rs.rand(n).astype('float32')
+        else:
+            vals = rs.randint(maxval, size=n).astype('float32')
+
+        ids = (rs.permutation(n) + 12345).astype('int64')
+        dic = dict(zip(ids, vals))
+
+        #print("seed=", seed, "q=", q, "n=", n)
+        #print(vals)
+        #print(ids)
+
+        vals_orig = vals.copy()
+
+        sp = faiss.swig_ptr
+        if type(q) == int:
+            faiss.CMax_float_partition_fuzzy(
+                sp(vals), sp(ids), n,
+                q, q, None
+            )
+        else:
+            q_min, q_max = q
+            q = np.array([-1], dtype='uint64')
+            faiss.CMax_float_partition_fuzzy(
+                sp(vals), sp(ids), n,
+                q_min, q_max, sp(q)
+            )
+            q = q[0]
+            assert q_min <= q <= q_max
+
+        o = vals_orig.argsort()
+        thresh = vals_orig[o[q]]
+        n_eq = (vals_orig[o[:q]] == thresh).sum()
+
+        for i in range(q):
+            self.assertEqual(vals[i], dic[ids[i]])
+            self.assertLessEqual(vals[i], thresh)
+            if vals[i] == thresh:
+                n_eq -= 1
+        self.assertEqual(n_eq, 0)
+
+    def test_partition(self):
+        self.do_partition(160, 80)
+
+    def test_partition_manydups(self):
+        self.do_partition(160, 80, maxval=16)
+
+    def test_partition_lowq(self):
+        self.do_partition(160, 10, maxval=16)
+
+    def test_partition_highq(self):
+        self.do_partition(165, 155, maxval=16)
+
+    def test_partition_q10(self):
+        self.do_partition(32, 10, maxval=500)
+
+    def test_partition_q10_dups(self):
+        self.do_partition(32, 10, maxval=16)
+
+    def test_partition_q10_fuzzy(self):
+        self.do_partition(32, (10, 15), maxval=500)
+
+    def test_partition_fuzzy(self):
+        self.do_partition(160, (70, 80), maxval=500)
+
+    def test_partition_fuzzy_2(self):
+        self.do_partition(160, (70, 80))
 
 if __name__ == '__main__':
     unittest.main()

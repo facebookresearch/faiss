@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <vector>
+#include <random>
 
 #include <gtest/gtest.h>
 
@@ -18,6 +19,7 @@
 #include <faiss/index_factory.h>
 #include <faiss/AutoTune.h>
 #include <faiss/IVFlib.h>
+
 
 using namespace faiss;
 
@@ -35,13 +37,15 @@ size_t nb = 1000;
 // nb of queries
 size_t nq = 200;
 
+std::mt19937 rng;
 
 
 std::vector<float> make_data(size_t n)
 {
     std::vector <float> database (n * d);
+    std::uniform_real_distribution<> distrib;
     for (size_t i = 0; i < n * d; i++) {
-        database[i] = drand48();
+        database[i] = distrib(rng);
     }
     return database;
 }
@@ -155,8 +159,9 @@ TEST(TPO, IVFFlatPP) {
 
 std::vector<uint8_t> make_data_binary(size_t n) {
     std::vector <uint8_t> database (n * d / 8);
+    std::uniform_int_distribution<> distrib;
     for (size_t i = 0; i < n * d / 8; i++) {
-        database[i] = lrand48();
+        database[i] = distrib(rng);
     }
     return database;
 }

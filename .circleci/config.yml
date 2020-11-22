@@ -1,0 +1,288 @@
+version: 2.1
+
+orbs:
+  win: circleci/windows@2.4.0
+
+jobs:
+  build_linux:
+    docker:
+      - image: beauby/faiss-circleci:cpu
+    environment:
+      OMP_NUM_THREADS: 10
+      MKL_THREADING_LAYER: GNU
+    steps:
+      - checkout
+      - run:
+          name: Build faiss library
+          command: |
+            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
+                  -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
+            make -C build -j faiss
+      - run:
+          name: Test faiss library
+          command: |
+            make -C build -j faiss_test
+            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
+            make -C build test
+      - run:
+          name: Build python extension
+          command: |
+            make -C build -j swigfaiss
+            cd build/faiss/python
+            python3 setup.py build
+      - run:
+          name: Test python extension
+          command: |
+            pip3 install pytest
+            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
+            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+      - store_test_results:
+          path: test-results
+
+  build_osx:
+    macos:
+      xcode: 11.6.0
+    environment:
+      OMP_NUM_THREADS: 10
+    steps:
+      - checkout
+      - run:
+          name: Install Homebrew packages
+          command: |
+            brew install cmake swig libomp
+      - run:
+          name: Install numpy/scipy
+          command: |
+            pip3 install numpy scipy
+      - run:
+          name: Generate Makefiles
+          command: |
+            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -DPython_EXECUTABLE=/usr/local/bin/python3 .
+      - run:
+          name: Build faiss library
+          command: |
+            make -C build -j faiss
+      - run:
+          name: Test faiss library
+          command: |
+            make -C build -j faiss_test
+            export GTEST_OUTPUT="xml:$PWD/test-results/googletest/"
+            make -C build test
+      - run:
+          name: Build python extension
+          command: |
+            make -C build -j swigfaiss
+            cd build/faiss/python
+            python3 setup.py build
+      - run:
+          name: Test python extension
+          command: |
+            pip3 install pytest torch
+            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
+            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+      - store_test_results:
+          path: test-results
+
+  build_windows:
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+          name: Build/test
+          command: |
+            conda install conda-build
+            conda install -c pytorch pytorch
+            cd conda
+            conda build faiss --python 3.7
+
+  build_linux_gpu:
+    machine:
+      resource_class: gpu.nvidia.small
+      image: ubuntu-1604-cuda-10.1:201909-23
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - run:
+          name: Build/test
+          command: |
+            docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
+            docker run --gpus all faiss make -C build test
+            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
+            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
+
+  deploy_linux:
+    parameters:
+      label:
+        type: string
+        default: main
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - checkout
+      - run:
+          name: Install conda-build/anaconda-client
+          command: |
+            conda install -y -q conda-build anaconda-client
+            conda config --set anaconda_upload yes
+      - run:
+          name: Build packages
+          command: |
+            cd conda
+            conda build faiss --user pytorch --label <<parameters.label>>
+
+  deploy_linux_gpu:
+    parameters:
+      label:
+        type: string
+        default: main
+      cuda:
+        type: string
+    machine:
+      resource_class: gpu.nvidia.small
+      image: ubuntu-1604-cuda-10.1:201909-23
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - run:
+          name: Build packages
+          command: |
+            docker build -t faiss -f conda/Dockerfile.cuda<<parameters.cuda>> .
+            docker run --gpus all \
+              -e CUDA_ARCHS="35;52;60;61;70;72;75" \
+              -e ANACONDA_API_TOKEN=$ANACONDA_API_TOKEN \
+              faiss \
+              conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>" }' \
+                --user pytorch --label <<parameters.label>>
+
+  deploy_osx:
+    parameters:
+      label:
+        type: string
+        default: main
+    macos:
+      xcode: 11.6.0
+    steps:
+      - checkout
+      - run:
+          name: Install conda
+          command: |
+            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh --output miniconda.sh
+            bash miniconda.sh -b -p $HOME/miniconda
+            $HOME/miniconda/bin/conda install -y -q conda-build anaconda-client
+            $HOME/miniconda/bin/conda config --set anaconda_upload yes
+      - run:
+          name: Install MacOSX10.9 SDK
+          command: |
+            curl -L -o - https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.9.sdk.tar.xz | sudo tar xJf - -C /opt
+      - run:
+          name: Build packages
+          command: |
+            export PATH=~/miniconda/bin:$PATH
+            cd conda
+            conda build faiss --user pytorch --label <<parameters.label>>
+
+  deploy_windows:
+    parameters:
+      label:
+        type: string
+        default: main
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+          name: Install conda-build/anaconda-client
+          command: |
+            conda install -y -q conda-build anaconda-client
+            conda config --set anaconda_upload yes
+      - run:
+          name: Build packages
+          command: |
+            cd conda
+            conda build faiss --user pytorch --label <<parameters.label>>
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build_linux:
+          name: Linux
+      - build_linux_gpu:
+          name: Linux GPU
+          requires:
+            - Linux
+      - build_osx:
+          name: OSX
+      - build_windows:
+          name: Windows
+      - deploy_linux:
+          name: Linux packages
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy_linux_gpu:
+          name: Linux GPU packages (CUDA 10.1)
+          cuda: "10.1"
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy_linux_gpu:
+          name: Linux GPU packages (CUDA 10.2)
+          cuda: "10.2"
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy_windows:
+          name: Windows packages
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy_osx:
+          name: OSX packages
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - deploy_linux:
+          name: Linux nightlies
+          label: nightly
+      - deploy_linux_gpu:
+          name: Linux GPU nightlies (CUDA 10.1)
+          cuda: "10.1"
+          label: nightly
+      - deploy_linux_gpu:
+          name: Linux GPU nightlies (CUDA 10.2)
+          cuda: "10.2"
+          label: nightly
+      - deploy_windows:
+          name: Windows nightlies
+          label: nightly
+      - deploy_osx:
+          name: OSX nightlies
+          label: nightly

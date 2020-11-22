@@ -7,6 +7,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <random>
 
 #include <gtest/gtest.h>
 
@@ -70,11 +71,13 @@ struct CommonData {
 
     CommonData(): database (nb * d), queries (nq * d), ids(nb), quantizer (d) {
 
+        std::mt19937 rng;
+        std::uniform_real_distribution<> distrib;
         for (size_t i = 0; i < nb * d; i++) {
-            database[i] = drand48();
+            database[i] = distrib(rng);
         }
         for (size_t i = 0; i < nq * d; i++) {
-            queries[i] = drand48();
+            queries[i] = distrib(rng);
         }
         for (int i = 0; i < nb; i++) {
             ids[i] = 123 + 456 * i;
@@ -111,7 +114,7 @@ int compare_merged (faiss::IndexShards *index_shards, bool shift_ids,
                    shift_ids);
         }
 
-        index_shards->sync_with_shard_indexes();
+        index_shards->syncWithSubIndexes();
     } else {
         std::vector<const faiss::InvertedLists *> lists;
         faiss::IndexIVF *index0 = nullptr;

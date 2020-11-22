@@ -3,19 +3,16 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-#! /usr/bin/env python2
-
 import sys
 import faiss
 import unittest
-import resource
+import platform
 
 class TestOOMException(unittest.TestCase):
-
+    @unittest.skipIf(platform.system() != 'Linux',
+                     'Test is Linux only.')
     def test_outrageous_alloc(self):
-        # Disable test on OSX.
-        if sys.platform == "darwin":
-            return
+        import resource
 
         # https://github.com/facebookresearch/faiss/issues/758
         soft_as, hard_as = resource.getrlimit(resource.RLIMIT_AS)

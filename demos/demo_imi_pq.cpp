@@ -10,6 +10,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <random>
 
 #include <sys/time.h>
 
@@ -87,6 +88,9 @@ int main ()
     index.nprobe = 2048;
 
 
+    std::mt19937 rng;
+    std::uniform_real_distribution<> distrib;
+
     { // training.
 
         // The distribution of the training vectors should be the same
@@ -100,7 +104,7 @@ int main ()
         std::vector <float> trainvecs (nt * d);
         for (size_t i = 0; i < nt; i++) {
             for (size_t j = 0; j < d; j++) {
-                trainvecs[i * d + j] = drand48();
+                trainvecs[i * d + j] = distrib(rng);
             }
         }
 
@@ -124,7 +128,7 @@ int main ()
         std::vector <long> ids (nb);
         for (size_t i = 0; i < nb; i++) {
             for (size_t j = 0; j < d; j++) {
-                database[i * d + j] = drand48();
+                database[i * d + j] = distrib(rng);
             }
             ids[i] = 8760000000L + i;
         }

@@ -31,6 +31,8 @@ void faiss_ParameterRange_values(FaissParameterRange*, double**, size_t*);
  */
 FAISS_DECLARE_CLASS(ParameterSpace)
 
+FAISS_DECLARE_DESTRUCTOR(ParameterSpace)
+
 /// Parameter space default constructor
 int faiss_ParameterSpace_new(FaissParameterSpace** space);
 

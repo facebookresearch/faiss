@@ -13,6 +13,7 @@
 #include <time.h>
 
 #include "error_c.h"
+#include "index_factory_c.h"
 #include "index_io_c.h"
 #include "Index_c.h"
 #include "IndexFlat_c.h"

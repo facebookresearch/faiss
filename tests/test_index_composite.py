@@ -12,6 +12,7 @@ import faiss
 import os
 import shutil
 import tempfile
+import platform
 
 from common import get_dataset_2
 
@@ -63,6 +64,8 @@ class TestRemove(unittest.TestCase):
     def test_remove_regular(self):
         self.do_merge_then_remove(False)
 
+    @unittest.skipIf(platform.system() == 'Windows',
+                     'OnDiskInvertedLists is unsupported on Windows.')
     def test_remove_ondisk(self):
         self.do_merge_then_remove(True)
 
@@ -71,9 +74,9 @@ class TestRemove(unittest.TestCase):
 
         index = faiss.IndexFlat(5)
         xb = np.zeros((10, 5), dtype='float32')
-        xb[:, 0] = np.arange(10) + 1000
+        xb[:, 0] = np.arange(10, dtype='int64') + 1000
         index.add(xb)
-        index.remove_ids(np.arange(5) * 2)
+        index.remove_ids(np.arange(5, dtype='int64') * 2)
         xb2 = faiss.vector_float_to_array(index.xb).reshape(5, 5)
         assert np.all(xb2[:, 0] == xb[np.arange(5) * 2 + 1, 0])
 
@@ -82,9 +85,9 @@ class TestRemove(unittest.TestCase):
         xb = np.zeros((10, 5), dtype='float32')
         xb[:, 0] = np.arange(10) + 1000
         index = faiss.IndexIDMap2(sub_index)
-        index.add_with_ids(xb, np.arange(10) + 100)
+        index.add_with_ids(xb, np.arange(10, dtype='int64') + 100)
         assert index.reconstruct(104)[0] == 1004
-        index.remove_ids(np.array([103]))
+        index.remove_ids(np.array([103], dtype='int64'))
         assert index.reconstruct(104)[0] == 1004
         try:
             index.reconstruct(103)
@@ -118,9 +121,9 @@ class TestRemove(unittest.TestCase):
         xb = np.zeros((10, 5), dtype='uint8')
         xb[:, 0] = np.arange(10) + 100
         index = faiss.IndexBinaryIDMap2(sub_index)
-        index.add_with_ids(xb, np.arange(10) + 1000)
+        index.add_with_ids(xb, np.arange(10, dtype='int64') + 1000)
         assert index.reconstruct(1004)[0] == 104
-        index.remove_ids(np.array([1003]))
+        index.remove_ids(np.array([1003], dtype='int64'))
         assert index.reconstruct(1004)[0] == 104
         try:
             index.reconstruct(1003)
@@ -130,7 +133,8 @@ class TestRemove(unittest.TestCase):
             assert False, 'should have raised an exception'
 
         # while we are there, let's test I/O as well...
-        _, tmpnam = tempfile.mkstemp()
+        fd, tmpnam = tempfile.mkstemp()
+        os.close(fd)
         try:
             faiss.write_index_binary(index, tmpnam)
             index = faiss.read_index_binary(tmpnam)
@@ -154,7 +158,7 @@ class TestRangeSearch(unittest.TestCase):
         xb = np.zeros((10, 5), dtype='float32')
         xb[:, 0] = np.arange(10) + 1000
         index = faiss.IndexIDMap2(sub_index)
-        index.add_with_ids(xb, np.arange(10) + 100)
+        index.add_with_ids(xb, np.arange(10, dtype=np.int64) + 100)
         dist = float(np.linalg.norm(xb[3] - xb[0])) * 0.99
         res_subindex = sub_index.range_search(xb[[0], :], dist)
         res_index = index.range_search(xb[[0], :], dist)
@@ -185,7 +189,8 @@ class TestUpdate(unittest.TestCase):
 
         # revert order of the 200 first vectors
         nu = 200
-        index.update_vectors(np.arange(nu), xb[nu - 1::-1].copy())
+        index.update_vectors(np.arange(nu).astype('int64'),
+                             xb[nu - 1::-1].copy())
 
         recons_after = np.vstack([index.reconstruct(i) for i in range(nb)])
 
@@ -305,6 +310,8 @@ class TestTransformChain(unittest.TestCase):
 
         assert np.all(I == I2)
 
+@unittest.skipIf(platform.system() == 'Windows', \
+                 'Mmap not supported on Windows.')
 class TestRareIO(unittest.TestCase):
 
     def compare_results(self, index1, index2, xq):
@@ -409,7 +416,8 @@ class TestIVFFlatDedup(unittest.TestCase):
             assert ref == new
 
         # test I/O
-        _, tmpfile = tempfile.mkstemp()
+        fd, tmpfile = tempfile.mkstemp()
+        os.close(fd)
         try:
             faiss.write_index(index_new, tmpfile)
             index_st = faiss.read_index(tmpfile)
@@ -425,6 +433,7 @@ class TestIVFFlatDedup(unittest.TestCase):
 
         # test remove
         toremove = np.hstack((np.arange(3, 1000, 5), np.arange(850, 950)))
+        toremove = toremove.astype(np.int64)
         index_ref.remove_ids(toremove)
         index_new.remove_ids(toremove)
 
@@ -474,7 +483,8 @@ class TestSerialize(unittest.TestCase):
         Dnew, Inew = index3.search(xq, 5)
         assert np.all(Dnew == Dref) and np.all(Inew == Iref)
 
-
+@unittest.skipIf(platform.system() == 'Windows',
+                 'OnDiskInvertedLists is unsupported on Windows.')
 class TestRenameOndisk(unittest.TestCase):
 
     def test_rename(self):
@@ -563,6 +573,48 @@ class TestInvlistMeta(unittest.TestCase):
         D, I = index2.search(xq, 10)
         assert np.all(D == Dref)
         assert np.all(I == Iref)
+
+    def test_stop_words(self):
+        d = 10
+        nb = 1000
+        nq = 1
+        nt = 200
+
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
+
+        index = faiss.index_factory(d, "IVF32,Flat")
+        index.nprobe = 4
+        index.train(xt)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+
+        il = index.invlists
+        maxsz = max(il.list_size(i) for i in range(il.nlist))
+
+        il2 = faiss.StopWordsInvertedLists(il, maxsz + 1)
+        index.own_invlists
+        index.own_invlists = False
+
+        index.replace_invlists(il2, False)
+        D1, I1 = index.search(xq, 10)
+        np.testing.assert_array_equal(Dref, D1)
+        np.testing.assert_array_equal(Iref, I1)
+
+        # cleanup to avoid segfault on exit
+        index.replace_invlists(il, False)
+
+        # voluntarily unbalance one invlist
+        i = int(I1[0, 0])
+        index.add(np.vstack([xb[i]] * (maxsz + 10)))
+
+        # introduce stopwords again
+        index.replace_invlists(il2, False)
+
+        D2, I2 = index.search(xq, 10)
+        self.assertFalse(i in list(I2.ravel()))
+
+        # avoid mem leak
+        index.replace_invlists(il, True)
 
 
 

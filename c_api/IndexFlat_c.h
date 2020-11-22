@@ -30,7 +30,7 @@ int faiss_IndexFlat_new_with(FaissIndexFlat** p_index, idx_t d, FaissMetricType 
 
 /** get a pointer to the index's internal data (the `xb` field). The outputs
  * become invalid after any data addition or removal operation.
- * 
+ *
  * @param index   opaque pointer to index object
  * @param p_xb    output, the pointer to the beginning of `xb`.
  * @param p_size  output, the current size of `sb` in number of float values.
@@ -39,7 +39,7 @@ void faiss_IndexFlat_xb(FaissIndexFlat* index, float** p_xb, size_t* p_size);
 
 /** attempt a dynamic cast to a flat index, thus checking
  * check whether the underlying index type is `IndexFlat`.
- * 
+ *
  * @param index opaque pointer to index object
  * @return the same pointer if the index is a flat index, NULL otherwise
  */
@@ -78,14 +78,6 @@ int faiss_IndexFlatL2_new(FaissIndexFlatL2** p_index);
 
 int faiss_IndexFlatL2_new_with(FaissIndexFlatL2** p_index, idx_t d);
 
-/** Opaque type for IndexFlatL2BaseShift
- *
- * same as an IndexFlatL2 but a value is subtracted from each distance
- */
-FAISS_DECLARE_CLASS_INHERITED(IndexFlatL2BaseShift, Index)
-
-int faiss_IndexFlatL2BaseShift_new(FaissIndexFlatL2BaseShift** p_index, idx_t d, size_t nshift, const float *shift);
-
 /** Opaque type for IndexRefineFlat
  *
  * Index that queries in a base_index (a fast one) and refines the
@@ -98,7 +90,7 @@ int faiss_IndexRefineFlat_new(FaissIndexRefineFlat** p_index, FaissIndex* base_i
 FAISS_DECLARE_DESTRUCTOR(IndexRefineFlat)
 
 /** Opaque type for IndexFlat1D
- * 
+ *
  * optimized version for 1D "vectors"
  */
 FAISS_DECLARE_CLASS_INHERITED(IndexFlat1D, Index)

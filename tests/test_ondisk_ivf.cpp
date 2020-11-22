@@ -7,6 +7,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <random>
 
 #include <omp.h>
 
@@ -69,8 +70,10 @@ TEST(ONDISK, make_invlists) {
 
     {
         std::vector<uint8_t> code(32);
+        std::mt19937 rng;
+        std::uniform_real_distribution<> distrib;
         for (int i = 0; i < nadd; i++) {
-            double d = drand48();
+            double d = distrib(rng);
             int list_no = int(nlist * d * d); // skewed distribution
             int * ar = (int*)code.data();
             ar[0] = i;
@@ -183,8 +186,10 @@ TEST(ONDISK, make_invlists_threaded) {
 
     std::vector<int> list_nos (nadd);
 
+    std::mt19937 rng;
+    std::uniform_real_distribution<> distrib;
     for (int i = 0; i < nadd; i++) {
-        double d = drand48();
+        double d = distrib(rng);
         list_nos[i] = int(nlist * d * d); // skewed distribution
     }
 

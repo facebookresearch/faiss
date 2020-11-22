@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 #include "IndexShards_c.h"
 #include "IndexShards.h"
 #include "macros_impl.h"
@@ -29,12 +36,6 @@ int faiss_IndexShards_add_shard(FaissIndexShards* index, FaissIndex* shard) {
     try {
         reinterpret_cast<IndexShards*>(index)->add_shard(
             reinterpret_cast<Index*>(shard));
-    } CATCH_AND_HANDLE
-}
-
-int faiss_IndexShards_sync_with_shard_indexes(FaissIndexShards* index) {
-    try {
-        reinterpret_cast<IndexShards*>(index)->sync_with_shard_indexes();
     } CATCH_AND_HANDLE
 }
 
