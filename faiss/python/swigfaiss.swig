@@ -822,6 +822,24 @@ uint16_t CMin_uint16_partition_fuzzy(
         vals, ids, n, q_min, q_max, q_out);
 }
 
+// and overload with the int32 version
+
+uint16_t CMax_uint16_partition_fuzzy(
+        uint16_t *vals, int *ids, size_t n,
+        size_t q_min, size_t q_max, size_t * q_out)
+{
+    return faiss::partition_fuzzy<faiss::CMax<unsigned short, int> >(
+        vals, ids, n, q_min, q_max, q_out);
+}
+
+uint16_t CMin_uint16_partition_fuzzy(
+        uint16_t *vals, int *ids, size_t n,
+        size_t q_min, size_t q_max, size_t * q_out)
+{
+    return faiss::partition_fuzzy<faiss::CMin<unsigned short, int> >(
+        vals, ids, n, q_min, q_max, q_out);
+}
+
 %}
 
 /*******************************************************************

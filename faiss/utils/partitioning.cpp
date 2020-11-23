@@ -376,6 +376,7 @@ int simd_compress_array(
     return wp;
 }
 
+// #define MICRO_BENCHMARK
 
 static uint64_t get_cy () {
 #ifdef  MICRO_BENCHMARK
