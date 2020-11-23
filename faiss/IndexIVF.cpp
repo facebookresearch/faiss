@@ -879,11 +879,15 @@ void IndexIVF::replace_invlists (InvertedLists *il, bool own)
 {
     if (own_invlists) {
         delete invlists;
+        invlists = nullptr;
     }
     // FAISS_THROW_IF_NOT (ntotal == 0);
     if (il) {
-        FAISS_THROW_IF_NOT (il->nlist == nlist &&
-                            il->code_size == code_size);
+        FAISS_THROW_IF_NOT (il->nlist == nlist);
+        FAISS_THROW_IF_NOT (
+            il->code_size == code_size ||
+            il->code_size == InvertedLists::INVALID_CODE_SIZE
+        );
     }
     invlists = il;
     own_invlists = own;
