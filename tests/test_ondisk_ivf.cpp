@@ -16,7 +16,7 @@
 
 #include <gtest/gtest.h>
 
-#include <faiss/OnDiskInvertedLists.h>
+#include <faiss/invlists/OnDiskInvertedLists.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/utils/random.h>
