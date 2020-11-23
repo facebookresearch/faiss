@@ -26,12 +26,13 @@ size_t BlockInvertedLists::add_entries (
            const idx_t* ids_in, const uint8_t *code)
 {
     if (n_entry == 0) return 0;
-    assert (list_no < nlist);
+    FAISS_THROW_IF_NOT (list_no < nlist);
     size_t o = ids [list_no].size();
-    assert(o == 0); // not clear how we should handle subsequent adds
+    FAISS_THROW_IF_NOT (o == 0); // not clear how we should handle subsequent adds
     ids [list_no].resize (o + n_entry);
     memcpy (&ids[list_no][o], ids_in, sizeof (ids_in[0]) * n_entry);
 
+    // copy whole blocks
     size_t n_block = (n_entry + n_per_block - 1) / n_per_block;
     codes [list_no].resize (n_block * block_size);
     memcpy (&codes[list_no][o * code_size], code, n_block * block_size);
