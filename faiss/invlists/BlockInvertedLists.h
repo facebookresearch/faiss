@@ -44,13 +44,18 @@ struct BlockInvertedLists: InvertedLists {
     const uint8_t * get_codes (size_t list_no) const override;
     const idx_t * get_ids (size_t list_no) const override;
 
+    // works only on empty BlockInvertedLists
+    // the codes should be of size ceil(n_entry / n_per_block) * block_size
+    // and padded with 0s
     size_t add_entries (
            size_t list_no, size_t n_entry,
            const idx_t* ids, const uint8_t *code) override;
 
+    /// not implemented
     void update_entries (size_t list_no, size_t offset, size_t n_entry,
                          const idx_t *ids, const uint8_t *code) override;
 
+    // also pads new data with 0s
     void resize (size_t list_no, size_t new_size) override;
 
     virtual ~BlockInvertedLists ();
