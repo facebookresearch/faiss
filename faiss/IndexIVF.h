@@ -16,8 +16,8 @@
 #include <stdint.h>
 
 #include <faiss/Index.h>
-#include <faiss/InvertedLists.h>
-#include <faiss/DirectMap.h>
+#include <faiss/invlists/InvertedLists.h>
+#include <faiss/invlists/DirectMap.h>
 #include <faiss/Clustering.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>

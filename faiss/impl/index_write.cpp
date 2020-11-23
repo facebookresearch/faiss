@@ -47,7 +47,7 @@
 #include <faiss/IndexBinaryHash.h>
 
 #ifndef _MSC_VER
-#include <faiss/OnDiskInvertedLists.h>
+#include <faiss/invlists/OnDiskInvertedLists.h>
 #endif // !_MSC_VER
 
 
