@@ -16,7 +16,7 @@
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/impl/platform_macros.h>
-
+#include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
 
@@ -56,7 +56,7 @@ struct FAISS_API IndexIVFPQ: IndexIVF {
 
     /// if use_precompute_table
     /// size nlist * pq.M * pq.ksub
-    std::vector <float> precomputed_table;
+    AlignedTable<float> precomputed_table;
 
     IndexIVFPQ (
             Index * quantizer, size_t d, size_t nlist,

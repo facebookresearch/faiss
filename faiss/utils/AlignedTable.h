@@ -61,10 +61,14 @@ struct AlignedTable {
     void clear() {memset(ptr, 0, nbytes()); }
     size_t size() const {return numel; }
     size_t nbytes() const {return numel * sizeof(T); }
+
     T * get() {return ptr; }
     const T * get() const {return ptr; }
-    T operator [] (size_t i) const {return ptr[i]; }
+    T * data() {return ptr; }
+    const T * data() const {return ptr; }
     T & operator [] (size_t i)  {return ptr[i]; }
+    T operator [] (size_t i) const {return ptr[i]; }
+
     ~AlignedTable() {free(ptr); }
 
     AlignedTable<T, A> & operator = (const AlignedTable<T, A> & other) {

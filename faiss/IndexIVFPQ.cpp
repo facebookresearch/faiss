@@ -676,11 +676,12 @@ struct QueryTables {
         } else if (use_precomputed_table == 1) {
             dis0 = coarse_dis;
 
-            fvec_madd (pq.M * pq.ksub,
-                       &ivfpq.precomputed_table [key * pq.ksub * pq.M],
-                       -2.0, sim_table_2,
-                       sim_table);
-
+            fvec_madd (
+                    pq.M * pq.ksub,
+                    ivfpq.precomputed_table.data() + key * pq.ksub * pq.M,
+                    -2.0, sim_table_2,
+                    sim_table
+            );
 
             if (polysemous_ht != 0) {
                 ivfpq.quantizer->compute_residual (qi, residual_vec, key);
@@ -706,8 +707,8 @@ struct QueryTables {
                 k >>= cpq.nbits;
 
                 // get corresponding table
-                const float *pc = &ivfpq.precomputed_table
-                    [(ki * pq.M + cm * Mf) * pq.ksub];
+                const float *pc = ivfpq.precomputed_table.data() +
+                    (ki * pq.M + cm * Mf) * pq.ksub;
 
                 if (polysemous_ht == 0) {
 
@@ -741,7 +742,8 @@ struct QueryTables {
         if (use_precomputed_table == 1) {
             dis0 = coarse_dis;
 
-            const float * s = &ivfpq.precomputed_table [key * pq.ksub * pq.M];
+            const float * s = ivfpq.precomputed_table.data() +
+                    key * pq.ksub * pq.M;
             for (int m = 0; m < pq.M; m++) {
                 sim_table_ptrs [m] = s;
                 s += pq.ksub;
@@ -761,8 +763,8 @@ struct QueryTables {
                 int ki = k & ((uint64_t(1) << cpq.nbits) - 1);
                 k >>= cpq.nbits;
 
-                const float *pc = &ivfpq.precomputed_table
-                    [(ki * pq.M + cm * Mf) * pq.ksub];
+                const float *pc = ivfpq.precomputed_table.data() +
+                    (ki * pq.M + cm * Mf) * pq.ksub;
 
                 for (int m = m0; m < m0 + Mf; m++) {
                     sim_table_ptrs [m] = pc;
