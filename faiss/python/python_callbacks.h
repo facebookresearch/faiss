@@ -9,7 +9,7 @@
 
 #include "Python.h"
 #include <faiss/impl/io.h>
-#include <faiss/InvertedLists.h>
+#include <faiss/invlists/InvertedLists.h>
 
 //  all callbacks have to acquire the GIL on input
 

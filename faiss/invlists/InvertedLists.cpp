@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include <faiss/InvertedLists.h>
+#include <faiss/invlists/InvertedLists.h>
 
 #include <cstdio>
 

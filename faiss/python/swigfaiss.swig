@@ -104,8 +104,10 @@ typedef uint64_t size_t;
 #include <faiss/utils/partitioning.h>
 #include <faiss/impl/AuxIndexStructures.h>
 
+#include <faiss/invlists/BlockInvertedLists.h>
+
 #ifndef _MSC_VER
-#include <faiss/OnDiskInvertedLists.h>
+#include <faiss/invlists/OnDiskInvertedLists.h>
 #endif // !_MSC_VER
 
 #include <faiss/Clustering.h>
@@ -359,8 +361,9 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexLSH.h>
 %include  <faiss/impl/PolysemousTraining.h>
 %include  <faiss/IndexPQ.h>
-%include  <faiss/InvertedLists.h>
-%include  <faiss/DirectMap.h>
+%include  <faiss/invlists/InvertedLists.h>
+%include  <faiss/invlists/BlockInvertedLists.h>
+%include  <faiss/invlists/DirectMap.h>
 %ignore InvertedListScanner;
 %ignore BinaryInvertedListScanner;
 %include  <faiss/IndexIVF.h>
@@ -379,7 +382,7 @@ void gpu_sync_all_devices()
 #ifndef SWIGWIN
 %warnfilter(401) faiss::OnDiskInvertedListsIOHook;
 %ignore OnDiskInvertedListsIOHook;
-%include  <faiss/OnDiskInvertedLists.h>
+%include  <faiss/invlists/OnDiskInvertedLists.h>
 #endif // !SWIGWIN
 
 %include  <faiss/impl/lattice_Zn.h>
@@ -561,6 +564,7 @@ void gpu_sync_all_devices()
 
 %typemap(out) faiss::InvertedLists * {
     DOWNCAST (ArrayInvertedLists)
+    DOWNCAST (BlockInvertedLists)
 #ifndef SWIGWIN
     DOWNCAST (OnDiskInvertedLists)
 #endif // !SWIGWIN

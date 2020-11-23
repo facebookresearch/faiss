@@ -7,7 +7,6 @@
 add_library(faiss
   AutoTune.cpp
   Clustering.cpp
-  DirectMap.cpp
   IVFlib.cpp
   Index.cpp
   Index2Layer.cpp
@@ -31,7 +30,6 @@ add_library(faiss
   IndexReplicas.cpp
   IndexScalarQuantizer.cpp
   IndexShards.cpp
-  InvertedLists.cpp
   MatrixStats.cpp
   MetaIndexes.cpp
   VectorTransform.cpp
@@ -47,6 +45,9 @@ add_library(faiss
   impl/index_write.cpp
   impl/io.cpp
   impl/lattice_Zn.cpp
+  invlists/DirectMap.cpp
+  invlists/InvertedLists.cpp
+  invlists/BlockInvertedLists.cpp
   utils/Heap.cpp
   utils/WorkerThread.cpp
   utils/distances.cpp
@@ -61,7 +62,6 @@ add_library(faiss
 set(FAISS_HEADERS
   AutoTune.h
   Clustering.h
-  DirectMap.h
   IVFlib.h
   Index.h
   Index2Layer.h
@@ -85,7 +85,6 @@ set(FAISS_HEADERS
   IndexReplicas.h
   IndexScalarQuantizer.h
   IndexShards.h
-  InvertedLists.h
   MatrixStats.h
   MetaIndexes.h
   MetricType.h
@@ -107,6 +106,9 @@ set(FAISS_HEADERS
   impl/io_macros.h
   impl/lattice_Zn.h
   impl/platform_macros.h
+  invlists/InvertedLists.h
+  invlists/BlockInvertedLists.h
+  invlists/DirectMap.h
   utils/Heap.h
   utils/AlignedTable.h
   utils/WorkerThread.h
@@ -122,8 +124,8 @@ set(FAISS_HEADERS
 )
 
 if(NOT WIN32)
-  target_sources(faiss PRIVATE OnDiskInvertedLists.cpp)
-  list(APPEND FAISS_HEADERS OnDiskInvertedLists.h)
+  target_sources(faiss PRIVATE invlists/OnDiskInvertedLists.cpp)
+  list(APPEND FAISS_HEADERS invlists/OnDiskInvertedLists.h)
 endif()
 
 if(FAISS_OPT_LEVEL STREQUAL "avx2")
