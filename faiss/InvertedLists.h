@@ -36,6 +36,10 @@ struct InvertedLists {
 
     InvertedLists (size_t nlist, size_t code_size);
 
+    /// used for BlockInvertedLists, where the codes are packed into groups
+    /// and the individual code size is meaningless
+    static const size_t INVALID_CODE_SIZE = (size_t)(-1);
+
     /*************************
      *  Read only functions */
 
