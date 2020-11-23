@@ -3,13 +3,16 @@ import time
 import faiss
 import numpy as np
 
-def do_partition(n, qin, maxval=65536, seed=123):
-    print(f"n={n} qin={qin} maxval={maxval}", end="\t", flush=True)
+def do_partition(n, qin, maxval=65536, seed=123, id_type='int64'):
+    print(
+        f"n={n} qin={qin} maxval={maxval} id_type={id_type}  ",
+        end="\t", flush=True
+    )
 
     # print("seed=", seed)
     rs = np.random.RandomState(seed)
     vals = rs.randint(maxval, size=n).astype('uint16')
-    ids = (rs.permutation(n) + 12345).astype('int64')
+    ids = (rs.permutation(n) + 12345).astype(id_type)
     dic = dict(zip(ids, vals))
 
     sp = faiss.swig_ptr
@@ -63,3 +66,11 @@ do_partition(2000, (1000, 1000))
 do_partition(2000, (1000, 1500))
 do_partition(20000, (10000, 10000))
 do_partition(20000, (10000, 15000))
+
+
+do_partition(200, (100, 100), id_type='int32')
+do_partition(200, (100, 150), id_type='int32')
+do_partition(2000, (1000, 1000), id_type='int32')
+do_partition(2000, (1000, 1500), id_type='int32')
+do_partition(20000, (10000, 10000), id_type='int32')
+do_partition(20000, (10000, 15000), id_type='int32')

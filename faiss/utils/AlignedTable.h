@@ -40,6 +40,9 @@ struct AlignedTable {
     size_t itemsize() const {return sizeof(T); }
 
     void resize(size_t n) {
+        if (numel == n) {
+            return;
+        }
         T * new_ptr;
         if (n > 0) {
             int ret = posix_memalign((void**)&new_ptr, A, n * sizeof(T));
