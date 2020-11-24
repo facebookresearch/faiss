@@ -13,6 +13,8 @@
 #include <cassert>
 #include <cstring>
 
+#include <algorithm>
+
 #include <faiss/impl/platform_macros.h>
 
 namespace faiss {

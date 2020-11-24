@@ -23,8 +23,8 @@
 #define posix_memalign(p, a, s) (((*(p)) = _aligned_malloc((s), (a))), *(p) ?0 :errno)
 #define posix_memalign_free _aligned_free
 
-#define ALIGNED(x) __declspec(align(x))
-
+// #define ALIGNED(x) __declspec(align(x))
+#define ALIGNED(x)
 
 #else
 // Linux and OSX

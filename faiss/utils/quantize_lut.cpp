@@ -11,6 +11,7 @@
 #include <cmath>
 #include <cstring>
 #include <vector>
+#include <algorithm>
 
 #include <faiss/impl/FaissAssert.h>
 
