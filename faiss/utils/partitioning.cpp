@@ -229,7 +229,7 @@ void find_minimax(
         vmax.accu_max(v);
     }
 
-    uint16_t tab32[32] ALIGNED(32);
+    ALIGNED(32) uint16_t tab32[32];
     vmin.store(tab32);
     vmax.store(tab32 + 16);
 
@@ -1033,7 +1033,7 @@ void simd_histogram_8_unbounded(
     PreprocNOP pp;
     simd16uint16 a16 = histogram_8(data, pp, (n & ~15));
 
-    uint16_t a16_tab[16] ALIGNED(32);
+    ALIGNED(32) uint16_t a16_tab[16];
     a16.store(a16_tab);
 
     for(int i = 0; i < 8; i++) {
@@ -1054,7 +1054,7 @@ void simd_histogram_16_unbounded(
 
     simd16uint16 a16 = histogram_16(data, PreprocNOP(), (n & ~15));
 
-    uint16_t a16_tab[16] ALIGNED(32);
+    ALIGNED(32) uint16_t a16_tab[16];
     a16.store(a16_tab);
 
     for(int i = 0; i < 16; i++) {
@@ -1112,7 +1112,7 @@ void simd_histogram_8(
     }
 #undef DISPATCH
 
-    uint16_t a16_tab[16] ALIGNED(32);
+    ALIGNED(32) uint16_t a16_tab[16];
     a16.store(a16_tab);
 
     for(int i = 0; i < 8; i++) {
@@ -1167,7 +1167,7 @@ void simd_histogram_16(
     }
 #undef DISPATCH
 
-    uint16_t a16_tab[16] ALIGNED(32);
+    ALIGNED(32) uint16_t a16_tab[16];
     a16.store(a16_tab);
 
     for(int i = 0; i < 16; i++) {

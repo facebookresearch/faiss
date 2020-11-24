@@ -23,12 +23,8 @@
 #define posix_memalign(p, a, s) (((*(p)) = _aligned_malloc((s), (a))), *(p) ?0 :errno)
 #define posix_memalign_free _aligned_free
 
-// This does not seem to work so disable for now.
-// Alignment does not matter if the code is compiled with simdlib_emulated
-// but it would matter with read AVX.
-
-// #define ALIGNED(x) __declspec(align(x))
-#define ALIGNED(x)
+// aligned should be in front of the declaration
+#define ALIGNED(x) __declspec(align(x))
 
 #include <intrin.h>
 
@@ -50,6 +46,8 @@ inline int __builtin_ctz(unsigned long x) {
 
 #define FAISS_API
 #define posix_memalign_free free
+
+// aligned should be in front of the declaration for compatibility with windows
 #define ALIGNED(x) __attribute__ ((aligned(x)))
 
 #endif // _MSC_VER

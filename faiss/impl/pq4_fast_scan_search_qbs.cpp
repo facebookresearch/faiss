@@ -36,8 +36,10 @@ void kernel_accumulate_block(
         const uint8_t *LUT,
         ResultHandler & res)
 {
+    // dummy alloc to keep the windows compiler happy
+    constexpr int NQA = NQ > 0 ? NQ : 1;
     // distance accumulators
-    simd16uint16 accu[NQ][4];
+    simd16uint16 accu[NQA][4];
 
     for(int q = 0; q < NQ; q++) {
         for(int b = 0; b < 4; b++) {
