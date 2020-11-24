@@ -39,6 +39,12 @@ Numpy ndarrays can continue to be used in the Faiss python interface after impor
 
 Tested in `tests/test_contrib_torch.py` (CPU) and `gpu/test/test_contrib_torch_gpu.py` (GPU).
 
+### inspect_tools.py
+
+Functions to inspect C++ objects wrapped by SWIG. Most often this just means reading
+fields and converting them to the proper python array.
+
+
 ### datasets.py
 
 (may require h5py)
