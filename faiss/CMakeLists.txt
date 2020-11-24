@@ -131,6 +131,8 @@ set(FAISS_HEADERS
   utils/quantize_lut.h
   utils/random.h
   utils/simdlib.h
+  utils/simdlib_emulated.h
+  utils/simdlib_avx2.h
   utils/utils.h
 )
 
