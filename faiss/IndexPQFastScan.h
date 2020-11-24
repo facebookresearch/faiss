@@ -93,6 +93,6 @@ struct FastScanStats {
     }
 };
 
-extern FastScanStats FastScan_stats;
+FAISS_API extern FastScanStats FastScan_stats;
 
 } // namespace faiss

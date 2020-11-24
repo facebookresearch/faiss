@@ -150,7 +150,7 @@ struct IVFFastScanStats {
     }
 };
 
-extern IVFFastScanStats IVFFastScan_stats;
+FAISS_API extern IVFFastScanStats IVFFastScan_stats;
 
 
 } // namespace faiss
