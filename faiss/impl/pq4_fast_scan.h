@@ -15,7 +15,11 @@
  * The basic kernel accumulates nq query vectors with bbs = nb * 2 * 16 vectors
  * and produces an output matrix for that. It is interesting for nq * nb <= 4,
  * otherwise register spilling becomes too large.
+ *
+ * The implementation of these functions is spread over 3 cpp files to reduce
+ * parallel compile times. Templates are instanciated explicitly.
  */
+
 
 namespace faiss {
 

@@ -141,7 +141,10 @@ VectorTransform* read_VectorTransform (IOReader *f) {
         }
         vt = itqt;
     } else {
-        FAISS_THROW_MSG("fourcc not recognized");
+        FAISS_THROW_FMT(
+            "fourcc %ud (\"%s\") not recognized",
+            h, fourcc_inv_printable(h).c_str()
+        );
     }
     READ1 (vt->d_in);
     READ1 (vt->d_out);
@@ -167,7 +170,10 @@ static void read_ArrayInvertedLists_sizes (
             sizes[idsizes[j]] = idsizes[j + 1];
         }
     } else {
-        FAISS_THROW_MSG ("invalid list_type");
+        FAISS_THROW_FMT(
+            "list_type %ud (\"%s\") not recognized",
+            list_type, fourcc_inv_printable(list_type).c_str()
+        );
     }
 }
 
@@ -201,7 +207,10 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
 
 #ifdef _MSC_VER
     } else {
-        FAISS_THROW_MSG("Unsupported inverted list format for Windows");
+        FAISS_THROW_FMT(
+            "fourcc %ud (\"%s\") not recognized",
+            h, fourcc_inv_printable(h).c_str()
+        );
     }
 #else
     } else if (h == fourcc ("ilar") && (io_flags & IO_FLAG_SKIP_IVF_DATA)) {
@@ -599,7 +608,10 @@ Index *read_index (IOReader *f, int io_flags) {
         }
         idx = idxhnsw;
     } else {
-        FAISS_THROW_FMT("Index type 0x%08x not supported\n", h);
+        FAISS_THROW_FMT(
+            "Index type %08x (\"%s\") not recognized",
+            h, fourcc_inv_printable(h).c_str()
+        );
         idx = nullptr;
     }
     return idx;
@@ -780,7 +792,10 @@ IndexBinary *read_index_binary (IOReader *f, int io_flags) {
         }
         idx = idxmh;
     } else {
-        FAISS_THROW_FMT("Index type 0x%08x not supported\n", h);
+        FAISS_THROW_FMT(
+            "Index type %08x (\"%s\") not recognized",
+            h, fourcc_inv_printable(h).c_str()
+        );
         idx = nullptr;
     }
     return idx;
@@ -835,7 +850,8 @@ InvertedListsIOHook* InvertedListsIOHook::lookup(int h)
             return callback;
         }
     }
-    FAISS_THROW_FMT ("read_InvertedLists: could not load ArrayInvertedLists as %04x", h);
+    FAISS_THROW_FMT (
+        "read_InvertedLists: could not load ArrayInvertedLists as %04x", h);
 }
 
 InvertedListsIOHook* InvertedListsIOHook::lookup_classname(const std::string & classname)
@@ -845,7 +861,8 @@ InvertedListsIOHook* InvertedListsIOHook::lookup_classname(const std::string & c
             return callback;
         }
     }
-    FAISS_THROW_FMT ("read_InvertedLists: could not find classname %s", classname.c_str());
+    FAISS_THROW_FMT (
+            "read_InvertedLists: could not find classname %s", classname.c_str());
 }
 
 void InvertedListsIOHook::add_callback(InvertedListsIOHook *cb)

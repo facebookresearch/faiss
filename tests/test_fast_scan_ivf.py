@@ -10,7 +10,7 @@ import numpy as np
 import faiss
 
 from faiss.contrib import datasets
-from faiss.contrib.ivf_tools import get_invlist, get_sizes_array
+from faiss.contrib.inspect_tools import get_invlist, get_invlist_sizes
 
 
 class TestLUTQuantization(unittest.TestCase):
