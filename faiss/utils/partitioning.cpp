@@ -15,6 +15,8 @@
 #include <faiss/utils/ordered_key_value.h>
 #include <faiss/utils/simdlib.h>
 
+#include <faiss/impl/platform_macros.h>
+
 namespace faiss {
 
 
@@ -153,7 +155,7 @@ typename C::T partition_fuzzy_median3(
 
         IFV  printf("   thresh=%g [%g %g] n_lt=%ld n_eq=%ld, q=%ld:%ld/%ld\n",
             float(thresh), float(thresh_inf), float(thresh_sup),
-            n_lt, n_eq, q_min, q_max, n);
+            long(n_lt), long(n_eq), long(q_min), long(q_max), long(n));
 
         if (n_lt <= q_min) {
             if (n_lt + n_eq >= q_min) {
@@ -181,7 +183,7 @@ typename C::T partition_fuzzy_median3(
 
     int64_t n_eq_1 = q - n_lt;
 
-    IFV printf("shrink: thresh=%g n_eq_1=%ld\n", float(thresh), n_eq_1);
+    IFV printf("shrink: thresh=%g n_eq_1=%ld\n", float(thresh), long(n_eq_1));
 
     if (n_eq_1 < 0) { // happens when > q elements are at lower bound
         q = q_min;
@@ -227,7 +229,7 @@ void find_minimax(
         vmax.accu_max(v);
     }
 
-    uint16_t tab32[32] __attribute__ ((aligned (32)));
+    uint16_t tab32[32] ALIGNED(32);
     vmin.store(tab32);
     vmax.store(tab32 + 16);
 
@@ -1031,7 +1033,7 @@ void simd_histogram_8_unbounded(
     PreprocNOP pp;
     simd16uint16 a16 = histogram_8(data, pp, (n & ~15));
 
-    uint16_t a16_tab[16] __attribute__ ((aligned (32)));
+    uint16_t a16_tab[16] ALIGNED(32);
     a16.store(a16_tab);
 
     for(int i = 0; i < 8; i++) {
@@ -1052,7 +1054,7 @@ void simd_histogram_16_unbounded(
 
     simd16uint16 a16 = histogram_16(data, PreprocNOP(), (n & ~15));
 
-    uint16_t a16_tab[16] __attribute__ ((aligned (32)));
+    uint16_t a16_tab[16] ALIGNED(32);
     a16.store(a16_tab);
 
     for(int i = 0; i < 16; i++) {
@@ -1110,7 +1112,7 @@ void simd_histogram_8(
     }
 #undef DISPATCH
 
-    uint16_t a16_tab[16] __attribute__ ((aligned (32)));
+    uint16_t a16_tab[16] ALIGNED(32);
     a16.store(a16_tab);
 
     for(int i = 0; i < 8; i++) {
@@ -1165,7 +1167,7 @@ void simd_histogram_16(
     }
 #undef DISPATCH
 
-    uint16_t a16_tab[16] __attribute__ ((aligned (32)));
+    uint16_t a16_tab[16] ALIGNED(32);
     a16.store(a16_tab);
 
     for(int i = 0; i < 16; i++) {

@@ -16,6 +16,7 @@
 
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/partitioning.h>
+#include <faiss/impl/platform_macros.h>
 
 /** This file contains callbacks for kernels that compute distances.
  *
@@ -224,7 +225,7 @@ struct SingleResultHandler: SIMDResultHandler<C, with_id_map> {
             return;
         }
 
-        uint16_t d32tab[32] __attribute__ ((aligned (32)));
+        uint16_t d32tab[32] ALIGNED(32);
         d0.store(d32tab);
         d1.store(d32tab + 16);
 
@@ -305,7 +306,7 @@ struct HeapHandler: SIMDResultHandler<C, with_id_map> {
             return;
         }
 
-        uint16_t d32tab[32] __attribute__ ((aligned (32)));
+        uint16_t d32tab[32] ALIGNED(32);
         d0.store(d32tab);
         d1.store(d32tab + 16);
 
@@ -484,7 +485,7 @@ struct ReservoirHandler: SIMDResultHandler<C, with_id_map> {
         if (!lt_mask) {
             return;
         }
-        uint16_t d32tab[32] __attribute__ ((aligned (32)));
+        uint16_t d32tab[32] ALIGNED(32);
         d0.store(d32tab);
         d1.store(d32tab + 16);
 

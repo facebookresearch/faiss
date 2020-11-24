@@ -12,6 +12,8 @@
 
 #include <immintrin.h>
 
+#include <faiss/impl/platform_macros.h>
+
 namespace faiss {
 
 
@@ -186,7 +188,7 @@ struct simd16uint16: simd256bit {
 
     // for debugging only
     uint16_t operator [] (int i) const {
-        uint16_t tab[16] __attribute__ ((aligned (32)));
+        uint16_t tab[16] ALIGNED(32);
         store(tab);
         return tab[i];
     }
@@ -332,7 +334,7 @@ struct simd32uint8: simd256bit {
 
     // for debugging only
     uint8_t operator [] (int i) const {
-        uint8_t tab[32] __attribute__ ((aligned (32)));
+        uint8_t tab[32] ALIGNED(32);
         store(tab);
         return tab[i];
     }
