@@ -33,10 +33,11 @@ struct simd256bit {
 
     simd256bit()   {}
 
-    simd256bit(__m256i i): i(i) {}
-    simd256bit(__m256 f): f(f) {}
+    explicit simd256bit(__m256i i): i(i) {}
 
-    simd256bit(const void *x):
+    explicit simd256bit(__m256 f): f(f) {}
+
+    explicit simd256bit(const void *x):
     i(_mm256_load_si256((__m256i const *)x))
     {}
 
@@ -78,13 +79,15 @@ struct simd256bit {
 struct simd16uint16: simd256bit {
     simd16uint16() {}
 
-    simd16uint16(int x): simd256bit(_mm256_set1_epi16(x)) {}
+    explicit simd16uint16(__m256i i): simd256bit(i) {}
 
-    simd16uint16(uint16_t x): simd256bit(_mm256_set1_epi16(x)) {}
+    explicit simd16uint16(int x): simd256bit(_mm256_set1_epi16(x)) {}
 
-    simd16uint16(simd256bit x): simd256bit(x) {}
+    explicit simd16uint16(uint16_t x): simd256bit(_mm256_set1_epi16(x)) {}
 
-    simd16uint16(const uint16_t *x): simd256bit((const void*)x) {}
+    explicit simd16uint16(simd256bit x): simd256bit(x) {}
+
+    explicit simd16uint16(const uint16_t *x): simd256bit((const void*)x) {}
 
     std::string elements_to_string(const char * fmt) const {
         uint16_t bytes[16];
@@ -261,15 +264,18 @@ inline uint32_t cmp_le32(simd16uint16 d0, simd16uint16 d1, simd16uint16 thr) {
 // vector of 32 unsigned 8-bit integers
 struct simd32uint8: simd256bit {
 
+
     simd32uint8() {}
 
-    simd32uint8(int x): simd256bit(_mm256_set1_epi8(x)) {}
+    explicit simd32uint8(__m256i i): simd256bit(i) {}
 
-    simd32uint8(uint8_t x): simd256bit(_mm256_set1_epi8(x)) {}
+    explicit simd32uint8(int x): simd256bit(_mm256_set1_epi8(x)) {}
 
-    simd32uint8(simd256bit x): simd256bit(x) {}
+    explicit simd32uint8(uint8_t x): simd256bit(_mm256_set1_epi8(x)) {}
 
-    simd32uint8(const uint8_t *x): simd256bit((const void*)x) {}
+    explicit simd32uint8(simd256bit x): simd256bit(x) {}
+
+    explicit simd32uint8(const uint8_t *x): simd256bit((const void*)x) {}
 
     std::string elements_to_string(const char * fmt) const {
         uint8_t bytes[32];
@@ -336,7 +342,7 @@ struct simd32uint8: simd256bit {
 // convert with saturation
 // careful: this does not cross lanes, so the order is weird
 inline simd32uint8 uint16_to_uint8_saturate(simd16uint16 a, simd16uint16 b) {
-    return simd16uint16(_mm256_packs_epi16(a.i, b.i));
+    return simd32uint8(_mm256_packs_epi16(a.i, b.i));
 }
 
 /// get most significant bit of each byte
@@ -355,12 +361,13 @@ inline simd32uint8 blendv(simd32uint8 a, simd32uint8 b, simd32uint8 mask) {
 struct simd8uint32: simd256bit {
     simd8uint32() {}
 
+    explicit simd8uint32(__m256i i): simd256bit(i) {}
 
-    simd8uint32(uint32_t x): simd256bit(_mm256_set1_epi32(x)) {}
+    explicit simd8uint32(uint32_t x): simd256bit(_mm256_set1_epi32(x)) {}
 
-    simd8uint32(simd256bit x): simd256bit(x) {}
+    explicit simd8uint32(simd256bit x): simd256bit(x) {}
 
-    simd8uint32(const uint8_t *x): simd256bit((const void*)x) {}
+    explicit simd8uint32(const uint8_t *x): simd256bit((const void*)x) {}
 
     std::string elements_to_string(const char * fmt) const {
         uint32_t bytes[8];
@@ -392,11 +399,14 @@ struct simd8float32: simd256bit {
 
     simd8float32() {}
 
-    simd8float32(simd256bit x): simd256bit(x) {}
 
-    simd8float32(float x): simd256bit(_mm256_set1_ps(x)) {}
+    explicit simd8float32(simd256bit x): simd256bit(x) {}
 
-    simd8float32(const float *x): simd256bit(_mm256_load_ps(x)) {}
+    explicit simd8float32(__m256 x): simd256bit(x) {}
+
+    explicit simd8float32(float x): simd256bit(_mm256_set1_ps(x)) {}
+
+    explicit simd8float32(const float *x): simd256bit(_mm256_load_ps(x)) {}
 
     simd8float32 operator * (simd8float32 other) const {
         return simd8float32(_mm256_mul_ps(f, other.f));
@@ -435,7 +445,6 @@ inline simd8float32 unpacklo(simd8float32 a, simd8float32 b) {
 inline simd8float32 unpackhi(simd8float32 a, simd8float32 b) {
     return simd8float32(_mm256_unpackhi_ps(a.f, b.f));
 }
-
 
 // compute a * b + c
 inline simd8float32 fmadd(simd8float32 a, simd8float32 b, simd8float32 c) {

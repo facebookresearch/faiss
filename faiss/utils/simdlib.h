@@ -25,7 +25,8 @@
 // emulated = all operations are implemented as scalars
 #include <faiss/utils/simdlib_emulated.h>
 
-// FIXME: make a SSE version -- is this ever going to happen?
+// FIXME: make a SSE version
+// is this ever going to happen? We will probably rather implement AVX512
 
 #endif
 
