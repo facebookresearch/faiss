@@ -36,8 +36,16 @@ IndexPQFastScan::IndexPQFastScan(
     bbs(bbs), ntotal2(0), M2(roundup(M, 2))
 {
     is_trained = false;
+    if (bbs == 32) {
+        implem = 12;
+    } else {
+        implem = 14;
+    }
 }
 
+IndexPQFastScan::IndexPQFastScan():
+    bbs(0), ntotal2(0), M2(0)
+{}
 
 IndexPQFastScan::IndexPQFastScan(const IndexPQ & orig, int bbs):
     Index(orig.d, orig.metric_type),

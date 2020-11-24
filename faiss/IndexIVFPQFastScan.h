@@ -62,6 +62,8 @@ struct IndexIVFPQFastScan: IndexIVF {
             size_t M, size_t nbits_per_idx,
             MetricType metric = METRIC_L2, int bbs = 32);
 
+    IndexIVFPQFastScan ();
+
     // built from an IndexIVFPQ
     IndexIVFPQFastScan(const IndexIVFPQ & orig, int bbs = 32);
 

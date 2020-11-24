@@ -39,6 +39,8 @@
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexIVFPQFastScan.h>
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryFromFloat.h>
@@ -440,6 +442,18 @@ void write_index (const Index *idx, IOWriter *f) {
         write_index_header (idxhnsw, f);
         write_HNSW (&idxhnsw->hnsw, f);
         write_index (idxhnsw->storage, f);
+    } else if (const IndexPQFastScan *idxpqfs =
+               dynamic_cast<const IndexPQFastScan*>(idx)) {
+        uint32_t h = fourcc("IPfs");
+        WRITE1 (h);
+        write_index_header (idxpqfs, f);
+        write_ProductQuantizer (&idxpqfs->pq, f);
+        WRITE1 (idxpqfs->implem);
+        WRITE1 (idxpqfs->bbs);
+        WRITE1 (idxpqfs->qbs);
+        WRITE1 (idxpqfs->ntotal2);
+        WRITE1 (idxpqfs->M2);
+        WRITEVECTOR (idxpqfs->codes);
     } else {
       FAISS_THROW_MSG ("don't know how to serialize this type of index");
     }

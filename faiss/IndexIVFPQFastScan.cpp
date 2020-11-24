@@ -54,7 +54,12 @@ IndexIVFPQFastScan::IndexIVFPQFastScan (
     qbs2 = 11;
 }
 
-
+IndexIVFPQFastScan::IndexIVFPQFastScan ()
+{
+    by_residual = false;
+    bbs = 0;
+    M2 = 0;
+}
 
 
 IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ & orig, int bbs):

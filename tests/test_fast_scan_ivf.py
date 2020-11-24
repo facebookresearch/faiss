@@ -446,6 +446,14 @@ class TestTraining(unittest.TestCase):
         self.assertGreater(m3[1], ref_m3[1] * 0.99)
         self.assertGreater(m3[2], ref_m3[2] * 0.99)
 
+        # Test I/O
+        data = faiss.serialize_index(index2)
+        index3 = faiss.deserialize_index(data)
+
+        D3, I3 = index3.search(ds.get_queries(), 10)
+        np.testings.assert_array_equal(D3, Dnew)
+        np.testings.assert_array_equal(I3, Inew)
+
 
     def test_no_residual(self):
         self.do_test(by_residual=False)
@@ -464,5 +472,7 @@ class TestTraining(unittest.TestCase):
 
     def test_by_residual_odd_dim(self):
         self.do_test(by_residual=True, d=30)
+
+
 
 

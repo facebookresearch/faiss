@@ -43,16 +43,19 @@ struct IndexPQFastScan: Index  {
     // packed version of the codes
     size_t ntotal2;
     size_t M2;
+
     AlignedTable<uint8_t> codes;
 
     // this is for testing purposes only (set when initialized by IndexPQ)
-    const uint8_t *orig_codes;
+    const uint8_t *orig_codes = nullptr;
 
     IndexPQFastScan(
         int d, size_t M, size_t nbits,
         MetricType metric = METRIC_L2,
         int bbs = 32
     );
+
+    IndexPQFastScan();
 
     /// build from an existing IndexPQ
     IndexPQFastScan(const IndexPQ & orig, int bbs = 32);

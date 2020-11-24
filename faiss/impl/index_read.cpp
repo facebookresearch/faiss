@@ -39,11 +39,15 @@
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexIVFPQFastScan.h>
+
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryFromFloat.h>
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexBinaryHash.h>
+
 
 #ifndef _MSC_VER
 #include <faiss/invlists/OnDiskInvertedLists.h>
@@ -607,9 +611,20 @@ Index *read_index (IOReader *f, int io_flags) {
             dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table ();
         }
         idx = idxhnsw;
+    } else if(h == fourcc("IPfs")) {
+        IndexPQFastScan *idxpqfs = new IndexPQFastScan();
+        read_index_header (idxpqfs, f);
+        read_ProductQuantizer (&idxpqfs->pq, f);
+        READ1 (idxpqfs->implem);
+        READ1 (idxpqfs->bbs);
+        READ1 (idxpqfs->qbs);
+        READ1 (idxpqfs->ntotal2);
+        READ1 (idxpqfs->M2);
+        READVECTOR (idxpqfs->codes);
+        idx = idxpqfs;
     } else {
         FAISS_THROW_FMT(
-            "Index type %08x (\"%s\") not recognized",
+            "Index type 0x%08x (\"%s\") not recognized",
             h, fourcc_inv_printable(h).c_str()
         );
         idx = nullptr;

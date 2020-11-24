@@ -101,7 +101,7 @@ def reference_accu(codes, LUT):
 
 
 # disabled because the function to write to mem is not implemented currently
-class TestLoop5:    # (unittest.TestCase):
+class ThisIsNotATestLoop5:    # (unittest.TestCase):
 
     def do_loop5_kernel(self, nq, bb):
         """ unit test for the accumulation kernel """
@@ -330,10 +330,6 @@ class TestAdd(unittest.TestCase):
         xb = ds.get_database()
         index.add(xb[:1235])
 
-        #index.add(ds.get_database())
-        #Dref, Iref = index.search(ds.get_queries(), 10)
-        #nq = Iref.shape[0]
-
         index2 = faiss.IndexPQFastScan(index, bbs)
         index2.add(xb[1235:])
         new_codes = faiss.AlignedTable_to_array(index2.codes)
@@ -367,10 +363,19 @@ class TestAdd(unittest.TestCase):
         index2 = faiss.IndexPQFastScan(d, d // 2, 4)
         index2.train(ds.get_train())
         index2.add(ds.get_database())
-        Dnew, Inew = index.search(ds.get_queries(), 10)
+        Dnew, Inew = index2.search(ds.get_queries(), 10)
 
         recall_at_1 = (Iref[:, 0] == Inew[:, 0]).sum() / nq
 
-        # print("recall=", recall_at_1)
-
         self.assertGreater(recall_at_1, 0.99)
+
+        data = faiss.serialize_index(index2)
+        index3 = faiss.deserialize_index(data)
+
+        self.assertEqual(index2.implem, index3.implem)
+
+        D3, I3 = index3.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(D3, Dnew)
+        np.testing.assert_array_equal(I3, Inew)
+
+
