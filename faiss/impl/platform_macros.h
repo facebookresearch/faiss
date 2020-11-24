@@ -26,6 +26,8 @@
 // aligned should be in front of the declaration
 #define ALIGNED(x) __declspec(align(x))
 
+// redefine the GCC intrinsics with Windows equivalents
+
 #include <intrin.h>
 
 inline int __builtin_ctzll(uint64_t x) {
@@ -40,6 +42,11 @@ inline int __builtin_ctz(unsigned long x) {
     return (int)ret;
 }
 
+inline int __builtin_clzll(uint64_t x) {
+    return (int)__lzcnt64(x);
+}
+
+#define __builtin_popcountl __popcnt64
 
 #else
 // Linux and OSX
