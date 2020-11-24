@@ -10,7 +10,7 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/Index.h>
-#include <faiss/InvertedLists.h>
+#include <faiss/invlists/InvertedLists.h>
 #include <initializer_list>
 #include <gtest/gtest.h>
 #include <cstring>
