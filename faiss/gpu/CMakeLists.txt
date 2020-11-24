@@ -170,7 +170,7 @@ set(FAISS_GPU_HEADERS
 foreach(header ${FAISS_GPU_HEADERS})
   get_filename_component(dir ${header} DIRECTORY )
   install(FILES ${header}
-    DESTINATION include/faiss/gpu/${dir}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/faiss/gpu/${dir}
   )
 endforeach()
 
