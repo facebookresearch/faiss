@@ -104,6 +104,7 @@ class TestExhaustiveSearch(unittest.TestCase):
         assert np.all(Inew == Iref)
         assert np.allclose(Dref, Dnew)
 
+
 class TestInspect(unittest.TestCase):
 
     def test_LinearTransform(self):

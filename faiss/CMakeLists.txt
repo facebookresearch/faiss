@@ -22,6 +22,8 @@ add_library(faiss
   IndexIVFFlat.cpp
   IndexIVFPQ.cpp
   IndexIVFPQR.cpp
+  IndexIVFPQFastScan.cpp
+  IndexPQFastScan.cpp
   IndexIVFSpectralHash.cpp
   IndexLSH.cpp
   IndexLattice.cpp
@@ -43,6 +45,9 @@ add_library(faiss
   impl/ScalarQuantizer.cpp
   impl/index_read.cpp
   impl/index_write.cpp
+  impl/pq4_fast_scan.cpp
+  impl/pq4_fast_scan_search_1.cpp
+  impl/pq4_fast_scan_search_qbs.cpp
   impl/io.cpp
   impl/lattice_Zn.cpp
   invlists/DirectMap.cpp
@@ -55,6 +60,7 @@ add_library(faiss
   utils/extra_distances.cpp
   utils/hamming.cpp
   utils/partitioning.cpp
+  utils/quantize_lut.cpp
   utils/random.cpp
   utils/utils.cpp
 )
@@ -77,6 +83,8 @@ set(FAISS_HEADERS
   IndexIVFFlat.h
   IndexIVFPQ.h
   IndexIVFPQR.h
+  IndexIVFPQFastScan.h
+  IndexPQFastScan.h
   IndexIVFSpectralHash.h
   IndexLSH.h
   IndexLattice.h
@@ -105,6 +113,8 @@ set(FAISS_HEADERS
   impl/io.h
   impl/io_macros.h
   impl/lattice_Zn.h
+  impl/pq4_fast_scan.h
+  impl/simd_result_handlers.h
   impl/platform_macros.h
   invlists/InvertedLists.h
   invlists/BlockInvertedLists.h
@@ -118,6 +128,7 @@ set(FAISS_HEADERS
   utils/hamming.h
   utils/ordered_key_value.h
   utils/partitioning.h
+  utils/quantize_lut.h
   utils/random.h
   utils/simdlib.h
   utils/utils.h
@@ -129,7 +140,7 @@ if(NOT WIN32)
 endif()
 
 if(FAISS_OPT_LEVEL STREQUAL "avx2")
-  target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mpopcnt>)
+  target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mpopcnt>)
   set_target_properties(faiss PROPERTIES OUTPUT_NAME "faiss_avx2")
 elseif(FAISS_OPT_LEVEL STREQUAL "sse4")
   target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-msse4 -mpopcnt>)
