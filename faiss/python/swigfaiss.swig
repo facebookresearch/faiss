@@ -367,6 +367,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/PolysemousTraining.h>
 %include  <faiss/IndexPQ.h>
 %include  <faiss/invlists/InvertedLists.h>
+%ignore BlockInvertedListsIOHook;
 %include  <faiss/invlists/BlockInvertedLists.h>
 %include  <faiss/invlists/DirectMap.h>
 %ignore InvertedListScanner;

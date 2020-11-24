@@ -61,7 +61,9 @@ InvertedListsIOHook* InvertedListsIOHook::lookup(int h)
         }
     }
     FAISS_THROW_FMT (
-        "read_InvertedLists: could not load ArrayInvertedLists as %04x", h);
+        "read_InvertedLists: could not load ArrayInvertedLists as "
+        "%08x (\"%s\")", h, fourcc_inv_printable(h).c_str()
+    );
 }
 
 InvertedListsIOHook* InvertedListsIOHook::lookup_classname(const std::string & classname)
@@ -72,7 +74,9 @@ InvertedListsIOHook* InvertedListsIOHook::lookup_classname(const std::string & c
         }
     }
     FAISS_THROW_FMT (
-            "read_InvertedLists: could not find classname %s", classname.c_str());
+            "read_InvertedLists: could not find classname %s",
+            classname.c_str()
+    );
 }
 
 void InvertedListsIOHook::add_callback(InvertedListsIOHook *cb)
@@ -97,7 +101,7 @@ InvertedLists * InvertedListsIOHook::read_ArrayInvertedLists(
         size_t nlist, size_t code_size,
         const std::vector<size_t> &sizes) const
 {
-    FAISS_THROW_MSG("read to array not implemented");
+    FAISS_THROW_FMT("read to array not implemented for %s", classname.c_str());
 }
 
 } // namespace faiss
