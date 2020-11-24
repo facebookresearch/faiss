@@ -7,15 +7,16 @@
 
 #pragma once
 
+
 #ifdef _MSC_VER
+// Windows specific macros
+
 
 #ifdef FAISS_MAIN_LIB
 #define FAISS_API __declspec(dllexport)
 #else // _FAISS_MAIN_LIB
 #define FAISS_API __declspec(dllimport)
 #endif // FAISS_MAIN_LIB
-
-#define posix_memalign_free free
 
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 
@@ -24,6 +25,7 @@
 
 
 #else
+// Linux and OSX
 
 #define FAISS_API
 #define posix_memalign_free free

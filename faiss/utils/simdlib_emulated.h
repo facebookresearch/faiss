@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <cstring>
 #include <functional>
-
+#include <algorithm>
 
 namespace faiss {
 

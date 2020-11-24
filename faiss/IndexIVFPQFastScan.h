@@ -68,7 +68,7 @@ struct IndexIVFPQFastScan: IndexIVF {
     IndexIVFPQFastScan(const IndexIVFPQ & orig, int bbs = 32);
 
     /// orig's inverted lists (for debugging)
-    InvertedLists * orig_invlists;
+    InvertedLists * orig_invlists = nullptr;
 
     void train_residual (idx_t n, const float *x) override;
 

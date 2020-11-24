@@ -8,6 +8,9 @@
 #include <faiss/IndexIVFPQFastScan.h>
 
 #include <cassert>
+#include <cstdio>
+#include <inttypes.h>
+
 #include <memory>
 
 #include <faiss/impl/FaissAssert.h>
@@ -222,7 +225,7 @@ void IndexIVFPQFastScan::add_with_ids (
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min (n, i0 + bs);
             if (verbose) {
-                printf("   IndexIVF::add_with_ids %zd:%zd\n", i0, i1);
+                printf("   IndexIVF::add_with_ids %" PRId64 ":%" PRId64 "\n", i0, i1);
             }
             add_with_ids (i1 - i0, x + i0 * d,
                           xids ? xids + i0 : nullptr);
@@ -870,9 +873,6 @@ void IndexIVFPQFastScan::search_implem_12(
         int qno;
         int list_no;
         int rank;
-        bool operator < (const QC & other) {
-            return list_no < other.list_no;
-        }
     };
     bool single_LUT = !(by_residual && metric_type == METRIC_L2);
 
@@ -885,7 +885,12 @@ void IndexIVFPQFastScan::search_implem_12(
                 ij++;
             }
         }
-        std::sort(qcs.begin(), qcs.end());
+        std::sort(
+            qcs.begin(), qcs.end(),
+            [](const QC &a, const QC & b) {
+                return a.list_no < b.list_no;
+            }
+        );
     }
     TIC;
 
