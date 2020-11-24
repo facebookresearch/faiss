@@ -48,6 +48,7 @@
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexBinaryHash.h>
 
+#include <faiss/invlists/BlockInvertedLists.h>
 
 #ifndef _MSC_VER
 #include <faiss/invlists/OnDiskInvertedLists.h>
@@ -209,14 +210,6 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
         }
         return ails;
 
-#ifdef _MSC_VER
-    } else {
-        FAISS_THROW_FMT(
-            "fourcc %ud (\"%s\") not recognized",
-            h, fourcc_inv_printable(h).c_str()
-        );
-    }
-#else
     } else if (h == fourcc ("ilar") && (io_flags & IO_FLAG_SKIP_IVF_DATA)) {
         // code is always ilxx where xx is specific to the type of invlists we want
         // so we get the 16 high bits from the io_flag and the 16 low bits as "il"
@@ -231,7 +224,6 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
     } else {
         return InvertedListsIOHook::lookup(h)->read(f, io_flags);
     }
-#endif // !_MSC_VER
 
 }
 
@@ -239,8 +231,11 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
 static void read_InvertedLists (
         IndexIVF *ivf, IOReader *f, int io_flags) {
     InvertedLists *ils = read_InvertedLists (f, io_flags);
-    FAISS_THROW_IF_NOT (!ils || (ils->nlist == ivf->nlist &&
-                                 ils->code_size == ivf->code_size));
+    if (ils) {
+        FAISS_THROW_IF_NOT (ils->nlist == ivf->nlist);
+        FAISS_THROW_IF_NOT (ils->code_size == InvertedLists::INVALID_CODE_SIZE ||
+                            ils->code_size == ivf->code_size);
+    }
     ivf->invlists = ils;
     ivf->own_invlists = true;
 }
@@ -622,6 +617,20 @@ Index *read_index (IOReader *f, int io_flags) {
         READ1 (idxpqfs->M2);
         READVECTOR (idxpqfs->codes);
         idx = idxpqfs;
+
+    } else if (h == fourcc("IwPf")) {
+        IndexIVFPQFastScan *ivpq = new IndexIVFPQFastScan();
+        read_ivf_header (ivpq, f);
+        READ1 (ivpq->by_residual);
+        READ1 (ivpq->code_size);
+        READ1 (ivpq->bbs);
+        READ1 (ivpq->M2);
+        READ1 (ivpq->implem);
+        READ1 (ivpq->qbs2);
+        read_ProductQuantizer (&ivpq->pq, f);
+        read_InvertedLists (ivpq, f, io_flags);
+        ivpq->precompute_table();
+        idx = ivpq;
     } else {
         FAISS_THROW_FMT(
             "Index type 0x%08x (\"%s\") not recognized",
@@ -827,7 +836,6 @@ IndexBinary *read_index_binary (const char *fname, int io_flags) {
     return idx;
 }
 
-#ifndef _MSC_VER
 
 /**********************************************************
  * InvertedListIOHook's
@@ -844,7 +852,10 @@ namespace {
 struct IOHookTable: std::vector<InvertedListsIOHook*> {
 
     IOHookTable() {
+#ifndef _MSC_VER
         push_back(new OnDiskInvertedListsIOHook());
+#endif
+        push_back(new BlockInvertedListsIOHook());
     }
 
     ~IOHookTable() {
@@ -897,7 +908,13 @@ void InvertedListsIOHook::print_callbacks()
     }
 }
 
-#endif // !_MSC_VER
+InvertedLists * InvertedListsIOHook::read_ArrayInvertedLists(
+        IOReader *f, int io_flags,
+        size_t nlist, size_t code_size,
+        const std::vector<size_t> &sizes) const
+{
+    FAISS_THROW_MSG("read to array not implemented");
+}
 
 
 

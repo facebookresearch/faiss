@@ -76,7 +76,6 @@ void write_InvertedLists (const InvertedLists *ils, IOWriter *f);
 InvertedLists *read_InvertedLists (IOReader *reader, int io_flags = 0);
 
 
-#ifndef _MSC_VER
 /** Callbacks to handle other types of InvertedList objects.
  *
  * The callbacks should be registered with add_callback before calling
@@ -102,11 +101,13 @@ struct InvertedListsIOHook {
     /** read from a ArrayInvertedLists into this invertedlist type.
      * For this to work, the callback has to be enabled and the io_flag has to be set to
      * IO_FLAG_SKIP_IVF_DATA | (16 upper bits of the fourcc)
+     *
+     * (default implementation fails)
      */
     virtual InvertedLists * read_ArrayInvertedLists(
             IOReader *f, int io_flags,
             size_t nlist, size_t code_size,
-            const std::vector<size_t> &sizes) const = 0;
+            const std::vector<size_t> &sizes) const;
 
     virtual ~InvertedListsIOHook() {}
 
@@ -120,7 +121,6 @@ struct InvertedListsIOHook {
 
 };
 
-#endif // !_MSC_VER
 
 
 } // namespace faiss

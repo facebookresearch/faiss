@@ -10,7 +10,7 @@ import numpy as np
 import faiss
 
 from faiss.contrib import datasets
-from faiss.contrib.inspect_tools import get_invlist, get_invlist_sizes
+from faiss.contrib.inspect_tools import get_invlist, print_object_fields
 
 
 class TestLUTQuantization(unittest.TestCase):
@@ -449,11 +449,10 @@ class TestTraining(unittest.TestCase):
         # Test I/O
         data = faiss.serialize_index(index2)
         index3 = faiss.deserialize_index(data)
-
         D3, I3 = index3.search(ds.get_queries(), 10)
-        np.testings.assert_array_equal(D3, Dnew)
-        np.testings.assert_array_equal(I3, Inew)
 
+        np.testing.assert_array_equal(I3, Inew)
+        np.testing.assert_array_equal(D3, Dnew)
 
     def test_no_residual(self):
         self.do_test(by_residual=False)

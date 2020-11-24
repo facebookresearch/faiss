@@ -218,6 +218,7 @@ void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
                 WRITEANDCHECK (ails->ids[i].data(), n);
             }
         }
+
 #ifndef _MSC_VER
     } else {
 
@@ -454,8 +455,21 @@ void write_index (const Index *idx, IOWriter *f) {
         WRITE1 (idxpqfs->ntotal2);
         WRITE1 (idxpqfs->M2);
         WRITEVECTOR (idxpqfs->codes);
+    } else if (const IndexIVFPQFastScan * ivpq =
+              dynamic_cast<const IndexIVFPQFastScan *> (idx)) {
+        uint32_t h = fourcc ("IwPf");
+        WRITE1 (h);
+        write_ivf_header (ivpq, f);
+        WRITE1 (ivpq->by_residual);
+        WRITE1 (ivpq->code_size);
+        WRITE1 (ivpq->bbs);
+        WRITE1 (ivpq->M2);
+        WRITE1 (ivpq->implem);
+        WRITE1 (ivpq->qbs2);
+        write_ProductQuantizer (&ivpq->pq, f);
+        write_InvertedLists (ivpq->invlists, f);
     } else {
-      FAISS_THROW_MSG ("don't know how to serialize this type of index");
+        FAISS_THROW_MSG ("don't know how to serialize this type of index");
     }
 }
 

@@ -10,6 +10,7 @@
 
 #include <faiss/invlists/InvertedLists.h>
 #include <faiss/utils/AlignedTable.h>
+#include <faiss/index_io.h>
 
 namespace faiss {
 
@@ -40,6 +41,8 @@ struct BlockInvertedLists: InvertedLists {
         size_t block_size
     );
 
+    BlockInvertedLists();
+
     size_t list_size(size_t list_no) const override;
     const uint8_t * get_codes (size_t list_no) const override;
     const idx_t * get_ids (size_t list_no) const override;
@@ -61,5 +64,12 @@ struct BlockInvertedLists: InvertedLists {
     virtual ~BlockInvertedLists ();
 
 };
+
+struct BlockInvertedListsIOHook : InvertedListsIOHook {
+    BlockInvertedListsIOHook();
+    void write(const InvertedLists *ils, IOWriter *f) const override;
+    InvertedLists * read(IOReader *f, int io_flags) const override;
+};
+
 
 } // namespace faiss

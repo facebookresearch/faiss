@@ -9,17 +9,27 @@
 
 #include <faiss/impl/FaissAssert.h>
 
+#include <faiss/impl/io.h>
+#include <faiss/impl/io_macros.h>
+
+
 namespace faiss {
 
 BlockInvertedLists::BlockInvertedLists (
         size_t nlist, size_t n_per_block,
         size_t block_size):
-    InvertedLists (nlist, (size_t)(-1)),
+    InvertedLists (nlist, InvertedLists::INVALID_CODE_SIZE),
     n_per_block(n_per_block), block_size(block_size)
 {
     ids.resize (nlist);
     codes.resize (nlist);
 }
+
+BlockInvertedLists::BlockInvertedLists ():
+    InvertedLists (0, InvertedLists::INVALID_CODE_SIZE),
+    n_per_block(0), block_size(0)
+{}
+
 
 size_t BlockInvertedLists::add_entries (
            size_t list_no, size_t n_entry,
@@ -89,6 +99,52 @@ void BlockInvertedLists::update_entries (
 
 BlockInvertedLists::~BlockInvertedLists ()
 {}
+
+/**************************************************
+ * IO hook implementation
+ **************************************************/
+
+BlockInvertedListsIOHook::BlockInvertedListsIOHook():
+    InvertedListsIOHook("ilbl", typeid(BlockInvertedLists).name())
+{}
+
+
+void BlockInvertedListsIOHook::write(const InvertedLists *ils_in, IOWriter *f) const
+{
+    uint32_t h = fourcc ("ilbl");
+    WRITE1 (h);
+    const BlockInvertedLists *il =
+        dynamic_cast<const BlockInvertedLists*> (ils_in);
+    WRITE1 (il->nlist);
+    WRITE1 (il->code_size);
+    WRITE1 (il->n_per_block);
+    WRITE1 (il->block_size);
+
+    for (size_t i = 0; i < il->nlist; i++) {
+        WRITEVECTOR(il->ids[i]);
+        WRITEVECTOR(il->codes[i]);
+    }
+}
+
+InvertedLists * BlockInvertedListsIOHook::read(IOReader *f, int io_flags) const
+{
+    BlockInvertedLists *il = new BlockInvertedLists();
+    READ1 (il->nlist);
+    READ1 (il->code_size);
+    READ1 (il->n_per_block);
+    READ1 (il->block_size);
+
+    il->ids.resize(il->nlist);
+    il->codes.resize(il->nlist);
+
+    for (size_t i = 0; i < il->nlist; i++) {
+        READVECTOR(il->ids[i]);
+        READVECTOR(il->codes[i]);
+    }
+
+    return il;
+}
+
 
 
 
