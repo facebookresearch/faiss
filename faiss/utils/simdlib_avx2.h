@@ -207,11 +207,6 @@ inline simd16uint16 max(simd16uint16 a, simd16uint16 b) {
     return simd16uint16(_mm256_max_epu16(a.i, b.i));
 }
 
-// convert with saturation
-// careful: this does not cross lanes, so the order is weird
-inline simd16uint16 uint16_to_uint8_saturate(simd16uint16 a, simd16uint16 b) {
-    return simd16uint16(_mm256_packs_epi16(a.i, b.i));
-}
 
 
 // decompose in 128-lanes: a = (a0, a1), b = (b0, b1)
@@ -338,6 +333,11 @@ struct simd32uint8: simd256bit {
 
 };
 
+// convert with saturation
+// careful: this does not cross lanes, so the order is weird
+inline simd32uint8 uint16_to_uint8_saturate(simd16uint16 a, simd16uint16 b) {
+    return simd16uint16(_mm256_packs_epi16(a.i, b.i));
+}
 
 /// get most significant bit of each byte
 inline uint32_t get_MSBs(simd32uint8 a) {

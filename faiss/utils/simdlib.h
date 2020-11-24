@@ -22,7 +22,10 @@
 
 #else
 
+// emulated = all operations are implemented as scalars
 #include <faiss/utils/simdlib_emulated.h>
+
+// FIXME: make a SSE version -- is this ever going to happen?
 
 #endif
 

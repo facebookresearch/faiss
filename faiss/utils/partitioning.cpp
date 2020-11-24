@@ -311,7 +311,8 @@ int simd_compress_array(
         simd16uint16 max2 = max_func<C>(v, thr16);
         simd16uint16 gemask = (v == max2);
         simd16uint16 eqmask = (v == thr16);
-        uint32_t bits = get_MSBs(blendv(eqmask, gemask, mixmask));
+        uint32_t bits = get_MSBs(blendv(
+            simd32uint8(eqmask), simd32uint8(gemask), simd32uint8(mixmask)));
         bits ^= 0xAAAAAAAA;
         // bit 2*i     : eq
         // bit 2*i + 1 : lt
@@ -341,7 +342,7 @@ int simd_compress_array(
         simd16uint16 v(vals + i0);
         simd16uint16 max2 = max_func<C>(v, thr16);
         simd16uint16 gemask = (v == max2);
-        uint32_t bits = ~get_MSBs(gemask);
+        uint32_t bits = ~get_MSBs(simd32uint8(gemask));
 
         while(bits) {
             int j = __builtin_ctz(bits);
@@ -707,13 +708,15 @@ typename C::T partition_fuzzy(
     typename C::T *vals, typename C::TI * ids, size_t n,
     size_t q_min, size_t q_max, size_t * q_out)
 {
-//#ifdef __AVX2__
+    // the code below compiles and runs without AVX2 but it's slower than
+    // the scalar implementation
+#ifdef __AVX2__
     constexpr bool is_uint16 = std::is_same<typename C::T, uint16_t>::value;
     if (is_uint16 && is_aligned_pointer(vals)) {
         return simd_partitioning::simd_partition_fuzzy<C>(
             (uint16_t*)vals, ids, n, q_min, q_max, q_out);
     }
-//#endif
+#endif
     return partitioning::partition_fuzzy_median3<C>(
         vals, ids, n, q_min, q_max, q_out);
 }

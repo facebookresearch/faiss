@@ -27,7 +27,7 @@ struct simd256bit {
 
     simd256bit() {}
 
-    simd256bit(const void *x)
+    explicit simd256bit(const void *x)
     {
         memcpy(u8, x, 32);
     }
@@ -71,17 +71,17 @@ struct simd256bit {
 struct simd16uint16: simd256bit {
     simd16uint16() {}
 
-    simd16uint16(int x) {
+    explicit simd16uint16(int x) {
         set1(x);
     }
 
-    simd16uint16(uint16_t x) {
+    explicit simd16uint16(uint16_t x) {
         set1(x);
     }
 
-    simd16uint16(simd256bit x): simd256bit(x) {}
+    explicit simd16uint16(simd256bit x): simd256bit(x) {}
 
-    simd16uint16(const uint16_t *x): simd256bit((const void*)x) {}
+    explicit simd16uint16(const uint16_t *x): simd256bit((const void*)x) {}
 
     std::string elements_to_string(const char * fmt) const {
         char res[1000], *ptr = res;
@@ -163,19 +163,19 @@ struct simd16uint16: simd256bit {
     }
 
     simd16uint16 operator & (simd256bit other) const {
-        return binary_func(*this, other,
+        return binary_func(*this, simd16uint16(other),
             [](uint16_t a, uint16_t b) {return a & b; }
         );
     }
 
     simd16uint16 operator | (simd256bit other) const {
-        return binary_func(*this, other,
+        return binary_func(*this, simd16uint16(other),
             [](uint16_t a, uint16_t b) {return a | b; }
         );
     }
 
     // returns binary masks
-    simd16uint16 operator == (simd256bit other) const {
+    simd16uint16 operator == (simd16uint16 other) const {
         return binary_func(*this, other,
             [](uint16_t a, uint16_t b) {return a == b ? 0xffff : 0; }
         );
@@ -251,7 +251,6 @@ inline simd16uint16 max(simd16uint16 av, simd16uint16 bv) {
     );
 }
 
-
 // decompose in 128-lanes: a = (a0, a1), b = (b0, b1)
 // return (a0 + a1, b0 + b1)
 // TODO find a better name
@@ -300,13 +299,13 @@ struct simd32uint8: simd256bit {
 
     simd32uint8() {}
 
-    simd32uint8(int x) {set1(x); }
+    explicit simd32uint8(int x) {set1(x); }
 
-    simd32uint8(uint8_t x) {set1(x); }
+    explicit simd32uint8(uint8_t x) {set1(x); }
 
-    simd32uint8(simd256bit x): simd256bit(x) {}
+    explicit simd32uint8(simd256bit x): simd256bit(x) {}
 
-    simd32uint8(const uint8_t *x): simd256bit((const void*)x) {}
+    explicit simd32uint8(const uint8_t *x): simd256bit((const void*)x) {}
 
     std::string elements_to_string(const char * fmt) const {
         char res[1000], *ptr = res;
@@ -345,7 +344,7 @@ struct simd32uint8: simd256bit {
 
 
     simd32uint8 operator & (simd256bit other) const {
-        return binary_func(*this, other,
+        return binary_func(*this, simd32uint8(other),
             [](uint8_t a, uint8_t b) {return a & b; }
         );
     }
@@ -376,26 +375,10 @@ struct simd32uint8: simd256bit {
 
     // extract + 0-extend lane
     // this operation is slow (3 cycles)
-    /*
-    simd16uint16 lane0_as_uint16() const {
-        __m128i x = _mm256_extracti128_si256(i, 0);
-        return simd16uint16(_mm256_cvtepu8_epi16(x));
-    }
 
-    simd16uint16 lane1_as_uint16() const {
-        __m128i x = _mm256_extracti128_si256(i, 1);
-        return simd16uint16(_mm256_cvtepu8_epi16(x));
-    }
-*/
     simd32uint8 operator += (simd32uint8 other) {
         *this = *this + other;
         return *this;
-    }
-
-    simd16uint16 operator + (simd16uint16 other) const {
-        return binary_func(*this, other,
-            [](uint8_t a, uint8_t b) {return a + b; }
-        );
     }
 
     // for debugging only
@@ -405,16 +388,62 @@ struct simd32uint8: simd256bit {
 
 };
 
+
+// convert with saturation
+// careful: this does not cross lanes, so the order is weird
+inline simd32uint8 uint16_to_uint8_saturate(simd16uint16 a, simd16uint16 b) {
+    simd32uint8 c;
+
+    auto saturate_16_to_8 = [] (uint16_t x) {
+        return x >= 256 ? 0xff : x;
+    };
+
+    for (int i = 0; i < 8; i++) {
+        c.u8[     i] = saturate_16_to_8(a.u16[i]);
+        c.u8[8  + i] = saturate_16_to_8(b.u16[i]);
+        c.u8[16 + i] = saturate_16_to_8(a.u16[8 + i]);
+        c.u8[24 + i] = saturate_16_to_8(b.u16[8 + i]);
+    }
+    return c;
+}
+
+/// get most significant bit of each byte
+inline uint32_t get_MSBs(simd32uint8 a) {
+    uint32_t res = 0;
+    for (int i = 0; i < 32; i++) {
+        if (a.u8[i] & 0x80) {
+            res |= 1 << i;
+        }
+    }
+    return res;
+}
+
+/// use MSB of each byte of mask to select a byte between a and b
+inline simd32uint8 blendv(simd32uint8 a, simd32uint8 b, simd32uint8 mask) {
+    simd32uint8 c;
+    for (int i = 0; i < 32; i++) {
+        if (mask.u8[i] & 0x80) {
+            c.u8[i] = b.u8[i];
+        } else {
+            c.u8[i] = a.u8[i];
+        }
+    }
+    return c;
+}
+
+
+
+
 /// vector of 8 unsigned 32-bit integers
 struct simd8uint32: simd256bit {
     simd8uint32() {}
 
 
-    simd8uint32(uint32_t x) {set1(x); }
+    explicit simd8uint32(uint32_t x) {set1(x); }
 
-    simd8uint32(simd256bit x): simd256bit(x) {}
+    explicit simd8uint32(simd256bit x): simd256bit(x) {}
 
-    simd8uint32(const uint8_t *x): simd256bit((const void*)x) {}
+    explicit simd8uint32(const uint8_t *x): simd256bit((const void*)x) {}
 
     std::string elements_to_string(const char * fmt) const {
         char res[1000], *ptr = res;
@@ -446,11 +475,11 @@ struct simd8float32: simd256bit {
 
     simd8float32() {}
 
-    simd8float32(simd256bit x): simd256bit(x) {}
+    explicit simd8float32(simd256bit x): simd256bit(x) {}
 
-    simd8float32(float x) {set1(x); }
+    explicit simd8float32(float x) {set1(x); }
 
-    simd8float32(const float *x) {loadu((void*)x); }
+    explicit simd8float32(const float *x) {loadu((void*)x); }
 
     void set1(float x) {
         for(int i = 0; i < 8; i++) {
