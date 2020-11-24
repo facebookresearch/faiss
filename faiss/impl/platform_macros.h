@@ -23,8 +23,27 @@
 #define posix_memalign(p, a, s) (((*(p)) = _aligned_malloc((s), (a))), *(p) ?0 :errno)
 #define posix_memalign_free _aligned_free
 
+// This does not seem to work so disable for now.
+// Alignment does not matter if the code is compiled with simdlib_emulated
+// but it would matter with read AVX.
+
 // #define ALIGNED(x) __declspec(align(x))
 #define ALIGNED(x)
+
+#include <intrin.h>
+
+inline int __builtin_ctzll(uint64_t x) {
+    unsigned long ret;
+    _BitScanForward64(&ret, x);
+    return (int)ret;
+}
+
+inline int __builtin_ctz(unsigned long x) {
+    unsigned long ret;
+    _BitScanForward(&ret, x);
+    return (int)ret;
+}
+
 
 #else
 // Linux and OSX
