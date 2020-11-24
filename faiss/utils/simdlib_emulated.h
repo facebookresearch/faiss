@@ -238,7 +238,7 @@ struct simd16uint16: simd256bit {
 };
 
 
-// not really a std::min because it returns a binary mask
+// not really a std::min because it returns an elementwise min
 inline simd16uint16 min(simd16uint16 av, simd16uint16 bv) {
     return simd16uint16::binary_func(av, bv,
         [](uint16_t a, uint16_t b) {return std::min(a, b); }
@@ -259,7 +259,7 @@ inline simd16uint16 combine2x2(simd16uint16 a, simd16uint16 b) {
     simd16uint16 c;
     for(int j = 0; j < 8; j++) {
         c.u16[j] = a.u16[j] + a.u16[j + 8];
-        c.u16[j] = b.u16[j] + b.u16[j + 8];
+        c.u16[j + 8] = b.u16[j] + b.u16[j + 8];
     }
     return c;
 }

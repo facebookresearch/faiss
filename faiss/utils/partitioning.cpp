@@ -210,7 +210,6 @@ typename C::T partition_fuzzy_median3(
  * SIMD routines when vals is an aligned array of uint16_t
  ******************************************************************/
 
-#ifdef __AVX2__
 
 namespace simd_partitioning {
 
@@ -253,9 +252,9 @@ template<class C>
 simd16uint16 max_func(simd16uint16 v, simd16uint16 thr16) {
     constexpr bool is_max = C::is_max;
     if (is_max) {
-        return simd16uint16(_mm256_max_epu16(v.i, thr16.i));
+        return max(v, thr16);
     } else {
-        return simd16uint16(_mm256_min_epu16(v.i, thr16.i));
+        return min(v, thr16);
     }
 }
 
@@ -275,9 +274,7 @@ void count_lt_and_eq(
         simd16uint16 eqmask = (v == thr16);
         simd16uint16 max2 = max_func<C>(v, thr16);
         simd16uint16 gemask = (v == max2);
-        uint32_t bits = _mm256_movemask_epi8(
-            _mm256_packs_epi16(eqmask.i, gemask.i)
-        );
+        uint32_t bits = get_MSBs(uint16_to_uint8_saturate(eqmask, gemask));
         int i_eq = __builtin_popcount(bits & 0x00ff00ff);
         int i_ge = __builtin_popcount(bits) - i_eq;
         n_eq += i_eq;
@@ -314,9 +311,7 @@ int simd_compress_array(
         simd16uint16 max2 = max_func<C>(v, thr16);
         simd16uint16 gemask = (v == max2);
         simd16uint16 eqmask = (v == thr16);
-        uint32_t bits = _mm256_movemask_epi8(
-            _mm256_blendv_epi8(eqmask.i, gemask.i, mixmask.i)
-        );
+        uint32_t bits = get_MSBs(blendv(eqmask, gemask, mixmask));
         bits ^= 0xAAAAAAAA;
         // bit 2*i     : eq
         // bit 2*i + 1 : lt
@@ -346,7 +341,7 @@ int simd_compress_array(
         simd16uint16 v(vals + i0);
         simd16uint16 max2 = max_func<C>(v, thr16);
         simd16uint16 gemask = (v == max2);
-        uint32_t bits = ~_mm256_movemask_epi8(gemask.i);
+        uint32_t bits = ~get_MSBs(gemask);
 
         while(bits) {
             int j = __builtin_ctz(bits);
@@ -701,7 +696,6 @@ uint16_t simd_partition_with_bounds(
 
 } // namespace simd_partitioning
 
-#endif
 
 /******************************************************************
  * Driver routine
@@ -713,13 +707,13 @@ typename C::T partition_fuzzy(
     typename C::T *vals, typename C::TI * ids, size_t n,
     size_t q_min, size_t q_max, size_t * q_out)
 {
-#ifdef __AVX2__
+//#ifdef __AVX2__
     constexpr bool is_uint16 = std::is_same<typename C::T, uint16_t>::value;
     if (is_uint16 && is_aligned_pointer(vals)) {
         return simd_partitioning::simd_partition_fuzzy<C>(
             (uint16_t*)vals, ids, n, q_min, q_max, q_out);
     }
-#endif
+//#endif
     return partitioning::partition_fuzzy_median3<C>(
         vals, ids, n, q_min, q_max, q_out);
 }
