@@ -9,6 +9,7 @@
 #pragma once
 
 #include <faiss/invlists/InvertedLists.h>
+#include <faiss/invlists/InvertedListsIOHook.h>
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/index_io.h>
 

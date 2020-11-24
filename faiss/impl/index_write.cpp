@@ -15,9 +15,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifndef _MSC_VER
-#include <sys/mman.h>
-#endif // !_MSC_VER
+#include <faiss/invlists/InvertedListsIOHook.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/io.h>

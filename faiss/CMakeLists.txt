@@ -53,6 +53,7 @@ add_library(faiss
   invlists/DirectMap.cpp
   invlists/InvertedLists.cpp
   invlists/BlockInvertedLists.cpp
+  invlists/InvertedListsIOHook.cpp
   utils/Heap.cpp
   utils/WorkerThread.cpp
   utils/distances.cpp
@@ -119,6 +120,7 @@ set(FAISS_HEADERS
   invlists/InvertedLists.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h
+  invlists/InvertedListsIOHook.h
   utils/Heap.h
   utils/AlignedTable.h
   utils/WorkerThread.h

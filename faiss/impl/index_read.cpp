@@ -15,14 +15,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifndef _MSC_VER
-#include <sys/mman.h>
-#endif // !_MSC_VER
-
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/io.h>
 #include <faiss/impl/io_macros.h>
 #include <faiss/utils/hamming.h>
+
+#include <faiss/invlists/InvertedListsIOHook.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
@@ -47,13 +45,6 @@
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexBinaryHash.h>
-
-#include <faiss/invlists/BlockInvertedLists.h>
-
-#ifndef _MSC_VER
-#include <faiss/invlists/OnDiskInvertedLists.h>
-#endif // !_MSC_VER
-
 
 namespace faiss {
 
@@ -834,86 +825,6 @@ IndexBinary *read_index_binary (const char *fname, int io_flags) {
     FileIOReader reader(fname);
     IndexBinary *idx = read_index_binary (&reader, io_flags);
     return idx;
-}
-
-
-/**********************************************************
- * InvertedListIOHook's
- **********************************************************/
-
-InvertedListsIOHook::InvertedListsIOHook(
-        const std::string & key, const std::string & classname):
-    key(key), classname(classname)
-{}
-
-namespace {
-
-/// std::vector that deletes its contents
-struct IOHookTable: std::vector<InvertedListsIOHook*> {
-
-    IOHookTable() {
-#ifndef _MSC_VER
-        push_back(new OnDiskInvertedListsIOHook());
-#endif
-        push_back(new BlockInvertedListsIOHook());
-    }
-
-    ~IOHookTable() {
-        for (auto x: *this) {
-            delete x;
-        }
-    }
-};
-
-static IOHookTable InvertedListsIOHook_table;
-
-} // anonymous namepsace
-
-InvertedListsIOHook* InvertedListsIOHook::lookup(int h)
-{
-    for(const auto & callback: InvertedListsIOHook_table) {
-        if (h == fourcc(callback->key)) {
-            return callback;
-        }
-    }
-    FAISS_THROW_FMT (
-        "read_InvertedLists: could not load ArrayInvertedLists as %04x", h);
-}
-
-InvertedListsIOHook* InvertedListsIOHook::lookup_classname(const std::string & classname)
-{
-    for(const auto & callback: InvertedListsIOHook_table) {
-        if (callback->classname == classname) {
-            return callback;
-        }
-    }
-    FAISS_THROW_FMT (
-            "read_InvertedLists: could not find classname %s", classname.c_str());
-}
-
-void InvertedListsIOHook::add_callback(InvertedListsIOHook *cb)
-{
-    InvertedListsIOHook_table.push_back(cb);
-}
-
-void InvertedListsIOHook::print_callbacks()
-{
-    printf("registered %zd InvertedListsIOHooks:\n",
-          InvertedListsIOHook_table.size());
-    for(const auto & cb: InvertedListsIOHook_table) {
-        printf("%08x %s %s\n",
-               fourcc(cb->key.c_str()),
-               cb->key.c_str(),
-               cb->classname.c_str());
-    }
-}
-
-InvertedLists * InvertedListsIOHook::read_ArrayInvertedLists(
-        IOReader *f, int io_flags,
-        size_t nlist, size_t code_size,
-        const std::vector<size_t> &sizes) const
-{
-    FAISS_THROW_MSG("read to array not implemented");
 }
 
 
