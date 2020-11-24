@@ -13,7 +13,7 @@
 #include <cassert>
 #include <cstring>
 
-
+#include <faiss/impl/platform_macros.h>
 
 namespace faiss {
 
@@ -69,7 +69,7 @@ struct AlignedTable {
     T & operator [] (size_t i)  {return ptr[i]; }
     T operator [] (size_t i) const {return ptr[i]; }
 
-    ~AlignedTable() {free(ptr); }
+    ~AlignedTable() {posix_memalign_free(ptr); }
 
     AlignedTable<T, A> & operator = (const AlignedTable<T, A> & other) {
         resize(other.numel);

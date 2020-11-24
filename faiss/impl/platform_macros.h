@@ -15,10 +15,17 @@
 #define FAISS_API __declspec(dllimport)
 #endif // FAISS_MAIN_LIB
 
+#define posix_memalign_free free
+
 #define __PRETTY_FUNCTION__ __FUNCSIG__
+
+#define posix_memalign(p, a, s) (((*(p)) = _aligned_malloc((s), (a))), *(p) ?0 :errno)
+#define posix_memalign_free _aligned_free
+
 
 #else
 
 #define FAISS_API
+#define posix_memalign_free free
 
 #endif // _MSC_VER
