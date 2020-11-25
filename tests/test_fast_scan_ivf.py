@@ -5,6 +5,7 @@
 
 
 import unittest
+import platform
 
 import numpy as np
 import faiss
@@ -351,7 +352,7 @@ class TestIVFImplem13(TestIVFImplem12):
     IMPLEM = 13
 
 
-
+@unittest.skipIf(platform.system() == "Windows", "heap corruption on windows")
 class TestAdd(unittest.TestCase):
 
     def do_test(self, by_residual=False, metric=faiss.METRIC_L2, d=32, bbs=32):
