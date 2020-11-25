@@ -78,6 +78,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                        metric == METRIC_INNER_PRODUCT);
     VTChain vts;
     Index *coarse_quantizer = nullptr;
+    std::unique_ptr<Index> parenthesis_index;
     Index *index = nullptr;
     bool add_idmap = false;
     bool make_IndexRefineFlat = false;
@@ -86,6 +87,23 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
 
     std::string description(description_in);
     char *ptr;
+
+    if (description.find('(') != std::string::npos) {
+        // then we make a sub-index and remove the () from the description
+        int i0 = description.find('(');
+        int i1 = description.find(')');
+        FAISS_THROW_IF_NOT_MSG(
+            i1 != std::string::npos, "string must contain closing parenthesis");
+        std::string sub_description = description.substr(i0 + 1, i1 - i0 - 1);
+        // printf("substring=%s\n", sub_description.c_str());
+
+        parenthesis_index.reset(index_factory(d, sub_description.c_str(), metric));
+
+        description = description.erase(i0, i1 - i0 + 1);
+
+        // printf("new description=%s\n", description.c_str());
+
+    }
 
     int64_t ncentroids = -1;
     bool use_2layer = false;
@@ -148,11 +166,14 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
 
         } else if (!coarse_quantizer &&
                    sscanf (tok, "IVF%" PRId64, &ncentroids) == 1) {
-            if (metric == METRIC_L2) {
+            if (parenthesis_index) {
+                coarse_quantizer_1 = parenthesis_index.release();
+            } else if (metric == METRIC_L2) {
                 coarse_quantizer_1 = new IndexFlatL2 (d);
             } else {
                 coarse_quantizer_1 = new IndexFlatIP (d);
             }
+
         } else if (!coarse_quantizer && sscanf (tok, "IMI2x%d", &nbit) == 1) {
             FAISS_THROW_IF_NOT_MSG (metric == METRIC_L2,
                              "MultiIndex not implemented for inner prod search");
@@ -232,8 +253,9 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             del_coarse_quantizer.release ();
             index_ivf->own_fields = true;
             index_1 = index_ivf;
-        } else if (!index && (sscanf (tok, "PQ%dx4fs_%d", &M, &bbs) == 2,
-                              sscanf (tok, "PQ%dx4f%c", &M, &c) == 2 && c == 's')) {
+        } else if (!index && (
+            sscanf (tok, "PQ%dx4fs_%d", &M, &bbs) == 2 ||
+            (sscanf (tok, "PQ%dx4f%c", &M, &c) == 2 && c == 's') )) {
             if (bbs == -1) {
                 bbs = 32;
             }

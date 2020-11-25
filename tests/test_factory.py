@@ -84,6 +84,11 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(56, "PQ28x4fs,RFlat")
         self.assertEqual(index.k_factor, 1.0)
 
+    def test_parenthesis(self):
+        index = faiss.index_factory(50, "IVF32(PQ25),Flat")
+        quantizer = faiss.downcast_index(index.quantizer)
+        self.assertEqual(quantizer.pq.M, 25)
+
 
 class TestCloneSize(unittest.TestCase):
 
