@@ -51,7 +51,9 @@ struct AlignedTable {
             if (ret != 0) {
                 throw std::bad_alloc();
             }
-            memcpy(new_ptr, ptr, sizeof(T) * std::min(numel, n));
+            if (numel > 0) {
+                memcpy(new_ptr, ptr, sizeof(T) * std::min(numel, n));
+            }
         } else {
             new_ptr = nullptr;
         }
@@ -87,3 +89,4 @@ struct AlignedTable {
 
 
 } // namespace faiss
+

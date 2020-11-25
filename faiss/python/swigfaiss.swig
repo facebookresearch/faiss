@@ -241,6 +241,8 @@ namespace std {
 
 %include <faiss/utils/ordered_key_value.h>
 %include <faiss/utils/Heap.h>
+
+%ignore faiss::AlignedTable::operator=;
 %include <faiss/utils/AlignedTable.h>
 %include <faiss/utils/partitioning.h>
 %include <faiss/utils/hamming.h>

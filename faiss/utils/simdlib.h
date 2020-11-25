@@ -29,4 +29,3 @@
 // is this ever going to happen? We will probably rather implement AVX512
 
 #endif
-

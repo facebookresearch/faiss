@@ -88,10 +88,12 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ & orig, int bbs):
     );
 
     precomputed_table.resize(orig.precomputed_table.size());
-    memcpy(
-        precomputed_table.get(), orig.precomputed_table.data(),
-        precomputed_table.nbytes()
-    );
+
+    if (precomputed_table.nbytes() > 0) {
+        memcpy(precomputed_table.get(), orig.precomputed_table.data(),
+               precomputed_table.nbytes()
+        );
+    }
 
     for(size_t i = 0; i < nlist; i++) {
         size_t nb = orig.invlists->list_size(i);
