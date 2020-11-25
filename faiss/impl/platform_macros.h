@@ -9,7 +9,10 @@
 
 
 #ifdef _MSC_VER
-// Windows specific macros
+
+/*******************************************************
+ * Windows specific macros
+ *******************************************************/
 
 
 #ifdef FAISS_MAIN_LIB
@@ -49,12 +52,14 @@ inline int __builtin_clzll(uint64_t x) {
 #define __builtin_popcountl __popcnt64
 
 #else
-// Linux and OSX
+/*******************************************************
+ * Linux and OSX
+ *******************************************************/
 
 #define FAISS_API
 #define posix_memalign_free free
 
-// aligned should be in front of the declaration for compatibility with windows
+// aligned should be *in front* of the declaration, for compatibility with windows
 #define ALIGNED(x) __attribute__ ((aligned(x)))
 
 #endif // _MSC_VER
