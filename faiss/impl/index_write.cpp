@@ -46,11 +46,6 @@
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexBinaryHash.h>
 
-#ifndef _MSC_VER
-#include <faiss/invlists/OnDiskInvertedLists.h>
-#endif // !_MSC_VER
-
-
 /*************************************************************
  * The I/O format is the content of the class. For objects that are
  * inherited, like Index, a 4-character-code (fourcc) indicates which
@@ -220,13 +215,6 @@ void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
     } else {
         InvertedListsIOHook::lookup_classname(
                 typeid(*ils).name())->write(ils, f);
-
-        /*
-        fprintf(stderr, "WARN! write_InvertedLists: unsupported invlist type, "
-                "saving null invlist\n");
-        uint32_t h = fourcc ("il00");
-        WRITE1 (h);
-        */
     }
 }
 
