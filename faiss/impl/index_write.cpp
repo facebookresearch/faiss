@@ -217,9 +217,7 @@ void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
             }
         }
 
-#ifndef _MSC_VER
     } else {
-
         InvertedListsIOHook::lookup_classname(
                 typeid(*ils).name())->write(ils, f);
 
@@ -229,7 +227,6 @@ void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
         uint32_t h = fourcc ("il00");
         WRITE1 (h);
         */
-#endif // !_MSC_VER
     }
 }
 
