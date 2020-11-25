@@ -15,7 +15,7 @@
 #include <typeinfo>
 
 #include <faiss/IndexIVF.h>
-
+#include <faiss/invlists/InvertedListsIOHook.h>
 #include <faiss/index_io.h>
 
 namespace faiss {

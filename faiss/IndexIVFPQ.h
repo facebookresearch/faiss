@@ -16,7 +16,7 @@
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/impl/platform_macros.h>
-
+#include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
 
@@ -28,10 +28,14 @@ struct IVFPQSearchParameters: IVFSearchParameters {
 };
 
 
+
+FAISS_API extern size_t precomputed_table_max_bytes;
+
+
 /** Inverted file with Product Quantizer encoding. Each residual
  * vector is encoded as a product quantizer code.
  */
-struct FAISS_API IndexIVFPQ: IndexIVF {
+struct IndexIVFPQ: IndexIVF {
     bool by_residual;              ///< Encode residual or plain vector?
 
     ProductQuantizer pq;           ///< produces the codes
@@ -45,18 +49,12 @@ struct FAISS_API IndexIVFPQ: IndexIVF {
 
     /** Precompute table that speed up query preprocessing at some
      * memory cost (used only for by_residual with L2 metric)
-     * =-1: force disable
-     * =0: decide heuristically (default: use tables only if they are
-     *     < precomputed_tables_max_bytes)
-     * =1: tables that work for all quantizers (size 256 * nlist * M)
-     * =2: specific version for MultiIndexQuantizer (much more compact)
      */
     int use_precomputed_table;
-    static size_t precomputed_table_max_bytes;
 
     /// if use_precompute_table
     /// size nlist * pq.M * pq.ksub
-    std::vector <float> precomputed_table;
+    AlignedTable<float> precomputed_table;
 
     IndexIVFPQ (
             Index * quantizer, size_t d, size_t nlist,
@@ -133,6 +131,24 @@ struct FAISS_API IndexIVFPQ: IndexIVF {
 
 };
 
+/** Pre-compute distance tables for IVFPQ with by-residual and METRIC_L2
+ *
+ * @param use_precomputed_table (I/O)
+ *        =-1: force disable
+ *        =0: decide heuristically (default: use tables only if they are
+ *            < precomputed_tables_max_bytes), set use_precomputed_table on output
+ *        =1: tables that work for all quantizers (size 256 * nlist * M)
+ *        =2: specific version for MultiIndexQuantizer (much more compact)
+ * @param precomputed_table precomputed table to intialize
+ */
+
+void initialize_IVFPQ_precomputed_table(
+    int &use_precomputed_table,
+    const Index *quantizer,
+    const ProductQuantizer &pq,
+    AlignedTable<float> & precomputed_table,
+    bool verbose
+);
 
 /// statistics are robust to internal threading, but not if
 /// IndexIVFPQ::search_preassigned is called by multiple threads

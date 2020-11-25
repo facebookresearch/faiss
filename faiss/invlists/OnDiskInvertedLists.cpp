@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include <faiss/OnDiskInvertedLists.h>
+#include <faiss/invlists/OnDiskInvertedLists.h>
 
 #include <pthread.h>
 

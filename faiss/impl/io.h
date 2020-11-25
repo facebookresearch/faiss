@@ -146,5 +146,10 @@ struct BufferedIOWriter: IOWriter {
 uint32_t fourcc (const char sx[4]);
 uint32_t fourcc (const std::string & sx);
 
+// decoding of fourcc (int32 -> string)
+void fourcc_inv(uint32_t x, char str[5]);
+std::string fourcc_inv(uint32_t x);
+std::string fourcc_inv_printable(uint32_t x);
+
 
 } // namespace faiss

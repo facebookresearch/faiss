@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include <faiss/DirectMap.h>
+#include <faiss/invlists/DirectMap.h>
 
 #include <cstdio>
 #include <cassert>

@@ -242,16 +242,47 @@ BufferedIOWriter::~BufferedIOWriter()
 
 
 uint32_t fourcc (const  char sx[4]) {
-    assert(4 == strlen(sx));
+    FAISS_THROW_IF_NOT (4 == strlen(sx));
     const unsigned char *x = (unsigned char*)sx;
     return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
 }
 
 uint32_t fourcc (const std::string & sx) {
-    assert(sx.length() == 4);
+    FAISS_THROW_IF_NOT (sx.length() == 4);
     const unsigned char *x = (unsigned char*)sx.c_str();
     return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
 }
+
+void fourcc_inv(uint32_t x, char str[5]) {
+    *(uint32_t*)str = x;
+    str[5] = 0;
+}
+
+std::string fourcc_inv(uint32_t x) {
+    char str[5];
+    fourcc_inv(x, str);
+    return std::string(str);
+}
+
+
+std::string fourcc_inv_printable(uint32_t x) {
+    char cstr[5];
+    fourcc_inv(x, cstr);
+    std::string str = "";
+    for (int i = 0; i < 4; i++) {
+        uint8_t c = cstr[i];
+        if (32 <= c && c < 127) {
+            str += c;
+        } else {
+            char buf[10];
+            sprintf(buf, "\\x%02x", c);
+            str += buf;
+        }
+    }
+    return str;
+}
+
+
 
 
 } // namespace faiss

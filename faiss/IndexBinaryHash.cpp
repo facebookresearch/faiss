@@ -18,16 +18,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-
-#ifdef _MSC_VER
-#include <intrin.h>
-
-static inline int __builtin_ctzll(uint64_t x) {
-    unsigned long ret;
-    _BitScanForward64(&ret, x);
-    return (int)ret;
-}
-#endif // _MSC_VER
+#include <faiss/impl/platform_macros.h>
 
 namespace faiss {
 

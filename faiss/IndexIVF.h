@@ -16,8 +16,8 @@
 #include <stdint.h>
 
 #include <faiss/Index.h>
-#include <faiss/InvertedLists.h>
-#include <faiss/DirectMap.h>
+#include <faiss/invlists/InvertedLists.h>
+#include <faiss/invlists/DirectMap.h>
 #include <faiss/Clustering.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
@@ -179,13 +179,13 @@ struct IndexIVF: Index, Level1Quantizer {
      *                     instead of ids (used for reranking).
      * @param params used to override the object's search parameters
      */
-    virtual void search_preassigned (idx_t n, const float *x, idx_t k,
-                                     const idx_t *assign,
-                                     const float *centroid_dis,
-                                     float *distances, idx_t *labels,
-                                     bool store_pairs,
-                                     const IVFSearchParameters *params=nullptr
-                                     ) const;
+    virtual void search_preassigned (
+            idx_t n, const float *x, idx_t k,
+            const idx_t *assign, const float *centroid_dis,
+            float *distances, idx_t *labels,
+            bool store_pairs,
+            const IVFSearchParameters *params=nullptr
+            ) const;
 
     /** assign the vectors, then call search_preassign */
     void search (idx_t n, const float *x, idx_t k,
@@ -194,11 +194,12 @@ struct IndexIVF: Index, Level1Quantizer {
     void range_search (idx_t n, const float* x, float radius,
                        RangeSearchResult* result) const override;
 
-    void range_search_preassigned(idx_t nx, const float *x, float radius,
-                                  const idx_t *keys, const float *coarse_dis,
-                                  RangeSearchResult *result,
-                                  bool store_pairs=false,
-                                  const IVFSearchParameters *params=nullptr) const;
+    void range_search_preassigned(
+            idx_t nx, const float *x, float radius,
+            const idx_t *keys, const float *coarse_dis,
+            RangeSearchResult *result,
+            bool store_pairs=false,
+            const IVFSearchParameters *params=nullptr) const;
 
     /// get a scanner for this index (store_pairs means ignore labels)
     virtual InvertedListScanner *get_InvertedListScanner (

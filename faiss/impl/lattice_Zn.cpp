@@ -20,22 +20,8 @@
 #include <algorithm>
 
 #include <faiss/utils/distances.h>
+#include <faiss/impl/platform_macros.h>
 
-#ifdef _MSC_VER
-
-#include <intrin.h>
-
-static inline int __builtin_ctzll(uint64_t x) {
-    unsigned long ret;
-    _BitScanForward64(&ret, x);
-    return (int)ret;
-}
-
-static inline int __builtin_clzll(uint64_t x) {
-    return (int)__lzcnt64(x);
-}
-
-#endif // _MSC_VER
 
 namespace faiss {
 
