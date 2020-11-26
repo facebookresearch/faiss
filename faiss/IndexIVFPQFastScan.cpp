@@ -227,7 +227,10 @@ void IndexIVFPQFastScan::add_with_ids (
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min (n, i0 + bs);
             if (verbose) {
-                printf("   IndexIVF::add_with_ids %" PRId64 ":%" PRId64 "\n", i0, i1);
+                printf(
+                    "   IndexIVFPQFastScan::add_with_ids %"
+                    PRId64 ":%" PRId64 "\n", i0, i1
+                );
             }
             add_with_ids (i1 - i0, x + i0 * d,
                           xids ? xids + i0 : nullptr);
@@ -878,12 +881,14 @@ void IndexIVFPQFastScan::search_implem_12(
     };
     bool single_LUT = !(by_residual && metric_type == METRIC_L2);
 
-    std::vector<QC> qcs(n * nprobe);
+    std::vector<QC> qcs;
     {
         int ij = 0;
         for(int i = 0; i < n; i++) {
             for(int j = 0; j < nprobe; j++) {
-                qcs[ij] = {i, int(coarse_ids[ij]), int(j)};
+                if (coarse_ids[ij] >= 0) {
+                    qcs.push_back(QC{i, int(coarse_ids[ij]), int(j)});
+                }
                 ij++;
             }
         }

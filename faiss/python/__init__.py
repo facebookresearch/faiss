@@ -726,7 +726,7 @@ def AlignedTable_to_array(v):
     dtype = classname[12:].lower()
     a = np.empty(v.size(), dtype=dtype)
     if a.size > 0:
-        memcpy(swig_ptr(a), v.ptr, a.nbytes)
+        memcpy(swig_ptr(a), v.data(), a.nbytes)
     return a
 
 ###########################################

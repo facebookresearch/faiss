@@ -29,14 +29,14 @@ inline bool is_aligned_pointer(const void* x)
 // class that manages suitably aligned arrays for SIMD
 // T should be a POV type. The default alignment is 32 for AVX
 template<class T, int A=32>
-struct AlignedTable {
+struct AlignedTableTightAlloc {
     T * ptr;
     size_t numel;
 
-    AlignedTable(): ptr(nullptr), numel(0)
+    AlignedTableTightAlloc(): ptr(nullptr), numel(0)
     { }
 
-    AlignedTable(size_t n): ptr(nullptr), numel(0)
+    AlignedTableTightAlloc(size_t n): ptr(nullptr), numel(0)
     { resize(n); }
 
     size_t itemsize() const {return sizeof(T); }
@@ -73,17 +73,67 @@ struct AlignedTable {
     T & operator [] (size_t i)  {return ptr[i]; }
     T operator [] (size_t i) const {return ptr[i]; }
 
-    ~AlignedTable() {posix_memalign_free(ptr); }
+    ~AlignedTableTightAlloc() {posix_memalign_free(ptr); }
 
-    AlignedTable<T, A> & operator = (const AlignedTable<T, A> & other) {
+    AlignedTableTightAlloc<T, A> & operator =
+            (const AlignedTableTightAlloc<T, A> & other) {
         resize(other.numel);
         memcpy(ptr, other.ptr, sizeof(T) * numel);
         return *this;
     }
 
-    AlignedTable(const AlignedTable<T, A> & other) {
+    AlignedTableTightAlloc(const AlignedTableTightAlloc<T, A> & other) {
         *this = other;
     }
+
+};
+
+// same as AlignedTableTightAlloc, but with geometric re-allocation
+template<class T, int A=32>
+struct AlignedTable {
+    AlignedTableTightAlloc<T, A> tab;
+    size_t numel = 0;
+
+    static size_t round_capacity(size_t n) {
+        if (n == 0) {
+            return 0;
+        }
+        if (n < 8 * A) {
+            return 8 * A;
+        }
+        size_t capacity = 8 * A;
+        while (capacity < n) {
+            capacity *= 2;
+        }
+        return capacity;
+    }
+
+    AlignedTable() {}
+
+    AlignedTable(size_t n):
+        tab(round_capacity(n)),
+        numel(n)
+    { }
+
+    size_t itemsize() const {return sizeof(T); }
+
+    void resize(size_t n) {
+        tab.resize(round_capacity(n));
+        numel = n;
+    }
+
+    void clear() { tab.clear(); }
+    size_t size() const {return numel; }
+    size_t nbytes() const {return numel * sizeof(T); }
+
+    T * get() {return tab.get(); }
+    const T * get() const {return tab.get(); }
+    T * data() {return tab.get(); }
+    const T * data() const {return tab.get(); }
+    T & operator [] (size_t i)  {return tab.ptr[i]; }
+    T operator [] (size_t i) const {return tab.ptr[i]; }
+
+    // assign and copy constructor should work as expected
 
 };
 

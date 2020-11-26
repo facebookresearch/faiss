@@ -61,9 +61,6 @@
  * or deprecated fields), the fourcc can be replaced. New code should
  * be able to read the old fourcc and fill in new classes.
  *
- * TODO: serialization to strings for use in Python pickle or Torch
- * serialization.
- *
  * TODO: in this file, the read functions that encouter errors may
  * leak memory.
  **************************************************************/
