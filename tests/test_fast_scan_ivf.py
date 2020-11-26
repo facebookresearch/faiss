@@ -313,6 +313,9 @@ class TestIVFImplem12(unittest.TestCase):
         Dnew, Inew = index2.search(ds.get_queries(), 4)
         verify_with_draws(self, Dref, Iref, Dnew, Inew)
 
+        stats = faiss.indexIVF_stats
+        stats.reset()
+
         # also verify with single result
         Dnew, Inew = index2.search(ds.get_queries(), 1)
         for q in range(len(Dref)):
@@ -321,6 +324,8 @@ class TestIVFImplem12(unittest.TestCase):
                 continue
             self.assertEqual(Iref[q, 0], Inew[q, 0])
             np.testing.assert_almost_equal(Dref[q, 0], Dnew[q, 0])
+
+        self.assertGreater(stats.ndis, 0)
 
     def test_no_residual(self):
         self.do_test(False)

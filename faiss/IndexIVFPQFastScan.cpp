@@ -610,6 +610,10 @@ void IndexIVFPQFastScan::search_implem_1(
     );
 
     bool single_LUT = !(by_residual && metric_type == METRIC_L2);
+
+    size_t ndis = 0, nlist = 0;
+
+#pragma omp parallel for reduction(+: ndis, nlist)
     for(idx_t i = 0; i < n; i++) {
         int64_t *heap_ids = labels + i * k;
         float *heap_dis = distances + i * k;
@@ -637,10 +641,14 @@ void IndexIVFPQFastScan::search_implem_1(
                 LUT, ids.get(), bias,
                 k, heap_dis, heap_ids
             );
-
+            nlist ++;
+            ndis ++;
         }
         heap_reorder<C> (k, heap_dis, heap_ids);
     }
+    indexIVF_stats.nq += n;
+    indexIVF_stats.ndis += ndis;
+    indexIVF_stats.nlist += nlist;
 }
 
 template<class C>
@@ -674,6 +682,9 @@ void IndexIVFPQFastScan::search_implem_2(
 
     bool single_LUT = !(by_residual && metric_type == METRIC_L2);
 
+    size_t ndis = 0, nlist = 0;
+
+#pragma omp parallel for reduction(+: ndis, nlist)
     for(idx_t i = 0; i < n; i++) {
         int64_t *heap_ids = labels + i * k;
         uint16_t *heap_dis = tmp_dis.data();
@@ -717,6 +728,9 @@ void IndexIVFPQFastScan::search_implem_2(
             }
         }
     }
+    indexIVF_stats.nq += n;
+    indexIVF_stats.ndis += ndis;
+    indexIVF_stats.nlist += nlist;
 }
 
 
@@ -766,8 +780,9 @@ void IndexIVFPQFastScan::search_implem_10(
     bool single_LUT = !(by_residual && metric_type == METRIC_L2);
 
     TIC;
+    size_t ndis = 0, nlist = 0;
 
-#pragma omp parallel
+#pragma omp parallel reduction(+: ndis, nlist)
     {
         AlignedTable<uint16_t> tmp_distances(k);
 #pragma omp for
@@ -824,6 +839,8 @@ void IndexIVFPQFastScan::search_implem_10(
                 else DISPATCH(SingleResultHC)
 #undef DISPATCH
 
+                nlist ++;
+                ndis ++;
             }
 
             handler->to_flat_arrays(
@@ -832,6 +849,9 @@ void IndexIVFPQFastScan::search_implem_10(
             );
         }
     }
+    indexIVF_stats.ndis += n;
+    indexIVF_stats.ndis += ndis;
+    indexIVF_stats.nlist += nlist;
 }
 
 
@@ -846,7 +866,6 @@ void IndexIVFPQFastScan::search_implem_12(
 {
 
     FAISS_THROW_IF_NOT(bbs == 32);
-
 
     std::unique_ptr<idx_t[]> coarse_ids(new idx_t[n * nprobe]);
     std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
@@ -924,6 +943,8 @@ void IndexIVFPQFastScan::search_implem_12(
     }
     TIC;
 
+    size_t ndis = 0;
+
     size_t i0 = 0;
     uint64_t t_copy_pack = 0, t_scan = 0;
     while (i0 < qcs.size()) {
@@ -966,6 +987,8 @@ void IndexIVFPQFastScan::search_implem_12(
             qbs, M2, dis_tables.get(), lut_entries.data(),
             LUT.get()
         );
+
+        ndis += (i1 - i0) * list_size;
 
         InvertedLists::ScopedCodes codes(invlists, list_no);
         InvertedLists::ScopedIds ids(invlists, list_no);
@@ -1013,7 +1036,9 @@ void IndexIVFPQFastScan::search_implem_12(
             IVFFastScan_stats.reservoir_times[i] += rh->times[i];
         }
     }
-
+    indexIVF_stats.nq += n;
+    indexIVF_stats.ndis += ndis;
+    indexIVF_stats.nlist += qcs.size();
 }
 
 
