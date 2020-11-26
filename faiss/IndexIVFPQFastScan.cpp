@@ -560,6 +560,10 @@ void IndexIVFPQFastScan::search_dispatch_implem(
     using C = typename std::conditional<is_max,
         CMax<uint16_t, int64_t>, CMin<uint16_t, int64_t> >::type;
 
+    if (n == 0) {
+        return;
+    }
+
     if (implem == 1) {
         search_implem_1<Cfloat>(n, x, k, distances, labels);
     } else if (implem == 2) {
@@ -891,7 +895,9 @@ void IndexIVFPQFastScan::search_implem_12(
                 idx_t* labels,
                 size_t *ndis_out, size_t *nlist_out) const
 {
-
+    if (n == 0) { // does not work well with reservoir
+        return;
+    }
     FAISS_THROW_IF_NOT(bbs == 32);
 
     std::unique_ptr<idx_t[]> coarse_ids(new idx_t[n * nprobe]);
