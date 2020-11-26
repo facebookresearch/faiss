@@ -106,8 +106,14 @@ struct IndexIVFPQFastScan: IndexIVF {
         float * normalizers
     ) const;
 
-
     // internal search funcs
+
+    template<bool is_max>
+    void search_dispatch_implem(
+            idx_t n, const float* x, idx_t k,
+            float* distances, idx_t* labels) const;
+
+
     template<class C>
     void search_implem_1(
             idx_t n, const float* x, idx_t k,

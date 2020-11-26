@@ -546,6 +546,52 @@ void IndexIVFPQFastScan::compute_LUT_uint8(
  * Search functions
  *********************************************************/
 
+template<bool is_max>
+void IndexIVFPQFastScan::search_dispatch_implem(
+                idx_t n,
+                const float* x,
+                idx_t k,
+                float* distances,
+                idx_t* labels) const
+{
+    using Cfloat = typename std::conditional<is_max,
+        CMax<float, int64_t>, CMin<float, int64_t> >::type;
+
+    using C = typename std::conditional<is_max,
+        CMax<uint16_t, int64_t>, CMin<uint16_t, int64_t> >::type;
+
+    if (implem == 1) {
+        search_implem_1<Cfloat>(n, x, k, distances, labels);
+    } else if (implem == 2) {
+        search_implem_2<C>(n, x, k, distances, labels);
+    } else if (implem == 10 || implem == 11) {
+        search_implem_10<C>(n, x, k, distances, labels);
+    } else if (implem == 12 || implem == 13) {
+        size_t ndis = 0, nlist_visited = 0;
+        int nt = omp_get_max_threads();
+        if (nt < 2 || n < nt) {
+            search_implem_12<C>
+                    (n, x, k, distances, labels, &ndis, &nlist_visited);
+        } else {
+            // explicitly slice over threads
+#pragma omp parallel for reduction(+: ndis, nlist_visited)
+            for (int slice = 0; slice < nt; slice++) {
+                idx_t i0 = n * slice / nt;
+                idx_t i1 = n * (slice + 1) / nt;
+                float *dis_i = distances + i0 * k;
+                idx_t *lab_i = labels + i0 * k;
+                search_implem_12<C>
+                        (i1 - i0, x + i0 * d, k, dis_i, lab_i, &ndis, &nlist_visited);
+            }
+        }
+        indexIVF_stats.nq += n;
+        indexIVF_stats.ndis += ndis;
+        indexIVF_stats.nlist += nlist_visited;
+    } else {
+        FAISS_THROW_FMT("implem %d does not exist", implem);
+    }
+
+}
 
 
 void IndexIVFPQFastScan::search(
@@ -555,60 +601,11 @@ void IndexIVFPQFastScan::search(
                 float* distances,
                 idx_t* labels) const
 {
-
-    if (implem == 1) {
-        if (metric_type == METRIC_L2) {
-            search_implem_1<CMax<float, int64_t>>(n, x, k, distances, labels);
-        } else {
-            search_implem_1<CMin<float, int64_t>>(n, x, k, distances, labels);
-        }
-    } else if (implem == 2) {
-        if (metric_type == METRIC_L2) {
-            search_implem_2<CMax<uint16_t, int64_t>>(n, x, k, distances, labels);
-        } else {
-            search_implem_2<CMin<uint16_t, int64_t>>(n, x, k, distances, labels);
-        }
-    } else if (implem == 10 || implem == 11) {
-        if (metric_type == METRIC_L2) {
-            search_implem_10<CMax<uint16_t, int64_t>>(n, x, k, distances, labels);
-        } else {
-            search_implem_10<CMin<uint16_t, int64_t>>(n, x, k, distances, labels);
-        }
-    } else if (implem == 12 || implem == 13) {
-        size_t ndis = 0, nlist = 0;
-        int nt = omp_get_max_threads();
-        if (nt < 2 || n < nt) {
-            if (metric_type == METRIC_L2) {
-                search_implem_12<CMax<uint16_t, int64_t>>
-                    (n, x, k, distances, labels, &ndis, &nlist);
-            } else {
-                search_implem_12<CMin<uint16_t, int64_t>>
-                    (n, x, k, distances, labels, &ndis, &nlist);
-            }
-        } else {
-            // explicitly slice over threads
-#pragma omp parallel for reduction(+: ndis, nlist)
-            for (int slice = 0; slice < nt; slice++) {
-                idx_t i0 = n * slice / nt;
-                idx_t i1 = n * (slice + 1) / nt;
-                float *dis_i = distances + i0 * k;
-                idx_t *lab_i = labels + i0 * k;
-                if (metric_type == METRIC_L2) {
-                    search_implem_12<CMax<uint16_t, int64_t>>
-                        (i1 - i0, x, k, dis_i, lab_i, &ndis, &nlist);
-                } else {
-                    search_implem_12<CMin<uint16_t, int64_t>>
-                        (i1 - i0, x, k, dis_i, lab_i, &ndis, &nlist);
-                }
-            }
-        }
-        indexIVF_stats.nq += n;
-        indexIVF_stats.ndis += ndis;
-        indexIVF_stats.nlist += nlist;
+    if (metric_type == METRIC_L2) {
+        search_dispatch_implem<true>(n, x, k, distances, labels);
     } else {
-        FAISS_THROW_FMT("implem %d does not exist", implem);
+        search_dispatch_implem<false>(n, x, k, distances, labels);
     }
-
 }
 
 template<class C>
@@ -638,9 +635,9 @@ void IndexIVFPQFastScan::search_implem_1(
 
     bool single_LUT = !(by_residual && metric_type == METRIC_L2);
 
-    size_t ndis = 0, nlist = 0;
+    size_t ndis = 0, nlist_visited = 0;
 
-#pragma omp parallel for reduction(+: ndis, nlist)
+#pragma omp parallel for reduction(+: ndis, nlist_visited)
     for(idx_t i = 0; i < n; i++) {
         int64_t *heap_ids = labels + i * k;
         float *heap_dis = distances + i * k;
@@ -668,14 +665,14 @@ void IndexIVFPQFastScan::search_implem_1(
                 LUT, ids.get(), bias,
                 k, heap_dis, heap_ids
             );
-            nlist ++;
+            nlist_visited ++;
             ndis ++;
         }
         heap_reorder<C> (k, heap_dis, heap_ids);
     }
     indexIVF_stats.nq += n;
     indexIVF_stats.ndis += ndis;
-    indexIVF_stats.nlist += nlist;
+    indexIVF_stats.nlist += nlist_visited;
 }
 
 template<class C>
@@ -705,14 +702,14 @@ void IndexIVFPQFastScan::search_implem_2(
         normalizers.get()
     );
 
-    std::vector<uint16_t> tmp_dis(k);
 
     bool single_LUT = !(by_residual && metric_type == METRIC_L2);
 
-    size_t ndis = 0, nlist = 0;
+    size_t ndis = 0, nlist_visited = 0;
 
-#pragma omp parallel for reduction(+: ndis, nlist)
+#pragma omp parallel for reduction(+: ndis, nlist_visited)
     for(idx_t i = 0; i < n; i++) {
+        std::vector<uint16_t> tmp_dis(k);
         int64_t *heap_ids = labels + i * k;
         uint16_t *heap_dis = tmp_dis.data();
         heap_heapify<C> (k, heap_dis, heap_ids);
@@ -740,6 +737,8 @@ void IndexIVFPQFastScan::search_implem_2(
                 k, heap_dis, heap_ids
             );
 
+            nlist_visited++;
+            ndis += ls;
         }
         heap_reorder<C> (k, heap_dis, heap_ids);
         // convert distances to float
@@ -757,7 +756,7 @@ void IndexIVFPQFastScan::search_implem_2(
     }
     indexIVF_stats.nq += n;
     indexIVF_stats.ndis += ndis;
-    indexIVF_stats.nlist += nlist;
+    indexIVF_stats.nlist += nlist_visited;
 }
 
 
@@ -807,9 +806,9 @@ void IndexIVFPQFastScan::search_implem_10(
     bool single_LUT = !(by_residual && metric_type == METRIC_L2);
 
     TIC;
-    size_t ndis = 0, nlist = 0;
+    size_t ndis = 0, nlist_visited = 0;
 
-#pragma omp parallel reduction(+: ndis, nlist)
+#pragma omp parallel reduction(+: ndis, nlist_visited)
     {
         AlignedTable<uint16_t> tmp_distances(k);
 #pragma omp for
@@ -866,7 +865,7 @@ void IndexIVFPQFastScan::search_implem_10(
                 else DISPATCH(SingleResultHC)
 #undef DISPATCH
 
-                nlist ++;
+                nlist_visited ++;
                 ndis ++;
             }
 
@@ -878,7 +877,7 @@ void IndexIVFPQFastScan::search_implem_10(
     }
     indexIVF_stats.ndis += n;
     indexIVF_stats.ndis += ndis;
-    indexIVF_stats.nlist += nlist;
+    indexIVF_stats.nlist += nlist_visited;
 }
 
 

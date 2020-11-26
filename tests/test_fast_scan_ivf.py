@@ -137,7 +137,7 @@ class TestLUTQuantization(unittest.TestCase):
 def verify_with_draws(testcase, Dref, Iref, Dnew, Inew):
     """ verify a list of results where there are draws in the distances (because
     they are integer). """
-    np.testing.assert_array_equal(Dref, Dnew)
+    np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
     # here we have to be careful because of draws
     for i in range(len(Iref)):
         if np.all(Iref[i] == Inew[i]): # easy case
@@ -312,13 +312,9 @@ class TestIVFImplem12(unittest.TestCase):
         index2.implem = self.IMPLEM
         Dnew, Inew = index2.search(ds.get_queries(), 4)
 
-        print(Iref[:5])
-        print(Inew[:5])
-
-
         verify_with_draws(self, Dref, Iref, Dnew, Inew)
 
-        stats = faiss.indexIVF_stats
+        stats = faiss.cvar.indexIVF_stats
         stats.reset()
 
         # also verify with single result
@@ -328,7 +324,7 @@ class TestIVFImplem12(unittest.TestCase):
                 # then we cannot conclude
                 continue
             self.assertEqual(Iref[q, 0], Inew[q, 0])
-            np.testing.assert_almost_equal(Dref[q, 0], Dnew[q, 0])
+            np.testing.assert_almost_equal(Dref[q, 0], Dnew[q, 0], decimal=5)
 
         self.assertGreater(stats.ndis, 0)
 
