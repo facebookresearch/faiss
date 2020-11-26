@@ -707,8 +707,8 @@ void ParameterSpace::explore (Index *index,
         bool keep = ops->add (perf, t_search, combination_name (cno), cno);
 
         if (verbose)
-            printf(" perf %.3f t %.3f (%d runs) %s\n",
-                   perf, t_search, nrun,
+            printf(" perf %.3f t %.3f (%d %s) %s\n",
+                   perf, t_search, nrun, nrun >= 2 ? "runs" : "run",
                    keep ? "*" : "");
     }
 }
