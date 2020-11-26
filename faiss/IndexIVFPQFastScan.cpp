@@ -55,8 +55,6 @@ IndexIVFPQFastScan::IndexIVFPQFastScan (
         new BlockInvertedLists(nlist, bbs, bbs * M2 / 2),
         true
     );
-    implem = 12;
-    qbs2 = 11;
 }
 
 IndexIVFPQFastScan::IndexIVFPQFastScan ()
@@ -114,9 +112,6 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ & orig, int bbs):
     }
 
     orig_invlists = orig.invlists;
-
-    implem = 12;
-    qbs2 = 11;
 }
 
 
@@ -564,18 +559,36 @@ void IndexIVFPQFastScan::search_dispatch_implem(
         return;
     }
 
-    if (implem == 1) {
+    // actual implementation used
+    int impl = implem;
+
+    if (impl == 0) {
+        if (bbs == 32) {
+            impl = 12;
+        } else {
+            impl = 10;
+        }
+        if (k > 20) {
+            impl ++;
+        }
+    }
+
+    if (impl == 1) {
         search_implem_1<Cfloat>(n, x, k, distances, labels);
-    } else if (implem == 2) {
+    } else if (impl == 2) {
         search_implem_2<C>(n, x, k, distances, labels);
-    } else if (implem == 10 || implem == 11) {
-        search_implem_10<C>(n, x, k, distances, labels);
-    } else if (implem == 12 || implem == 13) {
+
+    } else if (impl >= 10 && impl <= 13) {
         size_t ndis = 0, nlist_visited = 0;
         int nt = omp_get_max_threads();
         if (nt < 2 || n < nt) {
-            search_implem_12<C>
-                    (n, x, k, distances, labels, &ndis, &nlist_visited);
+            if (impl == 12 || impl == 13) {
+                search_implem_12<C>
+                    (n, x, k, distances, labels, impl, &ndis, &nlist_visited);
+            } else {
+                search_implem_10<C>
+                    (n, x, k, distances, labels, impl, &ndis, &nlist_visited);
+            }
         } else {
             // explicitly slice over threads
 #pragma omp parallel for reduction(+: ndis, nlist_visited)
@@ -584,8 +597,17 @@ void IndexIVFPQFastScan::search_dispatch_implem(
                 idx_t i1 = n * (slice + 1) / nt;
                 float *dis_i = distances + i0 * k;
                 idx_t *lab_i = labels + i0 * k;
-                search_implem_12<C>
-                        (i1 - i0, x + i0 * d, k, dis_i, lab_i, &ndis, &nlist_visited);
+                if (impl == 12 || impl == 13) {
+                    search_implem_12<C>(
+                        i1 - i0, x + i0 * d, k, dis_i, lab_i,
+                        impl, &ndis, &nlist_visited
+                    );
+                } else {
+                    search_implem_10<C>(
+                        i1 - i0, x + i0 * d, k, dis_i, lab_i,
+                        impl, &ndis, &nlist_visited
+                    );
+                }
             }
         }
         indexIVF_stats.nq += n;
@@ -599,11 +621,8 @@ void IndexIVFPQFastScan::search_dispatch_implem(
 
 
 void IndexIVFPQFastScan::search(
-                idx_t n,
-                const float* x,
-                idx_t k,
-                float* distances,
-                idx_t* labels) const
+                idx_t n, const float* x, idx_t k,
+                float* distances, idx_t* labels) const
 {
     if (metric_type == METRIC_L2) {
         search_dispatch_implem<true>(n, x, k, distances, labels);
@@ -614,11 +633,8 @@ void IndexIVFPQFastScan::search(
 
 template<class C>
 void IndexIVFPQFastScan::search_implem_1(
-                idx_t n,
-                const float* x,
-                idx_t k,
-                float* distances,
-                idx_t* labels) const
+                idx_t n, const float* x, idx_t k,
+                float* distances, idx_t* labels) const
 {
     FAISS_THROW_IF_NOT(orig_invlists);
 
@@ -681,11 +697,8 @@ void IndexIVFPQFastScan::search_implem_1(
 
 template<class C>
 void IndexIVFPQFastScan::search_implem_2(
-                idx_t n,
-                const float* x,
-                idx_t k,
-                float* distances,
-                idx_t* labels) const
+                idx_t n, const float* x, idx_t k,
+                float* distances, idx_t* labels) const
 {
     FAISS_THROW_IF_NOT(orig_invlists);
 
@@ -767,11 +780,9 @@ void IndexIVFPQFastScan::search_implem_2(
 
 template<class C>
 void IndexIVFPQFastScan::search_implem_10(
-                idx_t n,
-                const float* x,
-                idx_t k,
-                float* distances,
-                idx_t* labels) const
+                idx_t n, const float* x, idx_t k,
+                float* distances, idx_t* labels,
+                int impl, size_t *ndis_out, size_t *nlist_out) const
 {
     memset(distances, -1, sizeof(float) * k * n);
     memset(labels, -1, sizeof(idx_t) * k * n);
@@ -812,10 +823,8 @@ void IndexIVFPQFastScan::search_implem_10(
     TIC;
     size_t ndis = 0, nlist_visited = 0;
 
-#pragma omp parallel reduction(+: ndis, nlist_visited)
     {
         AlignedTable<uint16_t> tmp_distances(k);
-#pragma omp for
         for(idx_t i = 0; i < n; i++) {
             const uint8_t *LUT = nullptr;
             int qmap1[1] = {0};
@@ -823,9 +832,9 @@ void IndexIVFPQFastScan::search_implem_10(
 
             if (k == 1) {
                 handler.reset(new SingleResultHC(1, 0));
-            } else if (implem == 10) {
+            } else if (impl == 10) {
                 handler.reset(new HeapHC(1, tmp_distances.get(), labels + i * k, k, 0));
-            } else if (implem == 11) {
+            } else if (impl == 11) {
                 handler.reset(new ReservoirHC(1, 0, k, 2 * k));
             } else {
                 FAISS_THROW_MSG("invalid");
@@ -879,21 +888,17 @@ void IndexIVFPQFastScan::search_implem_10(
             );
         }
     }
-    indexIVF_stats.ndis += n;
-    indexIVF_stats.ndis += ndis;
-    indexIVF_stats.nlist += nlist_visited;
+    *ndis_out = ndis;
+    *nlist_out = nlist;
 }
 
 
 
 template<class C>
 void IndexIVFPQFastScan::search_implem_12(
-                idx_t n,
-                const float* x,
-                idx_t k,
-                float* distances,
-                idx_t* labels,
-                size_t *ndis_out, size_t *nlist_out) const
+                idx_t n, const float* x, idx_t k,
+                float* distances, idx_t* labels,
+                int impl, size_t *ndis_out, size_t *nlist_out) const
 {
     if (n == 0) { // does not work well with reservoir
         return;
@@ -962,12 +967,14 @@ void IndexIVFPQFastScan::search_implem_12(
 
     if (k == 1) {
         handler.reset(new SingleResultHC(n, 0));
-    } else if (implem == 12) {
+    } else if (impl == 12) {
         tmp_distances.resize(n * k);
         handler.reset(new HeapHC(n, tmp_distances.get(), labels, k, 0));
-    } else if (implem == 13) {
+    } else if (impl == 13) {
         handler.reset(new ReservoirHC(n, 0, k, 2 * k));
     }
+
+    int qbs2 = this->qbs2 ? this->qbs2 : 11;
 
     std::vector<uint16_t> tmp_bias;
     if (biases.get()) {

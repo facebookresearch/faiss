@@ -53,7 +53,7 @@ struct IndexIVFPQFastScan: IndexIVF {
     // skip some parts of the computation (for timing)
     int skip = 0;
 
-    // batching factors at search time
+    // batching factors at search time (0 = default)
     int qbs = 0;
     size_t qbs2 = 0;
 
@@ -124,18 +124,19 @@ struct IndexIVFPQFastScan: IndexIVF {
             idx_t n, const float* x, idx_t k,
             float* distances, idx_t* labels) const;
 
+    // implem 10 and 12 are not multithreaded internally, so
+    // export search stats
     template<class C>
     void search_implem_10(
             idx_t n, const float* x, idx_t k,
-            float* distances, idx_t* labels) const;
+            float* distances, idx_t* labels,
+            int impl, size_t *ndis_out, size_t *nlist_out) const;
 
-    // this one is not multithreaded internally, so
-    // export search stats
     template<class C>
     void search_implem_12(
             idx_t n, const float* x, idx_t k,
             float* distances, idx_t* labels,
-            size_t *ndis_out, size_t *nlist_out) const;
+            int impl, size_t *ndis_out, size_t *nlist_out) const;
 
 
 
