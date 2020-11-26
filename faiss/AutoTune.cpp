@@ -15,6 +15,7 @@
 
 #include <cinttypes>
 #include <cmath>
+#include <typeinfo>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
@@ -234,7 +235,7 @@ void OperatingPoints::display (bool only_optimal) const
 {
     const std::vector<OperatingPoint> &pts =
         only_optimal ? optimal_pts : all_pts;
-    printf("Tested %zd operating points, %zd ones are optimal:\n",
+    printf("Tested %zd operating points, %zd ones are Pareto-optimal:\n",
            all_pts.size(), optimal_pts.size());
 
     for (int i = 0; i < pts.size(); i++) {
@@ -333,7 +334,7 @@ static void init_pq_ParameterRange (const ProductQuantizer & pq,
     pr.values.push_back (pq.code_size * 8);
 }
 
-ParameterRange &ParameterSpace::add_range(const char * name)
+ParameterRange &ParameterSpace::add_range(const std::string & name)
 {
     for (auto & pr : parameter_ranges) {
         if (pr.name == name) {
@@ -346,7 +347,7 @@ ParameterRange &ParameterSpace::add_range(const char * name)
 }
 
 
-/// initialize with reasonable parameters for the index
+/// initialize with reasonable parameters for this type of index
 void ParameterSpace::initialize (const Index * index)
 {
     if (DC (IndexPreTransform)) {
@@ -372,12 +373,14 @@ void ParameterSpace::initialize (const Index * index)
                 pr.values.push_back (nprobe);
             }
         }
-        if (dynamic_cast<const IndexHNSW*>(ix->quantizer)) {
-            ParameterRange & pr = add_range("efSearch");
-            for (int i = 2; i <= 9; i++) {
-                pr.values.push_back (1 << i);
-            }
+        ParameterSpace ivf_pspace;
+        ivf_pspace.initialize(ix->quantizer);
+
+        for (const ParameterRange & p: ivf_pspace.parameter_ranges) {
+            ParameterRange & pr = add_range("quantizer_" + p.name);
+            pr.values = p.values;
         }
+
     }
     if (DC (IndexPQ)) {
         ParameterRange & pr = add_range("ht");
@@ -457,34 +460,28 @@ void ParameterSpace::set_index_parameters (
 void ParameterSpace::set_index_parameter (
         Index * index, const std::string & name, double val) const
 {
-    if (verbose > 1)
-        printf("    set %s=%g\n", name.c_str(), val);
+    if (verbose > 1) {
+        printf("    set_index_parameter %s=%g\n", name.c_str(), val);
+    }
 
     if (name == "verbose") {
         index->verbose = int(val);
         // and fall through to also enable it on sub-indexes
     }
+    if (DC (IndexIDMap)) {
+        set_index_parameter (ix->index, name, val);
+        return;
+    }
     if (DC (IndexPreTransform)) {
         set_index_parameter (ix->index, name, val);
         return;
     }
-    if (DC (IndexShards)) {
+    if (DC (ThreadedIndex<Index>)) {
         // call on all sub-indexes
         auto fn =
-          [this, name, val](int, Index* subIndex) {
-            set_index_parameter(subIndex, name, val);
+          [this, name, val](int no, Index* subIndex) {
+              set_index_parameter(subIndex, name, val);
           };
-
-        ix->runOnIndex(fn);
-        return;
-    }
-    if (DC (IndexReplicas)) {
-        // call on all sub-indexes
-        auto fn =
-          [this, name, val](int, Index* subIndex) {
-            set_index_parameter(subIndex, name, val);
-          };
-
         ix->runOnIndex(fn);
         return;
     }
@@ -494,7 +491,7 @@ void ParameterSpace::set_index_parameter (
             return;
         }
         // otherwise it is for the sub-index
-        set_index_parameter (&ix->refine_index, name, val);
+        set_index_parameter (ix->base_index, name, val);
         return;
     }
 
@@ -504,10 +501,7 @@ void ParameterSpace::set_index_parameter (
     }
 
     if (name == "nprobe") {
-        if (DC (IndexIDMap)) {
-            set_index_parameter (ix->index, name, val);
-            return;
-        } else if (DC (IndexIVF)) {
+        if (DC (IndexIVF)) {
             ix->nprobe = int(val);
             return;
         }
@@ -556,6 +550,14 @@ void ParameterSpace::set_index_parameter (
                 cq->hnsw.efSearch = int(val);
                 return;
             }
+        }
+    }
+
+    if (name.find("quantizer_") == 0) {
+        if (DC(IndexIVF)) {
+            std::string sub_name = name.substr(strlen("quantizer_"));
+            set_index_parameter(ix->quantizer, sub_name, val);
+            return;
         }
     }
 
