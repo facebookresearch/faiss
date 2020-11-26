@@ -108,17 +108,6 @@ struct IndexIVFPQFastScan: IndexIVF {
 
 
     // internal search funcs
-
-    template<class C>
-    void search_implem_10(
-            idx_t n, const float* x, idx_t k,
-            float* distances, idx_t* labels) const;
-
-    template<class C>
-    void search_implem_12(
-            idx_t n, const float* x, idx_t k,
-            float* distances, idx_t* labels) const;
-
     template<class C>
     void search_implem_1(
             idx_t n, const float* x, idx_t k,
@@ -128,6 +117,21 @@ struct IndexIVFPQFastScan: IndexIVF {
     void search_implem_2(
             idx_t n, const float* x, idx_t k,
             float* distances, idx_t* labels) const;
+
+    template<class C>
+    void search_implem_10(
+            idx_t n, const float* x, idx_t k,
+            float* distances, idx_t* labels) const;
+
+    // this one is not multithreaded internally, so
+    // export search stats
+    template<class C>
+    void search_implem_12(
+            idx_t n, const float* x, idx_t k,
+            float* distances, idx_t* labels,
+            size_t *ndis_out, size_t *nlist_out) const;
+
+
 
 };
 

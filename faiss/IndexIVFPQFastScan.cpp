@@ -11,6 +11,8 @@
 #include <cstdio>
 #include <inttypes.h>
 
+#include <omp.h>
+
 #include <memory>
 
 #include <faiss/impl/FaissAssert.h>
@@ -427,7 +429,7 @@ void IndexIVFPQFastScan::compute_LUT(
                 AlignedTable<float> ip_table(n * dim12);
                 pq.compute_inner_prod_tables (n, x, ip_table.get());
 
-#pragma omp parallel if (n > 8000)
+#pragma omp parallel if (n * nprobe > 8000)
                 for(idx_t i = 0; i < n; i++) {
                     for(idx_t j = 0; j < nprobe; j++) {
                         size_t ij = i * nprobe + j;
@@ -573,11 +575,36 @@ void IndexIVFPQFastScan::search(
             search_implem_10<CMin<uint16_t, int64_t>>(n, x, k, distances, labels);
         }
     } else if (implem == 12 || implem == 13) {
-        if (metric_type == METRIC_L2) {
-            search_implem_12<CMax<uint16_t, int64_t>>(n, x, k, distances, labels);
+        size_t ndis = 0, nlist = 0;
+        int nt = omp_get_max_threads();
+        if (nt < 2 || n < nt) {
+            if (metric_type == METRIC_L2) {
+                search_implem_12<CMax<uint16_t, int64_t>>
+                    (n, x, k, distances, labels, &ndis, &nlist);
+            } else {
+                search_implem_12<CMin<uint16_t, int64_t>>
+                    (n, x, k, distances, labels, &ndis, &nlist);
+            }
         } else {
-            search_implem_12<CMin<uint16_t, int64_t>>(n, x, k, distances, labels);
+            // explicitly slice over threads
+#pragma omp parallel for reduction(+: ndis, nlist)
+            for (int slice = 0; slice < nt; slice++) {
+                idx_t i0 = n * slice / nt;
+                idx_t i1 = n * (slice + 1) / nt;
+                float *dis_i = distances + i0 * k;
+                idx_t *lab_i = labels + i0 * k;
+                if (metric_type == METRIC_L2) {
+                    search_implem_12<CMax<uint16_t, int64_t>>
+                        (i1 - i0, x, k, dis_i, lab_i, &ndis, &nlist);
+                } else {
+                    search_implem_12<CMin<uint16_t, int64_t>>
+                        (i1 - i0, x, k, dis_i, lab_i, &ndis, &nlist);
+                }
+            }
         }
+        indexIVF_stats.nq += n;
+        indexIVF_stats.ndis += ndis;
+        indexIVF_stats.nlist += nlist;
     } else {
         FAISS_THROW_FMT("implem %d does not exist", implem);
     }
@@ -862,7 +889,8 @@ void IndexIVFPQFastScan::search_implem_12(
                 const float* x,
                 idx_t k,
                 float* distances,
-                idx_t* labels) const
+                idx_t* labels,
+                size_t *ndis_out, size_t *nlist_out) const
 {
 
     FAISS_THROW_IF_NOT(bbs == 32);
@@ -1025,6 +1053,8 @@ void IndexIVFPQFastScan::search_implem_12(
 
     TIC;
 
+    // these stats are not thread-safe
+
     for(int i = 1; i < ti; i++) {
         IVFFastScan_stats.times[i] += times[i] - times[i-1];
     }
@@ -1036,9 +1066,10 @@ void IndexIVFPQFastScan::search_implem_12(
             IVFFastScan_stats.reservoir_times[i] += rh->times[i];
         }
     }
-    indexIVF_stats.nq += n;
-    indexIVF_stats.ndis += ndis;
-    indexIVF_stats.nlist += qcs.size();
+
+    *ndis_out = ndis;
+    *nlist_out = nlist;
+
 }
 
 

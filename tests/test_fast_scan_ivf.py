@@ -311,6 +311,11 @@ class TestIVFImplem12(unittest.TestCase):
         index2 = faiss.IndexIVFPQFastScan(index)
         index2.implem = self.IMPLEM
         Dnew, Inew = index2.search(ds.get_queries(), 4)
+
+        print(Iref[:5])
+        print(Inew[:5])
+
+
         verify_with_draws(self, Dref, Iref, Dnew, Inew)
 
         stats = faiss.indexIVF_stats
