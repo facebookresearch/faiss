@@ -82,7 +82,7 @@ struct IndexScalarQuantizer: Index {
 
 
  /** An IVF implementation where the components of the residuals are
- * encoded with a scalar uniform quantizer. All distance computations
+ * encoded with a scalar quantizer. All distance computations
  * are asymmetric, so the encoded vectors are decoded and approximate
  * distances are computed.
  */

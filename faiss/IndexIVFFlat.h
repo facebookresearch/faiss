@@ -77,7 +77,8 @@ struct IndexIVFFlatDedup: IndexIVFFlat {
                              const float *centroid_dis,
                              float *distances, idx_t *labels,
                              bool store_pairs,
-                             const IVFSearchParameters *params=nullptr
+                             const IVFSearchParameters *params=nullptr,
+                             IndexIVFStats *stats=nullptr
                              ) const override;
 
     size_t remove_ids(const IDSelector& sel) override;
