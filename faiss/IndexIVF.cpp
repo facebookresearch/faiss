@@ -267,6 +267,22 @@ void IndexIVF::set_direct_map_type (DirectMap::Type type)
 void IndexIVF::search (idx_t n, const float *x, idx_t k,
                          float *distances, idx_t *labels) const
 {
+    if (parallel_mode == 3) {
+        int nt = omp_get_max_threads();
+        if (n >= nt) {
+#pragma omp parallel for
+            for(idx_t slice = 0; slice < nt; slice++) {
+                idx_t i0 = n * slice / nt;
+                idx_t i1 = n * (slice + 1) / nt;
+                search(
+                    i1 - i0, x + i0 * d, k,
+                    distances + i0 * k, labels + i0 * k
+                );
+           }
+           return;
+        }
+    }
+
     std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
     std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
 
@@ -307,10 +323,10 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
 
     // don't start parallel section if single query
     bool do_parallel = omp_get_max_threads() >= 2 && (
+            pmode == 3 ? false :
             pmode == 0 ? n > 1 :
             pmode == 1 ? nprobe > 1 :
             nprobe * n > 1);
-
 
 #pragma omp parallel if(do_parallel) reduction(+: nlistv, ndis, nheap)
     {
@@ -409,7 +425,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
          * Actual loops, depending on parallel_mode
          ****************************************************/
 
-        if (pmode == 0) {
+        if (pmode == 0 || pmode == 3) {
 
 #pragma omp for
             for (idx_t i = 0; i < n; i++) {

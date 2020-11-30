@@ -303,7 +303,7 @@ class TestSQFlavors(unittest.TestCase):
         index.nprobe = 4   # hopefully more robust than 1
         Dref, Iref = index.search(xq, 10)
 
-        for pm in 1, 2:
+        for pm in 1, 2, 3:
             index.parallel_mode = pm
 
             Dnew, Inew = index.search(xq, 10)
