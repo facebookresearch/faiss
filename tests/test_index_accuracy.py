@@ -703,7 +703,9 @@ class TestRefine(unittest.TestCase):
         recall1 = (I1 == Iref[:, :1]).sum()
 
         # add refine index on top
-        index2 = faiss.IndexRefineFlat(index1, faiss.swig_ptr(xb))
+        index_flat = faiss.IndexFlat(d, metric)
+        index_flat.add(xb)
+        index2 = faiss.IndexRefine(index1, index_flat)
         index2.k_factor = 10.0
         D2, I2 = index2.search(xq, 10)
 

@@ -128,7 +128,8 @@ void IndexRefine::search (
             for (idx_t j = 0; j < k_base; j++) {
                 idx_t idx = base_labels[ij];
                 if (idx < 0) break;
-                base_distances[idx] = (*dc)(idx);
+                base_distances[ij] = (*dc)(idx);
+                ij++;
             }
         }
     }

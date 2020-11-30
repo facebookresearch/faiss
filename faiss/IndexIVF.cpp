@@ -295,7 +295,7 @@ void IndexIVF::search (idx_t n, const float *x, idx_t k,
     if ((parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT) == 0) {
         int nt = std::min(omp_get_max_threads(), int(n));
         std::vector<IndexIVFStats> stats(nt);
-#pragma omp parallel for if (n > nt)
+#pragma omp parallel for if (nt > 1)
         for(idx_t slice = 0; slice < nt; slice++) {
             IndexIVFStats local_stats;
             idx_t i0 = n * slice / nt;
