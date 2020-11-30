@@ -126,7 +126,7 @@ if(NOT WIN32)
 endif()
 
 if(FAISS_OPT_LEVEL STREQUAL "avx2")
-  target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mpopcnt>)
+  target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mf16c -mpopcnt>)
   set_target_properties(faiss PROPERTIES OUTPUT_NAME "faiss_avx2")
 elseif(FAISS_OPT_LEVEL STREQUAL "sse4")
   target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-msse4 -mpopcnt>)
