@@ -89,6 +89,31 @@ class TestFactory(unittest.TestCase):
         quantizer = faiss.downcast_index(index.quantizer)
         self.assertEqual(quantizer.pq.M, 25)
 
+    def test_parenthesis_2(self):
+        index = faiss.index_factory(50, "PCA30,IVF32(PQ15),Flat")
+        index_ivf = faiss.extract_index_ivf(index)
+        quantizer = faiss.downcast_index(index_ivf.quantizer)
+        self.assertEqual(quantizer.pq.M, 15)
+        self.assertEqual(quantizer.d, 30)
+
+    def test_parenthesis_refine(self):
+        index = faiss.index_factory(50, "IVF32,Flat,Refine(PQ25x12)")
+        rf = faiss.downcast_index(index.refine_index)
+        self.assertEqual(rf.pq.M, 25)
+        self.assertEqual(rf.pq.nbits, 12)
+
+
+    def test_parenthesis_refine_2(self):
+        # Refine applies on the whole index including pre-transforms
+        index = faiss.index_factory(50, "PCA32,IVF32,Flat,Refine(PQ25x12)")
+        rf = faiss.downcast_index(index.refine_index)
+        self.assertEqual(rf.pq.M, 25)
+
+
+
+
+
+
 
 class TestCloneSize(unittest.TestCase):
 

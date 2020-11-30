@@ -71,6 +71,20 @@ char get_trains_alone(const Index *coarse_quantizer) {
         0;
 }
 
+bool str_ends_with(const std::string& s, const std::string& suffix)
+{
+    return s.rfind(suffix) == std::abs(int(s.size()-suffix.size()));
+}
+
+// check if ends with suffix followed by digits
+bool str_ends_with_digits(const std::string& s, const std::string& suffix)
+{
+    int i;
+    for(i = s.length() - 1; i >= 0; i--) {
+        if (!isdigit(s[i])) break;
+    }
+    return str_ends_with(s.substr(0, i + 1), suffix);
+}
 
 } // anonymous namespace
 
@@ -80,31 +94,34 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                        metric == METRIC_INNER_PRODUCT);
     VTChain vts;
     Index *coarse_quantizer = nullptr;
-    std::unique_ptr<Index> parenthesis_index;
+    std::string parenthesis_ivf, parenthesis_refine;
     Index *index = nullptr;
     bool add_idmap = false;
-    bool make_IndexRefineFlat = false;
+    int d_in = d;
 
     ScopeDeleter1<Index> del_coarse_quantizer, del_index;
 
     std::string description(description_in);
     char *ptr;
 
-    if (description.find('(') != std::string::npos) {
+    // handle indexes in parentheses
+    while (description.find('(') != std::string::npos) {
         // then we make a sub-index and remove the () from the description
         int i0 = description.find('(');
         int i1 = description.find(')');
         FAISS_THROW_IF_NOT_MSG(
             i1 != std::string::npos, "string must contain closing parenthesis");
+
         std::string sub_description = description.substr(i0 + 1, i1 - i0 - 1);
-        // printf("substring=%s\n", sub_description.c_str());
 
-        parenthesis_index.reset(index_factory(d, sub_description.c_str(), metric));
-
+        if (str_ends_with_digits(description.substr(0, i0), "IVF")) {
+            parenthesis_ivf = sub_description;
+        } else if (str_ends_with(description.substr(0, i0), "Refine")) {
+            parenthesis_refine = sub_description;
+        } else {
+            FAISS_THROW_MSG("don't know what to do with parenthesis index");
+        }
         description = description.erase(i0, i1 - i0 + 1);
-
-        // printf("new description=%s\n", description.c_str());
-
     }
 
     int64_t ncentroids = -1;
@@ -168,8 +185,9 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
 
         } else if (!coarse_quantizer &&
                    sscanf (tok, "IVF%" PRId64, &ncentroids) == 1) {
-            if (parenthesis_index) {
-                coarse_quantizer_1 = parenthesis_index.release();
+            if (!parenthesis_ivf.empty()) {
+                coarse_quantizer_1 =
+                    index_factory(d, parenthesis_ivf.c_str(), metric);
             } else if (metric == METRIC_L2) {
                 coarse_quantizer_1 = new IndexFlatL2 (d);
             } else {
@@ -349,7 +367,12 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             FAISS_THROW_IF_NOT(!coarse_quantizer);
             index_1 = new IndexLattice(d, M, nbit, r2);
         } else if (stok == "RFlat") {
-            make_IndexRefineFlat = true;
+            parenthesis_refine = "Flat";
+        } else if (stok == "Refine") {
+            FAISS_THROW_IF_NOT_MSG(
+                    !parenthesis_refine.empty(),
+                    "Refine index should be provided in parentheses"
+            );
         } else {
             FAISS_THROW_FMT( "could not parse token \"%s\" in %s\n",
                              tok, description_in);
@@ -406,8 +429,10 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
         index = index_pt;
     }
 
-    if (make_IndexRefineFlat) {
-        IndexRefineFlat *index_rf = new IndexRefineFlat (index);
+    if (!parenthesis_refine.empty()) {
+        Index *refine_index = index_factory(d_in, parenthesis_refine.c_str(), metric);
+        IndexRefine *index_rf = new IndexRefine(index, refine_index);
+        index_rf->own_refine_index = true;
         index_rf->own_fields = true;
         index = index_rf;
     }
