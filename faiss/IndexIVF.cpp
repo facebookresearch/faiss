@@ -263,7 +263,10 @@ void IndexIVF::set_direct_map_type (DirectMap::Type type)
     direct_map.set_type (type, invlists, ntotal);
 }
 
-
+/** It is a sad fact of software that a conceptually simple function like this
+ * becomes very complex when you factor in several ways of parallelizing +
+ * interrupt/error handling + collecting stats + min/max collection. The
+ * codepath that is used 95% of time is the one for parallel_mode = 0 */
 void IndexIVF::search (idx_t n, const float *x, idx_t k,
                          float *distances, idx_t *labels) const
 {
@@ -288,21 +291,22 @@ void IndexIVF::search (idx_t n, const float *x, idx_t k,
         ivf_stats->search_time += t2 - t0;
     };
 
-    int nt = omp_get_max_threads();
-    if ((parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT) == 0 &&
-         n >= nt) {
-        int nt = omp_get_max_threads();
+
+    if ((parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT) == 0) {
+        int nt = std::min(omp_get_max_threads(), int(n));
         std::vector<IndexIVFStats> stats(nt);
 #pragma omp parallel for if (n > nt)
         for(idx_t slice = 0; slice < nt; slice++) {
             IndexIVFStats local_stats;
             idx_t i0 = n * slice / nt;
             idx_t i1 = n * (slice + 1) / nt;
-            sub_search_func(
-                i1 - i0, x + i0 * d,
-                distances + i0 * k, labels + i0 * k,
-                &stats[slice]
-            );
+            if (i1 > i0) {
+                sub_search_func(
+                    i1 - i0, x + i0 * d,
+                    distances + i0 * k, labels + i0 * k,
+                    &stats[slice]
+                );
+            }
         }
         // collect stats
         for(idx_t slice = 0; slice < nt; slice++) {
@@ -340,7 +344,6 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
     int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
     bool do_heap_init = !(this->parallel_mode & PARALLEL_MODE_NO_HEAP_INIT);
 
-    // don't start parallel section if single query
     bool do_parallel = omp_get_max_threads() >= 2 && (
             pmode == 0 ? false :
             pmode == 3 ? n > 1 :
