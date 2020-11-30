@@ -6,13 +6,14 @@
  */
 
 
-#include <faiss/IndexFlat.h>
+#include <faiss/IndexRefine.h>
 
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/IndexFlat.h>
 
 namespace faiss {
 
@@ -36,6 +37,7 @@ IndexRefine::IndexRefine (Index *base_index, Index *refine_index):
 IndexRefine::IndexRefine ():
     base_index(nullptr), refine_index(nullptr),
     own_fields(false), own_refine_index(false)
+{
 }
 
 void IndexRefine::train (idx_t n, const float *x)
@@ -55,7 +57,7 @@ void IndexRefine::add (idx_t n, const float *x) {
 void IndexRefine::reset ()
 {
     base_index->reset ();
-    refine_index.reset ();
+    refine_index->reset ();
     ntotal = 0;
 }
 
@@ -181,8 +183,11 @@ IndexRefineFlat::IndexRefineFlat (Index *base_index, const float *xb):
     ntotal = base_index->ntotal;
 }
 
-
-
+IndexRefineFlat::IndexRefineFlat():
+    IndexRefine()
+{
+    own_refine_index = true;
+}
 
 
 void IndexRefineFlat::search (
@@ -210,7 +215,10 @@ void IndexRefineFlat::search (
                 base_labels[i] < ntotal);
 
     // compute refined distances
-    refine_index.compute_distance_subset (
+    auto rf = dynamic_cast<const IndexFlat *>(refine_index);
+    FAISS_THROW_IF_NOT(rf);
+
+    rf->compute_distance_subset (
         n, x, k_base, base_distances, base_labels);
 
     // sort and store result

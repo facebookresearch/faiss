@@ -87,6 +87,8 @@ typedef uint64_t size_t;
 #include <faiss/impl/HNSW.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/MetaIndexes.h>
+#include <faiss/IndexRefine.h>
+
 #include <faiss/impl/FaissAssert.h>
 
 #include <faiss/IndexBinaryFlat.h>
@@ -365,6 +367,7 @@ void gpu_sync_all_devices()
 %include  <faiss/VectorTransform.h>
 %include  <faiss/IndexPreTransform.h>
 %include  <faiss/IndexFlat.h>
+%include  <faiss/IndexRefine.h>
 %include  <faiss/IndexLSH.h>
 %include  <faiss/impl/PolysemousTraining.h>
 %include  <faiss/IndexPQ.h>
@@ -507,6 +510,7 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexIVF )
     DOWNCAST ( IndexFlat )
     DOWNCAST ( IndexRefineFlat )
+    DOWNCAST ( IndexRefine )
     DOWNCAST ( IndexPQFastScan )
     DOWNCAST ( IndexPQ )
     DOWNCAST ( IndexScalarQuantizer )

@@ -24,8 +24,8 @@ struct IndexRefine: Index {
     /// refinement index
     Index *refine_index;
 
-    bool own_fields;  ///< should the base index be deallocated?
-    bool own_refine_index;
+    bool own_fields;         ///< should the base index be deallocated?
+    bool own_refine_index;   ///< same with the refinement index
 
     /// factor between k requested in search and the k requested from
     /// the base_index (should be >= 1)
@@ -50,10 +50,18 @@ struct IndexRefine: Index {
 };
 
 
+/** Version where the refinement index is an IndexFlat. It has one additional
+ * constructor that takes a table of elements to add to the flat refinement
+ * index */
 struct IndexRefineFlat: IndexRefine {
     explicit IndexRefineFlat (Index *base_index);
-
     IndexRefineFlat(Index *base_index, const float *xb);
+
+    IndexRefineFlat();
+
+    void search(
+        idx_t n, const float* x, idx_t k,
+        float* distances, idx_t* labels) const override;
 
 };
 

@@ -36,6 +36,8 @@
 #include <faiss/IndexLattice.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexIVFPQFastScan.h>
+#include <faiss/IndexRefine.h>
+
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryHNSW.h>

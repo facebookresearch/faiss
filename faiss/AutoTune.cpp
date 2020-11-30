@@ -33,6 +33,7 @@
 #include <faiss/MetaIndexes.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexRefine.h>
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryHNSW.h>
@@ -353,7 +354,7 @@ void ParameterSpace::initialize (const Index * index)
     if (DC (IndexPreTransform)) {
         index = ix->index;
     }
-    if (DC (IndexRefineFlat)) {
+    if (DC (IndexRefine)) {
         ParameterRange & pr = add_range("k_factor_rf");
         for (int i = 0; i <= 6; i++) {
             pr.values.push_back (1 << i);
@@ -485,7 +486,7 @@ void ParameterSpace::set_index_parameter (
         ix->runOnIndex(fn);
         return;
     }
-    if (DC (IndexRefineFlat)) {
+    if (DC (IndexRefine)) {
         if (name == "k_factor_rf") {
             ix->k_factor = int(val);
             return;
