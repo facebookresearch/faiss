@@ -129,9 +129,10 @@ void IndexPQ::reconstruct (idx_t key, float * recons) const
 
 namespace {
 
-
-struct PQ8DistanceComputer: DistanceComputer {
+template<class PQDecoder>
+struct PQDistanceComputer: DistanceComputer {
     size_t d;
+    MetricType metric;
     Index::idx_t nb;
     const uint8_t *codes;
     size_t code_size;
@@ -144,10 +145,11 @@ struct PQ8DistanceComputer: DistanceComputer {
     {
         const uint8_t *code = codes + i * code_size;
         const float *dt = precomputed_table.data();
+        PQDecoder decoder(code, pq.nbits);
         float accu = 0;
         for (int j = 0; j < pq.M; j++) {
-            accu += dt[*code++];
-            dt += 256;
+            accu += dt[decoder.decode()];
+            dt += 1 << decoder.nbits;
         }
         ndis++;
         return accu;
@@ -158,24 +160,25 @@ struct PQ8DistanceComputer: DistanceComputer {
         FAISS_THROW_IF_NOT(sdc);
         const float * sdci = sdc;
         float accu = 0;
-        const uint8_t *codei = codes + i * code_size;
-        const uint8_t *codej = codes + j * code_size;
+        PQDecoder codei (codes + i * code_size, pq.nbits);
+        PQDecoder codej (codes + j * code_size, pq.nbits);
 
         for (int l = 0; l < pq.M; l++) {
-            accu += sdci[(*codei++) + (*codej++) * 256];
-            sdci += 256 * 256;
+            accu += sdci[codei.decode() + (codej.decode() << codei.nbits)];
+            sdci += uint64_t(1) << (2 * codei.nbits);
         }
+        ndis++;
         return accu;
     }
 
-    PQ8DistanceComputer(const IndexPQ& storage)
-        : pq(storage.pq) {
+    PQDistanceComputer(const IndexPQ& storage)
+            : pq(storage.pq) {
         precomputed_table.resize(pq.M * pq.ksub);
         nb = storage.ntotal;
         d = storage.d;
+        metric = storage.metric_type;
         codes = storage.codes.data();
         code_size = pq.code_size;
-        FAISS_ASSERT(pq.ksub == 256);
         if (pq.sdc_table.size() == pq.ksub * pq.ksub * pq.M) {
             sdc = pq.sdc_table.data();
         } else {
@@ -185,7 +188,12 @@ struct PQ8DistanceComputer: DistanceComputer {
     }
 
     void set_query(const float *x) override {
-        pq.compute_distance_table(x, precomputed_table.data());
+        if (metric == METRIC_L2) {
+            pq.compute_distance_table(x, precomputed_table.data());
+        } else {
+            pq.compute_inner_prod_table(x, precomputed_table.data());
+        }
+
     }
 };
 
@@ -194,8 +202,13 @@ struct PQ8DistanceComputer: DistanceComputer {
 
 
 DistanceComputer * IndexPQ::get_distance_computer() const {
-    FAISS_THROW_IF_NOT(pq.nbits == 8);
-    return new PQ8DistanceComputer(*this);
+    if (pq.nbits == 8) {
+        return new PQDistanceComputer<PQDecoder8>(*this);
+    } else if (pq.nbits == 16) {
+        return new PQDistanceComputer<PQDecoder16>(*this);
+    } else {
+        return new PQDistanceComputer<PQDecoderGeneric>(*this);
+    }
 }
 
 

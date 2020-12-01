@@ -14,16 +14,14 @@ from faiss.contrib import datasets
 class TestDistanceComputer(unittest.TestCase):
 
 
-    def do_test(self, factory_string):
+    def do_test(self, factory_string, metric_type=faiss.METRIC_L2):
         ds = datasets.SyntheticDataset(32, 1000, 200, 20)
 
-        index = faiss.index_factory(32, factory_string)
+        index = faiss.index_factory(32, factory_string, metric_type)
         index.train(ds.get_train())
         index.add(ds.get_database())
         xq = ds.get_queries()
         Dref, Iref = index.search(xq, 10)
-
-        print(Dref)
         dc = index.get_distance_computer()
         self.assertTrue(dc.this.own())
         for q in range(ds.nq):
@@ -46,5 +44,9 @@ class TestDistanceComputer(unittest.TestCase):
     def test_distance_computer_PQbit6(self):
         self.do_test("PQ8x6np")
 
+    def test_distance_computer_PQbit6_ip(self):
+        self.do_test("PQ8x6np", faiss.METRIC_INNER_PRODUCT)
+
     def test_distance_computer_VT(self):
         self.do_test("PCA20,SQ8")
+
