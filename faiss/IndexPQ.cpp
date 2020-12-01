@@ -130,7 +130,7 @@ void IndexPQ::reconstruct (idx_t key, float * recons) const
 namespace {
 
 
-struct PQDis: DistanceComputer {
+struct PQ8DistanceComputer: DistanceComputer {
     size_t d;
     Index::idx_t nb;
     const uint8_t *codes;
@@ -155,6 +155,7 @@ struct PQDis: DistanceComputer {
 
     float symmetric_dis(idx_t i, idx_t j) override
     {
+        FAISS_THROW_IF_NOT(sdc);
         const float * sdci = sdc;
         float accu = 0;
         const uint8_t *codei = codes + i * code_size;
@@ -167,7 +168,7 @@ struct PQDis: DistanceComputer {
         return accu;
     }
 
-    explicit PQDis(const IndexPQ& storage, const float* /*q*/ = nullptr)
+    PQ8DistanceComputer(const IndexPQ& storage)
         : pq(storage.pq) {
         precomputed_table.resize(pq.M * pq.ksub);
         nb = storage.ntotal;
@@ -175,8 +176,11 @@ struct PQDis: DistanceComputer {
         codes = storage.codes.data();
         code_size = pq.code_size;
         FAISS_ASSERT(pq.ksub == 256);
-        FAISS_ASSERT(pq.sdc_table.size() == pq.ksub * pq.ksub * pq.M);
-        sdc = pq.sdc_table.data();
+        if (pq.sdc_table.size() == pq.ksub * pq.ksub * pq.M) {
+            sdc = pq.sdc_table.data();
+        } else {
+            sdc = nullptr;
+        }
         ndis = 0;
     }
 
@@ -191,7 +195,7 @@ struct PQDis: DistanceComputer {
 
 DistanceComputer * IndexPQ::get_distance_computer() const {
     FAISS_THROW_IF_NOT(pq.nbits == 8);
-    return new PQDis(*this);
+    return new PQ8DistanceComputer(*this);
 }
 
 

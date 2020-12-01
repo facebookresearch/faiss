@@ -77,6 +77,8 @@ struct IndexPreTransform: Index {
     void reverse_chain (idx_t n, const float* xt, float* x) const;
 
 
+    DistanceComputer * get_distance_computer() const override;
+
     /* standalone codec interface */
     size_t sa_code_size () const override;
     void sa_encode (idx_t n, const float *x,

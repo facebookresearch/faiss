@@ -355,6 +355,8 @@ void gpu_sync_all_devices()
 %include  <faiss/utils/random.h>
 
 %include  <faiss/MetricType.h>
+
+%newobject *::get_distance_computer() const;
 %include  <faiss/Index.h>
 %include  <faiss/Clustering.h>
 
@@ -432,6 +434,18 @@ void gpu_sync_all_devices()
 %template(IndexBinaryIDMap) faiss::IndexIDMapTemplate<faiss::IndexBinary>;
 %template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
 %template(IndexBinaryIDMap2) faiss::IndexIDMap2Template<faiss::IndexBinary>;
+
+
+
+%ignore faiss::BufferList::Buffer;
+%ignore faiss::RangeSearchPartialResult::QueryResult;
+%ignore faiss::IDSelectorBatch::set;
+%ignore faiss::IDSelectorBatch::bloom;
+%ignore faiss::InterruptCallback::instance;
+%ignore faiss::InterruptCallback::lock;
+
+%include  <faiss/impl/AuxIndexStructures.h>
+
 
 #ifdef GPU_WRAPPER
 
@@ -905,15 +919,6 @@ void * cast_integer_to_void_ptr (long long x) {
 /*******************************************************************
  * Range search interface
  *******************************************************************/
-
-%ignore faiss::BufferList::Buffer;
-%ignore faiss::RangeSearchPartialResult::QueryResult;
-%ignore faiss::IDSelectorBatch::set;
-%ignore faiss::IDSelectorBatch::bloom;
-
-%ignore faiss::InterruptCallback::instance;
-%ignore faiss::InterruptCallback::lock;
-%include  <faiss/impl/AuxIndexStructures.h>
 
 
 %inline %{
