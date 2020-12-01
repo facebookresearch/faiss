@@ -21,14 +21,14 @@ namespace faiss {
 struct SimulatedAnnealingParameters {
 
     // optimization parameters
-    double init_temperature;   // init probaility of accepting a bad swap
+    double init_temperature;   // init probability of accepting a bad swap
     double temperature_decay;  // at each iteration the temp is multiplied by this
     int n_iter; // nb of iterations
     int n_redo; // nb of runs of the simulation
     int seed;   // random seed
     int verbose;
     bool only_bit_flips; // restrict permutation changes to bit flips
-    bool init_random; // intialize with a random permutation (not identity)
+    bool init_random; // initialize with a random permutation (not identity)
 
     // set reasonable defaults
     SimulatedAnnealingParameters ();
@@ -57,7 +57,7 @@ struct ReproduceDistancesObjective : PermutationObjective {
 
     static double sqr (double x) { return x * x; }
 
-    // weihgting of distances: it is more important to reproduce small
+    // weighting of distances: it is more important to reproduce small
     // distances well
     double dis_weight (double x) const;
 
@@ -139,7 +139,7 @@ struct PolysemousTraining: SimulatedAnnealingParameters {
     // sets default values
     PolysemousTraining ();
 
-    /// reorder the centroids so that the Hamming distace becomes a
+    /// reorder the centroids so that the Hamming distance becomes a
     /// good approximation of the SDC distance (called by train)
     void optimize_pq_for_hamming (ProductQuantizer & pq,
                                   size_t n, const float *x) const;
