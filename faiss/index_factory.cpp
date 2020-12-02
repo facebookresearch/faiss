@@ -66,9 +66,11 @@ struct VTChain {
 /// what kind of training does this coarse quantizer require?
 char get_trains_alone(const Index *coarse_quantizer) {
     return
+        dynamic_cast<const IndexFlat*>(coarse_quantizer) ? 0 :
+        // multi index just needs to be quantized
         dynamic_cast<const MultiIndexQuantizer*>(coarse_quantizer) ? 1 :
         dynamic_cast<const IndexHNSWFlat*>(coarse_quantizer) ? 2 :
-        0;
+        2; // for complicated indexes, we assume they can't be used as a kmeans index
 }
 
 bool str_ends_with(const std::string& s, const std::string& suffix)
@@ -188,6 +190,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             if (!parenthesis_ivf.empty()) {
                 coarse_quantizer_1 =
                     index_factory(d, parenthesis_ivf.c_str(), metric);
+
             } else if (metric == METRIC_L2) {
                 coarse_quantizer_1 = new IndexFlatL2 (d);
             } else {

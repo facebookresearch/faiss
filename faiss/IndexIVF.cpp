@@ -88,11 +88,12 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
         }
         quantizer->is_trained = true;
     } else if (quantizer_trains_alone == 2) {
-        if (verbose)
+        if (verbose) {
             printf (
                 "Training L2 quantizer on %zd vectors in %zdD%s\n",
                 n, d,
                 clustering_index ? "(user provided index)" : "");
+        }
         FAISS_THROW_IF_NOT (metric_type == METRIC_L2);
         Clustering clus (d, nlist, cp);
         if (!clustering_index) {
