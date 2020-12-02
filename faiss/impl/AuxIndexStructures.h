@@ -199,7 +199,7 @@ struct RangeSearchPartialResult: BufferList {
  *
  * The DistanceComputer is not intended to be thread-safe (eg. because
  * it maintains counters) so the distance functions are not const,
- * instanciate one from each thread if needed.
+ * instantiate one from each thread if needed.
  ***********************************************************/
 struct DistanceComputer {
      using idx_t = Index::idx_t;
@@ -233,9 +233,9 @@ struct FAISS_API InterruptCallback {
 
     /** check if:
      * - an interrupt callback is set
-     * - the callback retuns true
+     * - the callback returns true
      * if this is the case, then throw an exception. Should not be called
-     * from multiple threds.
+     * from multiple threads.
      */
     static void check ();
 
