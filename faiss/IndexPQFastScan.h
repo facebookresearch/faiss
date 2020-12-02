@@ -85,6 +85,7 @@ struct IndexPQFastScan: Index  {
             idx_t n, const float* x, idx_t k,
             float* distances, idx_t* labels) const;
 
+
     template<class C>
     void search_implem_12(
             idx_t n, const float* x, idx_t k,

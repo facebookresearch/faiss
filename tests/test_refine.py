@@ -13,7 +13,6 @@ from faiss.contrib import datasets
 
 class TestDistanceComputer(unittest.TestCase):
 
-
     def do_test(self, factory_string, metric_type=faiss.METRIC_L2):
         ds = datasets.SyntheticDataset(32, 1000, 200, 20)
 
@@ -49,4 +48,6 @@ class TestDistanceComputer(unittest.TestCase):
 
     def test_distance_computer_VT(self):
         self.do_test("PCA20,SQ8")
+
+
 
