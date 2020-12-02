@@ -580,8 +580,8 @@ void IndexIVFPQFastScan::search_dispatch_implem(
 
     } else if (impl >= 10 && impl <= 13) {
         size_t ndis = 0, nlist_visited = 0;
-        int nt = omp_get_max_threads();
-        if (nt < 2 || n < nt) {
+        int nt = std::min(omp_get_max_threads(), int(n));
+        if (nt < 2) {
             if (impl == 12 || impl == 13) {
                 search_implem_12<C>
                     (n, x, k, distances, labels, impl, &ndis, &nlist_visited);

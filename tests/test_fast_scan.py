@@ -36,10 +36,10 @@ class TestSearch(unittest.TestCase):
 
 class TestRounding(unittest.TestCase):
 
-    def do_test_rounding(self, implem=4):
+    def do_test_rounding(self, implem=4, metric=faiss.METRIC_L2):
         ds = datasets.SyntheticDataset(32, 2000, 5000, 200)
 
-        index = faiss.index_factory(32, 'PQ16x4')
+        index = faiss.index_factory(32, 'PQ16x4', metric)
         index.train(ds.get_train())
         index.add(ds.get_database())
         Dref, Iref = index.search(ds.get_queries(), 10)
@@ -60,7 +60,9 @@ class TestRounding(unittest.TestCase):
         recalls = {}
         for rank in 1, 10:
             recalls[rank] = (Iref[:, :1] == I4[:, :rank]).sum() / nq
-        self.assertGreater(recalls[1], 0.99)
+
+        min_r1 = 0.98 if metric == faiss.METRIC_INNER_PRODUCT else 0.99
+        self.assertGreater(recalls[1], min_r1)
         self.assertGreater(recalls[10], 0.995)
         # check accuracy of distances
         # err3 = ((D3 - D2) ** 2).sum()
@@ -71,11 +73,20 @@ class TestRounding(unittest.TestCase):
     def test_implem_4(self):
         self.do_test_rounding(4)
 
+    def test_implem_4_ip(self):
+        self.do_test_rounding(4, faiss.METRIC_INNER_PRODUCT)
+
     def test_implem_12(self):
         self.do_test_rounding(12)
 
+    def test_implem_12_ip(self):
+        self.do_test_rounding(12, faiss.METRIC_INNER_PRODUCT)
+
     def test_implem_14(self):
         self.do_test_rounding(14)
+
+    def test_implem_14_ip(self):
+        self.do_test_rounding(12, faiss.METRIC_INNER_PRODUCT)
 
 #########################################################
 # Kernel unit test
@@ -186,11 +197,11 @@ class TestImplems(unittest.TestCase):
         self.cache = {}
         self.k = 10
 
-    def get_index(self, d):
-        if d not in self.cache:
+    def get_index(self, d, metric):
+        if (d, metric) not in self.cache:
             ds = datasets.SyntheticDataset(d, 1000, 2000, 200)
             target_size = d // 2
-            index = faiss.index_factory(d, 'PQ%dx4' % target_size)
+            index = faiss.index_factory(d, 'PQ%dx4' % target_size, metric)
             index.train(ds.get_train())
             index.add(ds.get_database())
 
@@ -199,12 +210,12 @@ class TestImplems(unittest.TestCase):
             index2.implem = 4
             Dref, Iref = index2.search(ds.get_queries(), 10)
 
-            self.cache[d] = (ds, index, Dref, Iref)
+            self.cache[(d, metric)] = (ds, index, Dref, Iref)
 
-        return self.cache[d]
+        return self.cache[(d, metric)]
 
-    def do_with_params(self, d, params):
-        ds, index, Dref, Iref = self.get_index(d)
+    def do_with_params(self, d, params, metric=faiss.METRIC_L2):
+        ds, index, Dref, Iref = self.get_index(d, metric)
 
         index2 = self.build_fast_scan_index(index, params)
 
@@ -239,6 +250,9 @@ class TestImplem12(TestImplems):
 
     def test_qbs6(self):
         self.do_with_params(32, 0x33)
+
+    def test_qbs6_ip(self):
+        self.do_with_params(32, 0x33, faiss.METRIC_INNER_PRODUCT)
 
     def test_qbs6b(self):
         # test codepath where qbs is not known at compile time

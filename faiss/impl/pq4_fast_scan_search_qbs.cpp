@@ -266,15 +266,20 @@ void pq4_accumulate_loop_qbs(
 
 // explicit template instantiations
 
-using Csi = CMax<uint16_t, int>;
 
 #define INSTANTIATE_ACCUMULATE_Q(RH) \
 template void pq4_accumulate_loop_qbs<RH> \
     (int, size_t, int, const uint8_t *, const uint8_t *, RH &);
 
+using Csi = CMax<uint16_t, int>;
 INSTANTIATE_ACCUMULATE_Q(SingleResultHandler<Csi>)
 INSTANTIATE_ACCUMULATE_Q(HeapHandler<Csi>)
 INSTANTIATE_ACCUMULATE_Q(ReservoirHandler<Csi>)
+using Csi2 = CMin<uint16_t, int>;
+INSTANTIATE_ACCUMULATE_Q(SingleResultHandler<Csi2>)
+INSTANTIATE_ACCUMULATE_Q(HeapHandler<Csi2>)
+INSTANTIATE_ACCUMULATE_Q(ReservoirHandler<Csi2>)
+
 using Cfl = CMax<uint16_t, int64_t>;
 using HHCsl = HeapHandler<Cfl, true>;
 using RHCsl = ReservoirHandler<Cfl, true>;

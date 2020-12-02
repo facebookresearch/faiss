@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <memory>
+#include <limits.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
@@ -164,7 +165,11 @@ void IndexPQFastScan::compute_quantized_LUT(
 {
     size_t dim12 = pq.ksub * pq.M;
     std::unique_ptr<float[]> dis_tables(new float [n * dim12]);
-    pq.compute_distance_tables (n, x, dis_tables.get());
+    if (metric_type == METRIC_L2) {
+        pq.compute_distance_tables (n, x, dis_tables.get());
+    } else {
+        pq.compute_inner_prod_tables (n, x, dis_tables.get());
+    }
 
     for(uint64_t i = 0; i < n; i++) {
         round_uint8_per_column(
@@ -191,27 +196,48 @@ void IndexPQFastScan::compute_quantized_LUT(
  ******************************************************************************/
 
 
-
 void IndexPQFastScan::search(
+                idx_t n, const float* x, idx_t k,
+                float* distances, idx_t* labels) const
+{
+    if (metric_type == METRIC_L2) {
+        search_dispatch_implem<true>(n, x, k, distances, labels);
+    } else {
+        search_dispatch_implem<false>(n, x, k, distances, labels);
+    }
+}
+
+
+template<bool is_max>
+void IndexPQFastScan::search_dispatch_implem(
                 idx_t n,
                 const float* x,
                 idx_t k,
                 float* distances,
                 idx_t* labels) const
 {
+    using Cfloat = typename std::conditional<is_max,
+        CMax<float, int64_t>, CMin<float, int64_t> >::type;
+
+    using C = typename std::conditional<is_max,
+        CMax<uint16_t, int>, CMin<uint16_t, int> >::type;
+
     if (implem == 1) {
         FAISS_THROW_IF_NOT(orig_codes);
-
+        FAISS_THROW_IF_NOT(is_max);
         float_maxheap_array_t res = {
             size_t(n), size_t(k), labels, distances };
-
         pq.search (x, n, orig_codes, ntotal, &res, true);
     } else if (implem == 2 || implem == 3 || implem == 4) {
         FAISS_THROW_IF_NOT(orig_codes);
 
         size_t dim12 = pq.ksub * pq.M;
         std::unique_ptr<float[]> dis_tables(new float [n * dim12]);
-        pq.compute_distance_tables (n, x, dis_tables.get());
+        if (is_max) {
+            pq.compute_distance_tables (n, x, dis_tables.get());
+        } else {
+            pq.compute_inner_prod_tables (n, x, dis_tables.get());
+        }
 
         std::vector<float> normalizers(n * 2);
 
@@ -225,24 +251,21 @@ void IndexPQFastScan::search(
                         &normalizers[2 * i], &normalizers[2 * i + 1]
                 );
             }
-
         }
-
-        using C = CMax<float, int64_t>;
 
         for (int64_t i = 0; i < n; i++) {
             int64_t *heap_ids = labels + i * k;
             float *heap_dis = distances + i * k;
 
-            heap_heapify<C> (k, heap_dis, heap_ids);
+            heap_heapify<Cfloat> (k, heap_dis, heap_ids);
 
-            pq_estimators_from_tables_generic<C>(
+            pq_estimators_from_tables_generic<Cfloat>(
                 pq, pq.nbits, orig_codes, ntotal,
                 dis_tables.get() + i * dim12,
                 k, heap_dis, heap_ids
             );
 
-            heap_reorder<C> (k, heap_dis, heap_ids);
+            heap_reorder<Cfloat> (k, heap_dis, heap_ids);
 
             if (implem == 4) {
                 float a = normalizers[2 * i];
@@ -254,15 +277,18 @@ void IndexPQFastScan::search(
             }
         }
     } else if (implem == 12 || implem == 13) {
-        search_implem_12(n, x, k, distances, labels);
+        FAISS_THROW_IF_NOT(ntotal < INT_MAX);
+        search_implem_12<C>(n, x, k, distances, labels);
     } else if (implem == 14 || implem == 15) {
-        search_implem_14(n, x, k, distances, labels);
+        FAISS_THROW_IF_NOT(ntotal < INT_MAX);
+        search_implem_14<C>(n, x, k, distances, labels);
     } else {
         FAISS_THROW_FMT("invalid implem %d", implem);
     }
 
 }
 
+template<class C>
 void IndexPQFastScan::search_implem_12(
                 idx_t n,
                 const float* x,
@@ -278,16 +304,13 @@ void IndexPQFastScan::search_implem_12(
     if (n > qbs2) {
         for (int64_t i0 = 0; i0 < n; i0 += qbs2) {
             int64_t i1 = std::min(i0 + qbs2, n);
-            search_implem_12(
+            search_implem_12<C>(
                     i1 - i0, x + d * i0, k,
                     distances + i0 * k, labels + i0 * k
             );
         }
         return;
     }
-
-
-    using C = CMax<uint16_t, int32_t>;
 
     size_t dim12 = pq.ksub * M2;
     AlignedTable<uint8_t> quantized_dis_tables(n * dim12);
@@ -379,12 +402,12 @@ void IndexPQFastScan::search_implem_12(
         FastScan_stats.t2 += handler.times[2];
         FastScan_stats.t3 += handler.times[3];
 
-
     }
 }
 
 FastScanStats FastScan_stats;
 
+template<class C>
 void IndexPQFastScan::search_implem_14(
                 idx_t n,
                 const float* x,
@@ -401,15 +424,13 @@ void IndexPQFastScan::search_implem_14(
     if (n > qbs2) {
         for (int64_t i0 = 0; i0 < n; i0 += qbs2) {
             int64_t i1 = std::min(i0 + qbs2, n);
-            search_implem_14(
+            search_implem_14<C>(
                     i1 - i0, x + d * i0, k,
                     distances + i0 * k, labels + i0 * k
             );
         }
         return;
     }
-
-    using C = CMax<uint16_t, int32_t>;
 
     size_t dim12 = pq.ksub * M2;
     AlignedTable<uint8_t> quantized_dis_tables(n * dim12);

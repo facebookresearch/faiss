@@ -113,7 +113,6 @@ struct IndexIVFPQFastScan: IndexIVF {
             idx_t n, const float* x, idx_t k,
             float* distances, idx_t* labels) const;
 
-
     template<class C>
     void search_implem_1(
             idx_t n, const float* x, idx_t k,
