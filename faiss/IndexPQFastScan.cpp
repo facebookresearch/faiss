@@ -12,6 +12,8 @@
 #include <memory>
 #include <limits.h>
 
+#include <omp.h>
+
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
 #include <faiss/utils/random.h>
@@ -37,11 +39,6 @@ IndexPQFastScan::IndexPQFastScan(
     bbs(bbs), ntotal2(0), M2(roundup(M, 2))
 {
     is_trained = false;
-    if (bbs == 32) {
-        implem = 12;
-    } else {
-        implem = 14;
-    }
 }
 
 IndexPQFastScan::IndexPQFastScan():
@@ -77,12 +74,6 @@ IndexPQFastScan::IndexPQFastScan(const IndexPQ & orig, int bbs):
             ntotal2, bbs, M2,
             codes.get()
     );
-
-    if (bbs == 32) {
-        implem = 12;
-    } else {
-        implem = 14;
-    }
 }
 
 void IndexPQFastScan::train (idx_t n, const float *x)
@@ -222,6 +213,24 @@ void IndexPQFastScan::search_dispatch_implem(
     using C = typename std::conditional<is_max,
         CMax<uint16_t, int>, CMin<uint16_t, int> >::type;
 
+    if (n == 0) {
+        return;
+    }
+
+    // actual implementation used
+    int impl = implem;
+
+    if (impl == 0) {
+        if (bbs == 32) {
+            impl = 12;
+        } else {
+            impl = 14;
+        }
+        if (k > 20) {
+            impl ++;
+        }
+    }
+
     if (implem == 1) {
         FAISS_THROW_IF_NOT(orig_codes);
         FAISS_THROW_IF_NOT(is_max);
@@ -276,25 +285,43 @@ void IndexPQFastScan::search_dispatch_implem(
                 }
             }
         }
-    } else if (implem == 12 || implem == 13) {
+    } else if (impl >= 12 && impl <= 15) {
         FAISS_THROW_IF_NOT(ntotal < INT_MAX);
-        search_implem_12<C>(n, x, k, distances, labels);
-    } else if (implem == 14 || implem == 15) {
-        FAISS_THROW_IF_NOT(ntotal < INT_MAX);
-        search_implem_14<C>(n, x, k, distances, labels);
+        int nt = std::min(omp_get_max_threads(), int(n));
+        if (nt < 2) {
+            if (impl == 12 || impl == 13) {
+                search_implem_12<C>(n, x, k, distances, labels, impl);
+            } else {
+                search_implem_14<C>(n, x, k, distances, labels, impl);
+            }
+        } else {
+            // explicitly slice over threads
+#pragma omp parallel for num_threads(nt)
+            for (int slice = 0; slice < nt; slice++) {
+                idx_t i0 = n * slice / nt;
+                idx_t i1 = n * (slice + 1) / nt;
+                float *dis_i = distances + i0 * k;
+                idx_t *lab_i = labels + i0 * k;
+                if (impl == 12 || impl == 13) {
+                    search_implem_12<C>(
+                        i1 - i0, x + i0 * d, k, dis_i, lab_i, impl);
+                } else {
+                    search_implem_14<C>(
+                        i1 - i0, x + i0 * d, k, dis_i, lab_i, impl);
+                }
+            }
+        }
     } else {
-        FAISS_THROW_FMT("invalid implem %d", implem);
+        FAISS_THROW_FMT("invalid implem %d impl=%d", implem, impl);
     }
 
 }
 
 template<class C>
 void IndexPQFastScan::search_implem_12(
-                idx_t n,
-                const float* x,
-                idx_t k,
-                float* distances,
-                idx_t* labels) const
+                idx_t n, const float* x, idx_t k,
+                float* distances, idx_t* labels,
+                int impl) const
 {
 
     FAISS_THROW_IF_NOT(bbs == 32);
@@ -306,7 +333,7 @@ void IndexPQFastScan::search_implem_12(
             int64_t i1 = std::min(i0 + qbs2, n);
             search_implem_12<C>(
                     i1 - i0, x + d * i0, k,
-                    distances + i0 * k, labels + i0 * k
+                    distances + i0 * k, labels + i0 * k, impl
             );
         }
         return;
@@ -355,7 +382,7 @@ void IndexPQFastScan::search_implem_12(
 
         handler.to_flat_arrays(distances, labels, normalizers.get());
 
-    } else if (implem == 12) {
+    } else if (impl == 12) {
 
         std::vector<uint16_t> tmp_dis(n * k);
         std::vector<int32_t> tmp_ids(n * k);
@@ -378,7 +405,7 @@ void IndexPQFastScan::search_implem_12(
         }
 
 
-    } else { // implem == 13
+    } else { // impl == 13
 
         ReservoirHandler<C> handler(n, ntotal, k, 2 * k);
         handler.disable = bool(skip & 2);
@@ -409,11 +436,8 @@ FastScanStats FastScan_stats;
 
 template<class C>
 void IndexPQFastScan::search_implem_14(
-                idx_t n,
-                const float* x,
-                idx_t k,
-                float* distances,
-                idx_t* labels) const
+                idx_t n, const float* x, idx_t k,
+                float* distances, idx_t* labels, int impl) const
 {
 
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
@@ -426,7 +450,7 @@ void IndexPQFastScan::search_implem_14(
             int64_t i1 = std::min(i0 + qbs2, n);
             search_implem_14<C>(
                     i1 - i0, x + d * i0, k,
-                    distances + i0 * k, labels + i0 * k
+                    distances + i0 * k, labels + i0 * k, impl
             );
         }
         return;
@@ -461,7 +485,7 @@ void IndexPQFastScan::search_implem_14(
         }
         handler.to_flat_arrays(distances, labels, normalizers.get());
 
-    } else if (implem == 14) {
+    } else if (impl == 14) {
 
         std::vector<uint16_t> tmp_dis(n * k);
         std::vector<int32_t> tmp_ids(n * k);
@@ -484,7 +508,7 @@ void IndexPQFastScan::search_implem_14(
         }
 
 
-    } else { // implem == 15
+    } else { // impl == 15
 
         ReservoirHandler<C> handler(n, ntotal, k, 2 * k);
         handler.disable = bool(skip & 2);

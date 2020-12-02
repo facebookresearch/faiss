@@ -25,7 +25,7 @@ namespace faiss {
  * 12: blocked loop with internal loop on Q with qbs
  * 13: same with reservoir accumulator to store results
  * 14: no qbs with heap accumulator
- * 15: no qbs with reseroir accumulator
+ * 15: no qbs with reservoir accumulator
  */
 
 struct IndexPQFastScan: Index  {
@@ -88,12 +88,12 @@ struct IndexPQFastScan: Index  {
     template<class C>
     void search_implem_12(
             idx_t n, const float* x, idx_t k,
-            float* distances, idx_t* labels) const;
+            float* distances, idx_t* labels, int impl) const;
 
     template<class C>
     void search_implem_14(
             idx_t n, const float* x, idx_t k,
-            float* distances, idx_t* labels) const;
+            float* distances, idx_t* labels, int impl) const;
 
 };
 

@@ -591,7 +591,7 @@ void IndexIVFPQFastScan::search_dispatch_implem(
             }
         } else {
             // explicitly slice over threads
-#pragma omp parallel for reduction(+: ndis, nlist_visited)
+#pragma omp parallel for num_threads(nt) reduction(+: ndis, nlist_visited)
             for (int slice = 0; slice < nt; slice++) {
                 idx_t i0 = n * slice / nt;
                 idx_t i1 = n * (slice + 1) / nt;
