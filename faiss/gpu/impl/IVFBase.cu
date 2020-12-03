@@ -7,7 +7,7 @@
 
 
 #include <faiss/gpu/impl/IVFBase.cuh>
-#include <faiss/InvertedLists.h>
+#include <faiss/invlists/InvertedLists.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/impl/IVFAppend.cuh>

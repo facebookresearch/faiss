@@ -15,14 +15,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifndef _MSC_VER
-#include <sys/mman.h>
-#endif // !_MSC_VER
-
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/io.h>
 #include <faiss/impl/io_macros.h>
 #include <faiss/utils/hamming.h>
+
+#include <faiss/invlists/InvertedListsIOHook.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
@@ -39,16 +37,14 @@
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexIVFPQFastScan.h>
+
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryFromFloat.h>
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexBinaryHash.h>
-
-#ifndef _MSC_VER
-#include <faiss/OnDiskInvertedLists.h>
-#endif // !_MSC_VER
-
 
 namespace faiss {
 
@@ -141,7 +137,10 @@ VectorTransform* read_VectorTransform (IOReader *f) {
         }
         vt = itqt;
     } else {
-        FAISS_THROW_MSG("fourcc not recognized");
+        FAISS_THROW_FMT(
+            "fourcc %ud (\"%s\") not recognized",
+            h, fourcc_inv_printable(h).c_str()
+        );
     }
     READ1 (vt->d_in);
     READ1 (vt->d_out);
@@ -167,7 +166,10 @@ static void read_ArrayInvertedLists_sizes (
             sizes[idsizes[j]] = idsizes[j + 1];
         }
     } else {
-        FAISS_THROW_MSG ("invalid list_type");
+        FAISS_THROW_FMT(
+            "list_type %ud (\"%s\") not recognized",
+            list_type, fourcc_inv_printable(list_type).c_str()
+        );
     }
 }
 
@@ -199,11 +201,6 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
         }
         return ails;
 
-#ifdef _MSC_VER
-    } else {
-        FAISS_THROW_MSG("Unsupported inverted list format for Windows");
-    }
-#else
     } else if (h == fourcc ("ilar") && (io_flags & IO_FLAG_SKIP_IVF_DATA)) {
         // code is always ilxx where xx is specific to the type of invlists we want
         // so we get the 16 high bits from the io_flag and the 16 low bits as "il"
@@ -218,7 +215,6 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
     } else {
         return InvertedListsIOHook::lookup(h)->read(f, io_flags);
     }
-#endif // !_MSC_VER
 
 }
 
@@ -226,8 +222,11 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
 static void read_InvertedLists (
         IndexIVF *ivf, IOReader *f, int io_flags) {
     InvertedLists *ils = read_InvertedLists (f, io_flags);
-    FAISS_THROW_IF_NOT (!ils || (ils->nlist == ivf->nlist &&
-                                 ils->code_size == ivf->code_size));
+    if (ils) {
+        FAISS_THROW_IF_NOT (ils->nlist == ivf->nlist);
+        FAISS_THROW_IF_NOT (ils->code_size == InvertedLists::INVALID_CODE_SIZE ||
+                            ils->code_size == ivf->code_size);
+    }
     ivf->invlists = ils;
     ivf->own_invlists = true;
 }
@@ -598,8 +597,36 @@ Index *read_index (IOReader *f, int io_flags) {
             dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table ();
         }
         idx = idxhnsw;
+    } else if(h == fourcc("IPfs")) {
+        IndexPQFastScan *idxpqfs = new IndexPQFastScan();
+        read_index_header (idxpqfs, f);
+        read_ProductQuantizer (&idxpqfs->pq, f);
+        READ1 (idxpqfs->implem);
+        READ1 (idxpqfs->bbs);
+        READ1 (idxpqfs->qbs);
+        READ1 (idxpqfs->ntotal2);
+        READ1 (idxpqfs->M2);
+        READVECTOR (idxpqfs->codes);
+        idx = idxpqfs;
+
+    } else if (h == fourcc("IwPf")) {
+        IndexIVFPQFastScan *ivpq = new IndexIVFPQFastScan();
+        read_ivf_header (ivpq, f);
+        READ1 (ivpq->by_residual);
+        READ1 (ivpq->code_size);
+        READ1 (ivpq->bbs);
+        READ1 (ivpq->M2);
+        READ1 (ivpq->implem);
+        READ1 (ivpq->qbs2);
+        read_ProductQuantizer (&ivpq->pq, f);
+        read_InvertedLists (ivpq, f, io_flags);
+        ivpq->precompute_table();
+        idx = ivpq;
     } else {
-        FAISS_THROW_FMT("Index type 0x%08x not supported\n", h);
+        FAISS_THROW_FMT(
+            "Index type 0x%08x (\"%s\") not recognized",
+            h, fourcc_inv_printable(h).c_str()
+        );
         idx = nullptr;
     }
     return idx;
@@ -780,7 +807,10 @@ IndexBinary *read_index_binary (IOReader *f, int io_flags) {
         }
         idx = idxmh;
     } else {
-        FAISS_THROW_FMT("Index type 0x%08x not supported\n", h);
+        FAISS_THROW_FMT(
+            "Index type %08x (\"%s\") not recognized",
+            h, fourcc_inv_printable(h).c_str()
+        );
         idx = nullptr;
     }
     return idx;
@@ -796,76 +826,6 @@ IndexBinary *read_index_binary (const char *fname, int io_flags) {
     IndexBinary *idx = read_index_binary (&reader, io_flags);
     return idx;
 }
-
-#ifndef _MSC_VER
-
-/**********************************************************
- * InvertedListIOHook's
- **********************************************************/
-
-InvertedListsIOHook::InvertedListsIOHook(
-        const std::string & key, const std::string & classname):
-    key(key), classname(classname)
-{}
-
-namespace {
-
-/// std::vector that deletes its contents
-struct IOHookTable: std::vector<InvertedListsIOHook*> {
-
-    IOHookTable() {
-        push_back(new OnDiskInvertedListsIOHook());
-    }
-
-    ~IOHookTable() {
-        for (auto x: *this) {
-            delete x;
-        }
-    }
-};
-
-static IOHookTable InvertedListsIOHook_table;
-
-} // anonymous namepsace
-
-InvertedListsIOHook* InvertedListsIOHook::lookup(int h)
-{
-    for(const auto & callback: InvertedListsIOHook_table) {
-        if (h == fourcc(callback->key)) {
-            return callback;
-        }
-    }
-    FAISS_THROW_FMT ("read_InvertedLists: could not load ArrayInvertedLists as %04x", h);
-}
-
-InvertedListsIOHook* InvertedListsIOHook::lookup_classname(const std::string & classname)
-{
-    for(const auto & callback: InvertedListsIOHook_table) {
-        if (callback->classname == classname) {
-            return callback;
-        }
-    }
-    FAISS_THROW_FMT ("read_InvertedLists: could not find classname %s", classname.c_str());
-}
-
-void InvertedListsIOHook::add_callback(InvertedListsIOHook *cb)
-{
-    InvertedListsIOHook_table.push_back(cb);
-}
-
-void InvertedListsIOHook::print_callbacks()
-{
-    printf("registered %zd InvertedListsIOHooks:\n",
-          InvertedListsIOHook_table.size());
-    for(const auto & cb: InvertedListsIOHook_table) {
-        printf("%08x %s %s\n",
-               fourcc(cb->key.c_str()),
-               cb->key.c_str(),
-               cb->classname.c_str());
-    }
-}
-
-#endif // !_MSC_VER
 
 
 

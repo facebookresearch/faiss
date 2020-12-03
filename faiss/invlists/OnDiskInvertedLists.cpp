@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include <faiss/OnDiskInvertedLists.h>
+#include <faiss/invlists/OnDiskInvertedLists.h>
 
 #include <pthread.h>
 
@@ -130,7 +130,8 @@ struct LockLevels {
 
     void print () {
         pthread_mutex_lock(&mutex1);
-        printf("State: level3_in_use=%d n_level2=%d level1_holders: [", level3_in_use, n_level2);
+        printf("State: level3_in_use=%d n_level2=%d level1_holders: [",
+               int(level3_in_use), n_level2);
         for (int k : level1_holders) {
             printf("%d ", k);
         }
@@ -299,8 +300,7 @@ void OnDiskInvertedLists::update_totsize (size_t new_size)
     // unmap file
     if (ptr != nullptr) {
         int err = munmap (ptr, totsize);
-        FAISS_THROW_IF_NOT_FMT (err == 0, "munmap error: %s",
-                                strerror(errno));
+        FAISS_THROW_IF_NOT_FMT (err == 0, "munmap error: %s", strerror(errno));
     }
     if (totsize == 0) {
         // must create file before truncating it
@@ -516,8 +516,9 @@ size_t OnDiskInvertedLists::allocate_slot (size_t capacity) {
     if (it == slots.end()) {
         // not enough capacity
         size_t new_size = totsize == 0 ? 32 : totsize * 2;
-        while (new_size - totsize < capacity)
+        while (new_size - totsize < capacity) {
             new_size *= 2;
+        }
         locks->lock_3 ();
         update_totsize(new_size);
         locks->unlock_3 ();

@@ -15,7 +15,7 @@
 #include <typeinfo>
 
 #include <faiss/IndexIVF.h>
-
+#include <faiss/invlists/InvertedListsIOHook.h>
 #include <faiss/index_io.h>
 
 namespace faiss {
@@ -109,7 +109,7 @@ struct OnDiskInvertedLists: InvertedLists {
 
     void prefetch_lists (const idx_t *list_nos, int nlist) const override;
 
-    virtual ~OnDiskInvertedLists ();
+    ~OnDiskInvertedLists () override;
 
     // private
 

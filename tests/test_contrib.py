@@ -9,6 +9,7 @@ import numpy as np
 import platform
 
 from faiss.contrib import datasets
+from faiss.contrib import inspect_tools
 
 from common import get_dataset_2
 try:
@@ -102,3 +103,23 @@ class TestExhaustiveSearch(unittest.TestCase):
 
         assert np.all(Inew == Iref)
         assert np.allclose(Dref, Dnew)
+
+
+class TestInspect(unittest.TestCase):
+
+    def test_LinearTransform(self):
+        # training data
+        xt = np.random.rand(1000, 20).astype('float32')
+        # test data
+        x = np.random.rand(10, 20).astype('float32')
+        # make the PCA matrix
+        pca = faiss.PCAMatrix(20, 10)
+        pca.train(xt)
+        # apply it to test data
+        yref = pca.apply_py(x)
+
+        A, b = inspect_tools.get_LinearTransform_matrix(pca)
+
+        # verify
+        ynew = x @ A.T + b
+        np.testing.assert_array_almost_equal(yref, ynew)

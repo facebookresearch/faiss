@@ -686,5 +686,45 @@ class TestSpectralHash(unittest.TestCase):
                     assert abs(ninter - self.ref_results[key]) <= 4
 
 
-if __name__ == '__main__':
-    unittest.main()
+class TestRefine(unittest.TestCase):
+
+    def do_test(self, metric):
+        d = 32
+        xt, xb, xq = get_dataset_2(d, 2000, 1000, 200)
+        index1 = faiss.index_factory(d, "PQ4x4np", metric)
+
+        Dref, Iref = faiss.knn(xq, xb, 10, metric)
+
+        index1.train(xt)
+        index1.add(xb)
+
+        D1, I1 = index1.search(xq, 100)
+
+        recall1 = (I1 == Iref[:, :1]).sum()
+
+        # add refine index on top
+        index2 = faiss.IndexRefineFlat(index1, xb)
+        index2.k_factor = 10.0
+        D2, I2 = index2.search(xq, 10)
+
+        # check distance is computed properly
+        for i in range(len(xq)):
+            x1 = xq[i]
+            x2 = xb[I2[i, 5]]
+            if metric == faiss.METRIC_L2:
+                dref = ((x1 - x2) ** 2).sum()
+            else:
+                dref = np.dot(x1, x2)
+            np.testing.assert_almost_equal(dref, D2[i, 5], decimal=5)
+
+        # check that with refinement, the recall@10 is the same as
+        # the original recall@100
+        recall2 = (I2 == Iref[:, :1]).sum()
+        # print("recalls", recall1, recall2)
+        self.assertEquals(recall1, recall2)
+
+    def test_IP(self):
+        self.do_test(faiss.METRIC_INNER_PRODUCT)
+
+    def test_L2(self):
+        self.do_test(faiss.METRIC_L2)

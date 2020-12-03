@@ -953,8 +953,18 @@ void pq2_8cents_table(
     }
 }
 
+simd8float32 load_simd8float32_partial(const float *x, int n) {
+    ALIGNED(32) float tmp[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    float *wp = tmp;
+    for (int i = 0; i < n; i++) {
+        *wp++ = *x++;
+    }
+    return simd8float32(tmp);
+}
 
 } // anonymous namespace
+
+
 
 
 void compute_PQ_dis_tables_dsub2(
@@ -984,7 +994,12 @@ void compute_PQ_dis_tables_dsub2(
             }
             for(size_t i = 0; i < nx; i++) {
                 simd8float32 xi;
-                xi.loadu(x + i * d + m0 * 2);
+                if (m1 == m0 + 4) {
+                    xi.loadu(x + i * d + m0 * 2);
+                } else {
+                    xi = load_simd8float32_partial(x + i * d + m0 * 2, 2 * (m1 - m0));
+                }
+
                 if(is_inner_product) {
                     pq2_8cents_table<true>(
                         centroids, xi,

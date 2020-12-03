@@ -31,10 +31,12 @@
 #pragma SWIG nowarn=389
 #pragma SWIG nowarn=341
 #pragma SWIG nowarn=512
+#pragma SWIG nowarn=362
 
 %include <stdint.i>
 
 typedef uint64_t size_t;
+
 
 #define __restrict
 
@@ -73,6 +75,11 @@ typedef uint64_t size_t;
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFFlat.h>
+
+#include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexIVFPQFastScan.h>
+#include <faiss/utils/quantize_lut.h>
+
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/impl/ThreadedIndex.h>
@@ -99,11 +106,14 @@ typedef uint64_t size_t;
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/partitioning.h>
 #include <faiss/impl/AuxIndexStructures.h>
 
+#include <faiss/invlists/BlockInvertedLists.h>
+
 #ifndef _MSC_VER
-#include <faiss/OnDiskInvertedLists.h>
+#include <faiss/invlists/OnDiskInvertedLists.h>
 #endif // !_MSC_VER
 
 #include <faiss/Clustering.h>
@@ -230,10 +240,15 @@ namespace std {
 
 %ignore *::cmp;
 
-%include  <faiss/utils/ordered_key_value.h>
-%include  <faiss/utils/Heap.h>
-%include  <faiss/utils/partitioning.h>
-%include  <faiss/utils/hamming.h>
+%include <faiss/utils/ordered_key_value.h>
+%include <faiss/utils/Heap.h>
+
+// this ignore seems to be ignored, so disable W362 above
+%ignore faiss::AlignedTable::operator=;
+
+%include <faiss/utils/AlignedTable.h>
+%include <faiss/utils/partitioning.h>
+%include <faiss/utils/hamming.h>
 
 int get_num_gpus();
 void gpu_profiler_start();
@@ -356,8 +371,13 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexLSH.h>
 %include  <faiss/impl/PolysemousTraining.h>
 %include  <faiss/IndexPQ.h>
-%include  <faiss/InvertedLists.h>
-%include  <faiss/DirectMap.h>
+%include  <faiss/impl/io.h>
+
+%include  <faiss/invlists/InvertedLists.h>
+%include  <faiss/invlists/InvertedListsIOHook.h>
+%ignore BlockInvertedListsIOHook;
+%include  <faiss/invlists/BlockInvertedLists.h>
+%include  <faiss/invlists/DirectMap.h>
 %ignore InvertedListScanner;
 %ignore BinaryInvertedListScanner;
 %include  <faiss/IndexIVF.h>
@@ -376,7 +396,7 @@ void gpu_sync_all_devices()
 #ifndef SWIGWIN
 %warnfilter(401) faiss::OnDiskInvertedListsIOHook;
 %ignore OnDiskInvertedListsIOHook;
-%include  <faiss/OnDiskInvertedLists.h>
+%include  <faiss/invlists/OnDiskInvertedLists.h>
 #endif // !SWIGWIN
 
 %include  <faiss/impl/lattice_Zn.h>
@@ -386,6 +406,10 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFPQ.h>
 %include  <faiss/IndexIVFPQR.h>
 %include  <faiss/Index2Layer.h>
+
+%include  <faiss/IndexPQFastScan.h>
+%include  <faiss/IndexIVFPQFastScan.h>
+%include  <faiss/utils/quantize_lut.h>
 
 %include  <faiss/IndexBinary.h>
 %include  <faiss/IndexBinaryFlat.h>
@@ -481,6 +505,7 @@ void gpu_sync_all_devices()
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
+    DOWNCAST ( IndexIVFPQFastScan )
     DOWNCAST ( IndexIVFSpectralHash )
     DOWNCAST ( IndexIVFScalarQuantizer )
     DOWNCAST ( IndexIVFFlatDedup )
@@ -488,6 +513,7 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexIVF )
     DOWNCAST ( IndexFlat )
     DOWNCAST ( IndexRefineFlat )
+    DOWNCAST ( IndexPQFastScan )
     DOWNCAST ( IndexPQ )
     DOWNCAST ( IndexScalarQuantizer )
     DOWNCAST ( IndexLSH )
@@ -558,6 +584,7 @@ void gpu_sync_all_devices()
 
 %typemap(out) faiss::InvertedLists * {
     DOWNCAST (ArrayInvertedLists)
+    DOWNCAST (BlockInvertedLists)
 #ifndef SWIGWIN
     DOWNCAST (OnDiskInvertedLists)
 #endif // !SWIGWIN
@@ -591,7 +618,6 @@ faiss::InvertedLists * downcast_InvertedLists (faiss::InvertedLists *il)
 }
 %}
 
-%include  <faiss/impl/io.h>
 %include  <faiss/index_io.h>
 %include  <faiss/clone_index.h>
 %newobject index_factory;
@@ -795,6 +821,50 @@ REV_SWIG_PTR(uint64_t, NPY_UINT64);
 %template(CMax_float_partition_fuzzy)
     faiss::partition_fuzzy<faiss::CMax<float, int64_t> >;
 
+%template(AlignedTableUint8) faiss::AlignedTable<uint8_t>;
+%template(AlignedTableUint16) faiss::AlignedTable<uint16_t>;
+%template(AlignedTableFloat32) faiss::AlignedTable<float>;
+
+%inline %{
+
+// SWIG seems to have has some trouble resolving the template type here, so
+// declare explicitly
+uint16_t CMax_uint16_partition_fuzzy(
+        uint16_t *vals, int64_t *ids, size_t n,
+        size_t q_min, size_t q_max, size_t * q_out)
+{
+    return faiss::partition_fuzzy<faiss::CMax<unsigned short, int64_t> >(
+        vals, ids, n, q_min, q_max, q_out);
+}
+
+uint16_t CMin_uint16_partition_fuzzy(
+        uint16_t *vals, int64_t *ids, size_t n,
+        size_t q_min, size_t q_max, size_t * q_out)
+{
+    return faiss::partition_fuzzy<faiss::CMin<unsigned short, int64_t> >(
+        vals, ids, n, q_min, q_max, q_out);
+}
+
+// and overload with the int32 version
+
+uint16_t CMax_uint16_partition_fuzzy(
+        uint16_t *vals, int *ids, size_t n,
+        size_t q_min, size_t q_max, size_t * q_out)
+{
+    return faiss::partition_fuzzy<faiss::CMax<unsigned short, int> >(
+        vals, ids, n, q_min, q_max, q_out);
+}
+
+uint16_t CMin_uint16_partition_fuzzy(
+        uint16_t *vals, int *ids, size_t n,
+        size_t q_min, size_t q_max, size_t * q_out)
+{
+    return faiss::partition_fuzzy<faiss::CMin<unsigned short, int> >(
+        vals, ids, n, q_min, q_max, q_out);
+}
+
+%}
+
 /*******************************************************************
  * Expose a few basic functions
  *******************************************************************/
@@ -831,7 +901,6 @@ void * cast_integer_to_void_ptr (long long x) {
 }
 
 %}
-
 
 
 /*******************************************************************

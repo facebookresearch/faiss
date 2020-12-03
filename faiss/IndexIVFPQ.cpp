@@ -371,7 +371,7 @@ void IndexIVFPQ::reconstruct_from_offset (int64_t list_no, int64_t offset,
 
 
 /// 2G by default, accommodates tables up to PQ32 w/ 65536 centroids
-size_t IndexIVFPQ::precomputed_table_max_bytes = ((size_t)1) << 31;
+size_t precomputed_table_max_bytes = ((size_t)1) << 31;
 
 /** Precomputed tables for residuals
  *
@@ -403,10 +403,22 @@ size_t IndexIVFPQ::precomputed_table_max_bytes = ((size_t)1) << 31;
  * is faster when the length of the lists is > ksub * M.
  */
 
-void IndexIVFPQ::precompute_table ()
+void initialize_IVFPQ_precomputed_table (
+    int &use_precomputed_table,
+    const Index *quantizer,
+    const ProductQuantizer &pq,
+    AlignedTable<float> & precomputed_table,
+    bool verbose
+)
 {
-    if (use_precomputed_table == -1)
+    size_t nlist = quantizer->ntotal;
+    size_t d = quantizer->d;
+    FAISS_THROW_IF_NOT(d == pq.d);
+
+    if (use_precomputed_table == -1) {
+        precomputed_table.resize (0);
         return;
+    }
 
     if (use_precomputed_table == 0) { // then choose the type of table
         if (quantizer->metric_type == METRIC_INNER_PRODUCT) {
@@ -414,6 +426,7 @@ void IndexIVFPQ::precompute_table ()
                 printf("IndexIVFPQ::precompute_table: precomputed "
                         "tables not needed for inner product quantizers\n");
             }
+            precomputed_table.resize (0);
             return;
         }
         const MultiIndexQuantizer *miq =
@@ -491,6 +504,16 @@ void IndexIVFPQ::precompute_table ()
     }
 
 }
+
+void IndexIVFPQ::precompute_table ()
+{
+    initialize_IVFPQ_precomputed_table (
+        use_precomputed_table, quantizer, pq, precomputed_table,
+        verbose
+    );
+}
+
+
 
 namespace {
 
@@ -676,11 +699,12 @@ struct QueryTables {
         } else if (use_precomputed_table == 1) {
             dis0 = coarse_dis;
 
-            fvec_madd (pq.M * pq.ksub,
-                       &ivfpq.precomputed_table [key * pq.ksub * pq.M],
-                       -2.0, sim_table_2,
-                       sim_table);
-
+            fvec_madd (
+                    pq.M * pq.ksub,
+                    ivfpq.precomputed_table.data() + key * pq.ksub * pq.M,
+                    -2.0, sim_table_2,
+                    sim_table
+            );
 
             if (polysemous_ht != 0) {
                 ivfpq.quantizer->compute_residual (qi, residual_vec, key);
@@ -706,8 +730,8 @@ struct QueryTables {
                 k >>= cpq.nbits;
 
                 // get corresponding table
-                const float *pc = &ivfpq.precomputed_table
-                    [(ki * pq.M + cm * Mf) * pq.ksub];
+                const float *pc = ivfpq.precomputed_table.data() +
+                    (ki * pq.M + cm * Mf) * pq.ksub;
 
                 if (polysemous_ht == 0) {
 
@@ -741,7 +765,8 @@ struct QueryTables {
         if (use_precomputed_table == 1) {
             dis0 = coarse_dis;
 
-            const float * s = &ivfpq.precomputed_table [key * pq.ksub * pq.M];
+            const float * s = ivfpq.precomputed_table.data() +
+                    key * pq.ksub * pq.M;
             for (int m = 0; m < pq.M; m++) {
                 sim_table_ptrs [m] = s;
                 s += pq.ksub;
@@ -761,8 +786,8 @@ struct QueryTables {
                 int ki = k & ((uint64_t(1) << cpq.nbits) - 1);
                 k >>= cpq.nbits;
 
-                const float *pc = &ivfpq.precomputed_table
-                    [(ki * pq.M + cm * Mf) * pq.ksub];
+                const float *pc = ivfpq.precomputed_table.data() +
+                    (ki * pq.M + cm * Mf) * pq.ksub;
 
                 for (int m = m0; m < m0 + Mf; m++) {
                     sim_table_ptrs [m] = pc;

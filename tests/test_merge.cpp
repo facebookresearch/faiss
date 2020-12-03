@@ -16,7 +16,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/IndexPreTransform.h>
-#include <faiss/OnDiskInvertedLists.h>
+#include <faiss/invlists/OnDiskInvertedLists.h>
 #include <faiss/IVFlib.h>
 
 

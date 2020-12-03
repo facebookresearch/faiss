@@ -110,7 +110,11 @@ struct IndexRefineFlat: Index {
     /// the base_index (should be >= 1)
     float k_factor;
 
+    /// intitialize from empty index
     explicit IndexRefineFlat (Index *base_index);
+
+    /// initialize from index and corresponding data
+    IndexRefineFlat(Index *base_index, const float *xb);
 
     IndexRefineFlat ();
 

@@ -72,6 +72,23 @@ class TestFactory(unittest.TestCase):
         indexpq = faiss.downcast_index(index.storage)
         assert not indexpq.do_polysemous_training
 
+    def test_factory_fast_scan(self):
+        index = faiss.index_factory(56, "PQ28x4fs")
+        self.assertEqual(index.bbs, 32)
+        index = faiss.index_factory(56, "PQ28x4fs_64")
+        self.assertEqual(index.bbs, 64)
+        index = faiss.index_factory(56, "IVF50,PQ28x4fs_64", faiss.METRIC_INNER_PRODUCT)
+        self.assertEqual(index.bbs, 64)
+        self.assertEqual(index.nlist, 50)
+        self.assertTrue(index.cp.spherical)
+        index = faiss.index_factory(56, "PQ28x4fs,RFlat")
+        self.assertEqual(index.k_factor, 1.0)
+
+    def test_parenthesis(self):
+        index = faiss.index_factory(50, "IVF32(PQ25),Flat")
+        quantizer = faiss.downcast_index(index.quantizer)
+        self.assertEqual(quantizer.pq.M, 25)
+
 
 class TestCloneSize(unittest.TestCase):
 

@@ -34,6 +34,8 @@
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexIVFPQFastScan.h>
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryHNSW.h>
@@ -68,7 +70,7 @@ char get_trains_alone(const Index *coarse_quantizer) {
 }
 
 
-}
+} // anonymous namespace
 
 Index *index_factory (int d, const char *description_in, MetricType metric)
 {
@@ -76,6 +78,7 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                        metric == METRIC_INNER_PRODUCT);
     VTChain vts;
     Index *coarse_quantizer = nullptr;
+    std::unique_ptr<Index> parenthesis_index;
     Index *index = nullptr;
     bool add_idmap = false;
     bool make_IndexRefineFlat = false;
@@ -84,6 +87,23 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
 
     std::string description(description_in);
     char *ptr;
+
+    if (description.find('(') != std::string::npos) {
+        // then we make a sub-index and remove the () from the description
+        int i0 = description.find('(');
+        int i1 = description.find(')');
+        FAISS_THROW_IF_NOT_MSG(
+            i1 != std::string::npos, "string must contain closing parenthesis");
+        std::string sub_description = description.substr(i0 + 1, i1 - i0 - 1);
+        // printf("substring=%s\n", sub_description.c_str());
+
+        parenthesis_index.reset(index_factory(d, sub_description.c_str(), metric));
+
+        description = description.erase(i0, i1 - i0 + 1);
+
+        // printf("new description=%s\n", description.c_str());
+
+    }
 
     int64_t ncentroids = -1;
     bool use_2layer = false;
@@ -95,6 +115,8 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
         int d_out, opq_M, nbit, M, M2, pq_m, ncent, r2;
         std::string stok(tok);
         nbit = 8;
+        int bbs = -1;
+        char c;
 
         // to avoid mem leaks with exceptions:
         // do all tests before any instanciation
@@ -144,11 +166,14 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
 
         } else if (!coarse_quantizer &&
                    sscanf (tok, "IVF%" PRId64, &ncentroids) == 1) {
-            if (metric == METRIC_L2) {
+            if (parenthesis_index) {
+                coarse_quantizer_1 = parenthesis_index.release();
+            } else if (metric == METRIC_L2) {
                 coarse_quantizer_1 = new IndexFlatL2 (d);
             } else {
                 coarse_quantizer_1 = new IndexFlatIP (d);
             }
+
         } else if (!coarse_quantizer && sscanf (tok, "IMI2x%d", &nbit) == 1) {
             FAISS_THROW_IF_NOT_MSG (metric == METRIC_L2,
                              "MultiIndex not implemented for inner prod search");
@@ -228,6 +253,29 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             del_coarse_quantizer.release ();
             index_ivf->own_fields = true;
             index_1 = index_ivf;
+        } else if (!index && (
+            sscanf (tok, "PQ%dx4fs_%d", &M, &bbs) == 2 ||
+            (sscanf (tok, "PQ%dx4f%c", &M, &c) == 2 && c == 's') )) {
+            if (bbs == -1) {
+                bbs = 32;
+            }
+            if (coarse_quantizer) {
+                IndexIVFPQFastScan *index_ivf = new IndexIVFPQFastScan(
+                    coarse_quantizer, d, ncentroids, M, 4, metric, bbs
+                );
+                index_ivf->quantizer_trains_alone =
+                    get_trains_alone (coarse_quantizer);
+                index_ivf->metric_type = metric;
+                index_ivf->cp.spherical = metric == METRIC_INNER_PRODUCT;
+                del_coarse_quantizer.release ();
+                index_ivf->own_fields = true;
+                index_1 = index_ivf;
+            } else {
+                IndexPQFastScan *index_pq = new IndexPQFastScan (
+                    d, M, nbit, metric, bbs
+                );
+                index_1 = index_pq;
+            }
         } else if (!index && (sscanf (tok, "PQ%dx%d", &M, &nbit) == 2 ||
                               sscanf (tok, "PQ%d", &M) == 1 ||
                               sscanf (tok, "PQ%dnp", &M) == 1)) {

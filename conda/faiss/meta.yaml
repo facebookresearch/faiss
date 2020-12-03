@@ -77,7 +77,7 @@ outputs:
         - scipy
         - pytorch
       commands:
-        - python -m unittest discover -s tests -p "test_*"
-        - python -m unittest discover -s tests -p "torch_*"
+        - python -X faulthandler -m unittest discover -v -s tests -p "test_*"
+        - python -X faulthandler -m unittest discover -v -s tests -p "torch_*"
       source_files:
         - tests/
