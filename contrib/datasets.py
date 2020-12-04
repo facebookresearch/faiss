@@ -6,6 +6,7 @@
 import os
 import numpy as np
 import faiss
+import urllib.request
 
 from .vecs_io import fvecs_read, ivecs_read, bvecs_mmap, fvecs_mmap
 from .exhaustive_search import knn
@@ -96,7 +97,8 @@ class SyntheticDataset(Dataset):
         return self.xq
 
     def get_train(self, maxtrain=None):
-        maxtrain = maxtrain or self.nt
+        if maxtrain is None:
+            maxtrain = self.nt
         return self.xt[:maxtrain]
 
     def get_database(self):
@@ -140,7 +142,8 @@ class DatasetSIFT1M(Dataset):
         return fvecs_read(self.basedir + "sift_query.fvecs")
 
     def get_train(self, maxtrain=None):
-        maxtrain = maxtrain or self.nt
+        if maxtrain is None:
+            maxtrain = self.nt
         return fvecs_read(self.basedir + "sift_learn.fvecs")[:maxtrain]
 
     def get_database(self):
@@ -176,7 +179,8 @@ class DatasetBigANN(Dataset):
         return sanitize(bvecs_mmap(self.basedir + 'bigann_query.bvecs')[:])
 
     def get_train(self, maxtrain=None):
-        maxtrain = maxtrain or self.nt
+        if maxtrain is None:
+            maxtrain = self.nt
         return sanitize(bvecs_mmap(self.basedir + 'bigann_learn.bvecs')[:maxtrain])
 
     def get_groundtruth(self, k=None):
@@ -224,7 +228,8 @@ class DatasetDeep1B(Dataset):
         return sanitize(fvecs_read(self.basedir + "deep1B_queries.fvecs"))
 
     def get_train(self, maxtrain=None):
-        maxtrain = maxtrain or self.nt
+        if maxtrain is None:
+            maxtrain = self.nt
         return sanitize(fvecs_mmap(self.basedir + "learn.fvecs")[:maxtrain])
 
     def get_groundtruth(self, k=None):
@@ -246,15 +251,35 @@ class DatasetDeep1B(Dataset):
             yield sanitize(xb[j0: min(j0 + bs, i1)])
 
 
+def download_url(url, dest):
+    dirname = os.path.dirname(dest)
+    os.path.exists(dirname) or os.mkdir(dirname)
+    print(f"downloading {url} to {dest}")
+    size = 0
+    with urllib.request.urlopen(url) as fin:
+        with open(dest, "wb") as fout:
+            while True:
+                data = fin.read(20 * 1024 * 1024)
+                if not data:
+                    break
+                fout.write(data)
+                size += len(data)
+                print(f"   {size} bytes", end="\r", flush=True)
+        print()
+
+
 class DatasetGlove(Dataset):
     """
     Data from http://ann-benchmarks.com/glove-100-angular.hdf5
     """
 
-    def __init__(self, loc=None):
+    def __init__(self, loc=None, download=False):
         import h5py
         if not loc:
             loc = dataset_basedir + 'glove/glove-100-angular.hdf5'
+        if download:
+            url = "http://ann-benchmarks.com/glove-100-angular.hdf5"
+            download_url(url, loc)
         self.glove_h5py = h5py.File(loc, 'r')
         # IP and L2 are equivalent in this case, but it is traditionally seen as an IP dataset
         self.metric = 'IP'
