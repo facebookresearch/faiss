@@ -56,6 +56,7 @@ This generates the system-dependent configuration/build files.
 
 A few useful options:
 - `-DFAISS_ENABLE_GPU=OFF` in order to build the CPU part only.
+- `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the MKL BLAS implementation (otherwise it uses the system BLAS that is usually slow).
 - `-DCUDAToolkit_ROOT=/path/to/cuda-10.1` in order to hint to the path of
 the cudatoolkit.
 - `-DCMAKE_CUDA_ARCHITECTURES="75;72"` for specifying which GPU architectures to build against.
@@ -71,13 +72,13 @@ found, or the CPU part only otherwise).
 
 This installs the headers and libraries.
 
-Faiss is supported on x86_64 machines on Linux and Mac OS.
+Faiss is supported on x86_64 machines on Linux, Mac OS and Windows.
 It has been found to run on other platforms as well, see [other platforms](https://github.com/facebookresearch/faiss/wiki/Related-projects#bindings-to-other-languages-and-porting-to-other-platforms)
 
 Faiss requires a C++ compiler that understands:
 - the Intel intrinsics for SSE instructions,
-- the GCC intrinsic for the popcount instruction,
-- basic OpenMP.
+- the GCC intrinsic for the popcount and a few other instruction,
+- basic OpenMP (2.x).
 
 There are indications for specific configurations in the
 troubleshooting section of the wiki.
@@ -99,16 +100,8 @@ thus does not need an include path.
 
 There are several BLAS implementations, depending on the OS and
 machine. To have reasonable performance, the BLAS library should be
-multithreaded.
-
-To check that the link flags are correct, and verify whether the
-implementation uses 32 or 64 bit integers, you can
-
-  `make test_blas`
-
-and run
-
-  `./misc/test_blas`
+multithreaded. On Intel platforms, MKL is the fastest BLAS implementation, 
+see flags above on how to enable it.
 
 
 Testing Faiss
@@ -116,19 +109,24 @@ Testing Faiss
 
 A basic usage example is in
 
-  `demos/demo_ivfpq_indexing`
+  `demos/demo_ivfpq_indexing.cpp`
 
-which you can build by calling
-  `make demo_ivfpq_indexing`
+which you can build by calling 
+
+```
+make -C build demo_ivfpq_indexing
+./build/demo_ivfpq_indexing
+```
 
 It makes a small index, stores it and performs some searches. A normal
 runtime is around 20s. With a fast machine and Intel MKL's BLAS it
 runs in 2.5s.
 
-To run the whole test suite:
+To run the whole test suite, make sure that `cmake` has `-DBUILD_TESTING=ON`:
 
-   `make test` (for the CPU part)
-
+```
+make -C build test
+```
 
 A real-life benchmark
 ---------------------
@@ -144,8 +142,7 @@ directory for this repository.
 Then compile and run the following (after ensuring you have installed faiss):
 
 ```
-make demos
-./demos/demo_sift1M
+make -C build demo_sift1M
 ```
 
 This is a demonstration of the high-level auto-tuning API. You can try
@@ -159,8 +156,9 @@ Python Interface
 The Python interface is provided via SWIG (Simple Wrapper and
 Interface Generator) and an additional level of manual wrappers (in faiss/python/faiss.py).
 
-SWIG generates two wrapper files: a Python file (`faiss/python/swigfaiss.py`) and a
-C++ file that must be compiled to a dynamic library (`faiss/python/_swigfaiss.so`).
+SWIG generates two wrapper files: a Python file `swigfaiss.py` and a
+C++ file that must be compiled to a dynamic library (`_swigfaiss.so`).
+There is an AVX2 variant of the files, suffixed with `_avx2`. 
 
 Testing the Python wrapper
 --------------------------
@@ -184,7 +182,6 @@ python -c "import faiss, numpy
 faiss.Kmeans(10, 20).train(numpy.random.rand(1000, 10).astype('float32'))"
 ```
 
-
 Real-life test
 --------------
 
@@ -199,6 +196,18 @@ PYTHONPATH=. python demos/demo_auto_tune.py
 
 It will cycle through a few types of indexes and find optimal
 operating points. You can play around with the types of indexes.
+
+Developing in Faiss
+-------------------
+
+To repeatedly compile and run a python test, the following command line is useful: 
+
+```
+cmake -B build -DCMAKE_CXX_COMPILER=clang++-8 -DFAISS_ENABLE_GPU=OFF -DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=path_to_mkl
+ -DPython_EXECUTABLE=$(which python) -DFAISS_OPT_LEVEL=avx2  -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+
+make -j -C build VERBOSE=1 swigfaiss &&  (cd build/faiss/python/ ; python setup.py build ) && cp contrib/*.py build/faiss/python/build/lib/faiss/contrib/ && (pp=$PWD/build/faiss/python/build/lib;cd tests;  PYTHONPATH=$pp python -m unittest  -v test_index )
+```
 
 
 Step 3: Compiling the GPU implementation
@@ -231,14 +240,17 @@ nvcc, except some of them that are not recognized and that should be
 escaped by prefixing them with -Xcompiler. Also link flags that are
 prefixed with -Wl, should be passed with -Xlinker.
 
-You may want to add `-j 10` to use 10 threads during compile.
+You may want to add `-j 10` to the `make` command to use 10 threads during compile.
 
 Testing the GPU implementation
 ------------------------------
 
 Compile the example with
 
-  `make demo_ivfpq_indexing_gpu`
+```
+make -C build demo_ivfpq_indexing_gpu
+```
+
 
 This produce the GPU code equivalent to the CPU
 demo_ivfpq_indexing. It also shows how to translate indexed from/to
