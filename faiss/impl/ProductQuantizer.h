@@ -219,12 +219,14 @@ struct PQDecoderGeneric {
 };
 
 struct PQDecoder8 {
+    static const int nbits = 8;
     const uint8_t *code;
     PQDecoder8(const uint8_t *code, int nbits);
     uint64_t decode();
 };
 
 struct PQDecoder16 {
+    static const int nbits = 16;
     const uint16_t *code;
     PQDecoder16(const uint8_t *code, int nbits);
     uint64_t decode();

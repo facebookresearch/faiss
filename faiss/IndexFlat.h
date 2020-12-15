@@ -94,47 +94,6 @@ struct IndexFlatL2:IndexFlat {
 
 
 
-/** Index that queries in a base_index (a fast one) and refines the
- *  results with an exact search, hopefully improving the results.
- */
-struct IndexRefineFlat: Index {
-
-    /// storage for full vectors
-    IndexFlat refine_index;
-
-    /// faster index to pre-select the vectors that should be filtered
-    Index *base_index;
-    bool own_fields;  ///< should the base index be deallocated?
-
-    /// factor between k requested in search and the k requested from
-    /// the base_index (should be >= 1)
-    float k_factor;
-
-    /// intitialize from empty index
-    explicit IndexRefineFlat (Index *base_index);
-
-    /// initialize from index and corresponding data
-    IndexRefineFlat(Index *base_index, const float *xb);
-
-    IndexRefineFlat ();
-
-    void train(idx_t n, const float* x) override;
-
-    void add(idx_t n, const float* x) override;
-
-    void reset() override;
-
-    void search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const override;
-
-    ~IndexRefineFlat() override;
-};
-
-
 /// optimized version for 1D "vectors".
 struct IndexFlat1D:IndexFlatL2 {
     bool continuous_update; ///< is the permutation updated continuously?

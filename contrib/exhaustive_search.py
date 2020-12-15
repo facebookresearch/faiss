@@ -16,6 +16,7 @@ def knn_ground_truth(xq, db_iterator, k):
     does not fit in RAM but for which we have an iterator that
     returns it block by block.
     """
+    LOG.info("knn_ground_truth queries size %s k=%d" % (xq.shape, k))
     t0 = time.time()
     nq, d = xq.shape
     rh = faiss.ResultHeap(nq, k)

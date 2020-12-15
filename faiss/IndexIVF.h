@@ -76,6 +76,7 @@ struct IVFSearchParameters {
 
 
 struct InvertedListScanner;
+struct IndexIVFStats;
 
 /** Index based on a inverted file (IVF)
  *
@@ -109,9 +110,10 @@ struct IndexIVF: Index, Level1Quantizer {
 
     /** Parallel mode determines how queries are parallelized with OpenMP
      *
-     * 0 (default): parallelize over queries
+     * 0 (default): split over queries
      * 1: parallelize over inverted lists
      * 2: parallelize over both
+     * 3: split over queries with a finer granularity
      *
      * PARALLEL_MODE_NO_HEAP_INIT: binary or with the previous to
      * prevent the heap to be initialized and finalized
@@ -178,13 +180,15 @@ struct IndexIVF: Index, Level1Quantizer {
      *                     instead in upper/lower 32 bit of result,
      *                     instead of ids (used for reranking).
      * @param params used to override the object's search parameters
+     * @param stats  search stats to be updated (can be null)
      */
     virtual void search_preassigned (
             idx_t n, const float *x, idx_t k,
             const idx_t *assign, const float *centroid_dis,
             float *distances, idx_t *labels,
             bool store_pairs,
-            const IVFSearchParameters *params=nullptr
+            const IVFSearchParameters *params=nullptr,
+            IndexIVFStats *stats=nullptr
             ) const;
 
     /** assign the vectors, then call search_preassign */
@@ -199,7 +203,8 @@ struct IndexIVF: Index, Level1Quantizer {
             const idx_t *keys, const float *coarse_dis,
             RangeSearchResult *result,
             bool store_pairs=false,
-            const IVFSearchParameters *params=nullptr) const;
+            const IVFSearchParameters *params=nullptr,
+            IndexIVFStats *stats=nullptr) const;
 
     /// get a scanner for this index (store_pairs means ignore labels)
     virtual InvertedListScanner *get_InvertedListScanner (
@@ -365,6 +370,7 @@ struct IndexIVFStats {
 
     IndexIVFStats () {reset (); }
     void reset ();
+    void add (const IndexIVFStats & other);
 };
 
 // global var that collects them all

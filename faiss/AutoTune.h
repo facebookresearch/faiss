@@ -81,7 +81,10 @@ struct IntersectionCriterion: AutoTuneCriterion {
 /**
  * Maintains a list of experimental results. Each operating point is a
  * (perf, t, key) triplet, where higher perf and lower t is
- * better. The key field is an arbitrary identifier for the operating point
+ * better. The key field is an arbitrary identifier for the operating point.
+ *
+ * Includes primitives to extract the Pareto-optimal operating points in the
+ * (perf, t) space.
  */
 
 struct OperatingPoint {
@@ -168,7 +171,7 @@ struct ParameterSpace {
     void display () const;
 
     /// add a new parameter (or return it if it exists)
-    ParameterRange &add_range(const char * name);
+    ParameterRange &add_range(const std::string & name);
 
     /// initialize with reasonable parameters for the index
     virtual void initialize (const Index * index);
@@ -179,7 +182,7 @@ struct ParameterSpace {
     /// set a combination of parameters described by a string
     void set_index_parameters (Index *index, const char *param_string) const;
 
-    /// set one of the parameters
+    /// set one of the parameters, returns whether setting was successful
     virtual void set_index_parameter (
         Index * index, const std::string & name, double val) const;
 

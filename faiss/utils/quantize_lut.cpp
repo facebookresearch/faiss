@@ -42,7 +42,7 @@ float round_uint8_and_mul(float *tab, size_t n) {
     return multiplier;
 }
 
-
+// there can be NaNs in tables, they should be ignored
 float tab_min(const float *tab, size_t n) {
     float min = HUGE_VAL;
     for(int i = 0; i < n; i++) {
@@ -185,6 +185,7 @@ void quantize_LUT_and_bias(
         round_tab(bias, nprobe, a, bias_min, biasq);
 
     } else if (biasq) {
+        // LUT is 3D
         std::vector<float> mins(nprobe * M);
         std::vector<float> bias2(nprobe);
         float bias_min = tab_min(bias, nprobe);

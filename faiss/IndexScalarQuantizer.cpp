@@ -192,7 +192,7 @@ void IndexIVFScalarQuantizer::encode_vectors(idx_t n, const float* x,
     size_t coarse_size = include_listnos ? coarse_code_size () : 0;
     memset(codes, 0, (code_size + coarse_size) * n);
 
-#pragma omp parallel if(n > 1)
+#pragma omp parallel if(n > 1000)
     {
         std::vector<float> residual (d);
 
@@ -222,7 +222,7 @@ void IndexIVFScalarQuantizer::sa_decode (idx_t n, const uint8_t *codes,
     std::unique_ptr<ScalarQuantizer::Quantizer> squant (sq.select_quantizer ());
     size_t coarse_size = coarse_code_size ();
 
-#pragma omp parallel if(n > 1)
+#pragma omp parallel if(n > 1000)
     {
         std::vector<float> residual (d);
 

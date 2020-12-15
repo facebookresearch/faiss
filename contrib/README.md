@@ -50,3 +50,7 @@ fields and converting them to the proper python array.
 (may require h5py)
 
 Defintion of how to access data for some standard datsets.
+
+### factory_tools.py
+
+Functions related to factory strings.

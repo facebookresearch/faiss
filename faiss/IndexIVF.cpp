@@ -88,12 +88,19 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
         }
         quantizer->is_trained = true;
     } else if (quantizer_trains_alone == 2) {
-        if (verbose)
+        if (verbose) {
             printf (
                 "Training L2 quantizer on %zd vectors in %zdD%s\n",
                 n, d,
                 clustering_index ? "(user provided index)" : "");
-        FAISS_THROW_IF_NOT (metric_type == METRIC_L2);
+        }
+        // also accept spherical centroids because in that case
+        // L2 and IP are equivalent
+        FAISS_THROW_IF_NOT (
+            metric_type == METRIC_L2 ||
+            (metric_type == METRIC_INNER_PRODUCT && cp.spherical)
+        );
+
         Clustering clus (d, nlist, cp);
         if (!clustering_index) {
             IndexFlatL2 assigner (d);
@@ -263,23 +270,76 @@ void IndexIVF::set_direct_map_type (DirectMap::Type type)
     direct_map.set_type (type, invlists, ntotal);
 }
 
-
+/** It is a sad fact of software that a conceptually simple function like this
+ * becomes very complex when you factor in several ways of parallelizing +
+ * interrupt/error handling + collecting stats + min/max collection. The
+ * codepath that is used 95% of time is the one for parallel_mode = 0 */
 void IndexIVF::search (idx_t n, const float *x, idx_t k,
                          float *distances, idx_t *labels) const
 {
-    std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
-    std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
 
-    double t0 = getmillisecs();
-    quantizer->search (n, x, nprobe, coarse_dis.get(), idx.get());
-    indexIVF_stats.quantization_time += getmillisecs() - t0;
 
-    t0 = getmillisecs();
-    invlists->prefetch_lists (idx.get(), n * nprobe);
+    // search function for a subset of queries
+    auto sub_search_func = [this, k]
+            (idx_t n, const float *x, float *distances, idx_t *labels,
+             IndexIVFStats *ivf_stats) {
 
-    search_preassigned (n, x, k, idx.get(), coarse_dis.get(),
-                        distances, labels, false);
-    indexIVF_stats.search_time += getmillisecs() - t0;
+        std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
+        std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
+
+        double t0 = getmillisecs();
+        quantizer->search (n, x, nprobe, coarse_dis.get(), idx.get());
+
+        double t1 = getmillisecs();
+        invlists->prefetch_lists (idx.get(), n * nprobe);
+
+        search_preassigned (n, x, k, idx.get(), coarse_dis.get(),
+                            distances, labels, false, nullptr, ivf_stats);
+        double t2 = getmillisecs();
+        ivf_stats->quantization_time += t1 - t0;
+        ivf_stats->search_time += t2 - t0;
+    };
+
+
+    if ((parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT) == 0) {
+        int nt = std::min(omp_get_max_threads(), int(n));
+        std::vector<IndexIVFStats> stats(nt);
+        std::mutex exception_mutex;
+        std::string exception_string;
+
+#pragma omp parallel for if (nt > 1)
+        for(idx_t slice = 0; slice < nt; slice++) {
+            IndexIVFStats local_stats;
+            idx_t i0 = n * slice / nt;
+            idx_t i1 = n * (slice + 1) / nt;
+            if (i1 > i0) {
+                try {
+                    sub_search_func(
+                            i1 - i0, x + i0 * d,
+                            distances + i0 * k, labels + i0 * k,
+                            &stats[slice]
+                    );
+                } catch(const std::exception & e) {
+                    std::lock_guard<std::mutex> lock(exception_mutex);
+                    exception_string = e.what();
+                }
+            }
+        }
+
+        if (!exception_string.empty()) {
+            FAISS_THROW_MSG (exception_string.c_str());
+        }
+
+        // collect stats
+        for(idx_t slice = 0; slice < nt; slice++) {
+            indexIVF_stats.add(stats[slice]);
+        }
+    } else {
+        // handle paralellization at level below (or don't run in parallel at all)
+        sub_search_func(n, x, distances, labels, &indexIVF_stats);
+    }
+
+
 }
 
 
@@ -288,7 +348,8 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
                                    const float *coarse_dis ,
                                    float *distances, idx_t *labels,
                                    bool store_pairs,
-                                   const IVFSearchParameters *params) const
+                                   const IVFSearchParameters *params,
+                                   IndexIVFStats *ivf_stats) const
 {
     long nprobe = params ? params->nprobe : this->nprobe;
     long max_codes = params ? params->max_codes : this->max_codes;
@@ -305,12 +366,11 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
     int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
     bool do_heap_init = !(this->parallel_mode & PARALLEL_MODE_NO_HEAP_INIT);
 
-    // don't start parallel section if single query
     bool do_parallel = omp_get_max_threads() >= 2 && (
-            pmode == 0 ? n > 1 :
+            pmode == 0 ? false :
+            pmode == 3 ? n > 1 :
             pmode == 1 ? nprobe > 1 :
             nprobe * n > 1);
-
 
 #pragma omp parallel if(do_parallel) reduction(+: nlistv, ndis, nheap)
     {
@@ -409,7 +469,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
          * Actual loops, depending on parallel_mode
          ****************************************************/
 
-        if (pmode == 0) {
+        if (pmode == 0 || pmode == 3) {
 
 #pragma omp for
             for (idx_t i = 0; i < n; i++) {
@@ -527,11 +587,12 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
         }
     }
 
-    indexIVF_stats.nq += n;
-    indexIVF_stats.nlist += nlistv;
-    indexIVF_stats.ndis += ndis;
-    indexIVF_stats.nheap_updates += nheap;
-
+    if (ivf_stats) {
+        ivf_stats->nq += n;
+        ivf_stats->nlist += nlistv;
+        ivf_stats->ndis += ndis;
+        ivf_stats->nheap_updates += nheap;
+    }
 }
 
 
@@ -551,7 +612,7 @@ void IndexIVF::range_search (idx_t nx, const float *x, float radius,
     invlists->prefetch_lists (keys.get(), nx * nprobe);
 
     range_search_preassigned (nx, x, radius, keys.get (), coarse_dis.get (),
-                              result);
+                              result, false, nullptr, &indexIVF_stats);
 
     indexIVF_stats.search_time += getmillisecs() - t0;
 }
@@ -561,7 +622,8 @@ void IndexIVF::range_search_preassigned (
          const idx_t *keys, const float *coarse_dis,
          RangeSearchResult *result,
          bool store_pairs,
-         const IVFSearchParameters *params) const
+         const IVFSearchParameters *params,
+         IndexIVFStats *stats) const
 {
     long nprobe = params ? params->nprobe : this->nprobe;
     long max_codes = params ? params->max_codes : this->max_codes;
@@ -574,7 +636,15 @@ void IndexIVF::range_search_preassigned (
 
     std::vector<RangeSearchPartialResult *> all_pres (omp_get_max_threads());
 
-#pragma omp parallel reduction(+: nlistv, ndis)
+    int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
+    // don't start parallel section if single query
+    bool do_parallel = omp_get_max_threads() >= 2 && (
+            pmode == 3 ? false :
+            pmode == 0 ? nx > 1 :
+            pmode == 1 ? nprobe > 1 :
+            nprobe * nx > 1);
+
+#pragma omp parallel if(do_parallel) reduction(+: nlistv, ndis)
     {
         RangeSearchPartialResult pres(result);
         std::unique_ptr<InvertedListScanner> scanner
@@ -680,9 +750,11 @@ void IndexIVF::range_search_preassigned (
         }
     }
 
-    indexIVF_stats.nq += nx;
-    indexIVF_stats.nlist += nlistv;
-    indexIVF_stats.ndis += ndis;
+    if (stats) {
+        stats->nq += nx;
+        stats->nlist += nlistv;
+        stats->ndis += ndis;
+    }
 }
 
 
@@ -973,6 +1045,17 @@ IndexIVF::~IndexIVF()
 void IndexIVFStats::reset()
 {
     memset ((void*)this, 0, sizeof (*this));
+}
+
+void IndexIVFStats::add (const IndexIVFStats & other)
+{
+    nq += other.nq;
+    nlist += other.nlist;
+    ndis += other.ndis;
+    nheap_updates += other.nheap_updates;
+    quantization_time += other.quantization_time;
+    search_time += other.search_time;
+
 }
 
 

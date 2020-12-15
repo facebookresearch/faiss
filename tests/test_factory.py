@@ -3,11 +3,12 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import unittest
 import faiss
+
+from faiss.contrib import factory_tools
 
 
 class TestFactory(unittest.TestCase):
@@ -75,6 +76,7 @@ class TestFactory(unittest.TestCase):
     def test_factory_fast_scan(self):
         index = faiss.index_factory(56, "PQ28x4fs")
         self.assertEqual(index.bbs, 32)
+        self.assertEqual(index.pq.nbits, 4)
         index = faiss.index_factory(56, "PQ28x4fs_64")
         self.assertEqual(index.bbs, 64)
         index = faiss.index_factory(56, "IVF50,PQ28x4fs_64", faiss.METRIC_INNER_PRODUCT)
@@ -88,6 +90,45 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(50, "IVF32(PQ25),Flat")
         quantizer = faiss.downcast_index(index.quantizer)
         self.assertEqual(quantizer.pq.M, 25)
+
+    def test_parenthesis_2(self):
+        index = faiss.index_factory(50, "PCA30,IVF32(PQ15),Flat")
+        index_ivf = faiss.extract_index_ivf(index)
+        quantizer = faiss.downcast_index(index_ivf.quantizer)
+        self.assertEqual(quantizer.pq.M, 15)
+        self.assertEqual(quantizer.d, 30)
+
+    def test_parenthesis_refine(self):
+        index = faiss.index_factory(50, "IVF32,Flat,Refine(PQ25x12)")
+        rf = faiss.downcast_index(index.refine_index)
+        self.assertEqual(rf.pq.M, 25)
+        self.assertEqual(rf.pq.nbits, 12)
+
+
+    def test_parenthesis_refine_2(self):
+        # Refine applies on the whole index including pre-transforms
+        index = faiss.index_factory(50, "PCA32,IVF32,Flat,Refine(PQ25x12)")
+        rf = faiss.downcast_index(index.refine_index)
+        self.assertEqual(rf.pq.M, 25)
+
+    def test_nested_parenteses(self):
+        index = faiss.index_factory(50, "IVF1000(IVF20,SQ4,Refine(SQ8)),Flat")
+        q = faiss.downcast_index(index.quantizer)
+        qref = faiss.downcast_index(q.refine_index)
+        # check we can access the scalar quantizer
+        self.assertEqual(qref.sq.code_size, 50)
+
+    def test_residual(self):
+        index = faiss.index_factory(50, "IVF1000,PQ25x4fsr")
+        self.assertTrue(index.by_residual)
+
+class TestCodeSize(unittest.TestCase):
+
+    def test_1(self):
+        self.assertEqual(
+            factory_tools.get_code_size(50, "IVF32,Flat,Refine(PQ25x12)"),
+            50 * 4 + (25 * 12 + 7) // 8
+        )
 
 
 class TestCloneSize(unittest.TestCase):

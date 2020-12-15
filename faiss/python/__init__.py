@@ -494,7 +494,8 @@ add_ref_in_constructor(IndexIDMap2, 0)
 add_ref_in_constructor(IndexHNSW, 0)
 add_ref_in_method(IndexShards, 'add_shard', 0)
 add_ref_in_method(IndexBinaryShards, 'add_shard', 0)
-# add_ref_in_constructor(IndexRefineFlat, 0)
+add_ref_in_constructor(IndexRefineFlat, {2:[0], 1:[0]})
+add_ref_in_constructor(IndexRefine, {2:[0, 1]})
 
 add_ref_in_constructor(IndexBinaryIVF, 0)
 add_ref_in_constructor(IndexBinaryFromFloat, 0)
@@ -509,24 +510,6 @@ add_ref_in_constructor(BufferedIOReader, 0)
 
 # seems really marginal...
 # remove_ref_from_method(IndexReplicas, 'removeIndex', 0)
-
-def handle_IndexRefineFlat(the_class):
-
-    original_init = the_class.__init__
-
-    def replacement_init(self, *args):
-        if len(args) == 2:
-            index, xb = args
-            assert xb.shape == (index.ntotal, index.d)
-            xb = swig_ptr(xb)
-            args = (index, xb)
-
-        original_init(self, *args)
-        self.referenced_objects = [args[0]]
-
-    the_class.__init__ = replacement_init
-
-handle_IndexRefineFlat(IndexRefineFlat)
 
 ###########################################
 # GPU functions

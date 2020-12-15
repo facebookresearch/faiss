@@ -39,6 +39,7 @@
 #include <faiss/IndexLattice.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexIVFPQFastScan.h>
+#include <faiss/IndexRefine.h>
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryFromFloat.h>
@@ -392,13 +393,13 @@ void write_index (const Index *idx, IOWriter *f) {
         WRITE1 (h);
         write_index_header (imiq, f);
         write_ProductQuantizer (&imiq->pq, f);
-    } else if(const IndexRefineFlat * idxrf =
-              dynamic_cast<const IndexRefineFlat *> (idx)) {
+    } else if(const IndexRefine * idxrf =
+              dynamic_cast<const IndexRefine *> (idx)) {
         uint32_t h = fourcc ("IxRF");
         WRITE1 (h);
         write_index_header (idxrf, f);
         write_index (idxrf->base_index, f);
-        write_index (&idxrf->refine_index, f);
+        write_index (idxrf->refine_index, f);
         WRITE1 (idxrf->k_factor);
     } else if(const IndexIDMap * idxmap =
               dynamic_cast<const IndexIDMap *> (idx)) {

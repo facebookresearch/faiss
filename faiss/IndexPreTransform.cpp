@@ -15,6 +15,7 @@
 #include <memory>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 namespace faiss {
 
@@ -279,6 +280,52 @@ void IndexPreTransform::sa_decode (idx_t n, const uint8_t *bytes,
         index->sa_decode (n, bytes, x1.get());
         // Revert transformations from last to first
         reverse_chain (n, x1.get(), x);
+    }
+}
+
+namespace {
+
+struct PreTransformDistanceComputer: DistanceComputer {
+    const IndexPreTransform *index;
+    std::unique_ptr<DistanceComputer> sub_dc;
+    std::unique_ptr<const float []> query;
+
+    explicit PreTransformDistanceComputer(const IndexPreTransform *index):
+        index(index),
+        sub_dc(index->index->get_distance_computer())
+    {}
+
+    void set_query(const float *x) override {
+        const float *xt = index->apply_chain (1, x);
+        if (xt == x) {
+            sub_dc->set_query (x);
+        } else {
+            query.reset(xt);
+            sub_dc->set_query (xt);
+        }
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override
+    {
+        return sub_dc->symmetric_dis(i, j);
+    }
+
+    float operator () (idx_t i) override
+    {
+        return (*sub_dc)(i);
+    }
+
+};
+
+
+} // anonymous namespace
+
+
+DistanceComputer * IndexPreTransform::get_distance_computer() const {
+    if (chain.empty()) {
+        return index->get_distance_computer();
+    } else {
+        return new PreTransformDistanceComputer(this);
     }
 }
 
