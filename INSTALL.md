@@ -113,16 +113,20 @@ A basic usage example is in
 
 which you can build by calling 
 
-** how to run cmake in the demos subdirectory **
+```
+make -C build demo_ivfpq_indexing
+./build/demo_ivfpq_indexing
+```
 
 It makes a small index, stores it and performs some searches. A normal
 runtime is around 20s. With a fast machine and Intel MKL's BLAS it
 runs in 2.5s.
 
-To run the whole test suite:
+To run the whole test suite, make sure that `cmake` has `-DBUILD_TESTING=ON`:
 
-** how to run the C++ tests **
-
+```
+make -C build test
+```
 
 A real-life benchmark
 ---------------------
@@ -137,7 +141,9 @@ directory for this repository.
 
 Then compile and run the following (after ensuring you have installed faiss):
 
-** how to compile demo_sift1M **
+```
+make -C build demo_sift1M
+```
 
 This is a demonstration of the high-level auto-tuning API. You can try
 setting a different index_key to find the indexing structure that
@@ -230,8 +236,10 @@ Testing the GPU implementation
 
 Compile the example with
 
-** update ** 
-  `make demo_ivfpq_indexing_gpu`
+```
+make -C build demo_ivfpq_indexing_gpu
+```
+
 
 This produce the GPU code equivalent to the CPU
 demo_ivfpq_indexing. It also shows how to translate indexed from/to
