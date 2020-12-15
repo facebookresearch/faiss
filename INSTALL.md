@@ -182,7 +182,6 @@ python -c "import faiss, numpy
 faiss.Kmeans(10, 20).train(numpy.random.rand(1000, 10).astype('float32'))"
 ```
 
-
 Real-life test
 --------------
 
@@ -197,6 +196,18 @@ PYTHONPATH=. python demos/demo_auto_tune.py
 
 It will cycle through a few types of indexes and find optimal
 operating points. You can play around with the types of indexes.
+
+Developing in Faiss
+-------------------
+
+To repeatedly compile and run a python test, the following command line is useful: 
+
+```
+cmake -B build -DCMAKE_CXX_COMPILER=clang++-8 -DFAISS_ENABLE_GPU=OFF -DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=path_to_mkl
+ -DPython_EXECUTABLE=$(which python) -DFAISS_OPT_LEVEL=avx2  -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+
+make -j -C build VERBOSE=1 swigfaiss &&  (cd build/faiss/python/ ; python setup.py build ) && cp contrib/*.py build/faiss/python/build/lib/faiss/contrib/ && (pp=$PWD/build/faiss/python/build/lib;cd tests;  PYTHONPATH=$pp python -m unittest  -v test_index )
+```
 
 
 Step 3: Compiling the GPU implementation
@@ -259,7 +270,6 @@ use_gpu = True
 
 and you can run
 
-** update ** 
 ```
 export PYTHONPATH=.
 python demos/demo_auto_tune.py
@@ -311,8 +321,6 @@ libfaiss.so (or libfaiss.dylib)
 
 the executable should be linked to one of these. If you use
 the static version (.a), add the LDFLAGS used in the Makefile.
-
-** is this up-to-date? Does cmake generate dynamic libs? ** 
 
 For binary-only distributions, the headers should be under
 a `faiss/` directory, so that they can be included as
