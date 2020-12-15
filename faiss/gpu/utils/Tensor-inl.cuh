@@ -8,6 +8,7 @@
 
 #include <faiss/gpu/GpuFaissAssert.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <cstring>
 #include <limits>
 
 namespace faiss { namespace gpu {
@@ -200,6 +201,58 @@ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyTo(
                                   stream));
     }
   }
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__ void
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyFrom(
+  const std::vector<T>& v,
+  cudaStream_t stream) {
+  // The tensor must be fully contiguous
+  GPU_FAISS_ASSERT(this->isContiguous());
+
+  // Size must be the same
+  GPU_FAISS_ASSERT(this->numElements() == v.size());
+
+  if (v.size() > 0) {
+    GPU_FAISS_ASSERT(this->data_);
+    int ourDev = getDeviceForAddress(this->data_);
+
+    CUDA_VERIFY(cudaMemcpyAsync(this->data_,
+                                v.data(),
+                                this->getSizeInBytes(),
+                                ourDev == -1 ? cudaMemcpyHostToHost :
+                                cudaMemcpyHostToDevice,
+                                stream));
+  }
+}
+
+template <typename T, int Dim, bool InnerContig,
+          typename IndexT, template <typename U> class PtrTraits>
+__host__ std::vector<T>
+Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyToVector(
+  cudaStream_t stream) {
+  // The tensor must be fully contiguous
+  GPU_FAISS_ASSERT(this->isContiguous());
+
+  std::vector<T> out(this->numElements());
+
+  if (!out.empty()) {
+    int ourDev = getDeviceForAddress(this->data_);
+
+    if (ourDev == -1) {
+      std::memcpy(out.data(), this->data_, this->numElements() * sizeof(T));
+    } else {
+      CUDA_VERIFY(cudaMemcpyAsync(out.data(),
+                                  this->data_,
+                                  this->numElements() * sizeof(T),
+                                  cudaMemcpyDeviceToHost,
+                                  stream));
+    }
+  }
+
+  return out;
 }
 
 template <typename T, int Dim, bool InnerContig,

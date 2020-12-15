@@ -25,9 +25,7 @@ void runUpdateListPointers(Tensor<int, 1, true>& listIds,
                            thrust::device_vector<void*>& listIndices,
                            cudaStream_t stream);
 
-/// Actually append the new codes / vector indices to the individual lists
-
-/// IVFPQ
+/// Append PQ codes to IVF lists
 void runIVFPQInvertedListAppend(Tensor<int, 1, true>& listIds,
                                 Tensor<int, 1, true>& listOffset,
                                 Tensor<int, 2, true>& encodings,
@@ -38,17 +36,30 @@ void runIVFPQInvertedListAppend(Tensor<int, 1, true>& listIds,
                                 IndicesOptions indicesOptions,
                                 cudaStream_t stream);
 
-/// IVF flat storage
-void runIVFFlatInvertedListAppend(Tensor<int, 1, true>& listIds,
-                                  Tensor<int, 1, true>& listOffset,
-                                  Tensor<float, 2, true>& vecs,
-                                  Tensor<Index::idx_t, 1, true>& indices,
-                                  bool useResidual,
-                                  Tensor<float, 2, true>& residuals,
-                                  GpuScalarQuantizer* scalarQ,
-                                  thrust::device_vector<void*>& listData,
-                                  thrust::device_vector<void*>& listIndices,
-                                  IndicesOptions indicesOptions,
-                                  cudaStream_t stream);
+/// Append SQ codes to IVF lists (non-interleaved, old format)
+void runIVFFlatAppend(Tensor<int, 1, true>& listIds,
+                      Tensor<int, 1, true>& listOffset,
+                      Tensor<float, 2, true>& vecs,
+                      Tensor<Index::idx_t, 1, true>& indices,
+                      GpuScalarQuantizer* scalarQ,
+                      thrust::device_vector<void*>& listData,
+                      thrust::device_vector<void*>& listIndices,
+                      IndicesOptions indicesOptions,
+                      cudaStream_t stream);
+
+/// Append SQ codes to IVF lists (interleaved)
+void runIVFFlatInterleavedAppend(Tensor<int, 1, true>& listIds,
+                                 Tensor<int, 1, true>& listOffset,
+                                 Tensor<int, 1, true>& uniqueLists,
+                                 Tensor<int, 1, true>& vectorsByUniqueList,
+                                 Tensor<int, 1, true>& uniqueListVectorStart,
+                                 Tensor<int, 1, true>& uniqueListStartOffset,
+                                 Tensor<float, 2, true>& vecs,
+                                 Tensor<Index::idx_t, 1, true>& indices,
+                                 GpuScalarQuantizer* scalarQ,
+                                 thrust::device_vector<void*>& listData,
+                                 thrust::device_vector<void*>& listIndices,
+                                 IndicesOptions indicesOptions,
+                                 cudaStream_t stream);
 
 } } // namespace

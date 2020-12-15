@@ -53,6 +53,9 @@ struct ScalarQuantizer {
     /// dimension of input vectors
     size_t d;
 
+    /// bits per scalar code
+    size_t bits;
+
     /// bytes per vector
     size_t code_size;
 
@@ -61,6 +64,9 @@ struct ScalarQuantizer {
 
     ScalarQuantizer (size_t d, QuantizerType qtype);
     ScalarQuantizer ();
+
+    /// updates internal values based on qtype and d
+    void set_derived_sizes ();
 
     void train (size_t n, const float *x);
 

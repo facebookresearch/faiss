@@ -246,6 +246,7 @@ static void read_ScalarQuantizer (ScalarQuantizer *ivsc, IOReader *f) {
     READ1 (ivsc->d);
     READ1 (ivsc->code_size);
     READVECTOR (ivsc->trained);
+    ivsc->set_derived_sizes ();
 }
 
 

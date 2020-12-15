@@ -104,7 +104,7 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
                          bitsPerCode_,
                          ivfpqConfig_.useFloat16LookupTables,
                          ivfpqConfig_.useMMCodeDistance,
-                         ivfpqConfig_.alternativeLayout,
+                         ivfpqConfig_.interleavedLayout,
                          (float*) index->pq.centroids.data(),
                          ivfpqConfig_.indicesOptions,
                          config_.memorySpace));
@@ -263,7 +263,7 @@ GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
                          bitsPerCode_,
                          ivfpqConfig_.useFloat16LookupTables,
                          ivfpqConfig_.useMMCodeDistance,
-                         ivfpqConfig_.alternativeLayout,
+                         ivfpqConfig_.interleavedLayout,
                          pq.centroids.data(),
                          ivfpqConfig_.indicesOptions,
                          config_.memorySpace));
@@ -354,11 +354,11 @@ GpuIndexIVFPQ::getListLength(int listId) const {
 }
 
 std::vector<uint8_t>
-GpuIndexIVFPQ::getListVectorData(int listId) const {
+GpuIndexIVFPQ::getListVectorData(int listId, bool gpuFormat) const {
   FAISS_ASSERT(index_);
   DeviceScope scope(config_.device);
 
-  return index_->getListVectorData(listId);
+  return index_->getListVectorData(listId, gpuFormat);
 }
 
 std::vector<Index::idx_t>

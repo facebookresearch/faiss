@@ -115,6 +115,7 @@ jobs:
             docker run --gpus all faiss make -C build test
             docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
             docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
+          no_output_timeout: 20m
 
   deploy_linux:
     parameters:

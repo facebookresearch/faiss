@@ -32,6 +32,7 @@ class IVFBase {
           float metricArg,
           /// We do not own this reference
           FlatIndex* quantizer,
+          bool interleavedLayout,
           IndicesOptions indicesOptions,
           MemorySpace space);
 
@@ -62,7 +63,7 @@ class IVFBase {
   std::vector<Index::idx_t> getListIndices(int listId) const;
 
   /// Return the encoded vectors of a particular list back to the CPU
-  std::vector<uint8_t> getListVectorData(int listId) const;
+  std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat) const;
 
   /// Copy all inverted lists from a CPU representation to ourselves
   void copyInvertedListsFrom(const InvertedLists* ivf);
@@ -105,6 +106,10 @@ class IVFBase {
   /// Append vectors to our on-device lists
   virtual void appendVectors_(Tensor<float, 2, true>& vecs,
                               Tensor<Index::idx_t, 1, true>& indices,
+                              Tensor<int, 1, true>& uniqueLists,
+                              Tensor<int, 1, true>& vectorsByUniqueList,
+                              Tensor<int, 1, true>& uniqueListVectorStart,
+                              Tensor<int, 1, true>& uniqueListStartOffset,
                               Tensor<int, 1, true>& listIds,
                               Tensor<int, 1, true>& listOffset,
                               cudaStream_t stream) = 0;
@@ -144,6 +149,17 @@ class IVFBase {
 
   /// Number of inverted lists we maintain
   const int numLists_;
+
+  /// Whether or not our index uses an interleaved by 32 layout:
+  /// The default memory layout is [vector][PQ/SQ component]:
+  /// (v0 d0) (v0 d1) ... (v0 dD-1) (v1 d0) (v1 d1) ...
+  ///
+  /// The interleaved by 32 memory layout is:
+  /// [vector / 32][PQ/SQ component][vector % 32] with padding:
+  /// (v0 d0) (v1 d0) ... (v31 d0) (v0 d1) (v1 d1) ... (v31 dD-1) (v32 d0) (v33
+  /// d0) ...
+  /// so the list length is always a multiple of num quantizers * 32
+  bool interleavedLayout_;
 
   /// How are user indices stored on the GPU?
   const IndicesOptions indicesOptions_;

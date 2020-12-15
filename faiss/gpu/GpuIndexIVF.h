@@ -60,9 +60,13 @@ class GpuIndexIVF : public GpuIndex {
   virtual int getListLength(int listId) const = 0;
 
   /// Return the encoded vector data contained in a particular inverted list,
-  /// for debugging purposes. This is represented in a CPU Faiss (IndexIVF*)
+  /// for debugging purposes.
+  /// If gpuFormat is true, the data is returned as it is encoded in the
+  /// GPU-side representation.
+  /// Otherwise, it is converted to the CPU format.
   /// compliant format, while the native GPU format may differ.
-  virtual std::vector<uint8_t> getListVectorData(int listId) const = 0;
+  virtual std::vector<uint8_t>
+  getListVectorData(int listId, bool gpuFormat = false) const = 0;
 
   /// Return the vector indices contained in a particular inverted list, for
   /// debugging purposes.

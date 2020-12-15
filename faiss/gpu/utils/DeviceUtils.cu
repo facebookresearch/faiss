@@ -155,13 +155,18 @@ int getMaxKSelection() {
 }
 
 DeviceScope::DeviceScope(int device) {
-  prevDevice_ = getCurrentDevice();
+  if (device >= 0) {
+    int curDevice = getCurrentDevice();
 
-  if (prevDevice_ != device) {
-    setCurrentDevice(device);
-  } else {
-    prevDevice_ = -1;
+    if (curDevice != device) {
+      prevDevice_ = curDevice;
+      setCurrentDevice(device);
+      return;
+    }
   }
+
+  // Otherwise, we keep the current device
+  prevDevice_ = -1;
 }
 
 DeviceScope::~DeviceScope() {

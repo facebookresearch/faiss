@@ -470,9 +470,10 @@ TEST(TestGpuIndexIVFFlat, AddNaN) {
   std::vector<float> nans(numNans * opt.dim,
                           std::numeric_limits<float>::quiet_NaN());
 
-  // Make one vector valid, which should actually add
+  // Make one vector valid (not the first vector, in order to test offset
+  // issues), which should actually add
   for (int i = 0; i < opt.dim; ++i) {
-    nans[i] = 0.0f;
+    nans[opt.dim + i] = i;
   }
 
   std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
