@@ -317,7 +317,8 @@ void IndexIVFFlatDedup::search_preassigned (
            const float *centroid_dis,
            float *distances, idx_t *labels,
            bool store_pairs,
-           const IVFSearchParameters *params) const
+           const IVFSearchParameters *params,
+           IndexIVFStats *stats) const
 {
     FAISS_THROW_IF_NOT_MSG (
            !store_pairs, "store_pairs not supported in IVFDedup");

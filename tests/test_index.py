@@ -388,7 +388,7 @@ class TestSearchAndReconstruct(unittest.TestCase):
         R_ref = index.reconstruct_n(0, n)
         D, I, R = index.search_and_reconstruct(xq, k)
 
-        self.assertTrue((D == D_ref).all())
+        np.testing.assert_almost_equal(D, D_ref, decimal=5)
         self.assertTrue((I == I_ref).all())
         self.assertEqual(R.shape[:2], I.shape)
         self.assertEqual(R.shape[2], d)

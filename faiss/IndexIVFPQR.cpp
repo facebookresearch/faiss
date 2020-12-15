@@ -97,13 +97,13 @@ void IndexIVFPQR::add_core (idx_t n, const float *x, const idx_t *xids,
 #define TOC get_cycles () - t0
 
 
-void IndexIVFPQR::search_preassigned (idx_t n, const float *x, idx_t k,
-                                      const idx_t *idx,
-                                      const float *L1_dis,
-                                      float *distances, idx_t *labels,
-                                      bool store_pairs,
-                                      const IVFSearchParameters *params
-                                      ) const
+void IndexIVFPQR::search_preassigned (
+        idx_t n, const float *x, idx_t k,
+        const idx_t *idx, const float *L1_dis,
+        float *distances, idx_t *labels,
+        bool store_pairs,
+        const IVFSearchParameters *params, IndexIVFStats *stats
+        ) const
 {
     uint64_t t0;
     TIC;
