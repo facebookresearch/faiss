@@ -1,11 +1,8 @@
-#!/usr/bin/env python2
-
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from __future__ import print_function
 import os
 import numpy as np
 import faiss
@@ -98,6 +95,7 @@ clustering.seed = args.seed
 clustering.max_points_per_centroid = 10**6
 clustering.min_points_per_centroid = 1
 
+centroids = None
 
 for iter0 in range(0, args.niter, args.eval_freq):
     iter1 = min(args.niter, iter0 + args.eval_freq)

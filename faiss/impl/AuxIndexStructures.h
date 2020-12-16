@@ -204,7 +204,8 @@ struct RangeSearchPartialResult: BufferList {
 struct DistanceComputer {
      using idx_t = Index::idx_t;
 
-     /// called before computing distances
+     /// called before computing distances. Pointer x should remain valid
+     /// while operator () is called
      virtual void set_query(const float *x) = 0;
 
      /// compute distance of vector i to current query

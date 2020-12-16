@@ -39,6 +39,7 @@
 #include <faiss/IndexLattice.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexIVFPQFastScan.h>
+#include <faiss/IndexRefine.h>
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryFromFloat.h>
@@ -551,14 +552,20 @@ Index *read_index (IOReader *f, int io_flags) {
         read_ProductQuantizer (&imiq->pq, f);
         idx = imiq;
     } else if(h == fourcc ("IxRF")) {
-        IndexRefineFlat *idxrf = new IndexRefineFlat ();
+        IndexRefine *idxrf = new IndexRefine ();
         read_index_header (idxrf, f);
         idxrf->base_index = read_index(f, io_flags);
-        idxrf->own_fields = true;
-        IndexFlat *rf = dynamic_cast<IndexFlat*> (read_index (f, io_flags));
-        std::swap (*rf, idxrf->refine_index);
-        delete rf;
+        idxrf->refine_index = read_index(f, io_flags);
         READ1 (idxrf->k_factor);
+        if (dynamic_cast<IndexFlat*>(idxrf->refine_index)) {
+            // then make a RefineFlat with it
+            IndexRefine *idxrf_old = idxrf;
+            idxrf = new IndexRefineFlat();
+            *idxrf = *idxrf_old;
+            delete idxrf_old;
+        }
+        idxrf->own_fields = true;
+        idxrf->own_refine_index = true;
         idx = idxrf;
     } else if(h == fourcc ("IxMp") || h == fourcc ("IxM2")) {
         bool is_map2 = h == fourcc ("IxM2");

@@ -1,5 +1,3 @@
-#! /usr/bin/env python2
-
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -9,168 +7,83 @@
 Common functions to load datasets and compute their ground-truth
 """
 
-from __future__ import print_function
 import time
 import numpy as np
 import faiss
-import sys
 
-# set this to the directory that contains the datafiles.
-# deep1b data should be at simdir + 'deep1b'
-# bigann data should be at simdir + 'bigann'
-simdir = '/mnt/vol/gfsai-east/ai-group/datasets/simsearch/'
+from faiss.contrib import datasets as faiss_datasets
 
-#################################################################
-# Small I/O functions
-#################################################################
+print("path:", faiss_datasets.__file__)
 
+faiss_datasets.dataset_basedir = '/checkpoint/matthijs/simsearch/'
 
-def ivecs_read(fname):
-    a = np.fromfile(fname, dtype='int32')
-    d = a[0]
-    return a.reshape(-1, d + 1)[:, 1:].copy()
-
-
-def fvecs_read(fname):
-    return ivecs_read(fname).view('float32')
-
-
-def ivecs_mmap(fname):
-    a = np.memmap(fname, dtype='int32', mode='r')
-    d = a[0]
-    return a.reshape(-1, d + 1)[:, 1:]
-
-
-def fvecs_mmap(fname):
-    return ivecs_mmap(fname).view('float32')
-
-
-def bvecs_mmap(fname):
-    x = np.memmap(fname, dtype='uint8', mode='r')
-    d = x[:4].view('int32')[0]
-    return x.reshape(-1, d + 4)[:, 4:]
-
-
-def ivecs_write(fname, m):
-    n, d = m.shape
-    m1 = np.empty((n, d + 1), dtype='int32')
-    m1[:, 0] = d
-    m1[:, 1:] = m
-    m1.tofile(fname)
-
-
-def fvecs_write(fname, m):
-    m = m.astype('float32')
-    ivecs_write(fname, m.view('int32'))
-
+def sanitize(x):
+    return np.ascontiguousarray(x, dtype='float32')
 
 
 #################################################################
 # Dataset
 #################################################################
 
-def sanitize(x):
-    return np.ascontiguousarray(x, dtype='float32')
+class DatasetCentroids(faiss_datasets.Dataset):
+
+    def __init__(self, ds, indexfile):
+        self.d = ds.d
+        self.metric = ds.metric
+        self.nq = ds.nq
+        self.xq = ds.get_queries()
+
+        # get the xb set
+        src_index = faiss.read_index(indexfile)
+        src_quant = faiss.downcast_index(src_index.quantizer)
+        centroids = faiss.vector_to_array(src_quant.xb)
+        self.xb = centroids.reshape(-1, self.d)
+        self.nb = self.nt = len(self.xb)
+
+    def get_queries(self):
+        return self.xq
+
+    def get_database(self):
+        return self.xb
+
+    def get_train(self, maxtrain=None):
+        return self.xb
+
+    def get_groundtruth(self, k=100):
+        return faiss.knn(
+            self.xq, self.xb, k,
+            faiss.METRIC_L2 if self.metric == 'L2' else faiss.METRIC_INNER_PRODUCT
+        )[1]
 
 
-class ResultHeap:
-    """ Combine query results from a sliced dataset """
-
-    def __init__(self, nq, k):
-        " nq: number of query vectors, k: number of results per query "
-        self.I = np.zeros((nq, k), dtype='int64')
-        self.D = np.zeros((nq, k), dtype='float32')
-        self.nq, self.k = nq, k
-        heaps = faiss.float_maxheap_array_t()
-        heaps.k = k
-        heaps.nh = nq
-        heaps.val = faiss.swig_ptr(self.D)
-        heaps.ids = faiss.swig_ptr(self.I)
-        heaps.heapify()
-        self.heaps = heaps
-
-    def add_batch_result(self, D, I, i0):
-        assert D.shape == (self.nq, self.k)
-        assert I.shape == (self.nq, self.k)
-        I += i0
-        self.heaps.addn_with_ids(
-            self.k, faiss.swig_ptr(D),
-            faiss.swig_ptr(I), self.k)
-
-    def finalize(self):
-        self.heaps.reorder()
 
 
-def compute_GT_sliced(xb, xq, k):
-    print("compute GT")
-    t0 = time.time()
-    nb, d = xb.shape
-    nq, d = xq.shape
-    rh = ResultHeap(nq, k)
-    bs = 10 ** 5
-
-    xqs = sanitize(xq)
-
-    db_gt = faiss.index_cpu_to_all_gpus(faiss.IndexFlatL2(d))
-
-    # compute ground-truth by blocks of bs, and add to heaps
-    for i0 in range(0, nb, bs):
-        i1 = min(nb, i0 + bs)
-        xsl = sanitize(xb[i0:i1])
-        db_gt.add(xsl)
-        D, I = db_gt.search(xqs, k)
-        rh.add_batch_result(D, I, i0)
-        db_gt.reset()
-        print("\r   %d/%d, %.3f s" % (i0, nb, time.time() - t0), end=' ')
-        sys.stdout.flush()
-    print()
-    rh.finalize()
-    gt_I = rh.I
-
-    print("GT time: %.3f s" % (time.time() - t0))
-    return gt_I
 
 
-def do_compute_gt(xb, xq, k):
-    print("computing GT")
-    nb, d = xb.shape
-    index = faiss.index_cpu_to_all_gpus(faiss.IndexFlatL2(d))
-    if nb < 100 * 1000:
-        print("   add")
-        index.add(np.ascontiguousarray(xb, dtype='float32'))
-        print("   search")
-        D, I = index.search(np.ascontiguousarray(xq, dtype='float32'), k)
-    else:
-        I = compute_GT_sliced(xb, xq, k)
-
-    return I.astype('int32')
-
-
-def load_data(dataset='deep1M', compute_gt=False):
+def load_dataset(dataset='deep1M', compute_gt=False, download=False):
 
     print("load data", dataset)
 
     if dataset == 'sift1M':
-        basedir = simdir + 'sift1M/'
-
-        xt = fvecs_read(basedir + "sift_learn.fvecs")
-        xb = fvecs_read(basedir + "sift_base.fvecs")
-        xq = fvecs_read(basedir + "sift_query.fvecs")
-        gt = ivecs_read(basedir + "sift_groundtruth.ivecs")
+        return faiss_datasets.DatasetSIFT1M()
 
     elif dataset.startswith('bigann'):
-        basedir = simdir + 'bigann/'
 
         dbsize = 1000 if dataset == "bigann1B" else int(dataset[6:-1])
-        xb = bvecs_mmap(basedir + 'bigann_base.bvecs')
-        xq = bvecs_mmap(basedir + 'bigann_query.bvecs')
-        xt = bvecs_mmap(basedir + 'bigann_learn.bvecs')
-        # trim xb to correct size
-        xb = xb[:dbsize * 1000 * 1000]
-        gt = ivecs_read(basedir + 'gnd/idx_%dM.ivecs' % dbsize)
+
+        return faiss_datasets.DatasetBigANN(nb_M=dbsize)
+
+    elif dataset.startswith("deep_centroids_"):
+        ncent = int(dataset[len("deep_centroids_"):])
+        centdir = "/checkpoint/matthijs/bench_all_ivf/precomputed_clusters"
+        return DatasetCentroids(
+            faiss_datasets.DatasetDeep1B(nb=1000000),
+            f"{centdir}/clustering.dbdeep1M.IVF{ncent}.faissindex"
+        )
+
 
     elif dataset.startswith("deep"):
-        basedir = simdir + 'deep1b/'
+
         szsuf = dataset[4:]
         if szsuf[-1] == 'M':
             dbsize = 10 ** 6 * int(szsuf[:-1])
@@ -180,28 +93,17 @@ def load_data(dataset='deep1M', compute_gt=False):
             dbsize = 1000 * int(szsuf[:-1])
         else:
             assert False, "did not recognize suffix " + szsuf
+        return faiss_datasets.DatasetDeep1B(nb=dbsize)
 
-        xt = fvecs_mmap(basedir + "learn.fvecs")
-        xb = fvecs_mmap(basedir + "base.fvecs")
-        xq = fvecs_read(basedir + "deep1B_queries.fvecs")
+    elif dataset == "music-100":
+        return faiss_datasets.DatasetMusic100()
 
-        xb = xb[:dbsize]
-
-        gt_fname = basedir + "%s_groundtruth.ivecs" % dataset
-        if compute_gt:
-            gt = do_compute_gt(xb, xq, 100)
-            print("store", gt_fname)
-            ivecs_write(gt_fname, gt)
-
-        gt = ivecs_read(gt_fname)
+    elif dataset == "glove":
+        return faiss_datasets.DatasetGlove(download=download)
 
     else:
         assert False
 
-    print("dataset %s sizes: B %s Q %s T %s" % (
-        dataset, xb.shape, xq.shape, xt.shape))
-
-    return xt, xb, xq, gt
 
 #################################################################
 # Evaluation

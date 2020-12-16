@@ -14,6 +14,7 @@
 
 #include <omp.h>
 
+
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
 #include <faiss/utils/random.h>
@@ -38,6 +39,7 @@ IndexPQFastScan::IndexPQFastScan(
     Index(d, metric), pq(d, M, nbits),
     bbs(bbs), ntotal2(0), M2(roundup(M, 2))
 {
+    FAISS_THROW_IF_NOT(nbits == 4);
     is_trained = false;
 }
 
@@ -230,6 +232,7 @@ void IndexPQFastScan::search_dispatch_implem(
             impl ++;
         }
     }
+
 
     if (implem == 1) {
         FAISS_THROW_IF_NOT(orig_codes);

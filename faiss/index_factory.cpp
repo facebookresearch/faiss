@@ -36,6 +36,8 @@
 #include <faiss/IndexLattice.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexIVFPQFastScan.h>
+#include <faiss/IndexRefine.h>
+
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryHNSW.h>
@@ -64,11 +66,53 @@ struct VTChain {
 /// what kind of training does this coarse quantizer require?
 char get_trains_alone(const Index *coarse_quantizer) {
     return
+        dynamic_cast<const IndexFlat*>(coarse_quantizer) ? 0 :
+        // multi index just needs to be quantized
         dynamic_cast<const MultiIndexQuantizer*>(coarse_quantizer) ? 1 :
         dynamic_cast<const IndexHNSWFlat*>(coarse_quantizer) ? 2 :
-        0;
+        2; // for complicated indexes, we assume they can't be used as a kmeans index
 }
 
+bool str_ends_with(const std::string& s, const std::string& suffix)
+{
+    return s.rfind(suffix) == std::abs(int(s.size()-suffix.size()));
+}
+
+// check if ends with suffix followed by digits
+bool str_ends_with_digits(const std::string& s, const std::string& suffix)
+{
+    int i;
+    for(i = s.length() - 1; i >= 0; i--) {
+        if (!isdigit(s[i])) break;
+    }
+    return str_ends_with(s.substr(0, i + 1), suffix);
+}
+
+void find_matching_parentheses(const std::string &s, int & i0, int & i1) {
+    int st = 0;
+    for (int i = 0; i < s.length(); i++) {
+        if (s[i] == '(') {
+            if (st == 0) {
+                i0 = i;
+            }
+            st++;
+        }
+
+        if (s[i] == ')') {
+            st--;
+            if (st == 0) {
+                i1 = i;
+                return;
+            }
+            if (st < 0) {
+                FAISS_THROW_FMT("factory string %s: unbalanced parentheses", s.c_str());
+            }
+        }
+
+    }
+    FAISS_THROW_FMT("factory string %s: unbalanced parentheses st=%d", s.c_str(), st);
+
+}
 
 } // anonymous namespace
 
@@ -78,31 +122,32 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                        metric == METRIC_INNER_PRODUCT);
     VTChain vts;
     Index *coarse_quantizer = nullptr;
-    std::unique_ptr<Index> parenthesis_index;
+    std::string parenthesis_ivf, parenthesis_refine;
     Index *index = nullptr;
     bool add_idmap = false;
-    bool make_IndexRefineFlat = false;
+    int d_in = d;
 
     ScopeDeleter1<Index> del_coarse_quantizer, del_index;
 
     std::string description(description_in);
     char *ptr;
 
-    if (description.find('(') != std::string::npos) {
+    // handle indexes in parentheses
+    while (description.find('(') != std::string::npos) {
         // then we make a sub-index and remove the () from the description
-        int i0 = description.find('(');
-        int i1 = description.find(')');
-        FAISS_THROW_IF_NOT_MSG(
-            i1 != std::string::npos, "string must contain closing parenthesis");
+        int i0, i1;
+        find_matching_parentheses(description, i0, i1);
+
         std::string sub_description = description.substr(i0 + 1, i1 - i0 - 1);
-        // printf("substring=%s\n", sub_description.c_str());
 
-        parenthesis_index.reset(index_factory(d, sub_description.c_str(), metric));
-
+        if (str_ends_with_digits(description.substr(0, i0), "IVF")) {
+            parenthesis_ivf = sub_description;
+        } else if (str_ends_with(description.substr(0, i0), "Refine")) {
+            parenthesis_refine = sub_description;
+        } else {
+            FAISS_THROW_MSG("don't know what to do with parenthesis index");
+        }
         description = description.erase(i0, i1 - i0 + 1);
-
-        // printf("new description=%s\n", description.c_str());
-
     }
 
     int64_t ncentroids = -1;
@@ -162,12 +207,14 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
         // coarse quantizers
         } else if (!coarse_quantizer &&
                    sscanf (tok, "IVF%" PRId64 "_HNSW%d", &ncentroids, &M) == 2) {
-            coarse_quantizer_1 = new IndexHNSWFlat (d, M);
+            coarse_quantizer_1 = new IndexHNSWFlat (d, M, metric);
 
         } else if (!coarse_quantizer &&
                    sscanf (tok, "IVF%" PRId64, &ncentroids) == 1) {
-            if (parenthesis_index) {
-                coarse_quantizer_1 = parenthesis_index.release();
+            if (!parenthesis_ivf.empty()) {
+                coarse_quantizer_1 =
+                    index_factory(d, parenthesis_ivf.c_str(), metric);
+
             } else if (metric == METRIC_L2) {
                 coarse_quantizer_1 = new IndexFlatL2 (d);
             } else {
@@ -254,11 +301,13 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             index_ivf->own_fields = true;
             index_1 = index_ivf;
         } else if (!index && (
-            sscanf (tok, "PQ%dx4fs_%d", &M, &bbs) == 2 ||
-            (sscanf (tok, "PQ%dx4f%c", &M, &c) == 2 && c == 's') )) {
+             sscanf (tok, "PQ%dx4fs_%d", &M, &bbs) == 2 ||
+            (sscanf (tok, "PQ%dx4f%c", &M, &c) == 2 && c == 's') ||
+            (sscanf (tok, "PQ%dx4fs%c", &M, &c) == 2 && c == 'r'))) {
             if (bbs == -1) {
                 bbs = 32;
             }
+            bool by_residual = str_ends_with(stok, "fsr");
             if (coarse_quantizer) {
                 IndexIVFPQFastScan *index_ivf = new IndexIVFPQFastScan(
                     coarse_quantizer, d, ncentroids, M, 4, metric, bbs
@@ -266,13 +315,14 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
                 index_ivf->quantizer_trains_alone =
                     get_trains_alone (coarse_quantizer);
                 index_ivf->metric_type = metric;
+                index_ivf->by_residual = by_residual;
                 index_ivf->cp.spherical = metric == METRIC_INNER_PRODUCT;
                 del_coarse_quantizer.release ();
                 index_ivf->own_fields = true;
                 index_1 = index_ivf;
             } else {
                 IndexPQFastScan *index_pq = new IndexPQFastScan (
-                    d, M, nbit, metric, bbs
+                    d, M, 4, metric, bbs
                 );
                 index_1 = index_pq;
             }
@@ -347,7 +397,12 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
             FAISS_THROW_IF_NOT(!coarse_quantizer);
             index_1 = new IndexLattice(d, M, nbit, r2);
         } else if (stok == "RFlat") {
-            make_IndexRefineFlat = true;
+            parenthesis_refine = "Flat";
+        } else if (stok == "Refine") {
+            FAISS_THROW_IF_NOT_MSG(
+                    !parenthesis_refine.empty(),
+                    "Refine index should be provided in parentheses"
+            );
         } else {
             FAISS_THROW_FMT( "could not parse token \"%s\" in %s\n",
                              tok, description_in);
@@ -404,8 +459,10 @@ Index *index_factory (int d, const char *description_in, MetricType metric)
         index = index_pt;
     }
 
-    if (make_IndexRefineFlat) {
-        IndexRefineFlat *index_rf = new IndexRefineFlat (index);
+    if (!parenthesis_refine.empty()) {
+        Index *refine_index = index_factory(d_in, parenthesis_refine.c_str(), metric);
+        IndexRefine *index_rf = new IndexRefine(index, refine_index);
+        index_rf->own_refine_index = true;
         index_rf->own_fields = true;
         index = index_rf;
     }

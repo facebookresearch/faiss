@@ -39,8 +39,12 @@ namespace faiss {
  * that hides the template mess.
  ********************************************************************/
 
-#if defined(__F16C__) && defined(__AVX2__)
+#ifdef __AVX2__
+#ifdef __F16C__
 #define USE_F16C
+#else
+#warning "Cannot enable AVX optimizations in scalar quantizer if -mf16c is not set as well"
+#endif
 #endif
 
 
