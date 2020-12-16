@@ -19,6 +19,7 @@ macro(faiss_gpu_test file)
   gtest_discover_tests(${test_name})
 endmacro()
 
+faiss_gpu_test(TestCodePacking.cpp)
 faiss_gpu_test(TestGpuIndexFlat.cpp)
 faiss_gpu_test(TestGpuIndexIVFFlat.cpp)
 faiss_gpu_test(TestGpuIndexBinaryFlat.cpp)

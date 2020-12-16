@@ -24,6 +24,7 @@ class IVFFlat : public IVFBase {
           bool useResidual,
           /// Optional ScalarQuantizer
           faiss::ScalarQuantizer* scalarQ,
+          bool interleavedLayout,
           IndicesOptions indicesOptions,
           MemorySpace space);
 
@@ -56,6 +57,10 @@ class IVFFlat : public IVFBase {
   /// Encode the vectors that we're adding and append to our IVF lists
   void appendVectors_(Tensor<float, 2, true>& vecs,
                       Tensor<Index::idx_t, 1, true>& indices,
+                      Tensor<int, 1, true>& uniqueLists,
+                      Tensor<int, 1, true>& vectorsByUniqueList,
+                      Tensor<int, 1, true>& uniqueListVectorStart,
+                      Tensor<int, 1, true>& uniqueListStartOffset,
                       Tensor<int, 1, true>& listIds,
                       Tensor<int, 1, true>& listOffset,
                       cudaStream_t stream) override;

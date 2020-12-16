@@ -1220,32 +1220,40 @@ SQDistanceComputer *select_distance_computer (
 
 ScalarQuantizer::ScalarQuantizer
           (size_t d, QuantizerType qtype):
-              qtype (qtype), rangestat(RS_minmax), rangestat_arg(0), d (d)
+              qtype (qtype), rangestat(RS_minmax), rangestat_arg(0), d(d)
 {
-    switch (qtype) {
-    case QT_8bit:
-    case QT_8bit_uniform:
-    case QT_8bit_direct:
-        code_size = d;
-        break;
-    case QT_4bit:
-    case QT_4bit_uniform:
-        code_size = (d + 1) / 2;
-        break;
-    case QT_6bit:
-        code_size = (d * 6 + 7) / 8;
-        break;
-    case QT_fp16:
-        code_size = d * 2;
-        break;
-    }
-
+  set_derived_sizes();
 }
 
 ScalarQuantizer::ScalarQuantizer ():
     qtype(QT_8bit),
-    rangestat(RS_minmax), rangestat_arg(0), d (0), code_size(0)
+    rangestat(RS_minmax), rangestat_arg(0), d(0), bits(0), code_size(0)
 {}
+
+void ScalarQuantizer::set_derived_sizes ()
+{
+    switch (qtype) {
+      case QT_8bit:
+      case QT_8bit_uniform:
+      case QT_8bit_direct:
+        code_size = d;
+        bits = 8;
+        break;
+      case QT_4bit:
+      case QT_4bit_uniform:
+        code_size = (d + 1) / 2;
+        bits = 4;
+        break;
+      case QT_6bit:
+        code_size = (d * 6 + 7) / 8;
+        bits = 6;
+        break;
+      case QT_fp16:
+        code_size = d * 2;
+        bits = 16;
+        break;
+    }
+}
 
 void ScalarQuantizer::train (size_t n, const float *x)
 {

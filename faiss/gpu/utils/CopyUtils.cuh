@@ -65,6 +65,26 @@ DeviceTensor<T, Dim, true> toDeviceNonTemporary(
   }
 }
 
+template <typename T>
+DeviceTensor<T, 1, true> toDeviceTemporary(
+  GpuResources* resources,
+  const std::vector<T>& src,
+  cudaStream_t stream,
+  int device = -1) {
+  // Uses the current device if device == -1
+  DeviceScope scope(device);
+
+  FAISS_ASSERT(src.size() <
+               (size_t) std::numeric_limits<int>::max());
+
+  DeviceTensor<T, 1, true> out(
+    resources, makeTempAlloc(AllocType::Other, stream),
+    {(int) src.size()});
+
+  out.copyFrom(src, stream);
+
+  return out;
+}
 
 /// Copies data to the CPU, if it is not already on the CPU
 template <typename T, int Dim>

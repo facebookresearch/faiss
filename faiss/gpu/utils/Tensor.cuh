@@ -12,6 +12,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <initializer_list>
+#include <vector>
 
 /// Multi-dimensional array class for CUDA device and host usage.
 /// Originally from Facebook's fbcunn, since added to the Torch GPU
@@ -118,6 +119,16 @@ class Tensor {
   /// Copies ourselves into a tensor; sizes must match
   __host__ void copyTo(Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
                        cudaStream_t stream);
+
+  /// Copies a CPU std::vector<T> into ourselves, allocating memory for it.
+  /// The total size of our Tensor must match vector<T>::size(), though
+  /// we are not restricted to 1D Tensors to match the 1D vector<T>.
+  /// `stream` specifies the stream of the copy and thus the stream on which the
+  /// memory will initially be used.
+  __host__ void copyFrom(const std::vector<T>& v, cudaStream_t stream);
+
+  /// Copies ourselves into a flattened (1D) std::vector, using the given stream
+  __host__ std::vector<T> copyToVector(cudaStream_t stream);
 
   /// Returns true if the two tensors are of the same dimensionality,
   /// size and stride.

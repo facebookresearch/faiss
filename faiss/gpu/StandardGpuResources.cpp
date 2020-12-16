@@ -206,11 +206,44 @@ StandardGpuResourcesImpl::setPinnedMemory(size_t size) {
 
 void
 StandardGpuResourcesImpl::setDefaultStream(int device, cudaStream_t stream) {
+  if (isInitialized(device)) {
+     // A new series of calls may not be ordered with what was the previous
+     // stream, so if the stream being specified is different, then we need to
+     // ensure ordering between the two (new stream waits on old).
+    auto it = userDefaultStreams_.find(device);
+    cudaStream_t prevStream = nullptr;
+
+    if (it != userDefaultStreams_.end()) {
+      prevStream = it->second;
+    } else {
+      FAISS_ASSERT(defaultStreams_.count(device));
+      prevStream = defaultStreams_[device];
+    }
+
+    if (prevStream != stream) {
+      streamWait({stream}, {prevStream});
+    }
+  }
+
   userDefaultStreams_[device] = stream;
 }
 
 void
 StandardGpuResourcesImpl::revertDefaultStream(int device) {
+  if (isInitialized(device)) {
+    auto it = userDefaultStreams_.find(device);
+
+    if (it != userDefaultStreams_.end()) {
+      // There was a user stream set that we need to synchronize against
+      cudaStream_t prevStream = userDefaultStreams_[device];
+
+      FAISS_ASSERT(defaultStreams_.count(device));
+      cudaStream_t newStream = defaultStreams_[device];
+
+      streamWait({newStream}, {prevStream});
+    }
+  }
+
   userDefaultStreams_.erase(device);
 }
 

@@ -10,17 +10,16 @@
 #include <faiss/gpu/impl/DistanceUtils.cuh>
 #include <faiss/gpu/impl/IVFUtils.cuh>
 #include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/utils/Comparators.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 #include <faiss/gpu/utils/MathOperators.cuh>
-#include <faiss/gpu/utils/LoadStoreOperators.cuh>
 #include <faiss/gpu/utils/PtxUtils.cuh>
 #include <faiss/gpu/utils/Reductions.cuh>
 #include <faiss/gpu/utils/StaticUtils.h>
-#include <thrust/host_vector.h>
 
 namespace faiss { namespace gpu {
 
@@ -162,7 +161,8 @@ ivfFlatScan(Tensor<float, 2, true> queries,
 
   auto residualBaseSlice = residualBase[queryId][probeId].data();
 
-  codec.setSmem(smem, dim);
+  codec.initKernel(smem, dim);
+  __syncthreads();
 
   IVFFlatScan<Codec, Metric>::scan(query,
                                    useResidual,
@@ -253,51 +253,25 @@ runIVFFlatScanTile(GpuResources* res,
     switch (scalarQ->qtype) {
       case ScalarQuantizer::QuantizerType::QT_8bit:
       {
-        // FIXME: investigate 32 bit load perf issues
-//        if (dim % 4 == 0) {
-        if (false) {
-          Codec<ScalarQuantizer::QuantizerType::QT_8bit, 4>
-            codec(scalarQ->code_size,
-                  scalarQ->gpuTrained.data(),
-                  scalarQ->gpuTrained.data() + dim);
-          HANDLE_METRICS;
-        } else {
-          Codec<ScalarQuantizer::QuantizerType::QT_8bit, 1>
-            codec(scalarQ->code_size,
-                  scalarQ->gpuTrained.data(),
-                  scalarQ->gpuTrained.data() + dim);
-          HANDLE_METRICS;
-        }
+        Codec<ScalarQuantizer::QuantizerType::QT_8bit, 1>
+          codec(scalarQ->code_size,
+                scalarQ->gpuTrained.data(),
+                scalarQ->gpuTrained.data() + dim);
+        HANDLE_METRICS;
       }
       break;
       case ScalarQuantizer::QuantizerType::QT_8bit_uniform:
       {
-        // FIXME: investigate 32 bit load perf issues
-        if (false) {
-//        if (dim % 4 == 0) {
-          Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, 4>
-            codec(scalarQ->code_size, scalarQ->trained[0], scalarQ->trained[1]);
-          HANDLE_METRICS;
-        } else {
-          Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, 1>
-            codec(scalarQ->code_size, scalarQ->trained[0], scalarQ->trained[1]);
-          HANDLE_METRICS;
-        }
+        Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, 1>
+          codec(scalarQ->code_size, scalarQ->trained[0], scalarQ->trained[1]);
+        HANDLE_METRICS;
       }
       break;
       case ScalarQuantizer::QuantizerType::QT_fp16:
       {
-        if (false) {
-          // FIXME: investigate 32 bit load perf issues
-//        if (dim % 2 == 0) {
-          Codec<ScalarQuantizer::QuantizerType::QT_fp16, 2>
-            codec(scalarQ->code_size);
-          HANDLE_METRICS;
-        } else {
-          Codec<ScalarQuantizer::QuantizerType::QT_fp16, 1>
-            codec(scalarQ->code_size);
-          HANDLE_METRICS;
-        }
+        Codec<ScalarQuantizer::QuantizerType::QT_fp16, 1>
+          codec(scalarQ->code_size);
+        HANDLE_METRICS;
       }
       break;
       case ScalarQuantizer::QuantizerType::QT_8bit_direct:
@@ -384,7 +358,6 @@ runIVFFlatScan(Tensor<float, 2, true>& queries,
   constexpr int kThrustMemSize = 16384;
 
   int nprobe = listIds.getSize(1);
-
   auto stream = res->getDefaultStreamCurrentDevice();
 
   // Make a reservation for Thrust to do its dirty work (global memory

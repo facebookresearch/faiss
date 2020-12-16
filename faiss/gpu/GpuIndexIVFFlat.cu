@@ -87,6 +87,7 @@ GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
                            index->metric_arg,
                            false, // no residual
                            nullptr, // no scalar quantizer
+                           ivfFlatConfig_.interleavedLayout,
                            ivfFlatConfig_.indicesOptions,
                            config_.memorySpace));
 
@@ -172,6 +173,7 @@ GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
                            this->metric_arg,
                            false, // no residual
                            nullptr, // no scalar quantizer
+                           ivfFlatConfig_.interleavedLayout,
                            ivfFlatConfig_.indicesOptions,
                            config_.memorySpace));
 
@@ -191,11 +193,11 @@ GpuIndexIVFFlat::getListLength(int listId) const {
 }
 
 std::vector<uint8_t>
-GpuIndexIVFFlat::getListVectorData(int listId) const {
+GpuIndexIVFFlat::getListVectorData(int listId, bool gpuFormat) const {
   FAISS_ASSERT(index_);
   DeviceScope scope(config_.device);
 
-  return index_->getListVectorData(listId);
+  return index_->getListVectorData(listId, gpuFormat);
 }
 
 std::vector<Index::idx_t>

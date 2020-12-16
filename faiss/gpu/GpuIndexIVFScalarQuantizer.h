@@ -18,6 +18,13 @@ class IVFFlat;
 class GpuIndexFlat;
 
 struct GpuIndexIVFScalarQuantizerConfig : public GpuIndexIVFConfig {
+  inline GpuIndexIVFScalarQuantizerConfig()
+      : interleavedLayout(true) {
+  }
+
+  /// Use the alternative memory layout for the IVF lists
+  /// (currently the default)
+  bool interleavedLayout;
 };
 
 /// Wrapper around the GPU implementation that looks like
@@ -72,9 +79,13 @@ class GpuIndexIVFScalarQuantizer : public GpuIndexIVF {
   int getListLength(int listId) const override;
 
   /// Return the encoded vector data contained in a particular inverted list,
-  /// for debugging purposes. This is represented in a CPU Faiss (IndexIVF*)
+  /// for debugging purposes.
+  /// If gpuFormat is true, the data is returned as it is encoded in the
+  /// GPU-side representation.
+  /// Otherwise, it is converted to the CPU format.
   /// compliant format, while the native GPU format may differ.
-  std::vector<uint8_t> getListVectorData(int listId) const override;
+  std::vector<uint8_t>
+  getListVectorData(int listId, bool gpuFormat = false) const override;
 
   /// Return the vector indices contained in a particular inverted list, for
   /// debugging purposes.

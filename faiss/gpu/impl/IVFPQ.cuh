@@ -27,7 +27,7 @@ class IVFPQ : public IVFBase {
         int bitsPerSubQuantizer,
         bool useFloat16LookupTables,
         bool useMMCodeDistance,
-        bool alternativeLayout,
+        bool interleavedLayout,
         float* pqCentroidData,
         IndicesOptions indicesOptions,
         MemorySpace space);
@@ -68,6 +68,10 @@ class IVFPQ : public IVFBase {
   /// Encode the vectors that we're adding and append to our IVF lists
   void appendVectors_(Tensor<float, 2, true>& vecs,
                       Tensor<Index::idx_t, 1, true>& indices,
+                      Tensor<int, 1, true>& uniqueLists,
+                      Tensor<int, 1, true>& vectorsByUniqueList,
+                      Tensor<int, 1, true>& uniqueListVectorStart,
+                      Tensor<int, 1, true>& uniqueListStartOffset,
                       Tensor<int, 1, true>& listIds,
                       Tensor<int, 1, true>& listOffset,
                       cudaStream_t stream) override;
@@ -134,16 +138,6 @@ class IVFPQ : public IVFBase {
   /// general-purpose MM code distance computation? This is for testing
   /// purposes.
   const bool useMMCodeDistance_;
-
-  /// The default memory layout is [vector][PQ component]:
-  /// (v0 d0) (v0 d1) ... (v0 dD-1) (v1 d0) (v1 d1) ...
-  ///
-  /// An alternative memory layout (layoutBy32) is
-  /// [vector / 32][PQ component][vector % 32] with padding:
-  /// (v0 d0) (v1 d0) ... (v31 d0) (v0 d1) (v1 d1) ... (v31 dD-1) (v32 d0) (v33
-  /// d0) ...
-  /// so the list length is always a multiple of numSubQuantizers * 32
-  const bool alternativeLayout_;
 
   /// On the GPU, we prefer different PQ centroid data layouts for
   /// different purposes.

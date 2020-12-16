@@ -23,7 +23,7 @@ struct GpuIndexIVFPQConfig : public GpuIndexIVFConfig {
   inline GpuIndexIVFPQConfig()
       : useFloat16LookupTables(false),
         usePrecomputedTables(false),
-        alternativeLayout(false),
+        interleavedLayout(false),
         useMMCodeDistance(false) {
   }
 
@@ -38,7 +38,7 @@ struct GpuIndexIVFPQConfig : public GpuIndexIVFConfig {
 
   /// Use the alternative memory layout for the IVF lists
   /// WARNING: this is a feature under development, do not use!
-  bool alternativeLayout;
+  bool interleavedLayout;
 
   /// Use GEMM-backed computation of PQ code distances for the no precomputed
   /// table version of IVFPQ.
@@ -115,9 +115,13 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
   int getListLength(int listId) const override;
 
   /// Return the encoded vector data contained in a particular inverted list,
-  /// for debugging purposes. This is represented in a CPU Faiss (IndexIVF*)
+  /// for debugging purposes.
+  /// If gpuFormat is true, the data is returned as it is encoded in the
+  /// GPU-side representation.
+  /// Otherwise, it is converted to the CPU format.
   /// compliant format, while the native GPU format may differ.
-  std::vector<uint8_t> getListVectorData(int listId) const override;
+  std::vector<uint8_t>
+  getListVectorData(int listId, bool gpuFormat = false) const override;
 
   /// Return the vector indices contained in a particular inverted list, for
   /// debugging purposes.

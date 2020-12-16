@@ -11,6 +11,8 @@
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/utils/PtxUtils.cuh>
+#include <faiss/gpu/utils/WarpShuffles.cuh>
 
 namespace faiss { namespace gpu {
 
@@ -21,6 +23,7 @@ inline bool isSQSupported(ScalarQuantizer::QuantizerType qtype) {
     case ScalarQuantizer::QuantizerType::QT_8bit_direct:
     case ScalarQuantizer::QuantizerType::QT_4bit:
     case ScalarQuantizer::QuantizerType::QT_4bit_uniform:
+    case ScalarQuantizer::QuantizerType::QT_6bit:
     case ScalarQuantizer::QuantizerType::QT_fp16:
       return true;
     default:
@@ -41,9 +44,8 @@ struct GpuScalarQuantizer : public ScalarQuantizer {
     HostTensor<float, 1, true>
       cpuTrained((float*) sq.trained.data(), {(int) sq.trained.size()});
 
-    // Just use the default stream, as we're allocating memory above in any case
-    gpuTrained.copyFrom(cpuTrained, 0);
-    CUDA_VERIFY(cudaStreamSynchronize(0));
+    auto stream = res->getDefaultStreamCurrentDevice();
+    gpuTrained.copyFrom(cpuTrained, stream);
   }
 
   // ScalarQuantizer::trained copied to GPU memory
@@ -74,7 +76,7 @@ struct CodecFloat {
   CodecFloat(int vecBytes) : bytesPerVec(vecBytes) { }
 
   size_t getSmemSize(int dim) { return 0; }
-  inline __device__ void setSmem(float* smem, int dim) { }
+  inline __device__ void initKernel(float* smem, int dim) { }
 
   inline __device__ void decode(void* data, int vec, int d,
                                 float* out) const {
@@ -100,6 +102,20 @@ struct CodecFloat {
     // doesn't need implementing (kDimPerIter == 1)
   }
 
+  //
+  // new implementation
+  //
+  using EncodeT = float;
+  static constexpr int kEncodeBits = 32;
+
+  inline __device__ EncodeT encodeNew(int dim, float v) const {
+    return v;
+  }
+
+  inline __device__ float decodeNew(int dim, EncodeT v) const {
+    return v;
+  }
+
   int bytesPerVec;
 };
 
@@ -118,7 +134,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_fp16, 1> {
   Codec(int vecBytes) : bytesPerVec(vecBytes) { }
 
   size_t getSmemSize(int dim) { return 0; }
-  inline __device__ void setSmem(float* smem, int dim) { }
+  inline __device__ void initKernel(float* smem, int dim) { }
 
   inline __device__ void decode(void* data, int vec, int d,
                                 float* out) const {
@@ -144,50 +160,18 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_fp16, 1> {
     // doesn't need implementing (kDimPerIter == 1)
   }
 
-  int bytesPerVec;
-};
+  //
+  // new implementation
+  //
+  using EncodeT = half;
+  static constexpr int kEncodeBits = 16;
 
-// dim % 2 == 0, ensures uint32 alignment
-template <>
-struct Codec<ScalarQuantizer::QuantizerType::QT_fp16, 2> {
-  /// How many dimensions per iteration we are handling for encoding or decoding
-  static constexpr int kDimPerIter = 2;
-
-  Codec(int vecBytes) : bytesPerVec(vecBytes) { }
-
-  size_t getSmemSize(int dim) { return 0; }
-  inline __device__ void setSmem(float* smem, int dim) { }
-
-  inline __device__ void decode(void* data, int vec, int d,
-                                float* out) const {
-    half2* p = (half2*) &((uint8_t*) data)[vec * bytesPerVec];
-    half2 pd = p[d];
-
-    out[0] = Convert<half, float>()(__low2half(pd));
-    out[1] = Convert<half, float>()(__high2half(pd));
+  inline __device__ EncodeT encodeNew(int dim, float v) const {
+    return Convert<float, half>()(v);
   }
 
-  inline __device__ float decodePartial(void* data, int vec, int d,
-                                        int subD) const {
-    // should not be called
-    assert(false);
-    return 0;
-  }
-
-  inline __device__ void encode(void* data, int vec, int d,
-                                float v[kDimPerIter]) const {
-    half2* p = (half2*) &((uint8_t*) data)[vec * bytesPerVec];
-    half h0 = Convert<float, half>()(v[0]);
-    half h1 = Convert<float, half>()(v[1]);
-
-    p[d] = __halves2half2(h0, h1);
-  }
-
-  inline __device__ void encodePartial(void* data, int vec, int d,
-                                       int remaining,
-                                       float v[kDimPerIter]) const {
-    // should not be called
-    assert(false);
+  inline __device__ float decodeNew(int dim, EncodeT v) const {
+    return Convert<half, float>()(v);
   }
 
   int bytesPerVec;
@@ -223,11 +207,18 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, DimMultiple> {
   }
 
   size_t getSmemSize(int dim) { return 0; }
-  inline __device__ void setSmem(float* smem, int dim) { }
+  inline __device__ void initKernel(float* smem, int dim) {
+    // We are performing vmin + vdiff * (v + 0.5) / (2^bits - 1)
+    // This can be simplified to vmin' + vdiff' * v where:
+    // vdiff' = vdiff / (2^bits - 1)
+    // vmin' = vmin + 0.5 * vdiff'
+    auto vd = vdiff * (1.0f / 255.0f);
+    vmin = vmin + 0.5f * vd;
+    vdiff = vd;
+  }
 
   inline __device__ float decodeHelper(uint8_t v) const {
-    float x = (((float) v) + 0.5f) / 255.0f;
-    return vmin + x * vdiff;
+    return vmin + (float) v * vdiff;
   }
 
   inline __device__ void decode(void* data, int vec, int d,
@@ -267,7 +258,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, DimMultiple> {
   inline __device__ uint8_t encodeHelper(float v) const {
     float x = (v - vmin) / vdiff;
     x = fminf(1.0f, fmaxf(0.0f, x));
-    return (uint8_t) (255 * x);
+    return (uint8_t) (x * 255.0f);
   }
 
   inline __device__ void encode(void* data, int vec, int d,
@@ -300,9 +291,23 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, DimMultiple> {
     // otherwise does not need implementing
   }
 
+  //
+  // interleaved code implementation
+  //
+  using EncodeT = uint8_t;
+  static constexpr int kEncodeBits = 8;
+
+  inline __device__ EncodeT encodeNew(int dim, float v) const {
+    return encodeHelper(v);
+  }
+
+  inline __device__ float decodeNew(int dim, EncodeT v) const {
+    return decodeHelper(v);
+  }
+
   int bytesPerVec;
-  const float vmin;
-  const float vdiff;
+  float vmin;
+  float vdiff;
 };
 
 // Uniform quantization per each dimension
@@ -322,19 +327,26 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit, DimMultiple> {
     return sizeof(float) * dim * 2;
   }
 
-  inline __device__ void setSmem(float* smem, int dim) {
+  // Initialize shared memory and local storage
+  // It is up to the user to call a trailing syncthreads (after any other
+  // initialization required has been done)
+  inline __device__ void initKernel(float* smem, int dim) {
     smemVmin = smem;
     smemVdiff = smem + dim;
 
     for (int i = threadIdx.x; i < dim; i += blockDim.x) {
-      smemVmin[i] = vmin[i];
-      smemVdiff[i] = vdiff[i];
+      // We are performing vmin + vdiff * (v + 0.5) / (2^bits - 1)
+      // This can be simplified to vmin' + vdiff' * v where:
+      // vdiff' = vdiff / (2^bits - 1)
+      // vmin' = vmin + 0.5 * vdiff'
+      auto vd = vdiff[i] * (1.0f / 255.0f);
+      smemVmin[i] = vmin[i] + 0.5f * vd;
+      smemVdiff[i] = vd;
     }
   }
 
   inline __device__ float decodeHelper(uint8_t v, int realDim) const {
-    float x = (((float) v) + 0.5f) / 255.0f;
-    return smemVmin[realDim] + x * smemVdiff[realDim];
+    return smemVmin[realDim] + (float) v * smemVdiff[realDim];
   }
 
   inline __device__ void decode(void* data, int vec, int d,
@@ -375,7 +387,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit, DimMultiple> {
   inline __device__ uint8_t encodeHelper(float v, int realDim) const {
     float x = (v - vmin[realDim]) / vdiff[realDim];
     x = fminf(1.0f, fmaxf(0.0f, x));
-    return (uint8_t) (255 * x);
+    return (uint8_t) (x * 255.0f);
   }
 
   inline __device__ void encode(void* data, int vec, int d,
@@ -409,6 +421,20 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit, DimMultiple> {
     // otherwise does not need implementing
   }
 
+  //
+  // interleaved code implementation
+  //
+  using EncodeT = uint8_t;
+  static constexpr int kEncodeBits = 8;
+
+  inline __device__ EncodeT encodeNew(int dim, float v) const {
+    return encodeHelper(v, dim);
+  }
+
+  inline __device__ float decodeNew(int dim, EncodeT v) const {
+    return decodeHelper(v, dim);
+  }
+
   int bytesPerVec;
 
   // gmem pointers
@@ -428,7 +454,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_direct, 1> {
   Codec(int vecBytes) : bytesPerVec(vecBytes) { }
 
   size_t getSmemSize(int dim) { return 0; }
-  inline __device__ void setSmem(float* smem, int dim) { }
+  inline __device__ void initKernel(float* smem, int dim) { }
 
   inline __device__ void decode(void* data, int vec, int d,
                                 float* out) const {
@@ -454,7 +480,92 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_direct, 1> {
     // doesn't need implementing (kDimPerIter == 1)
   }
 
+  //
+  // interleaved code implementation
+  //
+  using EncodeT = uint8_t;
+  static constexpr int kEncodeBits = 8;
+
+  inline __device__ EncodeT encodeNew(int dim, float v) const {
+    return (uint8_t) v;
+  }
+
+  inline __device__ float decodeNew(int dim, EncodeT v) const {
+    return (float) v;
+  }
+
   int bytesPerVec;
+};
+
+/////
+//
+// 6 bit encodings
+//
+/////
+
+template <>
+struct Codec<ScalarQuantizer::QuantizerType::QT_6bit, 1> {
+  Codec(int vecBytes, float* min, float* diff)
+      : bytesPerVec(vecBytes), vmin(min), vdiff(diff),
+        smemVmin(nullptr),
+        smemVdiff(nullptr) {
+  }
+
+  size_t getSmemSize(int dim) {
+    return sizeof(float) * dim * 2;
+  }
+
+  // Initialize shared memory and local storage
+  // It is up to the user to call a trailing syncthreads (after any other
+  // initialization required has been done)
+  inline __device__ void initKernel(float* smem, int dim) {
+    smemVmin = smem;
+    smemVdiff = smem + dim;
+
+    for (int i = threadIdx.x; i < dim; i += blockDim.x) {
+      // We are performing vmin + vdiff * (v + 0.5) / (2^bits - 1)
+      // This can be simplified to vmin' + vdiff' * v where:
+      // vdiff' = vdiff / (2^bits - 1)
+      // vmin' = vmin + 0.5 * vdiff'
+      auto vd = vdiff[i] * (1.0f / 63.0f);
+      smemVmin[i] = vmin[i] + 0.5f * vd;
+      smemVdiff[i] = vd;
+    }
+  }
+
+  inline __device__ float decodeHelper(uint8_t v, int realDim) const {
+    return smemVmin[realDim] + (float) v * smemVdiff[realDim];
+  }
+
+  inline __device__ uint8_t encodeHelper(float v, int realDim) const {
+    float x = (v - vmin[realDim]) / vdiff[realDim];
+    x = fminf(1.0f, fmaxf(0.0f, x));
+    return (uint8_t) (x * 63.0f);
+  }
+
+  //
+  // interleaved code implementation
+  //
+  using EncodeT = uint8_t;
+  static constexpr int kEncodeBits = 6;
+
+  inline __device__ EncodeT encodeNew(int dim, float v) const {
+    return encodeHelper(v, dim);
+  }
+
+  inline __device__ float decodeNew(int dim, EncodeT v) const {
+    return decodeHelper(v, dim);
+  }
+
+  int bytesPerVec;
+
+  // gmem pointers
+  const float* vmin;
+  const float* vdiff;
+
+  // smem pointers
+  float* smemVmin;
+  float* smemVdiff;
 };
 
 /////
@@ -474,11 +585,18 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit_uniform, 1> {
   }
 
   size_t getSmemSize(int dim) { return 0; }
-  inline __device__ void setSmem(float* smem, int dim) { }
+  inline __device__ void initKernel(float* smem, int dim) {
+    // We are performing vmin + vdiff * (v + 0.5) / (2^bits - 1)
+    // This can be simplified to vmin' + vdiff' * v where:
+    // vdiff' = vdiff / (2^bits - 1)
+    // vmin' = vmin + 0.5 * vdiff'
+    auto vd = vdiff * (1.0f / 15.0f);
+    vmin = vmin + 0.5f * vd;
+    vdiff = vd;
+  }
 
   inline __device__ float decodeHelper(uint8_t v) const {
-    float x = (((float) v) + 0.5f) / 15.0f;
-    return vmin + x * vdiff;
+    return vmin + (float) v * vdiff;
   }
 
   inline __device__ void decode(void* data, int vec, int d,
@@ -519,9 +637,23 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit_uniform, 1> {
     p[d] = encodeHelper(v[0]);
   }
 
+  //
+  // interleaved code implementation
+  //
+  using EncodeT = uint8_t;
+  static constexpr int kEncodeBits = 4;
+
+  inline __device__ EncodeT encodeNew(int dim, float v) const {
+    return encodeHelper(v);
+  }
+
+  inline __device__ float decodeNew(int dim, EncodeT v) const {
+    return decodeHelper(v);
+  }
+
   int bytesPerVec;
-  const float vmin;
-  const float vdiff;
+  float vmin;
+  float vdiff;
 };
 
 template <>
@@ -539,19 +671,25 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit, 1> {
     return sizeof(float) * dim * 2;
   }
 
-  inline __device__ void setSmem(float* smem, int dim) {
+  inline __device__ void initKernel(float* smem, int dim) {
     smemVmin = smem;
     smemVdiff = smem + dim;
 
     for (int i = threadIdx.x; i < dim; i += blockDim.x) {
-      smemVmin[i] = vmin[i];
-      smemVdiff[i] = vdiff[i];
+      // We are performing vmin + vdiff * (v + 0.5) / (2^bits - 1)
+      // This can be simplified to vmin' + vdiff' * v where:
+      // vdiff' = vdiff / (2^bits - 1)
+      // vmin' = vmin + 0.5 * vdiff'
+      auto vd = vdiff[i] / 15.0f;
+      smemVmin[i] = vmin[i] + 0.5f * vd;
+      smemVdiff[i] = vd;
     }
+
+    __syncthreads();
   }
 
   inline __device__ float decodeHelper(uint8_t v, int realDim) const {
-    float x = (((float) v) + 0.5f) / 15.0f;
-    return smemVmin[realDim] + x * smemVdiff[realDim];
+    return smemVmin[realDim] + (float) v * smemVdiff[realDim];
   }
 
   inline __device__ void decode(void* data, int vec, int d,
@@ -595,6 +733,20 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit, 1> {
     int realDim = d * kDimPerIter;
 
     p[d] = encodeHelper(v[0], realDim);
+  }
+
+  //
+  // interleaved code implementation
+  //
+  using EncodeT = uint8_t;
+  static constexpr int kEncodeBits = 4;
+
+  inline __device__ EncodeT encodeNew(int dim, float v) const {
+    return encodeHelper(v, dim);
+  }
+
+  inline __device__ float decodeNew(int dim, EncodeT v) const {
+    return decodeHelper(v, dim);
   }
 
   int bytesPerVec;

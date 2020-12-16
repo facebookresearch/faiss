@@ -11,6 +11,7 @@
 #include <faiss/gpu/impl/BroadcastSum.cuh>
 #include <faiss/gpu/impl/Distance.cuh>
 #include <faiss/gpu/impl/FlatIndex.cuh>
+#include <faiss/gpu/impl/InterleavedCodes.h>
 #include <faiss/gpu/impl/IVFAppend.cuh>
 #include <faiss/gpu/impl/L2Norm.cuh>
 #include <faiss/gpu/impl/PQCodeDistances.cuh>
@@ -40,7 +41,7 @@ IVFPQ::IVFPQ(GpuResources* resources,
              int bitsPerSubQuantizer,
              bool useFloat16LookupTables,
              bool useMMCodeDistance,
-             bool alternativeLayout,
+             bool interleavedLayout,
              float* pqCentroidData,
              IndicesOptions indicesOptions,
              MemorySpace space) :
@@ -48,6 +49,7 @@ IVFPQ::IVFPQ(GpuResources* resources,
             metric,
             metricArg,
             quantizer,
+            interleavedLayout,
             indicesOptions,
             space),
     numSubQuantizers_(numSubQuantizers),
@@ -56,7 +58,6 @@ IVFPQ::IVFPQ(GpuResources* resources,
     dimPerSubQuantizer_(dim_ / numSubQuantizers),
     useFloat16LookupTables_(useFloat16LookupTables),
     useMMCodeDistance_(useMMCodeDistance),
-    alternativeLayout_(alternativeLayout),
     precomputedCodes_(false) {
   FAISS_ASSERT(pqCentroidData);
 
@@ -119,6 +120,10 @@ IVFPQ::setPrecomputedCodes(bool enable) {
 void
 IVFPQ::appendVectors_(Tensor<float, 2, true>& vecs,
                       Tensor<Index::idx_t, 1, true>& indices,
+                      Tensor<int, 1, true>& uniqueLists,
+                      Tensor<int, 1, true>& vectorsByUniqueList,
+                      Tensor<int, 1, true>& uniqueListVectorStart,
+                      Tensor<int, 1, true>& uniqueListStartOffset,
                       Tensor<int, 1, true>& listIds,
                       Tensor<int, 1, true>& listOffset,
                       cudaStream_t stream) {
@@ -209,7 +214,7 @@ IVFPQ::appendVectors_(Tensor<float, 2, true>& vecs,
                              listOffset,
                              encodings,
                              indices,
-                             alternativeLayout_,
+                             interleavedLayout_,
                              deviceListDataPointers_,
                              deviceListIndexPointers_,
                              indicesOptions_,
@@ -218,7 +223,7 @@ IVFPQ::appendVectors_(Tensor<float, 2, true>& vecs,
 
 size_t
 IVFPQ::getGpuVectorsEncodingSize_(int numVecs) const {
-  if (alternativeLayout_) {
+  if (interleavedLayout_) {
     return utils::roundUp(
       (size_t) numVecs, (size_t) 32) * numSubQuantizers_;
   } else {
@@ -235,52 +240,24 @@ IVFPQ::getCpuVectorsEncodingSize_(int numVecs) const {
 std::vector<uint8_t>
 IVFPQ::translateCodesToGpu_(std::vector<uint8_t> codes,
                             size_t numVecs) const {
-  if (!alternativeLayout_) {
+  if (!interleavedLayout_) {
     return codes;
   }
 
-  auto totalSize = getGpuVectorsEncodingSize_(numVecs);
-  std::vector<uint8_t> out(totalSize);
-
-  for (int i = 0; i < numVecs; ++i) {
-    for (int j = 0; j < numSubQuantizers_; ++j) {
-      int block = (i / 32) * numSubQuantizers_ + j;
-      int withinBlock = i % 32;
-
-      size_t srcOffset = (size_t) i * numSubQuantizers_ + j;
-      size_t dstOffset = (size_t) block * 32 + withinBlock;
-
-      out[dstOffset] = codes[srcOffset];
-    }
-  }
-
-  return out;
+  auto up = unpackNonInterleaved(std::move(codes), numVecs, numSubQuantizers_, 8);
+  return packInterleaved(std::move(up), numVecs, numSubQuantizers_, 8);
 }
 
 // Conver the GPU layout to the CPU layout
 std::vector<uint8_t>
 IVFPQ::translateCodesFromGpu_(std::vector<uint8_t> codes,
                               size_t numVecs) const {
-  if (!alternativeLayout_) {
+  if (!interleavedLayout_) {
     return codes;
   }
 
-  auto totalSize = getCpuVectorsEncodingSize_(numVecs);
-  std::vector<uint8_t> out(totalSize);
-
-  for (int i = 0; i < numVecs; ++i) {
-    for (int j = 0; j < numSubQuantizers_; ++j) {
-      int block = (i / 32) * numSubQuantizers_ + j;
-      int withinBlock = i % 32;
-
-      size_t srcOffset = (size_t) block * 32 + withinBlock;
-      size_t dstOffset = (size_t) i * numSubQuantizers_ + j;
-
-      out[dstOffset] = codes[srcOffset];
-    }
-  }
-
-  return out;
+  auto up = unpackInterleaved(std::move(codes), numVecs, numSubQuantizers_, 8);
+  return packNonInterleaved(std::move(up), numVecs, numSubQuantizers_, 8);
 }
 
 void
@@ -608,7 +585,7 @@ IVFPQ::runPQPrecomputedCodes_(
                                 term3, // term 3
                                 coarseIndices,
                                 useFloat16LookupTables_,
-                                alternativeLayout_,
+                                interleavedLayout_,
                                 numSubQuantizers_,
                                 numSubQuantizerCodes_,
                                 deviceListDataPointers_,
@@ -640,7 +617,7 @@ IVFPQ::runPQNoPrecomputedCodesT_(
                                   coarseIndices,
                                   useFloat16LookupTables_,
                                   useMMCodeDistance_,
-                                  alternativeLayout_,
+                                  interleavedLayout_,
                                   numSubQuantizers_,
                                   numSubQuantizerCodes_,
                                   deviceListDataPointers_,

@@ -180,7 +180,7 @@ def do_multi_test(qtype):
     nprobe = 10
     k = 50
 
-    for d in [11, 64]:
+    for d in [11, 64, 77]:
         if (qtype != faiss.ScalarQuantizer.QT_8bit_direct):
             # residual doesn't make sense here
             do_test(nlist, d, qtype, True,
@@ -205,13 +205,7 @@ class TestSQ(unittest.TestCase):
         do_multi_test(faiss.ScalarQuantizer.QT_8bit_uniform)
 
     def test_6bit(self):
-        try:
-            do_multi_test(faiss.ScalarQuantizer.QT_6bit)
-            # should not reach here; QT_6bit is unimplemented
-        except:
-            print('QT_6bit exception thrown (is expected)')
-        else:
-            assert(False)
+        do_multi_test(faiss.ScalarQuantizer.QT_6bit)
 
     def test_4bit(self):
         do_multi_test(faiss.ScalarQuantizer.QT_4bit)

@@ -22,6 +22,9 @@ namespace faiss { namespace gpu {
 /// over whether resize() initializes new space with T() (which we
 /// don't want), and control on how much the reserved space grows by
 /// upon resize/reserve. It is also meant for POD types only.
+///
+/// Any new memory allocated is automatically zeroed before being presented to
+/// the user.
 template <typename T>
 class DeviceVector {
  public:
@@ -157,6 +160,7 @@ class DeviceVector {
     FAISS_ASSERT(num_ <= newCapacity);
 
     size_t newSizeInBytes = newCapacity * sizeof(T);
+    size_t oldSizeInBytes = num_ * sizeof(T);
 
     // The new allocation will occur on this stream
     allocInfo_.stream = stream;
@@ -164,8 +168,18 @@ class DeviceVector {
     auto newAlloc =
       res_->allocMemoryHandle(AllocRequest(allocInfo_, newSizeInBytes));
 
-    CUDA_VERIFY(cudaMemcpyAsync(newAlloc.data, data(), num_ * sizeof(T),
+    // Copy over any old data
+    CUDA_VERIFY(cudaMemcpyAsync(newAlloc.data,
+                                data(),
+                                oldSizeInBytes,
                                 cudaMemcpyDeviceToDevice, stream));
+
+    // Zero out the new space past the data we just copied
+    CUDA_VERIFY(cudaMemsetAsync((uint8_t*) newAlloc.data + oldSizeInBytes,
+                                0,
+                                newSizeInBytes - oldSizeInBytes,
+                                stream));
+
     alloc_ = std::move(newAlloc);
     capacity_ = newCapacity;
   }

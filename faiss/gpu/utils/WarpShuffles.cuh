@@ -13,6 +13,15 @@
 
 namespace faiss { namespace gpu {
 
+// defines to simplify the SASS assembly structure file/line in the profiler
+#if CUDA_VERSION >= 9000
+#define SHFL_SYNC(VAL, SRC_LANE, WIDTH)         \
+  __shfl_sync(0xffffffff, VAL, SRC_LANE, WIDTH)
+#else
+#define SHFL_SYNC(VAL, SRC_LANE, WIDTH)         \
+  __shfl(VAL, SRC_LANE, WIDTH)
+#endif
+
 template <typename T>
 inline __device__ T shfl(const T val,
                          int srcLane, int width = kWarpSize) {

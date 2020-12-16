@@ -100,6 +100,7 @@ GpuIndexIVFScalarQuantizer::copyFrom(
                            index->metric_arg,
                            by_residual,
                            &sq,
+                           ivfSQConfig_.interleavedLayout,
                            ivfSQConfig_.indicesOptions,
                            config_.memorySpace));
 
@@ -164,11 +165,12 @@ GpuIndexIVFScalarQuantizer::getListLength(int listId) const {
 }
 
 std::vector<uint8_t>
-GpuIndexIVFScalarQuantizer::getListVectorData(int listId) const {
+GpuIndexIVFScalarQuantizer::getListVectorData(int listId,
+                                              bool gpuFormat) const {
   FAISS_ASSERT(index_);
   DeviceScope scope(config_.device);
 
-  return index_->getListVectorData(listId);
+  return index_->getListVectorData(listId, gpuFormat);
 }
 
 std::vector<Index::idx_t>
@@ -220,6 +222,7 @@ GpuIndexIVFScalarQuantizer::train(Index::idx_t n, const float* x) {
                            this->metric_arg,
                            by_residual,
                            &sq,
+                           ivfSQConfig_.interleavedLayout,
                            ivfSQConfig_.indicesOptions,
                            config_.memorySpace));
 

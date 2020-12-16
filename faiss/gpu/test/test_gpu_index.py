@@ -364,7 +364,7 @@ class TestInterleavedIVFPQLayout(unittest.TestCase):
         nprobe = 4
 
         config = faiss.GpuIndexIVFPQConfig()
-        config.alternativeLayout = True
+        config.interleavedLayout = True
         idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2, config)
         q = faiss.IndexFlatL2(d)
         idx_cpu = faiss.IndexIVFPQ(q, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2)
@@ -406,7 +406,7 @@ class TestInterleavedIVFPQLayout(unittest.TestCase):
         nprobe = 4
 
         config = faiss.GpuIndexIVFPQConfig()
-        config.alternativeLayout = True
+        config.interleavedLayout = True
         idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2, config)
         q = faiss.IndexFlatL2(d)
         idx_cpu = faiss.IndexIVFPQ(q, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2)
@@ -448,7 +448,7 @@ class TestInterleavedIVFPQLayout(unittest.TestCase):
         nprobe = 4
 
         config = faiss.GpuIndexIVFPQConfig()
-        config.alternativeLayout = True
+        config.interleavedLayout = True
         idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2, config)
         q = faiss.IndexFlatL2(d)
         idx_cpu = faiss.IndexIVFPQ(q, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2)

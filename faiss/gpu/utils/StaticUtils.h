@@ -10,6 +10,12 @@
 
 #include <cuda.h>
 
+// allow usage for non-CUDA files
+#ifndef __host__
+#define __host__
+#define __device__
+#endif
+
 namespace faiss { namespace gpu { namespace utils {
 
 template <typename U, typename V>
