@@ -133,7 +133,11 @@ IVFFlat::appendVectors_(Tensor<float, 2, true>& vecs,
     quantizer_->computeResidual(vecs, listIds, residuals);
   }
 
-  // Now, for each list to which a vector is being assigned, write it
+  // Append indices to the IVF lists
+  runIVFIndicesAppend(listIds, listOffset, indices,
+                      indicesOptions_, deviceListIndexPointers_, stream);
+
+  // Append the encoded vectors to the IVF lists
   if (interleavedLayout_) {
     runIVFFlatInterleavedAppend(listIds,
                                 listOffset,
@@ -142,21 +146,16 @@ IVFFlat::appendVectors_(Tensor<float, 2, true>& vecs,
                                 uniqueListVectorStart,
                                 uniqueListStartOffset,
                                 useResidual_ ? residuals : vecs,
-                                indices,
                                 scalarQ_.get(),
                                 deviceListDataPointers_,
-                                deviceListIndexPointers_,
-                                indicesOptions_,
+                                resources_,
                                 stream);
   } else {
     runIVFFlatAppend(listIds,
                      listOffset,
                      useResidual_ ? residuals : vecs,
-                     indices,
                      scalarQ_.get(),
                      deviceListDataPointers_,
-                     deviceListIndexPointers_,
-                     indicesOptions_,
                      stream);
   }
 }

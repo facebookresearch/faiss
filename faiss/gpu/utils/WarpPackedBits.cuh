@@ -48,8 +48,8 @@ struct WarpPackedBits<uint8_t, 6> {
     v = valid ? v : 0;
     v &= 0x3f; // ensure we have only 6 bits
 
-    uint8_t vLower = (uint8_t) shfl((unsigned int) v, laneFrom);
-    uint8_t vUpper = (uint8_t) shfl((unsigned int) v, laneFrom + 1);
+    uint8_t vLower = (uint8_t) SHFL_SYNC((unsigned int) v, laneFrom, kWarpSize);
+    uint8_t vUpper = (uint8_t) SHFL_SYNC((unsigned int) v, laneFrom + 1, kWarpSize);
 
     // lsb     ...    msb
     // 0: 0 0 0 0 0 0 1 1
@@ -94,8 +94,6 @@ struct WarpPackedBits<uint8_t, 6> {
   static inline __device__ uint8_t postRead(int laneId, uint8_t v) {
     int laneFrom = (laneId * 6) / 8;
 
-    // auto vLower = shfl((unsigned int) v, laneFrom);
-    // auto vUpper = shfl((unsigned int) v, laneFrom + 1);
     auto vLower = SHFL_SYNC((unsigned int) v, laneFrom, kWarpSize);
     auto vUpper = SHFL_SYNC((unsigned int) v, laneFrom + 1, kWarpSize);
     auto vConcat = (vUpper << 8) | vLower;
@@ -110,14 +108,117 @@ struct WarpPackedBits<uint8_t, 6> {
     // 2: 1, 2: offset 4 size 6
     // 3: 2, 3: offset 2 size 6
     //
-    // In binary, each of the offsets are the following (concatenated together):
-    // 0b0010'0100'0110'0000 or 0x2460
+    // The offsets are the following (concatenated together):
+    // 0x2460
     // We can thus use bfe.u32 as a lookup table for the above sequence.
     unsigned int pos;
     GET_BITFIELD_U32(pos, 0x2460, (laneId & 0x3) * 4, 4);
 
     unsigned int out;
     GET_BITFIELD_U32(out, vConcat, pos, 6);
+
+    return out;
+  }
+};
+
+
+// Read/write 5 bit fields, packed across the warp into 20 bytes
+template <>
+struct WarpPackedBits<uint8_t, 5> {
+  static __device__ void write(int laneId, uint8_t v, bool valid, uint8_t* out) {
+    // Lower 24 lanes wwrite out packed data
+    int laneFrom = (laneId * 8) / 5;
+
+    v = valid ? v : 0;
+    v &= 0x1f; // ensure we have only 6 bits
+
+    uint8_t lo = (uint8_t) SHFL_SYNC((unsigned int) v, laneFrom, kWarpSize);
+    uint8_t hi = (uint8_t) SHFL_SYNC((unsigned int) v, laneFrom + 1, kWarpSize);
+    uint8_t hi2 = (uint8_t) SHFL_SYNC((unsigned int) v, laneFrom + 2, kWarpSize);
+
+    uint8_t vOut = 0;
+
+    // lsb     ...    msb
+    // 0: 0 0 0 0 0 1 1 1
+    // 1: 1 1 2 2 2 2 2 3
+    // 2: 3 3 3 3 4 4 4 4
+    // 3: 4 5 5 5 5 5 6 6
+    // 4: 6 6 6 7 7 7 7 7
+    switch (laneId % 5) {
+      case 0:
+        // 5 msbs of lower as vOut lsbs
+        // 3 lsbs of upper as vOut msbs
+        vOut = (lo & 0x1f) | (hi << 5);
+        break;
+      case 1:
+        // 2 msbs of lower as vOut lsbs
+        // 5 lsbs of upper as vOut msbs
+        // 1 lsbs of upper2 as vOut msb
+        vOut = (lo >> 3) | (hi << 2) | (hi2 << 7);
+        break;
+      case 2:
+        // 4 msbs of lower as vOut lsbs
+        // 4 lsbs of upper as vOut msbs
+        vOut = (lo >> 1) | (hi << 4);
+        break;
+      case 3:
+        // 1 msbs of lower as vOut lsbs
+        // 5 lsbs of upper as vOut msbs
+        // 2 lsbs of upper2 as vOut msb
+        vOut = (lo >> 4) | (hi << 1) | (hi2 << 6);
+        break;
+      case 4:
+        // 3 msbs of lower as vOut lsbs
+        // 5 lsbs of upper as vOut msbs
+        vOut = (lo >> 2) | (hi << 3);
+        break;
+    }
+
+    if (laneId < 20) {
+      // There could be prior data
+      out[laneId] |= vOut;
+    }
+  }
+
+  static inline __device__ uint8_t read(int laneId, uint8_t* in) {
+    uint8_t v = 0;
+
+    if (laneId < 20) {
+      v = in[laneId];
+    }
+
+    return v;
+  }
+
+  static inline __device__ uint8_t postRead(int laneId, uint8_t v) {
+    int laneFrom = (laneId * 5) / 8;
+
+    auto vLower = SHFL_SYNC((unsigned int) v, laneFrom, kWarpSize);
+    auto vUpper = SHFL_SYNC((unsigned int) v, laneFrom + 1, kWarpSize);
+    auto vConcat = (vUpper << 8) | vLower;
+
+    // Now, this is weird. Each lane reads two uint8, but we wish to use the
+    // bfe.u32 instruction to read a 5 bit value from the concatenated uint32.
+    // The offset in which we wish to read in the concatenated word is the
+    // following:
+    //
+    // 0: 0, 1: offset 0 size 5
+    // 1: 0, 1: offset 5 size 5
+    // 2: 1, 2: offset 2 size 5
+    // 3: 1, 2: offset 7 size 5
+    // 4: 2, 3: offset 4 size 5
+    // 5: 3, 4: offset 1 size 5
+    // 6: 3, 4: offset 6 size 5
+    // 7: 4, 5: offset 3 size 5
+    //
+    // The offsets are the following (concatenated together):
+    // 0x36147250
+    // We can thus use bfe.u32 as a lookup table for the above sequence.
+    unsigned int pos;
+    GET_BITFIELD_U32(pos, 0x36147250, (laneId & 0x7) * 4, 4);
+
+    unsigned int out;
+    GET_BITFIELD_U32(out, vConcat, pos, 5);
 
     return out;
   }
@@ -132,8 +233,8 @@ struct WarpPackedBits<uint8_t, 4> {
 
     v = valid ? v : 0;
 
-    uint8_t vLower = (uint8_t) shfl((unsigned int) v, laneFrom);
-    uint8_t vUpper = (uint8_t) shfl((unsigned int) v, laneFrom + 1);
+    uint8_t vLower = (uint8_t) SHFL_SYNC((unsigned int) v, laneFrom, kWarpSize);
+    uint8_t vUpper = (uint8_t) SHFL_SYNC((unsigned int) v, laneFrom + 1, kWarpSize);
 
     uint8_t vOut = (vLower & 0xf) | (vUpper << 4);
 

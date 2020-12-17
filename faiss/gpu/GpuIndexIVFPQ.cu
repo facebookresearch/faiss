@@ -10,6 +10,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/impl/ProductQuantizer.h>
+#include <faiss/utils/utils.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/impl/IVFPQ.cuh>
@@ -77,7 +78,7 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
   bitsPerCode_ = index->pq.nbits;
 
   // We only support this
-  FAISS_THROW_IF_NOT_MSG(index->pq.nbits == 8,
+  FAISS_THROW_IF_NOT_MSG(ivfpqConfig_.interleavedLayout || index->pq.nbits == 8,
                          "GPU: only pq.nbits == 8 is supported");
   FAISS_THROW_IF_NOT_MSG(index->by_residual,
                          "GPU: only by_residual = true is supported");
@@ -227,9 +228,18 @@ GpuIndexIVFPQ::reset() {
 
 void
 GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
+  // Just use the CPU product quantizer to determine sub-centroids
+  faiss::ProductQuantizer pq(this->d, subQuantizers_, bitsPerCode_);
+  pq.verbose = verbose;
+
   // Code largely copied from faiss::IndexIVFPQ
-  // FIXME: GPUize more of this
-  n = std::min(n, (Index::idx_t) (1 << bitsPerCode_) * 64);
+  auto x_in = x;
+
+  x = fvecs_maybe_subsample (
+    d, (size_t*)&n, pq.cp.max_points_per_centroid * pq.ksub,
+    x, verbose, pq.cp.seed);
+
+  ScopeDeleter<float> del_x (x_in == x ? nullptr : x);
 
   if (this->verbose) {
     printf("computing residuals\n");
@@ -250,9 +260,6 @@ GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
            subQuantizers_, getCentroidsPerSubQuantizer(), n, this->d);
   }
 
-  // Just use the CPU product quantizer to determine sub-centroids
-  faiss::ProductQuantizer pq(this->d, subQuantizers_, bitsPerCode_);
-  pq.verbose = this->verbose;
   pq.train(n, residuals.data());
 
   index_.reset(new IVFPQ(resources_.get(),
@@ -377,8 +384,18 @@ GpuIndexIVFPQ::verifySettings_() const {
   FAISS_THROW_IF_NOT_MSG(nlist > 0, "nlist must be >0");
 
   // up to a single byte per code
-  FAISS_THROW_IF_NOT_FMT(bitsPerCode_ <= 8,
-                     "Bits per code must be <= 8 (passed %d)", bitsPerCode_);
+  if (ivfpqConfig_.interleavedLayout) {
+    FAISS_THROW_IF_NOT_FMT(bitsPerCode_ == 4 ||
+                           bitsPerCode_ == 5 ||
+                           bitsPerCode_ == 6 ||
+                           bitsPerCode_ == 8,
+                           "Bits per code must be between 4, 5, 6 or 8 (passed %d)",
+                           bitsPerCode_);
+
+  } else {
+    FAISS_THROW_IF_NOT_FMT(bitsPerCode_ == 8,
+                           "Bits per code must be 8 (passed %d)", bitsPerCode_);
+  }
 
   // Sub-quantizers must evenly divide dimensions available
   FAISS_THROW_IF_NOT_FMT(this->d % subQuantizers_ == 0,
@@ -387,7 +404,8 @@ GpuIndexIVFPQ::verifySettings_() const {
                      subQuantizers_, this->d);
 
   // The number of bytes per encoded vector must be one we support
-  FAISS_THROW_IF_NOT_FMT(IVFPQ::isSupportedPQCodeLength(subQuantizers_),
+  FAISS_THROW_IF_NOT_FMT(ivfpqConfig_.interleavedLayout ||
+                         IVFPQ::isSupportedPQCodeLength(subQuantizers_),
                      "Number of bytes per encoded vector / sub-quantizers (%d) "
                      "is not supported",
                      subQuantizers_);

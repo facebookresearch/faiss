@@ -63,7 +63,7 @@ IVFPQ::IVFPQ(GpuResources* resources,
 
   FAISS_ASSERT(bitsPerSubQuantizer_ <= 8);
   FAISS_ASSERT(dim_ % numSubQuantizers_ == 0);
-  FAISS_ASSERT(isSupportedPQCodeLength(numSubQuantizers_));
+  FAISS_ASSERT(interleavedLayout || isSupportedPQCodeLength(numSubQuantizers_));
 
   setPQCentroids_(pqCentroidData);
 }
@@ -131,7 +131,11 @@ IVFPQ::appendVectors_(Tensor<float, 2, true>& vecs,
   // Determine the encodings of the vectors
   //
 
-  DeviceTensor<int, 2, true> encodings(
+  // For now we are restricted to <= 8 bits per code (hence uint8_t in the
+  // encodings)
+  FAISS_ASSERT(bitsPerSubQuantizer_ <= 8);
+
+  DeviceTensor<uint8_t, 2, true> encodings(
     resources_, makeTempAlloc(AllocType::Other, stream),
     {vecs.getSize(0), numSubQuantizers_});
 
@@ -198,34 +202,59 @@ IVFPQ::appendVectors_(Tensor<float, 2, true>& vecs,
                     true);
     }
 
+    // The L2 distance function only returns int32 indices. As we are restricted
+    // to <= 8 bits per code, convert to uint8
+    auto closestSubQIndex8 = convertTensorTemporary<int, uint8_t, 3>(
+      resources_, stream, closestSubQIndex);
+
     // Now, we have the nearest sub-q centroid for each slice of the
     // residual vector.
-    auto closestSubQIndexView = closestSubQIndex.view<2>(
+    auto closestSubQIndex8View = closestSubQIndex8.view<2>(
       {numSubQuantizers_, residuals.getSize(0)});
 
     // The encodings are finally a transpose of this data
-    runTransposeAny(closestSubQIndexView, 0, 1, encodings, stream);
+    runTransposeAny(closestSubQIndex8View, 0, 1, encodings, stream);
   }
 
-  // Append the new encodings
-  // This kernel will handle appending each encoded vector + index to
-  // the appropriate list
-  runIVFPQInvertedListAppend(listIds,
-                             listOffset,
-                             encodings,
-                             indices,
-                             interleavedLayout_,
-                             deviceListDataPointers_,
-                             deviceListIndexPointers_,
-                             indicesOptions_,
-                             stream);
+  // Append indices to the IVF lists
+  runIVFIndicesAppend(listIds, listOffset, indices,
+                      indicesOptions_, deviceListIndexPointers_, stream);
+
+  // Append the encoded vectors to the IVF lists
+  if (interleavedLayout_) {
+    runIVFPQInterleavedAppend(listIds,
+                              listOffset,
+                              uniqueLists,
+                              vectorsByUniqueList,
+                              uniqueListVectorStart,
+                              uniqueListStartOffset,
+                              bitsPerSubQuantizer_,
+                              encodings,
+                              deviceListDataPointers_,
+                              stream);
+  } else {
+    runIVFPQAppend(
+      listIds, listOffset, encodings, deviceListDataPointers_, stream);
+  }
 }
 
 size_t
 IVFPQ::getGpuVectorsEncodingSize_(int numVecs) const {
   if (interleavedLayout_) {
-    return utils::roundUp(
-      (size_t) numVecs, (size_t) 32) * numSubQuantizers_;
+    // bits per PQ code
+    int bits = bitsPerSubQuantizer_;
+
+    // bytes to encode a block of 32 vectors (single PQ code)
+    int bytesPerDimBlock = bits * 32 / 8;
+
+    // bytes to fully encode 32 vectors
+    int bytesPerBlock = bytesPerDimBlock * numSubQuantizers_;
+
+    // number of blocks of 32 vectors we have
+    int numBlocks = utils::divUp(numVecs, 32);
+
+    // total size to encode numVecs
+    return bytesPerBlock * numBlocks;
   } else {
     return (size_t) numVecs * numSubQuantizers_;
   }
@@ -233,7 +262,10 @@ IVFPQ::getGpuVectorsEncodingSize_(int numVecs) const {
 
 size_t
 IVFPQ::getCpuVectorsEncodingSize_(int numVecs) const {
-  return (size_t) numVecs * numSubQuantizers_;
+  size_t sizePerVector =
+    utils::divUp(numSubQuantizers_ * bitsPerSubQuantizer_, 8);
+
+  return (size_t) numVecs * sizePerVector;
 }
 
 // Convert the CPU layout to the GPU layout
@@ -244,8 +276,14 @@ IVFPQ::translateCodesToGpu_(std::vector<uint8_t> codes,
     return codes;
   }
 
-  auto up = unpackNonInterleaved(std::move(codes), numVecs, numSubQuantizers_, 8);
-  return packInterleaved(std::move(up), numVecs, numSubQuantizers_, 8);
+  auto up = unpackNonInterleaved(std::move(codes),
+                                 numVecs,
+                                 numSubQuantizers_,
+                                 bitsPerSubQuantizer_);
+  return packInterleaved(std::move(up),
+                         numVecs,
+                         numSubQuantizers_,
+                         bitsPerSubQuantizer_);
 }
 
 // Conver the GPU layout to the CPU layout
@@ -256,8 +294,14 @@ IVFPQ::translateCodesFromGpu_(std::vector<uint8_t> codes,
     return codes;
   }
 
-  auto up = unpackInterleaved(std::move(codes), numVecs, numSubQuantizers_, 8);
-  return packNonInterleaved(std::move(up), numVecs, numSubQuantizers_, 8);
+  auto up = unpackInterleaved(std::move(codes),
+                              numVecs,
+                              numSubQuantizers_,
+                              bitsPerSubQuantizer_);
+  return packNonInterleaved(std::move(up),
+                            numVecs,
+                            numSubQuantizers_,
+                            bitsPerSubQuantizer_);
 }
 
 void
@@ -586,6 +630,7 @@ IVFPQ::runPQPrecomputedCodes_(
                                 coarseIndices,
                                 useFloat16LookupTables_,
                                 interleavedLayout_,
+                                bitsPerSubQuantizer_,
                                 numSubQuantizers_,
                                 numSubQuantizerCodes_,
                                 deviceListDataPointers_,
@@ -618,6 +663,7 @@ IVFPQ::runPQNoPrecomputedCodesT_(
                                   useFloat16LookupTables_,
                                   useMMCodeDistance_,
                                   interleavedLayout_,
+                                  bitsPerSubQuantizer_,
                                   numSubQuantizers_,
                                   numSubQuantizerCodes_,
                                   deviceListDataPointers_,
