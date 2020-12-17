@@ -26,7 +26,7 @@ TEST(TestCodePacking, NonInterleavedCodes_UnpackPack) {
 
   std::cout << "seed " << seed << "\n";
 
-  for (auto bitsPerCode : {4, 6, 8, 16, 32}) {
+  for (auto bitsPerCode : {4, 5, 6, 8, 16, 32}) {
     for (auto dims : {1, 7, 8, 31, 32}) {
       for (auto numVecs : {1, 3, 4, 5, 6, 8, 31, 32, 33, 65}) {
         std::cout << bitsPerCode << " " << dims << " " << numVecs << "\n";
@@ -74,7 +74,7 @@ TEST(TestCodePacking, NonInterleavedCodes_PackUnpack) {
   std::mt19937 gen(rd());
   std::uniform_int_distribution<uint8_t> dist;
 
-  for (auto bitsPerCode : {4, 6, 8, 16, 32}) {
+  for (auto bitsPerCode : {4, 5, 6, 8, 16, 32}) {
     for (auto dims : {1, 7, 8, 31, 32}) {
       for (auto numVecs : {1, 3, 4, 5, 6, 8, 31, 32, 33, 65}) {
         std::cout << bitsPerCode << " " << dims << " " << numVecs << "\n";
@@ -109,7 +109,7 @@ TEST(TestCodePacking, InterleavedCodes_UnpackPack) {
   std::mt19937 gen(rd());
   std::uniform_int_distribution<uint8_t> dist;
 
-  for (auto bitsPerCode : {4, 6, 8, 16, 32}) {
+  for (auto bitsPerCode : {4, 5, 6, 8, 16, 32}) {
     for (auto dims : {1, 7, 8, 31, 32}) {
       for (auto numVecs : {1, 3, 4, 5, 6, 8, 31, 32, 33, 65}) {
         std::cout << bitsPerCode << " " << dims << " " << numVecs << "\n";
@@ -144,15 +144,48 @@ TEST(TestCodePacking, InterleavedCodes_UnpackPack) {
               for (int k = 0; k < bytesPerDimBlock; ++k) {
                 int loVec = i * 32 + (k * 8) / bitsPerCode;
                 int hiVec = loVec + 1;
+                int hiVec2 = hiVec + 1;
 
                 uint8_t lo = loVec < numVecs ?
                   dist(gen) & (0xff >> (8 - bitsPerCode)) : 0;
                 uint8_t hi = hiVec < numVecs ?
                   dist(gen) & (0xff >> (8 - bitsPerCode)) : 0;
+                uint8_t hi2 = hiVec2 < numVecs ?
+                  dist(gen) & (0xff >> (8 - bitsPerCode)) : 0;
 
                 uint8_t v = 0;
                 if (bitsPerCode == 4) {
                   v = lo | (hi << 4);
+                } else if (bitsPerCode == 5) {
+                  switch (k % 5) {
+                    case 0:
+                      // 5 msbs of lower as vOut lsbs
+                      // 3 lsbs of upper as vOut msbs
+                      v = (lo & 0x1f) | (hi << 5);
+                      break;
+                    case 1:
+                      // 2 msbs of lower as vOut lsbs
+                      // 5 lsbs of upper as vOut msbs
+                      // 1 lsbs of upper2 as vOut msb
+                      v = (lo >> 3) | (hi << 2) | (hi2 << 7);
+                      break;
+                    case 2:
+                      // 4 msbs of lower as vOut lsbs
+                      // 4 lsbs of upper as vOut msbs
+                      v = (lo >> 1) | (hi << 4);
+                      break;
+                    case 3:
+                      // 1 msbs of lower as vOut lsbs
+                      // 5 lsbs of upper as vOut msbs
+                      // 2 lsbs of upper2 as vOut msb
+                      v = (lo >> 4) | (hi << 1) | (hi2 << 6);
+                      break;
+                    case 4:
+                      // 3 msbs of lower as vOut lsbs
+                      // 5 lsbs of upper as vOut msbs
+                      v = (lo >> 2) | (hi << 3);
+                      break;
+                  }
                 } else if (bitsPerCode == 6) {
                   switch (k % 3) {
                     case 0:
@@ -203,7 +236,7 @@ TEST(TestCodePacking, InterleavedCodes_PackUnpack) {
   std::mt19937 gen(rd());
   std::uniform_int_distribution<uint8_t> dist;
 
-  for (auto bitsPerCode : {4, 6, 8, 16, 32}) {
+  for (auto bitsPerCode : {4, 5, 6, 8, 16, 32}) {
     for (auto dims : {1, 7, 8, 31, 32}) {
       for (auto numVecs : {1, 3, 4, 5, 6, 8, 31, 32, 33, 65}) {
         std::cout << bitsPerCode << " " << dims << " " << numVecs << "\n";

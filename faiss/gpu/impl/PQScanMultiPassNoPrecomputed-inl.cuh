@@ -13,18 +13,18 @@
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/HostTensor.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 #include <faiss/gpu/utils/LoadStoreOperators.cuh>
 #include <faiss/gpu/utils/NoTypeTensor.cuh>
 #include <faiss/gpu/utils/StaticUtils.h>
-
-#include <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/utils/WarpPackedBits.cuh>
 
 namespace faiss { namespace gpu {
 
 // A basic implementation that works for the interleaved by vector layout for
 // any number of sub-quantizers
-template <typename CodeDistanceT>
+template <typename EncodeT, int EncodeBits, typename CodeDistanceT>
 __global__ void
 pqScanInterleaved(Tensor<float, 2, true> queries,
                   Tensor<float, 3, true> pqCentroids,
@@ -38,41 +38,58 @@ pqScanInterleaved(Tensor<float, 2, true> queries,
   auto queryId = blockIdx.y;
   auto probeId = blockIdx.x;
 
-  int numSubQuantizers = codeDistances.getSize(2);
-
-  // This is where we start writing out data
-  // We ensure that before the array (at offset -1), there is a 0 value
-  int outBase = *(prefixSumOffsets[queryId][probeId].data() - 1);
-  float* distanceOut = distance[outBase].data();
-
   auto listId = topQueryToCentroid[queryId][probeId];
   // Safety guard in case NaNs in input cause no list ID to be generated
   if (listId == -1) {
     return;
   }
 
-  // This is how many vecs we have to scan for this particular list
-  int numVecs = listLengths[listId];
+  int numWarps = blockDim.x / kWarpSize;
+  // FIXME: some issue with getLaneId() and CUDA 10.1 and P4 GPUs?
+  int laneId = threadIdx.x % kWarpSize;
+  int warpId = threadIdx.x / kWarpSize;
 
-  // This is where the codes for our list start
-  auto codes = (uint8_t*) listCodes[listId];
+  int numSubQuantizers = codeDistances.getSize(2);
 
+  // This is where we start writing out data
+  // We ensure that before the array (at offset -1), there is a 0 value
+  int outBase = *(prefixSumOffsets[queryId][probeId].data() - 1);
+  float* distanceOut = distance[outBase].data();
   auto localCodeDistances = codeDistances[queryId][probeId];
 
-  for (int vec = threadIdx.x; vec < numVecs; vec += blockDim.x) {
+  // This is where the codes for our list start
+  auto vecsBase = (EncodeT*) listCodes[listId];
+  int numVecs = listLengths[listId];
+
+  // How many vector blocks of 32 are in this list?
+  int numBlocks = utils::divUp(numVecs, 32);
+
+  // Number of EncodeT words per each dimension of block of 32 vecs
+  constexpr int bytesPerVectorBlockDim = EncodeBits * 32 / 8;
+  constexpr int wordsPerVectorBlockDim =
+    bytesPerVectorBlockDim / sizeof(EncodeT);
+  int wordsPerVectorBlock = wordsPerVectorBlockDim * numSubQuantizers;
+
+  for (int block = warpId; block < numBlocks; block += numWarps) {
     float dist = 0;
 
-    // This is where we start for this vector with the first sub-quantizer
-    int startCode = (vec / 32) * numSubQuantizers * 32 + (vec % 32);
+    // This is the vector a given lane/thread handles
+    int vec = block * kWarpSize + laneId;
+    bool valid = vec < numVecs;
+
+    EncodeT* data = vecsBase + block * wordsPerVectorBlock;
 
     for (int sq = 0; sq < numSubQuantizers; ++sq) {
-      auto code = codes[startCode + sq * 32];
+      EncodeT enc = WarpPackedBits<EncodeT, EncodeBits>::read(laneId, data);
+      EncodeT code = WarpPackedBits<EncodeT, EncodeBits>::postRead(laneId, enc);
 
-      dist += ConvertTo<float>::to(localCodeDistances[sq][code]);
+      dist += valid ? ConvertTo<float>::to(localCodeDistances[sq][code]) : 0;
+      data += wordsPerVectorBlockDim;
     }
 
-    // We're done with this vector
-    distanceOut[vec] = dist;
+    if (valid) {
+      distanceOut[vec] = dist;
+    }
   }
 }
 
@@ -258,6 +275,7 @@ runMultiPassTile(GpuResources* res,
                  bool useFloat16Lookup,
                  bool useMMCodeDistance,
                  bool interleavedCodeLayout,
+                 int bitsPerSubQuantizer,
                  int numSubQuantizers,
                  int numSubQuantizerCodes,
                  thrust::device_vector<void*>& listCodes,
@@ -307,30 +325,75 @@ runMultiPassTile(GpuResources* res,
                      coarseIndices.getSize(0));
     auto block = dim3(kThreadsPerBlock);
 
+#define RUN_INTERLEAVED(BITS_PER_CODE, CODE_DIST_T)             \
+    do {                                                        \
+      pqScanInterleaved<uint8_t, BITS_PER_CODE, CODE_DIST_T>    \
+        <<<grid, block, 0, stream>>>(queries,                   \
+                                     pqCentroidsInnermostCode,  \
+                                     coarseIndices,             \
+                                     codeDistancesT,            \
+                                     listCodes.data().get(),    \
+                                     listLengths.data().get(),  \
+                                     prefixSumOffsets,          \
+                                     allDistances);             \
+    } while (0)
+
     if (useFloat16Lookup) {
       auto codeDistancesT = codeDistances.toTensor<half>();
 
-      pqScanInterleaved<half>
-        <<<grid, block, 0, stream>>>(queries,
-                                     pqCentroidsInnermostCode,
-                                     coarseIndices,
-                                     codeDistancesT,
-                                     listCodes.data().get(),
-                                     listLengths.data().get(),
-                                     prefixSumOffsets,
-                                     allDistances);
+      switch (bitsPerSubQuantizer) {
+        case 4:
+        {
+          RUN_INTERLEAVED(4, half);
+        }
+        break;
+        case 5:
+        {
+          RUN_INTERLEAVED(5, half);
+        }
+        break;
+        case 6:
+        {
+          RUN_INTERLEAVED(6, half);
+        }
+        break;
+        case 8:
+        {
+          RUN_INTERLEAVED(8, half);
+        }
+        break;
+        default:
+          FAISS_ASSERT(false);
+          break;
+      }
     } else {
       auto codeDistancesT = codeDistances.toTensor<float>();
 
-      pqScanInterleaved<float>
-        <<<grid, block, 0, stream>>>(queries,
-                                     pqCentroidsInnermostCode,
-                                     coarseIndices,
-                                     codeDistancesT,
-                                     listCodes.data().get(),
-                                     listLengths.data().get(),
-                                     prefixSumOffsets,
-                                     allDistances);
+      switch (bitsPerSubQuantizer) {
+        case 4:
+        {
+          RUN_INTERLEAVED(4, float);
+        }
+        break;
+        case 5:
+        {
+          RUN_INTERLEAVED(5, float);
+        }
+        break;
+        case 6:
+        {
+          RUN_INTERLEAVED(6, float);
+        }
+        break;
+        case 8:
+        {
+          RUN_INTERLEAVED(8, float);
+        }
+        break;
+        default:
+          FAISS_ASSERT(false);
+          break;
+      }
     }
   } else {
     // Convert all codes to a distance, and write out (distance,
@@ -469,6 +532,7 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
                                 bool useFloat16Lookup,
                                 bool useMMCodeDistance,
                                 bool interleavedCodeLayout,
+                                int bitsPerSubQuantizer,
                                 int numSubQuantizers,
                                 int numSubQuantizerCodes,
                                 thrust::device_vector<void*>& listCodes,
@@ -659,6 +723,7 @@ runPQScanMultiPassNoPrecomputed(Tensor<float, 2, true>& queries,
                      useFloat16Lookup,
                      useMMCodeDistance,
                      interleavedCodeLayout,
+                     bitsPerSubQuantizer,
                      numSubQuantizers,
                      numSubQuantizerCodes,
                      listCodes,

@@ -460,7 +460,7 @@ TEST(TestGpuIndexIVFPQ, CopyFrom) {
 
   // Use garbage values to see if we overwrite them
   faiss::gpu::GpuIndexIVFPQ
-    gpuIndex(&res, 1, 1, 1, 1, faiss::METRIC_L2, config);
+    gpuIndex(&res, 1, 1, 1, 8, faiss::METRIC_L2, config);
   gpuIndex.setNumProbes(1);
 
   gpuIndex.copyFrom(&cpuIndex);
