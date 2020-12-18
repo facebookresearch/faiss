@@ -10,13 +10,17 @@ import platform
 
 from faiss.contrib import datasets
 from faiss.contrib import inspect_tools
+from faiss.contrib import evaluation
 
 from common import get_dataset_2
 try:
-    from faiss.contrib.exhaustive_search import knn_ground_truth, knn
+    from faiss.contrib.exhaustive_search import knn_ground_truth, knn, range_ground_truth
+    from faiss.contrib.exhaustive_search import range_search_max_results
 
 except:
     pass  # Submodule import broken in python 2.
+
+
 
 @unittest.skipIf(platform.python_version_tuple()[0] < '3', \
                  'Submodule import broken in python 2.')
@@ -80,10 +84,8 @@ class TestDatasets(unittest.TestCase):
 class TestExhaustiveSearch(unittest.TestCase):
 
     def test_knn_cpu(self):
-
         xb = np.random.rand(200, 32).astype('float32')
         xq = np.random.rand(100, 32).astype('float32')
-
 
         index = faiss.IndexFlatL2(32)
         index.add(xb)
@@ -104,6 +106,72 @@ class TestExhaustiveSearch(unittest.TestCase):
         assert np.all(Inew == Iref)
         assert np.allclose(Dref, Dnew)
 
+    def do_test_range(self, metric):
+        ds = datasets.SyntheticDataset(32, 0, 1000, 10)
+        xq = ds.get_queries()
+        xb = ds.get_database()
+        D, I = faiss.knn(xq, xb, 10, distance_type=metric)
+        threshold = float(D[:, -1].mean())
+
+        index = faiss.IndexFlat(32, metric)
+        index.add(xb)
+        ref_lims, ref_D, ref_I = index.range_search(xq, threshold)
+
+        new_lims, new_D, new_I = range_ground_truth(
+            xq, ds.database_iterator(bs=100), threshold, ngpu=0,
+            metric_type=metric)
+
+        evaluation.test_ref_range_results(
+            ref_lims, ref_D, ref_I,
+            new_lims, new_D, new_I
+        )
+
+    def test_range_L2(self):
+        self.do_test_range(faiss.METRIC_L2)
+
+    def test_range_IP(self):
+        self.do_test_range(faiss.METRIC_INNER_PRODUCT)
+
+    def test_query_iterator(self, metric=faiss.METRIC_L2):
+        ds = datasets.SyntheticDataset(32, 0, 1000, 1000)
+        xq = ds.get_queries()
+        xb = ds.get_database()
+        D, I = faiss.knn(xq, xb, 10, distance_type=metric)
+        threshold = float(D[:, -1].mean())
+        print(threshold)
+
+        index = faiss.IndexFlat(32, metric)
+        index.add(xb)
+        ref_lims, ref_D, ref_I = index.range_search(xq, threshold)
+
+        def matrix_iterator(xb, bs):
+            for i0 in range(0, xb.shape[0], bs):
+                yield xb[i0:i0 + bs]
+
+        # check repro OK
+        _, new_lims, new_D, new_I = range_search_max_results(
+            index, matrix_iterator(xq, 100), threshold)
+
+        evaluation.test_ref_range_results(
+            ref_lims, ref_D, ref_I,
+            new_lims, new_D, new_I
+        )
+
+        max_res = ref_lims[-1] // 2
+
+        new_threshold, new_lims, new_D, new_I = range_search_max_results(
+            index, matrix_iterator(xq, 100), threshold, max_results=max_res)
+
+        self.assertLessEqual(new_lims[-1], max_res)
+
+        ref_lims, ref_D, ref_I = index.range_search(xq, new_threshold)
+
+        evaluation.test_ref_range_results(
+            ref_lims, ref_D, ref_I,
+            new_lims, new_D, new_I
+        )
+
+
 
 class TestInspect(unittest.TestCase):
 
@@ -123,3 +191,77 @@ class TestInspect(unittest.TestCase):
         # verify
         ynew = x @ A.T + b
         np.testing.assert_array_almost_equal(yref, ynew)
+
+
+class TestRangeEval(unittest.TestCase):
+
+    def test_precision_recall(self):
+        Iref = [
+            [1, 2, 3],
+            [5, 6],
+            [],
+            []
+        ]
+        Inew = [
+            [1, 2],
+            [6, 7],
+            [1],
+            []
+        ]
+
+        lims_ref = np.cumsum([0] + [len(x) for x in Iref])
+        Iref = np.hstack(Iref)
+        lims_new = np.cumsum([0] + [len(x) for x in Inew])
+        Inew = np.hstack(Inew)
+
+        precision, recall = evaluation.range_PR(lims_ref, Iref, lims_new, Inew)
+        print(precision, recall)
+
+        self.assertEqual(precision, 0.6)
+        self.assertEqual(recall, 0.6)
+
+    def test_PR_multiple(self):
+        metric = faiss.METRIC_L2
+        ds = datasets.SyntheticDataset(32, 1000, 1000, 10)
+        xq = ds.get_queries()
+        xb = ds.get_database()
+
+        # good for ~10k results
+        threshold = 15
+
+        index = faiss.IndexFlat(32, metric)
+        index.add(xb)
+        ref_lims, ref_D, ref_I = index.range_search(xq, threshold)
+
+        # now make a slightly suboptimal index
+        index2 = faiss.index_factory(32, "PCA16,Flat")
+        index2.train(ds.get_train())
+        index2.add(xb)
+
+        # PCA reduces distances so will have more results
+        new_lims, new_D, new_I = index2.range_search(xq, threshold)
+
+        all_thr = np.array([5.0, 10.0, 12.0, 15.0])
+        for mode in "overall", "average":
+            ref_precisions = np.zeros_like(all_thr)
+            ref_recalls = np.zeros_like(all_thr)
+
+            for i, thr in enumerate(all_thr):
+
+                lims2, _, I2 = evaluation.filter_range_results(
+                    new_lims, new_D, new_I, thr)
+
+                prec, recall = evaluation.range_PR(
+                    ref_lims, ref_I, lims2, I2, mode=mode)
+
+                ref_precisions[i] = prec
+                ref_recalls[i] = recall
+
+            precisions, recalls = evaluation.range_PR_multiple_thresholds(
+                ref_lims, ref_I,
+                new_lims, new_D, new_I, all_thr,
+                mode=mode
+            )
+
+            np.testing.assert_array_almost_equal(ref_precisions, precisions)
+            np.testing.assert_array_almost_equal(ref_recalls, recalls)

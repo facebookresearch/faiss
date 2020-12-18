@@ -54,3 +54,7 @@ Defintion of how to access data for some standard datsets.
 ### factory_tools.py
 
 Functions related to factory strings.
+
+### evaluation.py
+
+A few non-trivial evaluation functions for search results
