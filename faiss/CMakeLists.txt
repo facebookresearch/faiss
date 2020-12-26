@@ -140,6 +140,9 @@ set(FAISS_HEADERS
   utils/utils.h
 )
 
+# Export FAISS_HEADERS variable to parent scope.
+set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
+
 if(NOT WIN32)
   target_sources(faiss PRIVATE invlists/OnDiskInvertedLists.cpp)
   list(APPEND FAISS_HEADERS invlists/OnDiskInvertedLists.h)
