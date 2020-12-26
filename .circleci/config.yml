@@ -7,9 +7,6 @@ jobs:
   build_linux:
     docker:
       - image: beauby/faiss-circleci:cpu
-    environment:
-      OMP_NUM_THREADS: 10
-      MKL_THREADING_LAYER: GNU
     steps:
       - checkout
       - run:
@@ -112,7 +109,7 @@ jobs:
           name: Build/test
           command: |
             docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
-            docker run --gpus all faiss make -C build test
+            docker run -e OMP_NUM_THREADS=1 --gpus all faiss make -C build test
             docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
             docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
           no_output_timeout: 20m
