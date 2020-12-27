@@ -9,6 +9,8 @@
 #include <cstdlib>
 #include <random>
 
+#include <unistd.h>
+
 #include <gtest/gtest.h>
 
 #include <faiss/IndexIVFFlat.h>
@@ -27,13 +29,12 @@ struct Tempfilename {
 
     static pthread_mutex_t mutex;
 
-    std::string filename;
+    std::string filename = "faiss_tmp_XXXXXX";
 
-    Tempfilename (const char *prefix = nullptr) {
+    Tempfilename () {
         pthread_mutex_lock (&mutex);
-        char *cfname = tempnam (nullptr, prefix);
-        filename = cfname;
-        free(cfname);
+        int fd = mkstemp (&filename[0]);
+        close(fd);
         pthread_mutex_unlock (&mutex);
     }
 
