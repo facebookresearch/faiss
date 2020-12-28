@@ -1,0 +1,492 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Struct faiss::IndexIDMap2Template &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Struct faiss::IndexIDMapTemplate" href="structfaiss_1_1IndexIDMapTemplate.html" />
+    <link rel="prev" title="Struct faiss::IndexHNSWSQ" href="structfaiss_1_1IndexHNSWSQ.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../structlist.html">Struct list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="structPyCallbackIOReader.html">Struct PyCallbackIOReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structPyCallbackIOWriter.html">Struct PyCallbackIOWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AlignedTable.html">Struct faiss::AlignedTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AlignedTableTightAlloc.html">Struct faiss::AlignedTableTightAlloc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ArrayInvertedLists.html">Struct faiss::ArrayInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AutoTuneCriterion.html">Struct faiss::AutoTuneCriterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BinaryInvertedListScanner.html">Struct faiss::BinaryInvertedListScanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BitstringReader.html">Struct faiss::BitstringReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BitstringWriter.html">Struct faiss::BitstringWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedLists.html">Struct faiss::BlockInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedListsIOHook.html">Struct faiss::BlockInvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CMax.html">Struct faiss::CMax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CMin.html">Struct faiss::CMin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CenteringTransform.html">Struct faiss::CenteringTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Cloner.html">Struct faiss::Cloner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Clustering.html">Struct faiss::Clustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ClusteringIterationStats.html">Struct faiss::ClusteringIterationStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ClusteringParameters.html">Struct faiss::ClusteringParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1DirectMap.html">Struct faiss::DirectMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1DirectMapAdd.html">Struct faiss::DirectMapAdd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1FastScanStats.html">Struct faiss::FastScanStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputer16.html">Struct faiss::GenHammingComputer16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputer32.html">Struct faiss::GenHammingComputer32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputer8.html">Struct faiss::GenHammingComputer8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputerM8.html">Struct faiss::GenHammingComputerM8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HCounterState.html">Struct faiss::HCounterState</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HStackInvertedLists.html">Struct faiss::HStackInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer.html">Struct faiss::HammingComputer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer16.html">Struct faiss::HammingComputer16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer20.html">Struct faiss::HammingComputer20</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer32.html">Struct faiss::HammingComputer32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer4.html">Struct faiss::HammingComputer4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer64.html">Struct faiss::HammingComputer64</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer8.html">Struct faiss::HammingComputer8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerDefault.html">Struct faiss::HammingComputerDefault</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerM4.html">Struct faiss::HammingComputerM4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerM8.html">Struct faiss::HammingComputerM8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapArray.html">Struct faiss::HeapArray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ITQMatrix.html">Struct faiss::ITQMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ITQTransform.html">Struct faiss::ITQTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFFastScanStats.html">Struct faiss::IVFFastScanStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFPQSearchParameters.html">Struct faiss::IVFPQSearchParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFSearchParameters.html">Struct faiss::IVFSearchParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index.html">Struct faiss::Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index2Layer.html">Struct faiss::Index2Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinary.html">Struct faiss::IndexBinary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryFlat.html">Struct faiss::IndexBinaryFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryFromFloat.html">Struct faiss::IndexBinaryFromFloat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHNSW.html">Struct faiss::IndexBinaryHNSW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHash.html">Struct faiss::IndexBinaryHash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHashStats.html">Struct faiss::IndexBinaryHashStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHash_1_1InvertedList.html">Struct faiss::IndexBinaryHash::InvertedList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryIVF.html">Struct faiss::IndexBinaryIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryMultiHash.html">Struct faiss::IndexBinaryMultiHash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlat.html">Struct faiss::IndexFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlat1D.html">Struct faiss::IndexFlat1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatIP.html">Struct faiss::IndexFlatIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatL2.html">Struct faiss::IndexFlatL2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSW.html">Struct faiss::IndexHNSW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSW2Level.html">Struct faiss::IndexHNSW2Level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWFlat.html">Struct faiss::IndexHNSWFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWPQ.html">Struct faiss::IndexHNSWPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWSQ.html">Struct faiss::IndexHNSWSQ</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::IndexIDMap2Template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIDMapTemplate.html">Struct faiss::IndexIDMapTemplate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVF.html">Struct faiss::IndexIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlat.html">Struct faiss::IndexIVFFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlatDedup.html">Struct faiss::IndexIVFFlatDedup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQ.html">Struct faiss::IndexIVFPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQFastScan.html">Struct faiss::IndexIVFPQFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQR.html">Struct faiss::IndexIVFPQR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQStats.html">Struct faiss::IndexIVFPQStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFScalarQuantizer.html">Struct faiss::IndexIVFScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html">Struct faiss::IndexIVFSpectralHash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFStats.html">Struct faiss::IndexIVFStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLSH.html">Struct faiss::IndexLSH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLattice.html">Struct faiss::IndexLattice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQ.html">Struct faiss::IndexPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQFastScan.html">Struct faiss::IndexPQFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQStats.html">Struct faiss::IndexPQStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPreTransform.html">Struct faiss::IndexPreTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefine.html">Struct faiss::IndexRefine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefineFlat.html">Struct faiss::IndexRefineFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexScalarQuantizer.html">Struct faiss::IndexScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexShardsTemplate.html">Struct faiss::IndexShardsTemplate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexSplitVectors.html">Struct faiss::IndexSplitVectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IntersectionCriterion.html">Struct faiss::IntersectionCriterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedListScanner.html">Struct faiss::InvertedListScanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists.html">Struct faiss::InvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedListsIOHook.html">Struct faiss::InvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists_1_1ScopedCodes.html">Struct faiss::InvertedLists::ScopedCodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists_1_1ScopedIds.html">Struct faiss::InvertedLists::ScopedIds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Level1Quantizer.html">Struct faiss::Level1Quantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1LinearTransform.html">Struct faiss::LinearTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MaskedInvertedLists.html">Struct faiss::MaskedInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats.html">Struct faiss::MatrixStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats_1_1Occurrence.html">Struct faiss::MatrixStats::Occurrence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats_1_1PerDimStats.html">Struct faiss::MatrixStats::PerDimStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MultiIndexQuantizer.html">Struct faiss::MultiIndexQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MultiIndexQuantizer2.html">Struct faiss::MultiIndexQuantizer2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1NormalizationTransform.html">Struct faiss::NormalizationTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OPQMatrix.html">Struct faiss::OPQMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskInvertedLists.html">Struct faiss::OnDiskInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskInvertedListsIOHook.html">Struct faiss::OnDiskInvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskInvertedLists_1_1Slot.html">Struct faiss::OnDiskInvertedLists::Slot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskOneList.html">Struct faiss::OnDiskOneList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OneRecallAtRCriterion.html">Struct faiss::OneRecallAtRCriterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OperatingPoint.html">Struct faiss::OperatingPoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OperatingPoints.html">Struct faiss::OperatingPoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PCAMatrix.html">Struct faiss::PCAMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ParameterRange.html">Struct faiss::ParameterRange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ParameterSpace.html">Struct faiss::ParameterSpace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PartitionStats.html">Struct faiss::PartitionStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomGenerator.html">Struct faiss::RandomGenerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomRotationMatrix.html">Struct faiss::RandomRotationMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReadOnlyInvertedLists.html">Struct faiss::ReadOnlyInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReconstructFromNeighbors.html">Struct faiss::ReconstructFromNeighbors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RemapDimensionsTransform.html">Struct faiss::RemapDimensionsTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorTransform.html">Struct faiss::VectorTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1AllocInfo.html">Struct faiss::gpu::AllocInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1AllocRequest.html">Struct faiss::gpu::AllocRequest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html">Struct faiss::gpu::GpuClonerOptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuDistanceParams.html">Struct faiss::gpu::GpuDistanceParams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig.html">Struct faiss::gpu::GpuIndexBinaryFlatConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexConfig.html">Struct faiss::gpu::GpuIndexConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html">Struct faiss::gpu::GpuIndexFlatConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFConfig.html">Struct faiss::gpu::GpuIndexIVFConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFFlatConfig.html">Struct faiss::gpu::GpuIndexIVFFlatConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig.html">Struct faiss::gpu::GpuIndexIVFPQConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig.html">Struct faiss::gpu::GpuIndexIVFScalarQuantizerConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuMemoryReservation.html">Struct faiss::gpu::GpuMemoryReservation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html">Struct faiss::gpu::GpuMultipleClonerOptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html">Struct faiss::gpu::GpuParameterSpace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1IndexWrapper.html">Struct faiss::gpu::IndexWrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range.html">Struct faiss::gpu::StackDeviceMemory::Range</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html">Struct faiss::gpu::StackDeviceMemory::Stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToCPUCloner.html">Struct faiss::gpu::ToCPUCloner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToGpuCloner.html">Struct faiss::gpu::ToGpuCloner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToGpuClonerMultiple.html">Struct faiss::gpu::ToGpuClonerMultiple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ivflib_1_1SlidingIndexWindow.html">Struct faiss::ivflib::SlidingIndexWindow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd16uint16.html">Struct faiss::simd16uint16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd256bit.html">Struct faiss::simd256bit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd32uint8.html">Struct faiss::simd32uint8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd8float32.html">Struct faiss::simd8float32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd8uint32.html">Struct faiss::simd8uint32</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../structlist.html">Struct list</a> &raquo;</li>
+        
+      <li>Struct faiss::IndexIDMap2Template</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/cpp_api/struct/structfaiss_1_1IndexIDMap2Template.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="struct-faiss-indexidmap2template">
+<h1>Struct faiss::IndexIDMap2Template<a class="headerlink" href="#struct-faiss-indexidmap2template" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp struct">
+<dt id="_CPPv4I0EN5faiss19IndexIDMap2TemplateE">
+<span id="_CPPv3I0EN5faiss19IndexIDMap2TemplateE"></span><span id="_CPPv2I0EN5faiss19IndexIDMap2TemplateE"></span>template&lt;typename <code class="sig-name descname">IndexT</code>&gt;<br /><span class="target" id="structfaiss_1_1IndexIDMap2Template"></span><em class="property">struct </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">IndexIDMap2Template</code> : <em class="property">public</em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4I0EN5faiss18IndexIDMapTemplateE" title="faiss::IndexIDMapTemplate">IndexIDMapTemplate</a>&lt;<a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4I0EN5faiss19IndexIDMap2TemplateE" title="faiss::IndexIDMap2Template::IndexT">IndexT</a>&gt;<br /></dt>
+<dd><p>same as IndexIDMap but also provides an efficient reconstruction implementation via a 2-way index </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template5idx_tE">
+<span id="_CPPv3N5faiss19IndexIDMap2Template5idx_tE"></span><span id="_CPPv2N5faiss19IndexIDMap2Template5idx_tE"></span><span class="target" id="structfaiss_1_1IndexIDMap2Template_1a4920bf4eb91addd483e85fd7c7691615"></span><em class="property">using </em><code class="sig-name descname">idx_t</code> = <em class="property">typename</em> <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4I0EN5faiss19IndexIDMap2TemplateE" title="faiss::IndexIDMap2Template::IndexT">IndexT</a>::idx_t<br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template11component_tE">
+<span id="_CPPv3N5faiss19IndexIDMap2Template11component_tE"></span><span id="_CPPv2N5faiss19IndexIDMap2Template11component_tE"></span><span class="target" id="structfaiss_1_1IndexIDMap2Template_1aee4b15cf1872fb69d8a6adf25da3c253"></span><em class="property">using </em><code class="sig-name descname">component_t</code> = <em class="property">typename</em> <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4I0EN5faiss19IndexIDMap2TemplateE" title="faiss::IndexIDMap2Template::IndexT">IndexT</a>::component_t<br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template10distance_tE">
+<span id="_CPPv3N5faiss19IndexIDMap2Template10distance_tE"></span><span id="_CPPv2N5faiss19IndexIDMap2Template10distance_tE"></span><span class="target" id="structfaiss_1_1IndexIDMap2Template_1a33649b40957664a1437c385b0e77ccbe"></span><em class="property">using </em><code class="sig-name descname">distance_t</code> = <em class="property">typename</em> <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4I0EN5faiss19IndexIDMap2TemplateE" title="faiss::IndexIDMap2Template::IndexT">IndexT</a>::distance_t<br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template19IndexIDMap2TemplateEP6IndexT">
+<span id="_CPPv3N5faiss19IndexIDMap2Template19IndexIDMap2TemplateEP6IndexT"></span><span id="_CPPv2N5faiss19IndexIDMap2Template19IndexIDMap2TemplateEP6IndexT"></span><span id="faiss::IndexIDMap2Template::IndexIDMap2Template__IndexTP"></span><span class="target" id="structfaiss_1_1IndexIDMap2Template_1a329f106e2ca6b71377083d5709f1b281"></span><code class="sig-name descname">IndexIDMap2Template</code><span class="sig-paren">(</span><a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4I0EN5faiss19IndexIDMap2TemplateE" title="faiss::IndexIDMap2Template::IndexT">IndexT</a> *<em>index</em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template17construct_rev_mapEv">
+<span id="_CPPv3N5faiss19IndexIDMap2Template17construct_rev_mapEv"></span><span id="_CPPv2N5faiss19IndexIDMap2Template17construct_rev_mapEv"></span><span id="faiss::IndexIDMap2Template::construct_rev_map"></span><span class="target" id="structfaiss_1_1IndexIDMap2Template_1afbd7827eb740d19fb7f48f734cd05dd4"></span>void <code class="sig-name descname">construct_rev_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>make the rev_map from scratch </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template12add_with_idsE5idx_tPK11component_tPK5idx_t">
+<span id="_CPPv3N5faiss19IndexIDMap2Template12add_with_idsE5idx_tPK11component_tPK5idx_t"></span><span id="_CPPv2N5faiss19IndexIDMap2Template12add_with_idsE5idx_tPK11component_tPK5idx_t"></span><span id="faiss::IndexIDMap2Template::add_with_ids__idx_t.component_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexIDMap2Template_1a751cb1ab67ffa1de83260e7bc72f61fe"></span>void <code class="sig-name descname">add_with_ids</code><span class="sig-paren">(</span><a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template5idx_tE" title="faiss::IndexIDMap2Template::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template11component_tE" title="faiss::IndexIDMap2Template::component_t">component_t</a> *<em>x</em>, <em class="property">const</em> <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template5idx_tE" title="faiss::IndexIDMap2Template::idx_t">idx_t</a> *<em>xids</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template10remove_idsERK10IDSelector">
+<span id="_CPPv3N5faiss19IndexIDMap2Template10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss19IndexIDMap2Template10remove_idsERK10IDSelector"></span><span id="faiss::IndexIDMap2Template::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1IndexIDMap2Template_1a8bd3808ffe012654687a584f5e553d50"></span>size_t <code class="sig-name descname">remove_ids</code><span class="sig-paren">(</span><em class="property">const</em> IDSelector &amp;<em>sel</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss19IndexIDMap2Template11reconstructE5idx_tP11component_t">
+<span id="_CPPv3NK5faiss19IndexIDMap2Template11reconstructE5idx_tP11component_t"></span><span id="_CPPv2NK5faiss19IndexIDMap2Template11reconstructE5idx_tP11component_t"></span><span id="faiss::IndexIDMap2Template::reconstruct__idx_t.component_tPC"></span><span class="target" id="structfaiss_1_1IndexIDMap2Template_1a2c3380bb909224c37d536316134d348a"></span>void <code class="sig-name descname">reconstruct</code><span class="sig-paren">(</span><a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template5idx_tE" title="faiss::IndexIDMap2Template::idx_t">idx_t</a> <em>key</em>, <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template11component_tE" title="faiss::IndexIDMap2Template::component_t">component_t</a> *<em>recons</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexIDMap2TemplateD0Ev">
+<span id="_CPPv3N5faiss19IndexIDMap2TemplateD0Ev"></span><span id="_CPPv2N5faiss19IndexIDMap2TemplateD0Ev"></span><span id="faiss::IndexIDMap2Template::~IndexIDMap2Template"></span><span class="target" id="structfaiss_1_1IndexIDMap2Template_1ab1c1d72f24c58dc8b8cafe03c0a9e7a9"></span><code class="sig-name descname">~IndexIDMap2Template</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template19IndexIDMap2TemplateEv">
+<span id="_CPPv3N5faiss19IndexIDMap2Template19IndexIDMap2TemplateEv"></span><span id="_CPPv2N5faiss19IndexIDMap2Template19IndexIDMap2TemplateEv"></span><span id="faiss::IndexIDMap2Template::IndexIDMap2Template"></span><span class="target" id="structfaiss_1_1IndexIDMap2Template_1a99adaac68f041b2c149bdae6d57c805a"></span><code class="sig-name descname">IndexIDMap2Template</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template3addE5idx_tPK11component_t">
+<span id="_CPPv3N5faiss19IndexIDMap2Template3addE5idx_tPK11component_t"></span><span id="_CPPv2N5faiss19IndexIDMap2Template3addE5idx_tPK11component_t"></span><span id="faiss::IndexIDMap2Template::add__idx_t.component_tCP"></span><span class="target" id="structfaiss_1_1IndexIDMapTemplate_1a79498bca09342333e351bb6a4da8984d"></span>void <code class="sig-name descname">add</code><span class="sig-paren">(</span><a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template5idx_tE" title="faiss::IndexIDMap2Template::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template11component_tE" title="faiss::IndexIDMap2Template::component_t">component_t</a> *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd><p>this will fail. Use add_with_ids </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss19IndexIDMap2Template6searchE5idx_tPK11component_t5idx_tP10distance_tP5idx_t">
+<span id="_CPPv3NK5faiss19IndexIDMap2Template6searchE5idx_tPK11component_t5idx_tP10distance_tP5idx_t"></span><span id="_CPPv2NK5faiss19IndexIDMap2Template6searchE5idx_tPK11component_t5idx_tP10distance_tP5idx_t"></span><span id="faiss::IndexIDMap2Template::search__idx_t.component_tCP.idx_t.distance_tP.idx_tPC"></span><span class="target" id="structfaiss_1_1IndexIDMapTemplate_1aa81597506b85759ce5b5d291a3bc631d"></span>void <code class="sig-name descname">search</code><span class="sig-paren">(</span><a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template5idx_tE" title="faiss::IndexIDMap2Template::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template11component_tE" title="faiss::IndexIDMap2Template::component_t">component_t</a> *<em>x</em>, <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template5idx_tE" title="faiss::IndexIDMap2Template::idx_t">idx_t</a> <em>k</em>, <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template10distance_tE" title="faiss::IndexIDMap2Template::distance_t">distance_t</a> *<em>distances</em>, <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template5idx_tE" title="faiss::IndexIDMap2Template::idx_t">idx_t</a> *<em>labels</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template5trainE5idx_tPK11component_t">
+<span id="_CPPv3N5faiss19IndexIDMap2Template5trainE5idx_tPK11component_t"></span><span id="_CPPv2N5faiss19IndexIDMap2Template5trainE5idx_tPK11component_t"></span><span id="faiss::IndexIDMap2Template::train__idx_t.component_tCP"></span><span class="target" id="structfaiss_1_1IndexIDMapTemplate_1a6b9a5e978a69c99d93b6b8b2a3324f34"></span>void <code class="sig-name descname">train</code><span class="sig-paren">(</span><a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template5idx_tE" title="faiss::IndexIDMap2Template::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template11component_tE" title="faiss::IndexIDMap2Template::component_t">component_t</a> *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template5resetEv">
+<span id="_CPPv3N5faiss19IndexIDMap2Template5resetEv"></span><span id="_CPPv2N5faiss19IndexIDMap2Template5resetEv"></span><span id="faiss::IndexIDMap2Template::reset"></span><span class="target" id="structfaiss_1_1IndexIDMapTemplate_1a31821431b6a6b960ecb18b8c2ac46372"></span>void <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss19IndexIDMap2Template12range_searchE5idx_tPK11component_t10distance_tP17RangeSearchResult">
+<span id="_CPPv3NK5faiss19IndexIDMap2Template12range_searchE5idx_tPK11component_t10distance_tP17RangeSearchResult"></span><span id="_CPPv2NK5faiss19IndexIDMap2Template12range_searchE5idx_tPK11component_t10distance_tP17RangeSearchResult"></span><span id="faiss::IndexIDMap2Template::range_search__idx_t.component_tCP.distance_t.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1IndexIDMapTemplate_1aa38b6bb7586c783aa33ab3d00ce8484a"></span>void <code class="sig-name descname">range_search</code><span class="sig-paren">(</span><a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template5idx_tE" title="faiss::IndexIDMap2Template::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template11component_tE" title="faiss::IndexIDMap2Template::component_t">component_t</a> *<em>x</em>, <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template10distance_tE" title="faiss::IndexIDMap2Template::distance_t">distance_t</a> <em>radius</em>, RangeSearchResult *<em>result</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template7rev_mapE">
+<span id="_CPPv3N5faiss19IndexIDMap2Template7rev_mapE"></span><span id="_CPPv2N5faiss19IndexIDMap2Template7rev_mapE"></span><span id="faiss::IndexIDMap2Template::rev_map__std::unordered_map:idx_t.idx_t:"></span><span class="target" id="structfaiss_1_1IndexIDMap2Template_1ae11b9dae4245ace5eb2a28ad6a5fdff9"></span>std::unordered_map&lt;<a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template5idx_tE" title="faiss::IndexIDMap2Template::idx_t">idx_t</a>, <a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template5idx_tE" title="faiss::IndexIDMap2Template::idx_t">idx_t</a>&gt; <code class="sig-name descname">rev_map</code><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template5indexE">
+<span id="_CPPv3N5faiss19IndexIDMap2Template5indexE"></span><span id="_CPPv2N5faiss19IndexIDMap2Template5indexE"></span><span id="faiss::IndexIDMap2Template::index__IndexTP"></span><span class="target" id="structfaiss_1_1IndexIDMapTemplate_1a2b6e5fb115db333ad99e25de74864fdf"></span><a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4I0EN5faiss19IndexIDMap2TemplateE" title="faiss::IndexIDMap2Template::IndexT">IndexT</a> *<code class="sig-name descname">index</code><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template10own_fieldsE">
+<span id="_CPPv3N5faiss19IndexIDMap2Template10own_fieldsE"></span><span id="_CPPv2N5faiss19IndexIDMap2Template10own_fieldsE"></span><span id="faiss::IndexIDMap2Template::own_fields__b"></span><span class="target" id="structfaiss_1_1IndexIDMapTemplate_1a6312303b535755beee7b487c99b07df1"></span>bool <code class="sig-name descname">own_fields</code><br /></dt>
+<dd><p>! the sub-index </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss19IndexIDMap2Template6id_mapE">
+<span id="_CPPv3N5faiss19IndexIDMap2Template6id_mapE"></span><span id="_CPPv2N5faiss19IndexIDMap2Template6id_mapE"></span><span id="faiss::IndexIDMap2Template::id_map__std::vector:idx_t:"></span><span class="target" id="structfaiss_1_1IndexIDMapTemplate_1a223985f0cd852b3ae7372506022662e0"></span>std::vector&lt;<a class="reference internal" href="../file/MetaIndexes_8h.html#_CPPv4N5faiss19IndexIDMap2Template5idx_tE" title="faiss::IndexIDMap2Template::idx_t">idx_t</a>&gt; <code class="sig-name descname">id_map</code><br /></dt>
+<dd><p>! whether pointers are deleted in destructo </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="structfaiss_1_1IndexIDMapTemplate.html" class="btn btn-neutral float-right" title="Struct faiss::IndexIDMapTemplate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="structfaiss_1_1IndexHNSWSQ.html" class="btn btn-neutral float-left" title="Struct faiss::IndexHNSWSQ" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright Facebook, Inc. and its affiliates.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

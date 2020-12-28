@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dir_8904d4d25cfd37481067280c4d4c9f97" kind="dir">
+    <compoundname>faiss/gpu</compoundname>
+    <innerdir refid="dir_a183f389f7fdb8e3b256673548812ad2">faiss/gpu/perf</innerdir>
+    <innerdir refid="dir_221463c854b1b8cd5e47ba008a62b54d">faiss/gpu/test</innerdir>
+    <innerdir refid="dir_42f4926097fe2768058790a30a036468">faiss/gpu/utils</innerdir>
+    <innerfile refid="GpuAutoTune_8h">GpuAutoTune.h</innerfile>
+    <innerfile refid="GpuCloner_8h">GpuCloner.h</innerfile>
+    <innerfile refid="GpuClonerOptions_8h">GpuClonerOptions.h</innerfile>
+    <innerfile refid="GpuDistance_8h">GpuDistance.h</innerfile>
+    <innerfile refid="GpuFaissAssert_8h">GpuFaissAssert.h</innerfile>
+    <innerfile refid="GpuIndex_8h">GpuIndex.h</innerfile>
+    <innerfile refid="GpuIndexBinaryFlat_8h">GpuIndexBinaryFlat.h</innerfile>
+    <innerfile refid="GpuIndexFlat_8h">GpuIndexFlat.h</innerfile>
+    <innerfile refid="GpuIndexIVF_8h">GpuIndexIVF.h</innerfile>
+    <innerfile refid="GpuIndexIVFFlat_8h">GpuIndexIVFFlat.h</innerfile>
+    <innerfile refid="GpuIndexIVFPQ_8h">GpuIndexIVFPQ.h</innerfile>
+    <innerfile refid="GpuIndexIVFScalarQuantizer_8h">GpuIndexIVFScalarQuantizer.h</innerfile>
+    <innerfile refid="GpuIndicesOptions_8h">GpuIndicesOptions.h</innerfile>
+    <innerfile refid="GpuResources_8h">GpuResources.h</innerfile>
+    <innerfile refid="StandardGpuResources_8h">StandardGpuResources.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,271 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1gpu_1_1GpuDistanceParams" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::gpu::GpuDistanceParams</compoundname>
+    <includes refid="GpuDistance_8h" local="no">GpuDistance.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a4427235f12999619094246d7e5cdaafa" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">faiss::MetricType</ref></type>
+        <definition>faiss::MetricType faiss::gpu::GpuDistanceParams::metric</definition>
+        <argsstring></argsstring>
+        <name>metric</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="56" column="21" bodyfile="faiss/gpu/GpuDistance.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a72acefaf5f4d3b7e410a6eff97ec375d" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::gpu::GpuDistanceParams::metricArg</definition>
+        <argsstring></argsstring>
+        <name>metricArg</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="60" column="9" bodyfile="faiss/gpu/GpuDistance.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9f46ba6c76c2cbeb2f35c3ebe2acfcd4" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::gpu::GpuDistanceParams::k</definition>
+        <argsstring></argsstring>
+        <name>k</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="63" column="7" bodyfile="faiss/gpu/GpuDistance.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa0ed4c6020552f15dfec2b8058e2cc26" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::gpu::GpuDistanceParams::dims</definition>
+        <argsstring></argsstring>
+        <name>dims</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="66" column="7" bodyfile="faiss/gpu/GpuDistance.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a056e77528c9b0f5f914b5a2cff27cafa" prot="public" static="no" mutable="no">
+        <type>const void *</type>
+        <definition>const void* faiss::gpu::GpuDistanceParams::vectors</definition>
+        <argsstring></argsstring>
+        <name>vectors</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="75" column="14" bodyfile="faiss/gpu/GpuDistance.h" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a38675c80c01de518a2d960d0a16d2bd8" prot="public" static="no" mutable="no">
+        <type>DistanceDataType</type>
+        <definition>DistanceDataType faiss::gpu::GpuDistanceParams::vectorType</definition>
+        <argsstring></argsstring>
+        <name>vectorType</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="76" column="20" bodyfile="faiss/gpu/GpuDistance.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a784111949c261dcd9c1e0f174ece623b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuDistanceParams::vectorsRowMajor</definition>
+        <argsstring></argsstring>
+        <name>vectorsRowMajor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="77" column="8" bodyfile="faiss/gpu/GpuDistance.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a3a30590cd98103929ca605e21e7d0561" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::gpu::GpuDistanceParams::numVectors</definition>
+        <argsstring></argsstring>
+        <name>numVectors</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="78" column="7" bodyfile="faiss/gpu/GpuDistance.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1aef4df8038d668bcad75787a123aef689" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::gpu::GpuDistanceParams::vectorNorms</definition>
+        <argsstring></argsstring>
+        <name>vectorNorms</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="82" column="15" bodyfile="faiss/gpu/GpuDistance.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9bdef6601a49e2fa0ed704ebd8c37800" prot="public" static="no" mutable="no">
+        <type>const void *</type>
+        <definition>const void* faiss::gpu::GpuDistanceParams::queries</definition>
+        <argsstring></argsstring>
+        <name>queries</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="92" column="14" bodyfile="faiss/gpu/GpuDistance.h" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1ac3e25631561ebfdb2df21e69b402061b" prot="public" static="no" mutable="no">
+        <type>DistanceDataType</type>
+        <definition>DistanceDataType faiss::gpu::GpuDistanceParams::queryType</definition>
+        <argsstring></argsstring>
+        <name>queryType</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="93" column="20" bodyfile="faiss/gpu/GpuDistance.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a27221aaa9e83abf2875ae0e5b76f5f9b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuDistanceParams::queriesRowMajor</definition>
+        <argsstring></argsstring>
+        <name>queriesRowMajor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="94" column="8" bodyfile="faiss/gpu/GpuDistance.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a482b948a09cfcc97c8033cb2901b2d40" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::gpu::GpuDistanceParams::numQueries</definition>
+        <argsstring></argsstring>
+        <name>numQueries</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="95" column="7" bodyfile="faiss/gpu/GpuDistance.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9ad96367054d61e361107f5c1e7e0535" prot="public" static="no" mutable="no">
+        <type>float *</type>
+        <definition>float* faiss::gpu::GpuDistanceParams::outDistances</definition>
+        <argsstring></argsstring>
+        <name>outDistances</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="103" column="9" bodyfile="faiss/gpu/GpuDistance.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a6c2c87890ef21e22f38059cb6bf614be" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuDistanceParams::ignoreOutDistances</definition>
+        <argsstring></argsstring>
+        <name>ignoreOutDistances</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="107" column="8" bodyfile="faiss/gpu/GpuDistance.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1adff919837926113a0022b2889d931d27" prot="public" static="no" mutable="no">
+        <type>IndicesDataType</type>
+        <definition>IndicesDataType faiss::gpu::GpuDistanceParams::outIndicesType</definition>
+        <argsstring></argsstring>
+        <name>outIndicesType</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="111" column="19" bodyfile="faiss/gpu/GpuDistance.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a2b44c3fec85b2fa6f9b52894a11242b2" prot="public" static="no" mutable="no">
+        <type>void *</type>
+        <definition>void* faiss::gpu::GpuDistanceParams::outIndices</definition>
+        <argsstring></argsstring>
+        <name>outIndices</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="112" column="8" bodyfile="faiss/gpu/GpuDistance.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1acc642fa3dfb2bd4d4c595dde12d83c88" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::GpuDistanceParams::GpuDistanceParams</definition>
+        <argsstring>()</argsstring>
+        <name>GpuDistanceParams</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="31" column="3" bodyfile="faiss/gpu/GpuDistance.h" bodystart="31" bodyend="49"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Arguments to brute-force GPU k-nearest neighbor searching. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu/GpuDistance.h" line="30" column="24" bodyfile="faiss/gpu/GpuDistance.h" bodystart="30" bodyend="113"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa0ed4c6020552f15dfec2b8058e2cc26" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>dims</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1acc642fa3dfb2bd4d4c595dde12d83c88" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>GpuDistanceParams</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a6c2c87890ef21e22f38059cb6bf614be" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>ignoreOutDistances</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9f46ba6c76c2cbeb2f35c3ebe2acfcd4" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>k</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a4427235f12999619094246d7e5cdaafa" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>metric</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a72acefaf5f4d3b7e410a6eff97ec375d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>metricArg</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a482b948a09cfcc97c8033cb2901b2d40" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>numQueries</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a3a30590cd98103929ca605e21e7d0561" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>numVectors</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9ad96367054d61e361107f5c1e7e0535" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>outDistances</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a2b44c3fec85b2fa6f9b52894a11242b2" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>outIndices</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1adff919837926113a0022b2889d931d27" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>outIndicesType</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9bdef6601a49e2fa0ed704ebd8c37800" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>queries</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a27221aaa9e83abf2875ae0e5b76f5f9b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>queriesRowMajor</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1ac3e25631561ebfdb2df21e69b402061b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>queryType</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1aef4df8038d668bcad75787a123aef689" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>vectorNorms</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a056e77528c9b0f5f914b5a2cff27cafa" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>vectors</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a784111949c261dcd9c1e0f174ece623b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>vectorsRowMajor</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a38675c80c01de518a2d960d0a16d2bd8" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>vectorType</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

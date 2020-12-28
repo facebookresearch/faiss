@@ -1,0 +1,505 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>File IndexShards.h &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="File IndexWrapper-inl.h" href="IndexWrapper-inl_8h.html" />
+    <link rel="prev" title="File IndexScalarQuantizer.h" href="IndexScalarQuantizer_8h.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="AlignedTable_8h.html">File AlignedTable.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AutoTune_8h.html">File AutoTune.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockInvertedLists_8h.html">File BlockInvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockSelectImpl_8cuh.html">File BlockSelectImpl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockSelectKernel_8cuh.html">File BlockSelectKernel.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Clustering_8h.html">File Clustering.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Comparators_8cuh.html">File Comparators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConversionOperators_8cuh.html">File ConversionOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CopyUtils_8cuh.html">File CopyUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceDefs_8cuh.html">File DeviceDefs.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceTensor-inl_8cuh.html">File DeviceTensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceTensor_8cuh.html">File DeviceTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceUtils_8h.html">File DeviceUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceVector_8cuh.html">File DeviceVector.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DirectMap_8h.html">File DirectMap.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Float16_8cuh.html">File Float16.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuAutoTune_8h.html">File GpuAutoTune.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuClonerOptions_8h.html">File GpuClonerOptions.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuCloner_8h.html">File GpuCloner.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuDistance_8h.html">File GpuDistance.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuFaissAssert_8h.html">File GpuFaissAssert.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexBinaryFlat_8h.html">File GpuIndexBinaryFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexFlat_8h.html">File GpuIndexFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFFlat_8h.html">File GpuIndexIVFFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFPQ_8h.html">File GpuIndexIVFPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFScalarQuantizer_8h.html">File GpuIndexIVFScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVF_8h.html">File GpuIndexIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndex_8h.html">File GpuIndex.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndicesOptions_8h.html">File GpuIndicesOptions.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuResources_8h.html">File GpuResources.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Heap_8h.html">File Heap.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HostTensor-inl_8cuh.html">File HostTensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HostTensor_8cuh.html">File HostTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFlib_8h.html">File IVFlib.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Index2Layer_8h.html">File Index2Layer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryFlat_8h.html">File IndexBinaryFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryFromFloat_8h.html">File IndexBinaryFromFloat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryHNSW_8h.html">File IndexBinaryHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryHash_8h.html">File IndexBinaryHash.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryIVF_8h.html">File IndexBinaryIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinary_8h.html">File IndexBinary.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexFlat_8h.html">File IndexFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexHNSW_8h.html">File IndexHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFFlat_8h.html">File IndexIVFFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQFastScan_8h.html">File IndexIVFPQFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQR_8h.html">File IndexIVFPQR.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQ_8h.html">File IndexIVFPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFSpectralHash_8h.html">File IndexIVFSpectralHash.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVF_8h.html">File IndexIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexLSH_8h.html">File IndexLSH.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexLattice_8h.html">File IndexLattice.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPQFastScan_8h.html">File IndexPQFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPQ_8h.html">File IndexPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPreTransform_8h.html">File IndexPreTransform.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexRefine_8h.html">File IndexRefine.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexReplicas_8h.html">File IndexReplicas.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexScalarQuantizer_8h.html">File IndexScalarQuantizer.h</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File IndexShards.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexWrapper-inl_8h.html">File IndexWrapper-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexWrapper_8h.html">File IndexWrapper.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Index_8h.html">File Index.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="InvertedListsIOHook_8h.html">File InvertedListsIOHook.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="InvertedLists_8h.html">File InvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Limits_8cuh.html">File Limits.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoadStoreOperators_8cuh.html">File LoadStoreOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MathOperators_8cuh.html">File MathOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixMult-inl_8cuh.html">File MatrixMult-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixMult_8cuh.html">File MatrixMult.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixStats_8h.html">File MatrixStats.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkBlock_8cuh.html">File MergeNetworkBlock.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkUtils_8cuh.html">File MergeNetworkUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkWarp_8cuh.html">File MergeNetworkWarp.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MetaIndexes_8h.html">File MetaIndexes.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MetricType_8h.html">File MetricType.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NoTypeTensor_8cuh.html">File NoTypeTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OnDiskInvertedLists_8h.html">File OnDiskInvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pair_8cuh.html">File Pair.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Select_8cuh.html">File Select.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StackDeviceMemory_8h.html">File StackDeviceMemory.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StandardGpuResources_8h.html">File StandardGpuResources.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StaticUtils_8h.html">File StaticUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tensor-inl_8cuh.html">File Tensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tensor_8cuh.html">File Tensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TestUtils_8h.html">File TestUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ThrustAllocator_8cuh.html">File ThrustAllocator.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Timer_8h.html">File Timer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Transpose_8cuh.html">File Transpose.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorTransform_8h.html">File VectorTransform.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpPackedBits_8cuh.html">File WarpPackedBits.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpSelectImpl_8cuh.html">File WarpSelectImpl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpSelectKernel_8cuh.html">File WarpSelectKernel.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpShuffles_8cuh.html">File WarpShuffles.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WorkerThread_8h.html">File WorkerThread.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clone__index_8h.html">File clone_index.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distances_8h.html">File distances.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extra__distances_8h.html">File extra_distances.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamming-inl_8h.html">File hamming-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamming_8h.html">File hamming.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index__factory_8h.html">File index_factory.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index__io_8h.html">File index_io.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ordered__key__value_8h.html">File ordered_key_value.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="partitioning_8h.html">File partitioning.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python__callbacks_8h.html">File python_callbacks.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quantize__lut_8h.html">File quantize_lut.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="random_8h.html">File random.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib_8h.html">File simdlib.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__avx2_8h.html">File simdlib_avx2.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__emulated_8h.html">File simdlib_emulated.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils_8h.html">File utils.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../filelist.html">File list</a> &raquo;</li>
+        
+      <li>File IndexShards.h</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/cpp_api/file/IndexShards_8h.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="file-indexshards-h">
+<h1>File IndexShards.h<a class="headerlink" href="#file-indexshards-h" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp type">
+<dt id="_CPPv45faiss">
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property">namespace </em><code class="sig-name descname">faiss</code><br /></dt>
+<dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
+<p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
+<p>x[ i * d + j ]</p>
+<p>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. I/O functions can read/write to a filename, a file handle or to an object that abstracts the medium.</p>
+<p>The read functions return objects that should be deallocated with delete. All references within these objectes are owned by the object.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Definition of inverted lists + a few common classes that implement the interface.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <a class="reference internal" href="../struct/structfaiss_1_1IndexPreTransform.html#structfaiss_1_1IndexPreTransform"><span class="std std-ref">IndexPreTransform</span></a>.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Typedefs</p>
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss11IndexShardsE">
+<span id="_CPPv3N5faiss11IndexShardsE"></span><span id="_CPPv2N5faiss11IndexShardsE"></span><span class="target" id="namespacefaiss_1aa4027ffe4b83be8ed0ad09c287853d17"></span><em class="property">using </em><code class="sig-name descname">IndexShards</code> = <a class="reference internal" href="#_CPPv4I0EN5faiss19IndexShardsTemplateE" title="faiss::IndexShardsTemplate">IndexShardsTemplate</a>&lt;<a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>&gt;<a class="headerlink" href="#_CPPv4N5faiss11IndexShardsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss17IndexBinaryShardsE">
+<span id="_CPPv3N5faiss17IndexBinaryShardsE"></span><span id="_CPPv2N5faiss17IndexBinaryShardsE"></span><span class="target" id="namespacefaiss_1a1e3dccddbd9b1cbe722804bbb9b2fa99"></span><em class="property">using </em><code class="sig-name descname">IndexBinaryShards</code> = <a class="reference internal" href="#_CPPv4I0EN5faiss19IndexShardsTemplateE" title="faiss::IndexShardsTemplate">IndexShardsTemplate</a>&lt;<a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary">IndexBinary</a>&gt;<a class="headerlink" href="#_CPPv4N5faiss17IndexBinaryShardsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt id="_CPPv4I0EN5faiss19IndexShardsTemplateE">
+<span id="_CPPv3I0EN5faiss19IndexShardsTemplateE"></span><span id="_CPPv2I0EN5faiss19IndexShardsTemplateE"></span>template&lt;typename <code class="sig-name descname">IndexT</code>&gt;<br /><span class="target" id="structfaiss_1_1IndexShardsTemplate"></span><em class="property">struct </em><code class="sig-name descname">IndexShardsTemplate</code> : <em class="property">public</em> ThreadedIndex&lt;<a class="reference internal" href="#_CPPv4I0EN5faiss19IndexShardsTemplateE" title="faiss::IndexShardsTemplate::IndexT">IndexT</a>&gt;<a class="headerlink" href="#_CPPv4I0EN5faiss19IndexShardsTemplateE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><em>#include &lt;IndexShards.h&gt;</em><p><a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> that concatenates the results from several sub-indexes </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate5idx_tE">
+<span id="_CPPv3N5faiss19IndexShardsTemplate5idx_tE"></span><span id="_CPPv2N5faiss19IndexShardsTemplate5idx_tE"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1a8d48a797bd827211a69c4f0a4cad1036"></span><em class="property">using </em><code class="sig-name descname">idx_t</code> = <em class="property">typename</em> <a class="reference internal" href="#_CPPv4I0EN5faiss19IndexShardsTemplateE" title="faiss::IndexShardsTemplate::IndexT">IndexT</a>::idx_t<a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate5idx_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate11component_tE">
+<span id="_CPPv3N5faiss19IndexShardsTemplate11component_tE"></span><span id="_CPPv2N5faiss19IndexShardsTemplate11component_tE"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1ada31784dde1b51d8be8b15288943c559"></span><em class="property">using </em><code class="sig-name descname">component_t</code> = <em class="property">typename</em> <a class="reference internal" href="#_CPPv4I0EN5faiss19IndexShardsTemplateE" title="faiss::IndexShardsTemplate::IndexT">IndexT</a>::component_t<a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate11component_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate10distance_tE">
+<span id="_CPPv3N5faiss19IndexShardsTemplate10distance_tE"></span><span id="_CPPv2N5faiss19IndexShardsTemplate10distance_tE"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1a94570791e9f70d2bef77d76564571417"></span><em class="property">using </em><code class="sig-name descname">distance_t</code> = <em class="property">typename</em> <a class="reference internal" href="#_CPPv4I0EN5faiss19IndexShardsTemplateE" title="faiss::IndexShardsTemplate::IndexT">IndexT</a>::distance_t<a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate10distance_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate19IndexShardsTemplateEbb">
+<span id="_CPPv3N5faiss19IndexShardsTemplate19IndexShardsTemplateEbb"></span><span id="_CPPv2N5faiss19IndexShardsTemplate19IndexShardsTemplateEbb"></span><span id="faiss::IndexShardsTemplate::IndexShardsTemplate__b.b"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1a2ffc0edbce1815fae55cae188b83a5cf"></span><code class="sig-name descname">IndexShardsTemplate</code><span class="sig-paren">(</span>bool <em>threaded</em> = false, bool <em>successive_ids</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate19IndexShardsTemplateEbb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The dimension that all sub-indices must share will be the dimension of the first sub-index added</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">threaded</span></code>: do we use one thread per sub_index or do queries sequentially? </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">successive_ids</span></code>: should we shift the returned ids by the size of each sub-index or return them as they are? </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate19IndexShardsTemplateE5idx_tbb">
+<span id="_CPPv3N5faiss19IndexShardsTemplate19IndexShardsTemplateE5idx_tbb"></span><span id="_CPPv2N5faiss19IndexShardsTemplate19IndexShardsTemplateE5idx_tbb"></span><span id="faiss::IndexShardsTemplate::IndexShardsTemplate__idx_t.b.b"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1ac278d8f7d54923cb034127a4257c56b7"></span><code class="sig-name descname">IndexShardsTemplate</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate5idx_tE" title="faiss::IndexShardsTemplate::idx_t">idx_t</a> <em>d</em>, bool <em>threaded</em> = false, bool <em>successive_ids</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate19IndexShardsTemplateE5idx_tbb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">threaded</span></code>: do we use one thread per sub_index or do queries sequentially? </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">successive_ids</span></code>: should we shift the returned ids by the size of each sub-index or return them as they are? </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate19IndexShardsTemplateEibb">
+<span id="_CPPv3N5faiss19IndexShardsTemplate19IndexShardsTemplateEibb"></span><span id="_CPPv2N5faiss19IndexShardsTemplate19IndexShardsTemplateEibb"></span><span id="faiss::IndexShardsTemplate::IndexShardsTemplate__i.b.b"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1a0596f5ca67d6c9bfddae1465c5353b29"></span><code class="sig-name descname">IndexShardsTemplate</code><span class="sig-paren">(</span>int <em>d</em>, bool <em>threaded</em> = false, bool <em>successive_ids</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate19IndexShardsTemplateEibb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>int version due to the implicit bool conversion ambiguity of int as dimension </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate9add_shardEP6IndexT">
+<span id="_CPPv3N5faiss19IndexShardsTemplate9add_shardEP6IndexT"></span><span id="_CPPv2N5faiss19IndexShardsTemplate9add_shardEP6IndexT"></span><span id="faiss::IndexShardsTemplate::add_shard__IndexTP"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1a47a2e1f78d91025857f483be3eb6828a"></span>void <code class="sig-name descname">add_shard</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5faiss19IndexShardsTemplateE" title="faiss::IndexShardsTemplate::IndexT">IndexT</a> *<em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate9add_shardEP6IndexT" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Alias for addIndex() </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate12remove_shardEP6IndexT">
+<span id="_CPPv3N5faiss19IndexShardsTemplate12remove_shardEP6IndexT"></span><span id="_CPPv2N5faiss19IndexShardsTemplate12remove_shardEP6IndexT"></span><span id="faiss::IndexShardsTemplate::remove_shard__IndexTP"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1ae0bff98885fecae6c42a474d05563ecd"></span>void <code class="sig-name descname">remove_shard</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5faiss19IndexShardsTemplateE" title="faiss::IndexShardsTemplate::IndexT">IndexT</a> *<em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate12remove_shardEP6IndexT" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Alias for removeIndex() </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate3addE5idx_tPK11component_t">
+<span id="_CPPv3N5faiss19IndexShardsTemplate3addE5idx_tPK11component_t"></span><span id="_CPPv2N5faiss19IndexShardsTemplate3addE5idx_tPK11component_t"></span><span id="faiss::IndexShardsTemplate::add__idx_t.component_tCP"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1a45647579ff21e0945d8a87a97ec705fe"></span>void <code class="sig-name descname">add</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate5idx_tE" title="faiss::IndexShardsTemplate::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate11component_tE" title="faiss::IndexShardsTemplate::component_t">component_t</a> *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate3addE5idx_tPK11component_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>supported only for sub-indices that implement add_with_ids </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate12add_with_idsE5idx_tPK11component_tPK5idx_t">
+<span id="_CPPv3N5faiss19IndexShardsTemplate12add_with_idsE5idx_tPK11component_tPK5idx_t"></span><span id="_CPPv2N5faiss19IndexShardsTemplate12add_with_idsE5idx_tPK11component_tPK5idx_t"></span><span id="faiss::IndexShardsTemplate::add_with_ids__idx_t.component_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1a15e0b4a2fd85f9345537d215a331ed91"></span>void <code class="sig-name descname">add_with_ids</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate5idx_tE" title="faiss::IndexShardsTemplate::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate11component_tE" title="faiss::IndexShardsTemplate::component_t">component_t</a> *<em>x</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate5idx_tE" title="faiss::IndexShardsTemplate::idx_t">idx_t</a> *<em>xids</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate12add_with_idsE5idx_tPK11component_tPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Cases (successive_ids, xids):<ul class="simple">
+<li><p>true, non-NULL ERROR: it makes no sense to pass in ids and request them to be shifted</p></li>
+<li><p>true, NULL OK, but should be called only once (calls <a class="reference internal" href="../struct/structfaiss_1_1IndexShardsTemplate.html#structfaiss_1_1IndexShardsTemplate_1a45647579ff21e0945d8a87a97ec705fe"><span class="std std-ref">add()</span></a> on sub-indexes).</p></li>
+<li><p>false, non-NULL OK: will call add_with_ids with passed in xids distributed evenly over shards</p></li>
+<li><p>false, NULL OK: will call add_with_ids on each sub-index, starting at ntotal </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss19IndexShardsTemplate6searchE5idx_tPK11component_t5idx_tP10distance_tP5idx_t">
+<span id="_CPPv3NK5faiss19IndexShardsTemplate6searchE5idx_tPK11component_t5idx_tP10distance_tP5idx_t"></span><span id="_CPPv2NK5faiss19IndexShardsTemplate6searchE5idx_tPK11component_t5idx_tP10distance_tP5idx_t"></span><span id="faiss::IndexShardsTemplate::search__idx_t.component_tCP.idx_t.distance_tP.idx_tPC"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1ab3698d94a2c039f445115d52c4545640"></span>void <code class="sig-name descname">search</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate5idx_tE" title="faiss::IndexShardsTemplate::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate11component_tE" title="faiss::IndexShardsTemplate::component_t">component_t</a> *<em>x</em>, <a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate5idx_tE" title="faiss::IndexShardsTemplate::idx_t">idx_t</a> <em>k</em>, <a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate10distance_tE" title="faiss::IndexShardsTemplate::distance_t">distance_t</a> *<em>distances</em>, <a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate5idx_tE" title="faiss::IndexShardsTemplate::idx_t">idx_t</a> *<em>labels</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK5faiss19IndexShardsTemplate6searchE5idx_tPK11component_t5idx_tP10distance_tP5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate5trainE5idx_tPK11component_t">
+<span id="_CPPv3N5faiss19IndexShardsTemplate5trainE5idx_tPK11component_t"></span><span id="_CPPv2N5faiss19IndexShardsTemplate5trainE5idx_tPK11component_t"></span><span id="faiss::IndexShardsTemplate::train__idx_t.component_tCP"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1aa7d268a8a30e16f52e192d41a57b8626"></span>void <code class="sig-name descname">train</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate5idx_tE" title="faiss::IndexShardsTemplate::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss19IndexShardsTemplate11component_tE" title="faiss::IndexShardsTemplate::component_t">component_t</a> *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate5trainE5idx_tPK11component_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate18syncWithSubIndexesEv">
+<span id="_CPPv3N5faiss19IndexShardsTemplate18syncWithSubIndexesEv"></span><span id="_CPPv2N5faiss19IndexShardsTemplate18syncWithSubIndexesEv"></span><span id="faiss::IndexShardsTemplate::syncWithSubIndexes"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1a7cd3a39d756000d2e64ba129be6e90d8"></span>void <code class="sig-name descname">syncWithSubIndexes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate18syncWithSubIndexesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Synchronize the top-level index (IndexShards) with data in the sub-indices. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate14successive_idsE">
+<span id="_CPPv3N5faiss19IndexShardsTemplate14successive_idsE"></span><span id="_CPPv2N5faiss19IndexShardsTemplate14successive_idsE"></span><span id="faiss::IndexShardsTemplate::successive_ids__b"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1aa79db16c723ae37eaf406e840e4f227a"></span>bool <code class="sig-name descname">successive_ids</code><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate14successive_idsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Protected Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate15onAfterAddIndexEP6IndexT">
+<span id="_CPPv3N5faiss19IndexShardsTemplate15onAfterAddIndexEP6IndexT"></span><span id="_CPPv2N5faiss19IndexShardsTemplate15onAfterAddIndexEP6IndexT"></span><span id="faiss::IndexShardsTemplate::onAfterAddIndex__IndexTP"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1a1d78dd47e9dc49488947e90dbc85e1ac"></span>void <code class="sig-name descname">onAfterAddIndex</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5faiss19IndexShardsTemplateE" title="faiss::IndexShardsTemplate::IndexT">IndexT</a> *<em>index</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate15onAfterAddIndexEP6IndexT" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Called just after an index is added. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss19IndexShardsTemplate18onAfterRemoveIndexEP6IndexT">
+<span id="_CPPv3N5faiss19IndexShardsTemplate18onAfterRemoveIndexEP6IndexT"></span><span id="_CPPv2N5faiss19IndexShardsTemplate18onAfterRemoveIndexEP6IndexT"></span><span id="faiss::IndexShardsTemplate::onAfterRemoveIndex__IndexTP"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1a0488d95e9d45e0cfab203c83e3a8e3c1"></span>void <code class="sig-name descname">onAfterRemoveIndex</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5faiss19IndexShardsTemplateE" title="faiss::IndexShardsTemplate::IndexT">IndexT</a> *<em>index</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate18onAfterRemoveIndexEP6IndexT" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Called just after an index is removed. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="IndexWrapper-inl_8h.html" class="btn btn-neutral float-right" title="File IndexWrapper-inl.h" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="IndexScalarQuantizer_8h.html" class="btn btn-neutral float-left" title="File IndexScalarQuantizer.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright Facebook, Inc. and its affiliates.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

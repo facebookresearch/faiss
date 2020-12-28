@@ -1,0 +1,4 @@
+Namespace faiss
+===============
+
+.. doxygennamespace:: faiss

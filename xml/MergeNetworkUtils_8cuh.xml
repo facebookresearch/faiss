@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="MergeNetworkUtils_8cuh" kind="file" language="C++">
+    <compoundname>MergeNetworkUtils.cuh</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">/**</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Facebook,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*/</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>void<sp/>swap(bool<sp/>swap,<sp/>T&amp;<sp/>x,<sp/>T&amp;<sp/>y)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>T<sp/>tmp<sp/>=<sp/>x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>x<sp/>=<sp/>swap<sp/>?<sp/>y<sp/>:<sp/>x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>y<sp/>=<sp/>swap<sp/>?<sp/>tmp<sp/>:<sp/>y;</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>void<sp/>assign(bool<sp/>assign,<sp/>T&amp;<sp/>x,<sp/>T<sp/>y)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>x<sp/>=<sp/>assign<sp/>?<sp/>y<sp/>:<sp/>x;</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+    </programlisting>
+    <location file="faiss/gpu/utils/MergeNetworkUtils.cuh"/>
+  </compounddef>
+</doxygen>

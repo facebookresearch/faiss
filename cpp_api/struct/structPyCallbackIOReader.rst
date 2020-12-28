@@ -1,0 +1,4 @@
+Struct PyCallbackIOReader
+=========================
+
+.. doxygenstruct:: PyCallbackIOReader

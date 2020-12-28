@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="DeviceDefs_8cuh" kind="file" language="C++">
+    <compoundname>DeviceDefs.cuh</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">/**</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Facebook,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*/</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>We<sp/>require<sp/>at<sp/>least<sp/>CUDA<sp/>8.0<sp/>for<sp/>compilation</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&lt;<sp/>8000</highlight></codeline>
+<codeline><highlight class="normal">#error<sp/>&quot;CUDA<sp/>&gt;=<sp/>8.0<sp/>is<sp/>required&quot;</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>__CUDA_ARCH__</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&lt;=<sp/>800</highlight></codeline>
+<codeline><highlight class="normal">constexpr<sp/>int<sp/>kWarpSize<sp/>=<sp/>32;</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal">#error<sp/>Unknown<sp/>__CUDA_ARCH__;<sp/>please<sp/>define<sp/>parameters<sp/>for<sp/>compute<sp/>capability</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>__CUDA_ARCH__<sp/>types</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>__CUDA_ARCH__</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#ifndef<sp/>__CUDA_ARCH__</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>dummy<sp/>value<sp/>for<sp/>host<sp/>compiler</highlight></codeline>
+<codeline><highlight class="normal">constexpr<sp/>int<sp/>kWarpSize<sp/>=<sp/>32;</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>!__CUDA_ARCH__</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>This<sp/>is<sp/>a<sp/>memory<sp/>barrier<sp/>for<sp/>intra-warp<sp/>writes<sp/>to<sp/>shared<sp/>memory.</highlight></codeline>
+<codeline><highlight class="normal">__forceinline__<sp/>__device__<sp/>void<sp/>warpFence()<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>__syncwarp();</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//<sp/>For<sp/>the<sp/>time<sp/>being,<sp/>assume<sp/>synchronicity.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//<sp/><sp/>__threadfence_block();</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;<sp/>9000</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>Based<sp/>on<sp/>the<sp/>CUDA<sp/>version<sp/>(we<sp/>assume<sp/>what<sp/>version<sp/>of<sp/>nvcc/ptxas<sp/>we<sp/>were</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>compiled<sp/>with),<sp/>the<sp/>register<sp/>allocation<sp/>algorithm<sp/>is<sp/>much<sp/>better,<sp/>so<sp/>only</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>enable<sp/>the<sp/>2048<sp/>selection<sp/>code<sp/>if<sp/>we<sp/>are<sp/>above<sp/>9.0<sp/>(9.2<sp/>seems<sp/>to<sp/>be<sp/>ok)</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>GPU_MAX_SELECTION_K<sp/>2048</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>GPU_MAX_SELECTION_K<sp/>1024</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+    </programlisting>
+    <location file="faiss/gpu/utils/DeviceDefs.cuh"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1BitstringReader" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::BitstringReader</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1BitstringReader_1a923b543ec505de62bc9a571027cb7e62" prot="public" static="no" mutable="no">
+        <type>const uint8_t *</type>
+        <definition>const uint8_t* faiss::BitstringReader::code</definition>
+        <argsstring></argsstring>
+        <name>code</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming.h" line="96" column="19" bodyfile="faiss/utils/hamming.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1BitstringReader_1aff839ea7bd1813717c2bc1feabab2773" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::BitstringReader::code_size</definition>
+        <argsstring></argsstring>
+        <name>code_size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming.h" line="97" column="12" bodyfile="faiss/utils/hamming.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1BitstringReader_1ae0a26c23a5659205cd1221b7f9e379eb" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::BitstringReader::i</definition>
+        <argsstring></argsstring>
+        <name>i</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming.h" line="98" column="12" bodyfile="faiss/utils/hamming.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1BitstringReader_1a072091ffc6244d551489564317396b1f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::BitstringReader::BitstringReader</definition>
+        <argsstring>(const uint8_t *code, int code_size)</argsstring>
+        <name>BitstringReader</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming.h" line="101" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="39" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1BitstringReader_1a9d9f24ba35ee13dbdc8a90fd74d76066" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::BitstringReader::read</definition>
+        <argsstring>(int nbit)</argsstring>
+        <name>read</name>
+        <param>
+          <type>int</type>
+          <declname>nbit</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming.h" line="104" column="14" bodyfile="faiss/utils/hamming-inl.h" bodystart="43" bodyend="68"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/hamming.h" line="95" column="22" bodyfile="faiss/utils/hamming.h" bodystart="95" bodyend="105"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1BitstringReader_1a072091ffc6244d551489564317396b1f" prot="public" virt="non-virtual"><scope>faiss::BitstringReader</scope><name>BitstringReader</name></member>
+      <member refid="structfaiss_1_1BitstringReader_1a923b543ec505de62bc9a571027cb7e62" prot="public" virt="non-virtual"><scope>faiss::BitstringReader</scope><name>code</name></member>
+      <member refid="structfaiss_1_1BitstringReader_1aff839ea7bd1813717c2bc1feabab2773" prot="public" virt="non-virtual"><scope>faiss::BitstringReader</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1BitstringReader_1ae0a26c23a5659205cd1221b7f9e379eb" prot="public" virt="non-virtual"><scope>faiss::BitstringReader</scope><name>i</name></member>
+      <member refid="structfaiss_1_1BitstringReader_1a9d9f24ba35ee13dbdc8a90fd74d76066" prot="public" virt="non-virtual"><scope>faiss::BitstringReader</scope><name>read</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

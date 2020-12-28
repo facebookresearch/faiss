@@ -1,0 +1,338 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="StandardGpuResources_8h" kind="file" language="C++">
+    <compoundname>StandardGpuResources.h</compoundname>
+    <includes refid="GpuResources_8h" local="no">faiss/gpu/GpuResources.h</includes>
+    <includes refid="StackDeviceMemory_8h" local="no">faiss/gpu/utils/StackDeviceMemory.h</includes>
+    <includes refid="DeviceUtils_8h" local="no">faiss/gpu/utils/DeviceUtils.h</includes>
+    <includes local="no">functional</includes>
+    <includes local="no">map</includes>
+    <includes local="no">unordered_map</includes>
+    <includes local="no">vector</includes>
+    <includedby refid="IndexWrapper_8h" local="no">faiss/gpu/perf/IndexWrapper.h</includedby>
+    <incdepgraph>
+      <node id="10">
+        <label>list</label>
+      </node>
+      <node id="14">
+        <label>functional</label>
+      </node>
+      <node id="5">
+        <label>cublas_v2.h</label>
+      </node>
+      <node id="13">
+        <label>faiss/gpu/utils/DeviceUtils.h</label>
+        <link refid="DeviceUtils_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>cuda_runtime.h</label>
+      </node>
+      <node id="15">
+        <label>map</label>
+      </node>
+      <node id="2">
+        <label>faiss/gpu/GpuResources.h</label>
+        <link refid="GpuResources_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/gpu/StandardGpuResources.h</label>
+        <link refid="StandardGpuResources_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/impl/FaissAssert.h</label>
+      </node>
+      <node id="9">
+        <label>faiss/gpu/utils/StackDeviceMemory.h</label>
+        <link refid="StackDeviceMemory_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>tuple</label>
+      </node>
+      <node id="8">
+        <label>vector</label>
+      </node>
+      <node id="7">
+        <label>utility</label>
+      </node>
+      <node id="11">
+        <label>unordered_map</label>
+      </node>
+      <node id="6">
+        <label>memory</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/gpu/StandardGpuResources.h</label>
+        <link refid="StandardGpuResources_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/gpu/perf/IndexWrapper.h</label>
+        <link refid="IndexWrapper_8h_source"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" prot="public">faiss::gpu::StandardGpuResourcesImpl</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1StandardGpuResources" prot="public">faiss::gpu::StandardGpuResources</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1gpu">faiss::gpu</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Facebook,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/GpuResources.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/utils/StackDeviceMemory.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/utils/DeviceUtils.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;functional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{<sp/></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu<sp/>{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="21"><highlight class="comment">///<sp/>Standard<sp/>implementation<sp/>of<sp/>the<sp/>GpuResources<sp/>object<sp/>that<sp/>provides<sp/>for<sp/>a</highlight></codeline>
+<codeline lineno="22"><highlight class="comment">///<sp/>temporary<sp/>memory<sp/>manager</highlight></codeline>
+<codeline lineno="23" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" kindref="compound">StandardGpuResourcesImpl</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref><sp/>{</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" kindref="compound">StandardGpuResourcesImpl</ref>();</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" kindref="compound">StandardGpuResourcesImpl</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/><sp/>///<sp/>Disable<sp/>allocation<sp/>of<sp/>temporary<sp/>memory;<sp/>all<sp/>temporary<sp/>memory</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/><sp/>///<sp/>requests<sp/>will<sp/>call<sp/>cudaMalloc<sp/>/<sp/>cudaFree<sp/>at<sp/>the<sp/>point<sp/>of<sp/>use</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a37459ad7862e50792e6498289c7f81b7" kindref="member">noTempMemory</ref>();</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/><sp/>///<sp/>Specify<sp/>that<sp/>we<sp/>wish<sp/>to<sp/>use<sp/>a<sp/>certain<sp/>fixed<sp/>size<sp/>of<sp/>memory<sp/>on</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/><sp/>///<sp/>all<sp/>devices<sp/>as<sp/>temporary<sp/>memory.<sp/>This<sp/>is<sp/>the<sp/>upper<sp/>bound<sp/>for<sp/>the<sp/>GPU</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/><sp/>///<sp/>memory<sp/>that<sp/>we<sp/>will<sp/>reserve.<sp/>We<sp/>will<sp/>never<sp/>go<sp/>above<sp/>1.5<sp/>GiB<sp/>on<sp/>any<sp/>GPU;</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/><sp/>///<sp/>smaller<sp/>GPUs<sp/>(with<sp/>&lt;=<sp/>4<sp/>GiB<sp/>or<sp/>&lt;=<sp/>8<sp/>GiB)<sp/>will<sp/>use<sp/>less<sp/>memory<sp/>than<sp/>that.</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"><sp/><sp/>///<sp/>To<sp/>avoid<sp/>any<sp/>temporary<sp/>memory<sp/>allocation,<sp/>pass<sp/>0.</highlight></codeline>
+<codeline lineno="38"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a95ec5cc373c8aeefcacd55ee0be0dff3" kindref="member">setTempMemory</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="40"><highlight class="comment"><sp/><sp/>///<sp/>Set<sp/>amount<sp/>of<sp/>pinned<sp/>memory<sp/>to<sp/>allocate,<sp/>for<sp/>async<sp/>GPU<sp/>&lt;-&gt;<sp/>CPU</highlight></codeline>
+<codeline lineno="41"><highlight class="comment"><sp/><sp/>///<sp/>transfers</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a63bd261de7e331760dea2e59ac26c036" kindref="member">setPinnedMemory</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="44"><highlight class="comment"><sp/><sp/>///<sp/>Called<sp/>to<sp/>change<sp/>the<sp/>stream<sp/>for<sp/>work<sp/>ordering.<sp/>We<sp/>do<sp/>not<sp/>own<sp/>`stream`;</highlight></codeline>
+<codeline lineno="45"><highlight class="comment"><sp/><sp/>///<sp/>i.e.,<sp/>it<sp/>will<sp/>not<sp/>be<sp/>destroyed<sp/>when<sp/>the<sp/>GpuResources<sp/>object<sp/>gets<sp/>cleaned</highlight></codeline>
+<codeline lineno="46"><highlight class="comment"><sp/><sp/>///<sp/>up.</highlight></codeline>
+<codeline lineno="47"><highlight class="comment"><sp/><sp/>///<sp/>We<sp/>are<sp/>guaranteed<sp/>that<sp/>all<sp/>Faiss<sp/>GPU<sp/>work<sp/>is<sp/>ordered<sp/>with<sp/>respect<sp/>to</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"><sp/><sp/>///<sp/>this<sp/>stream<sp/>upon<sp/>exit<sp/>from<sp/>an<sp/>index<sp/>or<sp/>other<sp/>Faiss<sp/>GPU<sp/>call.</highlight></codeline>
+<codeline lineno="49"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1aea675757238dda776033cd8607c6daef" kindref="member">setDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/>cudaStream_t<sp/>stream)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/><sp/>///<sp/>Revert<sp/>the<sp/>default<sp/>stream<sp/>to<sp/>the<sp/>original<sp/>stream<sp/>managed<sp/>by<sp/>this<sp/>resources</highlight></codeline>
+<codeline lineno="52"><highlight class="comment"><sp/><sp/>///<sp/>object,<sp/>in<sp/>case<sp/>someone<sp/>called<sp/>`setDefaultStream`.</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a9c01fa8034c5fcb8ef797293873ab75d" kindref="member">revertDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="55"><highlight class="comment"><sp/><sp/>///<sp/>Returns<sp/>the<sp/>stream<sp/>for<sp/>the<sp/>given<sp/>device<sp/>on<sp/>which<sp/>all<sp/>Faiss<sp/>GPU<sp/>work<sp/>is</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/><sp/>///<sp/>ordered.</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/><sp/>///<sp/>We<sp/>are<sp/>guaranteed<sp/>that<sp/>all<sp/>Faiss<sp/>GPU<sp/>work<sp/>is<sp/>ordered<sp/>with<sp/>respect<sp/>to</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/><sp/>///<sp/>this<sp/>stream<sp/>upon<sp/>exit<sp/>from<sp/>an<sp/>index<sp/>or<sp/>other<sp/>Faiss<sp/>GPU<sp/>call.</highlight></codeline>
+<codeline lineno="59"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ade7aa26366d1dae8b5eafc445bdbc465" kindref="member">getDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="61"><highlight class="comment"><sp/><sp/>///<sp/>Called<sp/>to<sp/>change<sp/>the<sp/>work<sp/>ordering<sp/>streams<sp/>to<sp/>the<sp/>null<sp/>stream</highlight></codeline>
+<codeline lineno="62"><highlight class="comment"><sp/><sp/>///<sp/>for<sp/>all<sp/>devices</highlight></codeline>
+<codeline lineno="63"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1af7f1af9afed27148890d5e4aaabe10d5" kindref="member">setDefaultNullStreamAllDevices</ref>();</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="65"><highlight class="comment"><sp/><sp/>///<sp/>If<sp/>enabled,<sp/>will<sp/>print<sp/>every<sp/>GPU<sp/>memory<sp/>allocation<sp/>and<sp/>deallocation<sp/>to</highlight></codeline>
+<codeline lineno="66"><highlight class="comment"><sp/><sp/>///<sp/>standard<sp/>output</highlight></codeline>
+<codeline lineno="67"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ace6a664d48bf37e59cc4adb942a35ad7" kindref="member">setLogMemoryAllocations</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>enable);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="70"><highlight class="comment"><sp/><sp/>///<sp/>Internal<sp/>system<sp/>calls</highlight></codeline>
+<codeline lineno="71"><highlight class="comment"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="72"><highlight class="comment"><sp/><sp/>///<sp/>Initialize<sp/>resources<sp/>for<sp/>this<sp/>device</highlight></codeline>
+<codeline lineno="73"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a5a7f41d69de7b8ec6b9b5d99cc39e86b" kindref="member">initializeForDevice</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/>cublasHandle_t<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a7a2b9d0db8057ec24a4acbdad5acf984" kindref="member">getBlasHandle</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/>std::vector&lt;cudaStream_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a098278ee17c5a58a385190da02ba8b08" kindref="member">getAlternateStreams</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="79"><highlight class="comment"><sp/><sp/>///<sp/>Allocate<sp/>non-temporary<sp/>GPU<sp/>memory</highlight></codeline>
+<codeline lineno="80"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1abfebafa768ef83db56488906fe57ed6c" kindref="member">allocMemory</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>&amp;<sp/>req)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="82"><highlight class="comment"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>previous<sp/>allocation</highlight></codeline>
+<codeline lineno="83"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a00d69ab624340410818c700b9019475d" kindref="member">deallocMemory</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>in)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a633cfc45b53aa74156418ddc108c8167" kindref="member">getTempMemoryAvailable</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="87"><highlight class="comment"><sp/><sp/>///<sp/>Export<sp/>a<sp/>description<sp/>of<sp/>memory<sp/>used<sp/>for<sp/>Python</highlight></codeline>
+<codeline lineno="88"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::map&lt;int,<sp/>std::map&lt;std::string,<sp/>std::pair&lt;int,<sp/>size_t&gt;&gt;&gt;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1af8760dfaf89fac90208e8c73b718437c" kindref="member">getMemoryInfo</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/>std::pair&lt;void*,<sp/>size_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a86dea0d55d2ab7226f173e2ec998c6b4" kindref="member">getPinnedMemory</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a28beb152642c2621724c7eedb088630c" kindref="member">getAsyncCopyStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="96"><highlight class="comment"><sp/><sp/>///<sp/>Have<sp/>GPU<sp/>resources<sp/>been<sp/>initialized<sp/>for<sp/>this<sp/>device<sp/>yet?</highlight></codeline>
+<codeline lineno="97"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>isInitialized(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="99"><highlight class="comment"><sp/><sp/>///<sp/>Adjust<sp/>the<sp/>default<sp/>temporary<sp/>memory<sp/>allocation<sp/>based<sp/>on<sp/>the<sp/>total<sp/>GPU</highlight></codeline>
+<codeline lineno="100"><highlight class="comment"><sp/><sp/>///<sp/>memory<sp/>size</highlight></codeline>
+<codeline lineno="101"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>getDefaultTempMemForGPU(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>requested);</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="104"><highlight class="comment"><sp/><sp/>///<sp/>Set<sp/>of<sp/>currently<sp/>outstanding<sp/>memory<sp/>allocations<sp/>per<sp/>device</highlight></codeline>
+<codeline lineno="105"><highlight class="comment"><sp/><sp/>///<sp/>device<sp/>-&gt;<sp/>(alloc<sp/>request,<sp/>allocated<sp/>ptr)</highlight></codeline>
+<codeline lineno="106"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::unordered_map&lt;int,<sp/>std::unordered_map&lt;void*,<sp/>AllocRequest&gt;&gt;<sp/>allocs_;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="108"><highlight class="comment"><sp/><sp/>///<sp/>Temporary<sp/>memory<sp/>provider,<sp/>per<sp/>each<sp/>device</highlight></codeline>
+<codeline lineno="109"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::unordered_map&lt;int,<sp/>std::unique_ptr&lt;StackDeviceMemory&gt;&gt;<sp/>tempMemory_;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="111"><highlight class="comment"><sp/><sp/>///<sp/>Our<sp/>default<sp/>stream<sp/>that<sp/>work<sp/>is<sp/>ordered<sp/>on,<sp/>one<sp/>per<sp/>each<sp/>device</highlight></codeline>
+<codeline lineno="112"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::unordered_map&lt;int,<sp/>cudaStream_t&gt;<sp/>defaultStreams_;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="114"><highlight class="comment"><sp/><sp/>///<sp/>This<sp/>contains<sp/>particular<sp/>streams<sp/>as<sp/>set<sp/>by<sp/>the<sp/>user<sp/>for</highlight></codeline>
+<codeline lineno="115"><highlight class="comment"><sp/><sp/>///<sp/>ordering,<sp/>if<sp/>any</highlight></codeline>
+<codeline lineno="116"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::unordered_map&lt;int,<sp/>cudaStream_t&gt;<sp/>userDefaultStreams_;</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="118"><highlight class="comment"><sp/><sp/>///<sp/>Other<sp/>streams<sp/>we<sp/>can<sp/>use,<sp/>per<sp/>each<sp/>device</highlight></codeline>
+<codeline lineno="119"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::unordered_map&lt;int,<sp/>std::vector&lt;cudaStream_t&gt;&gt;<sp/>alternateStreams_;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="121"><highlight class="comment"><sp/><sp/>///<sp/>Async<sp/>copy<sp/>stream<sp/>to<sp/>use<sp/>for<sp/>GPU<sp/>&lt;-&gt;<sp/>CPU<sp/>pinned<sp/>memory<sp/>copies</highlight></codeline>
+<codeline lineno="122"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::unordered_map&lt;int,<sp/>cudaStream_t&gt;<sp/>asyncCopyStreams_;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="124"><highlight class="comment"><sp/><sp/>///<sp/>cuBLAS<sp/>handle<sp/>for<sp/>each<sp/>device</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::unordered_map&lt;int,<sp/>cublasHandle_t&gt;<sp/>blasHandles_;</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="127"><highlight class="comment"><sp/><sp/>///<sp/>Pinned<sp/>memory<sp/>allocation<sp/>for<sp/>use<sp/>with<sp/>this<sp/>GPU</highlight></codeline>
+<codeline lineno="128"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>pinnedMemAlloc_;</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>pinnedMemAllocSize_;</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="131"><highlight class="comment"><sp/><sp/>///<sp/>Another<sp/>option<sp/>is<sp/>to<sp/>use<sp/>a<sp/>specified<sp/>amount<sp/>of<sp/>memory<sp/>on<sp/>all</highlight></codeline>
+<codeline lineno="132"><highlight class="comment"><sp/><sp/>///<sp/>devices</highlight></codeline>
+<codeline lineno="133"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>tempMemSize_;</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="135"><highlight class="comment"><sp/><sp/>///<sp/>Amount<sp/>of<sp/>pinned<sp/>memory<sp/>we<sp/>should<sp/>allocate</highlight></codeline>
+<codeline lineno="136"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>pinnedMemSize_;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="138"><highlight class="comment"><sp/><sp/>///<sp/>Whether<sp/>or<sp/>not<sp/>we<sp/>log<sp/>every<sp/>GPU<sp/>memory<sp/>allocation<sp/>and<sp/>deallocation</highlight></codeline>
+<codeline lineno="139"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>allocLogging_;</highlight></codeline>
+<codeline lineno="140"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="142"><highlight class="comment">///<sp/>Default<sp/>implementation<sp/>of<sp/>GpuResources<sp/>that<sp/>allocates<sp/>a<sp/>cuBLAS</highlight></codeline>
+<codeline lineno="143"><highlight class="comment">///<sp/>stream<sp/>and<sp/>2<sp/>streams<sp/>for<sp/>use,<sp/>as<sp/>well<sp/>as<sp/>temporary<sp/>memory.</highlight></codeline>
+<codeline lineno="144"><highlight class="comment">///<sp/>Internally,<sp/>the<sp/>Faiss<sp/>GPU<sp/>code<sp/>uses<sp/>the<sp/>instance<sp/>managed<sp/>by<sp/>getResources,</highlight></codeline>
+<codeline lineno="145"><highlight class="comment">///<sp/>but<sp/>this<sp/>is<sp/>the<sp/>user-facing<sp/>object<sp/>that<sp/>is<sp/>internally<sp/>reference<sp/>counted.</highlight></codeline>
+<codeline lineno="146" refid="classfaiss_1_1gpu_1_1StandardGpuResources" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref><sp/>{</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref>();</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1aed88267bce1b6657a06d160f0e62ffc4" kindref="member">getResources</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="153"><highlight class="comment"><sp/><sp/>///<sp/>Disable<sp/>allocation<sp/>of<sp/>temporary<sp/>memory;<sp/>all<sp/>temporary<sp/>memory</highlight></codeline>
+<codeline lineno="154"><highlight class="comment"><sp/><sp/>///<sp/>requests<sp/>will<sp/>call<sp/>cudaMalloc<sp/>/<sp/>cudaFree<sp/>at<sp/>the<sp/>point<sp/>of<sp/>use</highlight></codeline>
+<codeline lineno="155"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a6431477a7328ac147797b3b4e3fcf651" kindref="member">noTempMemory</ref>();</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="157"><highlight class="comment"><sp/><sp/>///<sp/>Specify<sp/>that<sp/>we<sp/>wish<sp/>to<sp/>use<sp/>a<sp/>certain<sp/>fixed<sp/>size<sp/>of<sp/>memory<sp/>on</highlight></codeline>
+<codeline lineno="158"><highlight class="comment"><sp/><sp/>///<sp/>all<sp/>devices<sp/>as<sp/>temporary<sp/>memory.<sp/>This<sp/>is<sp/>the<sp/>upper<sp/>bound<sp/>for<sp/>the<sp/>GPU</highlight></codeline>
+<codeline lineno="159"><highlight class="comment"><sp/><sp/>///<sp/>memory<sp/>that<sp/>we<sp/>will<sp/>reserve.<sp/>We<sp/>will<sp/>never<sp/>go<sp/>above<sp/>1.5<sp/>GiB<sp/>on<sp/>any<sp/>GPU;</highlight></codeline>
+<codeline lineno="160"><highlight class="comment"><sp/><sp/>///<sp/>smaller<sp/>GPUs<sp/>(with<sp/>&lt;=<sp/>4<sp/>GiB<sp/>or<sp/>&lt;=<sp/>8<sp/>GiB)<sp/>will<sp/>use<sp/>less<sp/>memory<sp/>than<sp/>that.</highlight></codeline>
+<codeline lineno="161"><highlight class="comment"><sp/><sp/>///<sp/>To<sp/>avoid<sp/>any<sp/>temporary<sp/>memory<sp/>allocation,<sp/>pass<sp/>0.</highlight></codeline>
+<codeline lineno="162"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a367102e65b16bfdc7a32770a4f5854a6" kindref="member">setTempMemory</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="164"><highlight class="comment"><sp/><sp/>///<sp/>Set<sp/>amount<sp/>of<sp/>pinned<sp/>memory<sp/>to<sp/>allocate,<sp/>for<sp/>async<sp/>GPU<sp/>&lt;-&gt;<sp/>CPU</highlight></codeline>
+<codeline lineno="165"><highlight class="comment"><sp/><sp/>///<sp/>transfers</highlight></codeline>
+<codeline lineno="166"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1af9acb23ac323f85fa5dab4ed968ccd51" kindref="member">setPinnedMemory</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="168"><highlight class="comment"><sp/><sp/>///<sp/>Called<sp/>to<sp/>change<sp/>the<sp/>stream<sp/>for<sp/>work<sp/>ordering.<sp/>We<sp/>do<sp/>not<sp/>own<sp/>`stream`;</highlight></codeline>
+<codeline lineno="169"><highlight class="comment"><sp/><sp/>///<sp/>i.e.,<sp/>it<sp/>will<sp/>not<sp/>be<sp/>destroyed<sp/>when<sp/>the<sp/>GpuResources<sp/>object<sp/>gets<sp/>cleaned</highlight></codeline>
+<codeline lineno="170"><highlight class="comment"><sp/><sp/>///<sp/>up.</highlight></codeline>
+<codeline lineno="171"><highlight class="comment"><sp/><sp/>///<sp/>We<sp/>are<sp/>guaranteed<sp/>that<sp/>all<sp/>Faiss<sp/>GPU<sp/>work<sp/>is<sp/>ordered<sp/>with<sp/>respect<sp/>to</highlight></codeline>
+<codeline lineno="172"><highlight class="comment"><sp/><sp/>///<sp/>this<sp/>stream<sp/>upon<sp/>exit<sp/>from<sp/>an<sp/>index<sp/>or<sp/>other<sp/>Faiss<sp/>GPU<sp/>call.</highlight></codeline>
+<codeline lineno="173"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a5924b424c36dba8300866f1b98c438cb" kindref="member">setDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="175"><highlight class="comment"><sp/><sp/>///<sp/>Revert<sp/>the<sp/>default<sp/>stream<sp/>to<sp/>the<sp/>original<sp/>stream<sp/>managed<sp/>by<sp/>this<sp/>resources</highlight></codeline>
+<codeline lineno="176"><highlight class="comment"><sp/><sp/>///<sp/>object,<sp/>in<sp/>case<sp/>someone<sp/>called<sp/>`setDefaultStream`.</highlight></codeline>
+<codeline lineno="177"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1abf351c4a72d7ab72070b24f82764da58" kindref="member">revertDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="179"><highlight class="comment"><sp/><sp/>///<sp/>Called<sp/>to<sp/>change<sp/>the<sp/>work<sp/>ordering<sp/>streams<sp/>to<sp/>the<sp/>null<sp/>stream</highlight></codeline>
+<codeline lineno="180"><highlight class="comment"><sp/><sp/>///<sp/>for<sp/>all<sp/>devices</highlight></codeline>
+<codeline lineno="181"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a5374f336f1957c266d7a5c185eb962a1" kindref="member">setDefaultNullStreamAllDevices</ref>();</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="183"><highlight class="comment"><sp/><sp/>///<sp/>Export<sp/>a<sp/>description<sp/>of<sp/>memory<sp/>used<sp/>for<sp/>Python</highlight></codeline>
+<codeline lineno="184"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::map&lt;int,<sp/>std::map&lt;std::string,<sp/>std::pair&lt;int,<sp/>size_t&gt;&gt;&gt;</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a9e0e2c7d7e9254c73546dc87d24ccbcf" kindref="member">getMemoryInfo</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="187"><highlight class="comment"><sp/><sp/>///<sp/>Returns<sp/>the<sp/>current<sp/>default<sp/>stream</highlight></codeline>
+<codeline lineno="188"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a2d0caade01eb384bc82c2e8759a129a1" kindref="member">getDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="190"><highlight class="comment"><sp/><sp/>///<sp/>Returns<sp/>the<sp/>current<sp/>amount<sp/>of<sp/>temp<sp/>memory<sp/>available</highlight></codeline>
+<codeline lineno="191"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a318f3c0aa6085f430c71f64496f42496" kindref="member">getTempMemoryAvailable</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="193"><highlight class="comment"><sp/><sp/>///<sp/>Synchronize<sp/>our<sp/>default<sp/>stream<sp/>with<sp/>the<sp/>CPU</highlight></codeline>
+<codeline lineno="194"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1aba33a979707f40913035bbbfcc9b2a14" kindref="member">syncDefaultStreamCurrentDevice</ref>();</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="196"><highlight class="comment"><sp/><sp/>///<sp/>If<sp/>enabled,<sp/>will<sp/>print<sp/>every<sp/>GPU<sp/>memory<sp/>allocation<sp/>and<sp/>deallocation<sp/>to</highlight></codeline>
+<codeline lineno="197"><highlight class="comment"><sp/><sp/>///<sp/>standard<sp/>output</highlight></codeline>
+<codeline lineno="198"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a26de76d448f071aa46555b77155a516d" kindref="member">setLogMemoryAllocations</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>enable);</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"></highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;StandardGpuResourcesImpl&gt;<sp/>res_;</highlight></codeline>
+<codeline lineno="202"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal">}<sp/>}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/gpu/StandardGpuResources.h"/>
+  </compounddef>
+</doxygen>

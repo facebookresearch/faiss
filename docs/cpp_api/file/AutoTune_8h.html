@@ -1,0 +1,902 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>File AutoTune.h &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="File BlockInvertedLists.h" href="BlockInvertedLists_8h.html" />
+    <link rel="prev" title="File AlignedTable.h" href="AlignedTable_8h.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="AlignedTable_8h.html">File AlignedTable.h</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File AutoTune.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockInvertedLists_8h.html">File BlockInvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockSelectImpl_8cuh.html">File BlockSelectImpl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockSelectKernel_8cuh.html">File BlockSelectKernel.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Clustering_8h.html">File Clustering.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Comparators_8cuh.html">File Comparators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConversionOperators_8cuh.html">File ConversionOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CopyUtils_8cuh.html">File CopyUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceDefs_8cuh.html">File DeviceDefs.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceTensor-inl_8cuh.html">File DeviceTensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceTensor_8cuh.html">File DeviceTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceUtils_8h.html">File DeviceUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceVector_8cuh.html">File DeviceVector.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DirectMap_8h.html">File DirectMap.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Float16_8cuh.html">File Float16.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuAutoTune_8h.html">File GpuAutoTune.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuClonerOptions_8h.html">File GpuClonerOptions.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuCloner_8h.html">File GpuCloner.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuDistance_8h.html">File GpuDistance.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuFaissAssert_8h.html">File GpuFaissAssert.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexBinaryFlat_8h.html">File GpuIndexBinaryFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexFlat_8h.html">File GpuIndexFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFFlat_8h.html">File GpuIndexIVFFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFPQ_8h.html">File GpuIndexIVFPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFScalarQuantizer_8h.html">File GpuIndexIVFScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVF_8h.html">File GpuIndexIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndex_8h.html">File GpuIndex.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndicesOptions_8h.html">File GpuIndicesOptions.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuResources_8h.html">File GpuResources.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Heap_8h.html">File Heap.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HostTensor-inl_8cuh.html">File HostTensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HostTensor_8cuh.html">File HostTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFlib_8h.html">File IVFlib.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Index2Layer_8h.html">File Index2Layer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryFlat_8h.html">File IndexBinaryFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryFromFloat_8h.html">File IndexBinaryFromFloat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryHNSW_8h.html">File IndexBinaryHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryHash_8h.html">File IndexBinaryHash.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryIVF_8h.html">File IndexBinaryIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinary_8h.html">File IndexBinary.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexFlat_8h.html">File IndexFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexHNSW_8h.html">File IndexHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFFlat_8h.html">File IndexIVFFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQFastScan_8h.html">File IndexIVFPQFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQR_8h.html">File IndexIVFPQR.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQ_8h.html">File IndexIVFPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFSpectralHash_8h.html">File IndexIVFSpectralHash.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVF_8h.html">File IndexIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexLSH_8h.html">File IndexLSH.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexLattice_8h.html">File IndexLattice.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPQFastScan_8h.html">File IndexPQFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPQ_8h.html">File IndexPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPreTransform_8h.html">File IndexPreTransform.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexRefine_8h.html">File IndexRefine.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexReplicas_8h.html">File IndexReplicas.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexScalarQuantizer_8h.html">File IndexScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexShards_8h.html">File IndexShards.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexWrapper-inl_8h.html">File IndexWrapper-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexWrapper_8h.html">File IndexWrapper.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Index_8h.html">File Index.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="InvertedListsIOHook_8h.html">File InvertedListsIOHook.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="InvertedLists_8h.html">File InvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Limits_8cuh.html">File Limits.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoadStoreOperators_8cuh.html">File LoadStoreOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MathOperators_8cuh.html">File MathOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixMult-inl_8cuh.html">File MatrixMult-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixMult_8cuh.html">File MatrixMult.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixStats_8h.html">File MatrixStats.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkBlock_8cuh.html">File MergeNetworkBlock.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkUtils_8cuh.html">File MergeNetworkUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkWarp_8cuh.html">File MergeNetworkWarp.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MetaIndexes_8h.html">File MetaIndexes.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MetricType_8h.html">File MetricType.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NoTypeTensor_8cuh.html">File NoTypeTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OnDiskInvertedLists_8h.html">File OnDiskInvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pair_8cuh.html">File Pair.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Select_8cuh.html">File Select.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StackDeviceMemory_8h.html">File StackDeviceMemory.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StandardGpuResources_8h.html">File StandardGpuResources.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StaticUtils_8h.html">File StaticUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tensor-inl_8cuh.html">File Tensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tensor_8cuh.html">File Tensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TestUtils_8h.html">File TestUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ThrustAllocator_8cuh.html">File ThrustAllocator.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Timer_8h.html">File Timer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Transpose_8cuh.html">File Transpose.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorTransform_8h.html">File VectorTransform.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpPackedBits_8cuh.html">File WarpPackedBits.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpSelectImpl_8cuh.html">File WarpSelectImpl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpSelectKernel_8cuh.html">File WarpSelectKernel.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpShuffles_8cuh.html">File WarpShuffles.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WorkerThread_8h.html">File WorkerThread.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clone__index_8h.html">File clone_index.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distances_8h.html">File distances.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extra__distances_8h.html">File extra_distances.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamming-inl_8h.html">File hamming-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamming_8h.html">File hamming.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index__factory_8h.html">File index_factory.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index__io_8h.html">File index_io.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ordered__key__value_8h.html">File ordered_key_value.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="partitioning_8h.html">File partitioning.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python__callbacks_8h.html">File python_callbacks.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quantize__lut_8h.html">File quantize_lut.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="random_8h.html">File random.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib_8h.html">File simdlib.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__avx2_8h.html">File simdlib_avx2.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__emulated_8h.html">File simdlib_emulated.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils_8h.html">File utils.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../filelist.html">File list</a> &raquo;</li>
+        
+      <li>File AutoTune.h</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/cpp_api/file/AutoTune_8h.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="file-autotune-h">
+<h1>File AutoTune.h<a class="headerlink" href="#file-autotune-h" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp type">
+<dt id="_CPPv45faiss">
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property">namespace </em><code class="sig-name descname">faiss</code><br /></dt>
+<dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
+<p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
+<p>x[ i * d + j ]</p>
+<p>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. I/O functions can read/write to a filename, a file handle or to an object that abstracts the medium.</p>
+<p>The read functions return objects that should be deallocated with delete. All references within these objectes are owned by the object.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Definition of inverted lists + a few common classes that implement the interface.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <a class="reference internal" href="../struct/structfaiss_1_1IndexPreTransform.html#structfaiss_1_1IndexPreTransform"><span class="std std-ref">IndexPreTransform</span></a>.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
+<dl class="cpp struct">
+<dt id="_CPPv4N5faiss17AutoTuneCriterionE">
+<span id="_CPPv3N5faiss17AutoTuneCriterionE"></span><span id="_CPPv2N5faiss17AutoTuneCriterionE"></span><span id="faiss::AutoTuneCriterion"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion"></span><em class="property">struct </em><code class="sig-name descname">AutoTuneCriterion</code><a class="headerlink" href="#_CPPv4N5faiss17AutoTuneCriterionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><em>#include &lt;AutoTune.h&gt;</em><p>Evaluation criterion. Returns a performance measure in [0,1], higher is better. </p>
+<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IntersectionCriterion.html#structfaiss_1_1IntersectionCriterion"><span class="std std-ref">faiss::IntersectionCriterion</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1OneRecallAtRCriterion.html#structfaiss_1_1OneRecallAtRCriterion"><span class="std std-ref">faiss::OneRecallAtRCriterion</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss17AutoTuneCriterion5idx_tE">
+<span id="_CPPv3N5faiss17AutoTuneCriterion5idx_tE"></span><span id="_CPPv2N5faiss17AutoTuneCriterion5idx_tE"></span><span id="faiss::AutoTuneCriterion::idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a7873f86515af86a77eaaea1f6b13e982"></span><em class="property">typedef </em><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> <code class="sig-name descname">idx_t</code><a class="headerlink" href="#_CPPv4N5faiss17AutoTuneCriterion5idx_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss17AutoTuneCriterion17AutoTuneCriterionE5idx_t5idx_t">
+<span id="_CPPv3N5faiss17AutoTuneCriterion17AutoTuneCriterionE5idx_t5idx_t"></span><span id="_CPPv2N5faiss17AutoTuneCriterion17AutoTuneCriterionE5idx_t5idx_t"></span><span id="faiss::AutoTuneCriterion::AutoTuneCriterion__idx_t.idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1abd85ee0d09e9f4958330c42e867e432b"></span><code class="sig-name descname">AutoTuneCriterion</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss17AutoTuneCriterion5idx_tE" title="faiss::AutoTuneCriterion::idx_t">idx_t</a> <em>nq</em>, <a class="reference internal" href="#_CPPv4N5faiss17AutoTuneCriterion5idx_tE" title="faiss::AutoTuneCriterion::idx_t">idx_t</a> <em>nnn</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17AutoTuneCriterion17AutoTuneCriterionE5idx_t5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss17AutoTuneCriterion15set_groundtruthEiPKfPK5idx_t">
+<span id="_CPPv3N5faiss17AutoTuneCriterion15set_groundtruthEiPKfPK5idx_t"></span><span id="_CPPv2N5faiss17AutoTuneCriterion15set_groundtruthEiPKfPK5idx_t"></span><span id="faiss::AutoTuneCriterion::set_groundtruth__i.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a174f0de8e6fd01905f5fa2170f5039d8"></span>void <code class="sig-name descname">set_groundtruth</code><span class="sig-paren">(</span>int <em>gt_nnn</em>, <em class="property">const</em> float *<em>gt_D_in</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss17AutoTuneCriterion5idx_tE" title="faiss::AutoTuneCriterion::idx_t">idx_t</a> *<em>gt_I_in</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17AutoTuneCriterion15set_groundtruthEiPKfPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Intitializes the gt_D and gt_I vectors. Must be called before evaluating</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gt_D_in</span></code>: size nq * gt_nnn </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gt_I_in</span></code>: size nq * gt_nnn </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss17AutoTuneCriterion8evaluateEPKfPK5idx_t">
+<span id="_CPPv3NK5faiss17AutoTuneCriterion8evaluateEPKfPK5idx_t"></span><span id="_CPPv2NK5faiss17AutoTuneCriterion8evaluateEPKfPK5idx_t"></span><span id="faiss::AutoTuneCriterion::evaluate__floatCP.idx_tCPC"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47"></span>double <code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="property">const</em> float *<em>D</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss17AutoTuneCriterion5idx_tE" title="faiss::AutoTuneCriterion::idx_t">idx_t</a> *<em>I</em><span class="sig-paren">)</span> <em class="property">const</em> = 0<a class="headerlink" href="#_CPPv4NK5faiss17AutoTuneCriterion8evaluateEPKfPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Evaluate the criterion.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the criterion, between 0 and 1. Larger is better. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">D</span></code>: size nq * nnn </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">I</span></code>: size nq * nnn </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss17AutoTuneCriterionD0Ev">
+<span id="_CPPv3N5faiss17AutoTuneCriterionD0Ev"></span><span id="_CPPv2N5faiss17AutoTuneCriterionD0Ev"></span><span id="faiss::AutoTuneCriterion::~AutoTuneCriterion"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1aa072c959d1cd882af33c7a570ac25f55"></span><code class="sig-name descname">~AutoTuneCriterion</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17AutoTuneCriterionD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss17AutoTuneCriterion2nqE">
+<span id="_CPPv3N5faiss17AutoTuneCriterion2nqE"></span><span id="_CPPv2N5faiss17AutoTuneCriterion2nqE"></span><span id="faiss::AutoTuneCriterion::nq__idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1adcfaafb3f1b3449e2cfd553f0f603a5b"></span><a class="reference internal" href="#_CPPv4N5faiss17AutoTuneCriterion5idx_tE" title="faiss::AutoTuneCriterion::idx_t">idx_t</a> <code class="sig-name descname">nq</code><a class="headerlink" href="#_CPPv4N5faiss17AutoTuneCriterion2nqE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>nb of queries this criterion is evaluated on </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss17AutoTuneCriterion3nnnE">
+<span id="_CPPv3N5faiss17AutoTuneCriterion3nnnE"></span><span id="_CPPv2N5faiss17AutoTuneCriterion3nnnE"></span><span id="faiss::AutoTuneCriterion::nnn__idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a3bb11e873707a812999f8391869aafab"></span><a class="reference internal" href="#_CPPv4N5faiss17AutoTuneCriterion5idx_tE" title="faiss::AutoTuneCriterion::idx_t">idx_t</a> <code class="sig-name descname">nnn</code><a class="headerlink" href="#_CPPv4N5faiss17AutoTuneCriterion3nnnE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>nb of NNs that the query should request </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss17AutoTuneCriterion6gt_nnnE">
+<span id="_CPPv3N5faiss17AutoTuneCriterion6gt_nnnE"></span><span id="_CPPv2N5faiss17AutoTuneCriterion6gt_nnnE"></span><span id="faiss::AutoTuneCriterion::gt_nnn__idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a9b3a2242729a0873d255c1684881bbd4"></span><a class="reference internal" href="#_CPPv4N5faiss17AutoTuneCriterion5idx_tE" title="faiss::AutoTuneCriterion::idx_t">idx_t</a> <code class="sig-name descname">gt_nnn</code><a class="headerlink" href="#_CPPv4N5faiss17AutoTuneCriterion6gt_nnnE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>nb of GT NNs required to evaluate crterion </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss17AutoTuneCriterion4gt_DE">
+<span id="_CPPv3N5faiss17AutoTuneCriterion4gt_DE"></span><span id="_CPPv2N5faiss17AutoTuneCriterion4gt_DE"></span><span id="faiss::AutoTuneCriterion::gt_D__std::vector:float:"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a40e91caa9232a597c16fc946d0befd9b"></span>std::vector&lt;float&gt; <code class="sig-name descname">gt_D</code><a class="headerlink" href="#_CPPv4N5faiss17AutoTuneCriterion4gt_DE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Ground-truth distances (size nq * gt_nnn) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss17AutoTuneCriterion4gt_IE">
+<span id="_CPPv3N5faiss17AutoTuneCriterion4gt_IE"></span><span id="_CPPv2N5faiss17AutoTuneCriterion4gt_IE"></span><span id="faiss::AutoTuneCriterion::gt_I__std::vector:idx_t:"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1af915fc4df215e3c8d9f71ff42d526144"></span>std::vector&lt;<a class="reference internal" href="#_CPPv4N5faiss17AutoTuneCriterion5idx_tE" title="faiss::AutoTuneCriterion::idx_t">idx_t</a>&gt; <code class="sig-name descname">gt_I</code><a class="headerlink" href="#_CPPv4N5faiss17AutoTuneCriterion4gt_IE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Ground-truth indexes (size nq * gt_nnn) </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5faiss21IntersectionCriterionE">
+<span id="_CPPv3N5faiss21IntersectionCriterionE"></span><span id="_CPPv2N5faiss21IntersectionCriterionE"></span><span id="faiss::IntersectionCriterion"></span><span class="target" id="structfaiss_1_1IntersectionCriterion"></span><em class="property">struct </em><code class="sig-name descname">IntersectionCriterion</code> : <em class="property">public</em> <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="#_CPPv4N5faiss17AutoTuneCriterionE" title="faiss::AutoTuneCriterion">AutoTuneCriterion</a><a class="headerlink" href="#_CPPv4N5faiss21IntersectionCriterionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss21IntersectionCriterion5idx_tE">
+<span id="_CPPv3N5faiss21IntersectionCriterion5idx_tE"></span><span id="_CPPv2N5faiss21IntersectionCriterion5idx_tE"></span><span id="faiss::IntersectionCriterion::idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a7873f86515af86a77eaaea1f6b13e982"></span><em class="property">typedef </em><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> <code class="sig-name descname">idx_t</code><a class="headerlink" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IntersectionCriterion21IntersectionCriterionE5idx_t5idx_t">
+<span id="_CPPv3N5faiss21IntersectionCriterion21IntersectionCriterionE5idx_t5idx_t"></span><span id="_CPPv2N5faiss21IntersectionCriterion21IntersectionCriterionE5idx_t5idx_t"></span><span id="faiss::IntersectionCriterion::IntersectionCriterion__idx_t.idx_t"></span><span class="target" id="structfaiss_1_1IntersectionCriterion_1a786f743984105ff940a780fe3ba85040"></span><code class="sig-name descname">IntersectionCriterion</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t">idx_t</a> <em>nq</em>, <a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t">idx_t</a> <em>R</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss21IntersectionCriterion21IntersectionCriterionE5idx_t5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t">
+<span id="_CPPv3NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t"></span><span id="_CPPv2NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t"></span><span id="faiss::IntersectionCriterion::evaluate__floatCP.idx_tCPC"></span><span class="target" id="structfaiss_1_1IntersectionCriterion_1a6f7aef25852931b22298f7bb4c358791"></span>double <code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="property">const</em> float *<em>D</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t">idx_t</a> *<em>I</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IntersectionCriterionD0Ev">
+<span id="_CPPv3N5faiss21IntersectionCriterionD0Ev"></span><span id="_CPPv2N5faiss21IntersectionCriterionD0Ev"></span><span id="faiss::IntersectionCriterion::~IntersectionCriterion"></span><span class="target" id="structfaiss_1_1IntersectionCriterion_1ab5ae8b2a2a4a978fa057ef2e2178f321"></span><code class="sig-name descname">~IntersectionCriterion</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss21IntersectionCriterionD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IntersectionCriterion15set_groundtruthEiPKfPK5idx_t">
+<span id="_CPPv3N5faiss21IntersectionCriterion15set_groundtruthEiPKfPK5idx_t"></span><span id="_CPPv2N5faiss21IntersectionCriterion15set_groundtruthEiPKfPK5idx_t"></span><span id="faiss::IntersectionCriterion::set_groundtruth__i.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a174f0de8e6fd01905f5fa2170f5039d8"></span>void <code class="sig-name descname">set_groundtruth</code><span class="sig-paren">(</span>int <em>gt_nnn</em>, <em class="property">const</em> float *<em>gt_D_in</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t">idx_t</a> *<em>gt_I_in</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss21IntersectionCriterion15set_groundtruthEiPKfPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Intitializes the gt_D and gt_I vectors. Must be called before evaluating</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gt_D_in</span></code>: size nq * gt_nnn </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gt_I_in</span></code>: size nq * gt_nnn </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47"></span>double <code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="property">const</em> float *<em>D</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t">idx_t</a> *<em>I</em><span class="sig-paren">)</span> <em class="property">const</em> = 0<br /></dt>
+<dd><p>Evaluate the criterion.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the criterion, between 0 and 1. Larger is better. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">D</span></code>: size nq * nnn </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">I</span></code>: size nq * nnn </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss21IntersectionCriterion1RE">
+<span id="_CPPv3N5faiss21IntersectionCriterion1RE"></span><span id="_CPPv2N5faiss21IntersectionCriterion1RE"></span><span id="faiss::IntersectionCriterion::R__idx_t"></span><span class="target" id="structfaiss_1_1IntersectionCriterion_1a9ccad002c0cf0272a2cc0e02d2a37384"></span><a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t">idx_t</a> <code class="sig-name descname">R</code><a class="headerlink" href="#_CPPv4N5faiss21IntersectionCriterion1RE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss21IntersectionCriterion2nqE">
+<span id="_CPPv3N5faiss21IntersectionCriterion2nqE"></span><span id="_CPPv2N5faiss21IntersectionCriterion2nqE"></span><span id="faiss::IntersectionCriterion::nq__idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1adcfaafb3f1b3449e2cfd553f0f603a5b"></span><a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t">idx_t</a> <code class="sig-name descname">nq</code><a class="headerlink" href="#_CPPv4N5faiss21IntersectionCriterion2nqE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>nb of queries this criterion is evaluated on </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss21IntersectionCriterion3nnnE">
+<span id="_CPPv3N5faiss21IntersectionCriterion3nnnE"></span><span id="_CPPv2N5faiss21IntersectionCriterion3nnnE"></span><span id="faiss::IntersectionCriterion::nnn__idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a3bb11e873707a812999f8391869aafab"></span><a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t">idx_t</a> <code class="sig-name descname">nnn</code><a class="headerlink" href="#_CPPv4N5faiss21IntersectionCriterion3nnnE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>nb of NNs that the query should request </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss21IntersectionCriterion6gt_nnnE">
+<span id="_CPPv3N5faiss21IntersectionCriterion6gt_nnnE"></span><span id="_CPPv2N5faiss21IntersectionCriterion6gt_nnnE"></span><span id="faiss::IntersectionCriterion::gt_nnn__idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a9b3a2242729a0873d255c1684881bbd4"></span><a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t">idx_t</a> <code class="sig-name descname">gt_nnn</code><a class="headerlink" href="#_CPPv4N5faiss21IntersectionCriterion6gt_nnnE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>nb of GT NNs required to evaluate crterion </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss21IntersectionCriterion4gt_DE">
+<span id="_CPPv3N5faiss21IntersectionCriterion4gt_DE"></span><span id="_CPPv2N5faiss21IntersectionCriterion4gt_DE"></span><span id="faiss::IntersectionCriterion::gt_D__std::vector:float:"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a40e91caa9232a597c16fc946d0befd9b"></span>std::vector&lt;float&gt; <code class="sig-name descname">gt_D</code><a class="headerlink" href="#_CPPv4N5faiss21IntersectionCriterion4gt_DE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Ground-truth distances (size nq * gt_nnn) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss21IntersectionCriterion4gt_IE">
+<span id="_CPPv3N5faiss21IntersectionCriterion4gt_IE"></span><span id="_CPPv2N5faiss21IntersectionCriterion4gt_IE"></span><span id="faiss::IntersectionCriterion::gt_I__std::vector:idx_t:"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1af915fc4df215e3c8d9f71ff42d526144"></span>std::vector&lt;<a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t">idx_t</a>&gt; <code class="sig-name descname">gt_I</code><a class="headerlink" href="#_CPPv4N5faiss21IntersectionCriterion4gt_IE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Ground-truth indexes (size nq * gt_nnn) </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5faiss21OneRecallAtRCriterionE">
+<span id="_CPPv3N5faiss21OneRecallAtRCriterionE"></span><span id="_CPPv2N5faiss21OneRecallAtRCriterionE"></span><span id="faiss::OneRecallAtRCriterion"></span><span class="target" id="structfaiss_1_1OneRecallAtRCriterion"></span><em class="property">struct </em><code class="sig-name descname">OneRecallAtRCriterion</code> : <em class="property">public</em> <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="#_CPPv4N5faiss17AutoTuneCriterionE" title="faiss::AutoTuneCriterion">AutoTuneCriterion</a><a class="headerlink" href="#_CPPv4N5faiss21OneRecallAtRCriterionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE">
+<span id="_CPPv3N5faiss21OneRecallAtRCriterion5idx_tE"></span><span id="_CPPv2N5faiss21OneRecallAtRCriterion5idx_tE"></span><span id="faiss::OneRecallAtRCriterion::idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a7873f86515af86a77eaaea1f6b13e982"></span><em class="property">typedef </em><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> <code class="sig-name descname">idx_t</code><a class="headerlink" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21OneRecallAtRCriterion21OneRecallAtRCriterionE5idx_t5idx_t">
+<span id="_CPPv3N5faiss21OneRecallAtRCriterion21OneRecallAtRCriterionE5idx_t5idx_t"></span><span id="_CPPv2N5faiss21OneRecallAtRCriterion21OneRecallAtRCriterionE5idx_t5idx_t"></span><span id="faiss::OneRecallAtRCriterion::OneRecallAtRCriterion__idx_t.idx_t"></span><span class="target" id="structfaiss_1_1OneRecallAtRCriterion_1a96f1529ebce808a196972e017fb17950"></span><code class="sig-name descname">OneRecallAtRCriterion</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="faiss::OneRecallAtRCriterion::idx_t">idx_t</a> <em>nq</em>, <a class="reference internal" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="faiss::OneRecallAtRCriterion::idx_t">idx_t</a> <em>R</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss21OneRecallAtRCriterion21OneRecallAtRCriterionE5idx_t5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss21OneRecallAtRCriterion8evaluateEPKfPK5idx_t">
+<span id="_CPPv3NK5faiss21OneRecallAtRCriterion8evaluateEPKfPK5idx_t"></span><span id="_CPPv2NK5faiss21OneRecallAtRCriterion8evaluateEPKfPK5idx_t"></span><span id="faiss::OneRecallAtRCriterion::evaluate__floatCP.idx_tCPC"></span><span class="target" id="structfaiss_1_1OneRecallAtRCriterion_1afe472c2ae38534c293b02feebf87988d"></span>double <code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="property">const</em> float *<em>D</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="faiss::OneRecallAtRCriterion::idx_t">idx_t</a> *<em>I</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK5faiss21OneRecallAtRCriterion8evaluateEPKfPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Evaluate the criterion.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the criterion, between 0 and 1. Larger is better. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">D</span></code>: size nq * nnn </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">I</span></code>: size nq * nnn </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21OneRecallAtRCriterionD0Ev">
+<span id="_CPPv3N5faiss21OneRecallAtRCriterionD0Ev"></span><span id="_CPPv2N5faiss21OneRecallAtRCriterionD0Ev"></span><span id="faiss::OneRecallAtRCriterion::~OneRecallAtRCriterion"></span><span class="target" id="structfaiss_1_1OneRecallAtRCriterion_1a79b1af707034d3984debd15a6aa34255"></span><code class="sig-name descname">~OneRecallAtRCriterion</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss21OneRecallAtRCriterionD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21OneRecallAtRCriterion15set_groundtruthEiPKfPK5idx_t">
+<span id="_CPPv3N5faiss21OneRecallAtRCriterion15set_groundtruthEiPKfPK5idx_t"></span><span id="_CPPv2N5faiss21OneRecallAtRCriterion15set_groundtruthEiPKfPK5idx_t"></span><span id="faiss::OneRecallAtRCriterion::set_groundtruth__i.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a174f0de8e6fd01905f5fa2170f5039d8"></span>void <code class="sig-name descname">set_groundtruth</code><span class="sig-paren">(</span>int <em>gt_nnn</em>, <em class="property">const</em> float *<em>gt_D_in</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="faiss::OneRecallAtRCriterion::idx_t">idx_t</a> *<em>gt_I_in</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss21OneRecallAtRCriterion15set_groundtruthEiPKfPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Intitializes the gt_D and gt_I vectors. Must be called before evaluating</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gt_D_in</span></code>: size nq * gt_nnn </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gt_I_in</span></code>: size nq * gt_nnn </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss21OneRecallAtRCriterion1RE">
+<span id="_CPPv3N5faiss21OneRecallAtRCriterion1RE"></span><span id="_CPPv2N5faiss21OneRecallAtRCriterion1RE"></span><span id="faiss::OneRecallAtRCriterion::R__idx_t"></span><span class="target" id="structfaiss_1_1OneRecallAtRCriterion_1ab25af5442746a34451a7ceeebd40f380"></span><a class="reference internal" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="faiss::OneRecallAtRCriterion::idx_t">idx_t</a> <code class="sig-name descname">R</code><a class="headerlink" href="#_CPPv4N5faiss21OneRecallAtRCriterion1RE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss21OneRecallAtRCriterion2nqE">
+<span id="_CPPv3N5faiss21OneRecallAtRCriterion2nqE"></span><span id="_CPPv2N5faiss21OneRecallAtRCriterion2nqE"></span><span id="faiss::OneRecallAtRCriterion::nq__idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1adcfaafb3f1b3449e2cfd553f0f603a5b"></span><a class="reference internal" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="faiss::OneRecallAtRCriterion::idx_t">idx_t</a> <code class="sig-name descname">nq</code><a class="headerlink" href="#_CPPv4N5faiss21OneRecallAtRCriterion2nqE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>nb of queries this criterion is evaluated on </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss21OneRecallAtRCriterion3nnnE">
+<span id="_CPPv3N5faiss21OneRecallAtRCriterion3nnnE"></span><span id="_CPPv2N5faiss21OneRecallAtRCriterion3nnnE"></span><span id="faiss::OneRecallAtRCriterion::nnn__idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a3bb11e873707a812999f8391869aafab"></span><a class="reference internal" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="faiss::OneRecallAtRCriterion::idx_t">idx_t</a> <code class="sig-name descname">nnn</code><a class="headerlink" href="#_CPPv4N5faiss21OneRecallAtRCriterion3nnnE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>nb of NNs that the query should request </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss21OneRecallAtRCriterion6gt_nnnE">
+<span id="_CPPv3N5faiss21OneRecallAtRCriterion6gt_nnnE"></span><span id="_CPPv2N5faiss21OneRecallAtRCriterion6gt_nnnE"></span><span id="faiss::OneRecallAtRCriterion::gt_nnn__idx_t"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a9b3a2242729a0873d255c1684881bbd4"></span><a class="reference internal" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="faiss::OneRecallAtRCriterion::idx_t">idx_t</a> <code class="sig-name descname">gt_nnn</code><a class="headerlink" href="#_CPPv4N5faiss21OneRecallAtRCriterion6gt_nnnE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>nb of GT NNs required to evaluate crterion </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss21OneRecallAtRCriterion4gt_DE">
+<span id="_CPPv3N5faiss21OneRecallAtRCriterion4gt_DE"></span><span id="_CPPv2N5faiss21OneRecallAtRCriterion4gt_DE"></span><span id="faiss::OneRecallAtRCriterion::gt_D__std::vector:float:"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1a40e91caa9232a597c16fc946d0befd9b"></span>std::vector&lt;float&gt; <code class="sig-name descname">gt_D</code><a class="headerlink" href="#_CPPv4N5faiss21OneRecallAtRCriterion4gt_DE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Ground-truth distances (size nq * gt_nnn) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss21OneRecallAtRCriterion4gt_IE">
+<span id="_CPPv3N5faiss21OneRecallAtRCriterion4gt_IE"></span><span id="_CPPv2N5faiss21OneRecallAtRCriterion4gt_IE"></span><span id="faiss::OneRecallAtRCriterion::gt_I__std::vector:idx_t:"></span><span class="target" id="structfaiss_1_1AutoTuneCriterion_1af915fc4df215e3c8d9f71ff42d526144"></span>std::vector&lt;<a class="reference internal" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="faiss::OneRecallAtRCriterion::idx_t">idx_t</a>&gt; <code class="sig-name descname">gt_I</code><a class="headerlink" href="#_CPPv4N5faiss21OneRecallAtRCriterion4gt_IE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Ground-truth indexes (size nq * gt_nnn) </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5faiss14OperatingPointE">
+<span id="_CPPv3N5faiss14OperatingPointE"></span><span id="_CPPv2N5faiss14OperatingPointE"></span><span id="faiss::OperatingPoint"></span><span class="target" id="structfaiss_1_1OperatingPoint"></span><em class="property">struct </em><code class="sig-name descname">OperatingPoint</code><a class="headerlink" href="#_CPPv4N5faiss14OperatingPointE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><em>#include &lt;AutoTune.h&gt;</em><p>Maintains a list of experimental results. Each operating point is a (perf, t, key) triplet, where higher perf and lower t is better. The key field is an arbitrary identifier for the operating point.</p>
+<p>Includes primitives to extract the Pareto-optimal operating points in the (perf, t) space. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14OperatingPoint4perfE">
+<span id="_CPPv3N5faiss14OperatingPoint4perfE"></span><span id="_CPPv2N5faiss14OperatingPoint4perfE"></span><span id="faiss::OperatingPoint::perf__double"></span><span class="target" id="structfaiss_1_1OperatingPoint_1ad218d1641b6e32d043a215542485a457"></span>double <code class="sig-name descname">perf</code><a class="headerlink" href="#_CPPv4N5faiss14OperatingPoint4perfE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>performance measure (output of a Criterion) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14OperatingPoint1tE">
+<span id="_CPPv3N5faiss14OperatingPoint1tE"></span><span id="_CPPv2N5faiss14OperatingPoint1tE"></span><span id="faiss::OperatingPoint::t__double"></span><span class="target" id="structfaiss_1_1OperatingPoint_1a886492ffe2b337539fadc798c8f4a6a8"></span>double <code class="sig-name descname">t</code><a class="headerlink" href="#_CPPv4N5faiss14OperatingPoint1tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>corresponding execution time (ms) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14OperatingPoint3keyE">
+<span id="_CPPv3N5faiss14OperatingPoint3keyE"></span><span id="_CPPv2N5faiss14OperatingPoint3keyE"></span><span id="faiss::OperatingPoint::key__ss"></span><span class="target" id="structfaiss_1_1OperatingPoint_1aa13782d6d26168531764cb64da941ced"></span>std::string <code class="sig-name descname">key</code><a class="headerlink" href="#_CPPv4N5faiss14OperatingPoint3keyE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>key that identifies this op pt </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14OperatingPoint3cnoE">
+<span id="_CPPv3N5faiss14OperatingPoint3cnoE"></span><span id="_CPPv2N5faiss14OperatingPoint3cnoE"></span><span id="faiss::OperatingPoint::cno__int64_t"></span><span class="target" id="structfaiss_1_1OperatingPoint_1ac9f4b8e26b022e847e6cbbfc4aed22f1"></span>int64_t <code class="sig-name descname">cno</code><a class="headerlink" href="#_CPPv4N5faiss14OperatingPoint3cnoE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>integer identifer </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5faiss15OperatingPointsE">
+<span id="_CPPv3N5faiss15OperatingPointsE"></span><span id="_CPPv2N5faiss15OperatingPointsE"></span><span id="faiss::OperatingPoints"></span><span class="target" id="structfaiss_1_1OperatingPoints"></span><em class="property">struct </em><code class="sig-name descname">OperatingPoints</code><a class="headerlink" href="#_CPPv4N5faiss15OperatingPointsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss15OperatingPoints15OperatingPointsEv">
+<span id="_CPPv3N5faiss15OperatingPoints15OperatingPointsEv"></span><span id="_CPPv2N5faiss15OperatingPoints15OperatingPointsEv"></span><span id="faiss::OperatingPoints::OperatingPoints"></span><span class="target" id="structfaiss_1_1OperatingPoints_1a65530fa64d46bcaca21719cf0b1126f7"></span><code class="sig-name descname">OperatingPoints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15OperatingPoints15OperatingPointsEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss15OperatingPoints10merge_withERK15OperatingPointsRKNSt6stringE">
+<span id="_CPPv3N5faiss15OperatingPoints10merge_withERK15OperatingPointsRKNSt6stringE"></span><span id="_CPPv2N5faiss15OperatingPoints10merge_withERK15OperatingPointsRKNSt6stringE"></span><span id="faiss::OperatingPoints::merge_with__OperatingPointsCR.ssCR"></span><span class="target" id="structfaiss_1_1OperatingPoints_1a84baddccd8b803dee460739f8bcbc0c9"></span>int <code class="sig-name descname">merge_with</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss15OperatingPointsE" title="faiss::OperatingPoints">OperatingPoints</a> &amp;<em>other</em>, <em class="property">const</em> std::string &amp;<em>prefix</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15OperatingPoints10merge_withERK15OperatingPointsRKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>add operating points from other to this, with a prefix to the keys </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss15OperatingPoints5clearEv">
+<span id="_CPPv3N5faiss15OperatingPoints5clearEv"></span><span id="_CPPv2N5faiss15OperatingPoints5clearEv"></span><span id="faiss::OperatingPoints::clear"></span><span class="target" id="structfaiss_1_1OperatingPoints_1a1702eeb680ce73ca8c1fd071955f0679"></span>void <code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15OperatingPoints5clearEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss15OperatingPoints3addEddRKNSt6stringE6size_t">
+<span id="_CPPv3N5faiss15OperatingPoints3addEddRKNSt6stringE6size_t"></span><span id="_CPPv2N5faiss15OperatingPoints3addEddRKNSt6stringE6size_t"></span><span id="faiss::OperatingPoints::add__double.double.ssCR.s"></span><span class="target" id="structfaiss_1_1OperatingPoints_1a7afabe0576800255eeec680486cb30df"></span>bool <code class="sig-name descname">add</code><span class="sig-paren">(</span>double <em>perf</em>, double <em>t</em>, <em class="property">const</em> std::string &amp;<em>key</em>, size_t <em>cno</em> = 0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15OperatingPoints3addEddRKNSt6stringE6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>add a performance measure. Return whether it is an optimal point </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss15OperatingPoints10t_for_perfEd">
+<span id="_CPPv3NK5faiss15OperatingPoints10t_for_perfEd"></span><span id="_CPPv2NK5faiss15OperatingPoints10t_for_perfEd"></span><span id="faiss::OperatingPoints::t_for_perf__doubleC"></span><span class="target" id="structfaiss_1_1OperatingPoints_1ad06f915a9b8f8cfd8c7a00858c6c24ae"></span>double <code class="sig-name descname">t_for_perf</code><span class="sig-paren">(</span>double <em>perf</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss15OperatingPoints10t_for_perfEd" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>get time required to obtain a given performance measure </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss15OperatingPoints7displayEb">
+<span id="_CPPv3NK5faiss15OperatingPoints7displayEb"></span><span id="_CPPv2NK5faiss15OperatingPoints7displayEb"></span><span id="faiss::OperatingPoints::display__bC"></span><span class="target" id="structfaiss_1_1OperatingPoints_1a3fe8cd962524dfdfb8e7bba8c984024d"></span>void <code class="sig-name descname">display</code><span class="sig-paren">(</span>bool <em>only_optimal</em> = true<span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss15OperatingPoints7displayEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>easy-to-read output </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss15OperatingPoints14all_to_gnuplotEPKc">
+<span id="_CPPv3NK5faiss15OperatingPoints14all_to_gnuplotEPKc"></span><span id="_CPPv2NK5faiss15OperatingPoints14all_to_gnuplotEPKc"></span><span id="faiss::OperatingPoints::all_to_gnuplot__cCPC"></span><span class="target" id="structfaiss_1_1OperatingPoints_1a355e16cdecf1905c995120a35ba08ac5"></span>void <code class="sig-name descname">all_to_gnuplot</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>fname</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss15OperatingPoints14all_to_gnuplotEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>output to a format easy to digest by gnuplot </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss15OperatingPoints18optimal_to_gnuplotEPKc">
+<span id="_CPPv3NK5faiss15OperatingPoints18optimal_to_gnuplotEPKc"></span><span id="_CPPv2NK5faiss15OperatingPoints18optimal_to_gnuplotEPKc"></span><span id="faiss::OperatingPoints::optimal_to_gnuplot__cCPC"></span><span class="target" id="structfaiss_1_1OperatingPoints_1a1223380199823ba94945bdd4dd2ccc24"></span>void <code class="sig-name descname">optimal_to_gnuplot</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>fname</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss15OperatingPoints18optimal_to_gnuplotEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss15OperatingPoints7all_ptsE">
+<span id="_CPPv3N5faiss15OperatingPoints7all_ptsE"></span><span id="_CPPv2N5faiss15OperatingPoints7all_ptsE"></span><span id="faiss::OperatingPoints::all_pts__std::vector:OperatingPoint:"></span><span class="target" id="structfaiss_1_1OperatingPoints_1a48f457047b0511ecc531f250ef8b19c3"></span>std::vector&lt;<a class="reference internal" href="#_CPPv4N5faiss14OperatingPointE" title="faiss::OperatingPoint">OperatingPoint</a>&gt; <code class="sig-name descname">all_pts</code><a class="headerlink" href="#_CPPv4N5faiss15OperatingPoints7all_ptsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>all operating points </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss15OperatingPoints11optimal_ptsE">
+<span id="_CPPv3N5faiss15OperatingPoints11optimal_ptsE"></span><span id="_CPPv2N5faiss15OperatingPoints11optimal_ptsE"></span><span id="faiss::OperatingPoints::optimal_pts__std::vector:OperatingPoint:"></span><span class="target" id="structfaiss_1_1OperatingPoints_1a2829e78e01cc42c3a341622947663b31"></span>std::vector&lt;<a class="reference internal" href="#_CPPv4N5faiss14OperatingPointE" title="faiss::OperatingPoint">OperatingPoint</a>&gt; <code class="sig-name descname">optimal_pts</code><a class="headerlink" href="#_CPPv4N5faiss15OperatingPoints11optimal_ptsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>optimal operating points, sorted by perf </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5faiss14ParameterRangeE">
+<span id="_CPPv3N5faiss14ParameterRangeE"></span><span id="_CPPv2N5faiss14ParameterRangeE"></span><span id="faiss::ParameterRange"></span><span class="target" id="structfaiss_1_1ParameterRange"></span><em class="property">struct </em><code class="sig-name descname">ParameterRange</code><a class="headerlink" href="#_CPPv4N5faiss14ParameterRangeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><em>#include &lt;AutoTune.h&gt;</em><p>possible values of a parameter, sorted from least to most expensive/accurate </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14ParameterRange4nameE">
+<span id="_CPPv3N5faiss14ParameterRange4nameE"></span><span id="_CPPv2N5faiss14ParameterRange4nameE"></span><span id="faiss::ParameterRange::name__ss"></span><span class="target" id="structfaiss_1_1ParameterRange_1a5db7cd6389a8303c7fb98d668b9a7625"></span>std::string <code class="sig-name descname">name</code><a class="headerlink" href="#_CPPv4N5faiss14ParameterRange4nameE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14ParameterRange6valuesE">
+<span id="_CPPv3N5faiss14ParameterRange6valuesE"></span><span id="_CPPv2N5faiss14ParameterRange6valuesE"></span><span id="faiss::ParameterRange::values__std::vector:double:"></span><span class="target" id="structfaiss_1_1ParameterRange_1a5e4f4836fe1f0c9be007c8009a068c7a"></span>std::vector&lt;double&gt; <code class="sig-name descname">values</code><a class="headerlink" href="#_CPPv4N5faiss14ParameterRange6valuesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5faiss14ParameterSpaceE">
+<span id="_CPPv3N5faiss14ParameterSpaceE"></span><span id="_CPPv2N5faiss14ParameterSpaceE"></span><span id="faiss::ParameterSpace"></span><span class="target" id="structfaiss_1_1ParameterSpace"></span><em class="property">struct </em><code class="sig-name descname">ParameterSpace</code><a class="headerlink" href="#_CPPv4N5faiss14ParameterSpaceE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><em>#include &lt;AutoTune.h&gt;</em><p>Uses a-priori knowledge on the Faiss indexes to extract tunable parameters. </p>
+<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuParameterSpace.html#structfaiss_1_1gpu_1_1GpuParameterSpace"><span class="std std-ref">faiss::gpu::GpuParameterSpace</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss14ParameterSpace14ParameterSpaceEv">
+<span id="_CPPv3N5faiss14ParameterSpace14ParameterSpaceEv"></span><span id="_CPPv2N5faiss14ParameterSpace14ParameterSpaceEv"></span><span id="faiss::ParameterSpace::ParameterSpace"></span><span class="target" id="structfaiss_1_1ParameterSpace_1ad9c41b66db298ddf8c43b14d8eb88a67"></span><code class="sig-name descname">ParameterSpace</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss14ParameterSpace14ParameterSpaceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss14ParameterSpace14n_combinationsEv">
+<span id="_CPPv3NK5faiss14ParameterSpace14n_combinationsEv"></span><span id="_CPPv2NK5faiss14ParameterSpace14n_combinationsEv"></span><span id="faiss::ParameterSpace::n_combinationsC"></span><span class="target" id="structfaiss_1_1ParameterSpace_1a255b1e3bf93f8b0cbbe16eae66478acc"></span>size_t <code class="sig-name descname">n_combinations</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss14ParameterSpace14n_combinationsEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>nb of combinations, = product of values sizes </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss14ParameterSpace14combination_geE6size_t6size_t">
+<span id="_CPPv3NK5faiss14ParameterSpace14combination_geE6size_t6size_t"></span><span id="_CPPv2NK5faiss14ParameterSpace14combination_geE6size_t6size_t"></span><span id="faiss::ParameterSpace::combination_ge__s.sC"></span><span class="target" id="structfaiss_1_1ParameterSpace_1ab311c622327c18b42aa66e2b9bcd5a7f"></span>bool <code class="sig-name descname">combination_ge</code><span class="sig-paren">(</span>size_t <em>c1</em>, size_t <em>c2</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss14ParameterSpace14combination_geE6size_t6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>returns whether combinations c1 &gt;= c2 in the tuple sense </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss14ParameterSpace16combination_nameE6size_t">
+<span id="_CPPv3NK5faiss14ParameterSpace16combination_nameE6size_t"></span><span id="_CPPv2NK5faiss14ParameterSpace16combination_nameE6size_t"></span><span id="faiss::ParameterSpace::combination_name__sC"></span><span class="target" id="structfaiss_1_1ParameterSpace_1af5081b3739982c6be702e46df666fec4"></span>std::string <code class="sig-name descname">combination_name</code><span class="sig-paren">(</span>size_t <em>cno</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss14ParameterSpace16combination_nameE6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>get string representation of the combination </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss14ParameterSpace7displayEv">
+<span id="_CPPv3NK5faiss14ParameterSpace7displayEv"></span><span id="_CPPv2NK5faiss14ParameterSpace7displayEv"></span><span id="faiss::ParameterSpace::displayC"></span><span class="target" id="structfaiss_1_1ParameterSpace_1a066ae6501cf7b31b1b5bb1e34bb8d0dc"></span>void <code class="sig-name descname">display</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss14ParameterSpace7displayEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>print a description on stdout </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss14ParameterSpace9add_rangeERKNSt6stringE">
+<span id="_CPPv3N5faiss14ParameterSpace9add_rangeERKNSt6stringE"></span><span id="_CPPv2N5faiss14ParameterSpace9add_rangeERKNSt6stringE"></span><span id="faiss::ParameterSpace::add_range__ssCR"></span><span class="target" id="structfaiss_1_1ParameterSpace_1a48fcb0d8a091c768dd59b4234c0733c1"></span><a class="reference internal" href="#_CPPv4N5faiss14ParameterRangeE" title="faiss::ParameterRange">ParameterRange</a> &amp;<code class="sig-name descname">add_range</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss14ParameterSpace9add_rangeERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>add a new parameter (or return it if it exists) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss14ParameterSpace10initializeEPK5Index">
+<span id="_CPPv3N5faiss14ParameterSpace10initializeEPK5Index"></span><span id="_CPPv2N5faiss14ParameterSpace10initializeEPK5Index"></span><span id="faiss::ParameterSpace::initialize__IndexCP"></span><span class="target" id="structfaiss_1_1ParameterSpace_1a3e2e52e7b04f838473e01d018afde832"></span>void <code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> *<em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss14ParameterSpace10initializeEPK5Index" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>initialize with reasonable parameters for the index </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss14ParameterSpace20set_index_parametersEP5Index6size_t">
+<span id="_CPPv3NK5faiss14ParameterSpace20set_index_parametersEP5Index6size_t"></span><span id="_CPPv2NK5faiss14ParameterSpace20set_index_parametersEP5Index6size_t"></span><span id="faiss::ParameterSpace::set_index_parameters__IndexP.sC"></span><span class="target" id="structfaiss_1_1ParameterSpace_1a613036d9ce9b2d89856043782975a30a"></span>void <code class="sig-name descname">set_index_parameters</code><span class="sig-paren">(</span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> *<em>index</em>, size_t <em>cno</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss14ParameterSpace20set_index_parametersEP5Index6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>set a combination of parameters on an index </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss14ParameterSpace20set_index_parametersEP5IndexPKc">
+<span id="_CPPv3NK5faiss14ParameterSpace20set_index_parametersEP5IndexPKc"></span><span id="_CPPv2NK5faiss14ParameterSpace20set_index_parametersEP5IndexPKc"></span><span id="faiss::ParameterSpace::set_index_parameters__IndexP.cCPC"></span><span class="target" id="structfaiss_1_1ParameterSpace_1acaf902b57394d802a32dcbdfa6bcd7b8"></span>void <code class="sig-name descname">set_index_parameters</code><span class="sig-paren">(</span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> *<em>index</em>, <em class="property">const</em> char *<em>param_string</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss14ParameterSpace20set_index_parametersEP5IndexPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>set a combination of parameters described by a string </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss14ParameterSpace19set_index_parameterEP5IndexRKNSt6stringEd">
+<span id="_CPPv3NK5faiss14ParameterSpace19set_index_parameterEP5IndexRKNSt6stringEd"></span><span id="_CPPv2NK5faiss14ParameterSpace19set_index_parameterEP5IndexRKNSt6stringEd"></span><span id="faiss::ParameterSpace::set_index_parameter__IndexP.ssCR.doubleC"></span><span class="target" id="structfaiss_1_1ParameterSpace_1ad9e630ff62561acf6a55b972ee7bb309"></span>void <code class="sig-name descname">set_index_parameter</code><span class="sig-paren">(</span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> *<em>index</em>, <em class="property">const</em> std::string &amp;<em>name</em>, double <em>val</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss14ParameterSpace19set_index_parameterEP5IndexRKNSt6stringEd" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>set one of the parameters, returns whether setting was successful </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss14ParameterSpace13update_boundsE6size_tRK14OperatingPointPdPd">
+<span id="_CPPv3NK5faiss14ParameterSpace13update_boundsE6size_tRK14OperatingPointPdPd"></span><span id="_CPPv2NK5faiss14ParameterSpace13update_boundsE6size_tRK14OperatingPointPdPd"></span><span id="faiss::ParameterSpace::update_bounds__s.OperatingPointCR.doubleP.doublePC"></span><span class="target" id="structfaiss_1_1ParameterSpace_1a8b8ca45f0a520a7100b4ad9c7be1e079"></span>void <code class="sig-name descname">update_bounds</code><span class="sig-paren">(</span>size_t <em>cno</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss14OperatingPointE" title="faiss::OperatingPoint">OperatingPoint</a> &amp;<em>op</em>, double *<em>upper_bound_perf</em>, double *<em>lower_bound_t</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss14ParameterSpace13update_boundsE6size_tRK14OperatingPointPdPd" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>find an upper bound on the performance and a lower bound on t for configuration cno given another operating point op </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss14ParameterSpace7exploreEP5Index6size_tPKfRK17AutoTuneCriterionP15OperatingPoints">
+<span id="_CPPv3NK5faiss14ParameterSpace7exploreEP5Index6size_tPKfRK17AutoTuneCriterionP15OperatingPoints"></span><span id="_CPPv2NK5faiss14ParameterSpace7exploreEP5Index6size_tPKfRK17AutoTuneCriterionP15OperatingPoints"></span><span id="faiss::ParameterSpace::explore__IndexP.s.floatCP.AutoTuneCriterionCR.OperatingPointsPC"></span><span class="target" id="structfaiss_1_1ParameterSpace_1abf95f9ac04d0a2d1d4ac9e3b685bfcc3"></span>void <code class="sig-name descname">explore</code><span class="sig-paren">(</span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> *<em>index</em>, size_t <em>nq</em>, <em class="property">const</em> float *<em>xq</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss17AutoTuneCriterionE" title="faiss::AutoTuneCriterion">AutoTuneCriterion</a> &amp;<em>crit</em>, <a class="reference internal" href="#_CPPv4N5faiss15OperatingPointsE" title="faiss::OperatingPoints">OperatingPoints</a> *<em>ops</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss14ParameterSpace7exploreEP5Index6size_tPKfRK17AutoTuneCriterionP15OperatingPoints" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>explore operating points <dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">index</span></code>: index to run on </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xq</span></code>: query vectors (size nq * index.d) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">crit</span></code>: selection criterion </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ops</span></code>: resulting operating points </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss14ParameterSpaceD0Ev">
+<span id="_CPPv3N5faiss14ParameterSpaceD0Ev"></span><span id="_CPPv2N5faiss14ParameterSpaceD0Ev"></span><span id="faiss::ParameterSpace::~ParameterSpace"></span><span class="target" id="structfaiss_1_1ParameterSpace_1a75fbe38ddf6cdca0928316dae9f17764"></span><code class="sig-name descname">~ParameterSpace</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss14ParameterSpaceD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14ParameterSpace16parameter_rangesE">
+<span id="_CPPv3N5faiss14ParameterSpace16parameter_rangesE"></span><span id="_CPPv2N5faiss14ParameterSpace16parameter_rangesE"></span><span id="faiss::ParameterSpace::parameter_ranges__std::vector:ParameterRange:"></span><span class="target" id="structfaiss_1_1ParameterSpace_1a334c1bb54bc2b70950a4a63950728cbb"></span>std::vector&lt;<a class="reference internal" href="#_CPPv4N5faiss14ParameterRangeE" title="faiss::ParameterRange">ParameterRange</a>&gt; <code class="sig-name descname">parameter_ranges</code><a class="headerlink" href="#_CPPv4N5faiss14ParameterSpace16parameter_rangesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>all tunable parameters </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14ParameterSpace7verboseE">
+<span id="_CPPv3N5faiss14ParameterSpace7verboseE"></span><span id="_CPPv2N5faiss14ParameterSpace7verboseE"></span><span id="faiss::ParameterSpace::verbose__i"></span><span class="target" id="structfaiss_1_1ParameterSpace_1a7a9f2292c4e0ac3aad569434edea87b0"></span>int <code class="sig-name descname">verbose</code><a class="headerlink" href="#_CPPv4N5faiss14ParameterSpace7verboseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>verbosity during exploration </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14ParameterSpace13n_experimentsE">
+<span id="_CPPv3N5faiss14ParameterSpace13n_experimentsE"></span><span id="_CPPv2N5faiss14ParameterSpace13n_experimentsE"></span><span id="faiss::ParameterSpace::n_experiments__i"></span><span class="target" id="structfaiss_1_1ParameterSpace_1a76aeae25b3269fb24a26194fbe013b86"></span>int <code class="sig-name descname">n_experiments</code><a class="headerlink" href="#_CPPv4N5faiss14ParameterSpace13n_experimentsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>nb of experiments during optimization (0 = try all combinations) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14ParameterSpace9batchsizeE">
+<span id="_CPPv3N5faiss14ParameterSpace9batchsizeE"></span><span id="_CPPv2N5faiss14ParameterSpace9batchsizeE"></span><span id="faiss::ParameterSpace::batchsize__s"></span><span class="target" id="structfaiss_1_1ParameterSpace_1aee8fd44e15656ba80fe98de4c65ed767"></span>size_t <code class="sig-name descname">batchsize</code><a class="headerlink" href="#_CPPv4N5faiss14ParameterSpace9batchsizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>maximum number of queries to submit at a time. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14ParameterSpace19thread_over_batchesE">
+<span id="_CPPv3N5faiss14ParameterSpace19thread_over_batchesE"></span><span id="_CPPv2N5faiss14ParameterSpace19thread_over_batchesE"></span><span id="faiss::ParameterSpace::thread_over_batches__b"></span><span class="target" id="structfaiss_1_1ParameterSpace_1af6dc3b9c5631b509cbae99bf0f24170b"></span>bool <code class="sig-name descname">thread_over_batches</code><a class="headerlink" href="#_CPPv4N5faiss14ParameterSpace19thread_over_batchesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>use multithreading over batches (useful to benchmark independent single-searches) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14ParameterSpace17min_test_durationE">
+<span id="_CPPv3N5faiss14ParameterSpace17min_test_durationE"></span><span id="_CPPv2N5faiss14ParameterSpace17min_test_durationE"></span><span id="faiss::ParameterSpace::min_test_duration__double"></span><span class="target" id="structfaiss_1_1ParameterSpace_1a50d9d784d69d9812c12dc9b2baf9351d"></span>double <code class="sig-name descname">min_test_duration</code><a class="headerlink" href="#_CPPv4N5faiss14ParameterSpace17min_test_durationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>run tests several times until they reach at least this duration (to avoid jittering in MT mode) </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="BlockInvertedLists_8h.html" class="btn btn-neutral float-right" title="File BlockInvertedLists.h" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="AlignedTable_8h.html" class="btn btn-neutral float-left" title="File AlignedTable.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright Facebook, Inc. and its affiliates.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

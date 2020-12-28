@@ -1,0 +1,585 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>File GpuIndexIVFPQ.h &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="File GpuIndexIVFScalarQuantizer.h" href="GpuIndexIVFScalarQuantizer_8h.html" />
+    <link rel="prev" title="File GpuIndexIVFFlat.h" href="GpuIndexIVFFlat_8h.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="AlignedTable_8h.html">File AlignedTable.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AutoTune_8h.html">File AutoTune.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockInvertedLists_8h.html">File BlockInvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockSelectImpl_8cuh.html">File BlockSelectImpl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockSelectKernel_8cuh.html">File BlockSelectKernel.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Clustering_8h.html">File Clustering.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Comparators_8cuh.html">File Comparators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConversionOperators_8cuh.html">File ConversionOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CopyUtils_8cuh.html">File CopyUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceDefs_8cuh.html">File DeviceDefs.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceTensor-inl_8cuh.html">File DeviceTensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceTensor_8cuh.html">File DeviceTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceUtils_8h.html">File DeviceUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceVector_8cuh.html">File DeviceVector.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DirectMap_8h.html">File DirectMap.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Float16_8cuh.html">File Float16.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuAutoTune_8h.html">File GpuAutoTune.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuClonerOptions_8h.html">File GpuClonerOptions.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuCloner_8h.html">File GpuCloner.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuDistance_8h.html">File GpuDistance.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuFaissAssert_8h.html">File GpuFaissAssert.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexBinaryFlat_8h.html">File GpuIndexBinaryFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexFlat_8h.html">File GpuIndexFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFFlat_8h.html">File GpuIndexIVFFlat.h</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File GpuIndexIVFPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFScalarQuantizer_8h.html">File GpuIndexIVFScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVF_8h.html">File GpuIndexIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndex_8h.html">File GpuIndex.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndicesOptions_8h.html">File GpuIndicesOptions.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuResources_8h.html">File GpuResources.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Heap_8h.html">File Heap.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HostTensor-inl_8cuh.html">File HostTensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HostTensor_8cuh.html">File HostTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFlib_8h.html">File IVFlib.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Index2Layer_8h.html">File Index2Layer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryFlat_8h.html">File IndexBinaryFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryFromFloat_8h.html">File IndexBinaryFromFloat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryHNSW_8h.html">File IndexBinaryHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryHash_8h.html">File IndexBinaryHash.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryIVF_8h.html">File IndexBinaryIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinary_8h.html">File IndexBinary.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexFlat_8h.html">File IndexFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexHNSW_8h.html">File IndexHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFFlat_8h.html">File IndexIVFFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQFastScan_8h.html">File IndexIVFPQFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQR_8h.html">File IndexIVFPQR.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQ_8h.html">File IndexIVFPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFSpectralHash_8h.html">File IndexIVFSpectralHash.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVF_8h.html">File IndexIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexLSH_8h.html">File IndexLSH.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexLattice_8h.html">File IndexLattice.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPQFastScan_8h.html">File IndexPQFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPQ_8h.html">File IndexPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPreTransform_8h.html">File IndexPreTransform.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexRefine_8h.html">File IndexRefine.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexReplicas_8h.html">File IndexReplicas.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexScalarQuantizer_8h.html">File IndexScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexShards_8h.html">File IndexShards.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexWrapper-inl_8h.html">File IndexWrapper-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexWrapper_8h.html">File IndexWrapper.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Index_8h.html">File Index.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="InvertedListsIOHook_8h.html">File InvertedListsIOHook.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="InvertedLists_8h.html">File InvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Limits_8cuh.html">File Limits.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoadStoreOperators_8cuh.html">File LoadStoreOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MathOperators_8cuh.html">File MathOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixMult-inl_8cuh.html">File MatrixMult-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixMult_8cuh.html">File MatrixMult.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixStats_8h.html">File MatrixStats.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkBlock_8cuh.html">File MergeNetworkBlock.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkUtils_8cuh.html">File MergeNetworkUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkWarp_8cuh.html">File MergeNetworkWarp.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MetaIndexes_8h.html">File MetaIndexes.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MetricType_8h.html">File MetricType.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NoTypeTensor_8cuh.html">File NoTypeTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OnDiskInvertedLists_8h.html">File OnDiskInvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pair_8cuh.html">File Pair.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Select_8cuh.html">File Select.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StackDeviceMemory_8h.html">File StackDeviceMemory.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StandardGpuResources_8h.html">File StandardGpuResources.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StaticUtils_8h.html">File StaticUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tensor-inl_8cuh.html">File Tensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tensor_8cuh.html">File Tensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TestUtils_8h.html">File TestUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ThrustAllocator_8cuh.html">File ThrustAllocator.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Timer_8h.html">File Timer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Transpose_8cuh.html">File Transpose.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorTransform_8h.html">File VectorTransform.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpPackedBits_8cuh.html">File WarpPackedBits.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpSelectImpl_8cuh.html">File WarpSelectImpl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpSelectKernel_8cuh.html">File WarpSelectKernel.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpShuffles_8cuh.html">File WarpShuffles.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WorkerThread_8h.html">File WorkerThread.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clone__index_8h.html">File clone_index.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distances_8h.html">File distances.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extra__distances_8h.html">File extra_distances.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamming-inl_8h.html">File hamming-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamming_8h.html">File hamming.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index__factory_8h.html">File index_factory.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index__io_8h.html">File index_io.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ordered__key__value_8h.html">File ordered_key_value.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="partitioning_8h.html">File partitioning.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python__callbacks_8h.html">File python_callbacks.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quantize__lut_8h.html">File quantize_lut.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="random_8h.html">File random.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib_8h.html">File simdlib.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__avx2_8h.html">File simdlib_avx2.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__emulated_8h.html">File simdlib_emulated.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils_8h.html">File utils.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../filelist.html">File list</a> &raquo;</li>
+        
+      <li>File GpuIndexIVFPQ.h</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/cpp_api/file/GpuIndexIVFPQ_8h.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="file-gpuindexivfpq-h">
+<h1>File GpuIndexIVFPQ.h<a class="headerlink" href="#file-gpuindexivfpq-h" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp type">
+<dt id="_CPPv45faiss">
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property">namespace </em><code class="sig-name descname">faiss</code><br /></dt>
+<dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
+<p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
+<p>x[ i * d + j ]</p>
+<p>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. I/O functions can read/write to a filename, a file handle or to an object that abstracts the medium.</p>
+<p>The read functions return objects that should be deallocated with delete. All references within these objectes are owned by the object.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Definition of inverted lists + a few common classes that implement the interface.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <a class="reference internal" href="../struct/structfaiss_1_1IndexPreTransform.html#structfaiss_1_1IndexPreTransform"><span class="std std-ref">IndexPreTransform</span></a>.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss3gpuE">
+<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><em class="property">namespace </em><code class="sig-name descname">gpu</code><br /></dt>
+<dd><dl class="cpp class">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQE"></span><span id="faiss::gpu::GpuIndexIVFPQ"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ"></span><em class="property">class </em><code class="sig-name descname">GpuIndexIVFPQ</code> : <em class="property">public</em> <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu">gpu</a>::<a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVF.html#_CPPv4N5faiss3gpu11GpuIndexIVFE" title="faiss::gpu::GpuIndexIVF">GpuIndexIVF</a><br /></dt>
+<dd><em>#include &lt;GpuIndexIVFPQ.h&gt;</em><p>IVFPQ index for the GPU. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ13GpuIndexIVFPQEP20GpuResourcesProviderPKN5faiss10IndexIVFPQE19GpuIndexIVFPQConfig">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ13GpuIndexIVFPQEP20GpuResourcesProviderPKN5faiss10IndexIVFPQE19GpuIndexIVFPQConfig"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ13GpuIndexIVFPQEP20GpuResourcesProviderPKN5faiss10IndexIVFPQE19GpuIndexIVFPQConfig"></span><span id="faiss::gpu::GpuIndexIVFPQ::GpuIndexIVFPQ__GpuResourcesProviderP.faiss::IndexIVFPQCP.GpuIndexIVFPQConfig"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a2142eefa6986b939927418c989ae7668"></span><code class="sig-name descname">GpuIndexIVFPQ</code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResourcesProvider.html#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="faiss::gpu::GpuResourcesProvider">GpuResourcesProvider</a> *<em>provider</em>, <em class="property">const</em> <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="IndexIVFPQ_8h.html#_CPPv4N5faiss10IndexIVFPQE" title="faiss::IndexIVFPQ">IndexIVFPQ</a> *<em>index</em>, <a class="reference internal" href="#_CPPv4N5faiss3gpu19GpuIndexIVFPQConfigE" title="faiss::gpu::GpuIndexIVFPQConfig">GpuIndexIVFPQConfig</a> <em>config</em> = <a class="reference internal" href="#_CPPv4N5faiss3gpu19GpuIndexIVFPQConfigE" title="faiss::gpu::GpuIndexIVFPQConfig">GpuIndexIVFPQConfig</a>()<span class="sig-paren">)</span><br /></dt>
+<dd><p>Construct from a pre-existing <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFPQ.html#structfaiss_1_1IndexIVFPQ"><span class="std std-ref">faiss::IndexIVFPQ</span></a> instance, copying data over to the given GPU, if the input index is trained. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ13GpuIndexIVFPQEP20GpuResourcesProvideriiiiN5faiss10MetricTypeE19GpuIndexIVFPQConfig">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ13GpuIndexIVFPQEP20GpuResourcesProvideriiiiN5faiss10MetricTypeE19GpuIndexIVFPQConfig"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ13GpuIndexIVFPQEP20GpuResourcesProvideriiiiN5faiss10MetricTypeE19GpuIndexIVFPQConfig"></span><span id="faiss::gpu::GpuIndexIVFPQ::GpuIndexIVFPQ__GpuResourcesProviderP.i.i.i.i.faiss::MetricType.GpuIndexIVFPQConfig"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a6160437520c5959dca4ae6b7201ec242"></span><code class="sig-name descname">GpuIndexIVFPQ</code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResourcesProvider.html#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="faiss::gpu::GpuResourcesProvider">GpuResourcesProvider</a> *<em>provider</em>, int <em>dims</em>, int <em>nlist</em>, int <em>subQuantizers</em>, int <em>bitsPerCode</em>, <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType">MetricType</a> <em>metric</em>, <a class="reference internal" href="#_CPPv4N5faiss3gpu19GpuIndexIVFPQConfigE" title="faiss::gpu::GpuIndexIVFPQConfig">GpuIndexIVFPQConfig</a> <em>config</em> = <a class="reference internal" href="#_CPPv4N5faiss3gpu19GpuIndexIVFPQConfigE" title="faiss::gpu::GpuIndexIVFPQConfig">GpuIndexIVFPQConfig</a>()<span class="sig-paren">)</span><br /></dt>
+<dd><p>Construct an empty index. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQD0Ev">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQD0Ev"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQD0Ev"></span><span id="faiss::gpu::GpuIndexIVFPQ::~GpuIndexIVFPQ"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ab105c6666af5697b4f1b3cb99a1f7bf6"></span><code class="sig-name descname">~GpuIndexIVFPQ</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ8copyFromEPKN5faiss10IndexIVFPQE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ8copyFromEPKN5faiss10IndexIVFPQE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ8copyFromEPKN5faiss10IndexIVFPQE"></span><span id="faiss::gpu::GpuIndexIVFPQ::copyFrom__faiss::IndexIVFPQCP"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a8d48f79af9080b55706050244fc24f0e"></span>void <code class="sig-name descname">copyFrom</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="IndexIVFPQ_8h.html#_CPPv4N5faiss10IndexIVFPQE" title="faiss::IndexIVFPQ">IndexIVFPQ</a> *<em>index</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Reserve space on the GPU for the inverted lists for <code class="docutils literal notranslate"><span class="pre">num</span></code> vectors, assumed equally distributed among Initialize ourselves from the given CPU index; will overwrite all data in ourselves </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ6copyToEPN5faiss10IndexIVFPQE">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ6copyToEPN5faiss10IndexIVFPQE"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ6copyToEPN5faiss10IndexIVFPQE"></span><span id="faiss::gpu::GpuIndexIVFPQ::copyTo__faiss::IndexIVFPQPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1abdea07beafa14bb3d7fe9ad2c8dc34df"></span>void <code class="sig-name descname">copyTo</code><span class="sig-paren">(</span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="IndexIVFPQ_8h.html#_CPPv4N5faiss10IndexIVFPQE" title="faiss::IndexIVFPQ">IndexIVFPQ</a> *<em>index</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>Copy ourselves to the given CPU index; will overwrite all data in the index instance </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ13reserveMemoryE6size_t">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ13reserveMemoryE6size_t"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ13reserveMemoryE6size_t"></span><span id="faiss::gpu::GpuIndexIVFPQ::reserveMemory__s"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a4e7d62e21f7e23fa4e94c69131389eea"></span>void <code class="sig-name descname">reserveMemory</code><span class="sig-paren">(</span>size_t <em>numVecs</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Reserve GPU memory in our inverted lists for this number of vectors. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ19setPrecomputedCodesEb">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ19setPrecomputedCodesEb"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ19setPrecomputedCodesEb"></span><span id="faiss::gpu::GpuIndexIVFPQ::setPrecomputedCodes__b"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1afda2894c0ce520e0d3d06eeca5ed5f0c"></span>void <code class="sig-name descname">setPrecomputedCodes</code><span class="sig-paren">(</span>bool <em>enable</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Enable or disable pre-computed codes. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ19getPrecomputedCodesEv">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ19getPrecomputedCodesEv"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ19getPrecomputedCodesEv"></span><span id="faiss::gpu::GpuIndexIVFPQ::getPrecomputedCodesC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a518ebeefff55ed18c217d3c824f25676"></span>bool <code class="sig-name descname">getPrecomputedCodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>Are pre-computed codes enabled? </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ19getNumSubQuantizersEv">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ19getNumSubQuantizersEv"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ19getNumSubQuantizersEv"></span><span id="faiss::gpu::GpuIndexIVFPQ::getNumSubQuantizersC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a7ed87c230b75e0d859704a7d5b9daead"></span>int <code class="sig-name descname">getNumSubQuantizers</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>Return the number of sub-quantizers we are using. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ14getBitsPerCodeEv">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ14getBitsPerCodeEv"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ14getBitsPerCodeEv"></span><span id="faiss::gpu::GpuIndexIVFPQ::getBitsPerCodeC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a0fa38b70f5a2bc7e6e359b47b4c1e73c"></span>int <code class="sig-name descname">getBitsPerCode</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>Return the number of bits per PQ code. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ27getCentroidsPerSubQuantizerEv">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ27getCentroidsPerSubQuantizerEv"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ27getCentroidsPerSubQuantizerEv"></span><span id="faiss::gpu::GpuIndexIVFPQ::getCentroidsPerSubQuantizerC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a7d8e89e73eeb7a936c144f28e613de23"></span>int <code class="sig-name descname">getCentroidsPerSubQuantizer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>Return the number of centroids per PQ code (2^bits per code) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ13reclaimMemoryEv">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ13reclaimMemoryEv"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ13reclaimMemoryEv"></span><span id="faiss::gpu::GpuIndexIVFPQ::reclaimMemory"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a83831088d9593f753560965172ccb0a0"></span>size_t <code class="sig-name descname">reclaimMemory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>After adding vectors, one can call this to reclaim device memory to exactly the amount needed. Returns space reclaimed in bytes </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ5resetEv">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ5resetEv"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ5resetEv"></span><span id="faiss::gpu::GpuIndexIVFPQ::reset"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a3a43a70461e09ef87bdb7b48ec420dd2"></span>void <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd><p>Clears out all inverted lists, but retains the coarse and product centroid information </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ5trainEN5Index5idx_tEPKf">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ5trainEN5Index5idx_tEPKf"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ5trainEN5Index5idx_tEPKf"></span><span id="faiss::gpu::GpuIndexIVFPQ::train__Index::idx_t.floatCP"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ac4814acafa4bc340a4c4bdcafd469b56"></span>void <code class="sig-name descname">train</code><span class="sig-paren">(</span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd><p>Trains the coarse and product quantizer based on the given vector data. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ13getListLengthEi">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ13getListLengthEi"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ13getListLengthEi"></span><span id="faiss::gpu::GpuIndexIVFPQ::getListLength__iC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ae9b275308a633114cf2e8a005b42bc08"></span>int <code class="sig-name descname">getListLength</code><span class="sig-paren">(</span>int <em>listId</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>Returns the number of vectors present in a particular inverted list. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ17getListVectorDataEib">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ17getListVectorDataEib"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ17getListVectorDataEib"></span><span id="faiss::gpu::GpuIndexIVFPQ::getListVectorData__i.bC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ab2ce111a45fe511a4bcc807c5b84c8f9"></span>std::vector&lt;uint8_t&gt; <code class="sig-name descname">getListVectorData</code><span class="sig-paren">(</span>int <em>listId</em>, bool <em>gpuFormat</em> = false<span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>Return the encoded vector data contained in a particular inverted list, for debugging purposes. If gpuFormat is true, the data is returned as it is encoded in the GPU-side representation. Otherwise, it is converted to the CPU format. compliant format, while the native GPU format may differ. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ14getListIndicesEi">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ14getListIndicesEi"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ14getListIndicesEi"></span><span id="faiss::gpu::GpuIndexIVFPQ::getListIndices__iC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a62eddda61a10b790541ec1efe97a249d"></span>std::vector&lt;<a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a>&gt; <code class="sig-name descname">getListIndices</code><span class="sig-paren">(</span>int <em>listId</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>Return the vector indices contained in a particular inverted list, for debugging purposes. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Protected Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ8addImpl_EiPKfPKN5Index5idx_tE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ8addImpl_EiPKfPKN5Index5idx_tE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ8addImpl_EiPKfPKN5Index5idx_tE"></span><span id="faiss::gpu::GpuIndexIVFPQ::addImpl___i.floatCP.Index::idx_tCP"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1aa0468cf70921073b3ba798fe753531eb"></span>void <code class="sig-name descname">addImpl_</code><span class="sig-paren">(</span>int <em>n</em>, <em class="property">const</em> float *<em>x</em>, <em class="property">const</em> <a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> *<em>ids</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd><p>Called from <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndex"><span class="std std-ref">GpuIndex</span></a> for add/add_with_ids. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ11searchImpl_EiPKfiPfPN5Index5idx_tE">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ11searchImpl_EiPKfiPfPN5Index5idx_tE"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ11searchImpl_EiPKfiPfPN5Index5idx_tE"></span><span id="faiss::gpu::GpuIndexIVFPQ::searchImpl___i.floatCP.i.floatP.Index::idx_tPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a73a06501e87117e5f620bb07d7c1e54d"></span>void <code class="sig-name descname">searchImpl_</code><span class="sig-paren">(</span>int <em>n</em>, <em class="property">const</em> float *<em>x</em>, int <em>k</em>, float *<em>distances</em>, <a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> *<em>labels</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>Called from <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndex"><span class="std std-ref">GpuIndex</span></a> for search. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ15verifySettings_Ev">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ15verifySettings_Ev"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ15verifySettings_Ev"></span><span id="faiss::gpu::GpuIndexIVFPQ::verifySettings_C"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a93a5cdb61826376c8d4d8698d7a3ccc8"></span>void <code class="sig-name descname">verifySettings_</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>Throws errors if configuration settings are improper. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ23trainResidualQuantizer_EN5Index5idx_tEPKf">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ23trainResidualQuantizer_EN5Index5idx_tEPKf"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ23trainResidualQuantizer_EN5Index5idx_tEPKf"></span><span id="faiss::gpu::GpuIndexIVFPQ::trainResidualQuantizer___Index::idx_t.floatCP"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a9252f1f86146658759fa0d0077b67dce"></span>void <code class="sig-name descname">trainResidualQuantizer_</code><span class="sig-paren">(</span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Trains the PQ quantizer based on the given vector data. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Protected Attributes</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ12ivfpqConfig_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ12ivfpqConfig_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ12ivfpqConfig_E"></span><span id="faiss::gpu::GpuIndexIVFPQ::ivfpqConfig___GpuIndexIVFPQConfigC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a34e191c9fa03320f083ca06155faa1a9"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss3gpu19GpuIndexIVFPQConfigE" title="faiss::gpu::GpuIndexIVFPQConfig">GpuIndexIVFPQConfig</a> <code class="sig-name descname">ivfpqConfig_</code><br /></dt>
+<dd><p>Our configuration options that we were initialized with. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ21usePrecomputedTables_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ21usePrecomputedTables_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ21usePrecomputedTables_E"></span><span id="faiss::gpu::GpuIndexIVFPQ::usePrecomputedTables___b"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ae687f3d1b19bc2da4864ececf84b944b"></span>bool <code class="sig-name descname">usePrecomputedTables_</code><br /></dt>
+<dd><p>Runtime override: whether or not we use precomputed tables. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ14subQuantizers_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ14subQuantizers_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ14subQuantizers_E"></span><span id="faiss::gpu::GpuIndexIVFPQ::subQuantizers___i"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a1e0d550a362813a21de6af150ab67b7f"></span>int <code class="sig-name descname">subQuantizers_</code><br /></dt>
+<dd><p>Number of sub-quantizers per encoded vector. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ12bitsPerCode_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ12bitsPerCode_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ12bitsPerCode_E"></span><span id="faiss::gpu::GpuIndexIVFPQ::bitsPerCode___i"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a56a4264e54409db885f439a06501ef11"></span>int <code class="sig-name descname">bitsPerCode_</code><br /></dt>
+<dd><p>Bits per sub-quantizer code. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ18reserveMemoryVecs_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ18reserveMemoryVecs_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ18reserveMemoryVecs_E"></span><span id="faiss::gpu::GpuIndexIVFPQ::reserveMemoryVecs___s"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a145c8862f7e7ffd3b062a0ca38d6c6ec"></span>size_t <code class="sig-name descname">reserveMemoryVecs_</code><br /></dt>
+<dd><p>Desired inverted list memory reservation. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ6index_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ6index_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ6index_E"></span><span id="faiss::gpu::GpuIndexIVFPQ::index___std::unique_ptr:IVFPQ:"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1aee2cdc21caa1cdac1e7973c5904ea091"></span>std::unique_ptr&lt;IVFPQ&gt; <code class="sig-name descname">index_</code><br /></dt>
+<dd><p>The product quantizer instance that we own; contains the inverted lists </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5faiss3gpu19GpuIndexIVFPQConfigE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexIVFPQConfigE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexIVFPQConfigE"></span><span id="faiss::gpu::GpuIndexIVFPQConfig"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig"></span><em class="property">struct </em><code class="sig-name descname">GpuIndexIVFPQConfig</code> : <em class="property">public</em> <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu">gpu</a>::<a class="reference internal" href="GpuIndexIVF_8h.html#_CPPv4N5faiss3gpu17GpuIndexIVFConfigE" title="faiss::gpu::GpuIndexIVFConfig">GpuIndexIVFConfig</a><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexIVFPQConfigE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu19GpuIndexIVFPQConfig19GpuIndexIVFPQConfigEv">
+<span id="_CPPv3N5faiss3gpu19GpuIndexIVFPQConfig19GpuIndexIVFPQConfigEv"></span><span id="_CPPv2N5faiss3gpu19GpuIndexIVFPQConfig19GpuIndexIVFPQConfigEv"></span><span id="faiss::gpu::GpuIndexIVFPQConfig::GpuIndexIVFPQConfig"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1ab8173b4e53a49aa5c43f0b04a61f16fd"></span><code class="sig-name descname">GpuIndexIVFPQConfig</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexIVFPQConfig19GpuIndexIVFPQConfigEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu19GpuIndexIVFPQConfig22useFloat16LookupTablesE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexIVFPQConfig22useFloat16LookupTablesE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexIVFPQConfig22useFloat16LookupTablesE"></span><span id="faiss::gpu::GpuIndexIVFPQConfig::useFloat16LookupTables__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1a9dbbec78d77d90b7b150f543e477cc49"></span>bool <code class="sig-name descname">useFloat16LookupTables</code><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexIVFPQConfig22useFloat16LookupTablesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Whether or not float16 residual distance tables are used in the list scanning kernels. When subQuantizers * 2^bitsPerCode &gt; 16384, this is required. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu19GpuIndexIVFPQConfig20usePrecomputedTablesE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexIVFPQConfig20usePrecomputedTablesE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexIVFPQConfig20usePrecomputedTablesE"></span><span id="faiss::gpu::GpuIndexIVFPQConfig::usePrecomputedTables__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1ae5b5c7acc06743e5bcca197bc33c30ec"></span>bool <code class="sig-name descname">usePrecomputedTables</code><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexIVFPQConfig20usePrecomputedTablesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Whether or not we enable the precomputed table option for search, which can substantially increase the memory requirement. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu19GpuIndexIVFPQConfig17interleavedLayoutE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexIVFPQConfig17interleavedLayoutE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexIVFPQConfig17interleavedLayoutE"></span><span id="faiss::gpu::GpuIndexIVFPQConfig::interleavedLayout__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1a3698bd46d5a0003ec43d434a58794532"></span>bool <code class="sig-name descname">interleavedLayout</code><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexIVFPQConfig17interleavedLayoutE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Use the alternative memory layout for the IVF lists WARNING: this is a feature under development, do not use! </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu19GpuIndexIVFPQConfig17useMMCodeDistanceE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexIVFPQConfig17useMMCodeDistanceE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexIVFPQConfig17useMMCodeDistanceE"></span><span id="faiss::gpu::GpuIndexIVFPQConfig::useMMCodeDistance__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1a45b88d1deb299970d887a4aa3ec8dd2a"></span>bool <code class="sig-name descname">useMMCodeDistance</code><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexIVFPQConfig17useMMCodeDistanceE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Use GEMM-backed computation of PQ code distances for the no precomputed table version of IVFPQ. This is for debugging purposes, it should not substantially affect the results one way for another.</p>
+<p>Note that MM code distance is enabled automatically if one uses a number of dimensions per sub-quantizer that is not natively specialized (an odd number like 7 or so). </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="GpuIndexIVFScalarQuantizer_8h.html" class="btn btn-neutral float-right" title="File GpuIndexIVFScalarQuantizer.h" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="GpuIndexIVFFlat_8h.html" class="btn btn-neutral float-left" title="File GpuIndexIVFFlat.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright Facebook, Inc. and its affiliates.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

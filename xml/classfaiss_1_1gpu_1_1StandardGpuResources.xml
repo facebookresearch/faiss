@@ -1,0 +1,300 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classfaiss_1_1gpu_1_1StandardGpuResources" kind="class" language="C++" prot="public">
+    <compoundname>faiss::gpu::StandardGpuResources</compoundname>
+    <basecompoundref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" prot="public" virt="non-virtual">faiss::gpu::GpuResourcesProvider</basecompoundref>
+    <includes refid="StandardGpuResources_8h" local="no">StandardGpuResources.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a14134d33f2201b905babac6252ac1019" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" kindref="compound">StandardGpuResourcesImpl</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;StandardGpuResourcesImpl&gt; faiss::gpu::StandardGpuResources::res_</definition>
+        <argsstring></argsstring>
+        <name>res_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="201" column="19" bodyfile="faiss/gpu/StandardGpuResources.h" bodystart="201" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1ad1ef27033798e5250230a339099e07db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::StandardGpuResources::StandardGpuResources</definition>
+        <argsstring>()</argsstring>
+        <name>StandardGpuResources</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="148" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1ae26840fd6490cfaf7311f2eed81def34" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::StandardGpuResources::~StandardGpuResources</definition>
+        <argsstring>() override</argsstring>
+        <name>~StandardGpuResources</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="149" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1aed88267bce1b6657a06d160f0e62ffc4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>std::shared_ptr&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;GpuResources&gt; faiss::gpu::StandardGpuResources::getResources</definition>
+        <argsstring>() override</argsstring>
+        <name>getResources</name>
+        <reimplements refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a0b727386cf462ab0392ee1ccca8135b3">getResources</reimplements>
+        <briefdescription>
+<para>Returns the shared resources object. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="151" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a6431477a7328ac147797b3b4e3fcf651" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::StandardGpuResources::noTempMemory</definition>
+        <argsstring>()</argsstring>
+        <name>noTempMemory</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Disable allocation of temporary memory; all temporary memory requests will call cudaMalloc / cudaFree at the point of use </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="155" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a367102e65b16bfdc7a32770a4f5854a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::StandardGpuResources::setTempMemory</definition>
+        <argsstring>(size_t size)</argsstring>
+        <name>setTempMemory</name>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Specify that we wish to use a certain fixed size of memory on all devices as temporary memory. This is the upper bound for the GPU memory that we will reserve. We will never go above 1.5 GiB on any GPU; smaller GPUs (with &lt;= 4 GiB or &lt;= 8 GiB) will use less memory than that. To avoid any temporary memory allocation, pass 0. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="162" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1af9acb23ac323f85fa5dab4ed968ccd51" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::StandardGpuResources::setPinnedMemory</definition>
+        <argsstring>(size_t size)</argsstring>
+        <name>setPinnedMemory</name>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Set amount of pinned memory to allocate, for async GPU &lt;-&gt; CPU transfers </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="166" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a5924b424c36dba8300866f1b98c438cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::StandardGpuResources::setDefaultStream</definition>
+        <argsstring>(int device, cudaStream_t stream)</argsstring>
+        <name>setDefaultStream</name>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>cudaStream_t</type>
+          <declname>stream</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Called to change the stream for work ordering. We do not own <computeroutput>stream</computeroutput>; i.e., it will not be destroyed when the <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> object gets cleaned up. We are guaranteed that all Faiss GPU work is ordered with respect to this stream upon exit from an index or other Faiss GPU call. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="173" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1abf351c4a72d7ab72070b24f82764da58" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::StandardGpuResources::revertDefaultStream</definition>
+        <argsstring>(int device)</argsstring>
+        <name>revertDefaultStream</name>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Revert the default stream to the original stream managed by this resources object, in case someone called <computeroutput>setDefaultStream</computeroutput>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="177" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a5374f336f1957c266d7a5c185eb962a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::StandardGpuResources::setDefaultNullStreamAllDevices</definition>
+        <argsstring>()</argsstring>
+        <name>setDefaultNullStreamAllDevices</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Called to change the work ordering streams to the null stream for all devices </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="181" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a9e0e2c7d7e9254c73546dc87d24ccbcf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::map&lt; int, std::map&lt; std::string, std::pair&lt; int, size_t &gt; &gt; &gt;</type>
+        <definition>std::map&lt;int, std::map&lt;std::string, std::pair&lt;int, size_t&gt; &gt; &gt; faiss::gpu::StandardGpuResources::getMemoryInfo</definition>
+        <argsstring>() const</argsstring>
+        <name>getMemoryInfo</name>
+        <briefdescription>
+<para>Export a description of memory used for Python. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="185" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a2d0caade01eb384bc82c2e8759a129a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>cudaStream_t</type>
+        <definition>cudaStream_t faiss::gpu::StandardGpuResources::getDefaultStream</definition>
+        <argsstring>(int device)</argsstring>
+        <name>getDefaultStream</name>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the current default stream. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="188" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a318f3c0aa6085f430c71f64496f42496" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu::StandardGpuResources::getTempMemoryAvailable</definition>
+        <argsstring>(int device) const</argsstring>
+        <name>getTempMemoryAvailable</name>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the current amount of temp memory available. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="191" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1aba33a979707f40913035bbbfcc9b2a14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::StandardGpuResources::syncDefaultStreamCurrentDevice</definition>
+        <argsstring>()</argsstring>
+        <name>syncDefaultStreamCurrentDevice</name>
+        <briefdescription>
+<para>Synchronize our default stream with the CPU. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="194" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a26de76d448f071aa46555b77155a516d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::StandardGpuResources::setLogMemoryAllocations</definition>
+        <argsstring>(bool enable)</argsstring>
+        <name>setLogMemoryAllocations</name>
+        <param>
+          <type>bool</type>
+          <declname>enable</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>If enabled, will print every GPU memory allocation and deallocation to standard output </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/StandardGpuResources.h" line="198" column="8"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Default implementation of <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> that allocates a cuBLAS stream and 2 streams for use, as well as temporary memory. Internally, the Faiss GPU code uses the instance managed by getResources, but this is the user-facing object that is internally reference counted. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::gpu::StandardGpuResources</label>
+        <link refid="classfaiss_1_1gpu_1_1StandardGpuResources"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::gpu::GpuResourcesProvider</label>
+        <link refid="classfaiss_1_1gpu_1_1GpuResourcesProvider"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::gpu::StandardGpuResources</label>
+        <link refid="classfaiss_1_1gpu_1_1StandardGpuResources"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::gpu::GpuResourcesProvider</label>
+        <link refid="classfaiss_1_1gpu_1_1GpuResourcesProvider"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/gpu/StandardGpuResources.h" line="146" column="55" bodyfile="faiss/gpu/StandardGpuResources.h" bodystart="146" bodyend="202"/>
+    <listofallmembers>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a2d0caade01eb384bc82c2e8759a129a1" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>getDefaultStream</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a9e0e2c7d7e9254c73546dc87d24ccbcf" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>getMemoryInfo</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1aed88267bce1b6657a06d160f0e62ffc4" prot="public" virt="virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>getResources</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a318f3c0aa6085f430c71f64496f42496" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>getTempMemoryAvailable</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a6431477a7328ac147797b3b4e3fcf651" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>noTempMemory</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a14134d33f2201b905babac6252ac1019" prot="private" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>res_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1abf351c4a72d7ab72070b24f82764da58" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>revertDefaultStream</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a5374f336f1957c266d7a5c185eb962a1" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>setDefaultNullStreamAllDevices</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a5924b424c36dba8300866f1b98c438cb" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>setDefaultStream</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a26de76d448f071aa46555b77155a516d" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>setLogMemoryAllocations</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1af9acb23ac323f85fa5dab4ed968ccd51" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>setPinnedMemory</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a367102e65b16bfdc7a32770a4f5854a6" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>setTempMemory</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1ad1ef27033798e5250230a339099e07db" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>StandardGpuResources</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1aba33a979707f40913035bbbfcc9b2a14" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>syncDefaultStreamCurrentDevice</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a9de5bf47e6a9754f19e43b30dd61bfca" prot="public" virt="virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>~GpuResourcesProvider</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1ae26840fd6490cfaf7311f2eed81def34" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>~StandardGpuResources</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

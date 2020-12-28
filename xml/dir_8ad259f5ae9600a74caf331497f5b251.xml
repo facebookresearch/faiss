@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dir_8ad259f5ae9600a74caf331497f5b251" kind="dir">
+    <compoundname>faiss/utils</compoundname>
+    <innerfile refid="AlignedTable_8h">AlignedTable.h</innerfile>
+    <innerfile refid="distances_8h">distances.h</innerfile>
+    <innerfile refid="extra__distances_8h">extra_distances.h</innerfile>
+    <innerfile refid="hamming-inl_8h">hamming-inl.h</innerfile>
+    <innerfile refid="hamming_8h">hamming.h</innerfile>
+    <innerfile refid="Heap_8h">Heap.h</innerfile>
+    <innerfile refid="ordered__key__value_8h">ordered_key_value.h</innerfile>
+    <innerfile refid="partitioning_8h">partitioning.h</innerfile>
+    <innerfile refid="quantize__lut_8h">quantize_lut.h</innerfile>
+    <innerfile refid="random_8h">random.h</innerfile>
+    <innerfile refid="simdlib_8h">simdlib.h</innerfile>
+    <innerfile refid="simdlib__avx2_8h">simdlib_avx2.h</innerfile>
+    <innerfile refid="simdlib__emulated_8h">simdlib_emulated.h</innerfile>
+    <innerfile refid="utils_8h">utils.h</innerfile>
+    <innerfile refid="WorkerThread_8h">WorkerThread.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/"/>
+  </compounddef>
+</doxygen>

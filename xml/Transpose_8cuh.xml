@@ -1,0 +1,167 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="Transpose_8cuh" kind="file" language="C++">
+    <compoundname>Transpose.cuh</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">/**</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Facebook,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*/</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/impl/FaissAssert.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Tensor.cuh&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceUtils.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/StaticUtils.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>IndexT&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>TensorInfo<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>kMaxDims<sp/>=<sp/>8;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>T*<sp/>data;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>IndexT<sp/>sizes[kMaxDims];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>IndexT<sp/>strides[kMaxDims];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>int<sp/>dims;</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>IndexT,<sp/>int<sp/>Dim&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>TensorInfoOffset<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>static<sp/>unsigned<sp/>int<sp/>get(const<sp/>TensorInfo&lt;T,<sp/>IndexT&gt;&amp;<sp/>info,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT<sp/>linearId)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>IndexT<sp/>offset<sp/>=<sp/>0;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>Dim<sp/>-<sp/>1;<sp/>i<sp/>&gt;=<sp/>0;<sp/>--i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>IndexT<sp/>curDimIndex<sp/>=<sp/>linearId<sp/>%<sp/>info.sizes[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>IndexT<sp/>curDimOffset<sp/>=<sp/>curDimIndex<sp/>*<sp/>info.strides[i];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>offset<sp/>+=<sp/>curDimOffset;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(i<sp/>&gt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>linearId<sp/>/=<sp/>info.sizes[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>offset;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>IndexT&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>TensorInfoOffset&lt;T,<sp/>IndexT,<sp/>-1&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>static<sp/>unsigned<sp/>int<sp/>get(const<sp/>TensorInfo&lt;T,<sp/>IndexT&gt;&amp;<sp/>info,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT<sp/>linearId)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>linearId;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>IndexT,<sp/>int<sp/>Dim&gt;</highlight></codeline>
+<codeline><highlight class="normal">TensorInfo&lt;T,<sp/>IndexT&gt;<sp/>getTensorInfo(const<sp/>Tensor&lt;T,<sp/>Dim,<sp/>true&gt;&amp;<sp/>t)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>TensorInfo&lt;T,<sp/>IndexT&gt;<sp/>info;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Dim;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>info.sizes[i]<sp/>=<sp/>(IndexT)<sp/>t.getSize(i);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>info.strides[i]<sp/>=<sp/>(IndexT)<sp/>t.getStride(i);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>info.data<sp/>=<sp/>t.data();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>info.dims<sp/>=<sp/>Dim;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>return<sp/>info;</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>IndexT,<sp/>int<sp/>DimInput,<sp/>int<sp/>DimOutput&gt;</highlight></codeline>
+<codeline><highlight class="normal">__global__<sp/>void<sp/>transposeAny(TensorInfo&lt;T,<sp/>IndexT&gt;<sp/>input,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorInfo&lt;T,<sp/>IndexT&gt;<sp/>output,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT<sp/>totalSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>for<sp/>(IndexT<sp/>i<sp/>=<sp/>blockIdx.x<sp/>*<sp/>blockDim.x<sp/>+<sp/>threadIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>&lt;<sp/>totalSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>+=<sp/>gridDim.x<sp/>+<sp/>blockDim.x)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>inputOffset<sp/>=<sp/>TensorInfoOffset&lt;T,<sp/>IndexT,<sp/>DimInput&gt;::get(input,<sp/>i);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>outputOffset<sp/>=<sp/>TensorInfoOffset&lt;T,<sp/>IndexT,<sp/>DimOutput&gt;::get(output,<sp/>i);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>output.data[outputOffset]<sp/>=<sp/>__ldg(&amp;input.data[inputOffset]);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>output.data[outputOffset]<sp/>=<sp/>input.data[inputOffset];</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">///<sp/>Performs<sp/>an<sp/>out-of-place<sp/>transposition<sp/>between<sp/>any<sp/>two<sp/>dimensions.</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>Best<sp/>performance<sp/>is<sp/>if<sp/>the<sp/>transposed<sp/>dimensions<sp/>are<sp/>not</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>innermost,<sp/>since<sp/>the<sp/>reads<sp/>and<sp/>writes<sp/>will<sp/>be<sp/>coalesced.</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>Could<sp/>include<sp/>a<sp/>shared<sp/>memory<sp/>transposition<sp/>if<sp/>the<sp/>dimensions</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>being<sp/>transposed<sp/>are<sp/>innermost,<sp/>but<sp/>would<sp/>require<sp/>support<sp/>for</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>arbitrary<sp/>rectangular<sp/>matrices.</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>This<sp/>linearized<sp/>implementation<sp/>seems<sp/>to<sp/>perform<sp/>well<sp/>enough,</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>especially<sp/>for<sp/>cases<sp/>that<sp/>we<sp/>care<sp/>about<sp/>(outer<sp/>dimension</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>transpositions).</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim&gt;</highlight></codeline>
+<codeline><highlight class="normal">void<sp/>runTransposeAny(Tensor&lt;T,<sp/>Dim,<sp/>true&gt;&amp;<sp/>in,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>dim1,<sp/>int<sp/>dim2,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>true&gt;&amp;<sp/>out,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>static_assert(Dim<sp/>&lt;=<sp/>TensorInfo&lt;T,<sp/>unsigned<sp/>int&gt;::kMaxDims,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;too<sp/>many<sp/>dimensions&quot;);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(dim1<sp/>!=<sp/>dim2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(dim1<sp/>&lt;<sp/>Dim<sp/>&amp;&amp;<sp/>dim2<sp/>&lt;<sp/>Dim);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>int<sp/>outSize[Dim];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Dim;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>outSize[i]<sp/>=<sp/>in.getSize(i);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>std::swap(outSize[dim1],<sp/>outSize[dim2]);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Dim;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(out.getSize(i)<sp/>==<sp/>outSize[i]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>size_t<sp/>totalSize<sp/>=<sp/>in.numElements();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>size_t<sp/>block<sp/>=<sp/>std::min((size_t)<sp/>getMaxThreadsCurrentDevice(),<sp/>totalSize);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>if<sp/>(totalSize<sp/>&lt;=<sp/>(size_t)<sp/>std::numeric_limits&lt;int&gt;::max())<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>div/mod<sp/>seems<sp/>faster<sp/>with<sp/>unsigned<sp/>types</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>inInfo<sp/>=<sp/>getTensorInfo&lt;T,<sp/>unsigned<sp/>int,<sp/>Dim&gt;(in);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>outInfo<sp/>=<sp/>getTensorInfo&lt;T,<sp/>unsigned<sp/>int,<sp/>Dim&gt;(out);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::swap(inInfo.sizes[dim1],<sp/>inInfo.sizes[dim2]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::swap(inInfo.strides[dim1],<sp/>inInfo.strides[dim2]);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>grid<sp/>=<sp/>std::min(utils::divUp(totalSize,<sp/>block),<sp/>(size_t)<sp/>4096);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>transposeAny&lt;T,<sp/>unsigned<sp/>int,<sp/>Dim,<sp/>-1&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;&lt;grid,<sp/>block,<sp/>0,<sp/>stream&gt;&gt;&gt;(inInfo,<sp/>outInfo,<sp/>totalSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>inInfo<sp/>=<sp/>getTensorInfo&lt;T,<sp/>unsigned<sp/>long,<sp/>Dim&gt;(in);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>outInfo<sp/>=<sp/>getTensorInfo&lt;T,<sp/>unsigned<sp/>long,<sp/>Dim&gt;(out);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::swap(inInfo.sizes[dim1],<sp/>inInfo.sizes[dim2]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::swap(inInfo.strides[dim1],<sp/>inInfo.strides[dim2]);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>grid<sp/>=<sp/>std::min(utils::divUp(totalSize,<sp/>block),<sp/>(size_t)<sp/>4096);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>transposeAny&lt;T,<sp/>unsigned<sp/>long,<sp/>Dim,<sp/>-1&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;&lt;grid,<sp/>block,<sp/>0,<sp/>stream&gt;&gt;&gt;(inInfo,<sp/>outInfo,<sp/>totalSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>CUDA_TEST_ERROR();</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+    </programlisting>
+    <location file="faiss/gpu/utils/Transpose.cuh"/>
+  </compounddef>
+</doxygen>

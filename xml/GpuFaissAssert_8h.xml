@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="GpuFaissAssert_8h" kind="file" language="C++">
+    <compoundname>GpuFaissAssert.h</compoundname>
+    <includes local="no">faiss/impl/FaissAssert.h</includes>
+    <includes local="no">cuda.h</includes>
+    <incdepgraph>
+      <node id="2">
+        <label>faiss/impl/FaissAssert.h</label>
+      </node>
+      <node id="1">
+        <label>faiss/gpu/GpuFaissAssert.h</label>
+        <link refid="GpuFaissAssert_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>cuda.h</label>
+      </node>
+    </incdepgraph>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="GpuFaissAssert_8h_1a506cedda3fa24ed640cd5a9589eff199" prot="public" static="no">
+        <name>GPU_FAISS_ASSERT</name>
+        <param><defname>X</defname></param>
+        <initializer>FAISS_ASSERT(X)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
+<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Assertions </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuFaissAssert.h" line="24" column="10" bodyfile="faiss/gpu/GpuFaissAssert.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="GpuFaissAssert_8h_1ae56fdb76f1aa25cdbad7d9c608586bcb" prot="public" static="no">
+        <name>GPU_FAISS_ASSERT_MSG</name>
+        <param><defname>X</defname></param>
+        <param><defname>MSG</defname></param>
+        <initializer>FAISS_ASSERT_MSG(X, MSG)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuFaissAssert.h" line="25" column="9" bodyfile="faiss/gpu/GpuFaissAssert.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="GpuFaissAssert_8h_1aac7ad32da7fdcff0f367f7ace73c3453" prot="public" static="no">
+        <name>GPU_FAISS_ASSERT_FMT</name>
+        <param><defname>X</defname></param>
+        <param><defname>FMT</defname></param>
+        <param><defname>...</defname></param>
+        <initializer>FAISS_ASSERT_FMT(X, FMT, __VA_ARGS)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuFaissAssert.h" line="26" column="9" bodyfile="faiss/gpu/GpuFaissAssert.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Facebook,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>GPU_FAISS_ASSERT_INCLUDED</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GPU_FAISS_ASSERT_INCLUDED</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/FaissAssert.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cuda.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="15"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="16"><highlight class="comment">///<sp/>Assertions</highlight></codeline>
+<codeline lineno="17"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__CUDA_ARCH__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GPU_FAISS_ASSERT(X)<sp/>assert(X)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GPU_FAISS_ASSERT_MSG(X,<sp/>MSG)<sp/>assert(X)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GPU_FAISS_ASSERT_FMT(X,<sp/>FMT,<sp/>...)<sp/>assert(X)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GPU_FAISS_ASSERT(X)<sp/>FAISS_ASSERT(X)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GPU_FAISS_ASSERT_MSG(X,<sp/>MSG)<sp/>FAISS_ASSERT_MSG(X,<sp/>MSG)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GPU_FAISS_ASSERT_FMT(X,<sp/>FMT,<sp/>...)<sp/>FAISS_ASSERT_FMT(X,<sp/>FMT,<sp/>__VA_ARGS)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/>//<sp/>__CUDA_ARCH__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="faiss/gpu/GpuFaissAssert.h"/>
+  </compounddef>
+</doxygen>

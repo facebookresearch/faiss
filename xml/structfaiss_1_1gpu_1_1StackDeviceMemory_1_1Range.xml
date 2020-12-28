@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range" kind="struct" language="C++" prot="protected">
+    <compoundname>faiss::gpu::StackDeviceMemory::Range</compoundname>
+    <includes refid="StackDeviceMemory_8h" local="no">StackDeviceMemory.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1a421e4893035861050a391d0088df815a" prot="public" static="no" mutable="no">
+        <type>char *</type>
+        <definition>char* faiss::gpu::StackDeviceMemory::Range::start_</definition>
+        <argsstring></argsstring>
+        <name>start_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="53" column="10" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1ab822fde6b35d02fa17b291db81e72c1f" prot="public" static="no" mutable="no">
+        <type>char *</type>
+        <definition>char* faiss::gpu::StackDeviceMemory::Range::end_</definition>
+        <argsstring></argsstring>
+        <name>end_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="54" column="10" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1acca587483d1cb6776c200b11f518a34c" prot="public" static="no" mutable="no">
+        <type>cudaStream_t</type>
+        <definition>cudaStream_t faiss::gpu::StackDeviceMemory::Range::stream_</definition>
+        <argsstring></argsstring>
+        <name>stream_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="55" column="18" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1a02f1fe4dc4d707011090e3e925e9d9ef" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::StackDeviceMemory::Range::Range</definition>
+        <argsstring>(char *s, char *e, cudaStream_t str)</argsstring>
+        <name>Range</name>
+        <param>
+          <type>char *</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>e</declname>
+        </param>
+        <param>
+          <type>cudaStream_t</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="48" column="12" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="48" bodyend="50"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Previous allocation ranges and the streams for which synchronization is required </para>
+    </detaileddescription>
+    <location file="faiss/gpu/utils/StackDeviceMemory.h" line="47" column="14" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="47" bodyend="56"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1ab822fde6b35d02fa17b291db81e72c1f" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory::Range</scope><name>end_</name></member>
+      <member refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1a02f1fe4dc4d707011090e3e925e9d9ef" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory::Range</scope><name>Range</name></member>
+      <member refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1a421e4893035861050a391d0088df815a" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory::Range</scope><name>start_</name></member>
+      <member refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1acca587483d1cb6776c200b11f518a34c" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory::Range</scope><name>stream_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

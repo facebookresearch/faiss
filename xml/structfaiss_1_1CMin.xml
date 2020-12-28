@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1CMin" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::CMin</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename T_</type>
+      </param>
+      <param>
+        <type>typename TI_</type>
+      </param>
+    </templateparamlist>
+      <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1CMin_1a88da78a6e6df33028f753bac4ec5504b" prot="public" static="no">
+        <type>T_</type>
+        <definition>typedef T_ faiss::CMin&lt; T_, TI_ &gt;::T</definition>
+        <argsstring></argsstring>
+        <name>T</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/ordered_key_value.h" line="44" column="16" bodyfile="faiss/utils/ordered_key_value.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structfaiss_1_1CMin_1aef7cdaa338899fd09f988aa69a9c155e" prot="public" static="no">
+        <type>TI_</type>
+        <definition>typedef TI_ faiss::CMin&lt; T_, TI_ &gt;::TI</definition>
+        <argsstring></argsstring>
+        <name>TI</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/ordered_key_value.h" line="45" column="17" bodyfile="faiss/utils/ordered_key_value.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structfaiss_1_1CMin_1ac3e75e2ec6af3946e74b71a97e5c7697" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; T_, TI_ &gt;</type>
+        <definition>typedef CMax&lt;T_, TI_&gt; faiss::CMin&lt; T_, TI_ &gt;::Crev</definition>
+        <argsstring></argsstring>
+        <name>Crev</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/ordered_key_value.h" line="46" column="18" bodyfile="faiss/utils/ordered_key_value.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1CMin_1a3b3249c8b7a6dd60fd4004e128da9fe0" prot="public" static="yes" mutable="no">
+        <type>const bool</type>
+        <definition>const bool faiss::CMin&lt; T_, TI_ &gt;::is_max</definition>
+        <argsstring></argsstring>
+        <name>is_max</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/ordered_key_value.h" line="53" column="23" bodyfile="faiss/utils/ordered_key_value.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1CMin_1a89143e2cd7f0cf758952178ee55ed88b" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool faiss::CMin&lt; T_, TI_ &gt;::cmp</definition>
+        <argsstring>(T a, T b)</argsstring>
+        <name>cmp</name>
+        <param>
+          <type>T</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/ordered_key_value.h" line="47" column="24" bodyfile="faiss/utils/ordered_key_value.h" bodystart="47" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1CMin_1af0f4d36dd0f4f44453986d9d73fbfa4d" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T</type>
+        <definition>static T faiss::CMin&lt; T_, TI_ &gt;::neutral</definition>
+        <argsstring>()</argsstring>
+        <name>neutral</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/ordered_key_value.h" line="50" column="21" bodyfile="faiss/utils/ordered_key_value.h" bodystart="50" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1CMin_1a37ab277ca36fca8d8681655da3b54b68" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T</type>
+        <definition>static T faiss::CMin&lt; T_, TI_ &gt;::nextafter</definition>
+        <argsstring>(T x)</argsstring>
+        <name>nextafter</name>
+        <param>
+          <type>T</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/ordered_key_value.h" line="55" column="21" bodyfile="faiss/utils/ordered_key_value.h" bodystart="55" bodyend="57"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/ordered_key_value.h" line="43" column="11" bodyfile="faiss/utils/ordered_key_value.h" bodystart="43" bodyend="58"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1CMin_1a89143e2cd7f0cf758952178ee55ed88b" prot="public" virt="non-virtual"><scope>faiss::CMin</scope><name>cmp</name></member>
+      <member refid="structfaiss_1_1CMin_1ac3e75e2ec6af3946e74b71a97e5c7697" prot="public" virt="non-virtual"><scope>faiss::CMin</scope><name>Crev</name></member>
+      <member refid="structfaiss_1_1CMin_1a3b3249c8b7a6dd60fd4004e128da9fe0" prot="public" virt="non-virtual"><scope>faiss::CMin</scope><name>is_max</name></member>
+      <member refid="structfaiss_1_1CMin_1af0f4d36dd0f4f44453986d9d73fbfa4d" prot="public" virt="non-virtual"><scope>faiss::CMin</scope><name>neutral</name></member>
+      <member refid="structfaiss_1_1CMin_1a37ab277ca36fca8d8681655da3b54b68" prot="public" virt="non-virtual"><scope>faiss::CMin</scope><name>nextafter</name></member>
+      <member refid="structfaiss_1_1CMin_1a88da78a6e6df33028f753bac4ec5504b" prot="public" virt="non-virtual"><scope>faiss::CMin</scope><name>T</name></member>
+      <member refid="structfaiss_1_1CMin_1aef7cdaa338899fd09f988aa69a9c155e" prot="public" virt="non-virtual"><scope>faiss::CMin</scope><name>TI</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

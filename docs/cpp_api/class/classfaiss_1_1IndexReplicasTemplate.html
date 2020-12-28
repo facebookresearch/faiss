@@ -1,0 +1,366 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Class faiss::IndexReplicasTemplate &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Class faiss::WorkerThread" href="classfaiss_1_1WorkerThread.html" />
+    <link rel="prev" title="Class list" href="../classlist.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../classlist.html">Class list</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Class faiss::IndexReplicasTemplate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1WorkerThread.html">Class faiss::WorkerThread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1CpuTimer.html">Class faiss::gpu::CpuTimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1CublasHandleScope.html">Class faiss::gpu::CublasHandleScope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1CudaEvent.html">Class faiss::gpu::CudaEvent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1DeviceScope.html">Class faiss::gpu::DeviceScope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndex.html">Class faiss::gpu::GpuIndex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html">Class faiss::gpu::GpuIndexBinaryFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html">Class faiss::gpu::GpuIndexFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html">Class faiss::gpu::GpuIndexFlatIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html">Class faiss::gpu::GpuIndexFlatL2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html">Class faiss::gpu::GpuIndexIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html">Class faiss::gpu::GpuIndexIVFFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html">Class faiss::gpu::GpuIndexIVFPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html">Class faiss::gpu::GpuIndexIVFScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResources.html">Class faiss::gpu::GpuResources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResourcesProvider.html">Class faiss::gpu::GpuResourcesProvider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1KernelTimer.html">Class faiss::gpu::KernelTimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StackDeviceMemory.html">Class faiss::gpu::StackDeviceMemory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StandardGpuResources.html">Class faiss::gpu::StandardGpuResources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl.html">Class faiss::gpu::StandardGpuResourcesImpl</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../classlist.html">Class list</a> &raquo;</li>
+        
+      <li>Class faiss::IndexReplicasTemplate</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/cpp_api/class/classfaiss_1_1IndexReplicasTemplate.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="class-faiss-indexreplicastemplate">
+<h1>Class faiss::IndexReplicasTemplate<a class="headerlink" href="#class-faiss-indexreplicastemplate" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp class">
+<dt id="_CPPv4I0EN5faiss21IndexReplicasTemplateE">
+<span id="_CPPv3I0EN5faiss21IndexReplicasTemplateE"></span><span id="_CPPv2I0EN5faiss21IndexReplicasTemplateE"></span>template&lt;typename <code class="sig-name descname">IndexT</code>&gt;<br /><span class="target" id="classfaiss_1_1IndexReplicasTemplate"></span><em class="property">class </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">IndexReplicasTemplate</code> : <em class="property">public</em> ThreadedIndex&lt;<a class="reference internal" href="#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="faiss::IndexReplicasTemplate::IndexT">IndexT</a>&gt;<a class="headerlink" href="#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Takes individual <a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">faiss::Index</span></a> instances, and splits queries for sending to each <a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> instance, and joins the results together when done. Each index is managed by a separate CPU thread. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate5idx_tE">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate5idx_tE"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate5idx_tE"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1ae8b631f7c3200cf1a02cd6e4397a50c9"></span><em class="property">using </em><code class="sig-name descname">idx_t</code> = <em class="property">typename</em> <a class="reference internal" href="#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="faiss::IndexReplicasTemplate::IndexT">IndexT</a>::idx_t<a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate5idx_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate11component_tE">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate11component_tE"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate11component_tE"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1aa2482e6d6245830bad1cd29551262793"></span><em class="property">using </em><code class="sig-name descname">component_t</code> = <em class="property">typename</em> <a class="reference internal" href="#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="faiss::IndexReplicasTemplate::IndexT">IndexT</a>::component_t<a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate11component_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate10distance_tE">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate10distance_tE"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate10distance_tE"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1a33eb25784833dd8dbb24544d8043eec0"></span><em class="property">using </em><code class="sig-name descname">distance_t</code> = <em class="property">typename</em> <a class="reference internal" href="#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="faiss::IndexReplicasTemplate::IndexT">IndexT</a>::distance_t<a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate10distance_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate21IndexReplicasTemplateEb">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate21IndexReplicasTemplateEb"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate21IndexReplicasTemplateEb"></span><span id="faiss::IndexReplicasTemplate::IndexReplicasTemplate__b"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1a29d851d995abc011c759a855ae0057ae"></span><code class="sig-name descname">IndexReplicasTemplate</code><span class="sig-paren">(</span>bool <em>threaded</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate21IndexReplicasTemplateEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The dimension that all sub-indices must share will be the dimension of the first sub-index added <dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">threaded</span></code>: do we use one thread per sub-index or do queries sequentially? </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate21IndexReplicasTemplateE5idx_tb">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate21IndexReplicasTemplateE5idx_tb"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate21IndexReplicasTemplateE5idx_tb"></span><span id="faiss::IndexReplicasTemplate::IndexReplicasTemplate__idx_t.b"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1ada9226643e1a48e45c65ffecc57b7391"></span><code class="sig-name descname">IndexReplicasTemplate</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss21IndexReplicasTemplate5idx_tE" title="faiss::IndexReplicasTemplate::idx_t">idx_t</a> <em>d</em>, bool <em>threaded</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate21IndexReplicasTemplateE5idx_tb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">d</span></code>: the dimension that all sub-indices must share </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">threaded</span></code>: do we use one thread per sub index or do queries sequentially? </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate21IndexReplicasTemplateEib">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate21IndexReplicasTemplateEib"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate21IndexReplicasTemplateEib"></span><span id="faiss::IndexReplicasTemplate::IndexReplicasTemplate__i.b"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1adbad834789bb985ce8c99a82dc020248"></span><code class="sig-name descname">IndexReplicasTemplate</code><span class="sig-paren">(</span>int <em>d</em>, bool <em>threaded</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate21IndexReplicasTemplateEib" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>int version due to the implicit bool conversion ambiguity of int as dimension </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate11add_replicaEP6IndexT">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate11add_replicaEP6IndexT"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate11add_replicaEP6IndexT"></span><span id="faiss::IndexReplicasTemplate::add_replica__IndexTP"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1a34bf1c7e890c2e5a57307fd3ee5b980b"></span>void <code class="sig-name descname">add_replica</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="faiss::IndexReplicasTemplate::IndexT">IndexT</a> *<em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate11add_replicaEP6IndexT" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Alias for addIndex() </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate14remove_replicaEP6IndexT">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate14remove_replicaEP6IndexT"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate14remove_replicaEP6IndexT"></span><span id="faiss::IndexReplicasTemplate::remove_replica__IndexTP"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1affcfc49402a7c3d5604689bfbab00326"></span>void <code class="sig-name descname">remove_replica</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="faiss::IndexReplicasTemplate::IndexT">IndexT</a> *<em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate14remove_replicaEP6IndexT" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Alias for removeIndex() </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate5trainE5idx_tPK11component_t">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate5trainE5idx_tPK11component_t"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate5trainE5idx_tPK11component_t"></span><span id="faiss::IndexReplicasTemplate::train__idx_t.component_tCP"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1a5cdb2a340a3b4f45ec244d5398a29005"></span>void <code class="sig-name descname">train</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss21IndexReplicasTemplate5idx_tE" title="faiss::IndexReplicasTemplate::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss21IndexReplicasTemplate11component_tE" title="faiss::IndexReplicasTemplate::component_t">component_t</a> *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate5trainE5idx_tPK11component_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">faiss::Index</span></a> API All indices receive the same call </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate3addE5idx_tPK11component_t">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate3addE5idx_tPK11component_t"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate3addE5idx_tPK11component_t"></span><span id="faiss::IndexReplicasTemplate::add__idx_t.component_tCP"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1a6b110e7efab3d01be7ae7cb346d9fbf9"></span>void <code class="sig-name descname">add</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss21IndexReplicasTemplate5idx_tE" title="faiss::IndexReplicasTemplate::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss21IndexReplicasTemplate11component_tE" title="faiss::IndexReplicasTemplate::component_t">component_t</a> *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate3addE5idx_tPK11component_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">faiss::Index</span></a> API All indices receive the same call </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss21IndexReplicasTemplate6searchE5idx_tPK11component_t5idx_tP10distance_tP5idx_t">
+<span id="_CPPv3NK5faiss21IndexReplicasTemplate6searchE5idx_tPK11component_t5idx_tP10distance_tP5idx_t"></span><span id="_CPPv2NK5faiss21IndexReplicasTemplate6searchE5idx_tPK11component_t5idx_tP10distance_tP5idx_t"></span><span id="faiss::IndexReplicasTemplate::search__idx_t.component_tCP.idx_t.distance_tP.idx_tPC"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1ad6382e3ebaaca61607ad90fc80cdbd3c"></span>void <code class="sig-name descname">search</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss21IndexReplicasTemplate5idx_tE" title="faiss::IndexReplicasTemplate::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss21IndexReplicasTemplate11component_tE" title="faiss::IndexReplicasTemplate::component_t">component_t</a> *<em>x</em>, <a class="reference internal" href="#_CPPv4N5faiss21IndexReplicasTemplate5idx_tE" title="faiss::IndexReplicasTemplate::idx_t">idx_t</a> <em>k</em>, <a class="reference internal" href="#_CPPv4N5faiss21IndexReplicasTemplate10distance_tE" title="faiss::IndexReplicasTemplate::distance_t">distance_t</a> *<em>distances</em>, <a class="reference internal" href="#_CPPv4N5faiss21IndexReplicasTemplate5idx_tE" title="faiss::IndexReplicasTemplate::idx_t">idx_t</a> *<em>labels</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK5faiss21IndexReplicasTemplate6searchE5idx_tPK11component_t5idx_tP10distance_tP5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">faiss::Index</span></a> API Query is partitioned into a slice for each sub-index split by ceil(n / #indices) for our sub-indices </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss21IndexReplicasTemplate11reconstructE5idx_tP11component_t">
+<span id="_CPPv3NK5faiss21IndexReplicasTemplate11reconstructE5idx_tP11component_t"></span><span id="_CPPv2NK5faiss21IndexReplicasTemplate11reconstructE5idx_tP11component_t"></span><span id="faiss::IndexReplicasTemplate::reconstruct__idx_t.component_tPC"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1a9fb6804492c12359b5cc2aa26fe6a6d6"></span>void <code class="sig-name descname">reconstruct</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss21IndexReplicasTemplate5idx_tE" title="faiss::IndexReplicasTemplate::idx_t">idx_t</a>, <a class="reference internal" href="#_CPPv4N5faiss21IndexReplicasTemplate11component_tE" title="faiss::IndexReplicasTemplate::component_t">component_t</a> *<em>v</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK5faiss21IndexReplicasTemplate11reconstructE5idx_tP11component_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>reconstructs from the first index </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate18syncWithSubIndexesEv">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate18syncWithSubIndexesEv"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate18syncWithSubIndexesEv"></span><span id="faiss::IndexReplicasTemplate::syncWithSubIndexes"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1a7b1233eb598fc053e61b7ceccdb9d71d"></span>void <code class="sig-name descname">syncWithSubIndexes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate18syncWithSubIndexesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Synchronize the top-level index (IndexShards) with data in the sub-indices. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Protected Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate15onAfterAddIndexEP6IndexT">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate15onAfterAddIndexEP6IndexT"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate15onAfterAddIndexEP6IndexT"></span><span id="faiss::IndexReplicasTemplate::onAfterAddIndex__IndexTP"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1a4fd98a5ba105391bfb3e490d84d26b27"></span>void <code class="sig-name descname">onAfterAddIndex</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="faiss::IndexReplicasTemplate::IndexT">IndexT</a> *<em>index</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate15onAfterAddIndexEP6IndexT" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Called just after an index is added. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss21IndexReplicasTemplate18onAfterRemoveIndexEP6IndexT">
+<span id="_CPPv3N5faiss21IndexReplicasTemplate18onAfterRemoveIndexEP6IndexT"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate18onAfterRemoveIndexEP6IndexT"></span><span id="faiss::IndexReplicasTemplate::onAfterRemoveIndex__IndexTP"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1a1cc7b38bf2e478ac1ee26d332953fb30"></span>void <code class="sig-name descname">onAfterRemoveIndex</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="faiss::IndexReplicasTemplate::IndexT">IndexT</a> *<em>index</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss21IndexReplicasTemplate18onAfterRemoveIndexEP6IndexT" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Called just after an index is removed. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="classfaiss_1_1WorkerThread.html" class="btn btn-neutral float-right" title="Class faiss::WorkerThread" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../classlist.html" class="btn btn-neutral float-left" title="Class list" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright Facebook, Inc. and its affiliates.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

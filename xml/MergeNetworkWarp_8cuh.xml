@@ -1,0 +1,523 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="MergeNetworkWarp_8cuh" kind="file" language="C++">
+    <compoundname>MergeNetworkWarp.cuh</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">/**</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Facebook,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*/</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceDefs.cuh&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/MergeNetworkUtils.cuh&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/PtxUtils.cuh&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/StaticUtils.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/WarpShuffles.cuh&gt;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>This<sp/>file<sp/>contains<sp/>functions<sp/>to:</highlight></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>-perform<sp/>bitonic<sp/>merges<sp/>on<sp/>pairs<sp/>of<sp/>sorted<sp/>lists,<sp/>held<sp/>in</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>registers.<sp/>Each<sp/>list<sp/>contains<sp/>N<sp/>*<sp/>kWarpSize<sp/>(multiple<sp/>of<sp/>32)</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>elements<sp/>for<sp/>some<sp/>N.</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>The<sp/>bitonic<sp/>merge<sp/>is<sp/>implemented<sp/>for<sp/>arbitrary<sp/>sizes;</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>sorted<sp/>list<sp/>A<sp/>of<sp/>size<sp/>N1<sp/>*<sp/>kWarpSize<sp/>registers</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>sorted<sp/>list<sp/>B<sp/>of<sp/>size<sp/>N2<sp/>*<sp/>kWarpSize<sp/>registers<sp/>=&gt;</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>sorted<sp/>list<sp/>C<sp/>if<sp/>size<sp/>(N1<sp/>+<sp/>N2)<sp/>*<sp/>kWarpSize<sp/>registers.<sp/>N1<sp/>and<sp/>N2</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>are<sp/>&gt;=<sp/>1<sp/>and<sp/>don&apos;t<sp/>have<sp/>to<sp/>be<sp/>powers<sp/>of<sp/>2.</highlight></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>-perform<sp/>bitonic<sp/>sorts<sp/>on<sp/>a<sp/>set<sp/>of<sp/>N<sp/>*<sp/>kWarpSize<sp/>key/value<sp/>pairs</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>held<sp/>in<sp/>registers,<sp/>by<sp/>using<sp/>the<sp/>above<sp/>bitonic<sp/>merge<sp/>as<sp/>a</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>primitive.</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>N<sp/>can<sp/>be<sp/>an<sp/>arbitrary<sp/>N<sp/>&gt;=<sp/>1;<sp/>i.e.,<sp/>the<sp/>bitonic<sp/>sort<sp/>here<sp/>supports</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>odd<sp/>sizes<sp/>and<sp/>doesn&apos;t<sp/>require<sp/>the<sp/>input<sp/>to<sp/>be<sp/>a<sp/>power<sp/>of<sp/>2.</highlight></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>The<sp/>sort<sp/>or<sp/>merge<sp/>network<sp/>is<sp/>completely<sp/>statically<sp/>instantiated<sp/>via</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>template<sp/>specialization<sp/>/<sp/>expansion<sp/>and<sp/>constexpr,<sp/>and<sp/>it<sp/>uses<sp/>warp</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>shuffles<sp/>to<sp/>exchange<sp/>values<sp/>between<sp/>warp<sp/>lanes.</highlight></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>A<sp/>note<sp/>about<sp/>comparsions:</highlight></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>For<sp/>a<sp/>sorting<sp/>network<sp/>of<sp/>keys<sp/>only,<sp/>we<sp/>only<sp/>need<sp/>one</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>comparison<sp/>(a<sp/>&lt;<sp/>b).<sp/>However,<sp/>what<sp/>we<sp/>really<sp/>need<sp/>to<sp/>know<sp/>is</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>if<sp/>one<sp/>lane<sp/>chooses<sp/>to<sp/>exchange<sp/>a<sp/>value,<sp/>then<sp/>the</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>corresponding<sp/>lane<sp/>should<sp/>also<sp/>do<sp/>the<sp/>exchange.</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>Thus,<sp/>if<sp/>one<sp/>just<sp/>uses<sp/>the<sp/>negation<sp/>!(x<sp/>&lt;<sp/>y)<sp/>in<sp/>the<sp/>higher</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>lane,<sp/>this<sp/>will<sp/>also<sp/>include<sp/>the<sp/>case<sp/>where<sp/>(x<sp/>==<sp/>y).<sp/>Thus,<sp/>one</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>lane<sp/>in<sp/>fact<sp/>performs<sp/>an<sp/>exchange<sp/>and<sp/>the<sp/>other<sp/>doesn&apos;t,<sp/>but</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>because<sp/>the<sp/>only<sp/>value<sp/>being<sp/>exchanged<sp/>is<sp/>equivalent,<sp/>nothing<sp/>has</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>changed.</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>So,<sp/>you<sp/>can<sp/>get<sp/>away<sp/>with<sp/>just<sp/>one<sp/>comparison<sp/>and<sp/>its<sp/>negation.</highlight></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>If<sp/>we&apos;re<sp/>sorting<sp/>keys<sp/>and<sp/>values,<sp/>where<sp/>equivalent<sp/>keys<sp/>can</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>exist,<sp/>then<sp/>this<sp/>is<sp/>a<sp/>problem,<sp/>since<sp/>we<sp/>want<sp/>to<sp/>treat<sp/>(x,<sp/>v1)</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>as<sp/>not<sp/>equivalent<sp/>to<sp/>(x,<sp/>v2).</highlight></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>To<sp/>remedy<sp/>this,<sp/>you<sp/>can<sp/>either<sp/>compare<sp/>with<sp/>a<sp/>lexicographic</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>ordering<sp/>(a.k<sp/>&lt;<sp/>b.k<sp/>||<sp/>(a.k<sp/>==<sp/>b.k<sp/>&amp;&amp;<sp/>a.v<sp/>&lt;<sp/>b.v)),<sp/>which<sp/>since</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>we&apos;re<sp/>predicating<sp/>all<sp/>of<sp/>the<sp/>choices<sp/>results<sp/>in<sp/>3<sp/>comparisons</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>being<sp/>executed,<sp/>or<sp/>we<sp/>can<sp/>invert<sp/>the<sp/>selection<sp/>so<sp/>that<sp/>there<sp/>is<sp/>no</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>middle<sp/>choice<sp/>of<sp/>equality;<sp/>the<sp/>other<sp/>lane<sp/>will<sp/>likewise</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>check<sp/>that<sp/>(b.k<sp/>&gt;<sp/>a.k)<sp/>(the<sp/>higher<sp/>lane<sp/>has<sp/>the<sp/>values</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>swapped).<sp/>Then,<sp/>the<sp/>first<sp/>lane<sp/>swaps<sp/>if<sp/>and<sp/>only<sp/>if<sp/>the</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>second<sp/>lane<sp/>swaps;<sp/>if<sp/>both<sp/>lanes<sp/>have<sp/>equivalent<sp/>keys,<sp/>no</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>swap<sp/>will<sp/>be<sp/>performed.<sp/>This<sp/>results<sp/>in<sp/>only<sp/>two<sp/>comparisons</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>being<sp/>executed.</highlight></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>If<sp/>you<sp/>don&apos;t<sp/>consider<sp/>values<sp/>as<sp/>well,<sp/>then<sp/>this<sp/>does<sp/>not<sp/>produce<sp/>a</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>consistent<sp/>ordering<sp/>among<sp/>(k,<sp/>v)<sp/>pairs<sp/>with<sp/>equivalent<sp/>keys<sp/>but</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>different<sp/>values;<sp/>for<sp/>us,<sp/>we<sp/>don&apos;t<sp/>really<sp/>care<sp/>about<sp/>ordering<sp/>or</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>stability<sp/>here.</highlight></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>I<sp/>have<sp/>tried<sp/>both<sp/>re-arranging<sp/>the<sp/>order<sp/>in<sp/>the<sp/>higher<sp/>lane<sp/>to<sp/>get</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>away<sp/>with<sp/>one<sp/>comparison<sp/>or<sp/>adding<sp/>the<sp/>value<sp/>to<sp/>the<sp/>check;<sp/>both</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>result<sp/>in<sp/>greater<sp/>register<sp/>consumption<sp/>or<sp/>lower<sp/>speed<sp/>than<sp/>just</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>perfoming<sp/>both<sp/>&lt;<sp/>and<sp/>&gt;<sp/>comparisons<sp/>with<sp/>the<sp/>variables,<sp/>so<sp/>I<sp/>just</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>stick<sp/>with<sp/>this.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>This<sp/>function<sp/>merges<sp/>kWarpSize<sp/>/<sp/>2L<sp/>lists<sp/>in<sp/>parallel<sp/>using<sp/>warp</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>shuffles.</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>It<sp/>works<sp/>on<sp/>at<sp/>most<sp/>size-16<sp/>lists,<sp/>as<sp/>we<sp/>need<sp/>32<sp/>threads<sp/>for<sp/>this</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>shuffle<sp/>merge.</highlight></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>If<sp/>IsBitonic<sp/>is<sp/>false,<sp/>the<sp/>first<sp/>stage<sp/>is<sp/>reversed,<sp/>so<sp/>we<sp/>don&apos;t</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>need<sp/>to<sp/>sort<sp/>directionally.<sp/>It&apos;s<sp/>still<sp/>technically<sp/>a<sp/>bitonic<sp/>sort.</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,<sp/>typename<sp/>V,<sp/>int<sp/>L,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp,<sp/>bool<sp/>IsBitonic&gt;</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>void<sp/>warpBitonicMergeLE16(K&amp;<sp/>k,<sp/>V&amp;<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>static_assert(utils::isPowerOf2(L),<sp/>&quot;L<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>static_assert(L<sp/>&lt;=<sp/>kWarpSize<sp/>/<sp/>2,<sp/>&quot;merge<sp/>list<sp/>size<sp/>must<sp/>be<sp/>&lt;=<sp/>16&quot;);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>if<sp/>(!IsBitonic)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Reverse<sp/>the<sp/>first<sp/>comparison<sp/>stage.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>For<sp/>example,<sp/>merging<sp/>a<sp/>list<sp/>of<sp/>size<sp/>8<sp/>has<sp/>the<sp/>exchanges:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>0<sp/>&lt;-&gt;<sp/>15,<sp/>1<sp/>&lt;-&gt;<sp/>14,<sp/>...</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>otherK<sp/>=<sp/>shfl_xor(k,<sp/>2<sp/>*<sp/>L<sp/>-<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>otherV<sp/>=<sp/>shfl_xor(v,<sp/>2<sp/>*<sp/>L<sp/>-<sp/>1);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Whether<sp/>we<sp/>are<sp/>the<sp/>lesser<sp/>thread<sp/>in<sp/>the<sp/>exchange</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>small<sp/>=<sp/>!(laneId<sp/>&amp;<sp/>L);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(Dir)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>See<sp/>the<sp/>comment<sp/>above<sp/>how<sp/>performing<sp/>both<sp/>of<sp/>these</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>comparisons<sp/>in<sp/>the<sp/>warp<sp/>seems<sp/>to<sp/>win<sp/>out<sp/>over<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>alternatives<sp/>in<sp/>practice</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>small<sp/>?<sp/>Comp::gt(k,<sp/>otherK)<sp/>:<sp/>Comp::lt(k,<sp/>otherK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>k,<sp/>otherK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>v,<sp/>otherV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>small<sp/>?<sp/>Comp::lt(k,<sp/>otherK)<sp/>:<sp/>Comp::gt(k,<sp/>otherK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>k,<sp/>otherK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>v,<sp/>otherV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>for<sp/>(int<sp/>stride<sp/>=<sp/>IsBitonic<sp/>?<sp/>L<sp/>:<sp/>L<sp/>/<sp/>2;<sp/>stride<sp/>&gt;<sp/>0;<sp/>stride<sp/>/=<sp/>2)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>otherK<sp/>=<sp/>shfl_xor(k,<sp/>stride);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>otherV<sp/>=<sp/>shfl_xor(v,<sp/>stride);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Whether<sp/>we<sp/>are<sp/>the<sp/>lesser<sp/>thread<sp/>in<sp/>the<sp/>exchange</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>small<sp/>=<sp/>!(laneId<sp/>&amp;<sp/>stride);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(Dir)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>small<sp/>?<sp/>Comp::gt(k,<sp/>otherK)<sp/>:<sp/>Comp::lt(k,<sp/>otherK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>k,<sp/>otherK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>v,<sp/>otherV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>small<sp/>?<sp/>Comp::lt(k,<sp/>otherK)<sp/>:<sp/>Comp::gt(k,<sp/>otherK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>k,<sp/>otherK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>assign(s,<sp/>v,<sp/>otherV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Template<sp/>for<sp/>performing<sp/>a<sp/>bitonic<sp/>merge<sp/>of<sp/>an<sp/>arbitrary<sp/>set<sp/>of</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>registers</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,<sp/>typename<sp/>V,<sp/>int<sp/>N,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp,<sp/>bool<sp/>Low,<sp/>bool<sp/>Pow2&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>BitonicMergeStep<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>Power-of-2<sp/>merge<sp/>specialization</highlight></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>All<sp/>merges<sp/>eventually<sp/>call<sp/>this</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,<sp/>typename<sp/>V,<sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp,<sp/>bool<sp/>Low&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>1,<sp/>Dir,<sp/>Comp,<sp/>Low,<sp/>true&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K<sp/>k[1],<sp/>V<sp/>v[1])<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Use<sp/>warp<sp/>shuffles</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>16,<sp/>Dir,<sp/>Comp,<sp/>true&gt;(k[0],<sp/>v[0]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,<sp/>typename<sp/>V,<sp/>int<sp/>N,<sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp,<sp/>bool<sp/>Low&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>N,<sp/>Dir,<sp/>Comp,<sp/>Low,<sp/>true&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K<sp/>k[N],<sp/>V<sp/>v[N])<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(utils::isPowerOf2(N),<sp/>&quot;must<sp/>be<sp/>power<sp/>of<sp/>2&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(N<sp/>&gt;<sp/>1,<sp/>&quot;must<sp/>be<sp/>N<sp/>&gt;<sp/>1&quot;);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>N<sp/>/<sp/>2;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K&amp;<sp/>ka<sp/>=<sp/>k[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V&amp;<sp/>va<sp/>=<sp/>v[i];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K&amp;<sp/>kb<sp/>=<sp/>k[i<sp/>+<sp/>N<sp/>/<sp/>2];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V&amp;<sp/>vb<sp/>=<sp/>v[i<sp/>+<sp/>N<sp/>/<sp/>2];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>newK[N<sp/>/<sp/>2];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>newV[N<sp/>/<sp/>2];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>N<sp/>/<sp/>2;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newK[i]<sp/>=<sp/>k[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newV[i]<sp/>=<sp/>v[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>N<sp/>/<sp/>2,<sp/>Dir,<sp/>Comp,<sp/>true,<sp/>true&gt;::merge(newK,<sp/>newV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>N<sp/>/<sp/>2;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>k[i]<sp/>=<sp/>newK[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v[i]<sp/>=<sp/>newV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>newK[N<sp/>/<sp/>2];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>newV[N<sp/>/<sp/>2];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>N<sp/>/<sp/>2;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newK[i]<sp/>=<sp/>k[i<sp/>+<sp/>N<sp/>/<sp/>2];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newV[i]<sp/>=<sp/>v[i<sp/>+<sp/>N<sp/>/<sp/>2];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>N<sp/>/<sp/>2,<sp/>Dir,<sp/>Comp,<sp/>false,<sp/>true&gt;::merge(newK,<sp/>newV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>N<sp/>/<sp/>2;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>k[i<sp/>+<sp/>N<sp/>/<sp/>2]<sp/>=<sp/>newK[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v[i<sp/>+<sp/>N<sp/>/<sp/>2]<sp/>=<sp/>newV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>Non-power-of-2<sp/>merge<sp/>specialization</highlight></codeline>
+<codeline><highlight class="normal">//</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Low<sp/>recursion</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,<sp/>typename<sp/>V,<sp/>int<sp/>N,<sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>N,<sp/>Dir,<sp/>Comp,<sp/>true,<sp/>false&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K<sp/>k[N],<sp/>V<sp/>v[N])<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(!utils::isPowerOf2(N),<sp/>&quot;must<sp/>be<sp/>non-power-of-2&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(N<sp/>&gt;=<sp/>3,<sp/>&quot;must<sp/>be<sp/>N<sp/>&gt;=<sp/>3&quot;);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNextHighestPowerOf2<sp/>=<sp/>utils::nextHighestPowerOf2(N);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>N<sp/>-<sp/>kNextHighestPowerOf2<sp/>/<sp/>2;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K&amp;<sp/>ka<sp/>=<sp/>k[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V&amp;<sp/>va<sp/>=<sp/>v[i];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K&amp;<sp/>kb<sp/>=<sp/>k[i<sp/>+<sp/>kNextHighestPowerOf2<sp/>/<sp/>2];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V&amp;<sp/>vb<sp/>=<sp/>v[i<sp/>+<sp/>kNextHighestPowerOf2<sp/>/<sp/>2];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kLowSize<sp/>=<sp/>N<sp/>-<sp/>kNextHighestPowerOf2<sp/>/<sp/>2;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kHighSize<sp/>=<sp/>kNextHighestPowerOf2<sp/>/<sp/>2;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>newK[kLowSize];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>newV[kLowSize];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kLowSize;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newK[i]<sp/>=<sp/>k[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newV[i]<sp/>=<sp/>v[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>bool<sp/>kLowIsPowerOf2<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::isPowerOf2(N<sp/>-<sp/>kNextHighestPowerOf2<sp/>/<sp/>2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>compiler<sp/>doesn&apos;t<sp/>like<sp/>this<sp/>expression?<sp/>compiler<sp/>bug?</highlight></codeline>
+<codeline><highlight class="normal">//<sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>bool<sp/>kLowIsPowerOf2<sp/>=<sp/>utils::isPowerOf2(kLowSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>kLowSize,<sp/>Dir,<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>true,<sp/>//<sp/>low</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kLowIsPowerOf2&gt;::merge(newK,<sp/>newV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kLowSize;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>k[i]<sp/>=<sp/>newK[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v[i]<sp/>=<sp/>newV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>newK[kHighSize];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>newV[kHighSize];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kHighSize;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newK[i]<sp/>=<sp/>k[i<sp/>+<sp/>kLowSize];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newV[i]<sp/>=<sp/>v[i<sp/>+<sp/>kLowSize];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>bool<sp/>kHighIsPowerOf2<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::isPowerOf2(kNextHighestPowerOf2<sp/>/<sp/>2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>compiler<sp/>doesn&apos;t<sp/>like<sp/>this<sp/>expression?<sp/>compiler<sp/>bug?</highlight></codeline>
+<codeline><highlight class="normal">//<sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>bool<sp/>kHighIsPowerOf2<sp/>=<sp/>utils::isPowerOf2(kHighSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>kHighSize,<sp/>Dir,<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false,<sp/>//<sp/>high</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kHighIsPowerOf2&gt;::merge(newK,<sp/>newV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kHighSize;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>k[i<sp/>+<sp/>kLowSize]<sp/>=<sp/>newK[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v[i<sp/>+<sp/>kLowSize]<sp/>=<sp/>newV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>High<sp/>recursion</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,<sp/>typename<sp/>V,<sp/>int<sp/>N,<sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>N,<sp/>Dir,<sp/>Comp,<sp/>false,<sp/>false&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K<sp/>k[N],<sp/>V<sp/>v[N])<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(!utils::isPowerOf2(N),<sp/>&quot;must<sp/>be<sp/>non-power-of-2&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(N<sp/>&gt;=<sp/>3,<sp/>&quot;must<sp/>be<sp/>N<sp/>&gt;=<sp/>3&quot;);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNextHighestPowerOf2<sp/>=<sp/>utils::nextHighestPowerOf2(N);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>N<sp/>-<sp/>kNextHighestPowerOf2<sp/>/<sp/>2;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K&amp;<sp/>ka<sp/>=<sp/>k[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V&amp;<sp/>va<sp/>=<sp/>v[i];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K&amp;<sp/>kb<sp/>=<sp/>k[i<sp/>+<sp/>kNextHighestPowerOf2<sp/>/<sp/>2];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V&amp;<sp/>vb<sp/>=<sp/>v[i<sp/>+<sp/>kNextHighestPowerOf2<sp/>/<sp/>2];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kLowSize<sp/>=<sp/>kNextHighestPowerOf2<sp/>/<sp/>2;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kHighSize<sp/>=<sp/>N<sp/>-<sp/>kNextHighestPowerOf2<sp/>/<sp/>2;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>newK[kLowSize];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>newV[kLowSize];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kLowSize;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newK[i]<sp/>=<sp/>k[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newV[i]<sp/>=<sp/>v[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>bool<sp/>kLowIsPowerOf2<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::isPowerOf2(kNextHighestPowerOf2<sp/>/<sp/>2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>compiler<sp/>doesn&apos;t<sp/>like<sp/>this<sp/>expression?<sp/>compiler<sp/>bug?</highlight></codeline>
+<codeline><highlight class="normal">//<sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>bool<sp/>kLowIsPowerOf2<sp/>=<sp/>utils::isPowerOf2(kLowSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>kLowSize,<sp/>Dir,<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>true,<sp/>//<sp/>low</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kLowIsPowerOf2&gt;::merge(newK,<sp/>newV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kLowSize;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>k[i]<sp/>=<sp/>newK[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v[i]<sp/>=<sp/>newV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>newK[kHighSize];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>newV[kHighSize];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kHighSize;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newK[i]<sp/>=<sp/>k[i<sp/>+<sp/>kLowSize];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newV[i]<sp/>=<sp/>v[i<sp/>+<sp/>kLowSize];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>bool<sp/>kHighIsPowerOf2<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::isPowerOf2(N<sp/>-<sp/>kNextHighestPowerOf2<sp/>/<sp/>2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>compiler<sp/>doesn&apos;t<sp/>like<sp/>this<sp/>expression?<sp/>compiler<sp/>bug?</highlight></codeline>
+<codeline><highlight class="normal">//<sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>bool<sp/>kHighIsPowerOf2<sp/>=<sp/>utils::isPowerOf2(kHighSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>kHighSize,<sp/>Dir,<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false,<sp/>//<sp/>high</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kHighIsPowerOf2&gt;::merge(newK,<sp/>newV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kHighSize;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>k[i<sp/>+<sp/>kLowSize]<sp/>=<sp/>newK[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v[i<sp/>+<sp/>kLowSize]<sp/>=<sp/>newV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">///<sp/>Merges<sp/>two<sp/>sets<sp/>of<sp/>registers<sp/>across<sp/>the<sp/>warp<sp/>of<sp/>any<sp/>size;</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>i.e.,<sp/>merges<sp/>a<sp/>sorted<sp/>k/v<sp/>list<sp/>of<sp/>size<sp/>kWarpSize<sp/>*<sp/>N1<sp/>with<sp/>a</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>sorted<sp/>k/v<sp/>list<sp/>of<sp/>size<sp/>kWarpSize<sp/>*<sp/>N2,<sp/>where<sp/>N1<sp/>and<sp/>N2<sp/>are<sp/>any</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>value<sp/>&gt;=<sp/>1</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>N1,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>N2,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge<sp/>=<sp/>true&gt;</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>void<sp/>warpMergeAnyRegisters(K<sp/>k1[N1],<sp/>V<sp/>v1[N1],</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>k2[N2],<sp/>V<sp/>v2[N2])<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>constexpr<sp/>int<sp/>kSmallestN<sp/>=<sp/>N1<sp/>&lt;<sp/>N2<sp/>?<sp/>N1<sp/>:<sp/>N2;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kSmallestN;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K&amp;<sp/>ka<sp/>=<sp/>k1[N1<sp/>-<sp/>1<sp/>-<sp/>i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V&amp;<sp/>va<sp/>=<sp/>v1[N1<sp/>-<sp/>1<sp/>-<sp/>i];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K&amp;<sp/>kb<sp/>=<sp/>k2[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V&amp;<sp/>vb<sp/>=<sp/>v2[i];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>otherKa;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>otherVa;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(FullMerge)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>need<sp/>the<sp/>other<sp/>values</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>otherKa<sp/>=<sp/>shfl_xor(ka,<sp/>kWarpSize<sp/>-<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>otherVa<sp/>=<sp/>shfl_xor(va,<sp/>kWarpSize<sp/>-<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>otherKb<sp/>=<sp/>shfl_xor(kb,<sp/>kWarpSize<sp/>-<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>otherVb<sp/>=<sp/>shfl_xor(vb,<sp/>kWarpSize<sp/>-<sp/>1);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>ka<sp/>is<sp/>always<sp/>first<sp/>in<sp/>the<sp/>list,<sp/>so<sp/>we<sp/>needn&apos;t<sp/>use<sp/>our<sp/>lane</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>in<sp/>this<sp/>comparison</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>swapa<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>otherKb)<sp/>:<sp/>Comp::lt(ka,<sp/>otherKb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>assign(swapa,<sp/>ka,<sp/>otherKb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>assign(swapa,<sp/>va,<sp/>otherVb);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>kb<sp/>is<sp/>always<sp/>second<sp/>in<sp/>the<sp/>list,<sp/>so<sp/>we<sp/>needn&apos;t<sp/>use<sp/>our<sp/>lane</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>in<sp/>this<sp/>comparison</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(FullMerge)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swapb<sp/>=<sp/>Dir<sp/>?<sp/>Comp::lt(kb,<sp/>otherKa)<sp/>:<sp/>Comp::gt(kb,<sp/>otherKa);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>assign(swapb,<sp/>kb,<sp/>otherKa);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>assign(swapb,<sp/>vb,<sp/>otherVa);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>don&apos;t<sp/>care<sp/>about<sp/>updating<sp/>elements<sp/>in<sp/>the<sp/>second<sp/>list</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>N1,<sp/>Dir,<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>true,<sp/>utils::isPowerOf2(N1)&gt;::merge(k1,<sp/>v1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>if<sp/>(FullMerge)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Only<sp/>if<sp/>we<sp/>care<sp/>about<sp/>N2<sp/>do<sp/>we<sp/>need<sp/>to<sp/>bother<sp/>merging<sp/>it<sp/>fully</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>N2,<sp/>Dir,<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false,<sp/>utils::isPowerOf2(N2)&gt;::merge(k2,<sp/>v2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Recursive<sp/>template<sp/>that<sp/>uses<sp/>the<sp/>above<sp/>bitonic<sp/>merge<sp/>to<sp/>perform<sp/>a</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>bitonic<sp/>sort</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,<sp/>typename<sp/>V,<sp/>int<sp/>N,<sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>BitonicSortStep<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>sort(K<sp/>k[N],<sp/>V<sp/>v[N])<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(N<sp/>&gt;<sp/>1,<sp/>&quot;did<sp/>not<sp/>hit<sp/>specialized<sp/>case&quot;);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Sort<sp/>recursively</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kSizeA<sp/>=<sp/>N<sp/>/<sp/>2;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kSizeB<sp/>=<sp/>N<sp/>-<sp/>kSizeA;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>aK[kSizeA];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>aV[kSizeA];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kSizeA;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>aK[i]<sp/>=<sp/>k[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>aV[i]<sp/>=<sp/>v[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>BitonicSortStep&lt;K,<sp/>V,<sp/>kSizeA,<sp/>Dir,<sp/>Comp&gt;::sort(aK,<sp/>aV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>bK[kSizeB];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>bV[kSizeB];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kSizeB;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>bK[i]<sp/>=<sp/>k[i<sp/>+<sp/>kSizeA];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>bV[i]<sp/>=<sp/>v[i<sp/>+<sp/>kSizeA];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>BitonicSortStep&lt;K,<sp/>V,<sp/>kSizeB,<sp/>Dir,<sp/>Comp&gt;::sort(bK,<sp/>bV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Merge<sp/>halves</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpMergeAnyRegisters&lt;K,<sp/>V,<sp/>kSizeA,<sp/>kSizeB,<sp/>Dir,<sp/>Comp&gt;(aK,<sp/>aV,<sp/>bK,<sp/>bV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kSizeA;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>k[i]<sp/>=<sp/>aK[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>v[i]<sp/>=<sp/>aV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kSizeB;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>k[i<sp/>+<sp/>kSizeA]<sp/>=<sp/>bK[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>v[i<sp/>+<sp/>kSizeA]<sp/>=<sp/>bV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Single<sp/>warp<sp/>(N<sp/>==<sp/>1)<sp/>sorting<sp/>specialization</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,<sp/>typename<sp/>V,<sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>BitonicSortStep&lt;K,<sp/>V,<sp/>1,<sp/>Dir,<sp/>Comp&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>sort(K<sp/>k[1],<sp/>V<sp/>v[1])<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Update<sp/>this<sp/>code<sp/>if<sp/>this<sp/>changes</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>should<sp/>go<sp/>from<sp/>1<sp/>-&gt;<sp/>kWarpSize<sp/>in<sp/>multiples<sp/>of<sp/>2</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(kWarpSize<sp/>==<sp/>32,<sp/>&quot;unexpected<sp/>warp<sp/>size&quot;);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>1,<sp/>Dir,<sp/>Comp,<sp/>false&gt;(k[0],<sp/>v[0]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>2,<sp/>Dir,<sp/>Comp,<sp/>false&gt;(k[0],<sp/>v[0]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>4,<sp/>Dir,<sp/>Comp,<sp/>false&gt;(k[0],<sp/>v[0]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>8,<sp/>Dir,<sp/>Comp,<sp/>false&gt;(k[0],<sp/>v[0]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>16,<sp/>Dir,<sp/>Comp,<sp/>false&gt;(k[0],<sp/>v[0]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">///<sp/>Sort<sp/>a<sp/>list<sp/>of<sp/>kWarpSize<sp/>*<sp/>N<sp/>elements<sp/>in<sp/>registers,<sp/>where<sp/>N<sp/>is<sp/>an</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>arbitrary<sp/>&gt;=<sp/>1</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,<sp/>typename<sp/>V,<sp/>int<sp/>N,<sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp&gt;</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>void<sp/>warpSortAnyRegisters(K<sp/>k[N],<sp/>V<sp/>v[N])<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>BitonicSortStep&lt;K,<sp/>V,<sp/>N,<sp/>Dir,<sp/>Comp&gt;::sort(k,<sp/>v);</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+    </programlisting>
+    <location file="faiss/gpu/utils/MergeNetworkWarp.cuh"/>
+  </compounddef>
+</doxygen>

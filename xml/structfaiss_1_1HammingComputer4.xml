@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1HammingComputer4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HammingComputer4</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1HammingComputer4_1ad5c8ec402c03b960fc835722e1254cfa" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::HammingComputer4::a0</definition>
+        <argsstring></argsstring>
+        <name>a0</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="87" column="14" bodyfile="faiss/utils/hamming-inl.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer4_1a371053baf6ea27ab7948387f96ad911e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HammingComputer4::HammingComputer4</definition>
+        <argsstring>()</argsstring>
+        <name>HammingComputer4</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="89" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="89" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer4_1a55b5dec647faca3fa97b0f96dd156267" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HammingComputer4::HammingComputer4</definition>
+        <argsstring>(const uint8_t *a, int code_size)</argsstring>
+        <name>HammingComputer4</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="91" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="91" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer4_1a727351f6b05e23f443ac5d0750cb9d93" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::HammingComputer4::set</definition>
+        <argsstring>(const uint8_t *a, int code_size)</argsstring>
+        <name>set</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="95" column="10" bodyfile="faiss/utils/hamming-inl.h" bodystart="95" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer4_1aba11f9b8b74d30adf8884205e1e754ac" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::HammingComputer4::hamming</definition>
+        <argsstring>(const uint8_t *b) const</argsstring>
+        <name>hamming</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="100" column="16" bodyfile="faiss/utils/hamming-inl.h" bodystart="100" bodyend="102"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/hamming-inl.h" line="80" column="23" bodyfile="faiss/utils/hamming-inl.h" bodystart="80" bodyend="98"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1HammingComputer4_1ad5c8ec402c03b960fc835722e1254cfa" prot="public" virt="non-virtual"><scope>faiss::HammingComputer4</scope><name>a0</name></member>
+      <member refid="structfaiss_1_1HammingComputer4_1aba11f9b8b74d30adf8884205e1e754ac" prot="public" virt="non-virtual"><scope>faiss::HammingComputer4</scope><name>hamming</name></member>
+      <member refid="structfaiss_1_1HammingComputer4_1a371053baf6ea27ab7948387f96ad911e" prot="public" virt="non-virtual"><scope>faiss::HammingComputer4</scope><name>HammingComputer4</name></member>
+      <member refid="structfaiss_1_1HammingComputer4_1a55b5dec647faca3fa97b0f96dd156267" prot="public" virt="non-virtual"><scope>faiss::HammingComputer4</scope><name>HammingComputer4</name></member>
+      <member refid="structfaiss_1_1HammingComputer4_1a727351f6b05e23f443ac5d0750cb9d93" prot="public" virt="non-virtual"><scope>faiss::HammingComputer4</scope><name>set</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

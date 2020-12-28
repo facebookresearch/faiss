@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Namespace faiss::quantize_lut &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Struct list" href="../structlist.html" />
+    <link rel="prev" title="Namespace faiss::ivflib" href="namespacefaiss_1_1ivflib.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../namespacelist.html">Namespace list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss.html">Namespace faiss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu.html">Namespace faiss::gpu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu_1_1utils.html">Namespace faiss::gpu::utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1ivflib.html">Namespace faiss::ivflib</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Namespace faiss::quantize_lut</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../namespacelist.html">Namespace list</a> &raquo;</li>
+        
+      <li>Namespace faiss::quantize_lut</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/cpp_api/namespace/namespacefaiss_1_1quantize__lut.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="namespace-faiss-quantize-lut">
+<h1>Namespace faiss::quantize_lut<a class="headerlink" href="#namespace-faiss-quantize-lut" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss12quantize_lutE">
+<span id="_CPPv3N5faiss12quantize_lutE"></span><span id="_CPPv2N5faiss12quantize_lutE"></span><span id="faiss::quantize_lut"></span><span class="target" id="namespacefaiss_1_1quantize__lut"></span><em class="property">namespace </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">quantize_lut</code><br /></dt>
+<dd><p>Functions to quantize PQ floating-point Look Up Tables (LUT) to uint8, and biases to uint16. The accumulation is supposed to take place in uint16. The quantization coefficients are float (a, b) such that <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">original_value</span> <span class="o">=</span> <span class="n">quantized_value</span> <span class="o">*</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span>
+</pre></div>
+</div>
+</p>
+<p>The hardest part of the quantization is with multiple LUTs that need to be added up together. In that case, coefficient a has to be chosen so that the sum fits in a uint16 accumulator. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss12quantize_lut22round_uint8_per_columnEPf6size_t6size_tPfPf">
+<span id="_CPPv3N5faiss12quantize_lut22round_uint8_per_columnEPf6size_t6size_tPfPf"></span><span id="_CPPv2N5faiss12quantize_lut22round_uint8_per_columnEPf6size_t6size_tPfPf"></span><span id="faiss::quantize_lut::round_uint8_per_column__floatP.s.s.floatP.floatP"></span><span class="target" id="namespacefaiss_1_1quantize__lut_1a71df0d46800a39a482d566c091623785"></span>void <code class="sig-name descname">round_uint8_per_column</code><span class="sig-paren">(</span>float *<em>tab</em>, size_t <em>n</em>, size_t <em>d</em>, float *<em>a_out</em> = nullptr, float *<em>b_out</em> = nullptr<span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss12quantize_lut28round_uint8_per_column_multiEPf6size_t6size_t6size_tPfPf">
+<span id="_CPPv3N5faiss12quantize_lut28round_uint8_per_column_multiEPf6size_t6size_t6size_tPfPf"></span><span id="_CPPv2N5faiss12quantize_lut28round_uint8_per_column_multiEPf6size_t6size_t6size_tPfPf"></span><span id="faiss::quantize_lut::round_uint8_per_column_multi__floatP.s.s.s.floatP.floatP"></span><span class="target" id="namespacefaiss_1_1quantize__lut_1aaca4bcc4d17e5c66dbc07a7f93cad911"></span>void <code class="sig-name descname">round_uint8_per_column_multi</code><span class="sig-paren">(</span>float *<em>tab</em>, size_t <em>m</em>, size_t <em>n</em>, size_t <em>d</em>, float *<em>a_out</em> = nullptr, float *<em>b_out</em> = nullptr<span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss12quantize_lut21quantize_LUT_and_biasE6size_t6size_t6size_tbPKfPKfP7uint8_t6size_tP8uint16_tPfPf">
+<span id="_CPPv3N5faiss12quantize_lut21quantize_LUT_and_biasE6size_t6size_t6size_tbPKfPKfP7uint8_t6size_tP8uint16_tPfPf"></span><span id="_CPPv2N5faiss12quantize_lut21quantize_LUT_and_biasE6size_t6size_t6size_tbPKfPKfP7uint8_t6size_tP8uint16_tPfPf"></span><span id="faiss::quantize_lut::quantize_LUT_and_bias__s.s.s.b.floatCP.floatCP.uint8_tP.s.uint16_tP.floatP.floatP"></span><span class="target" id="namespacefaiss_1_1quantize__lut_1a352d817a7e7c95c57c2cce10b77e3248"></span>void <code class="sig-name descname">quantize_LUT_and_bias</code><span class="sig-paren">(</span>size_t <em>nprobe</em>, size_t <em>M</em>, size_t <em>ksub</em>, bool <em>lut_is_3d</em>, <em class="property">const</em> float *<em>LUT</em>, <em class="property">const</em> float *<em>bias</em>, uint8_t *<em>LUTq</em>, size_t <em>M2</em>, uint16_t *<em>biasq</em>, float *<em>a_out</em> = nullptr, float *<em>b_out</em> = nullptr<span class="sig-paren">)</span><br /></dt>
+<dd><p>LUT quantization to uint8 and bias to uint16.</p>
+<p>(nprobe, M, ksub, lut_is_3d) determine the size of the the LUT</p>
+<p>LUT input:<ul class="simple">
+<li><p>2D size (M, ksub): single matrix per probe (lut_is_3d=false)</p></li>
+<li><p>3D size (nprobe, M, ksub): separate LUT per probe (lut_is_3d=true) bias input:</p></li>
+<li><p>nullptr: bias is 0</p></li>
+<li><p>size (nprobe): one bias per probe Output:</p></li>
+<li><p>LUTq uint8 version of the LUT (M size is rounded up to M2)</p></li>
+<li><p>biasq (or nullptr): uint16 version of the LUT</p></li>
+<li><p>a, b: scalars to approximate the true distance </p></li>
+</ul>
+</p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../structlist.html" class="btn btn-neutral float-right" title="Struct list" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="namespacefaiss_1_1ivflib.html" class="btn btn-neutral float-left" title="Namespace faiss::ivflib" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright Facebook, Inc. and its affiliates.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

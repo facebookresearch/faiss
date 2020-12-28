@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1HammingComputer16" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HammingComputer16</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1HammingComputer16_1ac4340a237b6cf38bad084fe520ce4f38" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::HammingComputer16::a0</definition>
+        <argsstring></argsstring>
+        <name>a0</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="122" column="14" bodyfile="faiss/utils/hamming-inl.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HammingComputer16_1ae0d55a59a4f9a4023f1888dc43297277" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::HammingComputer16::a1</definition>
+        <argsstring></argsstring>
+        <name>a1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="122" column="17" bodyfile="faiss/utils/hamming-inl.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer16_1ab601ee8d7ca9e50cc882ebb18354a89e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HammingComputer16::HammingComputer16</definition>
+        <argsstring>()</argsstring>
+        <name>HammingComputer16</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="124" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="124" bodyend="124"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer16_1a11aefbd5ff66bd895ac6563410622ae4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HammingComputer16::HammingComputer16</definition>
+        <argsstring>(const uint8_t *a8, int code_size)</argsstring>
+        <name>HammingComputer16</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a8</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="126" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="126" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer16_1a22a66f390eddd54563e1255b1a1c0184" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::HammingComputer16::set</definition>
+        <argsstring>(const uint8_t *a8, int code_size)</argsstring>
+        <name>set</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a8</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="130" column="10" bodyfile="faiss/utils/hamming-inl.h" bodystart="130" bodyend="134"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer16_1ab9589c7dfca5ed5993b4b79cebcb3ee0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::HammingComputer16::hamming</definition>
+        <argsstring>(const uint8_t *b8) const</argsstring>
+        <name>hamming</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>b8</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="136" column="16" bodyfile="faiss/utils/hamming-inl.h" bodystart="136" bodyend="139"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/hamming-inl.h" line="121" column="24" bodyfile="faiss/utils/hamming-inl.h" bodystart="121" bodyend="141"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1HammingComputer16_1ac4340a237b6cf38bad084fe520ce4f38" prot="public" virt="non-virtual"><scope>faiss::HammingComputer16</scope><name>a0</name></member>
+      <member refid="structfaiss_1_1HammingComputer16_1ae0d55a59a4f9a4023f1888dc43297277" prot="public" virt="non-virtual"><scope>faiss::HammingComputer16</scope><name>a1</name></member>
+      <member refid="structfaiss_1_1HammingComputer16_1ab9589c7dfca5ed5993b4b79cebcb3ee0" prot="public" virt="non-virtual"><scope>faiss::HammingComputer16</scope><name>hamming</name></member>
+      <member refid="structfaiss_1_1HammingComputer16_1ab601ee8d7ca9e50cc882ebb18354a89e" prot="public" virt="non-virtual"><scope>faiss::HammingComputer16</scope><name>HammingComputer16</name></member>
+      <member refid="structfaiss_1_1HammingComputer16_1a11aefbd5ff66bd895ac6563410622ae4" prot="public" virt="non-virtual"><scope>faiss::HammingComputer16</scope><name>HammingComputer16</name></member>
+      <member refid="structfaiss_1_1HammingComputer16_1a22a66f390eddd54563e1255b1a1c0184" prot="public" virt="non-virtual"><scope>faiss::HammingComputer16</scope><name>set</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

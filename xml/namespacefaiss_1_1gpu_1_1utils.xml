@@ -1,0 +1,248 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="namespacefaiss_1_1gpu_1_1utils" kind="namespace" language="C++">
+    <compoundname>faiss::gpu::utils</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="StaticUtils_8h_1a3bc4691d4731a93fbf5fcec46f5cf04d" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename U</type>
+          </param>
+          <param>
+            <type>typename V</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr __host__ __device__ auto</type>
+        <definition>constexpr __host__ __device__ auto faiss::gpu::utils::divDown</definition>
+        <argsstring>(U a, V b) -&gt; decltype(a+b)</argsstring>
+        <name>divDown</name>
+        <param>
+          <type>U</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>V</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="22" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="22" bodyend="24"/>
+      </memberdef>
+      <memberdef kind="function" id="StaticUtils_8h_1a91e56461afb8b046dba4fdd8000e95af" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename U</type>
+          </param>
+          <param>
+            <type>typename V</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr __host__ __device__ auto</type>
+        <definition>constexpr __host__ __device__ auto faiss::gpu::utils::divUp</definition>
+        <argsstring>(U a, V b) -&gt; decltype(a+b)</argsstring>
+        <name>divUp</name>
+        <param>
+          <type>U</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>V</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="27" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="27" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="StaticUtils_8h_1afbb2f1d0a5843abf8c3a836bfb387ab4" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename U</type>
+          </param>
+          <param>
+            <type>typename V</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr __host__ __device__ auto</type>
+        <definition>constexpr __host__ __device__ auto faiss::gpu::utils::roundDown</definition>
+        <argsstring>(U a, V b) -&gt; decltype(a+b)</argsstring>
+        <name>roundDown</name>
+        <param>
+          <type>U</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>V</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="32" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="32" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="StaticUtils_8h_1a1f24706c84852e436a8b5dcad7d9f252" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename U</type>
+          </param>
+          <param>
+            <type>typename V</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr __host__ __device__ auto</type>
+        <definition>constexpr __host__ __device__ auto faiss::gpu::utils::roundUp</definition>
+        <argsstring>(U a, V b) -&gt; decltype(a+b)</argsstring>
+        <name>roundUp</name>
+        <param>
+          <type>U</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>V</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="37" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="37" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="StaticUtils_8h_1a1f3e4845c081c122a447cc5f520b7a93" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr __host__ __device__ T</type>
+        <definition>constexpr __host__ __device__ T faiss::gpu::utils::pow</definition>
+        <argsstring>(T n, T power)</argsstring>
+        <name>pow</name>
+        <param>
+          <type>T</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>power</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="42" column="33" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="42" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="function" id="StaticUtils_8h_1aa90afbafb948f4fa36a2414120ff208c" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr __host__ __device__ T</type>
+        <definition>constexpr __host__ __device__ T faiss::gpu::utils::pow2</definition>
+        <argsstring>(T n)</argsstring>
+        <name>pow2</name>
+        <param>
+          <type>T</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="47" column="33" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="47" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="StaticUtils_8h_1aee56435daf563a79585c93c44e5375db" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr __host__ __device__ int</type>
+        <definition>constexpr __host__ __device__ int faiss::gpu::utils::log2</definition>
+        <argsstring>(T n, int p=0)</argsstring>
+        <name>log2</name>
+        <param>
+          <type>T</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>p</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="54" column="35" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="54" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="StaticUtils_8h_1a4d2f892d9242bffb150b3743b95eac33" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr __host__ __device__ bool</type>
+        <definition>constexpr __host__ __device__ bool faiss::gpu::utils::isPowerOf2</definition>
+        <argsstring>(T v)</argsstring>
+        <name>isPowerOf2</name>
+        <param>
+          <type>T</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="63" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="63" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="StaticUtils_8h_1ab55ab9059fa19bc3270a50dfe239a077" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr __host__ __device__ T</type>
+        <definition>constexpr __host__ __device__ T faiss::gpu::utils::nextHighestPowerOf2</definition>
+        <argsstring>(T v)</argsstring>
+        <name>nextHighestPowerOf2</name>
+        <param>
+          <type>T</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="71" column="33" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="71" bodyend="73"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu/utils/StaticUtils.h" line="19" column="41"/>
+  </compounddef>
+</doxygen>

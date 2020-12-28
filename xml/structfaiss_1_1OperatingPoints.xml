@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1OperatingPoints" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::OperatingPoints</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1OperatingPoints_1a48f457047b0511ecc531f250ef8b19c3" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structfaiss_1_1OperatingPoint" kindref="compound">OperatingPoint</ref> &gt;</type>
+        <definition>std::vector&lt;OperatingPoint&gt; faiss::OperatingPoints::all_pts</definition>
+        <argsstring></argsstring>
+        <name>all_pts</name>
+        <briefdescription>
+<para>all operating points </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="99" column="17" bodyfile="faiss/AutoTune.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1OperatingPoints_1a2829e78e01cc42c3a341622947663b31" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structfaiss_1_1OperatingPoint" kindref="compound">OperatingPoint</ref> &gt;</type>
+        <definition>std::vector&lt;OperatingPoint&gt; faiss::OperatingPoints::optimal_pts</definition>
+        <argsstring></argsstring>
+        <name>optimal_pts</name>
+        <briefdescription>
+<para>optimal operating points, sorted by perf </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="102" column="17" bodyfile="faiss/AutoTune.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1OperatingPoints_1a65530fa64d46bcaca21719cf0b1126f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::OperatingPoints::OperatingPoints</definition>
+        <argsstring>()</argsstring>
+        <name>OperatingPoints</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="105" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1OperatingPoints_1a84baddccd8b803dee460739f8bcbc0c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::OperatingPoints::merge_with</definition>
+        <argsstring>(const OperatingPoints &amp;other, const std::string &amp;prefix=&quot;&quot;)</argsstring>
+        <name>merge_with</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1OperatingPoints" kindref="compound">OperatingPoints</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>prefix</declname>
+          <defval>&quot;&quot;</defval>
+        </param>
+        <briefdescription>
+<para>add operating points from other to this, with a prefix to the keys </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="108" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1OperatingPoints_1a1702eeb680ce73ca8c1fd071955f0679" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::OperatingPoints::clear</definition>
+        <argsstring>()</argsstring>
+        <name>clear</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="111" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1OperatingPoints_1a7afabe0576800255eeec680486cb30df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::OperatingPoints::add</definition>
+        <argsstring>(double perf, double t, const std::string &amp;key, size_t cno=0)</argsstring>
+        <name>add</name>
+        <param>
+          <type>double</type>
+          <declname>perf</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>t</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>cno</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>add a performance measure. Return whether it is an optimal point </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="114" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1OperatingPoints_1ad06f915a9b8f8cfd8c7a00858c6c24ae" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double faiss::OperatingPoints::t_for_perf</definition>
+        <argsstring>(double perf) const</argsstring>
+        <name>t_for_perf</name>
+        <param>
+          <type>double</type>
+          <declname>perf</declname>
+        </param>
+        <briefdescription>
+<para>get time required to obtain a given performance measure </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="117" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1OperatingPoints_1a3fe8cd962524dfdfb8e7bba8c984024d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::OperatingPoints::display</definition>
+        <argsstring>(bool only_optimal=true) const</argsstring>
+        <name>display</name>
+        <param>
+          <type>bool</type>
+          <declname>only_optimal</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+<para>easy-to-read output </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="120" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1OperatingPoints_1a355e16cdecf1905c995120a35ba08ac5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::OperatingPoints::all_to_gnuplot</definition>
+        <argsstring>(const char *fname) const</argsstring>
+        <name>all_to_gnuplot</name>
+        <param>
+          <type>const char *</type>
+          <declname>fname</declname>
+        </param>
+        <briefdescription>
+<para>output to a format easy to digest by gnuplot </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="123" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1OperatingPoints_1a1223380199823ba94945bdd4dd2ccc24" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::OperatingPoints::optimal_to_gnuplot</definition>
+        <argsstring>(const char *fname) const</argsstring>
+        <name>optimal_to_gnuplot</name>
+        <param>
+          <type>const char *</type>
+          <declname>fname</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="124" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/AutoTune.h" line="97" column="22" bodyfile="faiss/AutoTune.h" bodystart="97" bodyend="126"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1OperatingPoints_1a7afabe0576800255eeec680486cb30df" prot="public" virt="non-virtual"><scope>faiss::OperatingPoints</scope><name>add</name></member>
+      <member refid="structfaiss_1_1OperatingPoints_1a48f457047b0511ecc531f250ef8b19c3" prot="public" virt="non-virtual"><scope>faiss::OperatingPoints</scope><name>all_pts</name></member>
+      <member refid="structfaiss_1_1OperatingPoints_1a355e16cdecf1905c995120a35ba08ac5" prot="public" virt="non-virtual"><scope>faiss::OperatingPoints</scope><name>all_to_gnuplot</name></member>
+      <member refid="structfaiss_1_1OperatingPoints_1a1702eeb680ce73ca8c1fd071955f0679" prot="public" virt="non-virtual"><scope>faiss::OperatingPoints</scope><name>clear</name></member>
+      <member refid="structfaiss_1_1OperatingPoints_1a3fe8cd962524dfdfb8e7bba8c984024d" prot="public" virt="non-virtual"><scope>faiss::OperatingPoints</scope><name>display</name></member>
+      <member refid="structfaiss_1_1OperatingPoints_1a84baddccd8b803dee460739f8bcbc0c9" prot="public" virt="non-virtual"><scope>faiss::OperatingPoints</scope><name>merge_with</name></member>
+      <member refid="structfaiss_1_1OperatingPoints_1a65530fa64d46bcaca21719cf0b1126f7" prot="public" virt="non-virtual"><scope>faiss::OperatingPoints</scope><name>OperatingPoints</name></member>
+      <member refid="structfaiss_1_1OperatingPoints_1a2829e78e01cc42c3a341622947663b31" prot="public" virt="non-virtual"><scope>faiss::OperatingPoints</scope><name>optimal_pts</name></member>
+      <member refid="structfaiss_1_1OperatingPoints_1a1223380199823ba94945bdd4dd2ccc24" prot="public" virt="non-virtual"><scope>faiss::OperatingPoints</scope><name>optimal_to_gnuplot</name></member>
+      <member refid="structfaiss_1_1OperatingPoints_1ad06f915a9b8f8cfd8c7a00858c6c24ae" prot="public" virt="non-virtual"><scope>faiss::OperatingPoints</scope><name>t_for_perf</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

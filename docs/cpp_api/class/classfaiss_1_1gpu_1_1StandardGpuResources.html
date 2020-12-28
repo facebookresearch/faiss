@@ -1,0 +1,350 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Class faiss::gpu::StandardGpuResources &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Class faiss::gpu::StandardGpuResourcesImpl" href="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl.html" />
+    <link rel="prev" title="Class faiss::gpu::StackDeviceMemory" href="classfaiss_1_1gpu_1_1StackDeviceMemory.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../classlist.html">Class list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1IndexReplicasTemplate.html">Class faiss::IndexReplicasTemplate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1WorkerThread.html">Class faiss::WorkerThread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1CpuTimer.html">Class faiss::gpu::CpuTimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1CublasHandleScope.html">Class faiss::gpu::CublasHandleScope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1CudaEvent.html">Class faiss::gpu::CudaEvent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1DeviceScope.html">Class faiss::gpu::DeviceScope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndex.html">Class faiss::gpu::GpuIndex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html">Class faiss::gpu::GpuIndexBinaryFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html">Class faiss::gpu::GpuIndexFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html">Class faiss::gpu::GpuIndexFlatIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html">Class faiss::gpu::GpuIndexFlatL2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html">Class faiss::gpu::GpuIndexIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html">Class faiss::gpu::GpuIndexIVFFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html">Class faiss::gpu::GpuIndexIVFPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html">Class faiss::gpu::GpuIndexIVFScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResources.html">Class faiss::gpu::GpuResources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResourcesProvider.html">Class faiss::gpu::GpuResourcesProvider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1KernelTimer.html">Class faiss::gpu::KernelTimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StackDeviceMemory.html">Class faiss::gpu::StackDeviceMemory</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Class faiss::gpu::StandardGpuResources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl.html">Class faiss::gpu::StandardGpuResourcesImpl</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../classlist.html">Class list</a> &raquo;</li>
+        
+      <li>Class faiss::gpu::StandardGpuResources</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/cpp_api/class/classfaiss_1_1gpu_1_1StandardGpuResources.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="class-faiss-gpu-standardgpuresources">
+<h1>Class faiss::gpu::StandardGpuResources<a class="headerlink" href="#class-faiss-gpu-standardgpuresources" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp class">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResourcesE">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResourcesE"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResourcesE"></span><span id="faiss::gpu::StandardGpuResources"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources"></span><em class="property">class </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu">gpu</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">StandardGpuResources</code> : <em class="property">public</em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu">gpu</a>::<a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResourcesProvider.html#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="faiss::gpu::GpuResourcesProvider">GpuResourcesProvider</a><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResourcesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default implementation of <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuResources"><span class="std std-ref">GpuResources</span></a> that allocates a cuBLAS stream and 2 streams for use, as well as temporary memory. Internally, the Faiss GPU code uses the instance managed by getResources, but this is the user-facing object that is internally reference counted. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResources20StandardGpuResourcesEv">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources20StandardGpuResourcesEv"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources20StandardGpuResourcesEv"></span><span id="faiss::gpu::StandardGpuResources::StandardGpuResources"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1ad1ef27033798e5250230a339099e07db"></span><code class="sig-name descname">StandardGpuResources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources20StandardGpuResourcesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResourcesD0Ev">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResourcesD0Ev"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResourcesD0Ev"></span><span id="faiss::gpu::StandardGpuResources::~StandardGpuResources"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1ae26840fd6490cfaf7311f2eed81def34"></span><code class="sig-name descname">~StandardGpuResources</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResourcesD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResources12getResourcesEv">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources12getResourcesEv"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources12getResourcesEv"></span><span id="faiss::gpu::StandardGpuResources::getResources"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1aed88267bce1b6657a06d160f0e62ffc4"></span>std::shared_ptr&lt;<a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources">GpuResources</a>&gt; <code class="sig-name descname">getResources</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources12getResourcesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the shared resources object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResources12noTempMemoryEv">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources12noTempMemoryEv"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources12noTempMemoryEv"></span><span id="faiss::gpu::StandardGpuResources::noTempMemory"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a6431477a7328ac147797b3b4e3fcf651"></span>void <code class="sig-name descname">noTempMemory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources12noTempMemoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Disable allocation of temporary memory; all temporary memory requests will call cudaMalloc / cudaFree at the point of use </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResources13setTempMemoryE6size_t">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources13setTempMemoryE6size_t"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources13setTempMemoryE6size_t"></span><span id="faiss::gpu::StandardGpuResources::setTempMemory__s"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a367102e65b16bfdc7a32770a4f5854a6"></span>void <code class="sig-name descname">setTempMemory</code><span class="sig-paren">(</span>size_t <em>size</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources13setTempMemoryE6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Specify that we wish to use a certain fixed size of memory on all devices as temporary memory. This is the upper bound for the GPU memory that we will reserve. We will never go above 1.5 GiB on any GPU; smaller GPUs (with &lt;= 4 GiB or &lt;= 8 GiB) will use less memory than that. To avoid any temporary memory allocation, pass 0. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResources15setPinnedMemoryE6size_t">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources15setPinnedMemoryE6size_t"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources15setPinnedMemoryE6size_t"></span><span id="faiss::gpu::StandardGpuResources::setPinnedMemory__s"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1af9acb23ac323f85fa5dab4ed968ccd51"></span>void <code class="sig-name descname">setPinnedMemory</code><span class="sig-paren">(</span>size_t <em>size</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources15setPinnedMemoryE6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set amount of pinned memory to allocate, for async GPU &lt;-&gt; CPU transfers </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResources16setDefaultStreamEi12cudaStream_t">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources16setDefaultStreamEi12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources16setDefaultStreamEi12cudaStream_t"></span><span id="faiss::gpu::StandardGpuResources::setDefaultStream__i.cudaStream_t"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a5924b424c36dba8300866f1b98c438cb"></span>void <code class="sig-name descname">setDefaultStream</code><span class="sig-paren">(</span>int <em>device</em>, cudaStream_t <em>stream</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources16setDefaultStreamEi12cudaStream_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Called to change the stream for work ordering. We do not own <code class="docutils literal notranslate"><span class="pre">stream</span></code>; i.e., it will not be destroyed when the <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuResources"><span class="std std-ref">GpuResources</span></a> object gets cleaned up. We are guaranteed that all Faiss GPU work is ordered with respect to this stream upon exit from an index or other Faiss GPU call. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResources19revertDefaultStreamEi">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources19revertDefaultStreamEi"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources19revertDefaultStreamEi"></span><span id="faiss::gpu::StandardGpuResources::revertDefaultStream__i"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1abf351c4a72d7ab72070b24f82764da58"></span>void <code class="sig-name descname">revertDefaultStream</code><span class="sig-paren">(</span>int <em>device</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources19revertDefaultStreamEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Revert the default stream to the original stream managed by this resources object, in case someone called <code class="docutils literal notranslate"><span class="pre">setDefaultStream</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResources30setDefaultNullStreamAllDevicesEv">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources30setDefaultNullStreamAllDevicesEv"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources30setDefaultNullStreamAllDevicesEv"></span><span id="faiss::gpu::StandardGpuResources::setDefaultNullStreamAllDevices"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a5374f336f1957c266d7a5c185eb962a1"></span>void <code class="sig-name descname">setDefaultNullStreamAllDevices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources30setDefaultNullStreamAllDevicesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Called to change the work ordering streams to the null stream for all devices </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu20StandardGpuResources13getMemoryInfoEv">
+<span id="_CPPv3NK5faiss3gpu20StandardGpuResources13getMemoryInfoEv"></span><span id="_CPPv2NK5faiss3gpu20StandardGpuResources13getMemoryInfoEv"></span><span id="faiss::gpu::StandardGpuResources::getMemoryInfoC"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a9e0e2c7d7e9254c73546dc87d24ccbcf"></span>std::map&lt;int, std::map&lt;std::string, std::pair&lt;int, size_t&gt;&gt;&gt; <code class="sig-name descname">getMemoryInfo</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu20StandardGpuResources13getMemoryInfoEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Export a description of memory used for Python. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResources16getDefaultStreamEi">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources16getDefaultStreamEi"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources16getDefaultStreamEi"></span><span id="faiss::gpu::StandardGpuResources::getDefaultStream__i"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a2d0caade01eb384bc82c2e8759a129a1"></span>cudaStream_t <code class="sig-name descname">getDefaultStream</code><span class="sig-paren">(</span>int <em>device</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources16getDefaultStreamEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the current default stream. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu20StandardGpuResources22getTempMemoryAvailableEi">
+<span id="_CPPv3NK5faiss3gpu20StandardGpuResources22getTempMemoryAvailableEi"></span><span id="_CPPv2NK5faiss3gpu20StandardGpuResources22getTempMemoryAvailableEi"></span><span id="faiss::gpu::StandardGpuResources::getTempMemoryAvailable__iC"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a318f3c0aa6085f430c71f64496f42496"></span>size_t <code class="sig-name descname">getTempMemoryAvailable</code><span class="sig-paren">(</span>int <em>device</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu20StandardGpuResources22getTempMemoryAvailableEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the current amount of temp memory available. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResources30syncDefaultStreamCurrentDeviceEv">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources30syncDefaultStreamCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources30syncDefaultStreamCurrentDeviceEv"></span><span id="faiss::gpu::StandardGpuResources::syncDefaultStreamCurrentDevice"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1aba33a979707f40913035bbbfcc9b2a14"></span>void <code class="sig-name descname">syncDefaultStreamCurrentDevice</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources30syncDefaultStreamCurrentDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Synchronize our default stream with the CPU. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResources23setLogMemoryAllocationsEb">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources23setLogMemoryAllocationsEb"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources23setLogMemoryAllocationsEb"></span><span id="faiss::gpu::StandardGpuResources::setLogMemoryAllocations__b"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a26de76d448f071aa46555b77155a516d"></span>void <code class="sig-name descname">setLogMemoryAllocations</code><span class="sig-paren">(</span>bool <em>enable</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources23setLogMemoryAllocationsEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>If enabled, will print every GPU memory allocation and deallocation to standard output </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Private Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu20StandardGpuResources4res_E">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources4res_E"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources4res_E"></span><span id="faiss::gpu::StandardGpuResources::res___std::shared_ptr:StandardGpuResourcesImpl:"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a14134d33f2201b905babac6252ac1019"></span>std::shared_ptr&lt;<a class="reference internal" href="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl.html#_CPPv4N5faiss3gpu24StandardGpuResourcesImplE" title="faiss::gpu::StandardGpuResourcesImpl">StandardGpuResourcesImpl</a>&gt; <code class="sig-name descname">res_</code><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources4res_E" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl.html" class="btn btn-neutral float-right" title="Class faiss::gpu::StandardGpuResourcesImpl" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="classfaiss_1_1gpu_1_1StackDeviceMemory.html" class="btn btn-neutral float-left" title="Class faiss::gpu::StackDeviceMemory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright Facebook, Inc. and its affiliates.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1OnDiskOneList" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::OnDiskOneList</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1OnDiskOneList_1a82948bfa0399754ff4274eef58d93874" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::OnDiskOneList::size</definition>
+        <argsstring></argsstring>
+        <name>size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="28" column="12" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1OnDiskOneList_1abd2ec43b560ff4ae9c056de1438752e1" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::OnDiskOneList::capacity</definition>
+        <argsstring></argsstring>
+        <name>capacity</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="29" column="12" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1OnDiskOneList_1a8298eb2a691566cd3225a7e4ff329043" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::OnDiskOneList::offset</definition>
+        <argsstring></argsstring>
+        <name>offset</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="30" column="12" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1OnDiskOneList_1aee43ab23bfac0c55a9a1cb26b6c421db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::OnDiskOneList::OnDiskOneList</definition>
+        <argsstring>()</argsstring>
+        <name>OnDiskOneList</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="31" column="5"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/invlists/OnDiskInvertedLists.h" line="27" column="20" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="27" bodyend="32"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1OnDiskOneList_1abd2ec43b560ff4ae9c056de1438752e1" prot="public" virt="non-virtual"><scope>faiss::OnDiskOneList</scope><name>capacity</name></member>
+      <member refid="structfaiss_1_1OnDiskOneList_1a8298eb2a691566cd3225a7e4ff329043" prot="public" virt="non-virtual"><scope>faiss::OnDiskOneList</scope><name>offset</name></member>
+      <member refid="structfaiss_1_1OnDiskOneList_1aee43ab23bfac0c55a9a1cb26b6c421db" prot="public" virt="non-virtual"><scope>faiss::OnDiskOneList</scope><name>OnDiskOneList</name></member>
+      <member refid="structfaiss_1_1OnDiskOneList_1a82948bfa0399754ff4274eef58d93874" prot="public" virt="non-virtual"><scope>faiss::OnDiskOneList</scope><name>size</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

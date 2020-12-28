@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1HCounterState" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HCounterState</compoundname>
+    <includes refid="hamming-inl_8h" local="no">hamming-inl.h</includes>
+    <templateparamlist>
+      <param>
+        <type>class <ref refid="structfaiss_1_1HammingComputer" kindref="compound">HammingComputer</ref></type>
+      </param>
+    </templateparamlist>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1HCounterState_1aba2730ef4714f1ec177994b37402ccfe" prot="public" static="no" mutable="no">
+        <type>int *</type>
+        <definition>int* faiss::HCounterState&lt; HammingComputer &gt;::counters</definition>
+        <argsstring></argsstring>
+        <name>counters</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="430" column="7" bodyfile="faiss/utils/hamming-inl.h" bodystart="430" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HCounterState_1a034efca2fb54bc2c45488259f5e47365" prot="public" static="no" mutable="no">
+        <type>int64_t *</type>
+        <definition>int64_t* faiss::HCounterState&lt; HammingComputer &gt;::ids_per_dis</definition>
+        <argsstring></argsstring>
+        <name>ids_per_dis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="431" column="11" bodyfile="faiss/utils/hamming-inl.h" bodystart="431" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HCounterState_1ac8aa41122bfbca508167f6c62f2b8701" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1HammingComputer" kindref="compound">HammingComputer</ref></type>
+        <definition>HammingComputer faiss::HCounterState&lt; HammingComputer &gt;::hc</definition>
+        <argsstring></argsstring>
+        <name>hc</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="433" column="19" bodyfile="faiss/utils/hamming-inl.h" bodystart="433" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HCounterState_1af064903b7159141e0997d00be5790a96" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HCounterState&lt; HammingComputer &gt;::thres</definition>
+        <argsstring></argsstring>
+        <name>thres</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="434" column="7" bodyfile="faiss/utils/hamming-inl.h" bodystart="434" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HCounterState_1abbf19dbccb8d0c988dc7ccdc0c6eb732" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HCounterState&lt; HammingComputer &gt;::count_lt</definition>
+        <argsstring></argsstring>
+        <name>count_lt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="435" column="7" bodyfile="faiss/utils/hamming-inl.h" bodystart="435" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HCounterState_1a2b05f257aa65e0471f3bfe39f9f439ae" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HCounterState&lt; HammingComputer &gt;::count_eq</definition>
+        <argsstring></argsstring>
+        <name>count_eq</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="436" column="7" bodyfile="faiss/utils/hamming-inl.h" bodystart="436" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HCounterState_1a4870c60387b35d4805fb3e5bff29ef08" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HCounterState&lt; HammingComputer &gt;::k</definition>
+        <argsstring></argsstring>
+        <name>k</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="437" column="7" bodyfile="faiss/utils/hamming-inl.h" bodystart="437" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1HCounterState_1a83bb9102d3f4a543ab5a95d51e539c23" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HCounterState&lt; HammingComputer &gt;::HCounterState</definition>
+        <argsstring>(int *counters, int64_t *ids_per_dis, const uint8_t *x, int d, int k)</argsstring>
+        <name>HCounterState</name>
+        <param>
+          <type>int *</type>
+          <declname>counters</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids_per_dis</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="439" column="2" bodyfile="faiss/utils/hamming-inl.h" bodystart="439" bodyend="447"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HCounterState_1acbc245f1f1e3dc91a0638fa093e2d4eb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::HCounterState&lt; HammingComputer &gt;::update_counter</definition>
+        <argsstring>(const uint8_t *y, size_t j)</argsstring>
+        <name>update_counter</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="449" column="8" bodyfile="faiss/utils/hamming-inl.h" bodystart="449" bodyend="466"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>This class maintains a list of best distances seen so far.</para>
+<para>Since the distances are in a limited range (0 to nbit), the object maintains one list per possible distance, and fills in only the n-first lists, such that the sum of sizes of the n lists is below k. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::HCounterState&lt; HammingComputer &gt;</label>
+        <link refid="structfaiss_1_1HCounterState"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>hc</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::HammingComputerM8</label>
+        <link refid="structfaiss_1_1HammingComputerM8"/>
+      </node>
+      <node id="2">
+        <label>faiss::HammingComputer&lt; CODE_SIZE &gt;</label>
+        <link refid="structfaiss_1_1HammingComputer"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/utils/hamming-inl.h" line="429" column="20" bodyfile="faiss/utils/hamming-inl.h" bodystart="429" bodyend="467"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1HCounterState_1a2b05f257aa65e0471f3bfe39f9f439ae" prot="public" virt="non-virtual"><scope>faiss::HCounterState</scope><name>count_eq</name></member>
+      <member refid="structfaiss_1_1HCounterState_1abbf19dbccb8d0c988dc7ccdc0c6eb732" prot="public" virt="non-virtual"><scope>faiss::HCounterState</scope><name>count_lt</name></member>
+      <member refid="structfaiss_1_1HCounterState_1aba2730ef4714f1ec177994b37402ccfe" prot="public" virt="non-virtual"><scope>faiss::HCounterState</scope><name>counters</name></member>
+      <member refid="structfaiss_1_1HCounterState_1ac8aa41122bfbca508167f6c62f2b8701" prot="public" virt="non-virtual"><scope>faiss::HCounterState</scope><name>hc</name></member>
+      <member refid="structfaiss_1_1HCounterState_1a83bb9102d3f4a543ab5a95d51e539c23" prot="public" virt="non-virtual"><scope>faiss::HCounterState</scope><name>HCounterState</name></member>
+      <member refid="structfaiss_1_1HCounterState_1a034efca2fb54bc2c45488259f5e47365" prot="public" virt="non-virtual"><scope>faiss::HCounterState</scope><name>ids_per_dis</name></member>
+      <member refid="structfaiss_1_1HCounterState_1a4870c60387b35d4805fb3e5bff29ef08" prot="public" virt="non-virtual"><scope>faiss::HCounterState</scope><name>k</name></member>
+      <member refid="structfaiss_1_1HCounterState_1af064903b7159141e0997d00be5790a96" prot="public" virt="non-virtual"><scope>faiss::HCounterState</scope><name>thres</name></member>
+      <member refid="structfaiss_1_1HCounterState_1acbc245f1f1e3dc91a0638fa093e2d4eb" prot="public" virt="non-virtual"><scope>faiss::HCounterState</scope><name>update_counter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

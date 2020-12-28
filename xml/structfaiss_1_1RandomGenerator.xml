@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1RandomGenerator" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::RandomGenerator</compoundname>
+    <includes refid="random_8h" local="no">random.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1RandomGenerator_1a1cb04ff503cdcdac5977274b8a2591d8" prot="public" static="no" mutable="no">
+        <type>std::mt19937</type>
+        <definition>std::mt19937 faiss::RandomGenerator::mt</definition>
+        <argsstring></argsstring>
+        <name>mt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="31" column="18" bodyfile="faiss/utils/random.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1RandomGenerator_1a583f124ecacdbe037ac96e23a44dd420" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::RandomGenerator::rand_int</definition>
+        <argsstring>()</argsstring>
+        <name>rand_int</name>
+        <briefdescription>
+<para>random positive integer </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="34" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RandomGenerator_1a3c1d4f4e81baf1507961409af6219da3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t faiss::RandomGenerator::rand_int64</definition>
+        <argsstring>()</argsstring>
+        <name>rand_int64</name>
+        <briefdescription>
+<para>random int64_t </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="37" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RandomGenerator_1aa460b9bac2593cd1d71305e10ab51af6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::RandomGenerator::rand_int</definition>
+        <argsstring>(int max)</argsstring>
+        <name>rand_int</name>
+        <param>
+          <type>int</type>
+          <declname>max</declname>
+        </param>
+        <briefdescription>
+<para>generate random integer between 0 and max-1 </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="40" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RandomGenerator_1ac82a433d7bfa56d750907ba5cf74aed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::RandomGenerator::rand_float</definition>
+        <argsstring>()</argsstring>
+        <name>rand_float</name>
+        <briefdescription>
+<para>between 0 and 1 </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="43" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RandomGenerator_1abd824911e83a956b21d0168f8b4f2364" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double faiss::RandomGenerator::rand_double</definition>
+        <argsstring>()</argsstring>
+        <name>rand_double</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="45" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RandomGenerator_1a8d2ce09ee883bb4e840e6aabafbbbdea" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::RandomGenerator::RandomGenerator</definition>
+        <argsstring>(int64_t seed=1234)</argsstring>
+        <name>RandomGenerator</name>
+        <param>
+          <type>int64_t</type>
+          <declname>seed</declname>
+          <defval>1234</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="47" column="14"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>random generator that can be used in multithreaded contexts </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/random.h" line="27" column="22" bodyfile="faiss/utils/random.h" bodystart="27" bodyend="46"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1RandomGenerator_1a1cb04ff503cdcdac5977274b8a2591d8" prot="public" virt="non-virtual"><scope>faiss::RandomGenerator</scope><name>mt</name></member>
+      <member refid="structfaiss_1_1RandomGenerator_1abd824911e83a956b21d0168f8b4f2364" prot="public" virt="non-virtual"><scope>faiss::RandomGenerator</scope><name>rand_double</name></member>
+      <member refid="structfaiss_1_1RandomGenerator_1ac82a433d7bfa56d750907ba5cf74aed7" prot="public" virt="non-virtual"><scope>faiss::RandomGenerator</scope><name>rand_float</name></member>
+      <member refid="structfaiss_1_1RandomGenerator_1a583f124ecacdbe037ac96e23a44dd420" prot="public" virt="non-virtual"><scope>faiss::RandomGenerator</scope><name>rand_int</name></member>
+      <member refid="structfaiss_1_1RandomGenerator_1aa460b9bac2593cd1d71305e10ab51af6" prot="public" virt="non-virtual"><scope>faiss::RandomGenerator</scope><name>rand_int</name></member>
+      <member refid="structfaiss_1_1RandomGenerator_1a3c1d4f4e81baf1507961409af6219da3" prot="public" virt="non-virtual"><scope>faiss::RandomGenerator</scope><name>rand_int64</name></member>
+      <member refid="structfaiss_1_1RandomGenerator_1a8d2ce09ee883bb4e840e6aabafbbbdea" prot="public" virt="non-virtual"><scope>faiss::RandomGenerator</scope><name>RandomGenerator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dir_42f4926097fe2768058790a30a036468" kind="dir">
+    <compoundname>faiss/gpu/utils</compoundname>
+    <innerdir refid="dir_e0bc4e8ba6e534e3fbf335254ee8d911">faiss/gpu/utils/blockselect</innerdir>
+    <innerdir refid="dir_ad53beca454033ad93eaf26a4bdf359c">faiss/gpu/utils/warpselect</innerdir>
+    <innerfile refid="BlockSelectKernel_8cuh">BlockSelectKernel.cuh</innerfile>
+    <innerfile refid="Comparators_8cuh">Comparators.cuh</innerfile>
+    <innerfile refid="ConversionOperators_8cuh">ConversionOperators.cuh</innerfile>
+    <innerfile refid="CopyUtils_8cuh">CopyUtils.cuh</innerfile>
+    <innerfile refid="DeviceDefs_8cuh">DeviceDefs.cuh</innerfile>
+    <innerfile refid="DeviceTensor-inl_8cuh">DeviceTensor-inl.cuh</innerfile>
+    <innerfile refid="DeviceTensor_8cuh">DeviceTensor.cuh</innerfile>
+    <innerfile refid="DeviceUtils_8h">DeviceUtils.h</innerfile>
+    <innerfile refid="DeviceVector_8cuh">DeviceVector.cuh</innerfile>
+    <innerfile refid="Float16_8cuh">Float16.cuh</innerfile>
+    <innerfile refid="HostTensor-inl_8cuh">HostTensor-inl.cuh</innerfile>
+    <innerfile refid="HostTensor_8cuh">HostTensor.cuh</innerfile>
+    <innerfile refid="Limits_8cuh">Limits.cuh</innerfile>
+    <innerfile refid="LoadStoreOperators_8cuh">LoadStoreOperators.cuh</innerfile>
+    <innerfile refid="MathOperators_8cuh">MathOperators.cuh</innerfile>
+    <innerfile refid="MatrixMult-inl_8cuh">MatrixMult-inl.cuh</innerfile>
+    <innerfile refid="MatrixMult_8cuh">MatrixMult.cuh</innerfile>
+    <innerfile refid="MergeNetworkBlock_8cuh">MergeNetworkBlock.cuh</innerfile>
+    <innerfile refid="MergeNetworkUtils_8cuh">MergeNetworkUtils.cuh</innerfile>
+    <innerfile refid="MergeNetworkWarp_8cuh">MergeNetworkWarp.cuh</innerfile>
+    <innerfile refid="NoTypeTensor_8cuh">NoTypeTensor.cuh</innerfile>
+    <innerfile refid="Pair_8cuh">Pair.cuh</innerfile>
+    <innerfile refid="PtxUtils_8cuh">PtxUtils.cuh</innerfile>
+    <innerfile refid="ReductionOperators_8cuh">ReductionOperators.cuh</innerfile>
+    <innerfile refid="Reductions_8cuh">Reductions.cuh</innerfile>
+    <innerfile refid="Select_8cuh">Select.cuh</innerfile>
+    <innerfile refid="StackDeviceMemory_8h">StackDeviceMemory.h</innerfile>
+    <innerfile refid="StaticUtils_8h">StaticUtils.h</innerfile>
+    <innerfile refid="Tensor-inl_8cuh">Tensor-inl.cuh</innerfile>
+    <innerfile refid="Tensor_8cuh">Tensor.cuh</innerfile>
+    <innerfile refid="ThrustAllocator_8cuh">ThrustAllocator.cuh</innerfile>
+    <innerfile refid="Timer_8h">Timer.h</innerfile>
+    <innerfile refid="Transpose_8cuh">Transpose.cuh</innerfile>
+    <innerfile refid="WarpPackedBits_8cuh">WarpPackedBits.cuh</innerfile>
+    <innerfile refid="WarpSelectKernel_8cuh">WarpSelectKernel.cuh</innerfile>
+    <innerfile refid="WarpShuffles_8cuh">WarpShuffles.cuh</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu/utils/"/>
+  </compounddef>
+</doxygen>

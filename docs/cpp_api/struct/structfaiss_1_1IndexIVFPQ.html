@@ -1,0 +1,979 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Struct faiss::IndexIVFPQ &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Struct faiss::IndexIVFPQFastScan" href="structfaiss_1_1IndexIVFPQFastScan.html" />
+    <link rel="prev" title="Struct faiss::IndexIVFFlatDedup" href="structfaiss_1_1IndexIVFFlatDedup.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../structlist.html">Struct list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="structPyCallbackIOReader.html">Struct PyCallbackIOReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structPyCallbackIOWriter.html">Struct PyCallbackIOWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AlignedTable.html">Struct faiss::AlignedTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AlignedTableTightAlloc.html">Struct faiss::AlignedTableTightAlloc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ArrayInvertedLists.html">Struct faiss::ArrayInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AutoTuneCriterion.html">Struct faiss::AutoTuneCriterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BinaryInvertedListScanner.html">Struct faiss::BinaryInvertedListScanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BitstringReader.html">Struct faiss::BitstringReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BitstringWriter.html">Struct faiss::BitstringWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedLists.html">Struct faiss::BlockInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedListsIOHook.html">Struct faiss::BlockInvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CMax.html">Struct faiss::CMax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CMin.html">Struct faiss::CMin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CenteringTransform.html">Struct faiss::CenteringTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Cloner.html">Struct faiss::Cloner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Clustering.html">Struct faiss::Clustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ClusteringIterationStats.html">Struct faiss::ClusteringIterationStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ClusteringParameters.html">Struct faiss::ClusteringParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1DirectMap.html">Struct faiss::DirectMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1DirectMapAdd.html">Struct faiss::DirectMapAdd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1FastScanStats.html">Struct faiss::FastScanStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputer16.html">Struct faiss::GenHammingComputer16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputer32.html">Struct faiss::GenHammingComputer32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputer8.html">Struct faiss::GenHammingComputer8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputerM8.html">Struct faiss::GenHammingComputerM8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HCounterState.html">Struct faiss::HCounterState</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HStackInvertedLists.html">Struct faiss::HStackInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer.html">Struct faiss::HammingComputer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer16.html">Struct faiss::HammingComputer16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer20.html">Struct faiss::HammingComputer20</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer32.html">Struct faiss::HammingComputer32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer4.html">Struct faiss::HammingComputer4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer64.html">Struct faiss::HammingComputer64</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer8.html">Struct faiss::HammingComputer8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerDefault.html">Struct faiss::HammingComputerDefault</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerM4.html">Struct faiss::HammingComputerM4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerM8.html">Struct faiss::HammingComputerM8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapArray.html">Struct faiss::HeapArray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ITQMatrix.html">Struct faiss::ITQMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ITQTransform.html">Struct faiss::ITQTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFFastScanStats.html">Struct faiss::IVFFastScanStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFPQSearchParameters.html">Struct faiss::IVFPQSearchParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFSearchParameters.html">Struct faiss::IVFSearchParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index.html">Struct faiss::Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index2Layer.html">Struct faiss::Index2Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinary.html">Struct faiss::IndexBinary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryFlat.html">Struct faiss::IndexBinaryFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryFromFloat.html">Struct faiss::IndexBinaryFromFloat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHNSW.html">Struct faiss::IndexBinaryHNSW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHash.html">Struct faiss::IndexBinaryHash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHashStats.html">Struct faiss::IndexBinaryHashStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHash_1_1InvertedList.html">Struct faiss::IndexBinaryHash::InvertedList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryIVF.html">Struct faiss::IndexBinaryIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryMultiHash.html">Struct faiss::IndexBinaryMultiHash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlat.html">Struct faiss::IndexFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlat1D.html">Struct faiss::IndexFlat1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatIP.html">Struct faiss::IndexFlatIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatL2.html">Struct faiss::IndexFlatL2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSW.html">Struct faiss::IndexHNSW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSW2Level.html">Struct faiss::IndexHNSW2Level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWFlat.html">Struct faiss::IndexHNSWFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWPQ.html">Struct faiss::IndexHNSWPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWSQ.html">Struct faiss::IndexHNSWSQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIDMap2Template.html">Struct faiss::IndexIDMap2Template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIDMapTemplate.html">Struct faiss::IndexIDMapTemplate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVF.html">Struct faiss::IndexIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlat.html">Struct faiss::IndexIVFFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlatDedup.html">Struct faiss::IndexIVFFlatDedup</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::IndexIVFPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQFastScan.html">Struct faiss::IndexIVFPQFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQR.html">Struct faiss::IndexIVFPQR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQStats.html">Struct faiss::IndexIVFPQStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFScalarQuantizer.html">Struct faiss::IndexIVFScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html">Struct faiss::IndexIVFSpectralHash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFStats.html">Struct faiss::IndexIVFStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLSH.html">Struct faiss::IndexLSH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLattice.html">Struct faiss::IndexLattice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQ.html">Struct faiss::IndexPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQFastScan.html">Struct faiss::IndexPQFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQStats.html">Struct faiss::IndexPQStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPreTransform.html">Struct faiss::IndexPreTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefine.html">Struct faiss::IndexRefine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefineFlat.html">Struct faiss::IndexRefineFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexScalarQuantizer.html">Struct faiss::IndexScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexShardsTemplate.html">Struct faiss::IndexShardsTemplate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexSplitVectors.html">Struct faiss::IndexSplitVectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IntersectionCriterion.html">Struct faiss::IntersectionCriterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedListScanner.html">Struct faiss::InvertedListScanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists.html">Struct faiss::InvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedListsIOHook.html">Struct faiss::InvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists_1_1ScopedCodes.html">Struct faiss::InvertedLists::ScopedCodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists_1_1ScopedIds.html">Struct faiss::InvertedLists::ScopedIds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Level1Quantizer.html">Struct faiss::Level1Quantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1LinearTransform.html">Struct faiss::LinearTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MaskedInvertedLists.html">Struct faiss::MaskedInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats.html">Struct faiss::MatrixStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats_1_1Occurrence.html">Struct faiss::MatrixStats::Occurrence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats_1_1PerDimStats.html">Struct faiss::MatrixStats::PerDimStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MultiIndexQuantizer.html">Struct faiss::MultiIndexQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MultiIndexQuantizer2.html">Struct faiss::MultiIndexQuantizer2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1NormalizationTransform.html">Struct faiss::NormalizationTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OPQMatrix.html">Struct faiss::OPQMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskInvertedLists.html">Struct faiss::OnDiskInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskInvertedListsIOHook.html">Struct faiss::OnDiskInvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskInvertedLists_1_1Slot.html">Struct faiss::OnDiskInvertedLists::Slot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskOneList.html">Struct faiss::OnDiskOneList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OneRecallAtRCriterion.html">Struct faiss::OneRecallAtRCriterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OperatingPoint.html">Struct faiss::OperatingPoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OperatingPoints.html">Struct faiss::OperatingPoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PCAMatrix.html">Struct faiss::PCAMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ParameterRange.html">Struct faiss::ParameterRange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ParameterSpace.html">Struct faiss::ParameterSpace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PartitionStats.html">Struct faiss::PartitionStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomGenerator.html">Struct faiss::RandomGenerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomRotationMatrix.html">Struct faiss::RandomRotationMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReadOnlyInvertedLists.html">Struct faiss::ReadOnlyInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReconstructFromNeighbors.html">Struct faiss::ReconstructFromNeighbors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RemapDimensionsTransform.html">Struct faiss::RemapDimensionsTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorTransform.html">Struct faiss::VectorTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1AllocInfo.html">Struct faiss::gpu::AllocInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1AllocRequest.html">Struct faiss::gpu::AllocRequest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html">Struct faiss::gpu::GpuClonerOptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuDistanceParams.html">Struct faiss::gpu::GpuDistanceParams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig.html">Struct faiss::gpu::GpuIndexBinaryFlatConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexConfig.html">Struct faiss::gpu::GpuIndexConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html">Struct faiss::gpu::GpuIndexFlatConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFConfig.html">Struct faiss::gpu::GpuIndexIVFConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFFlatConfig.html">Struct faiss::gpu::GpuIndexIVFFlatConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig.html">Struct faiss::gpu::GpuIndexIVFPQConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig.html">Struct faiss::gpu::GpuIndexIVFScalarQuantizerConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuMemoryReservation.html">Struct faiss::gpu::GpuMemoryReservation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html">Struct faiss::gpu::GpuMultipleClonerOptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html">Struct faiss::gpu::GpuParameterSpace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1IndexWrapper.html">Struct faiss::gpu::IndexWrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range.html">Struct faiss::gpu::StackDeviceMemory::Range</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html">Struct faiss::gpu::StackDeviceMemory::Stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToCPUCloner.html">Struct faiss::gpu::ToCPUCloner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToGpuCloner.html">Struct faiss::gpu::ToGpuCloner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToGpuClonerMultiple.html">Struct faiss::gpu::ToGpuClonerMultiple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ivflib_1_1SlidingIndexWindow.html">Struct faiss::ivflib::SlidingIndexWindow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd16uint16.html">Struct faiss::simd16uint16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd256bit.html">Struct faiss::simd256bit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd32uint8.html">Struct faiss::simd32uint8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd8float32.html">Struct faiss::simd8float32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd8uint32.html">Struct faiss::simd8uint32</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../structlist.html">Struct list</a> &raquo;</li>
+        
+      <li>Struct faiss::IndexIVFPQ</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/cpp_api/struct/structfaiss_1_1IndexIVFPQ.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="struct-faiss-indexivfpq">
+<h1>Struct faiss::IndexIVFPQ<a class="headerlink" href="#struct-faiss-indexivfpq" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp struct">
+<dt id="_CPPv4N5faiss10IndexIVFPQE">
+<span id="_CPPv3N5faiss10IndexIVFPQE"></span><span id="_CPPv2N5faiss10IndexIVFPQE"></span><span id="faiss::IndexIVFPQ"></span><span class="target" id="structfaiss_1_1IndexIVFPQ"></span><em class="property">struct </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">IndexIVFPQ</code> : <em class="property">public</em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss8IndexIVFE" title="faiss::IndexIVF">IndexIVF</a><br /></dt>
+<dd><p>Inverted file with Product Quantizer encoding. Each residual vector is encoded as a product quantizer code. </p>
+<p>Subclassed by <a class="reference internal" href="structfaiss_1_1IndexIVFPQR.html#structfaiss_1_1IndexIVFPQR"><span class="std std-ref">faiss::IndexIVFPQR</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss10IndexIVFPQ5idx_tE">
+<span id="_CPPv3N5faiss10IndexIVFPQ5idx_tE"></span><span id="_CPPv2N5faiss10IndexIVFPQ5idx_tE"></span><span class="target" id="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d"></span><em class="property">using </em><code class="sig-name descname">idx_t</code> = int64_t<br /></dt>
+<dd><p>all indices are this type </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss10IndexIVFPQ11component_tE">
+<span id="_CPPv3N5faiss10IndexIVFPQ11component_tE"></span><span id="_CPPv2N5faiss10IndexIVFPQ11component_tE"></span><span class="target" id="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb"></span><em class="property">using </em><code class="sig-name descname">component_t</code> = float<br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss10IndexIVFPQ10distance_tE">
+<span id="_CPPv3N5faiss10IndexIVFPQ10distance_tE"></span><span id="_CPPv2N5faiss10IndexIVFPQ10distance_tE"></span><span class="target" id="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f"></span><em class="property">using </em><code class="sig-name descname">distance_t</code> = float<br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ10IndexIVFPQEP5Index6size_t6size_t6size_t6size_t10MetricType">
+<span id="_CPPv3N5faiss10IndexIVFPQ10IndexIVFPQEP5Index6size_t6size_t6size_t6size_t10MetricType"></span><span id="_CPPv2N5faiss10IndexIVFPQ10IndexIVFPQEP5Index6size_t6size_t6size_t6size_t10MetricType"></span><span id="faiss::IndexIVFPQ::IndexIVFPQ__IndexP.s.s.s.s.MetricType"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a95ed93fe628eedff1dab2885f608e2d6"></span><code class="sig-name descname">IndexIVFPQ</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> *<em>quantizer</em>, size_t <em>d</em>, size_t <em>nlist</em>, size_t <em>M</em>, size_t <em>nbits_per_idx</em>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType">MetricType</a> <em>metric</em> = <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2">METRIC_L2</a><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ12add_with_idsE5idx_tPKfPK5idx_t">
+<span id="_CPPv3N5faiss10IndexIVFPQ12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="_CPPv2N5faiss10IndexIVFPQ12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="faiss::IndexIVFPQ::add_with_ids__idx_t.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1af843bf751bf287e31fb77abb83bcf55a"></span>void <code class="sig-name descname">add_with_ids</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <em class="property">const</em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>xids</em> = nullptr<span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd><p>default implementation that calls encode_vectors </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ14encode_vectorsE5idx_tPKfPK5idx_tP7uint8_tb">
+<span id="_CPPv3NK5faiss10IndexIVFPQ14encode_vectorsE5idx_tPKfPK5idx_tP7uint8_tb"></span><span id="_CPPv2NK5faiss10IndexIVFPQ14encode_vectorsE5idx_tPKfPK5idx_tP7uint8_tb"></span><span id="faiss::IndexIVFPQ::encode_vectors__idx_t.floatCP.idx_tCP.uint8_tP.bC"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a6350ed3e2b070ad01b37dff14dc2fe2a"></span>void <code class="sig-name descname">encode_vectors</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <em class="property">const</em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>list_nos</em>, uint8_t *<em>codes</em>, bool <em>include_listnos</em> = false<span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>Encodes a set of vectors as they would appear in the inverted lists</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">list_nos</span></code>: inverted list ids as returned by the quantizer (size n). -1s are ignored. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">codes</span></code>: output codes, size n * code_size </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">include_listno</span></code>: include the list ids in the code (in this case add ceil(log8(nlist)) to the code size) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ9sa_decodeE5idx_tPK7uint8_tPf">
+<span id="_CPPv3NK5faiss10IndexIVFPQ9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss10IndexIVFPQ9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::IndexIVFPQ::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1adb7494c07ce7812226ad41c8b6dca992"></span>void <code class="sig-name descname">sa_decode</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> uint8_t *<em>bytes</em>, float *<em>x</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>encode a set of vectors</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: input encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: output vectors, size n * d </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ10add_core_oE5idx_tPKfPK5idx_tPfPK5idx_t">
+<span id="_CPPv3N5faiss10IndexIVFPQ10add_core_oE5idx_tPKfPK5idx_tPfPK5idx_t"></span><span id="_CPPv2N5faiss10IndexIVFPQ10add_core_oE5idx_tPKfPK5idx_tPfPK5idx_t"></span><span id="faiss::IndexIVFPQ::add_core_o__idx_t.floatCP.idx_tCP.floatP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a8f3ee1073d04464acdc4ce12ea3440eb"></span>void <code class="sig-name descname">add_core_o</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <em class="property">const</em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>xids</em>, float *<em>residuals_2</em>, <em class="property">const</em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>precomputed_idx</em> = nullptr<span class="sig-paren">)</span><br /></dt>
+<dd><p>same as add_core, also:<ul class="simple">
+<li><p>output 2nd level residuals if residuals_2 != NULL</p></li>
+<li><p>use precomputed list numbers if precomputed_idx != NULL </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ14train_residualE5idx_tPKf">
+<span id="_CPPv3N5faiss10IndexIVFPQ14train_residualE5idx_tPKf"></span><span id="_CPPv2N5faiss10IndexIVFPQ14train_residualE5idx_tPKf"></span><span id="faiss::IndexIVFPQ::train_residual__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1af6565a5d8bab7be3df19c50d235bd662"></span>void <code class="sig-name descname">train_residual</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd><p>trains the product quantizer </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ16train_residual_oE5idx_tPKfPf">
+<span id="_CPPv3N5faiss10IndexIVFPQ16train_residual_oE5idx_tPKfPf"></span><span id="_CPPv2N5faiss10IndexIVFPQ16train_residual_oE5idx_tPKfPf"></span><span id="faiss::IndexIVFPQ::train_residual_o__idx_t.floatCP.floatP"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a4e06f04853dcb424dc393de5f641e917"></span>void <code class="sig-name descname">train_residual_o</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, float *<em>residuals_2</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>same as train_residual, also output 2nd level residuals </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ23reconstruct_from_offsetE7int64_t7int64_tPf">
+<span id="_CPPv3NK5faiss10IndexIVFPQ23reconstruct_from_offsetE7int64_t7int64_tPf"></span><span id="_CPPv2NK5faiss10IndexIVFPQ23reconstruct_from_offsetE7int64_t7int64_tPf"></span><span id="faiss::IndexIVFPQ::reconstruct_from_offset__int64_t.int64_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1ab9ec78723d3fbc9834018f697e0cbe95"></span>void <code class="sig-name descname">reconstruct_from_offset</code><span class="sig-paren">(</span>int64_t <em>list_no</em>, int64_t <em>offset</em>, float *<em>recons</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>Reconstruct a vector given the location in terms of (inv list index + inv list offset) instead of the id.</p>
+<p>Useful for reconstructing when the direct_map is not maintained and the inv list offset is computed by <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6"><span class="std std-ref">search_preassigned()</span></a> with <code class="docutils literal notranslate"><span class="pre">store_pairs</span></code> set. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ15find_duplicatesEP5idx_tP6size_t">
+<span id="_CPPv3NK5faiss10IndexIVFPQ15find_duplicatesEP5idx_tP6size_t"></span><span id="_CPPv2NK5faiss10IndexIVFPQ15find_duplicatesEP5idx_tP6size_t"></span><span id="faiss::IndexIVFPQ::find_duplicates__idx_tP.sPC"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a0d29813956d053b5262132edcc1cf527"></span>size_t <code class="sig-name descname">find_duplicates</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>ids</em>, size_t *<em>lims</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>Find exact duplicates in the dataset.</p>
+<p>the duplicates are returned in pre-allocated arrays (see the max sizes).</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>n number of groups found </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lims</span></code>: limits between groups of duplicates (max size ntotal / 2 + 1) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ids</span></code>: ids[lims[i]] : ids[lims[i+1]-1] is a group of duplicates (max size ntotal) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ6encodeE5idx_tPKfP7uint8_t">
+<span id="_CPPv3NK5faiss10IndexIVFPQ6encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss10IndexIVFPQ6encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexIVFPQ::encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1aaf34e32cb715cf716d17db18679fb1ab"></span>void <code class="sig-name descname">encode</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>key</em>, <em class="property">const</em> float *<em>x</em>, uint8_t *<em>code</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ15encode_multipleE6size_tP5idx_tPKfP7uint8_tb">
+<span id="_CPPv3NK5faiss10IndexIVFPQ15encode_multipleE6size_tP5idx_tPKfP7uint8_tb"></span><span id="_CPPv2NK5faiss10IndexIVFPQ15encode_multipleE6size_tP5idx_tPKfP7uint8_tb"></span><span id="faiss::IndexIVFPQ::encode_multiple__s.idx_tP.floatCP.uint8_tP.bC"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a5c52e3a7cf6d5c13b54395f8c646587c"></span>void <code class="sig-name descname">encode_multiple</code><span class="sig-paren">(</span>size_t <em>n</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>keys</em>, <em class="property">const</em> float *<em>x</em>, uint8_t *<em>codes</em>, bool <em>compute_keys</em> = false<span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>Encode multiple vectors</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb vectors to encode </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">keys</span></code>: posting list ids for those vectors (size n) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: vectors (size n * d) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">codes</span></code>: output codes (size n * code_size) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compute_keys</span></code>: if false, assume keys are precomputed, otherwise compute them </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ15decode_multipleE6size_tPK5idx_tPK7uint8_tPf">
+<span id="_CPPv3NK5faiss10IndexIVFPQ15decode_multipleE6size_tPK5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss10IndexIVFPQ15decode_multipleE6size_tPK5idx_tPK7uint8_tPf"></span><span id="faiss::IndexIVFPQ::decode_multiple__s.idx_tCP.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1ad074686c530454b0138f30a488078236"></span>void <code class="sig-name descname">decode_multiple</code><span class="sig-paren">(</span>size_t <em>n</em>, <em class="property">const</em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>keys</em>, <em class="property">const</em> uint8_t *<em>xcodes</em>, float *<em>x</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>inverse of encode_multiple </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ23get_InvertedListScannerEb">
+<span id="_CPPv3NK5faiss10IndexIVFPQ23get_InvertedListScannerEb"></span><span id="_CPPv2NK5faiss10IndexIVFPQ23get_InvertedListScannerEb"></span><span id="faiss::IndexIVFPQ::get_InvertedListScanner__bC"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a2e872f50fd1e1e89b2c3049fd24e2430"></span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss19InvertedListScannerE" title="faiss::InvertedListScanner">InvertedListScanner</a> *<code class="sig-name descname">get_InvertedListScanner</code><span class="sig-paren">(</span>bool <em>store_pairs</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>get a scanner for this index (store_pairs means ignore labels) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ16precompute_tableEv">
+<span id="_CPPv3N5faiss10IndexIVFPQ16precompute_tableEv"></span><span id="_CPPv2N5faiss10IndexIVFPQ16precompute_tableEv"></span><span id="faiss::IndexIVFPQ::precompute_table"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1ad99c215aeaf92e995cb97f4044c4d267"></span>void <code class="sig-name descname">precompute_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>build precomputed table </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ10IndexIVFPQEv">
+<span id="_CPPv3N5faiss10IndexIVFPQ10IndexIVFPQEv"></span><span id="_CPPv2N5faiss10IndexIVFPQ10IndexIVFPQEv"></span><span id="faiss::IndexIVFPQ::IndexIVFPQ"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a4821a0d1daec7a39abdc5d3e5762c7af"></span><code class="sig-name descname">IndexIVFPQ</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ5resetEv">
+<span id="_CPPv3N5faiss10IndexIVFPQ5resetEv"></span><span id="_CPPv2N5faiss10IndexIVFPQ5resetEv"></span><span id="faiss::IndexIVFPQ::reset"></span><span class="target" id="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f"></span>void <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd><p>removes all elements from the database. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ5trainE5idx_tPKf">
+<span id="_CPPv3N5faiss10IndexIVFPQ5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss10IndexIVFPQ5trainE5idx_tPKf"></span><span id="faiss::IndexIVFPQ::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86"></span>void <code class="sig-name descname">train</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd><p>Trains the quantizer and calls train_residual to train sub-quantizers. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ3addE5idx_tPKf">
+<span id="_CPPv3N5faiss10IndexIVFPQ3addE5idx_tPKf"></span><span id="_CPPv2N5faiss10IndexIVFPQ3addE5idx_tPKf"></span><span id="faiss::IndexIVFPQ::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075"></span>void <code class="sig-name descname">add</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd><p>Calls add_with_ids with NULL ids. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ18search_preassignedE5idx_tPKf5idx_tPK5idx_tPKfPfP5idx_tbPK19IVFSearchParametersP13IndexIVFStats">
+<span id="_CPPv3NK5faiss10IndexIVFPQ18search_preassignedE5idx_tPKf5idx_tPK5idx_tPKfPfP5idx_tbPK19IVFSearchParametersP13IndexIVFStats"></span><span id="_CPPv2NK5faiss10IndexIVFPQ18search_preassignedE5idx_tPKf5idx_tPK5idx_tPKfPfP5idx_tbPK19IVFSearchParametersP13IndexIVFStats"></span><span id="faiss::IndexIVFPQ::search_preassigned__idx_t.floatCP.idx_t.idx_tCP.floatCP.floatP.idx_tP.b.IVFSearchParametersCP.IndexIVFStatsPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6"></span>void <code class="sig-name descname">search_preassigned</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>k</em>, <em class="property">const</em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>assign</em>, <em class="property">const</em> float *<em>centroid_dis</em>, float *<em>distances</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>labels</em>, bool <em>store_pairs</em>, <em class="property">const</em> <a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss19IVFSearchParametersE" title="faiss::IVFSearchParameters">IVFSearchParameters</a> *<em>params</em> = nullptr, <a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss13IndexIVFStatsE" title="faiss::IndexIVFStats">IndexIVFStats</a> *<em>stats</em> = nullptr<span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>search a set of vectors, that are pre-quantized by the IVF quantizer. Fill in the corresponding heaps with the query results. The default implementation uses InvertedListScanners to do the search.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of vectors to query </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: query vectors, size nx * d </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">assign</span></code>: coarse quantization indices, size nx * nprobe </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">centroid_dis</span></code>: distances to coarse centroids, size nx * nprobe </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">distance</span></code>: output distances, size n * k </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: output labels, size n * k </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">store_pairs</span></code>: store inv list index + inv list offset instead in upper/lower 32 bit of result, instead of ids (used for reranking). </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>: used to override the object’s search parameters </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stats</span></code>: search stats to be updated (can be null) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ6searchE5idx_tPKf5idx_tPfP5idx_t">
+<span id="_CPPv3NK5faiss10IndexIVFPQ6searchE5idx_tPKf5idx_tPfP5idx_t"></span><span id="_CPPv2NK5faiss10IndexIVFPQ6searchE5idx_tPKf5idx_tPfP5idx_t"></span><span id="faiss::IndexIVFPQ::search__idx_t.floatCP.idx_t.floatP.idx_tPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1ae2fd47b7d52603659e269aa8f6abb613"></span>void <code class="sig-name descname">search</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>k</em>, float *<em>distances</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>labels</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>assign the vectors, then call search_preassign </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ12range_searchE5idx_tPKffP17RangeSearchResult">
+<span id="_CPPv3NK5faiss10IndexIVFPQ12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss10IndexIVFPQ12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::IndexIVFPQ::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a5b7b4b3dc5ea40f7076a00c81cc83d66"></span>void <code class="sig-name descname">range_search</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, float <em>radius</em>, RangeSearchResult *<em>result</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>query n vectors of dimension d to the index.</p>
+<p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ24range_search_preassignedE5idx_tPKffPK5idx_tPKfP17RangeSearchResultbPK19IVFSearchParametersP13IndexIVFStats">
+<span id="_CPPv3NK5faiss10IndexIVFPQ24range_search_preassignedE5idx_tPKffPK5idx_tPKfP17RangeSearchResultbPK19IVFSearchParametersP13IndexIVFStats"></span><span id="_CPPv2NK5faiss10IndexIVFPQ24range_search_preassignedE5idx_tPKffPK5idx_tPKfP17RangeSearchResultbPK19IVFSearchParametersP13IndexIVFStats"></span><span id="faiss::IndexIVFPQ::range_search_preassigned__idx_t.floatCP.float.idx_tCP.floatCP.RangeSearchResultP.b.IVFSearchParametersCP.IndexIVFStatsPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1ae51e8f23f3283feb2f262d791f2f167c"></span>void <code class="sig-name descname">range_search_preassigned</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>nx</em>, <em class="property">const</em> float *<em>x</em>, float <em>radius</em>, <em class="property">const</em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>keys</em>, <em class="property">const</em> float *<em>coarse_dis</em>, RangeSearchResult *<em>result</em>, bool <em>store_pairs</em> = false, <em class="property">const</em> <a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss19IVFSearchParametersE" title="faiss::IVFSearchParameters">IVFSearchParameters</a> *<em>params</em> = nullptr, <a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss13IndexIVFStatsE" title="faiss::IndexIVFStats">IndexIVFStats</a> *<em>stats</em> = nullptr<span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ11reconstructE5idx_tPf">
+<span id="_CPPv3NK5faiss10IndexIVFPQ11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss10IndexIVFPQ11reconstructE5idx_tPf"></span><span id="faiss::IndexIVFPQ::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39"></span>void <code class="sig-name descname">reconstruct</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>key</em>, float *<em>recons</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>reconstruct a vector. Works only if maintain_direct_map is set to 1 or 2 </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ14update_vectorsEiPK5idx_tPKf">
+<span id="_CPPv3N5faiss10IndexIVFPQ14update_vectorsEiPK5idx_tPKf"></span><span id="_CPPv2N5faiss10IndexIVFPQ14update_vectorsEiPK5idx_tPKf"></span><span id="faiss::IndexIVFPQ::update_vectors__i.idx_tCP.floatCP"></span><span class="target" id="structfaiss_1_1IndexIVF_1a297563f801130e43485c1818b0e13901"></span>void <code class="sig-name descname">update_vectors</code><span class="sig-paren">(</span>int <em>nv</em>, <em class="property">const</em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>idx</em>, <em class="property">const</em> float *<em>v</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Update a subset of vectors.</p>
+<p>The index must have a direct_map</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nv</span></code>: nb of vectors to update </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">idx</span></code>: vector indices to update, size nv </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: vectors of new values, size nv*d </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ13reconstruct_nE5idx_t5idx_tPf">
+<span id="_CPPv3NK5faiss10IndexIVFPQ13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss10IndexIVFPQ13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::IndexIVFPQ::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a7cc286dfbd8bfd43ea4b22173e28231c"></span>void <code class="sig-name descname">reconstruct_n</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>i0</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>ni</em>, float *<em>recons</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>Reconstruct a subset of the indexed vectors.</p>
+<p>Overrides default implementation to bypass <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39"><span class="std std-ref">reconstruct()</span></a> which requires direct_map to be maintained.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">i0</span></code>: first vector to reconstruct </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ni</span></code>: nb of vectors to reconstruct </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: output array of reconstructed vectors, size ni * d </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf">
+<span id="_CPPv3NK5faiss10IndexIVFPQ22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss10IndexIVFPQ22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::IndexIVFPQ::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a77aec24920024a09f7661790d9534c10"></span>void <code class="sig-name descname">search_and_reconstruct</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>k</em>, float *<em>distances</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>labels</em>, float *<em>recons</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
+<p>Overrides default implementation to avoid having to maintain direct_map and instead fetch the code offsets through the <code class="docutils literal notranslate"><span class="pre">store_pairs</span></code> flag in <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6"><span class="std std-ref">search_preassigned()</span></a>.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstructed vectors size (n, k, d) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ10remove_idsERK10IDSelector">
+<span id="_CPPv3N5faiss10IndexIVFPQ10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss10IndexIVFPQ10remove_idsERK10IDSelector"></span><span id="faiss::IndexIVFPQ::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1IndexIVF_1a7f4d5e3d38ed2db026780522ffb85b9d"></span>size_t <code class="sig-name descname">remove_ids</code><span class="sig-paren">(</span><em class="property">const</em> IDSelector &amp;<em>sel</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<dd><p>Dataset manipulation functions. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ26check_compatible_for_mergeERK8IndexIVF">
+<span id="_CPPv3NK5faiss10IndexIVFPQ26check_compatible_for_mergeERK8IndexIVF"></span><span id="_CPPv2NK5faiss10IndexIVFPQ26check_compatible_for_mergeERK8IndexIVF"></span><span id="faiss::IndexIVFPQ::check_compatible_for_merge__IndexIVFCRC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a76d85d286f3b58bba42b1d3c73dc9620"></span>void <code class="sig-name descname">check_compatible_for_merge</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss8IndexIVFE" title="faiss::IndexIVF">IndexIVF</a> &amp;<em>other</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ10merge_fromER8IndexIVF5idx_t">
+<span id="_CPPv3N5faiss10IndexIVFPQ10merge_fromER8IndexIVF5idx_t"></span><span id="_CPPv2N5faiss10IndexIVFPQ10merge_fromER8IndexIVF5idx_t"></span><span id="faiss::IndexIVFPQ::merge_from__IndexIVFR.idx_t"></span><span class="target" id="structfaiss_1_1IndexIVF_1aa38b33056ccb93cd4a2852eb26227899"></span>void <code class="sig-name descname">merge_from</code><span class="sig-paren">(</span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss8IndexIVFE" title="faiss::IndexIVF">IndexIVF</a> &amp;<em>other</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>add_id</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ14copy_subset_toER8IndexIVFi5idx_t5idx_t">
+<span id="_CPPv3NK5faiss10IndexIVFPQ14copy_subset_toER8IndexIVFi5idx_t5idx_t"></span><span id="_CPPv2NK5faiss10IndexIVFPQ14copy_subset_toER8IndexIVFi5idx_t5idx_t"></span><span id="faiss::IndexIVFPQ::copy_subset_to__IndexIVFR.i.idx_t.idx_tC"></span><span class="target" id="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae"></span>void <code class="sig-name descname">copy_subset_to</code><span class="sig-paren">(</span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss8IndexIVFE" title="faiss::IndexIVF">IndexIVF</a> &amp;<em>other</em>, int <em>subset_type</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>a1</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>a2</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>copy a subset of the entries index to the other index</p>
+<p>if subset_type == 0: copies ids in [a1, a2) if subset_type == 1: copies ids if id % a1 == a2 if subset_type == 2: copies inverted lists such that a1 elements are left before and a2 elements are after </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ13get_list_sizeE6size_t">
+<span id="_CPPv3NK5faiss10IndexIVFPQ13get_list_sizeE6size_t"></span><span id="_CPPv2NK5faiss10IndexIVFPQ13get_list_sizeE6size_t"></span><span id="faiss::IndexIVFPQ::get_list_size__sC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018"></span>size_t <code class="sig-name descname">get_list_size</code><span class="sig-paren">(</span>size_t <em>list_no</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ15make_direct_mapEb">
+<span id="_CPPv3N5faiss10IndexIVFPQ15make_direct_mapEb"></span><span id="_CPPv2N5faiss10IndexIVFPQ15make_direct_mapEb"></span><span id="faiss::IndexIVFPQ::make_direct_map__b"></span><span class="target" id="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89"></span>void <code class="sig-name descname">make_direct_map</code><span class="sig-paren">(</span>bool <em>new_maintain_direct_map</em> = true<span class="sig-paren">)</span><br /></dt>
+<dd><p>intialize a direct map</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">new_maintain_direct_map</span></code>: if true, create a direct map, else clear it </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ19set_direct_map_typeEN9DirectMap4TypeE">
+<span id="_CPPv3N5faiss10IndexIVFPQ19set_direct_map_typeEN9DirectMap4TypeE"></span><span id="_CPPv2N5faiss10IndexIVFPQ19set_direct_map_typeEN9DirectMap4TypeE"></span><span id="faiss::IndexIVFPQ::set_direct_map_type__DirectMap::Type"></span><span class="target" id="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a"></span>void <code class="sig-name descname">set_direct_map_type</code><span class="sig-paren">(</span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMapE" title="faiss::DirectMap">DirectMap</a>::<a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap4TypeE" title="faiss::DirectMap::Type">Type</a> <em>type</em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ16replace_invlistsEP13InvertedListsb">
+<span id="_CPPv3N5faiss10IndexIVFPQ16replace_invlistsEP13InvertedListsb"></span><span id="_CPPv2N5faiss10IndexIVFPQ16replace_invlistsEP13InvertedListsb"></span><span id="faiss::IndexIVFPQ::replace_invlists__InvertedListsP.b"></span><span class="target" id="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7"></span>void <code class="sig-name descname">replace_invlists</code><span class="sig-paren">(</span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists">InvertedLists</a> *<em>il</em>, bool <em>own</em> = false<span class="sig-paren">)</span><br /></dt>
+<dd><p>replace the inverted lists, old one is deallocated if own_invlists </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ12sa_code_sizeEv">
+<span id="_CPPv3NK5faiss10IndexIVFPQ12sa_code_sizeEv"></span><span id="_CPPv2NK5faiss10IndexIVFPQ12sa_code_sizeEv"></span><span id="faiss::IndexIVFPQ::sa_code_sizeC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d"></span>size_t <code class="sig-name descname">sa_code_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>size of the produced codes in bytes </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ9sa_encodeE5idx_tPKfP7uint8_t">
+<span id="_CPPv3NK5faiss10IndexIVFPQ9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss10IndexIVFPQ9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexIVFPQ::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a9d28b314ee008589eb41ce2823a088b6"></span>void <code class="sig-name descname">sa_encode</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, uint8_t *<em>bytes</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<dd><p>encode a set of vectors</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors, size n * d </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: output encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ6assignE5idx_tPKfP5idx_t5idx_t">
+<span id="_CPPv3NK5faiss10IndexIVFPQ6assignE5idx_tPKfP5idx_t5idx_t"></span><span id="_CPPv2NK5faiss10IndexIVFPQ6assignE5idx_tPKfP5idx_t5idx_t"></span><span id="faiss::IndexIVFPQ::assign__idx_t.floatCP.idx_tP.idx_tC"></span><span class="target" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa"></span>void <code class="sig-name descname">assign</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>labels</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>k</em> = 1<span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>return the indexes of the k vectors closest to the query x.</p>
+<p>This function is identical as search but only return labels of neighbors. <dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: output labels of the NNs, size n*k </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ16compute_residualEPKfPf5idx_t">
+<span id="_CPPv3NK5faiss10IndexIVFPQ16compute_residualEPKfPf5idx_t"></span><span id="_CPPv2NK5faiss10IndexIVFPQ16compute_residualEPKfPf5idx_t"></span><span id="faiss::IndexIVFPQ::compute_residual__floatCP.floatP.idx_tC"></span><span class="target" id="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20"></span>void <code class="sig-name descname">compute_residual</code><span class="sig-paren">(</span><em class="property">const</em> float *<em>x</em>, float *<em>residual</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>key</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>Computes a residual vector after indexing encoding.</p>
+<p>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <a class="reference internal" href="structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a>’s methods.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vector, size d </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">residual</span></code>: output residual vector, size d </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: encoded index, as returned by search and assign </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ18compute_residual_nE5idx_tPKfPfPK5idx_t">
+<span id="_CPPv3NK5faiss10IndexIVFPQ18compute_residual_nE5idx_tPKfPfPK5idx_t"></span><span id="_CPPv2NK5faiss10IndexIVFPQ18compute_residual_nE5idx_tPKfPfPK5idx_t"></span><span id="faiss::IndexIVFPQ::compute_residual_n__idx_t.floatCP.floatP.idx_tCPC"></span><span class="target" id="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa"></span>void <code class="sig-name descname">compute_residual_n</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>xs</em>, float *<em>residuals</em>, <em class="property">const</em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> *<em>keys</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>Computes a residual vector after indexing encoding (batch form). Equivalent to calling compute_residual for each vector.</p>
+<p>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <a class="reference internal" href="structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a>’s methods.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xs</span></code>: input vectors, size (n x d) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">residuals</span></code>: output residual vectors, size (n x d) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">keys</span></code>: encoded index, as returned by search and assign </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ21get_distance_computerEv">
+<span id="_CPPv3NK5faiss10IndexIVFPQ21get_distance_computerEv"></span><span id="_CPPv2NK5faiss10IndexIVFPQ21get_distance_computerEv"></span><span id="faiss::IndexIVFPQ::get_distance_computerC"></span><span class="target" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a"></span>DistanceComputer *<code class="sig-name descname">get_distance_computer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</p>
+<p>DistanceComputer is implemented for indexes that support random access of their vectors. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss10IndexIVFPQ8train_q1E6size_tPKfb10MetricType">
+<span id="_CPPv3N5faiss10IndexIVFPQ8train_q1E6size_tPKfb10MetricType"></span><span id="_CPPv2N5faiss10IndexIVFPQ8train_q1E6size_tPKfb10MetricType"></span><span id="faiss::IndexIVFPQ::train_q1__s.floatCP.b.MetricType"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a0069a6ee1e32c2e0c1c7df9a95740dd4"></span>void <code class="sig-name descname">train_q1</code><span class="sig-paren">(</span>size_t <em>n</em>, <em class="property">const</em> float *<em>x</em>, bool <em>verbose</em>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType">MetricType</a> <em>metric_type</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Trains the quantizer and calls train_residual to train sub-quantizers. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ16coarse_code_sizeEv">
+<span id="_CPPv3NK5faiss10IndexIVFPQ16coarse_code_sizeEv"></span><span id="_CPPv2NK5faiss10IndexIVFPQ16coarse_code_sizeEv"></span><span id="faiss::IndexIVFPQ::coarse_code_sizeC"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f"></span>size_t <code class="sig-name descname">coarse_code_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>compute the number of bytes required to store list ids </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ13encode_listnoEN5Index5idx_tEP7uint8_t">
+<span id="_CPPv3NK5faiss10IndexIVFPQ13encode_listnoEN5Index5idx_tEP7uint8_t"></span><span id="_CPPv2NK5faiss10IndexIVFPQ13encode_listnoEN5Index5idx_tEP7uint8_t"></span><span id="faiss::IndexIVFPQ::encode_listno__Index::idx_t.uint8_tPC"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a8d36d811aaf11daeae2a3f580747c5b2"></span>void <code class="sig-name descname">encode_listno</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> <em>list_no</em>, uint8_t *<em>code</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss10IndexIVFPQ13decode_listnoEPK7uint8_t">
+<span id="_CPPv3NK5faiss10IndexIVFPQ13decode_listnoEPK7uint8_t"></span><span id="_CPPv2NK5faiss10IndexIVFPQ13decode_listnoEPK7uint8_t"></span><span id="faiss::IndexIVFPQ::decode_listno__uint8_tCPC"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a64f28832f84e8559f9b76ccd3a3046d3"></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> <code class="sig-name descname">decode_listno</code><span class="sig-paren">(</span><em class="property">const</em> uint8_t *<em>code</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ11by_residualE">
+<span id="_CPPv3N5faiss10IndexIVFPQ11by_residualE"></span><span id="_CPPv2N5faiss10IndexIVFPQ11by_residualE"></span><span id="faiss::IndexIVFPQ::by_residual__b"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1afd13b471df293ae5a6e895704c69a4c3"></span>bool <code class="sig-name descname">by_residual</code><br /></dt>
+<dd><p>Encode residual or plain vector? </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ2pqE">
+<span id="_CPPv3N5faiss10IndexIVFPQ2pqE"></span><span id="_CPPv2N5faiss10IndexIVFPQ2pqE"></span><span id="faiss::IndexIVFPQ::pq__ProductQuantizer"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a007303be116c8da65b6d058e3fc77d16"></span>ProductQuantizer <code class="sig-name descname">pq</code><br /></dt>
+<dd><p>produces the codes </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ22do_polysemous_trainingE">
+<span id="_CPPv3N5faiss10IndexIVFPQ22do_polysemous_trainingE"></span><span id="_CPPv2N5faiss10IndexIVFPQ22do_polysemous_trainingE"></span><span id="faiss::IndexIVFPQ::do_polysemous_training__b"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a9d5373633df7a9bec4de69400b9adeed"></span>bool <code class="sig-name descname">do_polysemous_training</code><br /></dt>
+<dd><p>reorder PQ centroids after training? </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ19polysemous_trainingE">
+<span id="_CPPv3N5faiss10IndexIVFPQ19polysemous_trainingE"></span><span id="_CPPv2N5faiss10IndexIVFPQ19polysemous_trainingE"></span><span id="faiss::IndexIVFPQ::polysemous_training__PolysemousTrainingP"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a2b14cbb5acb3fc28a4df8fde3f5567cd"></span>PolysemousTraining *<code class="sig-name descname">polysemous_training</code><br /></dt>
+<dd><p>if NULL, use default </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ20scan_table_thresholdE">
+<span id="_CPPv3N5faiss10IndexIVFPQ20scan_table_thresholdE"></span><span id="_CPPv2N5faiss10IndexIVFPQ20scan_table_thresholdE"></span><span id="faiss::IndexIVFPQ::scan_table_threshold__s"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a7430fc4fa030c96497abced3b68358d4"></span>size_t <code class="sig-name descname">scan_table_threshold</code><br /></dt>
+<dd><p>use table computation or on-the-fly? </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ13polysemous_htE">
+<span id="_CPPv3N5faiss10IndexIVFPQ13polysemous_htE"></span><span id="_CPPv2N5faiss10IndexIVFPQ13polysemous_htE"></span><span id="faiss::IndexIVFPQ::polysemous_ht__i"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a3093a0a3e128eafce6e0583b75e9662e"></span>int <code class="sig-name descname">polysemous_ht</code><br /></dt>
+<dd><p>Hamming thresh for polysemous filtering. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ21use_precomputed_tableE">
+<span id="_CPPv3N5faiss10IndexIVFPQ21use_precomputed_tableE"></span><span id="_CPPv2N5faiss10IndexIVFPQ21use_precomputed_tableE"></span><span id="faiss::IndexIVFPQ::use_precomputed_table__i"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a1c66ff073c18a1edbe8444c24d870583"></span>int <code class="sig-name descname">use_precomputed_table</code><br /></dt>
+<dd><p>Precompute table that speed up query preprocessing at some memory cost (used only for by_residual with L2 metric) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ17precomputed_tableE">
+<span id="_CPPv3N5faiss10IndexIVFPQ17precomputed_tableE"></span><span id="_CPPv2N5faiss10IndexIVFPQ17precomputed_tableE"></span><span id="faiss::IndexIVFPQ::precomputed_table__AlignedTable:float:"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a1b6a77049a9f79844afa9f461611e43d"></span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv4I0_iEN5faiss12AlignedTableE" title="faiss::AlignedTable">AlignedTable</a>&lt;float&gt; <code class="sig-name descname">precomputed_table</code><br /></dt>
+<dd><p>if use_precompute_table size nlist * pq.M * pq.ksub </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ8invlistsE">
+<span id="_CPPv3N5faiss10IndexIVFPQ8invlistsE"></span><span id="_CPPv2N5faiss10IndexIVFPQ8invlistsE"></span><span id="faiss::IndexIVFPQ::invlists__InvertedListsP"></span><span class="target" id="structfaiss_1_1IndexIVF_1aa0e8fc5e04cbd8e0dde61f98bc7dd0bc"></span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists">InvertedLists</a> *<code class="sig-name descname">invlists</code><br /></dt>
+<dd><p>Access to the actual data. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ12own_invlistsE">
+<span id="_CPPv3N5faiss10IndexIVFPQ12own_invlistsE"></span><span id="_CPPv2N5faiss10IndexIVFPQ12own_invlistsE"></span><span id="faiss::IndexIVFPQ::own_invlists__b"></span><span class="target" id="structfaiss_1_1IndexIVF_1a5743b18d78fe1b9910d8ff8670f207d7"></span>bool <code class="sig-name descname">own_invlists</code><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ9code_sizeE">
+<span id="_CPPv3N5faiss10IndexIVFPQ9code_sizeE"></span><span id="_CPPv2N5faiss10IndexIVFPQ9code_sizeE"></span><span id="faiss::IndexIVFPQ::code_size__s"></span><span class="target" id="structfaiss_1_1IndexIVF_1a46d1aeddb60643c5b3f096147c3e028f"></span>size_t <code class="sig-name descname">code_size</code><br /></dt>
+<dd><p>code size per vector in bytes </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ6nprobeE">
+<span id="_CPPv3N5faiss10IndexIVFPQ6nprobeE"></span><span id="_CPPv2N5faiss10IndexIVFPQ6nprobeE"></span><span id="faiss::IndexIVFPQ::nprobe__s"></span><span class="target" id="structfaiss_1_1IndexIVF_1affed235eadf27a13d753ee4d33a1dc58"></span>size_t <code class="sig-name descname">nprobe</code><br /></dt>
+<dd><p>number of probes at query time </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ9max_codesE">
+<span id="_CPPv3N5faiss10IndexIVFPQ9max_codesE"></span><span id="_CPPv2N5faiss10IndexIVFPQ9max_codesE"></span><span id="faiss::IndexIVFPQ::max_codes__s"></span><span class="target" id="structfaiss_1_1IndexIVF_1a7f2dd34f66f8770acba74a0a591fa4a8"></span>size_t <code class="sig-name descname">max_codes</code><br /></dt>
+<dd><p>max nb of codes to visit to do a query </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ13parallel_modeE">
+<span id="_CPPv3N5faiss10IndexIVFPQ13parallel_modeE"></span><span id="_CPPv2N5faiss10IndexIVFPQ13parallel_modeE"></span><span id="faiss::IndexIVFPQ::parallel_mode__i"></span><span class="target" id="structfaiss_1_1IndexIVF_1a244ec2067da495ff1493687e0048ae02"></span>int <code class="sig-name descname">parallel_mode</code><br /></dt>
+<dd><p>Parallel mode determines how queries are parallelized with OpenMP</p>
+<p>0 (default): split over queries 1: parallelize over inverted lists 2: parallelize over both 3: split over queries with a finer granularity</p>
+<p>PARALLEL_MODE_NO_HEAP_INIT: binary or with the previous to prevent the heap to be initialized and finalized </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ26PARALLEL_MODE_NO_HEAP_INITE">
+<span id="_CPPv3N5faiss10IndexIVFPQ26PARALLEL_MODE_NO_HEAP_INITE"></span><span id="_CPPv2N5faiss10IndexIVFPQ26PARALLEL_MODE_NO_HEAP_INITE"></span><span id="faiss::IndexIVFPQ::PARALLEL_MODE_NO_HEAP_INIT__iC"></span><span class="target" id="structfaiss_1_1IndexIVF_1aa221f301cca11e1ab59d6c12e08a0240"></span><em class="property">const</em> int <code class="sig-name descname">PARALLEL_MODE_NO_HEAP_INIT</code> = 1024<br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ10direct_mapE">
+<span id="_CPPv3N5faiss10IndexIVFPQ10direct_mapE"></span><span id="_CPPv2N5faiss10IndexIVFPQ10direct_mapE"></span><span id="faiss::IndexIVFPQ::direct_map__DirectMap"></span><span class="target" id="structfaiss_1_1IndexIVF_1ae1267a1770ef6c8fa111891110e6fa69"></span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMapE" title="faiss::DirectMap">DirectMap</a> <code class="sig-name descname">direct_map</code><br /></dt>
+<dd><p>optional map that maps back ids to invlist entries. This enables <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39"><span class="std std-ref">reconstruct()</span></a> </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ1dE">
+<span id="_CPPv3N5faiss10IndexIVFPQ1dE"></span><span id="_CPPv2N5faiss10IndexIVFPQ1dE"></span><span id="faiss::IndexIVFPQ::d__i"></span><span class="target" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d"></span>int <code class="sig-name descname">d</code><br /></dt>
+<dd><p>vector dimension </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ6ntotalE">
+<span id="_CPPv3N5faiss10IndexIVFPQ6ntotalE"></span><span id="_CPPv2N5faiss10IndexIVFPQ6ntotalE"></span><span id="faiss::IndexIVFPQ::ntotal__idx_t"></span><span class="target" id="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd"></span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexIVFPQ5idx_tE" title="faiss::IndexIVFPQ::idx_t">idx_t</a> <code class="sig-name descname">ntotal</code><br /></dt>
+<dd><p>total nb of indexed vectors </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ7verboseE">
+<span id="_CPPv3N5faiss10IndexIVFPQ7verboseE"></span><span id="_CPPv2N5faiss10IndexIVFPQ7verboseE"></span><span id="faiss::IndexIVFPQ::verbose__b"></span><span class="target" id="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23"></span>bool <code class="sig-name descname">verbose</code><br /></dt>
+<dd><p>verbosity level </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ10is_trainedE">
+<span id="_CPPv3N5faiss10IndexIVFPQ10is_trainedE"></span><span id="_CPPv2N5faiss10IndexIVFPQ10is_trainedE"></span><span id="faiss::IndexIVFPQ::is_trained__b"></span><span class="target" id="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f"></span>bool <code class="sig-name descname">is_trained</code><br /></dt>
+<dd><p>set if the <a class="reference internal" href="structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> does not require training, or if training is done already </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ11metric_typeE">
+<span id="_CPPv3N5faiss10IndexIVFPQ11metric_typeE"></span><span id="_CPPv2N5faiss10IndexIVFPQ11metric_typeE"></span><span id="faiss::IndexIVFPQ::metric_type__MetricType"></span><span class="target" id="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e"></span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType">MetricType</a> <code class="sig-name descname">metric_type</code><br /></dt>
+<dd><p>type of metric this index uses for search </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ10metric_argE">
+<span id="_CPPv3N5faiss10IndexIVFPQ10metric_argE"></span><span id="_CPPv2N5faiss10IndexIVFPQ10metric_argE"></span><span id="faiss::IndexIVFPQ::metric_arg__float"></span><span class="target" id="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232"></span>float <code class="sig-name descname">metric_arg</code><br /></dt>
+<dd><p>argument of the metric type </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ9quantizerE">
+<span id="_CPPv3N5faiss10IndexIVFPQ9quantizerE"></span><span id="_CPPv2N5faiss10IndexIVFPQ9quantizerE"></span><span id="faiss::IndexIVFPQ::quantizer__IndexP"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a3cf99e2ee92b8558a066f821efab95d5"></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> *<code class="sig-name descname">quantizer</code><br /></dt>
+<dd><p>quantizer that maps vectors to inverted lists </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ5nlistE">
+<span id="_CPPv3N5faiss10IndexIVFPQ5nlistE"></span><span id="_CPPv2N5faiss10IndexIVFPQ5nlistE"></span><span id="faiss::IndexIVFPQ::nlist__s"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a1c4fc9d874d9492ee0ea27a5be388fa7"></span>size_t <code class="sig-name descname">nlist</code><br /></dt>
+<dd><p>number of possible key values </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ22quantizer_trains_aloneE">
+<span id="_CPPv3N5faiss10IndexIVFPQ22quantizer_trains_aloneE"></span><span id="_CPPv2N5faiss10IndexIVFPQ22quantizer_trains_aloneE"></span><span id="faiss::IndexIVFPQ::quantizer_trains_alone__c"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a1dcea762fc322fdcffe64f78994edea0"></span>char <code class="sig-name descname">quantizer_trains_alone</code><br /></dt>
+<dd><p>= 0: use the quantizer as index in a kmeans training = 1: just pass on the training set to the train() of the quantizer = 2: kmeans training on a flat index + add the centroids to the quantizer </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ10own_fieldsE">
+<span id="_CPPv3N5faiss10IndexIVFPQ10own_fieldsE"></span><span id="_CPPv2N5faiss10IndexIVFPQ10own_fieldsE"></span><span id="faiss::IndexIVFPQ::own_fields__b"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1ab688c629cd42122d73517078b87f483d"></span>bool <code class="sig-name descname">own_fields</code><br /></dt>
+<dd><p>whether object owns the quantizer </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ2cpE">
+<span id="_CPPv3N5faiss10IndexIVFPQ2cpE"></span><span id="_CPPv2N5faiss10IndexIVFPQ2cpE"></span><span id="faiss::IndexIVFPQ::cp__ClusteringParameters"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72"></span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss20ClusteringParametersE" title="faiss::ClusteringParameters">ClusteringParameters</a> <code class="sig-name descname">cp</code><br /></dt>
+<dd><p>to override default clustering params </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss10IndexIVFPQ16clustering_indexE">
+<span id="_CPPv3N5faiss10IndexIVFPQ16clustering_indexE"></span><span id="_CPPv2N5faiss10IndexIVFPQ16clustering_indexE"></span><span id="faiss::IndexIVFPQ::clustering_index__IndexP"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989"></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> *<code class="sig-name descname">clustering_index</code><br /></dt>
+<dd><p>to override index used during clustering </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="structfaiss_1_1IndexIVFPQFastScan.html" class="btn btn-neutral float-right" title="Struct faiss::IndexIVFPQFastScan" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="structfaiss_1_1IndexIVFFlatDedup.html" class="btn btn-neutral float-left" title="Struct faiss::IndexIVFFlatDedup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright Facebook, Inc. and its affiliates.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

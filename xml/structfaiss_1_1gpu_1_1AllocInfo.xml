@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1gpu_1_1AllocInfo" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::gpu::AllocInfo</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1gpu_1_1AllocRequest" prot="public" virt="non-virtual">faiss::gpu::AllocRequest</derivedcompoundref>
+    <includes refid="GpuResources_8h" local="no">GpuResources.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllocInfo_1ae927d4e6e7b86c3541ffd0106f3b6d34" prot="public" static="no" mutable="no">
+        <type>AllocType</type>
+        <definition>AllocType faiss::gpu::AllocInfo::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <briefdescription>
+<para>The internal category of the allocation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuResources.h" line="102" column="13" bodyfile="faiss/gpu/GpuResources.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllocInfo_1aa1417147ce3c9b88c2600d7b2618f719" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::gpu::AllocInfo::device</definition>
+        <argsstring></argsstring>
+        <name>device</name>
+        <briefdescription>
+<para>The device on which the allocation is happening. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuResources.h" line="105" column="7" bodyfile="faiss/gpu/GpuResources.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllocInfo_1a5be5f0b54e3fe97ceca73df4799b87ee" prot="public" static="no" mutable="no">
+        <type>MemorySpace</type>
+        <definition>MemorySpace faiss::gpu::AllocInfo::space</definition>
+        <argsstring></argsstring>
+        <name>space</name>
+        <briefdescription>
+<para>The memory space of the allocation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuResources.h" line="108" column="15" bodyfile="faiss/gpu/GpuResources.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllocInfo_1aa84beb46d87edf606343beefeb882bd0" prot="public" static="no" mutable="no">
+        <type>cudaStream_t</type>
+        <definition>cudaStream_t faiss::gpu::AllocInfo::stream</definition>
+        <argsstring></argsstring>
+        <name>stream</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The stream on which new work on the memory will be ordered (e.g., if a piece of memory cached and to be returned for this call was last used on stream 3 and a new memory request is for stream 4, the memory manager will synchronize stream 4 to wait for the completion of stream 3 via events or other stream synchronization.</para>
+<para>The memory manager guarantees that the returned memory is free to use without data races on this stream specified. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuResources.h" line="118" column="16" bodyfile="faiss/gpu/GpuResources.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1AllocInfo_1a9f0952aebd52122e8c9a304653a6c321" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::AllocInfo::AllocInfo</definition>
+        <argsstring>()</argsstring>
+        <name>AllocInfo</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuResources.h" line="81" column="10" bodyfile="faiss/gpu/GpuResources.h" bodystart="81" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1AllocInfo_1a37c06c3cfa2bd56b6f93a4e7d732ace5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::AllocInfo::AllocInfo</definition>
+        <argsstring>(AllocType at, int dev, MemorySpace sp, cudaStream_t st)</argsstring>
+        <name>AllocInfo</name>
+        <param>
+          <type>AllocType</type>
+          <declname>at</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dev</declname>
+        </param>
+        <param>
+          <type>MemorySpace</type>
+          <declname>sp</declname>
+        </param>
+        <param>
+          <type>cudaStream_t</type>
+          <declname>st</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuResources.h" line="88" column="10" bodyfile="faiss/gpu/GpuResources.h" bodystart="88" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1AllocInfo_1a977c06dfb2bb29e7997712508ebd9e36" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string faiss::gpu::AllocInfo::toString</definition>
+        <argsstring>() const</argsstring>
+        <name>toString</name>
+        <briefdescription>
+<para>Returns a string representation of this info. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuResources.h" line="99" column="15"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Information on what/where an allocation is. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::gpu::AllocInfo</label>
+        <link refid="structfaiss_1_1gpu_1_1AllocInfo"/>
+      </node>
+      <node id="2">
+        <label>faiss::gpu::AllocRequest</label>
+        <link refid="structfaiss_1_1gpu_1_1AllocRequest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="faiss/gpu/GpuResources.h" line="80" column="16" bodyfile="faiss/gpu/GpuResources.h" bodystart="80" bodyend="119"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1AllocInfo_1a9f0952aebd52122e8c9a304653a6c321" prot="public" virt="non-virtual"><scope>faiss::gpu::AllocInfo</scope><name>AllocInfo</name></member>
+      <member refid="structfaiss_1_1gpu_1_1AllocInfo_1a37c06c3cfa2bd56b6f93a4e7d732ace5" prot="public" virt="non-virtual"><scope>faiss::gpu::AllocInfo</scope><name>AllocInfo</name></member>
+      <member refid="structfaiss_1_1gpu_1_1AllocInfo_1aa1417147ce3c9b88c2600d7b2618f719" prot="public" virt="non-virtual"><scope>faiss::gpu::AllocInfo</scope><name>device</name></member>
+      <member refid="structfaiss_1_1gpu_1_1AllocInfo_1a5be5f0b54e3fe97ceca73df4799b87ee" prot="public" virt="non-virtual"><scope>faiss::gpu::AllocInfo</scope><name>space</name></member>
+      <member refid="structfaiss_1_1gpu_1_1AllocInfo_1aa84beb46d87edf606343beefeb882bd0" prot="public" virt="non-virtual"><scope>faiss::gpu::AllocInfo</scope><name>stream</name></member>
+      <member refid="structfaiss_1_1gpu_1_1AllocInfo_1a977c06dfb2bb29e7997712508ebd9e36" prot="public" virt="non-virtual"><scope>faiss::gpu::AllocInfo</scope><name>toString</name></member>
+      <member refid="structfaiss_1_1gpu_1_1AllocInfo_1ae927d4e6e7b86c3541ffd0106f3b6d34" prot="public" virt="non-virtual"><scope>faiss::gpu::AllocInfo</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1gpu_1_1GpuClonerOptions" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::gpu::GpuClonerOptions</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" prot="public" virt="non-virtual">faiss::gpu::GpuMultipleClonerOptions</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1gpu_1_1ToGpuCloner" prot="public" virt="non-virtual">faiss::gpu::ToGpuCloner</derivedcompoundref>
+    <includes refid="GpuClonerOptions_8h" local="no">GpuClonerOptions.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e" prot="public" static="no" mutable="no">
+        <type>IndicesOptions</type>
+        <definition>IndicesOptions faiss::gpu::GpuClonerOptions::indicesOptions</definition>
+        <argsstring></argsstring>
+        <name>indicesOptions</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>how should indices be stored on index types that support indices (anything but GpuIndexFlat*)? </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="20" column="18" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a85f3093908b6e9a503c24bb226b17b1b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuClonerOptions::useFloat16CoarseQuantizer</definition>
+        <argsstring></argsstring>
+        <name>useFloat16CoarseQuantizer</name>
+        <briefdescription>
+<para>is the coarse quantizer in float16? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="23" column="8" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ac7cc57d6091d6a79ea6020bf8d1fbe27" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuClonerOptions::useFloat16</definition>
+        <argsstring></argsstring>
+        <name>useFloat16</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>for <ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat" kindref="compound">GpuIndexIVFFlat</ref>, is storage in float16? for <ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" kindref="compound">GpuIndexIVFPQ</ref>, are intermediate calculations in float16? </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="27" column="8" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc9c607f2dfc9f23942a523fb49c63fe" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuClonerOptions::usePrecomputed</definition>
+        <argsstring></argsstring>
+        <name>usePrecomputed</name>
+        <briefdescription>
+<para>use precomputed tables? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="30" column="8" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04" prot="public" static="no" mutable="no">
+        <type>long</type>
+        <definition>long faiss::gpu::GpuClonerOptions::reserveVecs</definition>
+        <argsstring></argsstring>
+        <name>reserveVecs</name>
+        <briefdescription>
+<para>reserve vectors in the invfiles? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="33" column="8" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuClonerOptions::storeTransposed</definition>
+        <argsstring></argsstring>
+        <name>storeTransposed</name>
+        <briefdescription>
+<para>For <ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">GpuIndexFlat</ref>, store data in transposed layout? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="36" column="8" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuClonerOptions::verbose</definition>
+        <argsstring></argsstring>
+        <name>verbose</name>
+        <briefdescription>
+<para>Set verbose options on the index. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="39" column="8" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a07e1874e27433a0848dd8fff8392ed0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::GpuClonerOptions::GpuClonerOptions</definition>
+        <argsstring>()</argsstring>
+        <name>GpuClonerOptions</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="16" column="3"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>set some options on how to copy to GPU </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::gpu::GpuMultipleClonerOptions</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::gpu::GpuClonerOptions</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
+      </node>
+      <node id="3">
+        <label>faiss::gpu::ToGpuClonerMultiple</label>
+        <link refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::gpu::ToGpuCloner</label>
+        <link refid="structfaiss_1_1gpu_1_1ToGpuCloner"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="faiss/gpu/GpuClonerOptions.h" line="15" column="23" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="15" bodyend="40"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a07e1874e27433a0848dd8fff8392ed0c" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>GpuClonerOptions</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>indicesOptions</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>reserveVecs</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>storeTransposed</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ac7cc57d6091d6a79ea6020bf8d1fbe27" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>useFloat16</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a85f3093908b6e9a503c24bb226b17b1b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>useFloat16CoarseQuantizer</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc9c607f2dfc9f23942a523fb49c63fe" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>usePrecomputed</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>verbose</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

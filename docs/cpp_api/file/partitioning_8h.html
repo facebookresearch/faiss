@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>File partitioning.h &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="File python_callbacks.h" href="python__callbacks_8h.html" />
+    <link rel="prev" title="File ordered_key_value.h" href="ordered__key__value_8h.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="AlignedTable_8h.html">File AlignedTable.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AutoTune_8h.html">File AutoTune.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockInvertedLists_8h.html">File BlockInvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockSelectImpl_8cuh.html">File BlockSelectImpl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockSelectKernel_8cuh.html">File BlockSelectKernel.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Clustering_8h.html">File Clustering.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Comparators_8cuh.html">File Comparators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConversionOperators_8cuh.html">File ConversionOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CopyUtils_8cuh.html">File CopyUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceDefs_8cuh.html">File DeviceDefs.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceTensor-inl_8cuh.html">File DeviceTensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceTensor_8cuh.html">File DeviceTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceUtils_8h.html">File DeviceUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceVector_8cuh.html">File DeviceVector.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DirectMap_8h.html">File DirectMap.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Float16_8cuh.html">File Float16.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuAutoTune_8h.html">File GpuAutoTune.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuClonerOptions_8h.html">File GpuClonerOptions.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuCloner_8h.html">File GpuCloner.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuDistance_8h.html">File GpuDistance.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuFaissAssert_8h.html">File GpuFaissAssert.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexBinaryFlat_8h.html">File GpuIndexBinaryFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexFlat_8h.html">File GpuIndexFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFFlat_8h.html">File GpuIndexIVFFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFPQ_8h.html">File GpuIndexIVFPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFScalarQuantizer_8h.html">File GpuIndexIVFScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVF_8h.html">File GpuIndexIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndex_8h.html">File GpuIndex.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndicesOptions_8h.html">File GpuIndicesOptions.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuResources_8h.html">File GpuResources.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Heap_8h.html">File Heap.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HostTensor-inl_8cuh.html">File HostTensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HostTensor_8cuh.html">File HostTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFlib_8h.html">File IVFlib.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Index2Layer_8h.html">File Index2Layer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryFlat_8h.html">File IndexBinaryFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryFromFloat_8h.html">File IndexBinaryFromFloat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryHNSW_8h.html">File IndexBinaryHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryHash_8h.html">File IndexBinaryHash.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryIVF_8h.html">File IndexBinaryIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinary_8h.html">File IndexBinary.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexFlat_8h.html">File IndexFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexHNSW_8h.html">File IndexHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFFlat_8h.html">File IndexIVFFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQFastScan_8h.html">File IndexIVFPQFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQR_8h.html">File IndexIVFPQR.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQ_8h.html">File IndexIVFPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFSpectralHash_8h.html">File IndexIVFSpectralHash.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVF_8h.html">File IndexIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexLSH_8h.html">File IndexLSH.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexLattice_8h.html">File IndexLattice.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPQFastScan_8h.html">File IndexPQFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPQ_8h.html">File IndexPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPreTransform_8h.html">File IndexPreTransform.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexRefine_8h.html">File IndexRefine.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexReplicas_8h.html">File IndexReplicas.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexScalarQuantizer_8h.html">File IndexScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexShards_8h.html">File IndexShards.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexWrapper-inl_8h.html">File IndexWrapper-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexWrapper_8h.html">File IndexWrapper.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Index_8h.html">File Index.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="InvertedListsIOHook_8h.html">File InvertedListsIOHook.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="InvertedLists_8h.html">File InvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Limits_8cuh.html">File Limits.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoadStoreOperators_8cuh.html">File LoadStoreOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MathOperators_8cuh.html">File MathOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixMult-inl_8cuh.html">File MatrixMult-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixMult_8cuh.html">File MatrixMult.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixStats_8h.html">File MatrixStats.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkBlock_8cuh.html">File MergeNetworkBlock.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkUtils_8cuh.html">File MergeNetworkUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkWarp_8cuh.html">File MergeNetworkWarp.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MetaIndexes_8h.html">File MetaIndexes.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MetricType_8h.html">File MetricType.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NoTypeTensor_8cuh.html">File NoTypeTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OnDiskInvertedLists_8h.html">File OnDiskInvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pair_8cuh.html">File Pair.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Select_8cuh.html">File Select.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StackDeviceMemory_8h.html">File StackDeviceMemory.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StandardGpuResources_8h.html">File StandardGpuResources.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StaticUtils_8h.html">File StaticUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tensor-inl_8cuh.html">File Tensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tensor_8cuh.html">File Tensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TestUtils_8h.html">File TestUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ThrustAllocator_8cuh.html">File ThrustAllocator.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Timer_8h.html">File Timer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Transpose_8cuh.html">File Transpose.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorTransform_8h.html">File VectorTransform.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpPackedBits_8cuh.html">File WarpPackedBits.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpSelectImpl_8cuh.html">File WarpSelectImpl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpSelectKernel_8cuh.html">File WarpSelectKernel.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpShuffles_8cuh.html">File WarpShuffles.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WorkerThread_8h.html">File WorkerThread.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clone__index_8h.html">File clone_index.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distances_8h.html">File distances.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extra__distances_8h.html">File extra_distances.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamming-inl_8h.html">File hamming-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamming_8h.html">File hamming.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index__factory_8h.html">File index_factory.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index__io_8h.html">File index_io.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ordered__key__value_8h.html">File ordered_key_value.h</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File partitioning.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python__callbacks_8h.html">File python_callbacks.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quantize__lut_8h.html">File quantize_lut.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="random_8h.html">File random.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib_8h.html">File simdlib.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__avx2_8h.html">File simdlib_avx2.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__emulated_8h.html">File simdlib_emulated.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils_8h.html">File utils.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../filelist.html">File list</a> &raquo;</li>
+        
+      <li>File partitioning.h</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/cpp_api/file/partitioning_8h.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="file-partitioning-h">
+<h1>File partitioning.h<a class="headerlink" href="#file-partitioning-h" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp type">
+<dt id="_CPPv45faiss">
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property">namespace </em><code class="sig-name descname">faiss</code><br /></dt>
+<dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
+<p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
+<p>x[ i * d + j ]</p>
+<p>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. I/O functions can read/write to a filename, a file handle or to an object that abstracts the medium.</p>
+<p>The read functions return objects that should be deallocated with delete. All references within these objectes are owned by the object.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Definition of inverted lists + a few common classes that implement the interface.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <a class="reference internal" href="../struct/structfaiss_1_1IndexPreTransform.html#structfaiss_1_1IndexPreTransform"><span class="std std-ref">IndexPreTransform</span></a>.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4I0EN5faiss15partition_fuzzyEN1C1TEPN1C1TEPN1C2TIE6size_t6size_t6size_tP6size_t">
+<span id="_CPPv3I0EN5faiss15partition_fuzzyEPN1C1TEPN1C2TIE6size_t6size_t6size_tP6size_t"></span><span id="_CPPv2I0EN5faiss15partition_fuzzyEPN1C1TEPN1C2TIE6size_t6size_t6size_tP6size_t"></span>template&lt;class <code class="sig-name descname">C</code>&gt;<br /><span class="target" id="namespacefaiss_1a9c403fd30f8012bde1e38ea9c2dcdab3"></span><a class="reference internal" href="#_CPPv4I0EN5faiss15partition_fuzzyEN1C1TEPN1C1TEPN1C2TIE6size_t6size_t6size_tP6size_t" title="faiss::partition_fuzzy::C">C</a>::T <code class="sig-name descname">partition_fuzzy</code><span class="sig-paren">(</span><em class="property">typename</em> <a class="reference internal" href="#_CPPv4I0EN5faiss15partition_fuzzyEN1C1TEPN1C1TEPN1C2TIE6size_t6size_t6size_tP6size_t" title="faiss::partition_fuzzy::C">C</a>::T *<em>vals</em>, <em class="property">typename</em> <a class="reference internal" href="#_CPPv4I0EN5faiss15partition_fuzzyEN1C1TEPN1C1TEPN1C2TIE6size_t6size_t6size_tP6size_t" title="faiss::partition_fuzzy::C">C</a>::TI *<em>ids</em>, size_t <em>n</em>, size_t <em>q_min</em>, size_t <em>q_max</em>, size_t *<em>q_out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5faiss15partition_fuzzyEN1C1TEPN1C1TEPN1C2TIE6size_t6size_t6size_tP6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>partitions the table into 0:q and q:n where all elements above q are &gt;= all elements below q (for C = <a class="reference internal" href="../struct/structfaiss_1_1CMax.html#structfaiss_1_1CMax"><span class="std std-ref">CMax</span></a>, for <a class="reference internal" href="../struct/structfaiss_1_1CMin.html#structfaiss_1_1CMin"><span class="std std-ref">CMin</span></a> comparisons are reversed)</p>
+<p>Returns the partition threshold. The elements q:n are destroyed on output. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN5faiss9partitionEN1C1TEPN1C1TEPN1C2TIE6size_t6size_t">
+<span id="_CPPv3I0EN5faiss9partitionEPN1C1TEPN1C2TIE6size_t6size_t"></span><span id="_CPPv2I0EN5faiss9partitionEPN1C1TEPN1C2TIE6size_t6size_t"></span>template&lt;class <code class="sig-name descname">C</code>&gt;<br /><span class="target" id="namespacefaiss_1afad6c999c4af7456ef9954f2f3021592"></span><a class="reference internal" href="#_CPPv4I0EN5faiss9partitionEN1C1TEPN1C1TEPN1C2TIE6size_t6size_t" title="faiss::partition::C">C</a>::T <code class="sig-name descname">partition</code><span class="sig-paren">(</span><em class="property">typename</em> <a class="reference internal" href="#_CPPv4I0EN5faiss9partitionEN1C1TEPN1C1TEPN1C2TIE6size_t6size_t" title="faiss::partition::C">C</a>::T *<em>vals</em>, <em class="property">typename</em> <a class="reference internal" href="#_CPPv4I0EN5faiss9partitionEN1C1TEPN1C1TEPN1C2TIE6size_t6size_t" title="faiss::partition::C">C</a>::TI *<em>ids</em>, size_t <em>n</em>, size_t <em>q</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5faiss9partitionEN1C1TEPN1C1TEPN1C2TIE6size_t6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>simplified interface for when the parition is not fuzzy </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss16simd_histogram_8EPK8uint16_ti8uint16_tiPi">
+<span id="_CPPv3N5faiss16simd_histogram_8EPK8uint16_ti8uint16_tiPi"></span><span id="_CPPv2N5faiss16simd_histogram_8EPK8uint16_ti8uint16_tiPi"></span><span id="faiss::simd_histogram_8__uint16_tCP.i.uint16_t.i.iP"></span><span class="target" id="namespacefaiss_1a607e40148f9d63cc082cb0ed7cbdc1c2"></span>void <code class="sig-name descname">simd_histogram_8</code><span class="sig-paren">(</span><em class="property">const</em> uint16_t *<em>data</em>, int <em>n</em>, uint16_t <em>min</em>, int <em>shift</em>, int *<em>hist</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss16simd_histogram_8EPK8uint16_ti8uint16_tiPi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>low level SIMD histogramming functions 8-bin histogram of (x - min) &gt;&gt; shift values outside the range are ignored. the data table should be aligned on 32 bytes </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss17simd_histogram_16EPK8uint16_ti8uint16_tiPi">
+<span id="_CPPv3N5faiss17simd_histogram_16EPK8uint16_ti8uint16_tiPi"></span><span id="_CPPv2N5faiss17simd_histogram_16EPK8uint16_ti8uint16_tiPi"></span><span id="faiss::simd_histogram_16__uint16_tCP.i.uint16_t.i.iP"></span><span class="target" id="namespacefaiss_1aff3bc91a0aef8d8aca171a67611b65a2"></span>void <code class="sig-name descname">simd_histogram_16</code><span class="sig-paren">(</span><em class="property">const</em> uint16_t *<em>data</em>, int <em>n</em>, uint16_t <em>min</em>, int <em>shift</em>, int *<em>hist</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17simd_histogram_16EPK8uint16_ti8uint16_tiPi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>same for 16-bin histogram </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Variables</p>
+<dl class="cpp var">
+<dt>
+<span class="target" id="namespacefaiss_1ae2bb09d8026f83d03936dcddee878a04"></span><code class="sig-name descname">FAISS_API PartitionStats partition_stats</code></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt id="_CPPv4N5faiss14PartitionStatsE">
+<span id="_CPPv3N5faiss14PartitionStatsE"></span><span id="_CPPv2N5faiss14PartitionStatsE"></span><span id="faiss::PartitionStats"></span><span class="target" id="structfaiss_1_1PartitionStats"></span><em class="property">struct </em><code class="sig-name descname">PartitionStats</code><a class="headerlink" href="#_CPPv4N5faiss14PartitionStatsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss14PartitionStats14PartitionStatsEv">
+<span id="_CPPv3N5faiss14PartitionStats14PartitionStatsEv"></span><span id="_CPPv2N5faiss14PartitionStats14PartitionStatsEv"></span><span id="faiss::PartitionStats::PartitionStats"></span><span class="target" id="structfaiss_1_1PartitionStats_1aa9f9c8030b1ea6fd37df7f3cfff04d4f"></span><code class="sig-name descname">PartitionStats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss14PartitionStats14PartitionStatsEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss14PartitionStats5resetEv">
+<span id="_CPPv3N5faiss14PartitionStats5resetEv"></span><span id="_CPPv2N5faiss14PartitionStats5resetEv"></span><span id="faiss::PartitionStats::reset"></span><span class="target" id="structfaiss_1_1PartitionStats_1a2d09e115d4435fecc6af519e5fc10802"></span>void <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss14PartitionStats5resetEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14PartitionStats14bissect_cyclesE">
+<span id="_CPPv3N5faiss14PartitionStats14bissect_cyclesE"></span><span id="_CPPv2N5faiss14PartitionStats14bissect_cyclesE"></span><span id="faiss::PartitionStats::bissect_cycles__uint64_t"></span><span class="target" id="structfaiss_1_1PartitionStats_1a46c75f722bb31664cb0604cce4e003da"></span>uint64_t <code class="sig-name descname">bissect_cycles</code><a class="headerlink" href="#_CPPv4N5faiss14PartitionStats14bissect_cyclesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss14PartitionStats15compress_cyclesE">
+<span id="_CPPv3N5faiss14PartitionStats15compress_cyclesE"></span><span id="_CPPv2N5faiss14PartitionStats15compress_cyclesE"></span><span id="faiss::PartitionStats::compress_cycles__uint64_t"></span><span class="target" id="structfaiss_1_1PartitionStats_1aa6a83efd703c803b59684910ba3bac52"></span>uint64_t <code class="sig-name descname">compress_cycles</code><a class="headerlink" href="#_CPPv4N5faiss14PartitionStats15compress_cyclesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="python__callbacks_8h.html" class="btn btn-neutral float-right" title="File python_callbacks.h" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ordered__key__value_8h.html" class="btn btn-neutral float-left" title="File ordered_key_value.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright Facebook, Inc. and its affiliates.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

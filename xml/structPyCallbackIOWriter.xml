@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structPyCallbackIOWriter" kind="struct" language="C++" prot="public">
+    <compoundname>PyCallbackIOWriter</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">IOWriter</basecompoundref>
+    <includes refid="python__callbacks_8h" local="no">python_callbacks.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structPyCallbackIOWriter_1a3808eb412223dd66bd460392d4a4c269" prot="public" static="no" mutable="no">
+        <type>PyObject *</type>
+        <definition>PyObject* PyCallbackIOWriter::callback</definition>
+        <argsstring></argsstring>
+        <name>callback</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="25" column="15" bodyfile="faiss/python/python_callbacks.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structPyCallbackIOWriter_1a312d146753310ac87aed1627873ce814" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t PyCallbackIOWriter::bs</definition>
+        <argsstring></argsstring>
+        <name>bs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="26" column="12" bodyfile="faiss/python/python_callbacks.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structPyCallbackIOWriter_1ae185179b04cb71f49ee05d46505b124f" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>PyCallbackIOWriter::PyCallbackIOWriter</definition>
+        <argsstring>(PyObject *callback, size_t bs=1024 *1024)</argsstring>
+        <name>PyCallbackIOWriter</name>
+        <param>
+          <type>PyObject *</type>
+          <declname>callback</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>bs</declname>
+          <defval>1024 *1024</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Callback: Python function that takes a bytes object and returns the number of bytes successfully written. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="31" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structPyCallbackIOWriter_1afedd487fd01d398bd80042de7f700644" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t PyCallbackIOWriter::operator()</definition>
+        <argsstring>(const void *ptrv, size_t size, size_t nitems) override</argsstring>
+        <name>operator()</name>
+        <param>
+          <type>const void *</type>
+          <declname>ptrv</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nitems</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="34" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="structPyCallbackIOWriter_1a5b06cab97f45af7d67371f8359928259" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>PyCallbackIOWriter::~PyCallbackIOWriter</definition>
+        <argsstring>() override</argsstring>
+        <name>~PyCallbackIOWriter</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="36" column="5"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
+<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>PyCallbackIOWriter</label>
+        <link refid="structPyCallbackIOWriter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::IOWriter</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>PyCallbackIOWriter</label>
+        <link refid="structPyCallbackIOWriter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::IOWriter</label>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/python/python_callbacks.h" line="21" column="41" bodyfile="faiss/python/python_callbacks.h" bodystart="21" bodyend="36"/>
+    <listofallmembers>
+      <member refid="structPyCallbackIOWriter_1a312d146753310ac87aed1627873ce814" prot="public" virt="non-virtual"><scope>PyCallbackIOWriter</scope><name>bs</name></member>
+      <member refid="structPyCallbackIOWriter_1a3808eb412223dd66bd460392d4a4c269" prot="public" virt="non-virtual"><scope>PyCallbackIOWriter</scope><name>callback</name></member>
+      <member refid="structPyCallbackIOWriter_1afedd487fd01d398bd80042de7f700644" prot="public" virt="non-virtual"><scope>PyCallbackIOWriter</scope><name>operator()</name></member>
+      <member refid="structPyCallbackIOWriter_1ae185179b04cb71f49ee05d46505b124f" prot="public" virt="non-virtual"><scope>PyCallbackIOWriter</scope><name>PyCallbackIOWriter</name></member>
+      <member refid="structPyCallbackIOWriter_1a5b06cab97f45af7d67371f8359928259" prot="public" virt="non-virtual"><scope>PyCallbackIOWriter</scope><name>~PyCallbackIOWriter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

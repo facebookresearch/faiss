@@ -1,0 +1,410 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1ReconstructFromNeighbors" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::ReconstructFromNeighbors</compoundname>
+      <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1ReconstructFromNeighbors_1a67dc908b2ace7c07b20075059b4bb454" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref></type>
+        <definition>typedef Index::idx_t faiss::ReconstructFromNeighbors::idx_t</definition>
+        <argsstring></argsstring>
+        <name>idx_t</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="26" column="26" bodyfile="faiss/IndexHNSW.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structfaiss_1_1ReconstructFromNeighbors_1a799355a749bf0e6632e7d2deeb0e7a0f" prot="public" static="no">
+        <type>HNSW::storage_idx_t</type>
+        <definition>typedef HNSW::storage_idx_t faiss::ReconstructFromNeighbors::storage_idx_t</definition>
+        <argsstring></argsstring>
+        <name>storage_idx_t</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="27" column="33" bodyfile="faiss/IndexHNSW.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1a14034b43a0743e94ff70fab84fb7a66e" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> &amp;</type>
+        <definition>const IndexHNSW&amp; faiss::ReconstructFromNeighbors::index</definition>
+        <argsstring></argsstring>
+        <name>index</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="29" column="22" bodyfile="faiss/IndexHNSW.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1aa5a61e87d73f40064dd83c22ab94c3cc" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ReconstructFromNeighbors::M</definition>
+        <argsstring></argsstring>
+        <name>M</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="30" column="12" bodyfile="faiss/IndexHNSW.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1a6a2ce9a449053820ce88aff51139805c" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ReconstructFromNeighbors::k</definition>
+        <argsstring></argsstring>
+        <name>k</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="31" column="12" bodyfile="faiss/IndexHNSW.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1a9d469402cdcfdfcf45b56e8406259d8b" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ReconstructFromNeighbors::nsq</definition>
+        <argsstring></argsstring>
+        <name>nsq</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="32" column="12" bodyfile="faiss/IndexHNSW.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1aeae1c3969821123277b203a185362a4a" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ReconstructFromNeighbors::code_size</definition>
+        <argsstring></argsstring>
+        <name>code_size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="33" column="12" bodyfile="faiss/IndexHNSW.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1a6e5003517c06696a00f3e5c6b4bc18f1" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::ReconstructFromNeighbors::k_reorder</definition>
+        <argsstring></argsstring>
+        <name>k_reorder</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="34" column="9" bodyfile="faiss/IndexHNSW.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1ad7302ca13df0e8df9860ff649277c037" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::ReconstructFromNeighbors::codebook</definition>
+        <argsstring></argsstring>
+        <name>codebook</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="36" column="17" bodyfile="faiss/IndexHNSW.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1af9cf27d32e77ed1768ec3de7485e56ee" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::ReconstructFromNeighbors::codes</definition>
+        <argsstring></argsstring>
+        <name>codes</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="38" column="17" bodyfile="faiss/IndexHNSW.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1a4ed30d9a18a0d68c84a14ded6b91eba3" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ReconstructFromNeighbors::ntotal</definition>
+        <argsstring></argsstring>
+        <name>ntotal</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="39" column="12" bodyfile="faiss/IndexHNSW.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1aef8405a7dd11023f29f9a759ca900e5d" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ReconstructFromNeighbors::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="40" column="12" bodyfile="faiss/IndexHNSW.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1a108b1d722af230240f7092b3fc371a12" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ReconstructFromNeighbors::dsub</definition>
+        <argsstring></argsstring>
+        <name>dsub</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="40" column="14" bodyfile="faiss/IndexHNSW.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1a8c02da3c304ddf56e8bc4e51bebc07ad" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::ReconstructFromNeighbors::ReconstructFromNeighbors</definition>
+        <argsstring>(const IndexHNSW &amp;index, size_t k=256, size_t nsq=1)</argsstring>
+        <name>ReconstructFromNeighbors</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> &amp;</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+          <defval>256</defval>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nsq</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="42" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1a454b7a5f7437a257df7404f5778fc833" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ReconstructFromNeighbors::add_codes</definition>
+        <argsstring>(size_t n, const float *x)</argsstring>
+        <name>add_codes</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>codes must be added in the correct order and the <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> must be populated and sorted </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="47" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1ad4ba74fb24c09e638acccb6d92052e2d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::ReconstructFromNeighbors::compute_distances</definition>
+        <argsstring>(size_t n, const idx_t *shortlist, const float *query, float *distances) const</argsstring>
+        <name>compute_distances</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const idx_t *</type>
+          <declname>shortlist</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>query</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="49" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1a4b4b324ee73095e95c6692a75556f330" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ReconstructFromNeighbors::estimate_code</definition>
+        <argsstring>(const float *x, storage_idx_t i, uint8_t *code) const</argsstring>
+        <name>estimate_code</name>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>storage_idx_t</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+<para>called by add_codes </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="53" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1ae96899a06bd54901f856081d72adef5a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ReconstructFromNeighbors::reconstruct</definition>
+        <argsstring>(storage_idx_t i, float *x, float *tmp) const</argsstring>
+        <name>reconstruct</name>
+        <param>
+          <type>storage_idx_t</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>tmp</declname>
+        </param>
+        <briefdescription>
+<para>called by compute_distances </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="56" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1a50275f0f56de60400cee11b039c98339" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ReconstructFromNeighbors::reconstruct_n</definition>
+        <argsstring>(storage_idx_t n0, storage_idx_t ni, float *x) const</argsstring>
+        <name>reconstruct_n</name>
+        <param>
+          <type>storage_idx_t</type>
+          <declname>n0</declname>
+        </param>
+        <param>
+          <type>storage_idx_t</type>
+          <declname>ni</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="58" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1a6c6a4664893430278c7da1f0606d4adf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ReconstructFromNeighbors::get_neighbor_table</definition>
+        <argsstring>(storage_idx_t i, float *out) const</argsstring>
+        <name>get_neighbor_table</name>
+        <param>
+          <type>storage_idx_t</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+<para>get the M+1 -by-d table for neighbor coordinates for vector i </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="61" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::ReconstructFromNeighbors</label>
+        <link refid="structfaiss_1_1ReconstructFromNeighbors"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>index</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::Index</label>
+        <link refid="structfaiss_1_1Index"/>
+      </node>
+      <node id="2">
+        <label>faiss::IndexHNSW</label>
+        <link refid="structfaiss_1_1IndexHNSW"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="1" relation="usage">
+          <edgelabel>reconstruct_from_neighbors</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>storage</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/IndexHNSW.h" line="25" column="31" bodyfile="faiss/IndexHNSW.h" bodystart="25" bodyend="63"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a454b7a5f7437a257df7404f5778fc833" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>add_codes</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1aeae1c3969821123277b203a185362a4a" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1ad7302ca13df0e8df9860ff649277c037" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>codebook</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1af9cf27d32e77ed1768ec3de7485e56ee" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>codes</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1ad4ba74fb24c09e638acccb6d92052e2d" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>compute_distances</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1aef8405a7dd11023f29f9a759ca900e5d" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>d</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a108b1d722af230240f7092b3fc371a12" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>dsub</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a4b4b324ee73095e95c6692a75556f330" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>estimate_code</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a6c6a4664893430278c7da1f0606d4adf" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>get_neighbor_table</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a67dc908b2ace7c07b20075059b4bb454" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>idx_t</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a14034b43a0743e94ff70fab84fb7a66e" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>index</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a6a2ce9a449053820ce88aff51139805c" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>k</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a6e5003517c06696a00f3e5c6b4bc18f1" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>k_reorder</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1aa5a61e87d73f40064dd83c22ab94c3cc" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>M</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a9d469402cdcfdfcf45b56e8406259d8b" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>nsq</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a4ed30d9a18a0d68c84a14ded6b91eba3" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>ntotal</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1ae96899a06bd54901f856081d72adef5a" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>reconstruct</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a50275f0f56de60400cee11b039c98339" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>reconstruct_n</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a8c02da3c304ddf56e8bc4e51bebc07ad" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>ReconstructFromNeighbors</name></member>
+      <member refid="structfaiss_1_1ReconstructFromNeighbors_1a799355a749bf0e6632e7d2deeb0e7a0f" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>storage_idx_t</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

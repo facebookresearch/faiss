@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classfaiss_1_1gpu_1_1KernelTimer" kind="class" language="C++" prot="public">
+    <compoundname>faiss::gpu::KernelTimer</compoundname>
+    <includes refid="Timer_8h" local="no">Timer.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1KernelTimer_1ae02d1204dcac4dc5cff5be785312a7b4" prot="private" static="no" mutable="no">
+        <type>cudaEvent_t</type>
+        <definition>cudaEvent_t faiss::gpu::KernelTimer::startEvent_</definition>
+        <argsstring></argsstring>
+        <name>startEvent_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/Timer.h" line="33" column="15" bodyfile="faiss/gpu/utils/Timer.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1KernelTimer_1a53028f1e94f1f092208a6df69893b73f" prot="private" static="no" mutable="no">
+        <type>cudaEvent_t</type>
+        <definition>cudaEvent_t faiss::gpu::KernelTimer::stopEvent_</definition>
+        <argsstring></argsstring>
+        <name>stopEvent_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/Timer.h" line="34" column="15" bodyfile="faiss/gpu/utils/Timer.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1KernelTimer_1aac90fea6973d68d2b12149d5fb928da8" prot="private" static="no" mutable="no">
+        <type>cudaStream_t</type>
+        <definition>cudaStream_t faiss::gpu::KernelTimer::stream_</definition>
+        <argsstring></argsstring>
+        <name>stream_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/Timer.h" line="35" column="16" bodyfile="faiss/gpu/utils/Timer.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1KernelTimer_1a7582d3003da51096c5740c8773d9c3ec" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::KernelTimer::valid_</definition>
+        <argsstring></argsstring>
+        <name>valid_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/Timer.h" line="36" column="8" bodyfile="faiss/gpu/utils/Timer.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1KernelTimer_1af533a5a8734243263032960c2445d233" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::KernelTimer::KernelTimer</definition>
+        <argsstring>(cudaStream_t stream=0)</argsstring>
+        <name>KernelTimer</name>
+        <param>
+          <type>cudaStream_t</type>
+          <declname>stream</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructor starts the timer and adds an event into the current device stream </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/Timer.h" line="21" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1KernelTimer_1af9883350bf0732b2452f1ce4670266fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::KernelTimer::~KernelTimer</definition>
+        <argsstring>()</argsstring>
+        <name>~KernelTimer</name>
+        <briefdescription>
+<para>Destructor releases event resources. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/Timer.h" line="24" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::gpu::KernelTimer::elapsedMilliseconds</definition>
+        <argsstring>()</argsstring>
+        <name>elapsedMilliseconds</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Adds a stop event then synchronizes on the stop event to get the actual GPU-side kernel timings for any kernels launched in the current stream. Returns the number of milliseconds elapsed. Can only be called once. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/Timer.h" line="30" column="9"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Utility class for timing execution of a kernel. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu/utils/Timer.h" line="17" column="18" bodyfile="faiss/gpu/utils/Timer.h" bodystart="17" bodyend="37"/>
+    <listofallmembers>
+      <member refid="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5" prot="public" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>elapsedMilliseconds</name></member>
+      <member refid="classfaiss_1_1gpu_1_1KernelTimer_1af533a5a8734243263032960c2445d233" prot="public" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>KernelTimer</name></member>
+      <member refid="classfaiss_1_1gpu_1_1KernelTimer_1ae02d1204dcac4dc5cff5be785312a7b4" prot="private" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>startEvent_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1KernelTimer_1a53028f1e94f1f092208a6df69893b73f" prot="private" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>stopEvent_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1KernelTimer_1aac90fea6973d68d2b12149d5fb928da8" prot="private" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>stream_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1KernelTimer_1a7582d3003da51096c5740c8773d9c3ec" prot="private" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>valid_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1KernelTimer_1af9883350bf0732b2452f1ce4670266fa" prot="public" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>~KernelTimer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

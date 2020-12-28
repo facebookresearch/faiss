@@ -1,0 +1,4 @@
+Struct PyCallbackIOWriter
+=========================
+
+.. doxygenstruct:: PyCallbackIOWriter

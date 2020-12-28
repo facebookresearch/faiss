@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dir_71a5f2b83da87e7fb52bb1a9a3fef9ad" kind="dir">
+    <compoundname>faiss/invlists</compoundname>
+    <innerfile refid="BlockInvertedLists_8h">BlockInvertedLists.h</innerfile>
+    <innerfile refid="DirectMap_8h">DirectMap.h</innerfile>
+    <innerfile refid="InvertedLists_8h">InvertedLists.h</innerfile>
+    <innerfile refid="InvertedListsIOHook_8h">InvertedListsIOHook.h</innerfile>
+    <innerfile refid="OnDiskInvertedLists_8h">OnDiskInvertedLists.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/invlists/"/>
+  </compounddef>
+</doxygen>

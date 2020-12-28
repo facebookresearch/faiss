@@ -1,0 +1,540 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Class faiss::gpu::GpuIndexBinaryFlat &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Class faiss::gpu::GpuIndexFlat" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html" />
+    <link rel="prev" title="Class faiss::gpu::GpuIndex" href="classfaiss_1_1gpu_1_1GpuIndex.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../classlist.html">Class list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1IndexReplicasTemplate.html">Class faiss::IndexReplicasTemplate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1WorkerThread.html">Class faiss::WorkerThread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1CpuTimer.html">Class faiss::gpu::CpuTimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1CublasHandleScope.html">Class faiss::gpu::CublasHandleScope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1CudaEvent.html">Class faiss::gpu::CudaEvent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1DeviceScope.html">Class faiss::gpu::DeviceScope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndex.html">Class faiss::gpu::GpuIndex</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Class faiss::gpu::GpuIndexBinaryFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html">Class faiss::gpu::GpuIndexFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html">Class faiss::gpu::GpuIndexFlatIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html">Class faiss::gpu::GpuIndexFlatL2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html">Class faiss::gpu::GpuIndexIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html">Class faiss::gpu::GpuIndexIVFFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html">Class faiss::gpu::GpuIndexIVFPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html">Class faiss::gpu::GpuIndexIVFScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResources.html">Class faiss::gpu::GpuResources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResourcesProvider.html">Class faiss::gpu::GpuResourcesProvider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1KernelTimer.html">Class faiss::gpu::KernelTimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StackDeviceMemory.html">Class faiss::gpu::StackDeviceMemory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StandardGpuResources.html">Class faiss::gpu::StandardGpuResources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl.html">Class faiss::gpu::StandardGpuResourcesImpl</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../classlist.html">Class list</a> &raquo;</li>
+        
+      <li>Class faiss::gpu::GpuIndexBinaryFlat</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/cpp_api/class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="class-faiss-gpu-gpuindexbinaryflat">
+<h1>Class faiss::gpu::GpuIndexBinaryFlat<a class="headerlink" href="#class-faiss-gpu-gpuindexbinaryflat" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp class">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlatE">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlatE"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlatE"></span><span id="faiss::gpu::GpuIndexBinaryFlat"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat"></span><em class="property">class </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu">gpu</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">GpuIndexBinaryFlat</code> : <em class="property">public</em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary">IndexBinary</a><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlatE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>A GPU version of <a class="reference internal" href="../struct/structfaiss_1_1IndexBinaryFlat.html#structfaiss_1_1IndexBinaryFlat"><span class="std std-ref">IndexBinaryFlat</span></a> for brute-force comparison of bit vectors via Hamming distance </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat5idx_tE"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat5idx_tE"></span><span class="target" id="structfaiss_1_1IndexBinary_1a01749bbdbd3b7ec6bb9390257ab16c5c"></span><em class="property">using </em><code class="sig-name descname">idx_t</code> = <a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>all indices are this type </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat11component_tE">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat11component_tE"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat11component_tE"></span><span class="target" id="structfaiss_1_1IndexBinary_1aaa0f338d22575d508cd6141972addaa6"></span><em class="property">using </em><code class="sig-name descname">component_t</code> = uint8_t<a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat11component_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat10distance_tE">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat10distance_tE"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat10distance_tE"></span><span class="target" id="structfaiss_1_1IndexBinary_1af958aa9b51dac1fcc433014959cad20c"></span><em class="property">using </em><code class="sig-name descname">distance_t</code> = int32_t<a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat10distance_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat18GpuIndexBinaryFlatEP20GpuResourcesProviderPKN5faiss15IndexBinaryFlatE24GpuIndexBinaryFlatConfig">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat18GpuIndexBinaryFlatEP20GpuResourcesProviderPKN5faiss15IndexBinaryFlatE24GpuIndexBinaryFlatConfig"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat18GpuIndexBinaryFlatEP20GpuResourcesProviderPKN5faiss15IndexBinaryFlatE24GpuIndexBinaryFlatConfig"></span><span id="faiss::gpu::GpuIndexBinaryFlat::GpuIndexBinaryFlat__GpuResourcesProviderP.faiss::IndexBinaryFlatCP.GpuIndexBinaryFlatConfig"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1ae481f44b2f5233e2cc21298243133d6a"></span><code class="sig-name descname">GpuIndexBinaryFlat</code><span class="sig-paren">(</span><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResourcesProvider.html#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="faiss::gpu::GpuResourcesProvider">GpuResourcesProvider</a> *<em>resources</em>, <em class="property">const</em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/IndexBinaryFlat_8h.html#_CPPv4N5faiss15IndexBinaryFlatE" title="faiss::IndexBinaryFlat">IndexBinaryFlat</a> *<em>index</em>, <a class="reference internal" href="../file/GpuIndexBinaryFlat_8h.html#_CPPv4N5faiss3gpu24GpuIndexBinaryFlatConfigE" title="faiss::gpu::GpuIndexBinaryFlatConfig">GpuIndexBinaryFlatConfig</a> <em>config</em> = <a class="reference internal" href="../file/GpuIndexBinaryFlat_8h.html#_CPPv4N5faiss3gpu24GpuIndexBinaryFlatConfigE" title="faiss::gpu::GpuIndexBinaryFlatConfig">GpuIndexBinaryFlatConfig</a>()<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat18GpuIndexBinaryFlatEP20GpuResourcesProviderPKN5faiss15IndexBinaryFlatE24GpuIndexBinaryFlatConfig" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Construct from a pre-existing <a class="reference internal" href="../struct/structfaiss_1_1IndexBinaryFlat.html#structfaiss_1_1IndexBinaryFlat"><span class="std std-ref">faiss::IndexBinaryFlat</span></a> instance, copying data over to the given GPU </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat18GpuIndexBinaryFlatEP20GpuResourcesProvideri24GpuIndexBinaryFlatConfig">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat18GpuIndexBinaryFlatEP20GpuResourcesProvideri24GpuIndexBinaryFlatConfig"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat18GpuIndexBinaryFlatEP20GpuResourcesProvideri24GpuIndexBinaryFlatConfig"></span><span id="faiss::gpu::GpuIndexBinaryFlat::GpuIndexBinaryFlat__GpuResourcesProviderP.i.GpuIndexBinaryFlatConfig"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1af63a3b95ee7d806e37143b686e1c1d1d"></span><code class="sig-name descname">GpuIndexBinaryFlat</code><span class="sig-paren">(</span><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResourcesProvider.html#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="faiss::gpu::GpuResourcesProvider">GpuResourcesProvider</a> *<em>resources</em>, int <em>dims</em>, <a class="reference internal" href="../file/GpuIndexBinaryFlat_8h.html#_CPPv4N5faiss3gpu24GpuIndexBinaryFlatConfigE" title="faiss::gpu::GpuIndexBinaryFlatConfig">GpuIndexBinaryFlatConfig</a> <em>config</em> = <a class="reference internal" href="../file/GpuIndexBinaryFlat_8h.html#_CPPv4N5faiss3gpu24GpuIndexBinaryFlatConfigE" title="faiss::gpu::GpuIndexBinaryFlatConfig">GpuIndexBinaryFlatConfig</a>()<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat18GpuIndexBinaryFlatEP20GpuResourcesProvideri24GpuIndexBinaryFlatConfig" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Construct an empty instance that can be added to. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlatD0Ev">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlatD0Ev"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlatD0Ev"></span><span id="faiss::gpu::GpuIndexBinaryFlat::~GpuIndexBinaryFlat"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a133dbba6c51339bcc3d15f7f66f90611"></span><code class="sig-name descname">~GpuIndexBinaryFlat</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlatD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat9getDeviceEv">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat9getDeviceEv"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat9getDeviceEv"></span><span id="faiss::gpu::GpuIndexBinaryFlat::getDeviceC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a7f84b85338a3264d70ed30af4356d87b"></span>int <code class="sig-name descname">getDevice</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat9getDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the device that this index is resident on. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat12getResourcesEv">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat12getResourcesEv"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat12getResourcesEv"></span><span id="faiss::gpu::GpuIndexBinaryFlat::getResources"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a2c649f0f33a0be2738d3ff7c0e7103c5"></span>std::shared_ptr&lt;<a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources">GpuResources</a>&gt; <code class="sig-name descname">getResources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat12getResourcesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a reference to our <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuResources"><span class="std std-ref">GpuResources</span></a> object that manages memory, stream and handle resources on the GPU </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat8copyFromEPKN5faiss15IndexBinaryFlatE">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat8copyFromEPKN5faiss15IndexBinaryFlatE"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat8copyFromEPKN5faiss15IndexBinaryFlatE"></span><span id="faiss::gpu::GpuIndexBinaryFlat::copyFrom__faiss::IndexBinaryFlatCP"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a1acf93b118b4136857b5dd9ab614e901"></span>void <code class="sig-name descname">copyFrom</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/IndexBinaryFlat_8h.html#_CPPv4N5faiss15IndexBinaryFlatE" title="faiss::IndexBinaryFlat">IndexBinaryFlat</a> *<em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat8copyFromEPKN5faiss15IndexBinaryFlatE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Initialize ourselves from the given CPU index; will overwrite all data in ourselves </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat6copyToEPN5faiss15IndexBinaryFlatE">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat6copyToEPN5faiss15IndexBinaryFlatE"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat6copyToEPN5faiss15IndexBinaryFlatE"></span><span id="faiss::gpu::GpuIndexBinaryFlat::copyTo__faiss::IndexBinaryFlatPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a4a00b93de336e8536c657d69803ff5c2"></span>void <code class="sig-name descname">copyTo</code><span class="sig-paren">(</span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/IndexBinaryFlat_8h.html#_CPPv4N5faiss15IndexBinaryFlatE" title="faiss::IndexBinaryFlat">IndexBinaryFlat</a> *<em>index</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat6copyToEPN5faiss15IndexBinaryFlatE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Copy ourselves to the given CPU index; will overwrite all data in the index instance </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat3addEN5faiss11IndexBinary5idx_tEPK7uint8_t">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat3addEN5faiss11IndexBinary5idx_tEPK7uint8_t"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat3addEN5faiss11IndexBinary5idx_tEPK7uint8_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::add__faiss::IndexBinary::idx_t.uint8_tCP"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a84b9c07089abd5c0fa8f07a7a22de047"></span>void <code class="sig-name descname">add</code><span class="sig-paren">(</span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary">IndexBinary</a>::<a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> uint8_t *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat3addEN5faiss11IndexBinary5idx_tEPK7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Add n vectors of dimension d to the index.</p>
+<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 <dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input matrix, size n * d / 8 </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5resetEv">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat5resetEv"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat5resetEv"></span><span id="faiss::gpu::GpuIndexBinaryFlat::reset"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1ac8f14dd3257963082fa638d24df244d6"></span>void <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5resetEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Removes all elements from the database. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat6searchEN5faiss11IndexBinary5idx_tEPK7uint8_tN5faiss11IndexBinary5idx_tEP7int32_tPN5faiss11IndexBinary5idx_tE">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat6searchEN5faiss11IndexBinary5idx_tEPK7uint8_tN5faiss11IndexBinary5idx_tEP7int32_tPN5faiss11IndexBinary5idx_tE"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat6searchEN5faiss11IndexBinary5idx_tEPK7uint8_tN5faiss11IndexBinary5idx_tEP7int32_tPN5faiss11IndexBinary5idx_tE"></span><span id="faiss::gpu::GpuIndexBinaryFlat::search__faiss::IndexBinary::idx_t.uint8_tCP.faiss::IndexBinary::idx_t.int32_tP.faiss::IndexBinary::idx_tPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1aa4d81e853f4194a8b865fcfe7dddd050"></span>void <code class="sig-name descname">search</code><span class="sig-paren">(</span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary">IndexBinary</a>::<a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> uint8_t *<em>x</em>, <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary">IndexBinary</a>::<a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t">idx_t</a> <em>k</em>, int32_t *<em>distances</em>, <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary">IndexBinary</a>::<a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t">idx_t</a> *<em>labels</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat6searchEN5faiss11IndexBinary5idx_tEPK7uint8_tN5faiss11IndexBinary5idx_tEP7int32_tPN5faiss11IndexBinary5idx_tE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Query n vectors of dimension d to the index.</p>
+<p>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d / 8 </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: output labels of the NNs, size n*k </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">distances</span></code>: output pairwise distances, size n*k </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat11reconstructEN5faiss11IndexBinary5idx_tEP7uint8_t">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat11reconstructEN5faiss11IndexBinary5idx_tEP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat11reconstructEN5faiss11IndexBinary5idx_tEP7uint8_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::reconstruct__faiss::IndexBinary::idx_t.uint8_tPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a9b16b11b5fcc5cc97359e684f5e4a338"></span>void <code class="sig-name descname">reconstruct</code><span class="sig-paren">(</span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary">IndexBinary</a>::<a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t">idx_t</a> <em>key</em>, uint8_t *<em>recons</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat11reconstructEN5faiss11IndexBinary5idx_tEP7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Reconstruct a stored vector.</p>
+<p>This function may not be defined for some indexes. <dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d / 8) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5trainE5idx_tPK7uint8_t">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat5trainE5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat5trainE5idx_tPK7uint8_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::train__idx_t.uint8_tCP"></span><span class="target" id="structfaiss_1_1IndexBinary_1a3c0ffd1655d8a5486660cb025340c9a4"></span>void <code class="sig-name descname">train</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> uint8_t *<em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5trainE5idx_tPK7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Perform training on a representative set of vectors.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d / 8 </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat12add_with_idsE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat12add_with_idsE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat12add_with_idsE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::add_with_ids__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc"></span>void <code class="sig-name descname">add_with_ids</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> uint8_t *<em>x</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> *<em>xids</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat12add_with_idsE5idx_tPK7uint8_tPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Same as add, but stores xids instead of sequential ids.</p>
+<p>The default implementation fails with an assertion, as it is not supported by all indexes.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xids</span></code>: if non-null, ids to store for the vectors (size n) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat12range_searchE5idx_tPK7uint8_tiP17RangeSearchResult">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat12range_searchE5idx_tPK7uint8_tiP17RangeSearchResult"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat12range_searchE5idx_tPK7uint8_tiP17RangeSearchResult"></span><span id="faiss::gpu::GpuIndexBinaryFlat::range_search__idx_t.uint8_tCP.i.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1IndexBinary_1a35aedb48dd0270377f5602d61b783fd1"></span>void <code class="sig-name descname">range_search</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> uint8_t *<em>x</em>, int <em>radius</em>, RangeSearchResult *<em>result</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat12range_searchE5idx_tPK7uint8_tiP17RangeSearchResult" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Query n vectors of dimension d to the index.</p>
+<p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory). The distances are converted to float to reuse the RangeSearchResult structure, but they are integer. By convention, only distances &lt; radius (strict comparison) are returned, ie. radius = 0 does not return any result and 1 returns only exact same vectors.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d / 8 </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat6assignE5idx_tPK7uint8_tP5idx_t5idx_t">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat6assignE5idx_tPK7uint8_tP5idx_t5idx_t"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat6assignE5idx_tPK7uint8_tP5idx_t5idx_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::assign__idx_t.uint8_tCP.idx_tP.idx_tC"></span><span class="target" id="structfaiss_1_1IndexBinary_1aa706d8807d29c91e0a148553a8202bc9"></span>void <code class="sig-name descname">assign</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> uint8_t *<em>x</em>, <a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> *<em>labels</em>, <a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> <em>k</em> = 1<span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat6assignE5idx_tPK7uint8_tP5idx_t5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the indexes of the k vectors closest to the query x.</p>
+<p>This function is identical to search but only returns labels of neighbors. <dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d / 8 </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: output labels of the NNs, size n*k </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat10remove_idsERK10IDSelector">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat10remove_idsERK10IDSelector"></span><span id="faiss::gpu::GpuIndexBinaryFlat::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1IndexBinary_1a5ea7dee38e40f66b86d892bab2b6b80e"></span>size_t <code class="sig-name descname">remove_ids</code><span class="sig-paren">(</span><em class="property">const</em> IDSelector &amp;<em>sel</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat10remove_idsERK10IDSelector" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Removes IDs from the index. Not supported by all indexes. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat13reconstruct_nE5idx_t5idx_tP7uint8_t">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat13reconstruct_nE5idx_t5idx_tP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat13reconstruct_nE5idx_t5idx_tP7uint8_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::reconstruct_n__idx_t.idx_t.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4"></span>void <code class="sig-name descname">reconstruct_n</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> <em>i0</em>, <a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> <em>ni</em>, uint8_t *<em>recons</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat13reconstruct_nE5idx_t5idx_tP7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Reconstruct vectors i0 to i0 + ni - 1.</p>
+<p>This function may not be defined for some indexes. <dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vectors (size ni * d / 8) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat22search_and_reconstructE5idx_tPK7uint8_t5idx_tP7int32_tP5idx_tP7uint8_t">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat22search_and_reconstructE5idx_tPK7uint8_t5idx_tP7int32_tP5idx_tP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat22search_and_reconstructE5idx_tPK7uint8_t5idx_tP7int32_tP5idx_tP7uint8_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::search_and_reconstruct__idx_t.uint8_tCP.idx_t.int32_tP.idx_tP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexBinary_1ae7a4b9bdbe6f4392d00cf4e44120409e"></span>void <code class="sig-name descname">search_and_reconstruct</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> uint8_t *<em>x</em>, <a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> <em>k</em>, int32_t *<em>distances</em>, <a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> *<em>labels</em>, uint8_t *<em>recons</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat22search_and_reconstructE5idx_tPK7uint8_t5idx_tP7int32_tP5idx_tP7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
+<p>If there are not enough results for a query, the resulting array is padded with -1s.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstructed vectors size (n, k, d) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat7displayEv">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat7displayEv"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat7displayEv"></span><span id="faiss::gpu::GpuIndexBinaryFlat::displayC"></span><span class="target" id="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1"></span>void <code class="sig-name descname">display</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat7displayEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Display the actual class name and some more info. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat1dE">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat1dE"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat1dE"></span><span id="faiss::gpu::GpuIndexBinaryFlat::d__i"></span><span class="target" id="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88"></span>int <code class="sig-name descname">d</code><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat1dE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>vector dimension </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat9code_sizeE">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat9code_sizeE"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat9code_sizeE"></span><span id="faiss::gpu::GpuIndexBinaryFlat::code_size__i"></span><span class="target" id="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380"></span>int <code class="sig-name descname">code_size</code><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat9code_sizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>number of bytes per vector ( = d / 8 ) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat6ntotalE">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat6ntotalE"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat6ntotalE"></span><span id="faiss::gpu::GpuIndexBinaryFlat::ntotal__idx_t"></span><span class="target" id="structfaiss_1_1IndexBinary_1a41b6759d127475d5fcd2b3982a8f355e"></span><a class="reference internal" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t">idx_t</a> <code class="sig-name descname">ntotal</code><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat6ntotalE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>total nb of indexed vectors </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat7verboseE">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat7verboseE"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat7verboseE"></span><span id="faiss::gpu::GpuIndexBinaryFlat::verbose__b"></span><span class="target" id="structfaiss_1_1IndexBinary_1a1656c00d77d55999becd71e3d8ea6dd7"></span>bool <code class="sig-name descname">verbose</code><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat7verboseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>verbosity level </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat10is_trainedE">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat10is_trainedE"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat10is_trainedE"></span><span id="faiss::gpu::GpuIndexBinaryFlat::is_trained__b"></span><span class="target" id="structfaiss_1_1IndexBinary_1a132119ae93e240b54621c5c669853c7f"></span>bool <code class="sig-name descname">is_trained</code><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat10is_trainedE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>set if the <a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> does not require training, or if training is done already </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat11metric_typeE">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat11metric_typeE"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat11metric_typeE"></span><span id="faiss::gpu::GpuIndexBinaryFlat::metric_type__MetricType"></span><span class="target" id="structfaiss_1_1IndexBinary_1a344529c829717012b530ef9c13b145b7"></span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType">MetricType</a> <code class="sig-name descname">metric_type</code><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat11metric_typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>type of metric this index uses for search </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Protected Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat19searchFromCpuPaged_EiPK7uint8_tiP7int32_tPi">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat19searchFromCpuPaged_EiPK7uint8_tiP7int32_tPi"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat19searchFromCpuPaged_EiPK7uint8_tiP7int32_tPi"></span><span id="faiss::gpu::GpuIndexBinaryFlat::searchFromCpuPaged___i.uint8_tCP.i.int32_tP.iPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a24a12945934042c0117e108ee3f82d66"></span>void <code class="sig-name descname">searchFromCpuPaged_</code><span class="sig-paren">(</span>int <em>n</em>, <em class="property">const</em> uint8_t *<em>x</em>, int <em>k</em>, int32_t *<em>outDistancesData</em>, int *<em>outIndicesData</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat19searchFromCpuPaged_EiPK7uint8_tiP7int32_tPi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Called from search when the input data is on the CPU; potentially allows for pinned memory usage </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat15searchNonPaged_EiPK7uint8_tiP7int32_tPi">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat15searchNonPaged_EiPK7uint8_tiP7int32_tPi"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat15searchNonPaged_EiPK7uint8_tiP7int32_tPi"></span><span id="faiss::gpu::GpuIndexBinaryFlat::searchNonPaged___i.uint8_tCP.i.int32_tP.iPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a9f569b1b69e696a8bc2ef298309be8f2"></span>void <code class="sig-name descname">searchNonPaged_</code><span class="sig-paren">(</span>int <em>n</em>, <em class="property">const</em> uint8_t *<em>x</em>, int <em>k</em>, int32_t *<em>outDistancesData</em>, int *<em>outIndicesData</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat15searchNonPaged_EiPK7uint8_tiP7int32_tPi" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Protected Attributes</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat10resources_E">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat10resources_E"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat10resources_E"></span><span id="faiss::gpu::GpuIndexBinaryFlat::resources___std::shared_ptr:GpuResources:"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1aa5486bb18c4dd2bf2acdb1324b31940b"></span>std::shared_ptr&lt;<a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources">GpuResources</a>&gt; <code class="sig-name descname">resources_</code><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat10resources_E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Manages streans, cuBLAS handles and scratch memory for devices. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat17binaryFlatConfig_E">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat17binaryFlatConfig_E"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat17binaryFlatConfig_E"></span><span id="faiss::gpu::GpuIndexBinaryFlat::binaryFlatConfig___GpuIndexBinaryFlatConfigC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a280f27e2529d4ce6e08520c7687254c3"></span><em class="property">const</em> <a class="reference internal" href="../file/GpuIndexBinaryFlat_8h.html#_CPPv4N5faiss3gpu24GpuIndexBinaryFlatConfigE" title="faiss::gpu::GpuIndexBinaryFlatConfig">GpuIndexBinaryFlatConfig</a> <code class="sig-name descname">binaryFlatConfig_</code><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat17binaryFlatConfig_E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Configuration options. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5data_E">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat5data_E"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat5data_E"></span><span id="faiss::gpu::GpuIndexBinaryFlat::data___std::unique_ptr:BinaryFlatIndex:"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a6962261dda56de7315ba0481722dfc1f"></span>std::unique_ptr&lt;BinaryFlatIndex&gt; <code class="sig-name descname">data_</code><a class="headerlink" href="#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5data_E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Holds our GPU data containing the list of vectors. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="classfaiss_1_1gpu_1_1GpuIndexFlat.html" class="btn btn-neutral float-right" title="Class faiss::gpu::GpuIndexFlat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="classfaiss_1_1gpu_1_1GpuIndex.html" class="btn btn-neutral float-left" title="Class faiss::gpu::GpuIndex" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright Facebook, Inc. and its affiliates.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

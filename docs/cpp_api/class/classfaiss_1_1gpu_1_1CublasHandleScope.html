@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Class faiss::gpu::CublasHandleScope &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sphinx_tabs/tabs.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Class faiss::gpu::CudaEvent" href="classfaiss_1_1gpu_1_1CudaEvent.html" />
+    <link rel="prev" title="Class faiss::gpu::CpuTimer" href="classfaiss_1_1gpu_1_1CpuTimer.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../classlist.html">Class list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1IndexReplicasTemplate.html">Class faiss::IndexReplicasTemplate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1WorkerThread.html">Class faiss::WorkerThread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1CpuTimer.html">Class faiss::gpu::CpuTimer</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Class faiss::gpu::CublasHandleScope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1CudaEvent.html">Class faiss::gpu::CudaEvent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1DeviceScope.html">Class faiss::gpu::DeviceScope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndex.html">Class faiss::gpu::GpuIndex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html">Class faiss::gpu::GpuIndexBinaryFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexFlat.html">Class faiss::gpu::GpuIndexFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexFlatIP.html">Class faiss::gpu::GpuIndexFlatIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexFlatL2.html">Class faiss::gpu::GpuIndexFlatL2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVF.html">Class faiss::gpu::GpuIndexIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html">Class faiss::gpu::GpuIndexIVFFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html">Class faiss::gpu::GpuIndexIVFPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html">Class faiss::gpu::GpuIndexIVFScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResources.html">Class faiss::gpu::GpuResources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResourcesProvider.html">Class faiss::gpu::GpuResourcesProvider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1KernelTimer.html">Class faiss::gpu::KernelTimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StackDeviceMemory.html">Class faiss::gpu::StackDeviceMemory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StandardGpuResources.html">Class faiss::gpu::StandardGpuResources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl.html">Class faiss::gpu::StandardGpuResourcesImpl</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../classlist.html">Class list</a> &raquo;</li>
+        
+      <li>Class faiss::gpu::CublasHandleScope</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/cpp_api/class/classfaiss_1_1gpu_1_1CublasHandleScope.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="class-faiss-gpu-cublashandlescope">
+<h1>Class faiss::gpu::CublasHandleScope<a class="headerlink" href="#class-faiss-gpu-cublashandlescope" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp class">
+<dt id="_CPPv4N5faiss3gpu17CublasHandleScopeE">
+<span id="_CPPv3N5faiss3gpu17CublasHandleScopeE"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScopeE"></span><span id="faiss::gpu::CublasHandleScope"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope"></span><em class="property">class </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu">gpu</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CublasHandleScope</code><a class="headerlink" href="#_CPPv4N5faiss3gpu17CublasHandleScopeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>RAII object to manage a cublasHandle_t. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu17CublasHandleScope17CublasHandleScopeEv">
+<span id="_CPPv3N5faiss3gpu17CublasHandleScope17CublasHandleScopeEv"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScope17CublasHandleScopeEv"></span><span id="faiss::gpu::CublasHandleScope::CublasHandleScope"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope_1a7bcf61f669741a93cab18a0fa71b8df7"></span><code class="sig-name descname">CublasHandleScope</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu17CublasHandleScope17CublasHandleScopeEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu17CublasHandleScopeD0Ev">
+<span id="_CPPv3N5faiss3gpu17CublasHandleScopeD0Ev"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScopeD0Ev"></span><span id="faiss::gpu::CublasHandleScope::~CublasHandleScope"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope_1aebc00829e05d127f84f6502c61911109"></span><code class="sig-name descname">~CublasHandleScope</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu17CublasHandleScopeD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss3gpu17CublasHandleScope3getEv">
+<span id="_CPPv3N5faiss3gpu17CublasHandleScope3getEv"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScope3getEv"></span><span id="faiss::gpu::CublasHandleScope::get"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope_1ad72c3f76d76df0a5b8947b4a07a37cb5"></span>cublasHandle_t <code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu17CublasHandleScope3getEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Private Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss3gpu17CublasHandleScope11blasHandle_E">
+<span id="_CPPv3N5faiss3gpu17CublasHandleScope11blasHandle_E"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScope11blasHandle_E"></span><span id="faiss::gpu::CublasHandleScope::blasHandle___cublasHandle_t"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope_1a990a8e8805606bba7a6450404c6d05d1"></span>cublasHandle_t <code class="sig-name descname">blasHandle_</code><a class="headerlink" href="#_CPPv4N5faiss3gpu17CublasHandleScope11blasHandle_E" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="classfaiss_1_1gpu_1_1CudaEvent.html" class="btn btn-neutral float-right" title="Class faiss::gpu::CudaEvent" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="classfaiss_1_1gpu_1_1CpuTimer.html" class="btn btn-neutral float-left" title="Class faiss::gpu::CpuTimer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright Facebook, Inc. and its affiliates.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
