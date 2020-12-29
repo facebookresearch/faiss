@@ -683,7 +683,7 @@ class TestSpectralHash(unittest.TestCase):
                     key = (nbit, tt, period)
 
                     print('(%d, %s, %g): %d, ' % (nbit, repr(tt), period, ninter))
-                    assert abs(ninter - self.ref_results[key]) <= 4
+                    assert abs(ninter - self.ref_results[key]) <= 12
 
 
 class TestRefine(unittest.TestCase):
