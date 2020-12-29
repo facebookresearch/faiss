@@ -177,6 +177,10 @@ set(FAISS_GPU_HEADERS
   utils/warpselect/WarpSelectImpl.cuh
   utils/WarpShuffles.cuh
 )
+
+# Export FAISS_HEADERS variable to parent scope.
+set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
+
 foreach(header ${FAISS_GPU_HEADERS})
   get_filename_component(dir ${header} DIRECTORY )
   install(FILES ${header}

@@ -42,6 +42,19 @@ if(FAISS_ENABLE_GPU)
   )
 endif()
 
+if(TARGET faiss)
+  # Manually add headers as extra dependencies of swigfaiss.
+  set(SWIG_MODULE_swigfaiss_EXTRA_DEPS)
+  foreach(h ${FAISS_HEADERS})
+    list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS "${PROJECT_SOURCE_DIR}/../${h}")
+  endforeach()
+  foreach(h ${FAISS_GPU_HEADERS})
+    list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS "${PROJECT_SOURCE_DIR}/../gpu/${h}")
+  endforeach()
+else()
+  find_package(faiss REQUIRED)
+endif()
+
 swig_add_library(swigfaiss
   TYPE SHARED
   LANGUAGE python
@@ -56,10 +69,6 @@ endif()
 if(FAISS_ENABLE_GPU)
   find_package(CUDAToolkit REQUIRED)
   target_link_libraries(swigfaiss PRIVATE CUDA::cudart)
-endif()
-
-if(NOT TARGET faiss)
-  find_package(faiss REQUIRED)
 endif()
 
 find_package(OpenMP REQUIRED)
