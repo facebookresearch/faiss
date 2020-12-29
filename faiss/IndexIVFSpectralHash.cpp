@@ -269,9 +269,8 @@ struct IVFScanner: InvertedListScanner {
             float dis = hc.hamming (codes);
 
             if (dis < simi [0]) {
-                maxheap_pop (k, simi, idxi);
                 int64_t id = store_pairs ? lo_build (list_no, j) : ids[j];
-                maxheap_push (k, simi, idxi, dis, id);
+                maxheap_replace_top (k, simi, idxi, dis, id);
                 nup++;
             }
             codes += code_size;

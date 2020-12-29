@@ -172,9 +172,8 @@ void IndexIVFPQR::search_preassigned (
                 float dis = fvec_L2sqr (residual_1, residual_2, d);
 
                 if (dis < heap_sim[0]) {
-                    maxheap_pop (k, heap_sim, heap_ids);
                     idx_t id_or_pair = store_pairs ? sl : id;
-                    maxheap_push (k, heap_sim, heap_ids, dis, id_or_pair);
+                    maxheap_replace_top (k, heap_sim, heap_ids, dis, id_or_pair);
                 }
                 n_refine ++;
             }

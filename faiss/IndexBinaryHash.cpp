@@ -136,8 +136,7 @@ struct KnnSearchResults {
 
     inline void add (float dis, idx_t id) {
         if (dis < heap_sim[0]) {
-            heap_pop<C> (k, heap_sim, heap_ids);
-            heap_push<C> (k, heap_sim, heap_ids, dis, id);
+            heap_replace_top<C> (k, heap_sim, heap_ids, dis, id);
         }
     }
 

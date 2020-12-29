@@ -522,8 +522,7 @@ void knn_inner_products_by_idx (const float * x,
             float ip = fvec_inner_product (x_, y + d * idsi[j], d);
 
             if (ip > simi[0]) {
-                minheap_pop (k, simi, idxi);
-                minheap_push (k, simi, idxi, ip, idsi[j]);
+                minheap_replace_top (k, simi, idxi, ip, idsi[j]);
             }
         }
         minheap_reorder (k, simi, idxi);
@@ -550,8 +549,7 @@ void knn_L2sqr_by_idx (const float * x,
             float disij = fvec_L2sqr (x_, y + d * idsi[j], d);
 
             if (disij < simi[0]) {
-                maxheap_pop (k, simi, idxi);
-                maxheap_push (k, simi, idxi, disij, idsi[j]);
+                maxheap_replace_top (k, simi, idxi, disij, idsi[j]);
             }
         }
         maxheap_reorder (res->k, simi, idxi);

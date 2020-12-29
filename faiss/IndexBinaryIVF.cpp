@@ -319,9 +319,8 @@ struct IVFBinaryScannerL2: BinaryInvertedListScanner {
         for (size_t j = 0; j < n; j++) {
             uint32_t dis = hc.hamming (codes);
             if (dis < simi[0]) {
-                heap_pop<C> (k, simi, idxi);
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                heap_push<C> (k, simi, idxi, dis, id);
+                heap_replace_top<C> (k, simi, idxi, dis, id);
                 nup++;
             }
             codes += code_size;

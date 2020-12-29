@@ -75,8 +75,7 @@ struct HeapResultHandler {
         /// add one result for query i
         void add_result(T dis, TI idx) {
             if (C::cmp(heap_dis[0], dis)) {
-                heap_pop<C>(k, heap_dis, heap_ids);
-                heap_push<C>(k, heap_dis, heap_ids, dis, idx);
+                heap_replace_top<C>(k, heap_dis, heap_ids, dis, idx);
                 thresh = heap_dis[0];
             }
         }
@@ -113,8 +112,7 @@ struct HeapResultHandler {
             for (size_t j = j0; j < j1; j++) {
                 T dis = *dis_tab++;
                 if (C::cmp(thresh, dis)) {
-                    heap_pop<C>(k, heap_dis, heap_ids);
-                    heap_push<C>(k, heap_dis, heap_ids, dis, j);
+                    heap_replace_top<C>(k, heap_dis, heap_ids, dis, j);
                     thresh = heap_dis[0];
                 }
             }
