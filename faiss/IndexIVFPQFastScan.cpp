@@ -224,10 +224,8 @@ void IndexIVFPQFastScan::add_with_ids (
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min (n, i0 + bs);
             if (verbose) {
-                printf(
-                    "   IndexIVFPQFastScan::add_with_ids %"
-                    PRId64 ":%" PRId64 "\n", i0, i1
-                );
+                printf("   IndexIVFPQFastScan::add_with_ids %zd: %zd",
+                       size_t(i0), size_t(i1));
             }
             add_with_ids (i1 - i0, x + i0 * d,
                           xids ? xids + i0 : nullptr);

@@ -1,8 +1,12 @@
-# Faiss 
+# Faiss
 
 Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size, up to ones that possibly do not fit in RAM. It also contains supporting code for evaluation and parameter tuning. Faiss is written in C++ with complete wrappers for Python/numpy. Some of the most useful algorithms are implemented on the GPU. It is developed by [Facebook AI Research](https://research.fb.com/category/facebook-ai-research-fair/).
 
 ## NEWS
+
+*NEW: version 1.6.5 (2020-11-20) pytorch / faiss interoperability improvements *
+
+*NEW: version 1.6.4 (2020-10-20) Move to cmake -- Windows support*
 
 *NEW: version 1.6.3 (2020-03-27) IndexBinaryHash, GPU support for alternative distances.*
 
@@ -32,11 +36,11 @@ Faiss is a library for efficient similarity search and clustering of dense vecto
 
 Faiss contains several methods for similarity search. It assumes that the instances are represented as vectors and are identified by an integer, and that the vectors can be compared with L2 (Euclidean) distances or dot products. Vectors that are similar to a query vector are those that have the lowest L2 distance or the highest dot product with the query vector. It also supports cosine similarity, since this is a dot product on normalized vectors.
 
-Most of the methods, like those based on binary vectors and compact quantization codes, solely use a compressed representation of the vectors and do not require to keep the original vectors. This generally comes at the cost of a less precise search but these methods can scale to billions of vectors in main memory on a single server. 
+Most of the methods, like those based on binary vectors and compact quantization codes, solely use a compressed representation of the vectors and do not require to keep the original vectors. This generally comes at the cost of a less precise search but these methods can scale to billions of vectors in main memory on a single server.
 
 The GPU implementation can accept input from either CPU or GPU memory. On a server with GPUs, the GPU indexes can be used a drop-in replacement for the CPU indexes (e.g., replace `IndexFlatL2` with `GpuIndexFlatL2`) and copies to/from GPU memory are handled automatically. Results will be faster however if both input and output remain resident on the GPU. Both single and multi-GPU usage is supported.
 
-## Building 
+## Building
 
 The library is mostly implemented in C++, with optional GPU support provided via CUDA, and an optional Python interface. The CPU version requires a BLAS library. It compiles with a Makefile and can be packaged in a docker image. See [INSTALL.md](INSTALL.md) for details.
 
@@ -46,7 +50,7 @@ Faiss is built around an index type that stores a set of vectors, and provides a
 
 - search time
 - search quality
-- memory used per index vector 
+- memory used per index vector
 - training time
 - need for external data for unsupervised training
 
@@ -54,7 +58,7 @@ The optional GPU implementation provides what is likely (as of March 2017) the f
 
 ## Full documentation of Faiss
 
-The following are entry points for documentation: 
+The following are entry points for documentation:
 
 - the full documentation, including a [tutorial](https://github.com/facebookresearch/faiss/wiki/Getting-started), a [FAQ](https://github.com/facebookresearch/faiss/wiki/FAQ) and a [troubleshooting section](https://github.com/facebookresearch/faiss/wiki/Troubleshooting) can be found on the [wiki page](http://github.com/facebookresearch/faiss/wiki)
 - the [doxygen documentation](http://rawgithub.com/facebookresearch/faiss/master/docs/html/annotated.html) gives per-class information
@@ -86,7 +90,7 @@ Reference to cite when you use Faiss in a research paper:
 
 For public discussion of Faiss or for questions, there is a Facebook group at https://www.facebook.com/groups/faissusers/
 
-We monitor the [issues page](http://github.com/facebookresearch/faiss/issues) of the repository. 
+We monitor the [issues page](http://github.com/facebookresearch/faiss/issues) of the repository.
 You can report bugs, ask questions, etc.
 
 ## License
