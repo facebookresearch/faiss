@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="classfaiss_1_1gpu_1_1CpuTimer" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::CpuTimer</compoundname>
     <includes refid="Timer_8h" local="no">Timer.h</includes>
@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="46" column="9" bodyfile="faiss/gpu/utils/Timer.h" bodystart="49" bodyend="-1"/>
+        <location file="faiss/gpu/utils/Timer.h" line="46" column="1" bodyfile="faiss/gpu/utils/Timer.h" bodystart="49" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -25,13 +25,12 @@
         <argsstring>()</argsstring>
         <name>CpuTimer</name>
         <briefdescription>
-<para>Creates and starts a new timer. </para>
-        </briefdescription>
+<para>Creates and starts a new timer. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="43" column="3"/>
+        <location file="faiss/gpu/utils/Timer.h" line="43" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CpuTimer_1a4a2795debf10bc7eb904d62356e41f0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
@@ -39,21 +38,19 @@
         <argsstring>()</argsstring>
         <name>elapsedMilliseconds</name>
         <briefdescription>
-<para>Returns elapsed time in milliseconds. </para>
-        </briefdescription>
+<para>Returns elapsed time in milliseconds. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="46" column="9"/>
+        <location file="faiss/gpu/utils/Timer.h" line="46" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>CPU wallclock elapsed timer. </para>
-    </briefdescription>
+<para>CPU wallclock elapsed timer. </para>    </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/utils/Timer.h" line="40" column="15" bodyfile="faiss/gpu/utils/Timer.h" bodystart="40" bodyend="50"/>
+    <location file="faiss/gpu/utils/Timer.h" line="40" column="1" bodyfile="faiss/gpu/utils/Timer.h" bodystart="40" bodyend="50"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1CpuTimer_1af2f8e832b4c5425e152834ae7aa2af49" prot="public" virt="non-virtual"><scope>faiss::gpu::CpuTimer</scope><name>CpuTimer</name></member>
       <member refid="classfaiss_1_1gpu_1_1CpuTimer_1a4a2795debf10bc7eb904d62356e41f0d" prot="public" virt="non-virtual"><scope>faiss::gpu::CpuTimer</scope><name>elapsedMilliseconds</name></member>

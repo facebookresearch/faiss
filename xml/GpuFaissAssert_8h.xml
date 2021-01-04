@@ -1,22 +1,22 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="GpuFaissAssert_8h" kind="file" language="C++">
     <compoundname>GpuFaissAssert.h</compoundname>
     <includes local="no">faiss/impl/FaissAssert.h</includes>
     <includes local="no">cuda.h</includes>
     <incdepgraph>
-      <node id="2">
-        <label>faiss/impl/FaissAssert.h</label>
-      </node>
-      <node id="1">
+      <node id="88">
         <label>faiss/gpu/GpuFaissAssert.h</label>
         <link refid="GpuFaissAssert_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="89" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="90" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="89">
+        <label>faiss/impl/FaissAssert.h</label>
+      </node>
+      <node id="90">
         <label>cuda.h</label>
       </node>
     </incdepgraph>
@@ -28,9 +28,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Assertions </para>
-        </detaileddescription>
+<para>Copyright (c) Facebook, Inc. and its affiliates.</para><para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Assertions </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/gpu/GpuFaissAssert.h" line="24" column="10" bodyfile="faiss/gpu/GpuFaissAssert.h" bodystart="24" bodyend="-1"/>

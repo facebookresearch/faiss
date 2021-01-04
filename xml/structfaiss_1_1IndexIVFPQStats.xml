@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1IndexIVFPQStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexIVFPQStats</compoundname>
     <includes refid="IndexIVFPQ_8h" local="no">IndexIVFPQ.h</includes>
@@ -10,13 +10,12 @@
         <argsstring></argsstring>
         <name>nrefine</name>
         <briefdescription>
-<para>nb of refines (IVFPQR) </para>
-        </briefdescription>
+<para>nb of refines (IVFPQR) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="156" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="156" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="156" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="156" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQStats_1ae531123f47fc777db3e4d95789bfd6c6" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -24,13 +23,12 @@
         <argsstring></argsstring>
         <name>n_hamming_pass</name>
         <briefdescription>
-<para>nb of passed Hamming distance tests (for polysemous) </para>
-        </briefdescription>
+<para>nb of passed Hamming distance tests (for polysemous) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="158" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="158" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="158" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="158" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQStats_1a6b1fc7a99f1a4eb7d916dc36a7712140" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -43,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="162" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="162" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="162" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="162" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQStats_1a893c0045f56cccbfb73e42a716903fa0" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -51,13 +49,12 @@
         <argsstring></argsstring>
         <name>refine_cycles</name>
         <briefdescription>
-<para>only for IVFPQR </para>
-        </briefdescription>
+<para>only for IVFPQR </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="163" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="163" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="163" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="163" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -72,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="165" column="5" bodyfile="faiss/IndexIVFPQ.h" bodystart="165" bodyend="165"/>
+        <location file="faiss/IndexIVFPQ.h" line="165" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="165" bodyend="165"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQStats_1a84959a8cb7c2a75ca5a32dd73beaaee3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -85,15 +82,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="166" column="10"/>
+        <location file="faiss/IndexIVFPQ.h" line="166" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>statistics are robust to internal threading, but not if <ref refid="structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6" kindref="member">IndexIVFPQ::search_preassigned</ref> is called by multiple threads </para>
-    </detaileddescription>
-    <location file="faiss/IndexIVFPQ.h" line="155" column="22" bodyfile="faiss/IndexIVFPQ.h" bodystart="155" bodyend="167"/>
+<para>statistics are robust to internal threading, but not if <ref refid="structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6" kindref="member">IndexIVFPQ::search_preassigned</ref> is called by multiple threads </para>    </detaileddescription>
+    <location file="faiss/IndexIVFPQ.h" line="155" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="155" bodyend="167"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVFPQStats_1aded5c391a06a3ccb0b519433faf6cc30" prot="public" virt="non-virtual"><scope>faiss::IndexIVFPQStats</scope><name>IndexIVFPQStats</name></member>
       <member refid="structfaiss_1_1IndexIVFPQStats_1ae531123f47fc777db3e4d95789bfd6c6" prot="public" virt="non-virtual"><scope>faiss::IndexIVFPQStats</scope><name>n_hamming_pass</name></member>

@@ -1,22 +1,22 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="quantize__lut_8h" kind="file" language="C++">
     <compoundname>quantize_lut.h</compoundname>
     <includes local="no">cstdio</includes>
     <includes local="no">cstdint</includes>
     <incdepgraph>
-      <node id="3">
+      <node id="1353">
         <label>cstdint</label>
       </node>
-      <node id="2">
+      <node id="1352">
         <label>cstdio</label>
       </node>
-      <node id="1">
+      <node id="1351">
         <label>faiss/utils/quantize_lut.h</label>
         <link refid="quantize__lut_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1352" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="1353" relation="include">
         </childnode>
       </node>
     </incdepgraph>

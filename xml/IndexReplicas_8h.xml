@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="IndexReplicas_8h" kind="file" language="C++">
     <compoundname>IndexReplicas.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
@@ -8,85 +8,85 @@
     <includedby refid="IndexWrapper_8h" local="no">faiss/gpu/perf/IndexWrapper.h</includedby>
     <includedby refid="MetaIndexes_8h" local="no">faiss/MetaIndexes.h</includedby>
     <incdepgraph>
-      <node id="10">
+      <node id="970">
         <label>faiss/impl/ThreadedIndex.h</label>
       </node>
-      <node id="6">
+      <node id="966">
         <label>string</label>
       </node>
-      <node id="8">
-        <label>faiss/IndexBinary.h</label>
-        <link refid="IndexBinary_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
+      <node id="969">
         <label>faiss/impl/FaissAssert.h</label>
       </node>
-      <node id="5">
+      <node id="965">
         <label>typeinfo</label>
       </node>
-      <node id="4">
+      <node id="964">
         <label>cstdio</label>
       </node>
-      <node id="7">
+      <node id="967">
         <label>sstream</label>
       </node>
-      <node id="1">
-        <label>faiss/IndexReplicas.h</label>
-        <link refid="IndexReplicas_8h"/>
-        <childnode refid="2" relation="include">
+      <node id="968">
+        <label>faiss/IndexBinary.h</label>
+        <link refid="IndexBinary_8h_source"/>
+        <childnode refid="964" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="965" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="966" relation="include">
+        </childnode>
+        <childnode refid="967" relation="include">
+        </childnode>
+        <childnode refid="969" relation="include">
+        </childnode>
+        <childnode refid="962" relation="include">
         </childnode>
       </node>
-      <node id="2">
+      <node id="962">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="3" relation="include">
+        <childnode refid="963" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="964" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="965" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="966" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="967" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="963">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>
+      <node id="961">
+        <label>faiss/IndexReplicas.h</label>
+        <link refid="IndexReplicas_8h"/>
+        <childnode refid="962" relation="include">
+        </childnode>
+        <childnode refid="968" relation="include">
+        </childnode>
+        <childnode refid="970" relation="include">
+        </childnode>
+      </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="3">
+      <node id="973">
         <label>faiss/MetaIndexes.h</label>
         <link refid="MetaIndexes_8h_source"/>
       </node>
-      <node id="1">
-        <label>faiss/IndexReplicas.h</label>
-        <link refid="IndexReplicas_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
+      <node id="972">
         <label>faiss/gpu/perf/IndexWrapper.h</label>
         <link refid="IndexWrapper_8h_source"/>
+      </node>
+      <node id="971">
+        <label>faiss/IndexReplicas.h</label>
+        <link refid="IndexReplicas_8h"/>
+        <childnode refid="972" relation="include">
+        </childnode>
+        <childnode refid="973" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="classfaiss_1_1IndexReplicasTemplate" prot="public">faiss::IndexReplicasTemplate</innerclass>
@@ -174,8 +174,8 @@
 <codeline lineno="76"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a1cc7b38bf2e478ac1ee26d332953fb30" kindref="member">onAfterRemoveIndex</ref>(IndexT*<sp/>index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="77"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="79"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>IndexReplicas<sp/>=<sp/>IndexReplicasTemplate&lt;Index&gt;;</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>IndexBinaryReplicas<sp/>=<sp/>IndexReplicasTemplate&lt;IndexBinary&gt;;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate" kindref="compound">IndexReplicas</ref><sp/>=<sp/><ref refid="classfaiss_1_1IndexReplicasTemplate" kindref="compound">IndexReplicasTemplate&lt;Index&gt;</ref>;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate" kindref="compound">IndexBinaryReplicas</ref><sp/>=<sp/><ref refid="classfaiss_1_1IndexReplicasTemplate" kindref="compound">IndexReplicasTemplate&lt;IndexBinary&gt;</ref>;</highlight></codeline>
 <codeline lineno="81"><highlight class="normal"></highlight></codeline>
 <codeline lineno="82"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>

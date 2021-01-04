@@ -1,11 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1DirectMap" kind="struct" language="C++" prot="public">
     <compoundname>faiss::DirectMap</compoundname>
     <includes refid="DirectMap_8h" local="no">DirectMap.h</includes>
       <sectiondef kind="public-type">
-      <memberdef kind="enum" id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085e" prot="public" static="no" strong="no">
-        <type></type>
+      <memberdef kind="enum" id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085e" prot="public" static="no">
         <name>Type</name>
         <enumvalue id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085ea69e597c47ff96b59750caf4e3b1c1595" prot="public">
           <name>NoMap</name>
@@ -37,7 +36,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="40" column="14" bodyfile="faiss/invlists/DirectMap.h" bodystart="40" bodyend="44"/>
+        <location file="faiss/invlists/DirectMap.h" line="40" column="1" bodyfile="faiss/invlists/DirectMap.h" bodystart="40" bodyend="44"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1DirectMap_1a501137926cd0eed359b945346ef055e9" prot="public" static="no">
         <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref></type>
@@ -50,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="38" column="26" bodyfile="faiss/invlists/DirectMap.h" bodystart="38" bodyend="-1"/>
+        <location file="faiss/invlists/DirectMap.h" line="38" column="1" bodyfile="faiss/invlists/DirectMap.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -65,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="45" column="10" bodyfile="faiss/invlists/DirectMap.h" bodystart="45" bodyend="-1"/>
+        <location file="faiss/invlists/DirectMap.h" line="45" column="1" bodyfile="faiss/invlists/DirectMap.h" bodystart="45" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1DirectMap_1a5372a8a241fd5cd2940518c523ace9dc" prot="public" static="no" mutable="no">
         <type>std::vector&lt; idx_t &gt;</type>
@@ -73,13 +72,12 @@
         <argsstring></argsstring>
         <name>array</name>
         <briefdescription>
-<para>map for direct access to the elements. Map ids to LO-encoded entries. </para>
-        </briefdescription>
+<para>map for direct access to the elements. Map ids to LO-encoded entries. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="48" column="18" bodyfile="faiss/invlists/DirectMap.h" bodystart="48" bodyend="-1"/>
+        <location file="faiss/invlists/DirectMap.h" line="48" column="1" bodyfile="faiss/invlists/DirectMap.h" bodystart="48" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1DirectMap_1a5328b57d925865e464733f3512b0563f" prot="public" static="no" mutable="no">
         <type>std::unordered_map&lt; idx_t, idx_t &gt;</type>
@@ -92,7 +90,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="49" column="25" bodyfile="faiss/invlists/DirectMap.h" bodystart="49" bodyend="-1"/>
+        <location file="faiss/invlists/DirectMap.h" line="49" column="1" bodyfile="faiss/invlists/DirectMap.h" bodystart="49" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -107,7 +105,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="51" column="5"/>
+        <location file="faiss/invlists/DirectMap.h" line="51" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DirectMap_1a860f8dd0fb1d96532b43e492f201cb84" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -127,13 +125,12 @@
           <declname>ntotal</declname>
         </param>
         <briefdescription>
-<para>set type and initialize </para>
-        </briefdescription>
+<para>set type and initialize </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="54" column="10"/>
+        <location file="faiss/invlists/DirectMap.h" line="54" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DirectMap_1a032a4c2fbc9cfa556a84f8d8c1288ac7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>idx_t</type>
@@ -145,13 +142,12 @@
           <declname>id</declname>
         </param>
         <briefdescription>
-<para>get an entry </para>
-        </briefdescription>
+<para>get an entry </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="57" column="11"/>
+        <location file="faiss/invlists/DirectMap.h" line="57" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DirectMap_1a27e7208053589c02cdc9002bbfb857d3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -159,13 +155,12 @@
         <argsstring>() const</argsstring>
         <name>no</name>
         <briefdescription>
-<para>for quick checks </para>
-        </briefdescription>
+<para>for quick checks </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="60" column="10" bodyfile="faiss/invlists/DirectMap.h" bodystart="60" bodyend="60"/>
+        <location file="faiss/invlists/DirectMap.h" line="60" column="1" bodyfile="faiss/invlists/DirectMap.h" bodystart="60" bodyend="60"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DirectMap_1af436d21abce89e513dc1eb2d3a57ca78" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -177,14 +172,12 @@
           <declname>ids</declname>
         </param>
         <briefdescription>
-<para>throw if Array and ids is not NULL </para>
-        </briefdescription>
+<para>throw if Array and ids is not NULL </para>        </briefdescription>
         <detaileddescription>
-<para>update the direct_map </para>
-        </detaileddescription>
+<para>update the direct_map </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="67" column="10"/>
+        <location file="faiss/invlists/DirectMap.h" line="67" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DirectMap_1a2280a6a2b3b199988c052e6f918cd0e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -204,13 +197,12 @@
           <declname>offset</declname>
         </param>
         <briefdescription>
-<para>non thread-safe version </para>
-        </briefdescription>
+<para>non thread-safe version </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="70" column="10"/>
+        <location file="faiss/invlists/DirectMap.h" line="70" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DirectMap_1a1a0303d38971a9aac20eb861b070af24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -218,13 +210,12 @@
         <argsstring>()</argsstring>
         <name>clear</name>
         <briefdescription>
-<para>remove all entries </para>
-        </briefdescription>
+<para>remove all entries </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="73" column="10"/>
+        <location file="faiss/invlists/DirectMap.h" line="73" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DirectMap_1abe74c8ce6beb15af58c26da044274e2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -240,14 +231,12 @@
           <declname>invlists</declname>
         </param>
         <briefdescription>
-<para>remove ids from the <ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref>, possibly using the direct map </para>
-        </briefdescription>
+<para>remove ids from the <ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref>, possibly using the direct map </para>        </briefdescription>
         <detaileddescription>
-<para>operations on inverted lists that require translation with a <ref refid="structfaiss_1_1DirectMap" kindref="compound">DirectMap</ref> </para>
-        </detaileddescription>
+<para>operations on inverted lists that require translation with a <ref refid="structfaiss_1_1DirectMap" kindref="compound">DirectMap</ref> </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="80" column="12"/>
+        <location file="faiss/invlists/DirectMap.h" line="80" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DirectMap_1a0426251cccf9f756d82d1b40229b9391" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -275,21 +264,19 @@
           <declname>codes</declname>
         </param>
         <briefdescription>
-<para>update entries, using the direct map </para>
-        </briefdescription>
+<para>update entries, using the direct map </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="83" column="10"/>
+        <location file="faiss/invlists/DirectMap.h" line="83" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Direct map: a way to map back from ids to inverted lists </para>
-    </detaileddescription>
-    <location file="faiss/invlists/DirectMap.h" line="37" column="16" bodyfile="faiss/invlists/DirectMap.h" bodystart="37" bodyend="90"/>
+<para>Direct map: a way to map back from ids to inverted lists </para>    </detaileddescription>
+    <location file="faiss/invlists/DirectMap.h" line="37" column="1" bodyfile="faiss/invlists/DirectMap.h" bodystart="37" bodyend="90"/>
     <listofallmembers>
       <member refid="structfaiss_1_1DirectMap_1a2280a6a2b3b199988c052e6f918cd0e2" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>add_single_id</name></member>
       <member refid="structfaiss_1_1DirectMap_1a5372a8a241fd5cd2940518c523ace9dc" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>array</name></member>

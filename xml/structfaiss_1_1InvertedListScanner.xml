@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1InvertedListScanner" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::InvertedListScanner</compoundname>
     <includes refid="IndexIVF_8h" local="no">IndexIVF.h</includes>
@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="320" column="5" bodyfile="faiss/IndexIVF.h" bodystart="320" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="320" column="1" bodyfile="faiss/IndexIVF.h" bodystart="320" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -29,13 +29,12 @@
           <declname>query_vector</declname>
         </param>
         <briefdescription>
-<para>from now on we handle this query. </para>
-        </briefdescription>
+<para>from now on we handle this query. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="323" column="18"/>
+        <location file="faiss/IndexIVF.h" line="323" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1ae801ea7ba0086a05ace3b779c3acf305" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -51,13 +50,12 @@
           <declname>coarse_dis</declname>
         </param>
         <briefdescription>
-<para>following codes come from this inverted list </para>
-        </briefdescription>
+<para>following codes come from this inverted list </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="326" column="18"/>
+        <location file="faiss/IndexIVF.h" line="326" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1ade9518f1b0ee00c2a43a2eb2ae350ae1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>float</type>
@@ -69,13 +67,12 @@
           <declname>code</declname>
         </param>
         <briefdescription>
-<para>compute a single query-to-code distance </para>
-        </briefdescription>
+<para>compute a single query-to-code distance </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="329" column="19"/>
+        <location file="faiss/IndexIVF.h" line="329" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a218aeaf7cc45bf0bf27c3a8bfa44e303" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>size_t</type>
@@ -109,63 +106,54 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>scan a set of codes, compute distances to current query and update heap of results if necessary.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>scan a set of codes, compute distances to current query and update heap of results if necessary.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of codes to scan </para>
-</parameterdescription>
+<para>number of codes to scan </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>codes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>codes to scan (n * code_size) </para>
-</parameterdescription>
+<para>codes to scan (n * code_size) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>ids</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>corresponding ids (ignored if store_pairs) </para>
-</parameterdescription>
+<para>corresponding ids (ignored if store_pairs) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>distances</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>heap distances (size k) </para>
-</parameterdescription>
+<para>heap distances (size k) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>labels</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>heap labels (size k) </para>
-</parameterdescription>
+<para>heap labels (size k) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>k</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>heap size </para>
-</parameterdescription>
+<para>heap size </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>number of heap updates performed </para>
-</simplesect>
-</para>
-        </detaileddescription>
+<simplesect kind="return"><para>number of heap updates performed </para></simplesect>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="342" column="20"/>
+        <location file="faiss/IndexIVF.h" line="342" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -195,12 +183,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>scan a set of codes, compute distances to current query and update results if distances are below radius</para>
-<para>(default implementation fails) </para>
-        </detaileddescription>
+<para>scan a set of codes, compute distances to current query and update results if distances are below radius</para><para>(default implementation fails) </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="352" column="18"/>
+        <location file="faiss/IndexIVF.h" line="352" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1aa660ce2637299466c486080f44fd9820" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -213,15 +199,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="358" column="13" bodyfile="faiss/IndexIVF.h" bodystart="358" bodyend="358"/>
+        <location file="faiss/IndexIVF.h" line="358" column="1" bodyfile="faiss/IndexIVF.h" bodystart="358" bodyend="358"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Object that handles a query. The inverted lists to scan are provided externally. The object has a lot of state, but distance_to_code and scan_codes can be called in multiple threads </para>
-    </detaileddescription>
-    <location file="faiss/IndexIVF.h" line="318" column="26" bodyfile="faiss/IndexIVF.h" bodystart="318" bodyend="360"/>
+<para>Object that handles a query. The inverted lists to scan are provided externally. The object has a lot of state, but distance_to_code and scan_codes can be called in multiple threads </para>    </detaileddescription>
+    <location file="faiss/IndexIVF.h" line="318" column="1" bodyfile="faiss/IndexIVF.h" bodystart="318" bodyend="360"/>
     <listofallmembers>
       <member refid="structfaiss_1_1InvertedListScanner_1ade9518f1b0ee00c2a43a2eb2ae350ae1" prot="public" virt="pure-virtual"><scope>faiss::InvertedListScanner</scope><name>distance_to_code</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1a3839ad3afde506ac3cc7abdd69051759" prot="public" virt="non-virtual"><scope>faiss::InvertedListScanner</scope><name>idx_t</name></member>

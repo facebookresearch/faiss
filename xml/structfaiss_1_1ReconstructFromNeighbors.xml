@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1ReconstructFromNeighbors" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ReconstructFromNeighbors</compoundname>
       <sectiondef kind="public-type">
@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="26" column="26" bodyfile="faiss/IndexHNSW.h" bodystart="26" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="26" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="26" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1ReconstructFromNeighbors_1a799355a749bf0e6632e7d2deeb0e7a0f" prot="public" static="no">
         <type>HNSW::storage_idx_t</type>
@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="27" column="33" bodyfile="faiss/IndexHNSW.h" bodystart="27" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="27" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -42,7 +42,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="29" column="22" bodyfile="faiss/IndexHNSW.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="29" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1aa5a61e87d73f40064dd83c22ab94c3cc" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="30" column="12" bodyfile="faiss/IndexHNSW.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="30" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="30" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1a6a2ce9a449053820ce88aff51139805c" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -68,7 +68,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="31" column="12" bodyfile="faiss/IndexHNSW.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="31" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1a9d469402cdcfdfcf45b56e8406259d8b" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -81,7 +81,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="32" column="12" bodyfile="faiss/IndexHNSW.h" bodystart="32" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="32" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="32" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1aeae1c3969821123277b203a185362a4a" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -94,7 +94,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="33" column="12" bodyfile="faiss/IndexHNSW.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="33" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1a6e5003517c06696a00f3e5c6b4bc18f1" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -107,7 +107,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="34" column="9" bodyfile="faiss/IndexHNSW.h" bodystart="34" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="34" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1ad7302ca13df0e8df9860ff649277c037" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -120,7 +120,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="36" column="17" bodyfile="faiss/IndexHNSW.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="36" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1af9cf27d32e77ed1768ec3de7485e56ee" prot="public" static="no" mutable="no">
         <type>std::vector&lt; uint8_t &gt;</type>
@@ -133,7 +133,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="38" column="17" bodyfile="faiss/IndexHNSW.h" bodystart="38" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="38" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1a4ed30d9a18a0d68c84a14ded6b91eba3" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -146,7 +146,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="39" column="12" bodyfile="faiss/IndexHNSW.h" bodystart="39" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="39" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="39" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1aef8405a7dd11023f29f9a759ca900e5d" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -159,7 +159,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="40" column="12" bodyfile="faiss/IndexHNSW.h" bodystart="40" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="40" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="40" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReconstructFromNeighbors_1a108b1d722af230240f7092b3fc371a12" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -172,7 +172,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="40" column="14" bodyfile="faiss/IndexHNSW.h" bodystart="40" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="40" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="40" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -201,7 +201,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="42" column="14"/>
+        <location file="faiss/IndexHNSW.h" line="42" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1a454b7a5f7437a257df7404f5778fc833" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -219,11 +219,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>codes must be added in the correct order and the <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> must be populated and sorted </para>
-        </detaileddescription>
+<para>codes must be added in the correct order and the <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> must be populated and sorted </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="47" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="47" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1ad4ba74fb24c09e638acccb6d92052e2d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -252,7 +251,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="49" column="12"/>
+        <location file="faiss/IndexHNSW.h" line="49" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1a4b4b324ee73095e95c6692a75556f330" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -272,13 +271,12 @@
           <declname>code</declname>
         </param>
         <briefdescription>
-<para>called by add_codes </para>
-        </briefdescription>
+<para>called by add_codes </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="53" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="53" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1ae96899a06bd54901f856081d72adef5a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -298,13 +296,12 @@
           <declname>tmp</declname>
         </param>
         <briefdescription>
-<para>called by compute_distances </para>
-        </briefdescription>
+<para>called by compute_distances </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="56" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="56" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1a50275f0f56de60400cee11b039c98339" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -329,7 +326,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="58" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="58" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReconstructFromNeighbors_1a6c6a4664893430278c7da1f0606d4adf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -345,13 +342,12 @@
           <declname>out</declname>
         </param>
         <briefdescription>
-<para>get the M+1 -by-d table for neighbor coordinates for vector i </para>
-        </briefdescription>
+<para>get the M+1 -by-d table for neighbor coordinates for vector i </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="61" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="61" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -359,31 +355,31 @@
     <detaileddescription>
     </detaileddescription>
     <collaborationgraph>
-      <node id="1">
+      <node id="774">
         <label>faiss::ReconstructFromNeighbors</label>
         <link refid="structfaiss_1_1ReconstructFromNeighbors"/>
-        <childnode refid="2" relation="usage">
+        <childnode refid="775" relation="usage">
           <edgelabel>index</edgelabel>
         </childnode>
       </node>
-      <node id="3">
+      <node id="776">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
-      <node id="2">
+      <node id="775">
         <label>faiss::IndexHNSW</label>
         <link refid="structfaiss_1_1IndexHNSW"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="776" relation="public-inheritance">
         </childnode>
-        <childnode refid="1" relation="usage">
+        <childnode refid="774" relation="usage">
           <edgelabel>reconstruct_from_neighbors</edgelabel>
         </childnode>
-        <childnode refid="3" relation="usage">
+        <childnode refid="776" relation="usage">
           <edgelabel>storage</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexHNSW.h" line="25" column="31" bodyfile="faiss/IndexHNSW.h" bodystart="25" bodyend="63"/>
+    <location file="faiss/IndexHNSW.h" line="25" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="25" bodyend="63"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ReconstructFromNeighbors_1a454b7a5f7437a257df7404f5778fc833" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>add_codes</name></member>
       <member refid="structfaiss_1_1ReconstructFromNeighbors_1aeae1c3969821123277b203a185362a4a" prot="public" virt="non-virtual"><scope>faiss::ReconstructFromNeighbors</scope><name>code_size</name></member>

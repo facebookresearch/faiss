@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1Level1Quantizer" kind="struct" language="C++" prot="public">
     <compoundname>faiss::Level1Quantizer</compoundname>
     <derivedcompoundref refid="structfaiss_1_1IndexIVF" prot="public" virt="non-virtual">faiss::IndexIVF</derivedcompoundref>
@@ -11,13 +11,12 @@
         <argsstring></argsstring>
         <name>quantizer</name>
         <briefdescription>
-<para>quantizer that maps vectors to inverted lists </para>
-        </briefdescription>
+<para>quantizer that maps vectors to inverted lists </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="35" column="12" bodyfile="faiss/IndexIVF.h" bodystart="35" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="35" column="1" bodyfile="faiss/IndexIVF.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1a1c4fc9d874d9492ee0ea27a5be388fa7" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -25,13 +24,12 @@
         <argsstring></argsstring>
         <name>nlist</name>
         <briefdescription>
-<para>number of possible key values </para>
-        </briefdescription>
+<para>number of possible key values </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="36" column="12" bodyfile="faiss/IndexIVF.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="36" column="1" bodyfile="faiss/IndexIVF.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1a1dcea762fc322fdcffe64f78994edea0" prot="public" static="no" mutable="no">
         <type>char</type>
@@ -41,11 +39,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>= 0: use the quantizer as index in a kmeans training = 1: just pass on the training set to the train() of the quantizer = 2: kmeans training on a flat index + add the centroids to the quantizer </para>
-        </detaileddescription>
+<para>= 0: use the quantizer as index in a kmeans training = 1: just pass on the training set to the train() of the quantizer = 2: kmeans training on a flat index + add the centroids to the quantizer </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="43" column="10" bodyfile="faiss/IndexIVF.h" bodystart="43" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="43" column="1" bodyfile="faiss/IndexIVF.h" bodystart="43" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1ab688c629cd42122d73517078b87f483d" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -53,13 +50,12 @@
         <argsstring></argsstring>
         <name>own_fields</name>
         <briefdescription>
-<para>whether object owns the quantizer </para>
-        </briefdescription>
+<para>whether object owns the quantizer </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="44" column="10" bodyfile="faiss/IndexIVF.h" bodystart="44" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="44" column="1" bodyfile="faiss/IndexIVF.h" bodystart="44" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1ClusteringParameters" kindref="compound">ClusteringParameters</ref></type>
@@ -67,13 +63,12 @@
         <argsstring></argsstring>
         <name>cp</name>
         <briefdescription>
-<para>to override default clustering params </para>
-        </briefdescription>
+<para>to override default clustering params </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="46" column="26" bodyfile="faiss/IndexIVF.h" bodystart="46" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="46" column="1" bodyfile="faiss/IndexIVF.h" bodystart="46" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -81,13 +76,12 @@
         <argsstring></argsstring>
         <name>clustering_index</name>
         <briefdescription>
-<para>to override index used during clustering </para>
-        </briefdescription>
+<para>to override index used during clustering </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="47" column="11" bodyfile="faiss/IndexIVF.h" bodystart="47" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="47" column="1" bodyfile="faiss/IndexIVF.h" bodystart="47" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -113,13 +107,12 @@
           <declname>metric_type</declname>
         </param>
         <briefdescription>
-<para>Trains the quantizer and calls train_residual to train sub-quantizers. </para>
-        </briefdescription>
+<para>Trains the quantizer and calls train_residual to train sub-quantizers. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="50" column="10"/>
+        <location file="faiss/IndexIVF.h" line="50" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -127,13 +120,12 @@
         <argsstring>() const</argsstring>
         <name>coarse_code_size</name>
         <briefdescription>
-<para>compute the number of bytes required to store list ids </para>
-        </briefdescription>
+<para>compute the number of bytes required to store list ids </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="55" column="12"/>
+        <location file="faiss/IndexIVF.h" line="55" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a8d36d811aaf11daeae2a3f580747c5b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -154,7 +146,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="56" column="10"/>
+        <location file="faiss/IndexIVF.h" line="56" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a64f28832f84e8559f9b76ccd3a3046d3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref></type>
@@ -171,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="57" column="18"/>
+        <location file="faiss/IndexIVF.h" line="57" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a7262e1eb542b177308dab0c043e90d01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -192,7 +184,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="59" column="5"/>
+        <location file="faiss/IndexIVF.h" line="59" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a7623b6432ff9faee737ebe36b415fa18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -205,7 +197,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="61" column="5"/>
+        <location file="faiss/IndexIVF.h" line="61" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1ab0d7fc7420f306522923a96feddae7ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -218,91 +210,89 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="63" column="5"/>
+        <location file="faiss/IndexIVF.h" line="63" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Encapsulates a quantizer object for the <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref></para>
-<para>The class isolates the fields that are independent of the storage of the lists (especially training) </para>
-    </detaileddescription>
+<para>Encapsulates a quantizer object for the <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref></para><para>The class isolates the fields that are independent of the storage of the lists (especially training) </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="9">
+      <node id="670">
         <label>faiss::IndexIVFSpectralHash</label>
         <link refid="structfaiss_1_1IndexIVFSpectralHash"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="663" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="668">
         <label>faiss::IndexIVFPQFastScan</label>
         <link refid="structfaiss_1_1IndexIVFPQFastScan"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="663" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="1">
+      <node id="662">
         <label>faiss::Level1Quantizer</label>
         <link refid="structfaiss_1_1Level1Quantizer"/>
       </node>
-      <node id="8">
+      <node id="669">
         <label>faiss::IndexIVFScalarQuantizer</label>
         <link refid="structfaiss_1_1IndexIVFScalarQuantizer"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="663" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
+      <node id="663">
         <label>faiss::IndexIVF</label>
         <link refid="structfaiss_1_1IndexIVF"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="662" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="664">
         <label>faiss::IndexIVFFlat</label>
         <link refid="structfaiss_1_1IndexIVFFlat"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="663" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="666">
         <label>faiss::IndexIVFPQ</label>
         <link refid="structfaiss_1_1IndexIVFPQ"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="663" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="665">
         <label>faiss::IndexIVFFlatDedup</label>
         <link refid="structfaiss_1_1IndexIVFFlatDedup"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="664" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="667">
         <label>faiss::IndexIVFPQR</label>
         <link refid="structfaiss_1_1IndexIVFPQR"/>
-        <childnode refid="5" relation="public-inheritance">
+        <childnode refid="666" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="1">
+      <node id="671">
         <label>faiss::Level1Quantizer</label>
         <link refid="structfaiss_1_1Level1Quantizer"/>
-        <childnode refid="2" relation="usage">
+        <childnode refid="672" relation="usage">
           <edgelabel>cp</edgelabel>
         </childnode>
-        <childnode refid="3" relation="usage">
+        <childnode refid="673" relation="usage">
           <edgelabel>clustering_index</edgelabel>
           <edgelabel>quantizer</edgelabel>
         </childnode>
       </node>
-      <node id="2">
+      <node id="672">
         <label>faiss::ClusteringParameters</label>
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
-      <node id="3">
+      <node id="673">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVF.h" line="34" column="22" bodyfile="faiss/IndexIVF.h" bodystart="34" bodyend="65"/>
+    <location file="faiss/IndexIVF.h" line="34" column="1" bodyfile="faiss/IndexIVF.h" bodystart="34" bodyend="65"/>
     <listofallmembers>
       <member refid="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>clustering_index</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>coarse_code_size</name></member>

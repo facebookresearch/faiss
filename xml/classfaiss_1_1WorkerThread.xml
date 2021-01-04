@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="classfaiss_1_1WorkerThread" kind="class" language="C++" prot="public">
     <compoundname>faiss::WorkerThread</compoundname>
       <sectiondef kind="private-attrib">
@@ -9,13 +9,12 @@
         <argsstring></argsstring>
         <name>thread_</name>
         <briefdescription>
-<para>Thread that all queued lambdas are run on. </para>
-        </briefdescription>
+<para>Thread that all queued lambdas are run on. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="46" column="15" bodyfile="faiss/utils/WorkerThread.h" bodystart="46" bodyend="-1"/>
+        <location file="faiss/utils/WorkerThread.h" line="46" column="1" bodyfile="faiss/utils/WorkerThread.h" bodystart="46" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1WorkerThread_1ada0210696e69a082e226305052928f30" prot="private" static="no" mutable="no">
         <type>std::mutex</type>
@@ -23,13 +22,12 @@
         <argsstring></argsstring>
         <name>mutex_</name>
         <briefdescription>
-<para>Mutex for the queue and exit status. </para>
-        </briefdescription>
+<para>Mutex for the queue and exit status. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="49" column="14" bodyfile="faiss/utils/WorkerThread.h" bodystart="49" bodyend="-1"/>
+        <location file="faiss/utils/WorkerThread.h" line="49" column="1" bodyfile="faiss/utils/WorkerThread.h" bodystart="49" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1WorkerThread_1a1ac0f05c57f14389d12ec34d3cd7cd65" prot="private" static="no" mutable="no">
         <type>std::condition_variable</type>
@@ -37,13 +35,12 @@
         <argsstring></argsstring>
         <name>monitor_</name>
         <briefdescription>
-<para>Monitor for the exit status and the queue. </para>
-        </briefdescription>
+<para>Monitor for the exit status and the queue. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="52" column="27" bodyfile="faiss/utils/WorkerThread.h" bodystart="52" bodyend="-1"/>
+        <location file="faiss/utils/WorkerThread.h" line="52" column="1" bodyfile="faiss/utils/WorkerThread.h" bodystart="52" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1WorkerThread_1a4f9eb3eabaf5f4adf6612180060ed65e" prot="private" static="no" mutable="no">
         <type>bool</type>
@@ -51,13 +48,12 @@
         <argsstring></argsstring>
         <name>wantStop_</name>
         <briefdescription>
-<para>Whether or not we want the thread to exit. </para>
-        </briefdescription>
+<para>Whether or not we want the thread to exit. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="55" column="8" bodyfile="faiss/utils/WorkerThread.h" bodystart="55" bodyend="-1"/>
+        <location file="faiss/utils/WorkerThread.h" line="55" column="1" bodyfile="faiss/utils/WorkerThread.h" bodystart="55" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1WorkerThread_1ac334da22a126dcd565b835c93ea8193f" prot="private" static="no" mutable="no">
         <type>std::deque&lt; std::pair&lt; std::function&lt; void()&gt;, std::promise&lt; bool &gt; &gt; &gt;</type>
@@ -65,13 +61,12 @@
         <argsstring></argsstring>
         <name>queue_</name>
         <briefdescription>
-<para>Queue of pending lambdas to call. </para>
-        </briefdescription>
+<para>Queue of pending lambdas to call. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="58" column="14" bodyfile="faiss/utils/WorkerThread.h" bodystart="58" bodyend="-1"/>
+        <location file="faiss/utils/WorkerThread.h" line="58" column="1" bodyfile="faiss/utils/WorkerThread.h" bodystart="58" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -86,7 +81,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="20" column="3"/>
+        <location file="faiss/utils/WorkerThread.h" line="20" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1WorkerThread_1abe8c60d6c08a7287013d82c7b77bc8b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -96,11 +91,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Stops and waits for the worker thread to exit, flushing all pending lambdas </para>
-        </detaileddescription>
+<para>Stops and waits for the worker thread to exit, flushing all pending lambdas </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="24" column="3"/>
+        <location file="faiss/utils/WorkerThread.h" line="24" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1WorkerThread_1a5230264fa557f6d77c5fed5601a8c857" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -108,13 +102,12 @@
         <argsstring>()</argsstring>
         <name>stop</name>
         <briefdescription>
-<para>Request that the worker thread stop itself. </para>
-        </briefdescription>
+<para>Request that the worker thread stop itself. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="27" column="8"/>
+        <location file="faiss/utils/WorkerThread.h" line="27" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1WorkerThread_1a29c8cfced812372adb93440545c05edc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -124,11 +117,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Blocking waits in the current thread for the worker thread to stop </para>
-        </detaileddescription>
+<para>Blocking waits in the current thread for the worker thread to stop </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="31" column="8"/>
+        <location file="faiss/utils/WorkerThread.h" line="31" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1WorkerThread_1a498e03ba7e352e477d15d99d20724b50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::future&lt; bool &gt;</type>
@@ -142,11 +134,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Adds a lambda to run on the worker thread; returns a future that can be used to block on its completion. Future status is <computeroutput>true</computeroutput> if the lambda was run in the worker thread; <computeroutput>false</computeroutput> if it was not run, because the worker thread is exiting or has exited. </para>
-        </detaileddescription>
+<para>Adds a lambda to run on the worker thread; returns a future that can be used to block on its completion. Future status is <computeroutput>true</computeroutput> if the lambda was run in the worker thread; <computeroutput>false</computeroutput> if it was not run, because the worker thread is exiting or has exited. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="38" column="15"/>
+        <location file="faiss/utils/WorkerThread.h" line="38" column="1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="private-func">
@@ -161,7 +152,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="41" column="8"/>
+        <location file="faiss/utils/WorkerThread.h" line="41" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1WorkerThread_1a3bcba1e74bc0106710834cebba8109a9" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -174,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="42" column="8"/>
+        <location file="faiss/utils/WorkerThread.h" line="42" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1WorkerThread_1a1995b2a276e75326778af7e108d5a696" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -187,14 +178,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/WorkerThread.h" line="43" column="8"/>
+        <location file="faiss/utils/WorkerThread.h" line="43" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/WorkerThread.h" line="18" column="19" bodyfile="faiss/utils/WorkerThread.h" bodystart="18" bodyend="59"/>
+    <location file="faiss/utils/WorkerThread.h" line="18" column="1" bodyfile="faiss/utils/WorkerThread.h" bodystart="18" bodyend="59"/>
     <listofallmembers>
       <member refid="classfaiss_1_1WorkerThread_1a498e03ba7e352e477d15d99d20724b50" prot="public" virt="non-virtual"><scope>faiss::WorkerThread</scope><name>add</name></member>
       <member refid="classfaiss_1_1WorkerThread_1a1ac0f05c57f14389d12ec34d3cd7cd65" prot="private" virt="non-virtual"><scope>faiss::WorkerThread</scope><name>monitor_</name></member>

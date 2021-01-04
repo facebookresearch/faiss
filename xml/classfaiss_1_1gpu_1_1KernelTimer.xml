@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="classfaiss_1_1gpu_1_1KernelTimer" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::KernelTimer</compoundname>
     <includes refid="Timer_8h" local="no">Timer.h</includes>
@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="33" column="15" bodyfile="faiss/gpu/utils/Timer.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/gpu/utils/Timer.h" line="33" column="1" bodyfile="faiss/gpu/utils/Timer.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1KernelTimer_1a53028f1e94f1f092208a6df69893b73f" prot="private" static="no" mutable="no">
         <type>cudaEvent_t</type>
@@ -28,7 +28,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="34" column="15" bodyfile="faiss/gpu/utils/Timer.h" bodystart="34" bodyend="-1"/>
+        <location file="faiss/gpu/utils/Timer.h" line="34" column="1" bodyfile="faiss/gpu/utils/Timer.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1KernelTimer_1aac90fea6973d68d2b12149d5fb928da8" prot="private" static="no" mutable="no">
         <type>cudaStream_t</type>
@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="35" column="16" bodyfile="faiss/gpu/utils/Timer.h" bodystart="35" bodyend="-1"/>
+        <location file="faiss/gpu/utils/Timer.h" line="35" column="1" bodyfile="faiss/gpu/utils/Timer.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1KernelTimer_1a7582d3003da51096c5740c8773d9c3ec" prot="private" static="no" mutable="no">
         <type>bool</type>
@@ -54,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="36" column="8" bodyfile="faiss/gpu/utils/Timer.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/gpu/utils/Timer.h" line="36" column="1" bodyfile="faiss/gpu/utils/Timer.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -71,11 +71,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Constructor starts the timer and adds an event into the current device stream </para>
-        </detaileddescription>
+<para>Constructor starts the timer and adds an event into the current device stream </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="21" column="3"/>
+        <location file="faiss/gpu/utils/Timer.h" line="21" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1KernelTimer_1af9883350bf0732b2452f1ce4670266fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -83,13 +82,12 @@
         <argsstring>()</argsstring>
         <name>~KernelTimer</name>
         <briefdescription>
-<para>Destructor releases event resources. </para>
-        </briefdescription>
+<para>Destructor releases event resources. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="24" column="3"/>
+        <location file="faiss/gpu/utils/Timer.h" line="24" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
@@ -99,19 +97,17 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Adds a stop event then synchronizes on the stop event to get the actual GPU-side kernel timings for any kernels launched in the current stream. Returns the number of milliseconds elapsed. Can only be called once. </para>
-        </detaileddescription>
+<para>Adds a stop event then synchronizes on the stop event to get the actual GPU-side kernel timings for any kernels launched in the current stream. Returns the number of milliseconds elapsed. Can only be called once. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="30" column="9"/>
+        <location file="faiss/gpu/utils/Timer.h" line="30" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>Utility class for timing execution of a kernel. </para>
-    </briefdescription>
+<para>Utility class for timing execution of a kernel. </para>    </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/utils/Timer.h" line="17" column="18" bodyfile="faiss/gpu/utils/Timer.h" bodystart="17" bodyend="37"/>
+    <location file="faiss/gpu/utils/Timer.h" line="17" column="1" bodyfile="faiss/gpu/utils/Timer.h" bodystart="17" bodyend="37"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5" prot="public" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>elapsedMilliseconds</name></member>
       <member refid="classfaiss_1_1gpu_1_1KernelTimer_1af533a5a8734243263032960c2445d233" prot="public" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>KernelTimer</name></member>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="dir_283b6f110a5e88358299b04e4fc2c7ec" kind="dir">
     <compoundname>faiss</compoundname>
     <innerdir refid="dir_8904d4d25cfd37481067280c4d4c9f97">faiss/gpu</innerdir>

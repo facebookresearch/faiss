@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1AutoTuneCriterion" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::AutoTuneCriterion</compoundname>
     <derivedcompoundref refid="structfaiss_1_1IntersectionCriterion" prot="public" virt="non-virtual">faiss::IntersectionCriterion</derivedcompoundref>
@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="28" column="26" bodyfile="faiss/AutoTune.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="28" column="1" bodyfile="faiss/AutoTune.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -27,13 +27,12 @@
         <argsstring></argsstring>
         <name>nq</name>
         <briefdescription>
-<para>nb of queries this criterion is evaluated on </para>
-        </briefdescription>
+<para>nb of queries this criterion is evaluated on </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="29" column="11" bodyfile="faiss/AutoTune.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="29" column="1" bodyfile="faiss/AutoTune.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AutoTuneCriterion_1a3bb11e873707a812999f8391869aafab" prot="public" static="no" mutable="no">
         <type>idx_t</type>
@@ -41,13 +40,12 @@
         <argsstring></argsstring>
         <name>nnn</name>
         <briefdescription>
-<para>nb of NNs that the query should request </para>
-        </briefdescription>
+<para>nb of NNs that the query should request </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="30" column="11" bodyfile="faiss/AutoTune.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="30" column="1" bodyfile="faiss/AutoTune.h" bodystart="30" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AutoTuneCriterion_1a9b3a2242729a0873d255c1684881bbd4" prot="public" static="no" mutable="no">
         <type>idx_t</type>
@@ -55,13 +53,12 @@
         <argsstring></argsstring>
         <name>gt_nnn</name>
         <briefdescription>
-<para>nb of GT NNs required to evaluate crterion </para>
-        </briefdescription>
+<para>nb of GT NNs required to evaluate crterion </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="31" column="11" bodyfile="faiss/AutoTune.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="31" column="1" bodyfile="faiss/AutoTune.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AutoTuneCriterion_1a40e91caa9232a597c16fc946d0befd9b" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -69,13 +66,12 @@
         <argsstring></argsstring>
         <name>gt_D</name>
         <briefdescription>
-<para>Ground-truth distances (size nq * gt_nnn) </para>
-        </briefdescription>
+<para>Ground-truth distances (size nq * gt_nnn) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="33" column="17" bodyfile="faiss/AutoTune.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="33" column="1" bodyfile="faiss/AutoTune.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AutoTuneCriterion_1af915fc4df215e3c8d9f71ff42d526144" prot="public" static="no" mutable="no">
         <type>std::vector&lt; idx_t &gt;</type>
@@ -83,13 +79,12 @@
         <argsstring></argsstring>
         <name>gt_I</name>
         <briefdescription>
-<para>Ground-truth indexes (size nq * gt_nnn) </para>
-        </briefdescription>
+<para>Ground-truth indexes (size nq * gt_nnn) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="34" column="17" bodyfile="faiss/AutoTune.h" bodystart="34" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="34" column="1" bodyfile="faiss/AutoTune.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -112,7 +107,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="36" column="5"/>
+        <location file="faiss/AutoTune.h" line="36" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AutoTuneCriterion_1a174f0de8e6fd01905f5fa2170f5039d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -134,36 +129,31 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Intitializes the gt_D and gt_I vectors. Must be called before evaluating</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Intitializes the gt_D and gt_I vectors. Must be called before evaluating</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>gt_D_in</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>size nq * gt_nnn </para>
-</parameterdescription>
+<para>size nq * gt_nnn </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>gt_I_in</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>size nq * gt_nnn </para>
-</parameterdescription>
+<para>size nq * gt_nnn </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="43" column="10"/>
+        <location file="faiss/AutoTune.h" line="43" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>double</type>
         <definition>virtual double faiss::AutoTuneCriterion::evaluate</definition>
         <argsstring>(const float *D, const idx_t *I) const =0</argsstring>
         <name>evaluate</name>
-        <reimplementedby refid="structfaiss_1_1OneRecallAtRCriterion_1afe472c2ae38534c293b02feebf87988d">evaluate</reimplementedby>
         <param>
           <type>const float *</type>
           <declname>D</declname>
@@ -175,31 +165,26 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Evaluate the criterion.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Evaluate the criterion.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>D</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>size nq * nnn </para>
-</parameterdescription>
+<para>size nq * nnn </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>I</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>size nq * nnn </para>
-</parameterdescription>
+<para>size nq * nnn </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>the criterion, between 0 and 1. Larger is better. </para>
-</simplesect>
-</para>
-        </detaileddescription>
+<simplesect kind="return"><para>the criterion, between 0 and 1. Larger is better. </para></simplesect>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="52" column="20"/>
+        <location file="faiss/AutoTune.h" line="52" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AutoTuneCriterion_1aa072c959d1cd882af33c7a570ac25f55" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -212,33 +197,32 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="54" column="13" bodyfile="faiss/AutoTune.h" bodystart="54" bodyend="54"/>
+        <location file="faiss/AutoTune.h" line="54" column="1" bodyfile="faiss/AutoTune.h" bodystart="54" bodyend="54"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Evaluation criterion. Returns a performance measure in [0,1], higher is better. </para>
-    </detaileddescription>
+<para>Evaluation criterion. Returns a performance measure in [0,1], higher is better. </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="2">
+      <node id="17">
         <label>faiss::IntersectionCriterion</label>
         <link refid="structfaiss_1_1IntersectionCriterion"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="16" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="18">
         <label>faiss::OneRecallAtRCriterion</label>
         <link refid="structfaiss_1_1OneRecallAtRCriterion"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="16" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="1">
+      <node id="16">
         <label>faiss::AutoTuneCriterion</label>
         <link refid="structfaiss_1_1AutoTuneCriterion"/>
       </node>
     </inheritancegraph>
-    <location file="faiss/AutoTune.h" line="27" column="24" bodyfile="faiss/AutoTune.h" bodystart="27" bodyend="56"/>
+    <location file="faiss/AutoTune.h" line="27" column="1" bodyfile="faiss/AutoTune.h" bodystart="27" bodyend="56"/>
     <listofallmembers>
       <member refid="structfaiss_1_1AutoTuneCriterion_1abd85ee0d09e9f4958330c42e867e432b" prot="public" virt="non-virtual"><scope>faiss::AutoTuneCriterion</scope><name>AutoTuneCriterion</name></member>
       <member refid="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" prot="public" virt="pure-virtual"><scope>faiss::AutoTuneCriterion</scope><name>evaluate</name></member>

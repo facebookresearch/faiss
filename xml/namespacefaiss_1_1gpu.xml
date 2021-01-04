@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="namespacefaiss_1_1gpu" kind="namespace" language="C++">
     <compoundname>faiss::gpu</compoundname>
     <innerclass refid="structfaiss_1_1gpu_1_1AllocInfo" prot="public">faiss::gpu::AllocInfo</innerclass>
@@ -41,10 +41,9 @@
     <innerclass refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" prot="public">faiss::gpu::ToGpuClonerMultiple</innerclass>
     <innernamespace refid="namespacefaiss_1_1gpu_1_1utils">faiss::gpu::utils</innernamespace>
       <sectiondef kind="enum">
-      <memberdef kind="enum" id="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268" prot="public" static="no" strong="yes">
-        <type></type>
+      <memberdef kind="enum" id="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268" prot="public" static="no">
         <name>DistanceDataType</name>
-        <enumvalue id="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268a44ad4ef5a76e6aa6fb3e3fa079a54fda" prot="public">
+        <enumvalue id="dummy_1aa22865a7603feb994c5946c7c4d12268a44ad4ef5a76e6aa6fb3e3fa079a54fda" prot="public">
           <name>F32</name>
           <initializer>= 1</initializer>
           <briefdescription>
@@ -52,7 +51,7 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268a56d8353718e6fdc78b8d69078a2cdb94" prot="public">
+        <enumvalue id="dummy_1aa22865a7603feb994c5946c7c4d12268a56d8353718e6fdc78b8d69078a2cdb94" prot="public">
           <name>F16</name>
           <briefdescription>
           </briefdescription>
@@ -65,12 +64,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="18" column="28" bodyfile="faiss/gpu/GpuDistance.h" bodystart="18" bodyend="21"/>
+        <location file="faiss/gpu/GpuDistance.h" line="18" column="1" bodyfile="faiss/gpu/GpuDistance.h" bodystart="18" bodyend="21"/>
       </memberdef>
-      <memberdef kind="enum" id="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480" prot="public" static="no" strong="yes">
-        <type></type>
+      <memberdef kind="enum" id="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480" prot="public" static="no">
         <name>IndicesDataType</name>
-        <enumvalue id="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480ae7e62f6928f76df671b5a0379793fab6" prot="public">
+        <enumvalue id="dummy_1a6b68daa1ef37853ef9cab2ae9007b480ae7e62f6928f76df671b5a0379793fab6" prot="public">
           <name>I64</name>
           <initializer>= 1</initializer>
           <briefdescription>
@@ -78,7 +76,7 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480ad878ea6016bfe01729548bf442de5a8b" prot="public">
+        <enumvalue id="dummy_1a6b68daa1ef37853ef9cab2ae9007b480ad878ea6016bfe01729548bf442de5a8b" prot="public">
           <name>I32</name>
           <briefdescription>
           </briefdescription>
@@ -91,10 +89,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="24" column="27" bodyfile="faiss/gpu/GpuDistance.h" bodystart="24" bodyend="27"/>
+        <location file="faiss/gpu/GpuDistance.h" line="24" column="1" bodyfile="faiss/gpu/GpuDistance.h" bodystart="24" bodyend="27"/>
       </memberdef>
-      <memberdef kind="enum" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459" prot="public" static="no" strong="no">
-        <type></type>
+      <memberdef kind="enum" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459" prot="public" static="no">
         <name>IndicesOptions</name>
         <enumvalue id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a588811aea072aa57c268dec24d16ad81" prot="public">
           <name>INDICES_CPU</name>
@@ -102,8 +99,7 @@
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>The user indices are only stored on the CPU; the GPU returns (inverted list, offset) to the CPU which is then translated to the real user index. </para>
-          </detaileddescription>
+<para>The user indices are only stored on the CPU; the GPU returns (inverted list, offset) to the CPU which is then translated to the real user index. </para>          </detaileddescription>
         </enumvalue>
         <enumvalue id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a86cdd363f1311a43e0e99ebdc909311c" prot="public">
           <name>INDICES_IVF</name>
@@ -111,8 +107,7 @@
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>The indices are not stored at all, on either the CPU or GPU. Only (inverted list, offset) is returned to the user as the index. </para>
-          </detaileddescription>
+<para>The indices are not stored at all, on either the CPU or GPU. Only (inverted list, offset) is returned to the user as the index. </para>          </detaileddescription>
         </enumvalue>
         <enumvalue id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459ad702a8b1a6bcefaa8d731762e4f88936" prot="public">
           <name>INDICES_32_BIT</name>
@@ -120,36 +115,31 @@
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>Indices are stored as 32 bit integers on the GPU, but returned as 64 bit integers </para>
-          </detaileddescription>
+<para>Indices are stored as 32 bit integers on the GPU, but returned as 64 bit integers </para>          </detaileddescription>
         </enumvalue>
         <enumvalue id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a3173a4e316b70ff921a20943bc055aac" prot="public">
           <name>INDICES_64_BIT</name>
           <initializer>= 3</initializer>
           <briefdescription>
-<para>Indices are stored as 64 bit integers on the GPU. </para>
-          </briefdescription>
+<para>Indices are stored as 64 bit integers on the GPU. </para>          </briefdescription>
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
         <briefdescription>
-<para>How user vector index data is stored on the GPU. </para>
-        </briefdescription>
+<para>How user vector index data is stored on the GPU. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndicesOptions.h" line="14" column="20" bodyfile="faiss/gpu/GpuIndicesOptions.h" bodystart="14" bodyend="28"/>
+        <location file="faiss/gpu/GpuIndicesOptions.h" line="14" column="1" bodyfile="faiss/gpu/GpuIndicesOptions.h" bodystart="14" bodyend="28"/>
       </memberdef>
-      <memberdef kind="enum" id="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437" prot="public" static="no" strong="no">
-        <type></type>
+      <memberdef kind="enum" id="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437" prot="public" static="no">
         <name>AllocType</name>
         <enumvalue id="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437a0fcde2e6fdc2c0afd9a35bde9e99a269" prot="public">
           <name>Other</name>
           <initializer>= 0</initializer>
           <briefdescription>
-<para>Unknown allocation type or miscellaneous (not currently categorized) </para>
-          </briefdescription>
+<para>Unknown allocation type or miscellaneous (not currently categorized) </para>          </briefdescription>
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
@@ -159,8 +149,7 @@
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>Primary data storage for <ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">GpuIndexFlat</ref> (the raw matrix of vectors and vector norms if needed) </para>
-          </detaileddescription>
+<para>Primary data storage for <ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">GpuIndexFlat</ref> (the raw matrix of vectors and vector norms if needed) </para>          </detaileddescription>
         </enumvalue>
         <enumvalue id="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437a0b8e7919f13d089aef4f3bb6fd8420ab" prot="public">
           <name>IVFLists</name>
@@ -168,15 +157,13 @@
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>Primary data storage for GpuIndexIVF* (the storage for each individual IVF list) </para>
-          </detaileddescription>
+<para>Primary data storage for GpuIndexIVF* (the storage for each individual IVF list) </para>          </detaileddescription>
         </enumvalue>
         <enumvalue id="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437a65a8f1712a80b76e79e2e36087ece51f" prot="public">
           <name>Quantizer</name>
           <initializer>= 3</initializer>
           <briefdescription>
-<para>Quantizer (PQ, SQ) dictionary information. </para>
-          </briefdescription>
+<para>Quantizer (PQ, SQ) dictionary information. </para>          </briefdescription>
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
@@ -186,8 +173,7 @@
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>For <ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" kindref="compound">GpuIndexIVFPQ</ref>, &quot;precomputed codes&quot; for more efficient PQ lookup require the use of possibly large tables. These are marked separately from Quantizer as these can frequently be 100s - 1000s of MiB in size </para>
-          </detaileddescription>
+<para>For <ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" kindref="compound">GpuIndexIVFPQ</ref>, &quot;precomputed codes&quot; for more efficient PQ lookup require the use of possibly large tables. These are marked separately from Quantizer as these can frequently be 100s - 1000s of MiB in size </para>          </detaileddescription>
         </enumvalue>
         <enumvalue id="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437a6da735df4e3424ba16ed6877129cf52b" prot="public">
           <name>TemporaryMemoryBuffer</name>
@@ -195,8 +181,7 @@
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref> implementation specific types When using <ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref>, temporary memory allocations (MemorySpace::Temporary) come out of a stack region of memory that is allocated up front for each gpu (e.g., 1.5 GiB upon initialization). This allocation by <ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref> is marked with this AllocType. </para>
-          </detaileddescription>
+<para><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref> implementation specific typesWhen using <ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref>, temporary memory allocations (MemorySpace::Temporary) come out of a stack region of memory that is allocated up front for each gpu (e.g., 1.5 GiB upon initialization). This allocation by <ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref> is marked with this AllocType. </para>          </detaileddescription>
         </enumvalue>
         <enumvalue id="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437adeddb60bbeb3d0fd449dc5473bfbae74" prot="public">
           <name>TemporaryMemoryOverflow</name>
@@ -204,8 +189,7 @@
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>When using <ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref>, any MemorySpace::Temporary allocations that cannot be satisfied within the TemporaryMemoryBuffer region fall back to calling cudaMalloc which are sized to just the request at hand. These &quot;overflow&quot; temporary allocations are marked with this AllocType. </para>
-          </detaileddescription>
+<para>When using <ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref>, any MemorySpace::Temporary allocations that cannot be satisfied within the TemporaryMemoryBuffer region fall back to calling cudaMalloc which are sized to just the request at hand. These &quot;overflow&quot; temporary allocations are marked with this AllocType. </para>          </detaileddescription>
         </enumvalue>
         <briefdescription>
         </briefdescription>
@@ -213,10 +197,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="22" column="15" bodyfile="faiss/gpu/GpuResources.h" bodystart="22" bodyend="57"/>
+        <location file="faiss/gpu/GpuResources.h" line="22" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="22" bodyend="57"/>
       </memberdef>
-      <memberdef kind="enum" id="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67" prot="public" static="no" strong="no">
-        <type></type>
+      <memberdef kind="enum" id="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67" prot="public" static="no">
         <name>MemorySpace</name>
         <enumvalue id="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67a3cbdb1d642f55fc4c351b62f6f259f76" prot="public">
           <name>Temporary</name>
@@ -224,15 +207,13 @@
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>Temporary device memory (guaranteed to no longer be used upon exit of a top-level index call, and where the streams using it have completed GPU work). Typically backed by Device memory (cudaMalloc/cudaFree). </para>
-          </detaileddescription>
+<para>Temporary device memory (guaranteed to no longer be used upon exit of a top-level index call, and where the streams using it have completed GPU work). Typically backed by Device memory (cudaMalloc/cudaFree). </para>          </detaileddescription>
         </enumvalue>
         <enumvalue id="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67a18edc24f65a6948be1fd9a2c27df51cc" prot="public">
           <name>Device</name>
           <initializer>= 1</initializer>
           <briefdescription>
-<para>Managed using cudaMalloc/cudaFree (typical GPU device memory) </para>
-          </briefdescription>
+<para>Managed using cudaMalloc/cudaFree (typical GPU device memory) </para>          </briefdescription>
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
@@ -240,19 +221,17 @@
           <name>Unified</name>
           <initializer>= 2</initializer>
           <briefdescription>
-<para>Managed using cudaMallocManaged/cudaFree (typical Unified CPU/GPU memory) </para>
-          </briefdescription>
+<para>Managed using cudaMallocManaged/cudaFree (typical Unified CPU/GPU memory) </para>          </briefdescription>
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
         <briefdescription>
-<para>Memory regions accessible to the GPU. </para>
-        </briefdescription>
+<para>Memory regions accessible to the GPU. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="63" column="17" bodyfile="faiss/gpu/GpuResources.h" bodystart="63" bodyend="74"/>
+        <location file="faiss/gpu/GpuResources.h" line="63" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="63" bodyend="74"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
@@ -266,13 +245,12 @@
           <declname>gpu_index</declname>
         </param>
         <briefdescription>
-<para>converts any GPU index inside gpu_index to a CPU index </para>
-        </briefdescription>
+<para>converts any GPU index inside gpu_index to a CPU index </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="65" column="15" declfile="faiss/gpu/GpuCloner.h" declline="65" declcolumn="15"/>
+        <location file="faiss/gpu/GpuCloner.h" line="65" column="1"/>
       </memberdef>
       <memberdef kind="function" id="GpuCloner_8h_1a05cb0b5db1ebcd508cb0a259d4b536ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
@@ -297,21 +275,20 @@
           <defval>nullptr</defval>
         </param>
         <briefdescription>
-<para>converts any CPU index that can be converted to GPU </para>
-        </briefdescription>
+<para>converts any CPU index that can be converted to GPU </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="68" column="15" declfile="faiss/gpu/GpuCloner.h" declline="68" declcolumn="15"/>
+        <location file="faiss/gpu/GpuCloner.h" line="68" column="1"/>
       </memberdef>
-      <memberdef kind="function" id="GpuCloner_8h_1a70e1ea3a49957b88b2de70f21b588735" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="GpuCloner_8h_1ab26ee0f17fbf17d28c91d9107e19f921" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
         <definition>faiss::Index* faiss::gpu::index_cpu_to_gpu_multiple</definition>
-        <argsstring>(std::vector&lt; GpuResourcesProvider * &gt; &amp;provider, std::vector&lt; int &gt; &amp;devices, const faiss::Index *index, const GpuMultipleClonerOptions *options=nullptr)</argsstring>
+        <argsstring>(std::vector&lt; GpuResourcesProvider *&gt; &amp;provider, std::vector&lt; int &gt; &amp;devices, const faiss::Index *index, const GpuMultipleClonerOptions *options=nullptr)</argsstring>
         <name>index_cpu_to_gpu_multiple</name>
         <param>
-          <type>std::vector&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> * &gt; &amp;</type>
+          <type>std::vector&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> *&gt; &amp;</type>
           <declname>provider</declname>
         </param>
         <param>
@@ -333,7 +310,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="73" column="15" declfile="faiss/gpu/GpuCloner.h" declline="73" declcolumn="15"/>
+        <location file="faiss/gpu/GpuCloner.h" line="73" column="1"/>
       </memberdef>
       <memberdef kind="function" id="GpuDistance_8h_1a29928698b9b3bae60ff6f7e7d79e0354" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -351,13 +328,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>A wrapper for gpu/impl/Distance.cuh to expose direct brute-force k-nearest neighbor searches on an externally-provided region of memory (e.g., from a pytorch tensor). The data (vectors, queries, outDistances, outIndices) can be resident on the GPU or the CPU, but all calculations are performed on the GPU. If the result buffers are on the CPU, results will be copied back when done.</para>
-<para>All GPU computation is performed on the current CUDA device, and ordered with respect to resources-&gt;getDefaultStreamCurrentDevice().</para>
-<para>For each vector in <computeroutput>queries</computeroutput>, searches all of <computeroutput>vectors</computeroutput> to find its k nearest neighbors with respect to the given metric </para>
-        </detaileddescription>
+<para>A wrapper for gpu/impl/Distance.cuh to expose direct brute-force k-nearest neighbor searches on an externally-provided region of memory (e.g., from a pytorch tensor). The data (vectors, queries, outDistances, outIndices) can be resident on the GPU or the CPU, but all calculations are performed on the GPU. If the result buffers are on the CPU, results will be copied back when done.</para><para>All GPU computation is performed on the current CUDA device, and ordered with respect to resources-&gt;getDefaultStreamCurrentDevice().</para><para>For each vector in <computeroutput>queries</computeroutput>, searches all of <computeroutput>vectors</computeroutput> to find its k nearest neighbors with respect to the given metric </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="127" column="6" declfile="faiss/gpu/GpuDistance.h" declline="127" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="127" column="1"/>
       </memberdef>
       <memberdef kind="function" id="GpuDistance_8h_1a36de9d33475f2c592eaf24a0f82f43b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -413,13 +387,12 @@
           <declname>outIndices</declname>
         </param>
         <briefdescription>
-<para>Deprecated legacy implementation. </para>
-        </briefdescription>
+<para>Deprecated legacy implementation. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="130" column="6" declfile="faiss/gpu/GpuDistance.h" declline="130" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="130" column="1"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a01cfc3c8a312c3e60e1909eeb0941301" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -431,13 +404,12 @@
           <declname>t</declname>
         </param>
         <briefdescription>
-<para>Convert an AllocType to string. </para>
-        </briefdescription>
+<para>Convert an AllocType to string. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="60" column="13" declfile="faiss/gpu/GpuResources.h" declline="60" declcolumn="13"/>
+        <location file="faiss/gpu/GpuResources.h" line="60" column="1"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a26325bc7abaa18271fbe76c2bfbf1c64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -449,13 +421,12 @@
           <declname>s</declname>
         </param>
         <briefdescription>
-<para>Convert a MemorySpace to string. </para>
-        </briefdescription>
+<para>Convert a MemorySpace to string. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="77" column="13" declfile="faiss/gpu/GpuResources.h" declline="77" declcolumn="13"/>
+        <location file="faiss/gpu/GpuResources.h" line="77" column="1"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a899d29db52c5400a548baa534667f1c5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref></type>
@@ -471,13 +442,12 @@
           <declname>st</declname>
         </param>
         <briefdescription>
-<para>Create an <ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref> for the current device with MemorySpace::Device. </para>
-        </briefdescription>
+<para>Create an <ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref> for the current device with MemorySpace::Device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="122" column="11" declfile="faiss/gpu/GpuResources.h" declline="122" declcolumn="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="122" column="1"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a25ba473fa8b757298399a9898435424a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref></type>
@@ -493,13 +463,12 @@
           <declname>st</declname>
         </param>
         <briefdescription>
-<para>Create an <ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref> for the current device with MemorySpace::Temporary. </para>
-        </briefdescription>
+<para>Create an <ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref> for the current device with MemorySpace::Temporary. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="125" column="11" declfile="faiss/gpu/GpuResources.h" declline="125" declcolumn="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="125" column="1"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1acc39275d82143dd1663807a635e59cf9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref></type>
@@ -519,13 +488,12 @@
           <declname>st</declname>
         </param>
         <briefdescription>
-<para>Create an <ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref> for the current device. </para>
-        </briefdescription>
+<para>Create an <ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref> for the current device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="128" column="11" declfile="faiss/gpu/GpuResources.h" declline="128" declcolumn="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="128" column="1"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1a6985d5edeae8143e4f1680b1428e55fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -533,13 +501,12 @@
         <argsstring>()</argsstring>
         <name>newTestSeed</name>
         <briefdescription>
-<para>Generates and displays a new seed for the test. </para>
-        </briefdescription>
+<para>Generates and displays a new seed for the test. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="24" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="24" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="24" column="1"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1a97a43b6f2ad18a336a6ffb7d182e70e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -551,13 +518,12 @@
           <declname>seed</declname>
         </param>
         <briefdescription>
-<para>Uses an explicit seed for the test. </para>
-        </briefdescription>
+<para>Uses an explicit seed for the test. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="27" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="27" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="27" column="1"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1a58c0d857ccd6d5003f38f05969a04d07" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
@@ -575,11 +541,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Returns the relative error in difference between a and b (|a - b| / (0.5 * (|a| + |b|)) </para>
-        </detaileddescription>
+<para>Returns the relative error in difference between a and b (|a - b| / (0.5 * (|a| + |b|)) </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="31" column="7" declfile="faiss/gpu/test/TestUtils.h" declline="31" declcolumn="7"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="31" column="1"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1aa0974d57bcb32037493b2e50f4bc6553" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -595,13 +560,12 @@
           <declname>b</declname>
         </param>
         <briefdescription>
-<para>Generates a random integer in the range [a, b]. </para>
-        </briefdescription>
+<para>Generates a random integer in the range [a, b]. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="34" column="5" declfile="faiss/gpu/test/TestUtils.h" declline="34" declcolumn="5"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="34" column="1"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1aeaf4a47f6d9c0f1f21f6841a7dd3cb48" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -609,13 +573,12 @@
         <argsstring>()</argsstring>
         <name>randBool</name>
         <briefdescription>
-<para>Generates a random bool. </para>
-        </briefdescription>
+<para>Generates a random bool. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="37" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="37" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="37" column="1"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1ab667286f1786526a19d5186f2df348a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -634,11 +597,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Select a random value from the given list of values provided as an initializer_list </para>
-        </detaileddescription>
+<para>Select a random value from the given list of values provided as an initializer_list </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="42" column="3" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="42" bodyend="55"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="42" column="1" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="42" bodyend="55"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1ae9641002715e79d0aa4c594bbc3daa01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; float &gt;</type>
@@ -654,13 +616,12 @@
           <declname>dim</declname>
         </param>
         <briefdescription>
-<para>Generates a collection of random vectors in the range [0, 1]. </para>
-        </briefdescription>
+<para>Generates a collection of random vectors in the range [0, 1]. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="58" column="13" declfile="faiss/gpu/test/TestUtils.h" declline="58" declcolumn="13"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="58" column="1"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1a237b6df9cf96b9ab805c46aef32a37b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; unsigned char &gt;</type>
@@ -676,13 +637,12 @@
           <declname>dim</declname>
         </param>
         <briefdescription>
-<para>Generates a collection of random bit vectors. </para>
-        </briefdescription>
+<para>Generates a collection of random bit vectors. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="61" column="13" declfile="faiss/gpu/test/TestUtils.h" declline="61" declcolumn="13"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="61" column="1"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1af10d6d642f9c390100d2b8a31203918f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -735,11 +695,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Compare two indices via query for similarity, with a user-specified set of query vectors </para>
-        </detaileddescription>
+<para>Compare two indices via query for similarity, with a user-specified set of query vectors </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="65" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="65" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="65" column="1"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1aea8cc0513413b621ba2bcc3c5de02663" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -788,11 +747,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Compare two indices via query for similarity, generating random query vectors </para>
-        </detaileddescription>
+<para>Compare two indices via query for similarity, generating random query vectors </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="76" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="76" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="76" column="1"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1a4b17f759af26a756aab5035ddf5b53c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -855,13 +813,12 @@
           <defval>0.005f</defval>
         </param>
         <briefdescription>
-<para>Display specific differences in the two (distance, index) lists. </para>
-        </briefdescription>
+<para>Display specific differences in the two (distance, index) lists. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="85" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="85" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="85" column="1"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1a589a55d85f293c1ed9905e5aac936776" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -885,13 +842,12 @@
           <declname>gpuIndex</declname>
         </param>
         <briefdescription>
-<para>Compare IVF lists between a CPU and GPU index. </para>
-        </briefdescription>
+<para>Compare IVF lists between a CPU and GPU index. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="98" column="6" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="98" bodyend="124"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="98" column="1" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="98" bodyend="124"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a18ddaf734a629ded5ad2a2f235937298" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -899,13 +855,12 @@
         <argsstring>()</argsstring>
         <name>getCurrentDevice</name>
         <briefdescription>
-<para>Returns the current thread-local GPU device. </para>
-        </briefdescription>
+<para>Returns the current thread-local GPU device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="19" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="19" declcolumn="5"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="19" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1abf0b5b971122c7c024f70a2e690870ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -917,13 +872,12 @@
           <declname>device</declname>
         </param>
         <briefdescription>
-<para>Sets the current thread-local GPU device. </para>
-        </briefdescription>
+<para>Sets the current thread-local GPU device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="22" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="22" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="22" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1aaeb2757087735aef66e7ec5ba134530a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -931,13 +885,12 @@
         <argsstring>()</argsstring>
         <name>getNumDevices</name>
         <briefdescription>
-<para>Returns the number of available GPU devices. </para>
-        </briefdescription>
+<para>Returns the number of available GPU devices. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="25" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="25" declcolumn="5"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="25" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1aaf3d8c41cb926052dcdf4988a323bc3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -945,13 +898,12 @@
         <argsstring>()</argsstring>
         <name>profilerStart</name>
         <briefdescription>
-<para>Starts the CUDA profiler (exposed via SWIG) </para>
-        </briefdescription>
+<para>Starts the CUDA profiler (exposed via SWIG) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="28" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="28" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="28" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1aee97ca97dec791446ce147f0fe68db74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -959,13 +911,12 @@
         <argsstring>()</argsstring>
         <name>profilerStop</name>
         <briefdescription>
-<para>Stops the CUDA profiler (exposed via SWIG) </para>
-        </briefdescription>
+<para>Stops the CUDA profiler (exposed via SWIG) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="31" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="31" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="31" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a9aa4762fd8451c5f9b67072f4a4880e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -975,11 +926,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Synchronizes the CPU against all devices (equivalent to cudaDeviceSynchronize for each device) </para>
-        </detaileddescription>
+<para>Synchronizes the CPU against all devices (equivalent to cudaDeviceSynchronize for each device) </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="35" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="35" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="35" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a5ccce882c56a92a4830ce2fc7bedbc72" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const cudaDeviceProp &amp;</type>
@@ -991,13 +941,12 @@
           <declname>device</declname>
         </param>
         <briefdescription>
-<para>Returns a cached cudaDeviceProp for the given device. </para>
-        </briefdescription>
+<para>Returns a cached cudaDeviceProp for the given device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="38" column="22" declfile="faiss/gpu/utils/DeviceUtils.h" declline="38" declcolumn="22"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="38" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1af758bcee021c4fd616724dbf287e292a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const cudaDeviceProp &amp;</type>
@@ -1005,13 +954,12 @@
         <argsstring>()</argsstring>
         <name>getCurrentDeviceProperties</name>
         <briefdescription>
-<para>Returns the cached cudaDeviceProp for the current device. </para>
-        </briefdescription>
+<para>Returns the cached cudaDeviceProp for the current device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="41" column="22" declfile="faiss/gpu/utils/DeviceUtils.h" declline="41" declcolumn="22"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="41" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1aec530c2ba3468b1edd6e9eceb864e797" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -1025,11 +973,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Returns the maximum number of threads available for the given GPU device </para>
-        </detaileddescription>
+<para>Returns the maximum number of threads available for the given GPU device </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="45" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="45" declcolumn="5"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="45" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a7aa4505c9349ef84ae046e7973107366" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -1037,13 +984,12 @@
         <argsstring>()</argsstring>
         <name>getMaxThreadsCurrentDevice</name>
         <briefdescription>
-<para>Equivalent to getMaxThreads(getCurrentDevice()) </para>
-        </briefdescription>
+<para>Equivalent to getMaxThreads(getCurrentDevice()) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="48" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="48" declcolumn="5"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="48" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1ab671a87a6284fc4d2fec44400ca5d163" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -1055,13 +1001,12 @@
           <declname>device</declname>
         </param>
         <briefdescription>
-<para>Returns the maximum smem available for the given GPU device. </para>
-        </briefdescription>
+<para>Returns the maximum smem available for the given GPU device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="51" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="51" declcolumn="8"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="51" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1accf2b1c27fb6cbd2b384266d42f8c9a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -1069,13 +1014,12 @@
         <argsstring>()</argsstring>
         <name>getMaxSharedMemPerBlockCurrentDevice</name>
         <briefdescription>
-<para>Equivalent to getMaxSharedMemPerBlock(getCurrentDevice()) </para>
-        </briefdescription>
+<para>Equivalent to getMaxSharedMemPerBlock(getCurrentDevice()) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="54" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="54" declcolumn="8"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="54" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a90940c17958ddf1b0f5a7f86b556788b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -1089,11 +1033,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>For a given pointer, returns whether or not it is located on a device (deviceId &gt;= 0) or the host (-1). </para>
-        </detaileddescription>
+<para>For a given pointer, returns whether or not it is located on a device (deviceId &gt;= 0) or the host (-1). </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="58" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="58" declcolumn="5"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="58" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1ae57d0b0e0c7d5529d4aee4cbd432a474" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1107,11 +1050,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Does the given device support full unified memory sharing host memory? </para>
-        </detaileddescription>
+<para>Does the given device support full unified memory sharing host memory? </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="62" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="62" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="62" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a5b39c8414f2bdc2fbe1ab6f5f21473f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1119,13 +1061,12 @@
         <argsstring>()</argsstring>
         <name>getFullUnifiedMemSupportCurrentDevice</name>
         <briefdescription>
-<para>Equivalent to getFullUnifiedMemSupport(getCurrentDevice()) </para>
-        </briefdescription>
+<para>Equivalent to getFullUnifiedMemSupport(getCurrentDevice()) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="65" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="65" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="65" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a5de148f49baef8d80b3dd4a1509bec37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1137,13 +1078,12 @@
           <declname>device</declname>
         </param>
         <briefdescription>
-<para>Does the given device support tensor core operations? </para>
-        </briefdescription>
+<para>Does the given device support tensor core operations? </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="68" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="68" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="68" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1abf99b9aa3d1433ad0a69e7cccd949817" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1151,13 +1091,12 @@
         <argsstring>()</argsstring>
         <name>getTensorCoreSupportCurrentDevice</name>
         <briefdescription>
-<para>Equivalent to getTensorCoreSupport(getCurrentDevice()) </para>
-        </briefdescription>
+<para>Equivalent to getTensorCoreSupport(getCurrentDevice()) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="71" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="71" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="71" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1af43e39c84e5b12e107a71dfa5d840e60" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -1167,11 +1106,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Returns the maximum k-selection value supported based on the CUDA SDK that we were compiled with. .cu files can use <ref refid="DeviceDefs_8cuh_source" kindref="compound">DeviceDefs.cuh</ref>, but this is for non-CUDA files </para>
-        </detaileddescription>
+<para>Returns the maximum k-selection value supported based on the CUDA SDK that we were compiled with. .cu files can use <ref refid="DeviceDefs_8cuh_source" kindref="compound">DeviceDefs.cuh</ref>, but this is for non-CUDA files </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="76" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="76" declcolumn="5"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="76" column="1"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a4e6905505fb0c0d1525037408ee0a389" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1195,13 +1133,12 @@
           <declname>listWaitOn</declname>
         </param>
         <briefdescription>
-<para>Call for a collection of streams to wait on. </para>
-        </briefdescription>
+<para>Call for a collection of streams to wait on. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="150" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="150" bodyend="170"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="150" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="150" bodyend="170"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a64ae6cf687076b6b0f6a956e42d009c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1224,11 +1161,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>These versions allow usage of initializer_list as arguments, since otherwise {...} doesn&apos;t have a type </para>
-        </detaileddescription>
+<para>These versions allow usage of initializer_list as arguments, since otherwise {...} doesn&apos;t have a type </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="175" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="175" bodyend="178"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="175" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="175" bodyend="178"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a26377a820f76459a3451aa2664b6326f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1254,7 +1190,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="181" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="181" bodyend="184"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="181" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="181" bodyend="184"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a0ef5a2acf5c02c590e5029c061f463d8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1275,13 +1211,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="186" column="13" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="186" bodyend="189"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="186" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="186" bodyend="189"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/GpuAutoTune.h" line="13" column="27"/>
+    <location file="faiss/gpu/GpuAutoTune.h" line="13" column="1"/>
   </compounddef>
 </doxygen>

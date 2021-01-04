@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="namespacefaiss_1_1ivflib" kind="namespace" language="C++">
     <compoundname>faiss::ivflib</compoundname>
     <innerclass refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow" prot="public">faiss::ivflib::SlidingIndexWindow</innerclass>
@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="49" column="22" bodyfile="faiss/IVFlib.h" bodystart="49" bodyend="-1"/>
+        <location file="faiss/IVFlib.h" line="49" column="1" bodyfile="faiss/IVFlib.h" bodystart="49" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
@@ -35,11 +35,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>check if two indexes have the same parameters and are trained in the same way, otherwise throw. </para>
-        </detaileddescription>
+<para>check if two indexes have the same parameters and are trained in the same way, otherwise throw. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="27" column="6" declfile="faiss/IVFlib.h" declline="27" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="27" column="1"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a55cc82273e73c80efee882296b1e1e7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -53,12 +52,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>get an <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> from an index. The index may be an <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> or some wrapper class that encloses an <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref></para>
-<para>throws an exception if this is not the case. </para>
-        </detaileddescription>
+<para>get an <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> from an index. The index may be an <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> or some wrapper class that encloses an <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref></para><para>throws an exception if this is not the case. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="35" column="17" declfile="faiss/IVFlib.h" declline="35" declcolumn="17"/>
+        <location file="faiss/IVFlib.h" line="35" column="1"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a99619f17a07b9a29193d1c796a390b54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -75,7 +72,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="36" column="11" declfile="faiss/IVFlib.h" declline="36" declcolumn="11"/>
+        <location file="faiss/IVFlib.h" line="36" column="1"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a6fff1114be38812ecd9a5afa41f7c329" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -87,13 +84,12 @@
           <declname>index</declname>
         </param>
         <briefdescription>
-<para>same as above but returns nullptr instead of throwing on failure </para>
-        </briefdescription>
+<para>same as above but returns nullptr instead of throwing on failure </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="39" column="17" declfile="faiss/IVFlib.h" declline="39" declcolumn="17"/>
+        <location file="faiss/IVFlib.h" line="39" column="1"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a5905b16993db13ef518648936e63b251" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -110,7 +106,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="40" column="11" declfile="faiss/IVFlib.h" declline="40" declcolumn="11"/>
+        <location file="faiss/IVFlib.h" line="40" column="1"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a342382b7b7a6c4e769a9b6bbfe8becaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -132,21 +128,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Merge index1 into index0. Works on <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s and <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s embedded in a <ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref>. On output, the index1 is empty.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Merge index1 into index0. Works on <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s and <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s embedded in a <ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref>. On output, the index1 is empty.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>shift_ids</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>translate the ids from index1 to index0-&gt;prev_ntotal </para>
-</parameterdescription>
+<para>translate the ids from index1 to index0-&gt;prev_ntotal </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="47" column="6" declfile="faiss/IVFlib.h" declline="47" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="47" column="1"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1ad23c0309490017e0a4f7bf50eb873ecb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -175,7 +168,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="60" column="6" declfile="faiss/IVFlib.h" declline="60" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="60" column="1"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a739f3822af902e9b9fb8104415dc0ef2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -220,7 +213,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="74" column="6" declfile="faiss/IVFlib.h" declline="74" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="74" column="1"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1aaa9a8f346bd0ff551667de679f231bf6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref> *</type>
@@ -240,13 +233,12 @@
           <declname>i1</declname>
         </param>
         <briefdescription>
-<para>Get a subset of inverted lists [i0, i1) </para>
-        </briefdescription>
+<para>Get a subset of inverted lists [i0, i1) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="116" column="21" declfile="faiss/IVFlib.h" declline="116" declcolumn="21"/>
+        <location file="faiss/IVFlib.h" line="116" column="1"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a01332806047c09400a8c73f1fd400699" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -270,13 +262,12 @@
           <declname>src</declname>
         </param>
         <briefdescription>
-<para>Set a subset of inverted lists. </para>
-        </briefdescription>
+<para>Set a subset of inverted lists. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="120" column="6" declfile="faiss/IVFlib.h" declline="120" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="120" column="1"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a113970d7b83b793fe22b2cf2bb73a78b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -324,16 +315,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>search an <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>, possibly embedded in an <ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref> with given parameters. This is a way to set the nprobe and get statdistics in a thread-safe way.</para>
-<para>Optionally returns (if non-nullptr):<itemizedlist>
-<listitem><para>nb_dis: number of distances computed</para>
-</listitem><listitem><para>ms_per_stage: [0]: preprocessing time [1]: coarse quantization, [2]: list scanning </para>
-</listitem></itemizedlist>
-</para>
-        </detaileddescription>
+<para>search an <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>, possibly embedded in an <ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref> with given parameters. This is a way to set the nprobe and get statdistics in a thread-safe way.</para><para>Optionally returns (if non-nullptr):<itemizedlist>
+<listitem><para>nb_dis: number of distances computed</para></listitem><listitem><para>ms_per_stage: [0]: preprocessing time [1]: coarse quantization, [2]: list scanning </para></listitem></itemizedlist>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="133" column="6" declfile="faiss/IVFlib.h" declline="133" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="133" column="1"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1aa30ade5c6f5c5e11f70828dc2ca8359a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -377,17 +364,16 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>same as search_with_parameters but for range search </para>
-        </detaileddescription>
+<para>same as search_with_parameters but for range search </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="142" column="6" declfile="faiss/IVFlib.h" declline="142" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="142" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/IVFlib.h" line="22" column="30"/>
+    <location file="faiss/IVFlib.h" line="22" column="1"/>
   </compounddef>
 </doxygen>

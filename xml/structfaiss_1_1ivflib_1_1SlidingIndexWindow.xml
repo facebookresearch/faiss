@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1ivflib_1_1SlidingIndexWindow" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ivflib::SlidingIndexWindow</compoundname>
     <includes refid="IVFlib_8h" local="no">IVFlib.h</includes>
@@ -10,13 +10,12 @@
         <argsstring></argsstring>
         <name>index</name>
         <briefdescription>
-<para>common index that contains the sliding window </para>
-        </briefdescription>
+<para>common index that contains the sliding window </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="89" column="12" bodyfile="faiss/IVFlib.h" bodystart="89" bodyend="-1"/>
+        <location file="faiss/IVFlib.h" line="89" column="1" bodyfile="faiss/IVFlib.h" bodystart="89" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a10d876a9c750bc95986a22a57cf4fdc7" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref> *</type>
@@ -24,13 +23,12 @@
         <argsstring></argsstring>
         <name>ils</name>
         <briefdescription>
-<para><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> of index. </para>
-        </briefdescription>
+<para><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> of index. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="92" column="24" bodyfile="faiss/IVFlib.h" bodystart="92" bodyend="-1"/>
+        <location file="faiss/IVFlib.h" line="92" column="1" bodyfile="faiss/IVFlib.h" bodystart="92" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a8defa5121e371e64071c0eb956ad20d1" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -38,13 +36,12 @@
         <argsstring></argsstring>
         <name>n_slice</name>
         <briefdescription>
-<para>number of slices currently in index </para>
-        </briefdescription>
+<para>number of slices currently in index </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="95" column="9" bodyfile="faiss/IVFlib.h" bodystart="95" bodyend="-1"/>
+        <location file="faiss/IVFlib.h" line="95" column="1" bodyfile="faiss/IVFlib.h" bodystart="95" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1ac124372fd2b67bb901f0c71235165216" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -52,13 +49,12 @@
         <argsstring></argsstring>
         <name>nlist</name>
         <briefdescription>
-<para>same as index-&gt;nlist </para>
-        </briefdescription>
+<para>same as index-&gt;nlist </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="98" column="12" bodyfile="faiss/IVFlib.h" bodystart="98" bodyend="-1"/>
+        <location file="faiss/IVFlib.h" line="98" column="1" bodyfile="faiss/IVFlib.h" bodystart="98" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6dfc430601d194c428c2a25e3afa4492" prot="public" static="no" mutable="no">
         <type>std::vector&lt; std::vector&lt; size_t &gt; &gt;</type>
@@ -66,13 +62,12 @@
         <argsstring></argsstring>
         <name>sizes</name>
         <briefdescription>
-<para>cumulative list sizes at each slice </para>
-        </briefdescription>
+<para>cumulative list sizes at each slice </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="101" column="17" bodyfile="faiss/IVFlib.h" bodystart="101" bodyend="-1"/>
+        <location file="faiss/IVFlib.h" line="101" column="1" bodyfile="faiss/IVFlib.h" bodystart="101" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -86,13 +81,12 @@
           <declname>index</declname>
         </param>
         <briefdescription>
-<para>index should be initially empty and trained </para>
-        </briefdescription>
+<para>index should be initially empty and trained </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="104" column="5"/>
+        <location file="faiss/IVFlib.h" line="104" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1accf1c7b8de188b74de0d6827beceac7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -110,63 +104,58 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Add one index to the current index and remove the oldest one.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Add one index to the current index and remove the oldest one.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>sub_index</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>slice to swap in (can be NULL) </para>
-</parameterdescription>
+<para>slice to swap in (can be NULL) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>remove_oldest</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>if true, remove the oldest slices </para>
-</parameterdescription>
+<para>if true, remove the oldest slices </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="110" column="10"/>
+        <location file="faiss/IVFlib.h" line="110" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>A set of IndexIVFs concatenated together in a FIFO fashion. at each &quot;step&quot;, the oldest index slice is removed and a new index is added. </para>
-    </detaileddescription>
+<para>A set of IndexIVFs concatenated together in a FIFO fashion. at each &quot;step&quot;, the oldest index slice is removed and a new index is added. </para>    </detaileddescription>
     <collaborationgraph>
-      <node id="3">
+      <node id="818">
         <label>faiss::InvertedLists</label>
         <link refid="structfaiss_1_1InvertedLists"/>
       </node>
-      <node id="4">
+      <node id="819">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
-      <node id="2">
+      <node id="817">
         <label>faiss::ArrayInvertedLists</label>
         <link refid="structfaiss_1_1ArrayInvertedLists"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="818" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="1">
+      <node id="816">
         <label>faiss::ivflib::SlidingIndexWindow</label>
         <link refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow"/>
-        <childnode refid="2" relation="usage">
+        <childnode refid="817" relation="usage">
           <edgelabel>ils</edgelabel>
         </childnode>
-        <childnode refid="4" relation="usage">
+        <childnode refid="819" relation="usage">
           <edgelabel>index</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IVFlib.h" line="87" column="25" bodyfile="faiss/IVFlib.h" bodystart="87" bodyend="112"/>
+    <location file="faiss/IVFlib.h" line="87" column="1" bodyfile="faiss/IVFlib.h" bodystart="87" bodyend="112"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a10d876a9c750bc95986a22a57cf4fdc7" prot="public" virt="non-virtual"><scope>faiss::ivflib::SlidingIndexWindow</scope><name>ils</name></member>
       <member refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" prot="public" virt="non-virtual"><scope>faiss::ivflib::SlidingIndexWindow</scope><name>index</name></member>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="classfaiss_1_1gpu_1_1CudaEvent" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::CudaEvent</compoundname>
       <sectiondef kind="private-attrib">
@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="122" column="15" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="122" bodyend="-1"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="122" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="122" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -33,13 +33,12 @@
           <defval>false</defval>
         </param>
         <briefdescription>
-<para>Creates an event and records it in this stream. </para>
-        </briefdescription>
+<para>Creates an event and records it in this stream. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="105" column="12"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="105" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CudaEvent_1ad72ad67f6eb35e7716ef153a6d212dc7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -56,9 +55,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="106" column="3"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="106" column="1"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1CudaEvent_1acf9a0e14a2b79745a45cff67e94988dd" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1CudaEvent_1acf9a0e14a2b79745a45cff67e94988dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::CudaEvent::CudaEvent</definition>
         <argsstring>(CudaEvent &amp;&amp;event) noexcept</argsstring>
@@ -73,7 +72,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="107" column="3"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="107" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CudaEvent_1a6ab1e9050459d4509daf294eb6e50ea3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -86,7 +85,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="108" column="3"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="108" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CudaEvent_1adfd9acdace7565145c339c7a3241e151" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>cudaEvent_t</type>
@@ -99,7 +98,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="110" column="22" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="110" bodyend="110"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="110" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="110" bodyend="110"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CudaEvent_1ad8968b298b95788c7679d7e5aa0571eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -111,13 +110,12 @@
           <declname>stream</declname>
         </param>
         <briefdescription>
-<para>Wait on this event in this stream. </para>
-        </briefdescription>
+<para>Wait on this event in this stream. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="113" column="8"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="113" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CudaEvent_1a9c85540093aaf87de80ece9f854e7c57" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -125,15 +123,14 @@
         <argsstring>()</argsstring>
         <name>cpuWaitOnEvent</name>
         <briefdescription>
-<para>Have the CPU wait for the completion of this event. </para>
-        </briefdescription>
+<para>Have the CPU wait for the completion of this event. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="116" column="8"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="116" column="1"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1CudaEvent_1a19acf4ec7faca9bddda2a23f4b1371d3" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1CudaEvent_1a19acf4ec7faca9bddda2a23f4b1371d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref> &amp;</type>
         <definition>CudaEvent&amp; faiss::gpu::CudaEvent::operator=</definition>
         <argsstring>(CudaEvent &amp;&amp;event) noexcept</argsstring>
@@ -148,7 +145,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="118" column="13"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="118" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CudaEvent_1a204899e640da688e4c5c526656ab0ffc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref> &amp;</type>
@@ -165,14 +162,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="119" column="13"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="119" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/utils/DeviceUtils.h" line="102" column="16" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="102" bodyend="123"/>
+    <location file="faiss/gpu/utils/DeviceUtils.h" line="102" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="102" bodyend="123"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1CudaEvent_1a9c85540093aaf87de80ece9f854e7c57" prot="public" virt="non-virtual"><scope>faiss::gpu::CudaEvent</scope><name>cpuWaitOnEvent</name></member>
       <member refid="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a" prot="public" virt="non-virtual"><scope>faiss::gpu::CudaEvent</scope><name>CudaEvent</name></member>

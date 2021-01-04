@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1gpu_1_1GpuParameterSpace" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuParameterSpace</compoundname>
     <basecompoundref refid="structfaiss_1_1ParameterSpace" prot="public" virt="non-virtual">faiss::ParameterSpace</basecompoundref>
@@ -16,13 +16,12 @@
           <declname>index</declname>
         </param>
         <briefdescription>
-<para>initialize with reasonable parameters for the index </para>
-        </briefdescription>
+<para>initialize with reasonable parameters for the index </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuAutoTune.h" line="19" column="10"/>
+        <location file="faiss/gpu/GpuAutoTune.h" line="19" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuParameterSpace_1a1820826bb47a51ec9f000118be9c83b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -43,13 +42,12 @@
           <declname>val</declname>
         </param>
         <briefdescription>
-<para>set a combination of parameters on an index </para>
-        </briefdescription>
+<para>set a combination of parameters on an index </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuAutoTune.h" line="22" column="10"/>
+        <location file="faiss/gpu/GpuAutoTune.h" line="22" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a255b1e3bf93f8b0cbbe16eae66478acc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -57,13 +55,12 @@
         <argsstring>() const</argsstring>
         <name>n_combinations</name>
         <briefdescription>
-<para>nb of combinations, = product of values sizes </para>
-        </briefdescription>
+<para>nb of combinations, = product of values sizes </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="162" column="12"/>
+        <location file="faiss/AutoTune.h" line="162" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1ab311c622327c18b42aa66e2b9bcd5a7f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -79,13 +76,12 @@
           <declname>c2</declname>
         </param>
         <briefdescription>
-<para>returns whether combinations c1 &gt;= c2 in the tuple sense </para>
-        </briefdescription>
+<para>returns whether combinations c1 &gt;= c2 in the tuple sense </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="165" column="10"/>
+        <location file="faiss/AutoTune.h" line="165" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1af5081b3739982c6be702e46df666fec4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -97,13 +93,12 @@
           <declname>cno</declname>
         </param>
         <briefdescription>
-<para>get string representation of the combination </para>
-        </briefdescription>
+<para>get string representation of the combination </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="168" column="17"/>
+        <location file="faiss/AutoTune.h" line="168" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a066ae6501cf7b31b1b5bb1e34bb8d0dc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -111,13 +106,12 @@
         <argsstring>() const</argsstring>
         <name>display</name>
         <briefdescription>
-<para>print a description on stdout </para>
-        </briefdescription>
+<para>print a description on stdout </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="171" column="10"/>
+        <location file="faiss/AutoTune.h" line="171" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a48fcb0d8a091c768dd59b4234c0733c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1ParameterRange" kindref="compound">ParameterRange</ref> &amp;</type>
@@ -129,13 +123,12 @@
           <declname>name</declname>
         </param>
         <briefdescription>
-<para>add a new parameter (or return it if it exists) </para>
-        </briefdescription>
+<para>add a new parameter (or return it if it exists) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="174" column="20"/>
+        <location file="faiss/AutoTune.h" line="174" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a613036d9ce9b2d89856043782975a30a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -151,13 +144,12 @@
           <declname>cno</declname>
         </param>
         <briefdescription>
-<para>set a combination of parameters on an index </para>
-        </briefdescription>
+<para>set a combination of parameters on an index </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="180" column="10"/>
+        <location file="faiss/AutoTune.h" line="180" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1acaf902b57394d802a32dcbdfa6bcd7b8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -173,13 +165,12 @@
           <declname>param_string</declname>
         </param>
         <briefdescription>
-<para>set a combination of parameters described by a string </para>
-        </briefdescription>
+<para>set a combination of parameters described by a string </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="183" column="10"/>
+        <location file="faiss/AutoTune.h" line="183" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a8b8ca45f0a520a7100b4ad9c7be1e079" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -205,11 +196,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>find an upper bound on the performance and a lower bound on t for configuration cno given another operating point op </para>
-        </detaileddescription>
+<para>find an upper bound on the performance and a lower bound on t for configuration cno given another operating point op </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="191" column="10"/>
+        <location file="faiss/AutoTune.h" line="191" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1abf95f9ac04d0a2d1d4ac9e3b685bfcc3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -244,39 +234,34 @@
 <parametername>index</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>index to run on </para>
-</parameterdescription>
+<para>index to run on </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>xq</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>query vectors (size nq * index.d) </para>
-</parameterdescription>
+<para>query vectors (size nq * index.d) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>crit</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>selection criterion </para>
-</parameterdescription>
+<para>selection criterion </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>ops</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>resulting operating points </para>
-</parameterdescription>
+<para>resulting operating points </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="201" column="10"/>
+        <location file="faiss/AutoTune.h" line="201" column="1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -286,13 +271,12 @@
         <argsstring></argsstring>
         <name>parameter_ranges</name>
         <briefdescription>
-<para>all tunable parameters </para>
-        </briefdescription>
+<para>all tunable parameters </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="138" column="17" bodyfile="faiss/AutoTune.h" bodystart="138" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="138" column="1" bodyfile="faiss/AutoTune.h" bodystart="138" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ParameterSpace_1a7a9f2292c4e0ac3aad569434edea87b0" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -300,13 +284,12 @@
         <argsstring></argsstring>
         <name>verbose</name>
         <briefdescription>
-<para>verbosity during exploration </para>
-        </briefdescription>
+<para>verbosity during exploration </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="143" column="9" bodyfile="faiss/AutoTune.h" bodystart="143" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="143" column="1" bodyfile="faiss/AutoTune.h" bodystart="143" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ParameterSpace_1a76aeae25b3269fb24a26194fbe013b86" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -314,13 +297,12 @@
         <argsstring></argsstring>
         <name>n_experiments</name>
         <briefdescription>
-<para>nb of experiments during optimization (0 = try all combinations) </para>
-        </briefdescription>
+<para>nb of experiments during optimization (0 = try all combinations) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="146" column="9" bodyfile="faiss/AutoTune.h" bodystart="146" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="146" column="1" bodyfile="faiss/AutoTune.h" bodystart="146" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ParameterSpace_1aee8fd44e15656ba80fe98de4c65ed767" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -328,13 +310,12 @@
         <argsstring></argsstring>
         <name>batchsize</name>
         <briefdescription>
-<para>maximum number of queries to submit at a time. </para>
-        </briefdescription>
+<para>maximum number of queries to submit at a time. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="149" column="12" bodyfile="faiss/AutoTune.h" bodystart="149" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="149" column="1" bodyfile="faiss/AutoTune.h" bodystart="149" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ParameterSpace_1af6dc3b9c5631b509cbae99bf0f24170b" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -344,11 +325,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>use multithreading over batches (useful to benchmark independent single-searches) </para>
-        </detaileddescription>
+<para>use multithreading over batches (useful to benchmark independent single-searches) </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="153" column="10" bodyfile="faiss/AutoTune.h" bodystart="153" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="153" column="1" bodyfile="faiss/AutoTune.h" bodystart="153" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ParameterSpace_1a50d9d784d69d9812c12dc9b2baf9351d" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -358,43 +338,41 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>run tests several times until they reach at least this duration (to avoid jittering in MT mode) </para>
-        </detaileddescription>
+<para>run tests several times until they reach at least this duration (to avoid jittering in MT mode) </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="157" column="12" bodyfile="faiss/AutoTune.h" bodystart="157" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="157" column="1" bodyfile="faiss/AutoTune.h" bodystart="157" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>parameter space and setters for GPU indexes </para>
-    </briefdescription>
+<para>parameter space and setters for GPU indexes </para>    </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
+      <node id="244">
         <label>faiss::ParameterSpace</label>
         <link refid="structfaiss_1_1ParameterSpace"/>
       </node>
-      <node id="1">
+      <node id="243">
         <label>faiss::gpu::GpuParameterSpace</label>
         <link refid="structfaiss_1_1gpu_1_1GpuParameterSpace"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="244" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
+      <node id="246">
         <label>faiss::ParameterSpace</label>
         <link refid="structfaiss_1_1ParameterSpace"/>
       </node>
-      <node id="1">
+      <node id="245">
         <label>faiss::gpu::GpuParameterSpace</label>
         <link refid="structfaiss_1_1gpu_1_1GpuParameterSpace"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="246" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuAutoTune.h" line="17" column="46" bodyfile="faiss/gpu/GpuAutoTune.h" bodystart="17" bodyend="25"/>
+    <location file="faiss/gpu/GpuAutoTune.h" line="17" column="1" bodyfile="faiss/gpu/GpuAutoTune.h" bodystart="17" bodyend="25"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ParameterSpace_1a48fcb0d8a091c768dd59b4234c0733c1" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuParameterSpace</scope><name>add_range</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1aee8fd44e15656ba80fe98de4c65ed767" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuParameterSpace</scope><name>batchsize</name></member>

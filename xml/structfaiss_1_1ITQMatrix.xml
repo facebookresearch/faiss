@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1ITQMatrix" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ITQMatrix</compoundname>
     <basecompoundref refid="structfaiss_1_1LinearTransform" prot="public" virt="non-virtual">faiss::LinearTransform</basecompoundref>
@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="192" column="9" bodyfile="faiss/VectorTransform.h" bodystart="192" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="192" column="1" bodyfile="faiss/VectorTransform.h" bodystart="192" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ITQMatrix_1aad8bf31090ef0414326e42286f164a3a" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="193" column="9" bodyfile="faiss/VectorTransform.h" bodystart="193" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="193" column="1" bodyfile="faiss/VectorTransform.h" bodystart="193" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ITQMatrix_1a2460c1d755c391cb02a41be8328a97d4" prot="public" static="no" mutable="no">
         <type>std::vector&lt; double &gt;</type>
@@ -42,7 +42,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="196" column="17" bodyfile="faiss/VectorTransform.h" bodystart="196" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="196" column="1" bodyfile="faiss/VectorTransform.h" bodystart="196" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1LinearTransform_1a322401ba80cb96ac1e7846401f2bef24" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="78" column="10" bodyfile="faiss/VectorTransform.h" bodystart="78" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="78" column="1" bodyfile="faiss/VectorTransform.h" bodystart="78" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1LinearTransform_1a8a67a0178eab513cf87545f5d12d9569" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -63,14 +63,12 @@
         <argsstring></argsstring>
         <name>is_orthonormal</name>
         <briefdescription>
-<para>! whether to use the bias term </para>
-        </briefdescription>
+<para>! whether to use the bias term </para>        </briefdescription>
         <detaileddescription>
-<para>check if matrix A is orthonormal (enables reverse_transform) </para>
-        </detaileddescription>
+<para>check if matrix A is orthonormal (enables reverse_transform) </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="81" column="10" bodyfile="faiss/VectorTransform.h" bodystart="81" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="81" column="1" bodyfile="faiss/VectorTransform.h" bodystart="81" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1LinearTransform_1aa40e156ef57fe206cd5f3a58ec0660da" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -78,13 +76,12 @@
         <argsstring></argsstring>
         <name>A</name>
         <briefdescription>
-<para>Transformation matrix, size d_out * d_in. </para>
-        </briefdescription>
+<para>Transformation matrix, size d_out * d_in. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="84" column="17" bodyfile="faiss/VectorTransform.h" bodystart="84" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="84" column="1" bodyfile="faiss/VectorTransform.h" bodystart="84" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1LinearTransform_1ab0383f690aeb823876e9143febad1a87" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -92,13 +89,12 @@
         <argsstring></argsstring>
         <name>b</name>
         <briefdescription>
-<para>bias vector, size d_out </para>
-        </briefdescription>
+<para>bias vector, size d_out </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="87" column="17" bodyfile="faiss/VectorTransform.h" bodystart="87" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="87" column="1" bodyfile="faiss/VectorTransform.h" bodystart="87" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1LinearTransform_1ae351ccd1155b71ac9d2fbd8d11b7082a" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -111,7 +107,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="108" column="10" bodyfile="faiss/VectorTransform.h" bodystart="108" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="108" column="1" bodyfile="faiss/VectorTransform.h" bodystart="108" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -124,7 +120,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="31" column="9" bodyfile="faiss/VectorTransform.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="31" column="1" bodyfile="faiss/VectorTransform.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -132,13 +128,12 @@
         <argsstring></argsstring>
         <name>d_out</name>
         <briefdescription>
-<para>! input dimension </para>
-        </briefdescription>
+<para>! input dimension </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="32" column="9" bodyfile="faiss/VectorTransform.h" bodystart="32" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="32" column="1" bodyfile="faiss/VectorTransform.h" bodystart="32" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -148,11 +143,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>set if the <ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> does not require training, or if training is done already </para>
-        </detaileddescription>
+<para>set if the <ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> does not require training, or if training is done already </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="41" column="10" bodyfile="faiss/VectorTransform.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="41" column="1" bodyfile="faiss/VectorTransform.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -172,7 +166,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="198" column="14"/>
+        <location file="faiss/VectorTransform.h" line="198" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ITQMatrix_1abac7b3a00aa622c1590ea11f01abf073" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -191,29 +185,25 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Perform training on a representative set of vectors. Does nothing by default.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Perform training on a representative set of vectors. Does nothing by default.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>nb of training vectors </para>
-</parameterdescription>
+<para>nb of training vectors </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>training vecors, size n * d </para>
-</parameterdescription>
+<para>training vecors, size n * d </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="200" column="10"/>
+        <location file="faiss/VectorTransform.h" line="200" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1LinearTransform_1aefb0ae9416652e408a96604f18a78d7d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -234,13 +224,12 @@
           <declname>xt</declname>
         </param>
         <briefdescription>
-<para>same as apply, but result is pre-allocated </para>
-        </briefdescription>
+<para>same as apply, but result is pre-allocated </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="94" column="10"/>
+        <location file="faiss/VectorTransform.h" line="94" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1LinearTransform_1a29af2cf35a13b538eb327aa64b07e474" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -262,11 +251,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>compute x = A^T * (x - b) is reverse transform if A has orthonormal lines </para>
-        </detaileddescription>
+<para>compute x = A^T * (x - b) is reverse transform if A has orthonormal lines </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="98" column="10"/>
+        <location file="faiss/VectorTransform.h" line="98" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1LinearTransform_1aabcea47432734c860fdf6fcc3a998563" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -287,13 +275,12 @@
           <declname>x</declname>
         </param>
         <briefdescription>
-<para>works only if is_orthonormal </para>
-        </briefdescription>
+<para>works only if is_orthonormal </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="102" column="10"/>
+        <location file="faiss/VectorTransform.h" line="102" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1LinearTransform_1a1f75b8a58b9f452eb08fd8e54c134fe0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -301,13 +288,12 @@
         <argsstring>()</argsstring>
         <name>set_is_orthonormal</name>
         <briefdescription>
-<para>compute A^T * A to set the is_orthonormal flag </para>
-        </briefdescription>
+<para>compute A^T * A to set the is_orthonormal flag </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="106" column="10"/>
+        <location file="faiss/VectorTransform.h" line="106" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1LinearTransform_1aeca6faf0c5beb67a66b7a22182422bc5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -336,7 +322,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="109" column="10"/>
+        <location file="faiss/VectorTransform.h" line="109" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float *</type>
@@ -359,17 +345,14 @@
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>size n * d_in </para>
-</parameterdescription>
+<para>size n * d_in </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>size n * d_out </para>
-</simplesect>
-</para>
-        </detaileddescription>
+<simplesect kind="return"><para>size n * d_out </para></simplesect>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="56" column="11"/>
+        <location file="faiss/VectorTransform.h" line="56" column="1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-type">
@@ -384,53 +367,50 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="29" column="26" bodyfile="faiss/VectorTransform.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="29" column="1" bodyfile="faiss/VectorTransform.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>ITQ implementation from</para>
-<para>Iterative quantization: A procrustean approach to learning binary codes for large-scale image retrieval,</para>
-<para>Yunchao Gong, Svetlana Lazebnik, Albert Gordo, Florent Perronnin, PAMI&apos;12. </para>
-    </detaileddescription>
+<para>ITQ implementation from</para><para>Iterative quantization: A procrustean approach to learning binary codes for large-scale image retrieval,</para><para>Yunchao Gong, Svetlana Lazebnik, Albert Gordo, Florent Perronnin, PAMI&apos;12. </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="2">
+      <node id="640">
         <label>faiss::LinearTransform</label>
         <link refid="structfaiss_1_1LinearTransform"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="641" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="641">
         <label>faiss::VectorTransform</label>
         <link refid="structfaiss_1_1VectorTransform"/>
       </node>
-      <node id="1">
+      <node id="639">
         <label>faiss::ITQMatrix</label>
         <link refid="structfaiss_1_1ITQMatrix"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="640" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
+      <node id="643">
         <label>faiss::LinearTransform</label>
         <link refid="structfaiss_1_1LinearTransform"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="644" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="644">
         <label>faiss::VectorTransform</label>
         <link refid="structfaiss_1_1VectorTransform"/>
       </node>
-      <node id="1">
+      <node id="642">
         <label>faiss::ITQMatrix</label>
         <link refid="structfaiss_1_1ITQMatrix"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="643" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/VectorTransform.h" line="190" column="32" bodyfile="faiss/VectorTransform.h" bodystart="190" bodyend="201"/>
+    <location file="faiss/VectorTransform.h" line="190" column="1" bodyfile="faiss/VectorTransform.h" bodystart="190" bodyend="201"/>
     <listofallmembers>
       <member refid="structfaiss_1_1LinearTransform_1aa40e156ef57fe206cd5f3a58ec0660da" prot="public" virt="non-virtual"><scope>faiss::ITQMatrix</scope><name>A</name></member>
       <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" prot="public" virt="non-virtual"><scope>faiss::ITQMatrix</scope><name>apply</name></member>

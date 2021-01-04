@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1BitstringWriter" kind="struct" language="C++" prot="public">
     <compoundname>faiss::BitstringWriter</compoundname>
       <sectiondef kind="public-attrib">
@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="86" column="13" bodyfile="faiss/utils/hamming.h" bodystart="86" bodyend="-1"/>
+        <location file="faiss/utils/hamming.h" line="84" column="1" bodyfile="faiss/utils/hamming.h" bodystart="84" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1BitstringWriter_1a869df71e23e6e611247580c22fe49ac1" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="87" column="12" bodyfile="faiss/utils/hamming.h" bodystart="87" bodyend="-1"/>
+        <location file="faiss/utils/hamming.h" line="85" column="1" bodyfile="faiss/utils/hamming.h" bodystart="85" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1BitstringWriter_1a1e1f882a539150a6bf0d06bf0f1dba89" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="88" column="12" bodyfile="faiss/utils/hamming.h" bodystart="88" bodyend="-1"/>
+        <location file="faiss/utils/hamming.h" line="86" column="1" bodyfile="faiss/utils/hamming.h" bodystart="86" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="91" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="11" bodyend="15"/>
+        <location file="faiss/utils/hamming.h" line="89" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="11" bodyend="15"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BitstringWriter_1af8f527858ffdcc241a02408d2e791817" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -84,14 +84,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="94" column="10" bodyfile="faiss/utils/hamming-inl.h" bodystart="17" bodyend="36"/>
+        <location file="faiss/utils/hamming.h" line="92" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="17" bodyend="36"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/hamming.h" line="83" column="22" bodyfile="faiss/utils/hamming.h" bodystart="83" bodyend="93"/>
+    <location file="faiss/utils/hamming.h" line="83" column="1" bodyfile="faiss/utils/hamming.h" bodystart="83" bodyend="93"/>
     <listofallmembers>
       <member refid="structfaiss_1_1BitstringWriter_1a2089ae88dda9878016af84f8518f4bf7" prot="public" virt="non-virtual"><scope>faiss::BitstringWriter</scope><name>BitstringWriter</name></member>
       <member refid="structfaiss_1_1BitstringWriter_1af185df9f141d8e45c8d092f551de68a6" prot="public" virt="non-virtual"><scope>faiss::BitstringWriter</scope><name>code</name></member>

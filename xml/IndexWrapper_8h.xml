@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="IndexWrapper_8h" kind="file" language="C++">
     <compoundname>IndexWrapper.h</compoundname>
     <includes refid="IndexReplicas_8h" local="no">faiss/IndexReplicas.h</includes>
@@ -9,181 +9,181 @@
     <includes local="no">vector</includes>
     <includes refid="IndexWrapper-inl_8h" local="no">faiss/gpu/perf/IndexWrapper-inl.h</includes>
     <incdepgraph>
-      <node id="20">
+      <node id="299">
         <label>list</label>
       </node>
-      <node id="24">
-        <label>functional</label>
-      </node>
-      <node id="11">
-        <label>faiss/impl/ThreadedIndex.h</label>
-      </node>
-      <node id="15">
-        <label>cublas_v2.h</label>
-      </node>
-      <node id="23">
-        <label>faiss/gpu/utils/DeviceUtils.h</label>
-        <link refid="DeviceUtils_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-      </node>
-      <node id="14">
-        <label>cuda_runtime.h</label>
-      </node>
-      <node id="7">
-        <label>string</label>
-      </node>
-      <node id="25">
-        <label>map</label>
-      </node>
-      <node id="13">
-        <label>faiss/gpu/GpuResources.h</label>
-        <link refid="GpuResources_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>faiss/IndexBinary.h</label>
-        <link refid="IndexBinary_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="12">
-        <label>faiss/gpu/StandardGpuResources.h</label>
-        <link refid="StandardGpuResources_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>faiss/impl/FaissAssert.h</label>
-      </node>
-      <node id="19">
+      <node id="298">
         <label>faiss/gpu/utils/StackDeviceMemory.h</label>
         <link refid="StackDeviceMemory_8h_source"/>
-        <childnode refid="13" relation="include">
+        <childnode refid="292" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="293" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="299" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="295" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="300" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-      </node>
-      <node id="26">
-        <label>faiss/gpu/perf/IndexWrapper-inl.h</label>
-        <link refid="IndexWrapper-inl_8h_source"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="301" relation="include">
         </childnode>
       </node>
-      <node id="6">
-        <label>typeinfo</label>
+      <node id="303">
+        <label>functional</label>
       </node>
-      <node id="5">
-        <label>cstdio</label>
+      <node id="290">
+        <label>faiss/impl/ThreadedIndex.h</label>
       </node>
-      <node id="22">
-        <label>tuple</label>
+      <node id="294">
+        <label>cublas_v2.h</label>
       </node>
-      <node id="18">
-        <label>vector</label>
-      </node>
-      <node id="17">
-        <label>utility</label>
-      </node>
-      <node id="8">
-        <label>sstream</label>
-      </node>
-      <node id="2">
-        <label>faiss/IndexReplicas.h</label>
-        <link refid="IndexReplicas_8h_source"/>
-        <childnode refid="3" relation="include">
+      <node id="302">
+        <label>faiss/gpu/utils/DeviceUtils.h</label>
+        <link refid="DeviceUtils_8h_source"/>
+        <childnode refid="289" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="293" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="294" relation="include">
+        </childnode>
+        <childnode refid="297" relation="include">
         </childnode>
       </node>
-      <node id="21">
-        <label>unordered_map</label>
+      <node id="293">
+        <label>cuda_runtime.h</label>
       </node>
-      <node id="3">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
+      <node id="286">
+        <label>string</label>
       </node>
-      <node id="1">
+      <node id="304">
+        <label>map</label>
+      </node>
+      <node id="280">
         <label>faiss/gpu/perf/IndexWrapper.h</label>
         <link refid="IndexWrapper_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="281" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="291" relation="include">
         </childnode>
-        <childnode refid="24" relation="include">
+        <childnode refid="303" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="295" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="297" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="305" relation="include">
         </childnode>
       </node>
-      <node id="16">
-        <label>memory</label>
+      <node id="289">
+        <label>faiss/impl/FaissAssert.h</label>
       </node>
-      <node id="4">
+      <node id="292">
+        <label>faiss/gpu/GpuResources.h</label>
+        <link refid="GpuResources_8h_source"/>
+        <childnode refid="289" relation="include">
+        </childnode>
+        <childnode refid="293" relation="include">
+        </childnode>
+        <childnode refid="294" relation="include">
+        </childnode>
+        <childnode refid="295" relation="include">
+        </childnode>
+        <childnode refid="296" relation="include">
+        </childnode>
+        <childnode refid="297" relation="include">
+        </childnode>
+      </node>
+      <node id="285">
+        <label>typeinfo</label>
+      </node>
+      <node id="284">
+        <label>cstdio</label>
+      </node>
+      <node id="301">
+        <label>tuple</label>
+      </node>
+      <node id="297">
+        <label>vector</label>
+      </node>
+      <node id="296">
+        <label>utility</label>
+      </node>
+      <node id="287">
+        <label>sstream</label>
+      </node>
+      <node id="288">
+        <label>faiss/IndexBinary.h</label>
+        <link refid="IndexBinary_8h_source"/>
+        <childnode refid="284" relation="include">
+        </childnode>
+        <childnode refid="285" relation="include">
+        </childnode>
+        <childnode refid="286" relation="include">
+        </childnode>
+        <childnode refid="287" relation="include">
+        </childnode>
+        <childnode refid="289" relation="include">
+        </childnode>
+        <childnode refid="282" relation="include">
+        </childnode>
+      </node>
+      <node id="291">
+        <label>faiss/gpu/StandardGpuResources.h</label>
+        <link refid="StandardGpuResources_8h_source"/>
+        <childnode refid="292" relation="include">
+        </childnode>
+        <childnode refid="298" relation="include">
+        </childnode>
+        <childnode refid="302" relation="include">
+        </childnode>
+        <childnode refid="303" relation="include">
+        </childnode>
+        <childnode refid="304" relation="include">
+        </childnode>
+        <childnode refid="300" relation="include">
+        </childnode>
+        <childnode refid="297" relation="include">
+        </childnode>
+      </node>
+      <node id="300">
+        <label>unordered_map</label>
+      </node>
+      <node id="282">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="283" relation="include">
+        </childnode>
+        <childnode refid="284" relation="include">
+        </childnode>
+        <childnode refid="285" relation="include">
+        </childnode>
+        <childnode refid="286" relation="include">
+        </childnode>
+        <childnode refid="287" relation="include">
+        </childnode>
+      </node>
+      <node id="283">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+      </node>
+      <node id="281">
+        <label>faiss/IndexReplicas.h</label>
+        <link refid="IndexReplicas_8h_source"/>
+        <childnode refid="282" relation="include">
+        </childnode>
+        <childnode refid="288" relation="include">
+        </childnode>
+        <childnode refid="290" relation="include">
+        </childnode>
+      </node>
+      <node id="305">
+        <label>faiss/gpu/perf/IndexWrapper-inl.h</label>
+        <link refid="IndexWrapper-inl_8h_source"/>
+        <childnode refid="289" relation="include">
+        </childnode>
+      </node>
+      <node id="295">
+        <label>memory</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1gpu_1_1IndexWrapper" prot="public">faiss::gpu::IndexWrapper</innerclass>

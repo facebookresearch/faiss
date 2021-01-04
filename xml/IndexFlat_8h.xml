@@ -1,61 +1,61 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="IndexFlat_8h" kind="file" language="C++">
     <compoundname>IndexFlat.h</compoundname>
     <includes local="no">vector</includes>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <includedby refid="IndexHNSW_8h" local="no">faiss/IndexHNSW.h</includedby>
     <incdepgraph>
-      <node id="1">
+      <node id="651">
         <label>faiss/IndexFlat.h</label>
         <link refid="IndexFlat_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="652" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="653" relation="include">
         </childnode>
       </node>
-      <node id="7">
+      <node id="657">
         <label>string</label>
       </node>
-      <node id="6">
+      <node id="656">
         <label>typeinfo</label>
       </node>
-      <node id="5">
+      <node id="655">
         <label>cstdio</label>
       </node>
-      <node id="2">
+      <node id="652">
         <label>vector</label>
       </node>
-      <node id="8">
+      <node id="658">
         <label>sstream</label>
       </node>
-      <node id="3">
+      <node id="653">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="4" relation="include">
+        <childnode refid="654" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="655" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="656" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="657" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="658" relation="include">
         </childnode>
       </node>
-      <node id="4">
+      <node id="654">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="1">
+      <node id="659">
         <label>faiss/IndexFlat.h</label>
         <link refid="IndexFlat_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="660" relation="include">
         </childnode>
       </node>
-      <node id="2">
+      <node id="660">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
       </node>
@@ -154,13 +154,13 @@
 <codeline lineno="82"><highlight class="normal"></highlight></codeline>
 <codeline lineno="83"><highlight class="normal"></highlight></codeline>
 <codeline lineno="84" refid="structfaiss_1_1IndexFlatIP" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexFlatIP" kindref="compound">IndexFlatIP</ref>:<ref refid="structfaiss_1_1IndexFlat" kindref="compound">IndexFlat</ref><sp/>{</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlatIP" kindref="compound">IndexFlatIP</ref><sp/>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref><sp/><ref refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kindref="member">d</ref>):<sp/><ref refid="structfaiss_1_1IndexFlat" kindref="compound">IndexFlat</ref><sp/>(<ref refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kindref="member">d</ref>,<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2" kindref="member">METRIC_INNER_PRODUCT</ref>)<sp/>{}</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlatIP" kindref="compound">IndexFlatIP</ref><sp/>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref><sp/><ref refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kindref="member">d</ref>):<sp/><ref refid="structfaiss_1_1IndexFlat" kindref="compound">IndexFlat</ref><sp/>(d,<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2" kindref="member">METRIC_INNER_PRODUCT</ref>)<sp/>{}</highlight></codeline>
 <codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexFlatIP" kindref="compound">IndexFlatIP</ref><sp/>()<sp/>{}</highlight></codeline>
 <codeline lineno="87"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="88"><highlight class="normal"></highlight></codeline>
 <codeline lineno="89"><highlight class="normal"></highlight></codeline>
 <codeline lineno="90" refid="structfaiss_1_1IndexFlatL2" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexFlatL2" kindref="compound">IndexFlatL2</ref>:<ref refid="structfaiss_1_1IndexFlat" kindref="compound">IndexFlat</ref><sp/>{</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlatL2" kindref="compound">IndexFlatL2</ref><sp/>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref><sp/><ref refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kindref="member">d</ref>):<sp/><ref refid="structfaiss_1_1IndexFlat" kindref="compound">IndexFlat</ref><sp/>(<ref refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kindref="member">d</ref>,<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>)<sp/>{}</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlatL2" kindref="compound">IndexFlatL2</ref><sp/>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref><sp/><ref refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kindref="member">d</ref>):<sp/><ref refid="structfaiss_1_1IndexFlat" kindref="compound">IndexFlat</ref><sp/>(d,<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>)<sp/>{}</highlight></codeline>
 <codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexFlatL2" kindref="compound">IndexFlatL2</ref><sp/>()<sp/>{}</highlight></codeline>
 <codeline lineno="93"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"></highlight></codeline>
@@ -172,18 +172,18 @@
 <codeline lineno="100"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="101" refid="structfaiss_1_1IndexFlat1D_1a3442f0d86a14108534f99eea0b7d4d3f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;idx_t&gt;<sp/><ref refid="structfaiss_1_1IndexFlat1D_1a3442f0d86a14108534f99eea0b7d4d3f" kindref="member">perm</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>sorted<sp/>database<sp/>indices</highlight></codeline>
 <codeline lineno="102"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlat1D" kindref="compound">IndexFlat1D</ref><sp/>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlat1D_1a8b025a468b088a343cf8079006de45e2" kindref="member">continuous_update</ref>=</highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlat1D" kindref="compound">IndexFlat1D</ref><sp/>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>continuous_update=</highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="105"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>if<sp/>not<sp/>continuous_update,<sp/>call<sp/>this<sp/>between<sp/>the<sp/>last<sp/>add<sp/>and</highlight></codeline>
 <codeline lineno="106"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>first<sp/>search</highlight></codeline>
-<codeline lineno="107"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlat1D_1ac7466c6c9b1e9e81ea19b846ddb8209e" kindref="member">update_permutation</ref><sp/>();</highlight></codeline>
+<codeline lineno="107"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>update_permutation<sp/>();</highlight></codeline>
 <codeline lineno="108"><highlight class="normal"></highlight></codeline>
-<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlat1D_1a5dc39280262484ecadda5e11162c2457" kindref="member">add</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlat_1a406f028c702edec72477eacc5733f59c" kindref="member">add</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="110"><highlight class="normal"></highlight></codeline>
-<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlat1D_1aa205c4ffa6cbd50f49ef9cb6cc050000" kindref="member">reset</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlat_1ab63dc34ef5d33f98f94aa0ade7c7324f" kindref="member">reset</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="112"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="113"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Warn:<sp/>the<sp/>distances<sp/>returned<sp/>are<sp/>L1<sp/>not<sp/>L2</highlight></codeline>
-<codeline lineno="114"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlat1D_1a65736f2900865cd156faba4fcd260d05" kindref="member">search</ref>(</highlight></codeline>
+<codeline lineno="114"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlat_1a85510d70f4675197df9988651e4692c9" kindref="member">search</ref>(</highlight></codeline>
 <codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref><sp/>n,</highlight></codeline>
 <codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
 <codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref><sp/>k,</highlight></codeline>

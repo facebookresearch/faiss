@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="utils_8h" kind="file" language="C++">
     <compoundname>utils.h</compoundname>
     <includes local="no">stdint.h</includes>
@@ -7,82 +7,82 @@
     <includedby refid="IndexBinaryHNSW_8h" local="no">faiss/IndexBinaryHNSW.h</includedby>
     <includedby refid="IndexHNSW_8h" local="no">faiss/IndexHNSW.h</includedby>
     <incdepgraph>
-      <node id="9">
+      <node id="1389">
         <label>limits</label>
       </node>
-      <node id="3">
-        <label>faiss/utils/Heap.h</label>
-        <link refid="Heap_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
+      <node id="1382">
         <label>stdint.h</label>
       </node>
-      <node id="6">
+      <node id="1386">
         <label>cmath</label>
       </node>
-      <node id="7">
+      <node id="1387">
         <label>cassert</label>
       </node>
-      <node id="8">
+      <node id="1388">
         <label>cstdio</label>
       </node>
-      <node id="1">
-        <label>faiss/utils/utils.h</label>
-        <link refid="utils_8h"/>
-        <childnode refid="2" relation="include">
+      <node id="1383">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="1384" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="1385" relation="include">
+        </childnode>
+        <childnode refid="1386" relation="include">
+        </childnode>
+        <childnode refid="1387" relation="include">
+        </childnode>
+        <childnode refid="1388" relation="include">
+        </childnode>
+        <childnode refid="1382" relation="include">
+        </childnode>
+        <childnode refid="1389" relation="include">
+        </childnode>
+        <childnode refid="1390" relation="include">
         </childnode>
       </node>
-      <node id="4">
-        <label>climits</label>
-      </node>
-      <node id="10">
+      <node id="1390">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="4" relation="include">
+        <childnode refid="1384" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="1386" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="1389" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="1384">
+        <label>climits</label>
+      </node>
+      <node id="1385">
         <label>cstring</label>
+      </node>
+      <node id="1381">
+        <label>faiss/utils/utils.h</label>
+        <link refid="utils_8h"/>
+        <childnode refid="1382" relation="include">
+        </childnode>
+        <childnode refid="1383" relation="include">
+        </childnode>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="3">
+      <node id="1392">
+        <label>faiss/IndexBinaryHNSW.h</label>
+        <link refid="IndexBinaryHNSW_8h_source"/>
+      </node>
+      <node id="1393">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
       </node>
-      <node id="1">
+      <node id="1391">
         <label>faiss/utils/utils.h</label>
         <link refid="utils_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1392" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="1393" relation="include">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss/IndexBinaryHNSW.h</label>
-        <link refid="IndexBinaryHNSW_8h_source"/>
       </node>
     </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

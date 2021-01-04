@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="dir_a183f389f7fdb8e3b256673548812ad2" kind="dir">
     <compoundname>faiss/gpu/perf</compoundname>
     <innerfile refid="IndexWrapper-inl_8h">IndexWrapper-inl.h</innerfile>

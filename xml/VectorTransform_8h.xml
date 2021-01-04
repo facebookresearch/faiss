@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="VectorTransform_8h" kind="file" language="C++">
     <compoundname>VectorTransform.h</compoundname>
     <includes local="no">vector</includes>
@@ -8,69 +8,69 @@
     <includedby refid="IndexLSH_8h" local="no">faiss/IndexLSH.h</includedby>
     <includedby refid="IndexPreTransform_8h" local="no">faiss/IndexPreTransform.h</includedby>
     <incdepgraph>
-      <node id="3">
-        <label>stdint.h</label>
-      </node>
-      <node id="8">
-        <label>string</label>
-      </node>
-      <node id="7">
-        <label>typeinfo</label>
-      </node>
-      <node id="6">
-        <label>cstdio</label>
-      </node>
-      <node id="2">
-        <label>vector</label>
-      </node>
-      <node id="9">
-        <label>sstream</label>
-      </node>
-      <node id="4">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="1">
+      <node id="1400">
         <label>faiss/VectorTransform.h</label>
         <link refid="VectorTransform_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1401" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="1402" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="1403" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="1402">
+        <label>stdint.h</label>
+      </node>
+      <node id="1407">
+        <label>string</label>
+      </node>
+      <node id="1406">
+        <label>typeinfo</label>
+      </node>
+      <node id="1405">
+        <label>cstdio</label>
+      </node>
+      <node id="1401">
+        <label>vector</label>
+      </node>
+      <node id="1408">
+        <label>sstream</label>
+      </node>
+      <node id="1403">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="1404" relation="include">
+        </childnode>
+        <childnode refid="1405" relation="include">
+        </childnode>
+        <childnode refid="1406" relation="include">
+        </childnode>
+        <childnode refid="1407" relation="include">
+        </childnode>
+        <childnode refid="1408" relation="include">
+        </childnode>
+      </node>
+      <node id="1404">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="3">
+      <node id="1409">
+        <label>faiss/VectorTransform.h</label>
+        <link refid="VectorTransform_8h"/>
+        <childnode refid="1410" relation="include">
+        </childnode>
+        <childnode refid="1411" relation="include">
+        </childnode>
+      </node>
+      <node id="1411">
         <label>faiss/IndexPreTransform.h</label>
         <link refid="IndexPreTransform_8h_source"/>
       </node>
-      <node id="2">
+      <node id="1410">
         <label>faiss/IndexLSH.h</label>
         <link refid="IndexLSH_8h_source"/>
-      </node>
-      <node id="1">
-        <label>faiss/VectorTransform.h</label>
-        <link refid="VectorTransform_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1VectorTransform" prot="public">faiss::VectorTransform</innerclass>
@@ -122,8 +122,8 @@
 <codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_in;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///!<sp/>input<sp/>dimension</highlight></codeline>
 <codeline lineno="32" refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref>;<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///!<sp/>output<sp/>dimension</highlight></codeline>
 <codeline lineno="33"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="34" refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" kindref="member">VectorTransform</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_in<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref><sp/>=<sp/>0):</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>d_in(d_in),<sp/><ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref>(<ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref>),<sp/><ref refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" kindref="member">is_trained</ref>(true)</highlight></codeline>
+<codeline lineno="34" refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" kindref="member">VectorTransform</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_in<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_out<sp/>=<sp/>0):</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>d_in(d_in),<sp/>d_out(d_out),<sp/><ref refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" kindref="member">is_trained</ref>(true)</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"></highlight></codeline>
 <codeline lineno="38"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
@@ -178,23 +178,23 @@
 <codeline lineno="87" refid="structfaiss_1_1LinearTransform_1ab0383f690aeb823876e9143febad1a87" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/><ref refid="structfaiss_1_1LinearTransform_1ab0383f690aeb823876e9143febad1a87" kindref="member">b</ref>;</highlight></codeline>
 <codeline lineno="88"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="89"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>both<sp/>d_in<sp/>&gt;<sp/>d_out<sp/>and<sp/>d_out<sp/>&lt;<sp/>d_in<sp/>are<sp/>supported</highlight></codeline>
-<codeline lineno="90"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1LinearTransform_1a7bf766de1abac428d18b8817208fcab0" kindref="member">LinearTransform</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_in<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref><sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="90"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1LinearTransform" kindref="compound">LinearTransform</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_in<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref><sp/>=<sp/>0,</highlight></codeline>
 <codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>have_bias<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="92"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="93"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>same<sp/>as<sp/>apply,<sp/>but<sp/>result<sp/>is<sp/>pre-allocated</highlight></codeline>
-<codeline lineno="94"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1LinearTransform_1aefb0ae9416652e408a96604f18a78d7d" kindref="member">apply_noalloc</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="94"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0" kindref="member">apply_noalloc</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="95"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="96"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>compute<sp/>x<sp/>=<sp/>A^T<sp/>*<sp/>(x<sp/>-<sp/>b)</highlight></codeline>
 <codeline lineno="97"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>is<sp/>reverse<sp/>transform<sp/>if<sp/>A<sp/>has<sp/>orthonormal<sp/>lines</highlight></codeline>
-<codeline lineno="98"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1LinearTransform_1a29af2cf35a13b538eb327aa64b07e474" kindref="member">transform_transpose</ref><sp/>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*<sp/>y,</highlight></codeline>
+<codeline lineno="98"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>transform_transpose<sp/>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*<sp/>y,</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="100"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="101"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>works<sp/>only<sp/>if<sp/>is_orthonormal</highlight></codeline>
-<codeline lineno="102"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1LinearTransform_1aabcea47432734c860fdf6fcc3a998563" kindref="member">reverse_transform</ref><sp/>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*<sp/>xt,</highlight></codeline>
+<codeline lineno="102"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb" kindref="member">reverse_transform</ref><sp/>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*<sp/>xt,</highlight></codeline>
 <codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*x)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="105"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>compute<sp/>A^T<sp/>*<sp/>A<sp/>to<sp/>set<sp/>the<sp/>is_orthonormal<sp/>flag</highlight></codeline>
-<codeline lineno="106"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1LinearTransform_1a1f75b8a58b9f452eb08fd8e54c134fe0" kindref="member">set_is_orthonormal</ref><sp/>();</highlight></codeline>
+<codeline lineno="106"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_is_orthonormal<sp/>();</highlight></codeline>
 <codeline lineno="107"><highlight class="normal"></highlight></codeline>
 <codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>verbose;</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>print_if_verbose<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*name,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;<sp/>&amp;mat,</highlight></codeline>
@@ -210,13 +210,13 @@
 <codeline lineno="119"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="120"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>///<sp/>both<sp/>d_in<sp/>&gt;<sp/>d_out<sp/>and<sp/>d_out<sp/>&lt;<sp/>d_in<sp/>are<sp/>supported</highlight></codeline>
 <codeline lineno="121" refid="structfaiss_1_1RandomRotationMatrix_1a64e406c8f73c7692bcf7d97b27305fc6" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RandomRotationMatrix_1a64e406c8f73c7692bcf7d97b27305fc6" kindref="member">RandomRotationMatrix</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_in,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref>):</highlight></codeline>
-<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1LinearTransform" kindref="compound">LinearTransform</ref>(d_in,<sp/><ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref>,<sp/>false)<sp/>{}</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1LinearTransform" kindref="compound">LinearTransform</ref>(d_in,<sp/>d_out,<sp/>false)<sp/>{}</highlight></codeline>
 <codeline lineno="123"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="124"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>///<sp/>must<sp/>be<sp/>called<sp/>before<sp/>the<sp/>transform<sp/>is<sp/>used</highlight></codeline>
-<codeline lineno="125"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RandomRotationMatrix_1a35d70d2b2e01b10ac041002e8851d5ce" kindref="member">init</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>seed);</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>init(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>seed);</highlight></codeline>
 <codeline lineno="126"><highlight class="normal"></highlight></codeline>
 <codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>intializes<sp/>with<sp/>an<sp/>arbitrary<sp/>seed</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RandomRotationMatrix_1a8d7cd3057072bc2db0527ae4ac84b181" kindref="member">train</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" kindref="member">train</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="129"><highlight class="normal"></highlight></codeline>
 <codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RandomRotationMatrix" kindref="compound">RandomRotationMatrix</ref><sp/>()<sp/>{}</highlight></codeline>
 <codeline lineno="131"><highlight class="normal">};</highlight></codeline>
@@ -254,17 +254,17 @@
 <codeline lineno="163"><highlight class="normal"></highlight></codeline>
 <codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>final<sp/>matrix<sp/>is<sp/>computed<sp/>after<sp/>random<sp/>rotation<sp/>and/or<sp/>whitening</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PCAMatrix" kindref="compound">PCAMatrix</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_in<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref><sp/>=<sp/>0,</highlight></codeline>
-<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PCAMatrix_1a4e48e801f98ba2cf57c03b0913d6fafc" kindref="member">eigen_power</ref><sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PCAMatrix_1af111f055b7571703a3aa270d89e99321" kindref="member">random_rotation</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>eigen_power<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>random_rotation<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="167"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="168"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>train<sp/>on<sp/>n<sp/>vectors.<sp/>If<sp/>n<sp/>&lt;<sp/>d_in<sp/>then<sp/>the<sp/>eigenvector<sp/>matrix</highlight></codeline>
 <codeline lineno="169"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>will<sp/>be<sp/>completed<sp/>with<sp/>0s</highlight></codeline>
-<codeline lineno="170"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PCAMatrix_1a42f2fefbabe122868c59ea35b4ff080b" kindref="member">train</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="170"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" kindref="member">train</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="171"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="172"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>copy<sp/>pre-trained<sp/>PCA<sp/>matrix</highlight></codeline>
-<codeline lineno="173"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PCAMatrix_1a5eeb75861ade62cf606d003da398a09f" kindref="member">copy_from</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PCAMatrix" kindref="compound">PCAMatrix</ref><sp/>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="173"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>copy_from<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PCAMatrix" kindref="compound">PCAMatrix</ref><sp/>&amp;<sp/>other);</highlight></codeline>
 <codeline lineno="174"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="175"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>called<sp/>after<sp/>mean,<sp/>PCAMat<sp/>and<sp/>eigenvalues<sp/>are<sp/>computed</highlight></codeline>
-<codeline lineno="176"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PCAMatrix_1ac13555c4d9007ae338d3392882b8e0db" kindref="member">prepare_Ab</ref>();</highlight></codeline>
+<codeline lineno="176"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>prepare_Ab();</highlight></codeline>
 <codeline lineno="177"><highlight class="normal"></highlight></codeline>
 <codeline lineno="178"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="179"><highlight class="normal"></highlight></codeline>
@@ -288,7 +288,7 @@
 <codeline lineno="197"><highlight class="normal"></highlight></codeline>
 <codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ITQMatrix" kindref="compound">ITQMatrix</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d<sp/>=<sp/>0);</highlight></codeline>
 <codeline lineno="199"><highlight class="normal"></highlight></codeline>
-<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ITQMatrix_1abac7b3a00aa622c1590ea11f01abf073" kindref="member">train</ref><sp/>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" kindref="member">train</ref><sp/>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="201"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="202"><highlight class="normal"></highlight></codeline>
 <codeline lineno="203"><highlight class="normal"></highlight></codeline>
@@ -309,9 +309,9 @@
 <codeline lineno="218"><highlight class="normal"></highlight></codeline>
 <codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ITQTransform" kindref="compound">ITQTransform</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_in<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref><sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>do_pca<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="220"><highlight class="normal"></highlight></codeline>
-<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ITQTransform_1a836c8adc25326ade1a5998276648c736" kindref="member">train</ref><sp/>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" kindref="member">train</ref><sp/>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="222"><highlight class="normal"></highlight></codeline>
-<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ITQTransform_1af9bbe5be9e3c3f3f2919a46cc931443a" kindref="member">apply_noalloc</ref><sp/>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0" kindref="member">apply_noalloc</ref><sp/>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="224"><highlight class="normal"></highlight></codeline>
 <codeline lineno="225"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="226"><highlight class="normal"></highlight></codeline>
@@ -342,9 +342,9 @@
 <codeline lineno="251" refid="structfaiss_1_1OPQMatrix_1a01d3736c8e725f596b99440324544a59" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>ProductQuantizer<sp/>*<sp/><ref refid="structfaiss_1_1OPQMatrix_1a01d3736c8e725f596b99440324544a59" kindref="member">pq</ref>;</highlight></codeline>
 <codeline lineno="252"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="253"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>if<sp/>d2<sp/>!=<sp/>-1,<sp/>output<sp/>vectors<sp/>of<sp/>this<sp/>dimension</highlight></codeline>
-<codeline lineno="254"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1a377b53c090c7ab05814aaf9d6ec58fcf" kindref="member">OPQMatrix</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1a07ad0c0c84f96a6880c1c8eaf09596e3" kindref="member">M</ref><sp/>=<sp/>1,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d2<sp/>=<sp/>-1);</highlight></codeline>
+<codeline lineno="254"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix" kindref="compound">OPQMatrix</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>M<sp/>=<sp/>1,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d2<sp/>=<sp/>-1);</highlight></codeline>
 <codeline lineno="255"><highlight class="normal"></highlight></codeline>
-<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1abc57f03c88623a5844c7ac06a927ab6a" kindref="member">train</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" kindref="member">train</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="257"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="258"><highlight class="normal"></highlight></codeline>
 <codeline lineno="259"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
@@ -357,17 +357,17 @@
 <codeline lineno="266"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>-1<sp/>-&gt;<sp/>set<sp/>output<sp/>to<sp/>0</highlight></codeline>
 <codeline lineno="267" refid="structfaiss_1_1RemapDimensionsTransform_1a09202a195ff5f75f83e68792751a637f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;<sp/><ref refid="structfaiss_1_1RemapDimensionsTransform_1a09202a195ff5f75f83e68792751a637f" kindref="member">map</ref>;</highlight></codeline>
 <codeline lineno="268"><highlight class="normal"></highlight></codeline>
-<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RemapDimensionsTransform" kindref="compound">RemapDimensionsTransform</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_in,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*<ref refid="structfaiss_1_1RemapDimensionsTransform_1a09202a195ff5f75f83e68792751a637f" kindref="member">map</ref>);</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RemapDimensionsTransform" kindref="compound">RemapDimensionsTransform</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_in,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*map);</highlight></codeline>
 <codeline lineno="270"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="271"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>remap<sp/>input<sp/>to<sp/>output,<sp/>skipping<sp/>or<sp/>inserting<sp/>dimensions<sp/>as<sp/>needed</highlight></codeline>
 <codeline lineno="272"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>if<sp/>uniform:<sp/>distribute<sp/>dimensions<sp/>uniformly</highlight></codeline>
 <codeline lineno="273"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>otherwise<sp/>just<sp/>take<sp/>the<sp/>d_out<sp/>first<sp/>ones.</highlight></codeline>
 <codeline lineno="274"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RemapDimensionsTransform" kindref="compound">RemapDimensionsTransform</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_in,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kindref="member">d_out</ref>,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>uniform<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="275"><highlight class="normal"></highlight></codeline>
-<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RemapDimensionsTransform_1aa3028183624634f5ab0d7d3fe78ffa9e" kindref="member">apply_noalloc</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0" kindref="member">apply_noalloc</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="277"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="278"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>reverse<sp/>transform<sp/>correct<sp/>only<sp/>when<sp/>the<sp/>mapping<sp/>is<sp/>a<sp/>permutation</highlight></codeline>
-<codeline lineno="279"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RemapDimensionsTransform_1ac94a16755e3eb8693547f3a7ae90cec3" kindref="member">reverse_transform</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="279"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb" kindref="member">reverse_transform</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="280"><highlight class="normal"></highlight></codeline>
 <codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RemapDimensionsTransform" kindref="compound">RemapDimensionsTransform</ref><sp/>()<sp/>{}</highlight></codeline>
 <codeline lineno="282"><highlight class="normal">};</highlight></codeline>
@@ -380,10 +380,10 @@
 <codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NormalizationTransform" kindref="compound">NormalizationTransform</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>norm<sp/>=<sp/>2.0);</highlight></codeline>
 <codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1NormalizationTransform" kindref="compound">NormalizationTransform</ref><sp/>();</highlight></codeline>
 <codeline lineno="291"><highlight class="normal"></highlight></codeline>
-<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NormalizationTransform_1a282007331f7f6d96792c89fe1f9ecefd" kindref="member">apply_noalloc</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0" kindref="member">apply_noalloc</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="293"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="294"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Identity<sp/>transform<sp/>since<sp/>norm<sp/>is<sp/>not<sp/>revertible</highlight></codeline>
-<codeline lineno="295"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NormalizationTransform_1af280b21563b819ebb292a6f63d011ad1" kindref="member">reverse_transform</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="295"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb" kindref="member">reverse_transform</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="296"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="297"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="298"><highlight class="comment">/**<sp/>Subtract<sp/>the<sp/>mean<sp/>of<sp/>each<sp/>component<sp/>from<sp/>the<sp/>vectors.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -395,13 +395,13 @@
 <codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1CenteringTransform" kindref="compound">CenteringTransform</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d<sp/>=<sp/>0);</highlight></codeline>
 <codeline lineno="305"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="306"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>train<sp/>on<sp/>n<sp/>vectors.</highlight></codeline>
-<codeline lineno="307"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1CenteringTransform_1ae63f2afed997c435fda588b5a8642893" kindref="member">train</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="307"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" kindref="member">train</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="308"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="309"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>subtract<sp/>the<sp/>mean</highlight></codeline>
-<codeline lineno="310"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1CenteringTransform_1a0d9a07e911c43a598f64981f23afec0a" kindref="member">apply_noalloc</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="310"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0" kindref="member">apply_noalloc</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xt)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="311"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="312"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>add<sp/>the<sp/>mean</highlight></codeline>
-<codeline lineno="313"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1CenteringTransform_1a01aacceb0950fcb39b0f5e18103ea6d5" kindref="member">reverse_transform</ref><sp/>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*<sp/>xt,</highlight></codeline>
+<codeline lineno="313"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb" kindref="member">reverse_transform</ref><sp/>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*<sp/>xt,</highlight></codeline>
 <codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*x)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="315"><highlight class="normal"></highlight></codeline>
 <codeline lineno="316"><highlight class="normal">};</highlight></codeline>

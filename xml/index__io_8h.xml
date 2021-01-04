@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="index__io_8h" kind="file" language="C++">
     <compoundname>index_io.h</compoundname>
     <includes local="no">cstdio</includes>
@@ -9,46 +9,46 @@
     <includedby refid="BlockInvertedLists_8h" local="no">faiss/invlists/BlockInvertedLists.h</includedby>
     <includedby refid="OnDiskInvertedLists_8h" local="no">faiss/invlists/OnDiskInvertedLists.h</includedby>
     <incdepgraph>
-      <node id="4">
+      <node id="531">
         <label>string</label>
       </node>
-      <node id="3">
+      <node id="530">
         <label>typeinfo</label>
       </node>
-      <node id="2">
+      <node id="529">
         <label>cstdio</label>
       </node>
-      <node id="5">
+      <node id="532">
         <label>vector</label>
       </node>
-      <node id="1">
+      <node id="528">
         <label>faiss/index_io.h</label>
         <link refid="index__io_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="529" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="530" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="531" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="532" relation="include">
         </childnode>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="2">
-        <label>faiss/invlists/BlockInvertedLists.h</label>
-        <link refid="BlockInvertedLists_8h_source"/>
-      </node>
-      <node id="3">
+      <node id="535">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
         <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
-      <node id="1">
+      <node id="534">
+        <label>faiss/invlists/BlockInvertedLists.h</label>
+        <link refid="BlockInvertedLists_8h_source"/>
+      </node>
+      <node id="533">
         <label>faiss/index_io.h</label>
         <link refid="index__io_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="534" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="535" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

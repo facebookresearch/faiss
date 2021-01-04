@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="StackDeviceMemory_8h" kind="file" language="C++">
     <compoundname>StackDeviceMemory.h</compoundname>
     <includes refid="GpuResources_8h" local="no">faiss/gpu/GpuResources.h</includes>
@@ -10,82 +10,82 @@
     <includes local="no">tuple</includes>
     <includedby refid="StandardGpuResources_8h" local="no">faiss/gpu/StandardGpuResources.h</includedby>
     <incdepgraph>
-      <node id="9">
+      <node id="407">
         <label>list</label>
       </node>
-      <node id="5">
-        <label>cublas_v2.h</label>
-      </node>
-      <node id="4">
-        <label>cuda_runtime.h</label>
-      </node>
-      <node id="2">
-        <label>faiss/gpu/GpuResources.h</label>
-        <link refid="GpuResources_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>faiss/impl/FaissAssert.h</label>
-      </node>
-      <node id="1">
+      <node id="399">
         <label>faiss/gpu/utils/StackDeviceMemory.h</label>
         <link refid="StackDeviceMemory_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="400" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="402" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="407" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="404" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="408" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="409" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="403">
+        <label>cublas_v2.h</label>
+      </node>
+      <node id="402">
+        <label>cuda_runtime.h</label>
+      </node>
+      <node id="401">
+        <label>faiss/impl/FaissAssert.h</label>
+      </node>
+      <node id="400">
+        <label>faiss/gpu/GpuResources.h</label>
+        <link refid="GpuResources_8h_source"/>
+        <childnode refid="401" relation="include">
+        </childnode>
+        <childnode refid="402" relation="include">
+        </childnode>
+        <childnode refid="403" relation="include">
+        </childnode>
+        <childnode refid="404" relation="include">
+        </childnode>
+        <childnode refid="405" relation="include">
+        </childnode>
+        <childnode refid="406" relation="include">
+        </childnode>
+      </node>
+      <node id="409">
         <label>tuple</label>
       </node>
-      <node id="8">
+      <node id="406">
         <label>vector</label>
       </node>
-      <node id="7">
+      <node id="405">
         <label>utility</label>
       </node>
-      <node id="10">
+      <node id="408">
         <label>unordered_map</label>
       </node>
-      <node id="6">
+      <node id="404">
         <label>memory</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="2">
-        <label>faiss/gpu/StandardGpuResources.h</label>
-        <link refid="StandardGpuResources_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="1">
+      <node id="410">
         <label>faiss/gpu/utils/StackDeviceMemory.h</label>
         <link refid="StackDeviceMemory_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="411" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="412">
         <label>faiss/gpu/perf/IndexWrapper.h</label>
         <link refid="IndexWrapper_8h_source"/>
+      </node>
+      <node id="411">
+        <label>faiss/gpu/StandardGpuResources.h</label>
+        <link refid="StandardGpuResources_8h_source"/>
+        <childnode refid="412" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="classfaiss_1_1gpu_1_1StackDeviceMemory" prot="public">faiss::gpu::StackDeviceMemory</innerclass>
@@ -157,23 +157,23 @@
 <codeline lineno="57"><highlight class="normal"></highlight></codeline>
 <codeline lineno="58" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" refkind="compound"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="59"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Constructor<sp/>that<sp/>allocates<sp/>memory<sp/>via<sp/>cudaMalloc</highlight></codeline>
-<codeline lineno="60"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ab6afe6dad139fe3759c2835e31475e93" kindref="member">Stack</ref>(<ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>res,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
+<codeline lineno="60"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref>(<ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>res,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
 <codeline lineno="61"><highlight class="normal"></highlight></codeline>
 <codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref>();</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="64"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>how<sp/>much<sp/>size<sp/>is<sp/>available<sp/>for<sp/>an<sp/>allocation<sp/>without</highlight></codeline>
 <codeline lineno="65"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>calling<sp/>cudaMalloc</highlight></codeline>
-<codeline lineno="66"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a897d537bc1505843de36e104c1c9163c" kindref="member">getSizeAvailable</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="66"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>getSizeAvailable()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="67"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="68"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Obtains<sp/>an<sp/>allocation;<sp/>all<sp/>allocations<sp/>are<sp/>guaranteed<sp/>to<sp/>be<sp/>16</highlight></codeline>
 <codeline lineno="69"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>byte<sp/>aligned</highlight></codeline>
-<codeline lineno="70"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a2ff2675de5f5dbfc50d8ca8400845396" kindref="member">getAlloc</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline lineno="70"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>getAlloc(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="72"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>an<sp/>allocation</highlight></codeline>
-<codeline lineno="73"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a5c652c126c2bf37149995cdb9d46a382" kindref="member">returnAlloc</ref>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>p,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline lineno="73"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>returnAlloc(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>p,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="75"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>stack<sp/>state</highlight></codeline>
-<codeline lineno="76"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a85a65314a9a97a91d36bf1398f07f17d" kindref="member">toString</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="76"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>toString()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="78"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Our<sp/>GpuResources<sp/>object</highlight></codeline>
 <codeline lineno="79" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9b05d832e1643160a35bc02066a2c7b1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9b05d832e1643160a35bc02066a2c7b1" kindref="member">res_</ref>;</highlight></codeline>

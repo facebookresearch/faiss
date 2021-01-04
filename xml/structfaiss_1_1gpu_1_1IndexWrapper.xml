@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1gpu_1_1IndexWrapper" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::IndexWrapper</compoundname>
     <templateparamlist>
@@ -19,7 +19,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/perf/IndexWrapper.h" line="24" column="15" bodyfile="faiss/gpu/perf/IndexWrapper.h" bodystart="24" bodyend="-1"/>
+        <location file="faiss/gpu/perf/IndexWrapper.h" line="24" column="1" bodyfile="faiss/gpu/perf/IndexWrapper.h" bodystart="24" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IndexWrapper_1a166f30f9ea4d8d6b9a5dacc5c37e8871" prot="public" static="no" mutable="no">
         <type>std::vector&lt; std::unique_ptr&lt; <ref refid="classfaiss_1_1gpu_1_1GpuIndex" kindref="compound">GpuIndex</ref> &gt; &gt;</type>
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/perf/IndexWrapper.h" line="25" column="15" bodyfile="faiss/gpu/perf/IndexWrapper.h" bodystart="25" bodyend="-1"/>
+        <location file="faiss/gpu/perf/IndexWrapper.h" line="25" column="1" bodyfile="faiss/gpu/perf/IndexWrapper.h" bodystart="25" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IndexWrapper_1af265d777bf70e674192125f090718750" prot="public" static="no" mutable="no">
         <type>std::unique_ptr&lt; <ref refid="classfaiss_1_1IndexReplicasTemplate" kindref="compound">faiss::IndexReplicas</ref> &gt;</type>
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/perf/IndexWrapper.h" line="26" column="19" bodyfile="faiss/gpu/perf/IndexWrapper.h" bodystart="26" bodyend="-1"/>
+        <location file="faiss/gpu/perf/IndexWrapper.h" line="26" column="1" bodyfile="faiss/gpu/perf/IndexWrapper.h" bodystart="26" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -68,7 +68,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/perf/IndexWrapper.h" line="28" column="3" bodyfile="faiss/gpu/perf/IndexWrapper-inl.h" bodystart="14" bodyend="35"/>
+        <location file="faiss/gpu/perf/IndexWrapper.h" line="28" column="1" bodyfile="faiss/gpu/perf/IndexWrapper-inl.h" bodystart="14" bodyend="35"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1IndexWrapper_1a4abae0ec686d3e382ba7562ee97e17cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
@@ -81,7 +81,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/perf/IndexWrapper.h" line="31" column="16" bodyfile="faiss/gpu/perf/IndexWrapper-inl.h" bodystart="39" bodyend="46"/>
+        <location file="faiss/gpu/perf/IndexWrapper.h" line="31" column="1" bodyfile="faiss/gpu/perf/IndexWrapper-inl.h" bodystart="39" bodyend="46"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1IndexWrapper_1a533e41b6d13eaeefb960fa48aba50430" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -98,7 +98,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/perf/IndexWrapper.h" line="33" column="8" bodyfile="faiss/gpu/perf/IndexWrapper-inl.h" bodystart="50" bodyend="61"/>
+        <location file="faiss/gpu/perf/IndexWrapper.h" line="33" column="1" bodyfile="faiss/gpu/perf/IndexWrapper-inl.h" bodystart="50" bodyend="61"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1IndexWrapper_1a98d34a44e898d9e6c35de0da8f4eff8e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -115,14 +115,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/perf/IndexWrapper.h" line="34" column="8" bodyfile="faiss/gpu/perf/IndexWrapper-inl.h" bodystart="65" bodyend="69"/>
+        <location file="faiss/gpu/perf/IndexWrapper.h" line="34" column="1" bodyfile="faiss/gpu/perf/IndexWrapper-inl.h" bodystart="65" bodyend="69"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/perf/IndexWrapper.h" line="23" column="19" bodyfile="faiss/gpu/perf/IndexWrapper.h" bodystart="23" bodyend="35"/>
+    <location file="faiss/gpu/perf/IndexWrapper.h" line="23" column="1" bodyfile="faiss/gpu/perf/IndexWrapper.h" bodystart="23" bodyend="35"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1IndexWrapper_1a4abae0ec686d3e382ba7562ee97e17cc" prot="public" virt="non-virtual"><scope>faiss::gpu::IndexWrapper</scope><name>getIndex</name></member>
       <member refid="structfaiss_1_1gpu_1_1IndexWrapper_1a6b9484717293c385b79b8408e525fda5" prot="public" virt="non-virtual"><scope>faiss::gpu::IndexWrapper</scope><name>IndexWrapper</name></member>

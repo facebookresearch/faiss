@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1IndexScalarQuantizer" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexScalarQuantizer</compoundname>
     <basecompoundref refid="structfaiss_1_1Index" prot="public" virt="non-virtual">faiss::Index</basecompoundref>
@@ -11,13 +11,12 @@
         <argsstring></argsstring>
         <name>sq</name>
         <briefdescription>
-<para>Used to encode the vectors. </para>
-        </briefdescription>
+<para>Used to encode the vectors. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="33" column="21" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="33" column="1" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexScalarQuantizer_1a861fa059f9d4ced9147e08193a2be9be" prot="public" static="no" mutable="no">
         <type>std::vector&lt; uint8_t &gt;</type>
@@ -25,13 +24,12 @@
         <argsstring></argsstring>
         <name>codes</name>
         <briefdescription>
-<para>Codes. Size ntotal * pq.code_size. </para>
-        </briefdescription>
+<para>Codes. Size ntotal * pq.code_size. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="36" column="17" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="36" column="1" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexScalarQuantizer_1a8ca0b891036031ae0a9d4fef756858b2" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -44,7 +42,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="38" column="12" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="38" bodyend="-1"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="38" column="1" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -52,13 +50,12 @@
         <argsstring></argsstring>
         <name>d</name>
         <briefdescription>
-<para>vector dimension </para>
-        </briefdescription>
+<para>vector dimension </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="57" column="9" bodyfile="faiss/Index.h" bodystart="57" bodyend="-1"/>
+        <location file="faiss/Index.h" line="57" column="1" bodyfile="faiss/Index.h" bodystart="57" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
@@ -66,13 +63,12 @@
         <argsstring></argsstring>
         <name>ntotal</name>
         <briefdescription>
-<para>total nb of indexed vectors </para>
-        </briefdescription>
+<para>total nb of indexed vectors </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="58" column="11" bodyfile="faiss/Index.h" bodystart="58" bodyend="-1"/>
+        <location file="faiss/Index.h" line="58" column="1" bodyfile="faiss/Index.h" bodystart="58" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -80,13 +76,12 @@
         <argsstring></argsstring>
         <name>verbose</name>
         <briefdescription>
-<para>verbosity level </para>
-        </briefdescription>
+<para>verbosity level </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="59" column="10" bodyfile="faiss/Index.h" bodystart="59" bodyend="-1"/>
+        <location file="faiss/Index.h" line="59" column="1" bodyfile="faiss/Index.h" bodystart="59" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -96,11 +91,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>set if the <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> does not require training, or if training is done already </para>
-        </detaileddescription>
+<para>set if the <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> does not require training, or if training is done already </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="63" column="10" bodyfile="faiss/Index.h" bodystart="63" bodyend="-1"/>
+        <location file="faiss/Index.h" line="63" column="1" bodyfile="faiss/Index.h" bodystart="63" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
@@ -108,13 +102,12 @@
         <argsstring></argsstring>
         <name>metric_type</name>
         <briefdescription>
-<para>type of metric this index uses for search </para>
-        </briefdescription>
+<para>type of metric this index uses for search </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="66" column="16" bodyfile="faiss/Index.h" bodystart="66" bodyend="-1"/>
+        <location file="faiss/Index.h" line="66" column="1" bodyfile="faiss/Index.h" bodystart="66" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -122,13 +115,12 @@
         <argsstring></argsstring>
         <name>metric_arg</name>
         <briefdescription>
-<para>argument of the metric type </para>
-        </briefdescription>
+<para>argument of the metric type </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="67" column="11" bodyfile="faiss/Index.h" bodystart="67" bodyend="-1"/>
+        <location file="faiss/Index.h" line="67" column="1" bodyfile="faiss/Index.h" bodystart="67" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -153,37 +145,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Constructor.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Constructor.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>dimensionality of the input vectors </para>
-</parameterdescription>
+<para>dimensionality of the input vectors </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>M</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of subquantizers </para>
-</parameterdescription>
+<para>number of subquantizers </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>nbits</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of bit per subvector index </para>
-</parameterdescription>
+<para>number of bit per subvector index </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="46" column="5"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="46" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexScalarQuantizer_1a1359af1f7a9929062ecbb0ce787a77df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -196,7 +183,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="50" column="5"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="50" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexScalarQuantizer_1a300647e9cdac9acd160f2c55c610056b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -215,29 +202,25 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Perform training on a representative set of vectors</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Perform training on a representative set of vectors</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>nb of training vectors </para>
-</parameterdescription>
+<para>nb of training vectors </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>training vecors, size n * d </para>
-</parameterdescription>
+<para>training vecors, size n * d </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="52" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="52" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexScalarQuantizer_1ad49602f9ecfcaa2ec8737a449b69ccd7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -256,21 +239,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Add n vectors of dimension d to the index.</para>
-<para>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chuncks smaller than blocksize_add and calls add_core. <parameterlist kind="param"><parameteritem>
+<para>Add n vectors of dimension d to the index.</para><para>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chuncks smaller than blocksize_add and calls add_core. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input matrix, size n * d </para>
-</parameterdescription>
+<para>input matrix, size n * d </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="54" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="54" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexScalarQuantizer_1abf24732c29106bb808148c3d30599662" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -301,38 +281,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>query n vectors of dimension d to the index.</para>
-<para>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>query n vectors of dimension d to the index.</para><para>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors to search, size n * d </para>
-</parameterdescription>
+<para>input vectors to search, size n * d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>labels</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output labels of the NNs, size n*k </para>
-</parameterdescription>
+<para>output labels of the NNs, size n*k </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>distances</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output pairwise distances, size n*k </para>
-</parameterdescription>
+<para>output pairwise distances, size n*k </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="56" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="56" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexScalarQuantizer_1af0d6b901a2a02fff34e5c7c1ea5b8d55" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -341,13 +315,12 @@
         <name>reset</name>
         <reimplements refid="structfaiss_1_1Index_1a849361f5f0ab0aba8d419c86f2594191">reset</reimplements>
         <briefdescription>
-<para>removes all elements from the database. </para>
-        </briefdescription>
+<para>removes all elements from the database. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="63" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="63" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexScalarQuantizer_1a06e6935b75f0b209f65fffa1c9e1477c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -370,21 +343,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Reconstruct vectors i0 to i0 + ni - 1</para>
-<para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
+<para>Reconstruct vectors i0 to i0 + ni - 1</para><para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstucted vector (size ni * d) </para>
-</parameterdescription>
+<para>reconstucted vector (size ni * d) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="65" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="65" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexScalarQuantizer_1a8fb8680f64465d643d96119da58099f3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -403,29 +373,25 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Reconstruct a stored vector (or an approximation if lossy coding)</para>
-<para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
+<para>Reconstruct a stored vector (or an approximation if lossy coding)</para><para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>key</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>id of the vector to reconstruct </para>
-</parameterdescription>
+<para>id of the vector to reconstruct </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstucted vector (size d) </para>
-</parameterdescription>
+<para>reconstucted vector (size d) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="67" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="67" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexScalarQuantizer_1a453a94e1d549a9ebf11e4b211c577f17" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>DistanceComputer *</type>
@@ -436,12 +402,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para>
-<para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>
-        </detaileddescription>
+<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para><para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="69" column="22"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="69" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -452,11 +416,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>size of the produced codes in bytes </para>
-        </detaileddescription>
+<para>size of the produced codes in bytes </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="72" column="12"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="72" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexScalarQuantizer_1ae8c5ed4f9c2145aa074986bf1be3af46" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -479,37 +442,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>encode a set of vectors</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>encode a set of vectors</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of vectors </para>
-</parameterdescription>
+<para>number of vectors </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors, size n * d </para>
-</parameterdescription>
+<para>input vectors, size n * d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>bytes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output encoded vectors, size n * <ref refid="structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b" kindref="member">sa_code_size()</ref> </para>
-</parameterdescription>
+<para>output encoded vectors, size n * <ref refid="structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b" kindref="member">sa_code_size()</ref> </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="74" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="74" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexScalarQuantizer_1a96a5ca50fbdef07c7773bb9a27e860e5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -532,37 +490,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>encode a set of vectors</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>encode a set of vectors</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of vectors </para>
-</parameterdescription>
+<para>number of vectors </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>bytes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input encoded vectors, size n * <ref refid="structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b" kindref="member">sa_code_size()</ref> </para>
-</parameterdescription>
+<para>input encoded vectors, size n * <ref refid="structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b" kindref="member">sa_code_size()</ref> </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output vectors, size n * d </para>
-</parameterdescription>
+<para>output vectors, size n * d </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexScalarQuantizer.h" line="77" column="10"/>
+        <location file="faiss/IndexScalarQuantizer.h" line="77" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -572,12 +525,12 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a05824d67c11ce74a86fc32fbd091fe34">add_with_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1aa37b7428e0ac315db5e52b1cb1e42605">add_with_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1ae526b4722b470a33643d40ef30cf27f7">add_with_ids</reimplementedby>
+        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1a47f6969fe60d82b8e3407557ba9eec88">add_with_ids</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1af843bf751bf287e31fb77abb83bcf55a">add_with_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a4e27cfca56590371e0984d8f16b2b68d">add_with_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1ad31c3b30cd8dce05a5e12a0414fb9862">add_with_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1ae7b17fd2d485fa5a953203b88ceb180f">add_with_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a14e75169bddcd0251134821416b060a1">add_with_ids</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1af843bf751bf287e31fb77abb83bcf55a">add_with_ids</reimplementedby>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1a47f6969fe60d82b8e3407557ba9eec88">add_with_ids</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -593,22 +546,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Same as add, but stores xids instead of sequential ids.</para>
-<para>The default implementation fails with an assertion, as it is not supported by all indexes.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Same as add, but stores xids instead of sequential ids.</para><para>The default implementation fails with an assertion, as it is not supported by all indexes.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>xids</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>if non-null, ids to store for the vectors (size n) </para>
-</parameterdescription>
+<para>if non-null, ids to store for the vectors (size n) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="103" column="18"/>
+        <location file="faiss/Index.h" line="103" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -638,38 +587,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>query n vectors of dimension d to the index.</para>
-<para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>query n vectors of dimension d to the index.</para><para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors to search, size n * d </para>
-</parameterdescription>
+<para>input vectors to search, size n * d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>radius</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>search radius </para>
-</parameterdescription>
+<para>search radius </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>result</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>result table </para>
-</parameterdescription>
+<para>result table </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="127" column="18"/>
+        <location file="faiss/Index.h" line="127" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -697,29 +640,25 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>return the indexes of the k vectors closest to the query x.</para>
-<para>This function is identical as search but only return labels of neighbors. <parameterlist kind="param"><parameteritem>
+<para>return the indexes of the k vectors closest to the query x.</para><para>This function is identical as search but only return labels of neighbors. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors to search, size n * d </para>
-</parameterdescription>
+<para>input vectors to search, size n * d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>labels</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output labels of the NNs, size n*k </para>
-</parameterdescription>
+<para>output labels of the NNs, size n*k </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="136" column="18"/>
+        <location file="faiss/Index.h" line="136" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -739,11 +678,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>removes IDs from the index. Not supported by all indexes. Returns the number of elements removed. </para>
-        </detaileddescription>
+<para>removes IDs from the index. Not supported by all indexes. Returns the number of elements removed. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="144" column="20"/>
+        <location file="faiss/Index.h" line="144" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -779,22 +717,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</para>
-<para>If there are not enough results for a query, the resulting arrays is padded with -1s.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</para><para>If there are not enough results for a query, the resulting arrays is padded with -1s.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstructed vectors size (n, k, d) </para>
-</parameterdescription>
+<para>reconstructed vectors size (n, k, d) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="169" column="18"/>
+        <location file="faiss/Index.h" line="169" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -818,38 +752,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Computes a residual vector after indexing encoding.</para>
-<para>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s methods.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Computes a residual vector after indexing encoding.</para><para>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s methods.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vector, size d </para>
-</parameterdescription>
+<para>input vector, size d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>residual</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output residual vector, size d </para>
-</parameterdescription>
+<para>output residual vector, size d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>key</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>encoded index, as returned by search and assign </para>
-</parameterdescription>
+<para>encoded index, as returned by search and assign </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="184" column="18"/>
+        <location file="faiss/Index.h" line="184" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -877,46 +805,39 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Computes a residual vector after indexing encoding (batch form). Equivalent to calling compute_residual for each vector.</para>
-<para>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s methods.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Computes a residual vector after indexing encoding (batch form). Equivalent to calling compute_residual for each vector.</para><para>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s methods.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of vectors </para>
-</parameterdescription>
+<para>number of vectors </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>xs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors, size (n x d) </para>
-</parameterdescription>
+<para>input vectors, size (n x d) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>residuals</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output residual vectors, size (n x d) </para>
-</parameterdescription>
+<para>output residual vectors, size (n x d) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>keys</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>encoded index, as returned by search and assign </para>
-</parameterdescription>
+<para>encoded index, as returned by search and assign </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="200" column="18"/>
+        <location file="faiss/Index.h" line="200" column="1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-type">
@@ -926,13 +847,12 @@
         <argsstring></argsstring>
         <name>idx_t</name>
         <briefdescription>
-<para>all indices are this type </para>
-        </briefdescription>
+<para>all indices are this type </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="53" column="5" bodyfile="faiss/Index.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/Index.h" line="53" column="1" bodyfile="faiss/Index.h" bodystart="53" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" static="no">
         <type>float</type>
@@ -945,7 +865,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="54" column="5" bodyfile="faiss/Index.h" bodystart="54" bodyend="-1"/>
+        <location file="faiss/Index.h" line="54" column="1" bodyfile="faiss/Index.h" bodystart="54" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" static="no">
         <type>float</type>
@@ -958,39 +878,38 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="55" column="5" bodyfile="faiss/Index.h" bodystart="55" bodyend="-1"/>
+        <location file="faiss/Index.h" line="55" column="1" bodyfile="faiss/Index.h" bodystart="55" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>The uniform quantizer has a range [vmin, vmax]. The range can be the same for all dimensions (uniform) or specific per dimension (default). </para>
-    </detaileddescription>
+<para>The uniform quantizer has a range [vmin, vmax]. The range can be the same for all dimensions (uniform) or specific per dimension (default). </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="1">
+      <node id="602">
         <label>faiss::IndexScalarQuantizer</label>
         <link refid="structfaiss_1_1IndexScalarQuantizer"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="603" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
+      <node id="603">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="1">
+      <node id="604">
         <label>faiss::IndexScalarQuantizer</label>
         <link refid="structfaiss_1_1IndexScalarQuantizer"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="605" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
+      <node id="605">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexScalarQuantizer.h" line="31" column="33" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="31" bodyend="81"/>
+    <location file="faiss/IndexScalarQuantizer.h" line="31" column="1" bodyfile="faiss/IndexScalarQuantizer.h" bodystart="31" bodyend="81"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexScalarQuantizer_1ad49602f9ecfcaa2ec8737a449b69ccd7" prot="public" virt="virtual"><scope>faiss::IndexScalarQuantizer</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexScalarQuantizer</scope><name>add_with_ids</name></member>

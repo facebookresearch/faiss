@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1IVFPQSearchParameters" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IVFPQSearchParameters</compoundname>
     <basecompoundref refid="structfaiss_1_1IVFSearchParameters" prot="public" virt="non-virtual">faiss::IVFSearchParameters</basecompoundref>
@@ -10,13 +10,12 @@
         <argsstring></argsstring>
         <name>scan_table_threshold</name>
         <briefdescription>
-<para>use table computation or on-the-fly? </para>
-        </briefdescription>
+<para>use table computation or on-the-fly? </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="24" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="24" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="24" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="24" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IVFPQSearchParameters_1a66ff24d0f4fd606488ded44354a8a6cf" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -24,13 +23,12 @@
         <argsstring></argsstring>
         <name>polysemous_ht</name>
         <briefdescription>
-<para>Hamming thresh for polysemous filtering. </para>
-        </briefdescription>
+<para>Hamming thresh for polysemous filtering. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="25" column="9" bodyfile="faiss/IndexIVFPQ.h" bodystart="25" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="25" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="25" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IVFSearchParameters_1a1183c0b7d9ffd5154b32765175f2a9cc" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -38,13 +36,12 @@
         <argsstring></argsstring>
         <name>nprobe</name>
         <briefdescription>
-<para>number of probes at query time </para>
-        </briefdescription>
+<para>number of probes at query time </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="70" column="12" bodyfile="faiss/IndexIVF.h" bodystart="70" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="70" column="1" bodyfile="faiss/IndexIVF.h" bodystart="70" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IVFSearchParameters_1ac3e01728f6376ad727340525b2138782" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -52,13 +49,12 @@
         <argsstring></argsstring>
         <name>max_codes</name>
         <briefdescription>
-<para>max nb of codes to visit to do a query </para>
-        </briefdescription>
+<para>max nb of codes to visit to do a query </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="71" column="12" bodyfile="faiss/IndexIVF.h" bodystart="71" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="71" column="1" bodyfile="faiss/IndexIVF.h" bodystart="71" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -73,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="26" column="5" bodyfile="faiss/IndexIVFPQ.h" bodystart="26" bodyend="26"/>
+        <location file="faiss/IndexIVFPQ.h" line="26" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="26" bodyend="26"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IVFPQSearchParameters_1a233675559ed182bd59490cad0641ca8e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -86,7 +82,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="27" column="5" bodyfile="faiss/IndexIVFPQ.h" bodystart="27" bodyend="27"/>
+        <location file="faiss/IndexIVFPQ.h" line="27" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="27" bodyend="27"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -94,30 +90,30 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
+      <node id="654">
         <label>faiss::IVFSearchParameters</label>
         <link refid="structfaiss_1_1IVFSearchParameters"/>
       </node>
-      <node id="1">
+      <node id="653">
         <label>faiss::IVFPQSearchParameters</label>
         <link refid="structfaiss_1_1IVFPQSearchParameters"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="654" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
+      <node id="656">
         <label>faiss::IVFSearchParameters</label>
         <link refid="structfaiss_1_1IVFSearchParameters"/>
       </node>
-      <node id="1">
+      <node id="655">
         <label>faiss::IVFPQSearchParameters</label>
         <link refid="structfaiss_1_1IVFPQSearchParameters"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="656" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFPQ.h" line="23" column="48" bodyfile="faiss/IndexIVFPQ.h" bodystart="23" bodyend="28"/>
+    <location file="faiss/IndexIVFPQ.h" line="23" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="23" bodyend="28"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IVFPQSearchParameters_1abb58e8a6e58752abee118760b48e7d7e" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>IVFPQSearchParameters</name></member>
       <member refid="structfaiss_1_1IVFSearchParameters_1a176fda7175cf94806caac1e553e151e3" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>IVFSearchParameters</name></member>

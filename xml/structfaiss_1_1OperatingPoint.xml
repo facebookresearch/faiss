@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1OperatingPoint" kind="struct" language="C++" prot="public">
     <compoundname>faiss::OperatingPoint</compoundname>
     <includes refid="AutoTune_8h" local="no">AutoTune.h</includes>
@@ -10,13 +10,12 @@
         <argsstring></argsstring>
         <name>perf</name>
         <briefdescription>
-<para>performance measure (output of a Criterion) </para>
-        </briefdescription>
+<para>performance measure (output of a Criterion) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="91" column="12" bodyfile="faiss/AutoTune.h" bodystart="91" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="91" column="1" bodyfile="faiss/AutoTune.h" bodystart="91" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1OperatingPoint_1a886492ffe2b337539fadc798c8f4a6a8" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -24,13 +23,12 @@
         <argsstring></argsstring>
         <name>t</name>
         <briefdescription>
-<para>corresponding execution time (ms) </para>
-        </briefdescription>
+<para>corresponding execution time (ms) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="92" column="12" bodyfile="faiss/AutoTune.h" bodystart="92" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="92" column="1" bodyfile="faiss/AutoTune.h" bodystart="92" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1OperatingPoint_1aa13782d6d26168531764cb64da941ced" prot="public" static="no" mutable="no">
         <type>std::string</type>
@@ -38,13 +36,12 @@
         <argsstring></argsstring>
         <name>key</name>
         <briefdescription>
-<para>key that identifies this op pt </para>
-        </briefdescription>
+<para>key that identifies this op pt </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="93" column="17" bodyfile="faiss/AutoTune.h" bodystart="93" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="93" column="1" bodyfile="faiss/AutoTune.h" bodystart="93" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1OperatingPoint_1ac9f4b8e26b022e847e6cbbfc4aed22f1" prot="public" static="no" mutable="no">
         <type>int64_t</type>
@@ -52,22 +49,19 @@
         <argsstring></argsstring>
         <name>cno</name>
         <briefdescription>
-<para>integer identifer </para>
-        </briefdescription>
+<para>integer identifer </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="94" column="13" bodyfile="faiss/AutoTune.h" bodystart="94" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="94" column="1" bodyfile="faiss/AutoTune.h" bodystart="94" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Maintains a list of experimental results. Each operating point is a (perf, t, key) triplet, where higher perf and lower t is better. The key field is an arbitrary identifier for the operating point.</para>
-<para>Includes primitives to extract the Pareto-optimal operating points in the (perf, t) space. </para>
-    </detaileddescription>
-    <location file="faiss/AutoTune.h" line="90" column="21" bodyfile="faiss/AutoTune.h" bodystart="90" bodyend="95"/>
+<para>Maintains a list of experimental results. Each operating point is a (perf, t, key) triplet, where higher perf and lower t is better. The key field is an arbitrary identifier for the operating point.</para><para>Includes primitives to extract the Pareto-optimal operating points in the (perf, t) space. </para>    </detaileddescription>
+    <location file="faiss/AutoTune.h" line="90" column="1" bodyfile="faiss/AutoTune.h" bodystart="90" bodyend="95"/>
     <listofallmembers>
       <member refid="structfaiss_1_1OperatingPoint_1ac9f4b8e26b022e847e6cbbfc4aed22f1" prot="public" virt="non-virtual"><scope>faiss::OperatingPoint</scope><name>cno</name></member>
       <member refid="structfaiss_1_1OperatingPoint_1aa13782d6d26168531764cb64da941ced" prot="public" virt="non-virtual"><scope>faiss::OperatingPoint</scope><name>key</name></member>

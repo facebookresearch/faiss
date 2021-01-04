@@ -1,231 +1,231 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="GpuIndexIVFScalarQuantizer_8h" kind="file" language="C++">
     <compoundname>GpuIndexIVFScalarQuantizer.h</compoundname>
     <includes refid="GpuIndexIVF_8h" local="no">faiss/gpu/GpuIndexIVF.h</includes>
     <includes refid="IndexScalarQuantizer_8h" local="no">faiss/IndexScalarQuantizer.h</includes>
     <includes local="no">memory</includes>
     <incdepgraph>
-      <node id="2">
+      <node id="215">
         <label>faiss/gpu/GpuIndexIVF.h</label>
         <link refid="GpuIndexIVF_8h_source"/>
-        <childnode refid="3" relation="include">
+        <childnode refid="216" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="230" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="231" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-      </node>
-      <node id="25">
-        <label>faiss/invlists/DirectMap.h</label>
-        <link refid="DirectMap_8h_source"/>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="232" relation="include">
         </childnode>
       </node>
-      <node id="32">
+      <node id="245">
         <label>limits</label>
       </node>
-      <node id="26">
+      <node id="239">
         <label>faiss/impl/platform_macros.h</label>
       </node>
-      <node id="13">
+      <node id="226">
         <label>cublas_v2.h</label>
       </node>
-      <node id="27">
-        <label>faiss/utils/Heap.h</label>
-        <link refid="Heap_8h_source"/>
-        <childnode refid="28" relation="include">
-        </childnode>
-        <childnode refid="29" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-        <childnode refid="31" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="32" relation="include">
-        </childnode>
-        <childnode refid="33" relation="include">
-        </childnode>
-      </node>
-      <node id="21">
-        <label>stdint.h</label>
-      </node>
-      <node id="12">
-        <label>cuda_runtime.h</label>
-      </node>
-      <node id="30">
-        <label>cmath</label>
-      </node>
-      <node id="31">
-        <label>cassert</label>
-      </node>
-      <node id="19">
+      <node id="232">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h_source"/>
-        <childnode refid="4" relation="include">
+        <childnode refid="217" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="229" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="234">
+        <label>stdint.h</label>
+      </node>
+      <node id="235">
+        <label>faiss/IndexIVF.h</label>
+        <link refid="IndexIVF_8h_source"/>
+        <childnode refid="229" relation="include">
+        </childnode>
+        <childnode refid="236" relation="include">
+        </childnode>
+        <childnode refid="234" relation="include">
+        </childnode>
+        <childnode refid="217" relation="include">
+        </childnode>
+        <childnode refid="237" relation="include">
+        </childnode>
+        <childnode refid="238" relation="include">
+        </childnode>
+        <childnode refid="232" relation="include">
+        </childnode>
+        <childnode refid="239" relation="include">
+        </childnode>
+        <childnode refid="240" relation="include">
+        </childnode>
+      </node>
+      <node id="237">
+        <label>faiss/invlists/InvertedLists.h</label>
+        <link refid="InvertedLists_8h_source"/>
+        <childnode refid="229" relation="include">
+        </childnode>
+        <childnode refid="217" relation="include">
+        </childnode>
+      </node>
+      <node id="225">
+        <label>cuda_runtime.h</label>
+      </node>
+      <node id="230">
+        <label>faiss/gpu/GpuIndexFlat.h</label>
+        <link refid="GpuIndexFlat_8h_source"/>
+        <childnode refid="216" relation="include">
+        </childnode>
+        <childnode refid="227" relation="include">
+        </childnode>
+      </node>
+      <node id="243">
+        <label>cmath</label>
+      </node>
+      <node id="244">
+        <label>cassert</label>
+      </node>
+      <node id="221">
         <label>string</label>
       </node>
-      <node id="10">
+      <node id="224">
+        <label>faiss/impl/FaissAssert.h</label>
+      </node>
+      <node id="223">
         <label>faiss/gpu/GpuResources.h</label>
         <link refid="GpuResources_8h_source"/>
-        <childnode refid="11" relation="include">
+        <childnode refid="224" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="225" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="226" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="227" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="228" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="229" relation="include">
         </childnode>
       </node>
-      <node id="18">
+      <node id="220">
+        <label>typeinfo</label>
+      </node>
+      <node id="219">
+        <label>cstdio</label>
+      </node>
+      <node id="231">
         <label>faiss/gpu/GpuIndicesOptions.h</label>
         <link refid="GpuIndicesOptions_8h_source"/>
       </node>
-      <node id="1">
-        <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
-        <link refid="GpuIndexIVFScalarQuantizer_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-      </node>
-      <node id="11">
-        <label>faiss/impl/FaissAssert.h</label>
-      </node>
-      <node id="20">
-        <label>faiss/IndexScalarQuantizer.h</label>
-        <link refid="IndexScalarQuantizer_8h_source"/>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="34" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>typeinfo</label>
-      </node>
-      <node id="6">
-        <label>cstdio</label>
-      </node>
-      <node id="22">
-        <label>faiss/IndexIVF.h</label>
-        <link refid="IndexIVF_8h_source"/>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
-      </node>
-      <node id="16">
+      <node id="229">
         <label>vector</label>
       </node>
-      <node id="15">
+      <node id="228">
         <label>utility</label>
       </node>
-      <node id="9">
+      <node id="222">
         <label>sstream</label>
       </node>
-      <node id="17">
-        <label>faiss/gpu/GpuIndexFlat.h</label>
-        <link refid="GpuIndexFlat_8h_source"/>
-        <childnode refid="3" relation="include">
+      <node id="240">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="241" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="242" relation="include">
         </childnode>
-      </node>
-      <node id="3">
-        <label>faiss/gpu/GpuIndex.h</label>
-        <link refid="GpuIndex_8h_source"/>
-        <childnode refid="4" relation="include">
+        <childnode refid="243" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="244" relation="include">
         </childnode>
-      </node>
-      <node id="34">
-        <label>faiss/impl/ScalarQuantizer.h</label>
-      </node>
-      <node id="24">
-        <label>faiss/invlists/InvertedLists.h</label>
-        <link refid="InvertedLists_8h_source"/>
-        <childnode refid="16" relation="include">
+        <childnode refid="219" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="234" relation="include">
+        </childnode>
+        <childnode refid="245" relation="include">
+        </childnode>
+        <childnode refid="246" relation="include">
         </childnode>
       </node>
-      <node id="23">
-        <label>unordered_map</label>
-      </node>
-      <node id="28">
-        <label>climits</label>
-      </node>
-      <node id="33">
+      <node id="246">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="28" relation="include">
+        <childnode refid="241" relation="include">
         </childnode>
-        <childnode refid="30" relation="include">
+        <childnode refid="243" relation="include">
         </childnode>
-        <childnode refid="32" relation="include">
+        <childnode refid="245" relation="include">
         </childnode>
       </node>
-      <node id="4">
+      <node id="233">
+        <label>faiss/IndexScalarQuantizer.h</label>
+        <link refid="IndexScalarQuantizer_8h_source"/>
+        <childnode refid="234" relation="include">
+        </childnode>
+        <childnode refid="229" relation="include">
+        </childnode>
+        <childnode refid="235" relation="include">
+        </childnode>
+        <childnode refid="247" relation="include">
+        </childnode>
+      </node>
+      <node id="247">
+        <label>faiss/impl/ScalarQuantizer.h</label>
+      </node>
+      <node id="236">
+        <label>unordered_map</label>
+      </node>
+      <node id="214">
+        <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
+        <link refid="GpuIndexIVFScalarQuantizer_8h"/>
+        <childnode refid="215" relation="include">
+        </childnode>
+        <childnode refid="233" relation="include">
+        </childnode>
+        <childnode refid="227" relation="include">
+        </childnode>
+      </node>
+      <node id="241">
+        <label>climits</label>
+      </node>
+      <node id="217">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="5" relation="include">
+        <childnode refid="218" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="219" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="220" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="221" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="222" relation="include">
         </childnode>
       </node>
-      <node id="29">
-        <label>cstring</label>
-      </node>
-      <node id="14">
-        <label>memory</label>
-      </node>
-      <node id="5">
+      <node id="218">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+      </node>
+      <node id="216">
+        <label>faiss/gpu/GpuIndex.h</label>
+        <link refid="GpuIndex_8h_source"/>
+        <childnode refid="217" relation="include">
+        </childnode>
+        <childnode refid="223" relation="include">
+        </childnode>
+      </node>
+      <node id="238">
+        <label>faiss/invlists/DirectMap.h</label>
+        <link refid="DirectMap_8h_source"/>
+        <childnode refid="237" relation="include">
+        </childnode>
+        <childnode refid="236" relation="include">
+        </childnode>
+      </node>
+      <node id="242">
+        <label>cstring</label>
+      </node>
+      <node id="227">
+        <label>memory</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig" prot="public">faiss::gpu::GpuIndexIVFScalarQuantizerConfig</innerclass>
@@ -272,7 +272,7 @@
 <codeline lineno="33"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="34"><highlight class="comment"><sp/><sp/>///<sp/>Construct<sp/>from<sp/>a<sp/>pre-existing<sp/>faiss::IndexIVFScalarQuantizer<sp/>instance,</highlight></codeline>
 <codeline lineno="35"><highlight class="comment"><sp/><sp/>///<sp/>copying<sp/>data<sp/>over<sp/>to<sp/>the<sp/>given<sp/>GPU,<sp/>if<sp/>the<sp/>input<sp/>index<sp/>is<sp/>trained.</highlight></codeline>
-<codeline lineno="36"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a20f55135edbd34cd7e11eda616a6c4a4" kindref="member">GpuIndexIVFScalarQuantizer</ref>(</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer" kindref="compound">GpuIndexIVFScalarQuantizer</ref>(</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref>*<sp/>provider,</highlight></codeline>
 <codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFScalarQuantizer" kindref="compound">faiss::IndexIVFScalarQuantizer</ref>*<sp/>index,</highlight></codeline>
 <codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig" kindref="compound">GpuIndexIVFScalarQuantizerConfig</ref><sp/>config<sp/>=</highlight></codeline>
@@ -280,10 +280,10 @@
 <codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="42"><highlight class="comment"><sp/><sp/>///<sp/>Constructs<sp/>a<sp/>new<sp/>instance<sp/>with<sp/>an<sp/>empty<sp/>flat<sp/>quantizer;<sp/>the<sp/>user</highlight></codeline>
 <codeline lineno="43"><highlight class="comment"><sp/><sp/>///<sp/>provides<sp/>the<sp/>number<sp/>of<sp/>lists<sp/>desired.</highlight></codeline>
-<codeline lineno="44"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a20f55135edbd34cd7e11eda616a6c4a4" kindref="member">GpuIndexIVFScalarQuantizer</ref>(</highlight></codeline>
+<codeline lineno="44"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer" kindref="compound">GpuIndexIVFScalarQuantizer</ref>(</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref>*<sp/>provider,</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dims,</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a7d06649d5ae58b7a637a8b348d6f16b3" kindref="member">nlist</ref>,</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nlist,</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>faiss::ScalarQuantizer::QuantizerType<sp/>qtype,</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">faiss::MetricType</ref><sp/>metric<sp/>=<sp/>MetricType::METRIC_L2,</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>encodeResidual<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">,</highlight></codeline>
@@ -293,29 +293,29 @@
 <codeline lineno="54"><highlight class="normal"><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer" kindref="compound">GpuIndexIVFScalarQuantizer</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="55"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="56"><highlight class="comment"><sp/><sp/>///<sp/>Reserve<sp/>GPU<sp/>memory<sp/>in<sp/>our<sp/>inverted<sp/>lists<sp/>for<sp/>this<sp/>number<sp/>of<sp/>vectors</highlight></codeline>
-<codeline lineno="57"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a442f3139eef5b90b53e3523294c9d30f" kindref="member">reserveMemory</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>numVecs);</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>reserveMemory(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>numVecs);</highlight></codeline>
 <codeline lineno="58"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="59"><highlight class="comment"><sp/><sp/>///<sp/>Initialize<sp/>ourselves<sp/>from<sp/>the<sp/>given<sp/>CPU<sp/>index;<sp/>will<sp/>overwrite</highlight></codeline>
 <codeline lineno="60"><highlight class="comment"><sp/><sp/>///<sp/>all<sp/>data<sp/>in<sp/>ourselves</highlight></codeline>
-<codeline lineno="61"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a9d739a970bac43f2b906f7a88b638fe3" kindref="member">copyFrom</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFScalarQuantizer" kindref="compound">faiss::IndexIVFScalarQuantizer</ref>*<sp/>index);</highlight></codeline>
+<codeline lineno="61"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>copyFrom(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFScalarQuantizer" kindref="compound">faiss::IndexIVFScalarQuantizer</ref>*<sp/>index);</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="63"><highlight class="comment"><sp/><sp/>///<sp/>Copy<sp/>ourselves<sp/>to<sp/>the<sp/>given<sp/>CPU<sp/>index;<sp/>will<sp/>overwrite<sp/>all<sp/>data</highlight></codeline>
 <codeline lineno="64"><highlight class="comment"><sp/><sp/>///<sp/>in<sp/>the<sp/>index<sp/>instance</highlight></codeline>
-<codeline lineno="65"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a280bad274d429845f94c552b26531e64" kindref="member">copyTo</ref>(<ref refid="structfaiss_1_1IndexIVFScalarQuantizer" kindref="compound">faiss::IndexIVFScalarQuantizer</ref>*<sp/>index)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="65"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>copyTo(<ref refid="structfaiss_1_1IndexIVFScalarQuantizer" kindref="compound">faiss::IndexIVFScalarQuantizer</ref>*<sp/>index)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="66"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="67"><highlight class="comment"><sp/><sp/>///<sp/>After<sp/>adding<sp/>vectors,<sp/>one<sp/>can<sp/>call<sp/>this<sp/>to<sp/>reclaim<sp/>device<sp/>memory</highlight></codeline>
 <codeline lineno="68"><highlight class="comment"><sp/><sp/>///<sp/>to<sp/>exactly<sp/>the<sp/>amount<sp/>needed.<sp/>Returns<sp/>space<sp/>reclaimed<sp/>in<sp/>bytes</highlight></codeline>
-<codeline lineno="69"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a5611542c6d1e26dc94d677d33e30a8fd" kindref="member">reclaimMemory</ref>();</highlight></codeline>
+<codeline lineno="69"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>reclaimMemory();</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="71"><highlight class="comment"><sp/><sp/>///<sp/>Clears<sp/>out<sp/>all<sp/>inverted<sp/>lists,<sp/>but<sp/>retains<sp/>the<sp/>coarse<sp/>and<sp/>scalar<sp/>quantizer</highlight></codeline>
 <codeline lineno="72"><highlight class="comment"><sp/><sp/>///<sp/>information</highlight></codeline>
-<codeline lineno="73"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a6e25bd642bf3ae6fe84c9c315e0edf25" kindref="member">reset</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="73"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>reset()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="75"><highlight class="comment"><sp/><sp/>///<sp/>Trains<sp/>the<sp/>coarse<sp/>and<sp/>scalar<sp/>quantizer<sp/>based<sp/>on<sp/>the<sp/>given<sp/>vector<sp/>data</highlight></codeline>
-<codeline lineno="76"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a11c52bf069e04520b000cf888c06cb05" kindref="member">train</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="76"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>train(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="78"><highlight class="comment"><sp/><sp/>///<sp/>Returns<sp/>the<sp/>number<sp/>of<sp/>vectors<sp/>present<sp/>in<sp/>a<sp/>particular<sp/>inverted<sp/>list</highlight></codeline>
-<codeline lineno="79"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ae2a57707bf9631d4f4ca5866dba07208" kindref="member">getListLength</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>listId)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="79"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>getListLength(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>listId)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="80"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="81"><highlight class="comment"><sp/><sp/>///<sp/>Return<sp/>the<sp/>encoded<sp/>vector<sp/>data<sp/>contained<sp/>in<sp/>a<sp/>particular<sp/>inverted<sp/>list,</highlight></codeline>
 <codeline lineno="82"><highlight class="comment"><sp/><sp/>///<sp/>for<sp/>debugging<sp/>purposes.</highlight></codeline>
@@ -324,27 +324,27 @@
 <codeline lineno="85"><highlight class="comment"><sp/><sp/>///<sp/>Otherwise,<sp/>it<sp/>is<sp/>converted<sp/>to<sp/>the<sp/>CPU<sp/>format.</highlight></codeline>
 <codeline lineno="86"><highlight class="comment"><sp/><sp/>///<sp/>compliant<sp/>format,<sp/>while<sp/>the<sp/>native<sp/>GPU<sp/>format<sp/>may<sp/>differ.</highlight></codeline>
 <codeline lineno="87"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::vector&lt;uint8_t&gt;</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a8fd6f67fc3978b1742473d789b783612" kindref="member">getListVectorData</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>listId,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>gpuFormat<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/>getListVectorData(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>listId,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>gpuFormat<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="90"><highlight class="comment"><sp/><sp/>///<sp/>Return<sp/>the<sp/>vector<sp/>indices<sp/>contained<sp/>in<sp/>a<sp/>particular<sp/>inverted<sp/>list,<sp/>for</highlight></codeline>
 <codeline lineno="91"><highlight class="comment"><sp/><sp/>///<sp/>debugging<sp/>purposes.</highlight></codeline>
-<codeline lineno="92"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::vector&lt;Index::idx_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a6755bb048958c117db7dd4d898f8a4d6" kindref="member">getListIndices</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>listId)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="92"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::vector&lt;Index::idx_t&gt;<sp/>getListIndices(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>listId)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="93"><highlight class="normal"></highlight></codeline>
 <codeline lineno="94"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="95"><highlight class="comment"><sp/><sp/>///<sp/>Called<sp/>from<sp/>GpuIndex<sp/>for<sp/>add/add_with_ids</highlight></codeline>
-<codeline lineno="96"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1acb0acce275150539ea2e6180052787f3" kindref="member">addImpl_</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="96"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>addImpl_(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
 <codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
 <codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref>*<sp/>ids)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="100"><highlight class="comment"><sp/><sp/>///<sp/>Called<sp/>from<sp/>GpuIndex<sp/>for<sp/>search</highlight></codeline>
-<codeline lineno="101"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a6b69eff925245a3e0d39e00564e7a988" kindref="member">searchImpl_</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="101"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>searchImpl_(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
 <codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
 <codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>
 <codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref>*<sp/>labels)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="106"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="107"><highlight class="comment"><sp/><sp/>///<sp/>Called<sp/>from<sp/>train<sp/>to<sp/>handle<sp/>SQ<sp/>residual<sp/>training</highlight></codeline>
-<codeline lineno="108"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a8b1656df14f1e8c9aef6f19c0ca87982" kindref="member">trainResiduals_</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x);</highlight></codeline>
+<codeline lineno="108"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>trainResiduals_(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x);</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"></highlight></codeline>
 <codeline lineno="110"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="111"><highlight class="comment"><sp/><sp/>///<sp/>Exposed<sp/>like<sp/>the<sp/>CPU<sp/>version</highlight></codeline>

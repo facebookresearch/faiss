@@ -1,61 +1,61 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="IndexBinaryFromFloat_8h" kind="file" language="C++">
     <compoundname>IndexBinaryFromFloat.h</compoundname>
     <includes refid="IndexBinary_8h" local="no">faiss/IndexBinary.h</includes>
     <incdepgraph>
-      <node id="1">
-        <label>faiss/IndexBinaryFromFloat.h</label>
-        <link refid="IndexBinaryFromFloat_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
+      <node id="576">
         <label>string</label>
       </node>
-      <node id="2">
-        <label>faiss/IndexBinary.h</label>
-        <link refid="IndexBinary_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
+      <node id="578">
         <label>faiss/impl/FaissAssert.h</label>
       </node>
-      <node id="4">
+      <node id="575">
         <label>typeinfo</label>
       </node>
-      <node id="3">
+      <node id="574">
         <label>cstdio</label>
       </node>
-      <node id="6">
+      <node id="572">
+        <label>faiss/IndexBinaryFromFloat.h</label>
+        <link refid="IndexBinaryFromFloat_8h"/>
+        <childnode refid="573" relation="include">
+        </childnode>
+      </node>
+      <node id="577">
         <label>sstream</label>
       </node>
-      <node id="8">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="9" relation="include">
+      <node id="573">
+        <label>faiss/IndexBinary.h</label>
+        <link refid="IndexBinary_8h_source"/>
+        <childnode refid="574" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="575" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="576" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="577" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="578" relation="include">
+        </childnode>
+        <childnode refid="579" relation="include">
         </childnode>
       </node>
-      <node id="9">
+      <node id="579">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="580" relation="include">
+        </childnode>
+        <childnode refid="574" relation="include">
+        </childnode>
+        <childnode refid="575" relation="include">
+        </childnode>
+        <childnode refid="576" relation="include">
+        </childnode>
+        <childnode refid="577" relation="include">
+        </childnode>
+      </node>
+      <node id="580">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>

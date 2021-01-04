@@ -1,42 +1,42 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="GpuDistance_8h" kind="file" language="C++">
     <compoundname>GpuDistance.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <incdepgraph>
-      <node id="6">
+      <node id="85">
         <label>string</label>
       </node>
-      <node id="5">
-        <label>typeinfo</label>
-      </node>
-      <node id="4">
-        <label>cstdio</label>
-      </node>
-      <node id="1">
+      <node id="80">
         <label>faiss/gpu/GpuDistance.h</label>
         <link refid="GpuDistance_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="81" relation="include">
         </childnode>
       </node>
-      <node id="7">
+      <node id="84">
+        <label>typeinfo</label>
+      </node>
+      <node id="83">
+        <label>cstdio</label>
+      </node>
+      <node id="86">
         <label>sstream</label>
       </node>
-      <node id="2">
+      <node id="81">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="3" relation="include">
+        <childnode refid="82" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="83" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="84" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="85" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="86" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="82">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>

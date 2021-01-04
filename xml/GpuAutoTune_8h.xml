@@ -1,89 +1,89 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="GpuAutoTune_8h" kind="file" language="C++">
     <compoundname>GpuAutoTune.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <includes refid="AutoTune_8h" local="no">faiss/AutoTune.h</includes>
     <incdepgraph>
-      <node id="1">
-        <label>faiss/gpu/GpuAutoTune.h</label>
-        <link refid="GpuAutoTune_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="11">
+      <node id="53">
         <label>stdint.h</label>
       </node>
-      <node id="6">
+      <node id="48">
         <label>string</label>
       </node>
-      <node id="12">
-        <label>faiss/IndexBinary.h</label>
-        <link refid="IndexBinary_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="13">
-        <label>faiss/impl/FaissAssert.h</label>
-      </node>
-      <node id="8">
+      <node id="50">
         <label>faiss/AutoTune.h</label>
         <link refid="AutoTune_8h_source"/>
-        <childnode refid="9" relation="include">
+        <childnode refid="51" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="52" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="53" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
+        <childnode refid="44" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="54" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="55">
+        <label>faiss/impl/FaissAssert.h</label>
+      </node>
+      <node id="47">
         <label>typeinfo</label>
       </node>
-      <node id="4">
+      <node id="46">
         <label>cstdio</label>
       </node>
-      <node id="9">
+      <node id="51">
         <label>vector</label>
       </node>
-      <node id="7">
+      <node id="49">
         <label>sstream</label>
       </node>
-      <node id="10">
+      <node id="54">
+        <label>faiss/IndexBinary.h</label>
+        <link refid="IndexBinary_8h_source"/>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
         <label>unordered_map</label>
       </node>
-      <node id="2">
+      <node id="44">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="3" relation="include">
+        <childnode refid="45" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="46" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="47" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="48" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="49" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="45">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+      </node>
+      <node id="43">
+        <label>faiss/gpu/GpuAutoTune.h</label>
+        <link refid="GpuAutoTune_8h"/>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuParameterSpace" prot="public">faiss::gpu::GpuParameterSpace</innerclass>

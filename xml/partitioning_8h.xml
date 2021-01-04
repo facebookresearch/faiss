@@ -1,28 +1,28 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="partitioning_8h" kind="file" language="C++">
     <compoundname>partitioning.h</compoundname>
     <includes local="no">stdint.h</includes>
     <includes local="no">stdio.h</includes>
     <includes local="no">faiss/impl/platform_macros.h</includes>
     <incdepgraph>
-      <node id="4">
+      <node id="1349">
         <label>faiss/impl/platform_macros.h</label>
       </node>
-      <node id="2">
+      <node id="1347">
         <label>stdint.h</label>
       </node>
-      <node id="1">
+      <node id="1346">
         <label>faiss/utils/partitioning.h</label>
         <link refid="partitioning_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1347" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="1348" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="1349" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="1348">
         <label>stdio.h</label>
       </node>
     </incdepgraph>

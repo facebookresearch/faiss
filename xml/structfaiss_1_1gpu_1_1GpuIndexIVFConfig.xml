@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1gpu_1_1GpuIndexIVFConfig" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuIndexIVFConfig</compoundname>
     <basecompoundref refid="structfaiss_1_1gpu_1_1GpuIndexConfig" prot="public" virt="non-virtual">faiss::gpu::GpuIndexConfig</basecompoundref>
@@ -13,13 +13,12 @@
         <argsstring></argsstring>
         <name>indicesOptions</name>
         <briefdescription>
-<para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> storage options for the GPU. </para>
-        </briefdescription>
+<para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> storage options for the GPU. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="28" column="18" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="28" column="1" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a6d357a9a67a2fed9c8e7b139712d30f6" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig" kindref="compound">GpuIndexFlatConfig</ref></type>
@@ -27,13 +26,12 @@
         <argsstring></argsstring>
         <name>flatConfig</name>
         <briefdescription>
-<para>Configuration for the coarse quantizer object. </para>
-        </briefdescription>
+<para>Configuration for the coarse quantizer object. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="31" column="22" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="31" column="1" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -41,13 +39,12 @@
         <argsstring></argsstring>
         <name>device</name>
         <briefdescription>
-<para>GPU device on which the index is resident. </para>
-        </briefdescription>
+<para>GPU device on which the index is resident. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="23" column="7" bodyfile="faiss/gpu/GpuIndex.h" bodystart="23" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="23" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" static="no" mutable="no">
         <type>MemorySpace</type>
@@ -57,11 +54,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>What memory space to use for primary storage. On Pascal and above (CC 6+) architectures, allows GPUs to use more memory than is available on the GPU. </para>
-        </detaileddescription>
+<para>What memory space to use for primary storage. On Pascal and above (CC 6+) architectures, allows GPUs to use more memory than is available on the GPU. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="28" column="15" bodyfile="faiss/gpu/GpuIndex.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="28" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -76,7 +72,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="23" column="10" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="23" bodyend="25"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="23" column="1" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="23" bodyend="25"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -84,57 +80,57 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="4">
+      <node id="167">
         <label>faiss::gpu::GpuIndexIVFPQConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="164" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
+      <node id="165">
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
       </node>
-      <node id="1">
+      <node id="164">
         <label>faiss::gpu::GpuIndexIVFConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="165" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="166">
         <label>faiss::gpu::GpuIndexIVFFlatConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFFlatConfig"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="164" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="168">
         <label>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="164" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
+      <node id="170">
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
       </node>
-      <node id="1">
+      <node id="169">
         <label>faiss::gpu::GpuIndexIVFConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="170" relation="public-inheritance">
         </childnode>
-        <childnode refid="3" relation="usage">
+        <childnode refid="171" relation="usage">
           <edgelabel>flatConfig</edgelabel>
         </childnode>
       </node>
-      <node id="3">
+      <node id="171">
         <label>faiss::gpu::GpuIndexFlatConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="170" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuIndexIVF.h" line="22" column="46" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="22" bodyend="32"/>
+    <location file="faiss/gpu/GpuIndexIVF.h" line="22" column="1" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="22" bodyend="32"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFConfig</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a6d357a9a67a2fed9c8e7b139712d30f6" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFConfig</scope><name>flatConfig</name></member>

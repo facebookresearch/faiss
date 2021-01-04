@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="AutoTune_8h" kind="file" language="C++">
     <compoundname>AutoTune.h</compoundname>
     <includes local="no">vector</includes>
@@ -9,63 +9,44 @@
     <includes refid="IndexBinary_8h" local="no">faiss/IndexBinary.h</includes>
     <includedby refid="GpuAutoTune_8h" local="no">faiss/gpu/GpuAutoTune.h</includedby>
     <incdepgraph>
-      <node id="4">
+      <node id="3">
         <label>stdint.h</label>
       </node>
-      <node id="9">
+      <node id="8">
         <label>string</label>
       </node>
-      <node id="11">
-        <label>faiss/IndexBinary.h</label>
-        <link refid="IndexBinary_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="12">
-        <label>faiss/impl/FaissAssert.h</label>
-      </node>
-      <node id="1">
+      <node id="0">
         <label>faiss/AutoTune.h</label>
         <link refid="AutoTune_8h"/>
+        <childnode refid="1" relation="include">
+        </childnode>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="8">
-        <label>typeinfo</label>
+      <node id="11">
+        <label>faiss/impl/FaissAssert.h</label>
       </node>
       <node id="7">
+        <label>typeinfo</label>
+      </node>
+      <node id="6">
         <label>cstdio</label>
       </node>
-      <node id="2">
+      <node id="1">
         <label>vector</label>
       </node>
-      <node id="10">
+      <node id="9">
         <label>sstream</label>
       </node>
-      <node id="3">
-        <label>unordered_map</label>
-      </node>
-      <node id="5">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
+      <node id="10">
+        <label>faiss/IndexBinary.h</label>
+        <link refid="IndexBinary_8h_source"/>
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
@@ -74,24 +55,43 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="2">
+        <label>unordered_map</label>
+      </node>
+      <node id="4">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="2">
-        <label>faiss/gpu/GpuAutoTune.h</label>
-        <link refid="GpuAutoTune_8h_source"/>
-      </node>
-      <node id="1">
+      <node id="12">
         <label>faiss/AutoTune.h</label>
         <link refid="AutoTune_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/gpu/GpuAutoTune.h</label>
+        <link refid="GpuAutoTune_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1AutoTuneCriterion" prot="public">faiss::AutoTuneCriterion</innerclass>
@@ -142,14 +142,14 @@
 <codeline lineno="33" refid="structfaiss_1_1AutoTuneCriterion_1a40e91caa9232a597c16fc946d0befd9b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1a40e91caa9232a597c16fc946d0befd9b" kindref="member">gt_D</ref>;<sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>Ground-truth<sp/>distances<sp/>(size<sp/>nq<sp/>*<sp/>gt_nnn)</highlight></codeline>
 <codeline lineno="34" refid="structfaiss_1_1AutoTuneCriterion_1af915fc4df215e3c8d9f71ff42d526144" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;idx_t&gt;<sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1af915fc4df215e3c8d9f71ff42d526144" kindref="member">gt_I</ref>;<sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>Ground-truth<sp/>indexes<sp/>(size<sp/>nq<sp/>*<sp/>gt_nnn)</highlight></codeline>
 <codeline lineno="35"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1AutoTuneCriterion" kindref="compound">AutoTuneCriterion</ref><sp/>(idx_t<sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1adcfaafb3f1b3449e2cfd553f0f603a5b" kindref="member">nq</ref>,<sp/>idx_t<sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1a3bb11e873707a812999f8391869aafab" kindref="member">nnn</ref>);</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1AutoTuneCriterion" kindref="compound">AutoTuneCriterion</ref><sp/>(idx_t<sp/>nq,<sp/>idx_t<sp/>nnn);</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="38"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Intitializes<sp/>the<sp/>gt_D<sp/>and<sp/>gt_I<sp/>vectors.<sp/>Must<sp/>be<sp/>called<sp/>before<sp/>evaluating</highlight></codeline>
 <codeline lineno="39"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
 <codeline lineno="40"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>gt_D_in<sp/><sp/>size<sp/>nq<sp/>*<sp/>gt_nnn</highlight></codeline>
 <codeline lineno="41"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>gt_I_in<sp/><sp/>size<sp/>nq<sp/>*<sp/>gt_nnn</highlight></codeline>
 <codeline lineno="42"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1a174f0de8e6fd01905f5fa2170f5039d8" kindref="member">set_groundtruth</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1a9b3a2242729a0873d255c1684881bbd4" kindref="member">gt_nnn</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*gt_D_in,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1a174f0de8e6fd01905f5fa2170f5039d8" kindref="member">set_groundtruth</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>gt_nnn,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*gt_D_in,</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t<sp/>*gt_I_in);</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="46"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Evaluate<sp/>the<sp/>criterion.</highlight></codeline>
@@ -170,7 +170,7 @@
 <codeline lineno="61"><highlight class="normal"></highlight></codeline>
 <codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1OneRecallAtRCriterion" kindref="compound">OneRecallAtRCriterion</ref><sp/>(idx_t<sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1adcfaafb3f1b3449e2cfd553f0f603a5b" kindref="member">nq</ref>,<sp/>idx_t<sp/>R);</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"></highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OneRecallAtRCriterion_1afe472c2ae38534c293b02feebf87988d" kindref="member">evaluate</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>D,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/>I)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" kindref="member">evaluate</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>D,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/>I)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="65"><highlight class="normal"></highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1OneRecallAtRCriterion" kindref="compound">OneRecallAtRCriterion</ref>()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{}</highlight></codeline>
 <codeline lineno="67"><highlight class="normal">};</highlight></codeline>
@@ -182,7 +182,7 @@
 <codeline lineno="73"><highlight class="normal"></highlight></codeline>
 <codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IntersectionCriterion" kindref="compound">IntersectionCriterion</ref><sp/>(idx_t<sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1adcfaafb3f1b3449e2cfd553f0f603a5b" kindref="member">nq</ref>,<sp/>idx_t<sp/>R);</highlight></codeline>
 <codeline lineno="75"><highlight class="normal"></highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>evaluate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>D,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/>I)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" kindref="member">evaluate</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>D,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/>I)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"></highlight></codeline>
 <codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1IntersectionCriterion" kindref="compound">IntersectionCriterion</ref>()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{}</highlight></codeline>
 <codeline lineno="79"><highlight class="normal">};</highlight></codeline>
@@ -214,22 +214,22 @@
 <codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1OperatingPoints" kindref="compound">OperatingPoints</ref><sp/>();</highlight></codeline>
 <codeline lineno="106"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>add<sp/>operating<sp/>points<sp/>from<sp/>other<sp/>to<sp/>this,<sp/>with<sp/>a<sp/>prefix<sp/>to<sp/>the<sp/>keys</highlight></codeline>
-<codeline lineno="108"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OperatingPoints_1a84baddccd8b803dee460739f8bcbc0c9" kindref="member">merge_with</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OperatingPoints" kindref="compound">OperatingPoints</ref><sp/>&amp;other,</highlight></codeline>
+<codeline lineno="108"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>merge_with<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OperatingPoints" kindref="compound">OperatingPoints</ref><sp/>&amp;other,</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/>prefix<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="110"><highlight class="normal"></highlight></codeline>
 <codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>clear<sp/>();</highlight></codeline>
 <codeline lineno="112"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="113"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>add<sp/>a<sp/>performance<sp/>measure.<sp/>Return<sp/>whether<sp/>it<sp/>is<sp/>an<sp/>optimal<sp/>point</highlight></codeline>
-<codeline lineno="114"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OperatingPoints_1a7afabe0576800255eeec680486cb30df" kindref="member">add</ref><sp/>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>perf,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/>key,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>cno<sp/>=<sp/>0);</highlight></codeline>
+<codeline lineno="114"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>add<sp/>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>perf,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/>key,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>cno<sp/>=<sp/>0);</highlight></codeline>
 <codeline lineno="115"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="116"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>get<sp/>time<sp/>required<sp/>to<sp/>obtain<sp/>a<sp/>given<sp/>performance<sp/>measure</highlight></codeline>
-<codeline lineno="117"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OperatingPoints_1ad06f915a9b8f8cfd8c7a00858c6c24ae" kindref="member">t_for_perf</ref><sp/>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>perf)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="117"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t_for_perf<sp/>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>perf)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="119"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>easy-to-read<sp/>output</highlight></codeline>
-<codeline lineno="120"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OperatingPoints_1a3fe8cd962524dfdfb8e7bba8c984024d" kindref="member">display</ref><sp/>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>only_optimal<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="120"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>display<sp/>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>only_optimal<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="121"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="122"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>output<sp/>to<sp/>a<sp/>format<sp/>easy<sp/>to<sp/>digest<sp/>by<sp/>gnuplot</highlight></codeline>
-<codeline lineno="123"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OperatingPoints_1a355e16cdecf1905c995120a35ba08ac5" kindref="member">all_to_gnuplot</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*fname)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="123"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>all_to_gnuplot<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*fname)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>optimal_to_gnuplot<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*fname)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="125"><highlight class="normal"></highlight></codeline>
 <codeline lineno="126"><highlight class="normal">};</highlight></codeline>
@@ -268,36 +268,36 @@
 <codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ParameterSpace" kindref="compound">ParameterSpace</ref><sp/>();</highlight></codeline>
 <codeline lineno="160"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="161"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>nb<sp/>of<sp/>combinations,<sp/>=<sp/>product<sp/>of<sp/>values<sp/>sizes</highlight></codeline>
-<codeline lineno="162"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ParameterSpace_1a255b1e3bf93f8b0cbbe16eae66478acc" kindref="member">n_combinations</ref><sp/>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="162"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n_combinations<sp/>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="163"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="164"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>returns<sp/>whether<sp/>combinations<sp/>c1<sp/>&gt;=<sp/>c2<sp/>in<sp/>the<sp/>tuple<sp/>sense</highlight></codeline>
-<codeline lineno="165"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ParameterSpace_1ab311c622327c18b42aa66e2b9bcd5a7f" kindref="member">combination_ge</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>c1,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>c2)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="165"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>combination_ge<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>c1,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>c2)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="166"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="167"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>get<sp/>string<sp/>representation<sp/>of<sp/>the<sp/>combination</highlight></codeline>
-<codeline lineno="168"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="structfaiss_1_1ParameterSpace_1af5081b3739982c6be702e46df666fec4" kindref="member">combination_name</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>cno)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="168"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>combination_name<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>cno)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="169"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="170"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>print<sp/>a<sp/>description<sp/>on<sp/>stdout</highlight></codeline>
-<codeline lineno="171"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ParameterSpace_1a066ae6501cf7b31b1b5bb1e34bb8d0dc" kindref="member">display</ref><sp/>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="171"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>display<sp/>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="172"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="173"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>add<sp/>a<sp/>new<sp/>parameter<sp/>(or<sp/>return<sp/>it<sp/>if<sp/>it<sp/>exists)</highlight></codeline>
-<codeline lineno="174"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ParameterRange" kindref="compound">ParameterRange</ref><sp/>&amp;<ref refid="structfaiss_1_1ParameterSpace_1a48fcb0d8a091c768dd59b4234c0733c1" kindref="member">add_range</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/>name);</highlight></codeline>
+<codeline lineno="174"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ParameterRange" kindref="compound">ParameterRange</ref><sp/>&amp;add_range(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/>name);</highlight></codeline>
 <codeline lineno="175"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="176"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>initialize<sp/>with<sp/>reasonable<sp/>parameters<sp/>for<sp/>the<sp/>index</highlight></codeline>
-<codeline lineno="177"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ParameterSpace_1a3e2e52e7b04f838473e01d018afde832" kindref="member">initialize</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<sp/>index);</highlight></codeline>
+<codeline lineno="177"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initialize<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<sp/>index);</highlight></codeline>
 <codeline lineno="178"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="179"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>set<sp/>a<sp/>combination<sp/>of<sp/>parameters<sp/>on<sp/>an<sp/>index</highlight></codeline>
-<codeline lineno="180"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ParameterSpace_1a613036d9ce9b2d89856043782975a30a" kindref="member">set_index_parameters</ref><sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>cno)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="180"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_index_parameters<sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>cno)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="181"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="182"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>set<sp/>a<sp/>combination<sp/>of<sp/>parameters<sp/>described<sp/>by<sp/>a<sp/>string</highlight></codeline>
-<codeline lineno="183"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ParameterSpace_1a613036d9ce9b2d89856043782975a30a" kindref="member">set_index_parameters</ref><sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*param_string)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="183"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_index_parameters<sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*param_string)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="184"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="185"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>set<sp/>one<sp/>of<sp/>the<sp/>parameters,<sp/>returns<sp/>whether<sp/>setting<sp/>was<sp/>successful</highlight></codeline>
-<codeline lineno="186"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ParameterSpace_1ad9e630ff62561acf6a55b972ee7bb309" kindref="member">set_index_parameter</ref><sp/>(</highlight></codeline>
+<codeline lineno="186"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_index_parameter<sp/>(</highlight></codeline>
 <codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<sp/>index,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/>name,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>val)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="188"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="189"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>find<sp/>an<sp/>upper<sp/>bound<sp/>on<sp/>the<sp/>performance<sp/>and<sp/>a<sp/>lower<sp/>bound<sp/>on<sp/>t</highlight></codeline>
 <codeline lineno="190"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>for<sp/>configuration<sp/>cno<sp/>given<sp/>another<sp/>operating<sp/>point<sp/>op<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ParameterSpace_1a8b8ca45f0a520a7100b4ad9c7be1e079" kindref="member">update_bounds</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>cno,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OperatingPoint" kindref="compound">OperatingPoint</ref><sp/>&amp;<sp/>op,</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>update_bounds<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>cno,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OperatingPoint" kindref="compound">OperatingPoint</ref><sp/>&amp;<sp/>op,</highlight></codeline>
 <codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*upper_bound_perf,</highlight></codeline>
 <codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*lower_bound_t)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="194"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
@@ -307,8 +307,8 @@
 <codeline lineno="198"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>crit<sp/><sp/><sp/><sp/>selection<sp/>criterion</highlight></codeline>
 <codeline lineno="199"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>ops<sp/><sp/><sp/><sp/><sp/>resulting<sp/>operating<sp/>points</highlight></codeline>
 <codeline lineno="200"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ParameterSpace_1abf95f9ac04d0a2d1d4ac9e3b685bfcc3" kindref="member">explore</ref><sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index,</highlight></codeline>
-<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nq,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*xq,</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>explore<sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index,</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1adcfaafb3f1b3449e2cfd553f0f603a5b" kindref="member">nq</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*xq,</highlight></codeline>
 <codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1AutoTuneCriterion" kindref="compound">AutoTuneCriterion</ref><sp/>&amp;<sp/>crit,</highlight></codeline>
 <codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1OperatingPoints" kindref="compound">OperatingPoints</ref><sp/>*<sp/>ops)<sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="205"><highlight class="normal"></highlight></codeline>

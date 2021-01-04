@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="GpuIndex_8h" kind="file" language="C++">
     <compoundname>GpuIndex.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
@@ -9,127 +9,127 @@
     <includedby refid="GpuIndexFlat_8h" local="no">faiss/gpu/GpuIndexFlat.h</includedby>
     <includedby refid="GpuIndexIVF_8h" local="no">faiss/gpu/GpuIndexIVF.h</includedby>
     <incdepgraph>
-      <node id="11">
+      <node id="102">
         <label>cublas_v2.h</label>
       </node>
-      <node id="10">
+      <node id="101">
         <label>cuda_runtime.h</label>
       </node>
-      <node id="6">
+      <node id="97">
         <label>string</label>
       </node>
-      <node id="8">
-        <label>faiss/gpu/GpuResources.h</label>
-        <link refid="GpuResources_8h_source"/>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
+      <node id="100">
         <label>faiss/impl/FaissAssert.h</label>
       </node>
-      <node id="5">
+      <node id="99">
+        <label>faiss/gpu/GpuResources.h</label>
+        <link refid="GpuResources_8h_source"/>
+        <childnode refid="100" relation="include">
+        </childnode>
+        <childnode refid="101" relation="include">
+        </childnode>
+        <childnode refid="102" relation="include">
+        </childnode>
+        <childnode refid="103" relation="include">
+        </childnode>
+        <childnode refid="104" relation="include">
+        </childnode>
+        <childnode refid="105" relation="include">
+        </childnode>
+      </node>
+      <node id="96">
         <label>typeinfo</label>
       </node>
-      <node id="4">
+      <node id="95">
         <label>cstdio</label>
       </node>
-      <node id="14">
+      <node id="105">
         <label>vector</label>
       </node>
-      <node id="13">
+      <node id="104">
         <label>utility</label>
       </node>
-      <node id="7">
+      <node id="98">
         <label>sstream</label>
       </node>
-      <node id="1">
-        <label>faiss/gpu/GpuIndex.h</label>
-        <link refid="GpuIndex_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
+      <node id="93">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="3" relation="include">
+        <childnode refid="94" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="95" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="96" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="97" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="98" relation="include">
         </childnode>
       </node>
-      <node id="12">
-        <label>memory</label>
-      </node>
-      <node id="3">
+      <node id="94">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>
+      <node id="92">
+        <label>faiss/gpu/GpuIndex.h</label>
+        <link refid="GpuIndex_8h"/>
+        <childnode refid="93" relation="include">
+        </childnode>
+        <childnode refid="99" relation="include">
+        </childnode>
+      </node>
+      <node id="103">
+        <label>memory</label>
+      </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="5">
+      <node id="110">
         <label>faiss/gpu/GpuIndexIVF.h</label>
         <link refid="GpuIndexIVF_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="111" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="112" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="113" relation="include">
         </childnode>
       </node>
-      <node id="2">
-        <label>faiss/gpu/GpuCloner.h</label>
-        <link refid="GpuCloner_8h_source"/>
+      <node id="109">
+        <label>faiss/gpu/GpuIndexFlat.h</label>
+        <link refid="GpuIndexFlat_8h_source"/>
+        <childnode refid="110" relation="include">
+        </childnode>
       </node>
-      <node id="6">
-        <label>faiss/gpu/GpuIndexIVFFlat.h</label>
-        <link refid="GpuIndexIVFFlat_8h_source"/>
+      <node id="108">
+        <label>faiss/gpu/GpuIndexBinaryFlat.h</label>
+        <link refid="GpuIndexBinaryFlat_8h_source"/>
       </node>
-      <node id="8">
-        <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
-        <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
-      </node>
-      <node id="7">
+      <node id="112">
         <label>faiss/gpu/GpuIndexIVFPQ.h</label>
         <link refid="GpuIndexIVFPQ_8h_source"/>
       </node>
-      <node id="4">
-        <label>faiss/gpu/GpuIndexFlat.h</label>
-        <link refid="GpuIndexFlat_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
+      <node id="111">
+        <label>faiss/gpu/GpuIndexIVFFlat.h</label>
+        <link refid="GpuIndexIVFFlat_8h_source"/>
       </node>
-      <node id="1">
+      <node id="113">
+        <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
+        <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
+      </node>
+      <node id="107">
+        <label>faiss/gpu/GpuCloner.h</label>
+        <link refid="GpuCloner_8h_source"/>
+      </node>
+      <node id="106">
         <label>faiss/gpu/GpuIndex.h</label>
         <link refid="GpuIndex_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="107" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="108" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="109" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="110" relation="include">
         </childnode>
-      </node>
-      <node id="3">
-        <label>faiss/gpu/GpuIndexBinaryFlat.h</label>
-        <link refid="GpuIndexBinaryFlat_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexConfig" prot="public">faiss::gpu::GpuIndexConfig</innerclass>
@@ -180,41 +180,41 @@
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuIndexConfig" kindref="compound">GpuIndexConfig</ref><sp/>config);</highlight></codeline>
 <codeline lineno="38"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="39"><highlight class="comment"><sp/><sp/>///<sp/>Returns<sp/>the<sp/>device<sp/>that<sp/>this<sp/>index<sp/>is<sp/>resident<sp/>on</highlight></codeline>
-<codeline lineno="40"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1af4f02c713f639bd70e09af8afebd0f51" kindref="member">getDevice</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="40"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>getDevice()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="42"><highlight class="comment"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>reference<sp/>to<sp/>our<sp/>GpuResources<sp/>object<sp/>that<sp/>manages<sp/>memory,<sp/>stream</highlight></codeline>
 <codeline lineno="43"><highlight class="comment"><sp/><sp/>///<sp/>and<sp/>handle<sp/>resources<sp/>on<sp/>the<sp/>GPU</highlight></codeline>
-<codeline lineno="44"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1a2eb235a51b0a70bdbc2c814a48a0917d" kindref="member">getResources</ref>();</highlight></codeline>
+<codeline lineno="44"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/>getResources();</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="46"><highlight class="comment"><sp/><sp/>///<sp/>Set<sp/>the<sp/>minimum<sp/>data<sp/>size<sp/>for<sp/>searches<sp/>(in<sp/>MiB)<sp/>for<sp/>which<sp/>we<sp/>use</highlight></codeline>
 <codeline lineno="47"><highlight class="comment"><sp/><sp/>///<sp/>CPU<sp/>-&gt;<sp/>GPU<sp/>paging</highlight></codeline>
-<codeline lineno="48"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1a6c82cbea6b02cc996d634f822c1d310b" kindref="member">setMinPagingSize</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>setMinPagingSize(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="50"><highlight class="comment"><sp/><sp/>///<sp/>Returns<sp/>the<sp/>current<sp/>minimum<sp/>data<sp/>size<sp/>for<sp/>paged<sp/>searches</highlight></codeline>
-<codeline lineno="51"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1a6402d93925d2a403dc187dc1a7aab1e3" kindref="member">getMinPagingSize</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="51"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>getMinPagingSize()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="53"><highlight class="comment"><sp/><sp/>///<sp/>`x`<sp/>can<sp/>be<sp/>resident<sp/>on<sp/>the<sp/>CPU<sp/>or<sp/>any<sp/>GPU;<sp/>copies<sp/>are<sp/>performed</highlight></codeline>
 <codeline lineno="54"><highlight class="comment"><sp/><sp/>///<sp/>as<sp/>needed</highlight></codeline>
 <codeline lineno="55"><highlight class="comment"><sp/><sp/>///<sp/>Handles<sp/>paged<sp/>adds<sp/>if<sp/>the<sp/>add<sp/>set<sp/>is<sp/>too<sp/>large;<sp/>calls<sp/>addInternal_</highlight></codeline>
-<codeline lineno="56"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1ac6ac307f55a1b44dbf185e22c83b0a10" kindref="member">add</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="57"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="58"><highlight class="comment"><sp/><sp/>///<sp/>`x`<sp/>and<sp/>`ids`<sp/>can<sp/>be<sp/>resident<sp/>on<sp/>the<sp/>CPU<sp/>or<sp/>any<sp/>GPU;<sp/>copies<sp/>are</highlight></codeline>
 <codeline lineno="59"><highlight class="comment"><sp/><sp/>///<sp/>performed<sp/>as<sp/>needed</highlight></codeline>
 <codeline lineno="60"><highlight class="comment"><sp/><sp/>///<sp/>Handles<sp/>paged<sp/>adds<sp/>if<sp/>the<sp/>add<sp/>set<sp/>is<sp/>too<sp/>large;<sp/>calls<sp/>addInternal_</highlight></codeline>
-<codeline lineno="61"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1a47f6969fe60d82b8e3407557ba9eec88" kindref="member">add_with_ids</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,</highlight></codeline>
+<codeline lineno="61"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add_with_ids(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref>*<sp/>ids)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="65"><highlight class="comment"><sp/><sp/>///<sp/>`x`<sp/>and<sp/>`labels`<sp/>can<sp/>be<sp/>resident<sp/>on<sp/>the<sp/>CPU<sp/>or<sp/>any<sp/>GPU;<sp/>copies<sp/>are</highlight></codeline>
 <codeline lineno="66"><highlight class="comment"><sp/><sp/>///<sp/>performed<sp/>as<sp/>needed</highlight></codeline>
-<codeline lineno="67"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1ac108456e9c7cde162d77f64cc9c0dcdb" kindref="member">assign</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,</highlight></codeline>
+<codeline lineno="67"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>assign(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,</highlight></codeline>
 <codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref>*<sp/>labels,</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>k<sp/>=<sp/>1)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="72"><highlight class="comment"><sp/><sp/>///<sp/>`x`,<sp/>`distances`<sp/>and<sp/>`labels`<sp/>can<sp/>be<sp/>resident<sp/>on<sp/>the<sp/>CPU<sp/>or<sp/>any</highlight></codeline>
 <codeline lineno="73"><highlight class="comment"><sp/><sp/>///<sp/>GPU;<sp/>copies<sp/>are<sp/>performed<sp/>as<sp/>needed</highlight></codeline>
-<codeline lineno="74"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1a4564ff946e4339156173b39449562971" kindref="member">search</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,</highlight></codeline>
+<codeline lineno="74"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,</highlight></codeline>
 <codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
 <codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>k,</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>
@@ -222,37 +222,37 @@
 <codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="80"><highlight class="comment"><sp/><sp/>///<sp/>Overridden<sp/>to<sp/>force<sp/>GPU<sp/>indices<sp/>to<sp/>provide<sp/>their<sp/>own<sp/>GPU-friendly</highlight></codeline>
 <codeline lineno="81"><highlight class="comment"><sp/><sp/>///<sp/>implementation</highlight></codeline>
-<codeline lineno="82"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1a1c68659822d9e330a7737c8a6aaacae2" kindref="member">compute_residual</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="82"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_residual(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
 <codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>residual,</highlight></codeline>
 <codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>key)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="85"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="86"><highlight class="comment"><sp/><sp/>///<sp/>Overridden<sp/>to<sp/>force<sp/>GPU<sp/>indices<sp/>to<sp/>provide<sp/>their<sp/>own<sp/>GPU-friendly</highlight></codeline>
 <codeline lineno="87"><highlight class="comment"><sp/><sp/>///<sp/>implementation</highlight></codeline>
-<codeline lineno="88"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1aac69097d303830c3d48c4016c1e6a955" kindref="member">compute_residual_n</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,</highlight></codeline>
+<codeline lineno="88"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_residual_n(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,</highlight></codeline>
 <codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xs,</highlight></codeline>
 <codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>residuals,</highlight></codeline>
 <codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref>*<sp/>keys)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="92"><highlight class="normal"></highlight></codeline>
 <codeline lineno="93"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="94"><highlight class="comment"><sp/><sp/>///<sp/>Copy<sp/>what<sp/>we<sp/>need<sp/>from<sp/>the<sp/>CPU<sp/>equivalent</highlight></codeline>
-<codeline lineno="95"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" kindref="member">copyFrom</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index);</highlight></codeline>
+<codeline lineno="95"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>copyFrom(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index);</highlight></codeline>
 <codeline lineno="96"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="97"><highlight class="comment"><sp/><sp/>///<sp/>Copy<sp/>what<sp/>we<sp/>have<sp/>to<sp/>the<sp/>CPU<sp/>equivalent</highlight></codeline>
-<codeline lineno="98"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" kindref="member">copyTo</ref>(<ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="98"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>copyTo(<ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="100"><highlight class="comment"><sp/><sp/>///<sp/>Does<sp/>addImpl_<sp/>require<sp/>IDs?<sp/>If<sp/>so,<sp/>and<sp/>no<sp/>IDs<sp/>are<sp/>provided,<sp/>we<sp/>will</highlight></codeline>
 <codeline lineno="101"><highlight class="comment"><sp/><sp/>///<sp/>generate<sp/>them<sp/>sequentially<sp/>based<sp/>on<sp/>the<sp/>order<sp/>in<sp/>which<sp/>the<sp/>IDs<sp/>are<sp/>added</highlight></codeline>
-<codeline lineno="102"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1a358cad8f80a9c4b3aff45f3f7c131d03" kindref="member">addImplRequiresIDs_</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="102"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>addImplRequiresIDs_()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="103"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="104"><highlight class="comment"><sp/><sp/>///<sp/>Overridden<sp/>to<sp/>actually<sp/>perform<sp/>the<sp/>add</highlight></codeline>
 <codeline lineno="105"><highlight class="comment"><sp/><sp/>///<sp/>All<sp/>data<sp/>is<sp/>guaranteed<sp/>to<sp/>be<sp/>resident<sp/>on<sp/>our<sp/>device</highlight></codeline>
-<codeline lineno="106"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1ae8479445214c5ef37adf154c138ce973" kindref="member">addImpl_</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="106"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>addImpl_(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
 <codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
 <codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref>*<sp/>ids)<sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="110"><highlight class="comment"><sp/><sp/>///<sp/>Overridden<sp/>to<sp/>actually<sp/>perform<sp/>the<sp/>search</highlight></codeline>
 <codeline lineno="111"><highlight class="comment"><sp/><sp/>///<sp/>All<sp/>data<sp/>is<sp/>guaranteed<sp/>to<sp/>be<sp/>resident<sp/>on<sp/>our<sp/>device</highlight></codeline>
-<codeline lineno="112"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndex_1a184c443785b715fd692b2b67aa71d687" kindref="member">searchImpl_</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="112"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>searchImpl_(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
 <codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
 <codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
 <codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>

@@ -1,61 +1,61 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="IndexPreTransform_8h" kind="file" language="C++">
     <compoundname>IndexPreTransform.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <includes refid="VectorTransform_8h" local="no">faiss/VectorTransform.h</includes>
     <incdepgraph>
-      <node id="10">
-        <label>stdint.h</label>
-      </node>
-      <node id="6">
-        <label>string</label>
-      </node>
-      <node id="5">
-        <label>typeinfo</label>
-      </node>
-      <node id="4">
-        <label>cstdio</label>
-      </node>
-      <node id="1">
-        <label>faiss/IndexPreTransform.h</label>
-        <link refid="IndexPreTransform_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>vector</label>
-      </node>
-      <node id="7">
-        <label>sstream</label>
-      </node>
-      <node id="2">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
+      <node id="949">
         <label>faiss/VectorTransform.h</label>
         <link refid="VectorTransform_8h_source"/>
-        <childnode refid="9" relation="include">
+        <childnode refid="950" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="951" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
+        <childnode refid="943" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="942">
+        <label>faiss/IndexPreTransform.h</label>
+        <link refid="IndexPreTransform_8h"/>
+        <childnode refid="943" relation="include">
+        </childnode>
+        <childnode refid="949" relation="include">
+        </childnode>
+      </node>
+      <node id="951">
+        <label>stdint.h</label>
+      </node>
+      <node id="947">
+        <label>string</label>
+      </node>
+      <node id="946">
+        <label>typeinfo</label>
+      </node>
+      <node id="945">
+        <label>cstdio</label>
+      </node>
+      <node id="950">
+        <label>vector</label>
+      </node>
+      <node id="948">
+        <label>sstream</label>
+      </node>
+      <node id="943">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="944" relation="include">
+        </childnode>
+        <childnode refid="945" relation="include">
+        </childnode>
+        <childnode refid="946" relation="include">
+        </childnode>
+        <childnode refid="947" relation="include">
+        </childnode>
+        <childnode refid="948" relation="include">
+        </childnode>
+      </node>
+      <node id="944">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>
@@ -94,12 +94,12 @@
 <codeline lineno="25"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="26" refid="structfaiss_1_1IndexPreTransform_1ae5ec3f184eb211e7d6e204082b52c8c0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexPreTransform_1ae5ec3f184eb211e7d6e204082b52c8c0" kindref="member">own_fields</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///!<sp/>whether<sp/>pointers<sp/>are<sp/>deleted<sp/>in<sp/>destructor</highlight></codeline>
 <codeline lineno="27"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref><sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<ref refid="structfaiss_1_1IndexPreTransform_1aee3cbbe7915ec9ed13d59ca9276bdefc" kindref="member">index</ref>);</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref><sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index);</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight></codeline>
 <codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref><sp/>();</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="32"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>ltrans<sp/>is<sp/>the<sp/>last<sp/>transform<sp/>before<sp/>the<sp/>index</highlight></codeline>
-<codeline lineno="33"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref><sp/>(<ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref><sp/>*<sp/>ltrans,<sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<sp/><ref refid="structfaiss_1_1IndexPreTransform_1aee3cbbe7915ec9ed13d59ca9276bdefc" kindref="member">index</ref>);</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref><sp/>(<ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref><sp/>*<sp/>ltrans,<sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<sp/>index);</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>prepend_transform<sp/>(<ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref><sp/>*<sp/>ltrans);</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight></codeline>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="IndexShards_8h" kind="file" language="C++">
     <compoundname>IndexShards.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
@@ -7,77 +7,77 @@
     <includes local="no">faiss/impl/ThreadedIndex.h</includes>
     <includedby refid="MetaIndexes_8h" local="no">faiss/MetaIndexes.h</includedby>
     <incdepgraph>
-      <node id="10">
+      <node id="1009">
         <label>faiss/impl/ThreadedIndex.h</label>
       </node>
-      <node id="1">
+      <node id="1000">
         <label>faiss/IndexShards.h</label>
         <link refid="IndexShards_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1001" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="1007" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="1009" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="1005">
         <label>string</label>
       </node>
-      <node id="8">
-        <label>faiss/IndexBinary.h</label>
-        <link refid="IndexBinary_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
+      <node id="1008">
         <label>faiss/impl/FaissAssert.h</label>
       </node>
-      <node id="5">
+      <node id="1004">
         <label>typeinfo</label>
       </node>
-      <node id="4">
+      <node id="1003">
         <label>cstdio</label>
       </node>
-      <node id="7">
+      <node id="1006">
         <label>sstream</label>
       </node>
-      <node id="2">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="3" relation="include">
+      <node id="1007">
+        <label>faiss/IndexBinary.h</label>
+        <link refid="IndexBinary_8h_source"/>
+        <childnode refid="1003" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="1004" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="1005" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="1006" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="1008" relation="include">
+        </childnode>
+        <childnode refid="1001" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="1001">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="1002" relation="include">
+        </childnode>
+        <childnode refid="1003" relation="include">
+        </childnode>
+        <childnode refid="1004" relation="include">
+        </childnode>
+        <childnode refid="1005" relation="include">
+        </childnode>
+        <childnode refid="1006" relation="include">
+        </childnode>
+      </node>
+      <node id="1002">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="1">
+      <node id="1010">
         <label>faiss/IndexShards.h</label>
         <link refid="IndexShards_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1011" relation="include">
         </childnode>
       </node>
-      <node id="2">
+      <node id="1011">
         <label>faiss/MetaIndexes.h</label>
         <link refid="MetaIndexes_8h_source"/>
       </node>
@@ -183,8 +183,8 @@
 <codeline lineno="92"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexShardsTemplate_1a0488d95e9d45e0cfab203c83e3a8e3c1" kindref="member">onAfterRemoveIndex</ref>(IndexT*<sp/>index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="93"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"></highlight></codeline>
-<codeline lineno="95"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>IndexShards<sp/>=<sp/>IndexShardsTemplate&lt;Index&gt;;</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>IndexBinaryShards<sp/>=<sp/>IndexShardsTemplate&lt;IndexBinary&gt;;</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexShardsTemplate" kindref="compound">IndexShards</ref><sp/>=<sp/><ref refid="structfaiss_1_1IndexShardsTemplate" kindref="compound">IndexShardsTemplate&lt;Index&gt;</ref>;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexShardsTemplate" kindref="compound">IndexBinaryShards</ref><sp/>=<sp/><ref refid="structfaiss_1_1IndexShardsTemplate" kindref="compound">IndexShardsTemplate&lt;IndexBinary&gt;</ref>;</highlight></codeline>
 <codeline lineno="97"><highlight class="normal"></highlight></codeline>
 <codeline lineno="98"><highlight class="normal"></highlight></codeline>
 <codeline lineno="99"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>

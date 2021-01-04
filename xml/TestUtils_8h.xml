@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="TestUtils_8h" kind="file" language="C++">
     <compoundname>TestUtils.h</compoundname>
     <includes local="no">faiss/impl/FaissAssert.h</includes>
@@ -12,83 +12,83 @@
     <includes local="no">string</includes>
     <includes local="no">vector</includes>
     <incdepgraph>
-      <node id="7">
-        <label>string</label>
-      </node>
-      <node id="2">
-        <label>faiss/impl/FaissAssert.h</label>
-      </node>
-      <node id="6">
-        <label>typeinfo</label>
-      </node>
-      <node id="5">
-        <label>cstdio</label>
-      </node>
-      <node id="10">
-        <label>vector</label>
-      </node>
-      <node id="12">
-        <label>gtest/gtest.h</label>
-      </node>
-      <node id="8">
-        <label>sstream</label>
-      </node>
-      <node id="9">
-        <label>faiss/invlists/InvertedLists.h</label>
-        <link refid="InvertedLists_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="1">
+      <node id="324">
         <label>faiss/gpu/test/TestUtils.h</label>
         <link refid="TestUtils_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="325" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="326" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="332" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="334" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="335" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="336" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="337" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="330" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="333" relation="include">
         </childnode>
       </node>
-      <node id="13">
-        <label>cstring</label>
+      <node id="332">
+        <label>faiss/invlists/InvertedLists.h</label>
+        <link refid="InvertedLists_8h_source"/>
+        <childnode refid="333" relation="include">
+        </childnode>
+        <childnode refid="326" relation="include">
+        </childnode>
       </node>
-      <node id="14">
-        <label>memory</label>
+      <node id="330">
+        <label>string</label>
       </node>
-      <node id="11">
-        <label>initializer_list</label>
+      <node id="325">
+        <label>faiss/impl/FaissAssert.h</label>
       </node>
-      <node id="4">
+      <node id="329">
+        <label>typeinfo</label>
+      </node>
+      <node id="328">
+        <label>cstdio</label>
+      </node>
+      <node id="333">
+        <label>vector</label>
+      </node>
+      <node id="335">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="331">
+        <label>sstream</label>
+      </node>
+      <node id="326">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="327" relation="include">
+        </childnode>
+        <childnode refid="328" relation="include">
+        </childnode>
+        <childnode refid="329" relation="include">
+        </childnode>
+        <childnode refid="330" relation="include">
+        </childnode>
+        <childnode refid="331" relation="include">
+        </childnode>
+      </node>
+      <node id="327">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+      </node>
+      <node id="336">
+        <label>cstring</label>
+      </node>
+      <node id="337">
+        <label>memory</label>
+      </node>
+      <node id="334">
+        <label>initializer_list</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

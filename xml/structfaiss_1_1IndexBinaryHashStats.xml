@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1IndexBinaryHashStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexBinaryHashStats</compoundname>
       <sectiondef kind="public-attrib">
@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHash.h" line="66" column="12" bodyfile="faiss/IndexBinaryHash.h" bodystart="66" bodyend="-1"/>
+        <location file="faiss/IndexBinaryHash.h" line="66" column="1" bodyfile="faiss/IndexBinaryHash.h" bodystart="66" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryHashStats_1a7699c53b94f8b7172a189f34ba013464" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHash.h" line="67" column="12" bodyfile="faiss/IndexBinaryHash.h" bodystart="67" bodyend="-1"/>
+        <location file="faiss/IndexBinaryHash.h" line="67" column="1" bodyfile="faiss/IndexBinaryHash.h" bodystart="67" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryHashStats_1a8346efc7e23e52c8be4c8b1133299a86" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHash.h" line="68" column="12" bodyfile="faiss/IndexBinaryHash.h" bodystart="68" bodyend="-1"/>
+        <location file="faiss/IndexBinaryHash.h" line="68" column="1" bodyfile="faiss/IndexBinaryHash.h" bodystart="68" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryHashStats_1af4e3f7908fa1b7d786ee2657e55d7ad0" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -53,7 +53,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHash.h" line="69" column="12" bodyfile="faiss/IndexBinaryHash.h" bodystart="69" bodyend="-1"/>
+        <location file="faiss/IndexBinaryHash.h" line="69" column="1" bodyfile="faiss/IndexBinaryHash.h" bodystart="69" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -68,7 +68,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHash.h" line="71" column="5" bodyfile="faiss/IndexBinaryHash.h" bodystart="71" bodyend="71"/>
+        <location file="faiss/IndexBinaryHash.h" line="71" column="1" bodyfile="faiss/IndexBinaryHash.h" bodystart="71" bodyend="71"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryHashStats_1a6caf8ea01443aba3e451a8d6b7353c82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -81,14 +81,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHash.h" line="72" column="10"/>
+        <location file="faiss/IndexBinaryHash.h" line="72" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/IndexBinaryHash.h" line="65" column="27" bodyfile="faiss/IndexBinaryHash.h" bodystart="65" bodyend="73"/>
+    <location file="faiss/IndexBinaryHash.h" line="65" column="1" bodyfile="faiss/IndexBinaryHash.h" bodystart="65" bodyend="73"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexBinaryHashStats_1a948ec2f7bb6c7f66af0599d64c6e17d8" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHashStats</scope><name>IndexBinaryHashStats</name></member>
       <member refid="structfaiss_1_1IndexBinaryHashStats_1a7699c53b94f8b7172a189f34ba013464" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHashStats</scope><name>n0</name></member>

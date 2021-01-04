@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1gpu_1_1ToGpuCloner" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::ToGpuCloner</compoundname>
     <basecompoundref refid="structfaiss_1_1Cloner" prot="public" virt="non-virtual">faiss::Cloner</basecompoundref>
@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="31" column="26" bodyfile="faiss/gpu/GpuCloner.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/gpu/GpuCloner.h" line="31" column="1" bodyfile="faiss/gpu/GpuCloner.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1ToGpuCloner_1a6f68f4bdf04d86a1d45162822e85a224" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="32" column="9" bodyfile="faiss/gpu/GpuCloner.h" bodystart="32" bodyend="-1"/>
+        <location file="faiss/gpu/GpuCloner.h" line="32" column="1" bodyfile="faiss/gpu/GpuCloner.h" bodystart="32" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e" prot="public" static="no" mutable="no">
         <type>IndicesOptions</type>
@@ -40,11 +40,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>how should indices be stored on index types that support indices (anything but GpuIndexFlat*)? </para>
-        </detaileddescription>
+<para>how should indices be stored on index types that support indices (anything but GpuIndexFlat*)? </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="20" column="18" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="20" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="20" column="1" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="20" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a85f3093908b6e9a503c24bb226b17b1b" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -52,13 +51,12 @@
         <argsstring></argsstring>
         <name>useFloat16CoarseQuantizer</name>
         <briefdescription>
-<para>is the coarse quantizer in float16? </para>
-        </briefdescription>
+<para>is the coarse quantizer in float16? </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="23" column="8" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="23" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="23" column="1" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ac7cc57d6091d6a79ea6020bf8d1fbe27" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -68,11 +66,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>for <ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat" kindref="compound">GpuIndexIVFFlat</ref>, is storage in float16? for <ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" kindref="compound">GpuIndexIVFPQ</ref>, are intermediate calculations in float16? </para>
-        </detaileddescription>
+<para>for <ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat" kindref="compound">GpuIndexIVFFlat</ref>, is storage in float16? for <ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" kindref="compound">GpuIndexIVFPQ</ref>, are intermediate calculations in float16? </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="27" column="8" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="27" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="27" column="1" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc9c607f2dfc9f23942a523fb49c63fe" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -80,13 +77,12 @@
         <argsstring></argsstring>
         <name>usePrecomputed</name>
         <briefdescription>
-<para>use precomputed tables? </para>
-        </briefdescription>
+<para>use precomputed tables? </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="30" column="8" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="30" column="1" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="30" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04" prot="public" static="no" mutable="no">
         <type>long</type>
@@ -94,13 +90,12 @@
         <argsstring></argsstring>
         <name>reserveVecs</name>
         <briefdescription>
-<para>reserve vectors in the invfiles? </para>
-        </briefdescription>
+<para>reserve vectors in the invfiles? </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="33" column="8" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="33" column="1" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -108,13 +103,12 @@
         <argsstring></argsstring>
         <name>storeTransposed</name>
         <briefdescription>
-<para>For <ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">GpuIndexFlat</ref>, store data in transposed layout? </para>
-        </briefdescription>
+<para>For <ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">GpuIndexFlat</ref>, store data in transposed layout? </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="36" column="8" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="36" column="1" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -122,13 +116,12 @@
         <argsstring></argsstring>
         <name>verbose</name>
         <briefdescription>
-<para>Set verbose options on the index. </para>
-        </briefdescription>
+<para>Set verbose options on the index. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="39" column="8" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="39" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="39" column="1" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="39" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -155,7 +148,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="34" column="5"/>
+        <location file="faiss/gpu/GpuCloner.h" line="34" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1ToGpuCloner_1afd01f5d062a04d0ea3b2342cfac066bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -173,7 +166,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="37" column="11"/>
+        <location file="faiss/gpu/GpuCloner.h" line="37" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Cloner_1a6d0153062dcfde3da36a7ee845f0378e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> *</type>
@@ -189,7 +182,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/clone_index.h" line="30" column="29"/>
+        <location file="faiss/clone_index.h" line="30" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -205,58 +198,57 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/clone_index.h" line="32" column="22"/>
+        <location file="faiss/clone_index.h" line="32" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para><ref refid="structfaiss_1_1Cloner" kindref="compound">Cloner</ref> specialized for CPU -&gt; 1 GPU. </para>
-    </briefdescription>
+<para><ref refid="structfaiss_1_1Cloner" kindref="compound">Cloner</ref> specialized for CPU -&gt; 1 GPU. </para>    </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
+      <node id="848">
         <label>faiss::Cloner</label>
         <link refid="structfaiss_1_1Cloner"/>
       </node>
-      <node id="3">
+      <node id="849">
         <label>faiss::gpu::GpuClonerOptions</label>
         <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
       </node>
-      <node id="1">
+      <node id="847">
         <label>faiss::gpu::ToGpuCloner</label>
         <link refid="structfaiss_1_1gpu_1_1ToGpuCloner"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="848" relation="public-inheritance">
         </childnode>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="849" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
+      <node id="851">
         <label>faiss::Cloner</label>
         <link refid="structfaiss_1_1Cloner"/>
       </node>
-      <node id="4">
+      <node id="853">
         <label>faiss::gpu::GpuResourcesProvider</label>
         <link refid="classfaiss_1_1gpu_1_1GpuResourcesProvider"/>
       </node>
-      <node id="3">
+      <node id="852">
         <label>faiss::gpu::GpuClonerOptions</label>
         <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
       </node>
-      <node id="1">
+      <node id="850">
         <label>faiss::gpu::ToGpuCloner</label>
         <link refid="structfaiss_1_1gpu_1_1ToGpuCloner"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="851" relation="public-inheritance">
         </childnode>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="852" relation="public-inheritance">
         </childnode>
-        <childnode refid="4" relation="usage">
+        <childnode refid="853" relation="usage">
           <edgelabel>provider</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuCloner.h" line="30" column="50" bodyfile="faiss/gpu/GpuCloner.h" bodystart="30" bodyend="39"/>
+    <location file="faiss/gpu/GpuCloner.h" line="30" column="1" bodyfile="faiss/gpu/GpuCloner.h" bodystart="30" bodyend="39"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1ToGpuCloner_1afd01f5d062a04d0ea3b2342cfac066bb" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>clone_Index</name></member>
       <member refid="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>clone_IndexIVF</name></member>

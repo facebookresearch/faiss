@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="dir_ad53beca454033ad93eaf26a4bdf359c" kind="dir">
     <compoundname>faiss/gpu/utils/warpselect</compoundname>
     <innerfile refid="WarpSelectImpl_8cuh">WarpSelectImpl.cuh</innerfile>

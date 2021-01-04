@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="GpuCloner_8h" kind="file" language="C++">
     <compoundname>GpuCloner.h</compoundname>
     <includes local="no">vector</includes>
@@ -9,107 +9,107 @@
     <includes refid="GpuIndex_8h" local="no">faiss/gpu/GpuIndex.h</includes>
     <includes refid="GpuIndicesOptions_8h" local="no">faiss/gpu/GpuIndicesOptions.h</includes>
     <incdepgraph>
-      <node id="16">
+      <node id="72">
         <label>cublas_v2.h</label>
       </node>
-      <node id="1">
-        <label>faiss/gpu/GpuCloner.h</label>
-        <link refid="GpuCloner_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="15">
-        <label>cuda_runtime.h</label>
-      </node>
-      <node id="7">
-        <label>string</label>
-      </node>
-      <node id="13">
-        <label>faiss/gpu/GpuResources.h</label>
-        <link refid="GpuResources_8h_source"/>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
+      <node id="65">
         <label>faiss/clone_index.h</label>
         <link refid="clone__index_8h_source"/>
       </node>
-      <node id="11">
+      <node id="71">
+        <label>cuda_runtime.h</label>
+      </node>
+      <node id="63">
+        <label>string</label>
+      </node>
+      <node id="66">
+        <label>faiss/gpu/GpuClonerOptions.h</label>
+        <link refid="GpuClonerOptions_8h_source"/>
+        <childnode refid="67" relation="include">
+        </childnode>
+      </node>
+      <node id="70">
+        <label>faiss/impl/FaissAssert.h</label>
+      </node>
+      <node id="69">
+        <label>faiss/gpu/GpuResources.h</label>
+        <link refid="GpuResources_8h_source"/>
+        <childnode refid="70" relation="include">
+        </childnode>
+        <childnode refid="71" relation="include">
+        </childnode>
+        <childnode refid="72" relation="include">
+        </childnode>
+        <childnode refid="73" relation="include">
+        </childnode>
+        <childnode refid="74" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+      </node>
+      <node id="62">
+        <label>typeinfo</label>
+      </node>
+      <node id="61">
+        <label>cstdio</label>
+      </node>
+      <node id="67">
         <label>faiss/gpu/GpuIndicesOptions.h</label>
         <link refid="GpuIndicesOptions_8h_source"/>
       </node>
-      <node id="14">
-        <label>faiss/impl/FaissAssert.h</label>
-      </node>
-      <node id="6">
-        <label>typeinfo</label>
-      </node>
-      <node id="5">
-        <label>cstdio</label>
-      </node>
-      <node id="2">
+      <node id="58">
         <label>vector</label>
       </node>
-      <node id="18">
+      <node id="74">
         <label>utility</label>
       </node>
-      <node id="8">
+      <node id="64">
         <label>sstream</label>
       </node>
-      <node id="12">
-        <label>faiss/gpu/GpuIndex.h</label>
-        <link refid="GpuIndex_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>faiss/gpu/GpuClonerOptions.h</label>
-        <link refid="GpuClonerOptions_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
+      <node id="59">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="4" relation="include">
+        <childnode refid="60" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="61" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="62" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="63" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="64" relation="include">
         </childnode>
       </node>
-      <node id="17">
-        <label>memory</label>
+      <node id="57">
+        <label>faiss/gpu/GpuCloner.h</label>
+        <link refid="GpuCloner_8h"/>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="65" relation="include">
+        </childnode>
+        <childnode refid="66" relation="include">
+        </childnode>
+        <childnode refid="68" relation="include">
+        </childnode>
+        <childnode refid="67" relation="include">
+        </childnode>
       </node>
-      <node id="4">
+      <node id="60">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+      </node>
+      <node id="68">
+        <label>faiss/gpu/GpuIndex.h</label>
+        <link refid="GpuIndex_8h_source"/>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="69" relation="include">
+        </childnode>
+      </node>
+      <node id="73">
+        <label>memory</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1gpu_1_1ToCPUCloner" prot="public">faiss::gpu::ToCPUCloner</innerclass>
@@ -179,7 +179,7 @@
 <codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<sp/>clone_Index_to_shards<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index);</highlight></codeline>
 <codeline lineno="56"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="57"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>main<sp/>function</highlight></codeline>
-<codeline lineno="58"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<ref refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a6704701942e76bff3e2445c41d67deff" kindref="member">clone_Index</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*clone_Index(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="59"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="60"><highlight class="normal"></highlight></codeline>
 <codeline lineno="61"><highlight class="normal"></highlight></codeline>

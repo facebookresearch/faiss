@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="OnDiskInvertedLists_8h" kind="file" language="C++">
     <compoundname>OnDiskInvertedLists.h</compoundname>
     <includes local="no">vector</includes>
@@ -9,182 +9,182 @@
     <includes refid="InvertedListsIOHook_8h" local="no">faiss/invlists/InvertedListsIOHook.h</includes>
     <includes refid="index__io_8h" local="no">faiss/index_io.h</includes>
     <incdepgraph>
-      <node id="3">
+      <node id="1100">
         <label>list</label>
       </node>
-      <node id="14">
-        <label>faiss/invlists/DirectMap.h</label>
-        <link refid="DirectMap_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="22">
+      <node id="1119">
         <label>limits</label>
       </node>
-      <node id="16">
+      <node id="1113">
         <label>faiss/impl/platform_macros.h</label>
       </node>
-      <node id="17">
-        <label>faiss/utils/Heap.h</label>
-        <link refid="Heap_8h_source"/>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>stdint.h</label>
-      </node>
-      <node id="20">
-        <label>cmath</label>
-      </node>
-      <node id="21">
-        <label>cassert</label>
-      </node>
-      <node id="15">
+      <node id="1112">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h_source"/>
-        <childnode refid="8" relation="include">
+        <childnode refid="1105" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="11">
-        <label>string</label>
-      </node>
-      <node id="1">
-        <label>faiss/invlists/OnDiskInvertedLists.h</label>
-        <link refid="OnDiskInvertedLists_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="1099" relation="include">
         </childnode>
       </node>
-      <node id="4">
-        <label>typeinfo</label>
+      <node id="1104">
+        <label>stdint.h</label>
       </node>
-      <node id="10">
-        <label>cstdio</label>
-      </node>
-      <node id="5">
+      <node id="1102">
         <label>faiss/IndexIVF.h</label>
         <link refid="IndexIVF_8h_source"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1099" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="1103" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="1104" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="1105" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="1110" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="1111" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="1112" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="1113" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>vector</label>
-      </node>
-      <node id="12">
-        <label>sstream</label>
-      </node>
-      <node id="26">
-        <label>faiss/index_io.h</label>
-        <link refid="index__io_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
+        <childnode refid="1114" relation="include">
         </childnode>
       </node>
-      <node id="24">
-        <label>faiss/invlists/InvertedListsIOHook.h</label>
-        <link refid="InvertedListsIOHook_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
-      </node>
-      <node id="13">
+      <node id="1110">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1099" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="1105" relation="include">
         </childnode>
       </node>
-      <node id="6">
-        <label>unordered_map</label>
+      <node id="1117">
+        <label>cmath</label>
       </node>
-      <node id="18">
-        <label>climits</label>
+      <node id="1118">
+        <label>cassert</label>
       </node>
-      <node id="25">
-        <label>faiss/impl/io.h</label>
+      <node id="1108">
+        <label>string</label>
       </node>
-      <node id="23">
+      <node id="1098">
+        <label>faiss/invlists/OnDiskInvertedLists.h</label>
+        <link refid="OnDiskInvertedLists_8h"/>
+        <childnode refid="1099" relation="include">
+        </childnode>
+        <childnode refid="1100" relation="include">
+        </childnode>
+        <childnode refid="1101" relation="include">
+        </childnode>
+        <childnode refid="1102" relation="include">
+        </childnode>
+        <childnode refid="1121" relation="include">
+        </childnode>
+        <childnode refid="1123" relation="include">
+        </childnode>
+      </node>
+      <node id="1101">
+        <label>typeinfo</label>
+      </node>
+      <node id="1107">
+        <label>cstdio</label>
+      </node>
+      <node id="1099">
+        <label>vector</label>
+      </node>
+      <node id="1109">
+        <label>sstream</label>
+      </node>
+      <node id="1114">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="1115" relation="include">
+        </childnode>
+        <childnode refid="1116" relation="include">
+        </childnode>
+        <childnode refid="1117" relation="include">
+        </childnode>
+        <childnode refid="1118" relation="include">
+        </childnode>
+        <childnode refid="1107" relation="include">
+        </childnode>
+        <childnode refid="1104" relation="include">
+        </childnode>
+        <childnode refid="1119" relation="include">
+        </childnode>
+        <childnode refid="1120" relation="include">
+        </childnode>
+      </node>
+      <node id="1120">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="18" relation="include">
+        <childnode refid="1115" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="1117" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="1119" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="1103">
+        <label>unordered_map</label>
+      </node>
+      <node id="1115">
+        <label>climits</label>
+      </node>
+      <node id="1122">
+        <label>faiss/impl/io.h</label>
+      </node>
+      <node id="1105">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="9" relation="include">
+        <childnode refid="1106" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="1107" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="1101" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="1108" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="1109" relation="include">
         </childnode>
       </node>
-      <node id="19">
-        <label>cstring</label>
-      </node>
-      <node id="9">
+      <node id="1106">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+      </node>
+      <node id="1111">
+        <label>faiss/invlists/DirectMap.h</label>
+        <link refid="DirectMap_8h_source"/>
+        <childnode refid="1110" relation="include">
+        </childnode>
+        <childnode refid="1103" relation="include">
+        </childnode>
+      </node>
+      <node id="1123">
+        <label>faiss/index_io.h</label>
+        <link refid="index__io_8h_source"/>
+        <childnode refid="1107" relation="include">
+        </childnode>
+        <childnode refid="1101" relation="include">
+        </childnode>
+        <childnode refid="1108" relation="include">
+        </childnode>
+        <childnode refid="1099" relation="include">
+        </childnode>
+      </node>
+      <node id="1121">
+        <label>faiss/invlists/InvertedListsIOHook.h</label>
+        <link refid="InvertedListsIOHook_8h_source"/>
+        <childnode refid="1108" relation="include">
+        </childnode>
+        <childnode refid="1110" relation="include">
+        </childnode>
+        <childnode refid="1122" relation="include">
+        </childnode>
+      </node>
+      <node id="1116">
+        <label>cstring</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1OnDiskOneList" prot="public">faiss::OnDiskOneList</innerclass>
@@ -280,12 +280,12 @@
 <codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>*ptr;<sp/></highlight><highlight class="comment">//<sp/>mmap<sp/>base<sp/>pointer</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>read_only;<sp/><sp/></highlight><highlight class="comment">///<sp/>are<sp/>inverted<sp/>lists<sp/>mapped<sp/>read-only</highlight></codeline>
 <codeline lineno="83"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1OnDiskInvertedLists" kindref="compound">OnDiskInvertedLists</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" kindref="member">nlist</ref>,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists_1ae06049e4259edb47d443ef87bdedc744" kindref="member">code_size</ref>,</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1OnDiskInvertedLists" kindref="compound">OnDiskInvertedLists</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nlist,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>code_size,</highlight></codeline>
 <codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*filename);</highlight></codeline>
 <codeline lineno="86"><highlight class="normal"></highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1a19b264dfe5a541c1427d3b635ad887f5" kindref="member">list_size</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t<sp/>*<sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1a0fd755d5a0a55e9b9bf36f4ad32b2290" kindref="member">get_codes</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t<sp/>*<sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1a6849bca243f4b90d04bd3ee089b3a73e" kindref="member">get_ids</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_size(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t<sp/>*<sp/>get_codes<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t<sp/>*<sp/>get_ids<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="90"><highlight class="normal"></highlight></codeline>
 <codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>add_entries<sp/>(</highlight></codeline>
 <codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n_entry,</highlight></codeline>
@@ -301,12 +301,12 @@
 <codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>merge_from<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>**ils,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n_il,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>verbose=</highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="103"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="104"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>same<sp/>as<sp/>merge_from<sp/>for<sp/>a<sp/>single<sp/>invlist</highlight></codeline>
-<codeline lineno="105"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1af5d433fa2f151e2d32a216d83c977e17" kindref="member">merge_from_1</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*il,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>verbose=</highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="105"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>merge_from_1<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*il,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>verbose=</highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="106"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>restrict<sp/>the<sp/>inverted<sp/>lists<sp/>to<sp/>l0:l1<sp/>without<sp/>touching<sp/>the<sp/>mmapped<sp/>region</highlight></codeline>
-<codeline lineno="108"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1a0dbb919e454c26aaa1b907bdf35d3b55" kindref="member">crop_invlists</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>l0,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>l1);</highlight></codeline>
+<codeline lineno="108"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>crop_invlists(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>l0,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>l1);</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"></highlight></codeline>
-<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1a04ad61e3a23ced0aea032bf1e699436d" kindref="member">prefetch_lists</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t<sp/>*list_nos,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" kindref="member">nlist</ref>)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>prefetch_lists<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t<sp/>*list_nos,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nlist)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="111"><highlight class="normal"></highlight></codeline>
 <codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1OnDiskInvertedLists" kindref="compound">OnDiskInvertedLists</ref><sp/>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="113"><highlight class="normal"></highlight></codeline>
@@ -326,7 +326,7 @@
 <codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>free_slot<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>offset,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>capacity);</highlight></codeline>
 <codeline lineno="128"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="129"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>override<sp/>all<sp/>list<sp/>sizes<sp/>and<sp/>make<sp/>a<sp/>packed<sp/>storage</highlight></codeline>
-<codeline lineno="130"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1afac59f9ed8a6a70ade1eda9df31a977a" kindref="member">set_all_lists_sizes</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>*sizes);</highlight></codeline>
+<codeline lineno="130"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_all_lists_sizes(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>*sizes);</highlight></codeline>
 <codeline lineno="131"><highlight class="normal"></highlight></codeline>
 <codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>empty<sp/>constructor<sp/>for<sp/>the<sp/>I/O<sp/>functions</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1OnDiskInvertedLists" kindref="compound">OnDiskInvertedLists</ref><sp/>();</highlight></codeline>
@@ -334,9 +334,9 @@
 <codeline lineno="135"><highlight class="normal"></highlight></codeline>
 <codeline lineno="136" refid="structfaiss_1_1OnDiskInvertedListsIOHook" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1OnDiskInvertedListsIOHook" kindref="compound">OnDiskInvertedListsIOHook</ref>:<sp/><ref refid="structfaiss_1_1InvertedListsIOHook" kindref="compound">InvertedListsIOHook</ref><sp/>{</highlight></codeline>
 <codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1OnDiskInvertedListsIOHook" kindref="compound">OnDiskInvertedListsIOHook</ref>();</highlight></codeline>
-<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OnDiskInvertedListsIOHook_1ab1acdd64fa8a9cb97fafbd5902122ddd" kindref="member">write</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*ils,<sp/>IOWriter<sp/>*f)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*<sp/><ref refid="structfaiss_1_1OnDiskInvertedListsIOHook_1a9c5def4c9b6b157ee931d2d7f1ec2910" kindref="member">read</ref>(IOReader<sp/>*f,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>io_flags)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*<sp/><ref refid="structfaiss_1_1OnDiskInvertedListsIOHook_1a9b69d2e66d8dc44f2a7c78848d565c84" kindref="member">read_ArrayInvertedLists</ref>(</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>write(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*ils,<sp/>IOWriter<sp/>*f)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*<sp/>read(IOReader<sp/>*f,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>io_flags)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*<sp/>read_ArrayInvertedLists(</highlight></codeline>
 <codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IOReader<sp/>*f,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>io_flags,</highlight></codeline>
 <codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nlist,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>code_size,</highlight></codeline>
 <codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;size_t&gt;<sp/>&amp;sizes)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>

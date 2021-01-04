@@ -1,17 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="StaticUtils_8h" kind="file" language="C++">
     <compoundname>StaticUtils.h</compoundname>
     <includes local="no">cuda.h</includes>
     <incdepgraph>
-      <node id="2">
-        <label>cuda.h</label>
-      </node>
-      <node id="1">
+      <node id="413">
         <label>faiss/gpu/utils/StaticUtils.h</label>
         <link refid="StaticUtils_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="414" relation="include">
         </childnode>
+      </node>
+      <node id="414">
+        <label>cuda.h</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
@@ -23,9 +23,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. </para>
-        </detaileddescription>
+<para>Copyright (c) Facebook, Inc. and its affiliates.</para><para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/gpu/utils/StaticUtils.h" line="15" column="9" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="15" bodyend="-1"/>

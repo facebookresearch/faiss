@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.17">
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.13">
   <compound refid="structfaiss_1_1AlignedTable" kind="struct"><name>faiss::AlignedTable</name>
     <member refid="structfaiss_1_1AlignedTable_1a6b71c9654cff088a16e5c24466379774" kind="variable"><name>tab</name></member>
     <member refid="structfaiss_1_1AlignedTable_1a9faf9b717285bba439b0868722a34186" kind="variable"><name>numel</name></member>
@@ -3168,6 +3168,7 @@
     <member refid="structfaiss_1_1OneRecallAtRCriterion_1afe472c2ae38534c293b02feebf87988d" kind="function"><name>evaluate</name></member>
     <member refid="structfaiss_1_1OneRecallAtRCriterion_1a79b1af707034d3984debd15a6aa34255" kind="function"><name>~OneRecallAtRCriterion</name></member>
     <member refid="structfaiss_1_1AutoTuneCriterion_1a174f0de8e6fd01905f5fa2170f5039d8" kind="function"><name>set_groundtruth</name></member>
+    <member refid="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" kind="function"><name>evaluate</name></member>
     <member refid="structfaiss_1_1AutoTuneCriterion_1a7873f86515af86a77eaaea1f6b13e982" kind="typedef"><name>idx_t</name></member>
   </compound>
   <compound refid="structfaiss_1_1OperatingPoint" kind="struct"><name>faiss::OperatingPoint</name>
@@ -3434,7 +3435,7 @@
     <member refid="structfaiss_1_1simd16uint16_1aa676f9e0e5d37679f277d41f7c7f83fe" kind="function"><name>operator-=</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a0f93d38a2f5d3be0f20d67c83a9bbd5f" kind="function"><name>operator+</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a6d2d684064a30e4abed588f4e905d269" kind="function"><name>operator-</name></member>
-    <member refid="structfaiss_1_1simd16uint16_1a830e428813f3f6ebeaf8cedecd451cd0" kind="function"><name>operator&amp;</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a5f51171ec82109ad8f5c9bc7175a286b" kind="function"><name>operator&amp;</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a2b2d70d950af35b865d4689eef341daa" kind="function"><name>operator|</name></member>
     <member refid="structfaiss_1_1simd16uint16_1aad122575768011e04cf9e6901cef4448" kind="function"><name>operator==</name></member>
     <member refid="structfaiss_1_1simd16uint16_1ac50c11751c0043f3a8232855a85982c5" kind="function"><name>operator~</name></member>
@@ -3461,7 +3462,7 @@
     <member refid="structfaiss_1_1simd16uint16_1aa676f9e0e5d37679f277d41f7c7f83fe" kind="function"><name>operator-=</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a0f93d38a2f5d3be0f20d67c83a9bbd5f" kind="function"><name>operator+</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a6d2d684064a30e4abed588f4e905d269" kind="function"><name>operator-</name></member>
-    <member refid="structfaiss_1_1simd16uint16_1a830e428813f3f6ebeaf8cedecd451cd0" kind="function"><name>operator&amp;</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a5f51171ec82109ad8f5c9bc7175a286b" kind="function"><name>operator&amp;</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a2b2d70d950af35b865d4689eef341daa" kind="function"><name>operator|</name></member>
     <member refid="structfaiss_1_1simd16uint16_1adba6c3ab9355b0934114abbb080faf4e" kind="function"><name>operator==</name></member>
     <member refid="structfaiss_1_1simd16uint16_1ac50c11751c0043f3a8232855a85982c5" kind="function"><name>operator~</name></member>
@@ -3535,7 +3536,7 @@
     <member refid="structfaiss_1_1simd32uint8_1a3dd9c7e5676c98b54f4a5fe09b6e24d4" kind="function"><name>hex</name></member>
     <member refid="structfaiss_1_1simd32uint8_1ac962d91b9b95592d27786049f756b9fd" kind="function"><name>dec</name></member>
     <member refid="structfaiss_1_1simd32uint8_1aa5f0d78560238a22d1c2195ebe920aa8" kind="function"><name>set1</name></member>
-    <member refid="structfaiss_1_1simd32uint8_1a721bdd92857caa1ee42ec612ad4eeae5" kind="function"><name>operator&amp;</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a70bd47ca12a7960c5766cf2f2a963b88" kind="function"><name>operator&amp;</name></member>
     <member refid="structfaiss_1_1simd32uint8_1a5a798e078468d52680065e303f0dcd69" kind="function"><name>operator+</name></member>
     <member refid="structfaiss_1_1simd32uint8_1a3e7e14811119074e4f425eed96b6ed3a" kind="function"><name>lookup_2_lanes</name></member>
     <member refid="structfaiss_1_1simd32uint8_1a60712b19d7e880431c5a240185c84ead" kind="function"><name>lane0_as_uint16</name></member>
@@ -3551,7 +3552,7 @@
     <member refid="structfaiss_1_1simd32uint8_1a3dd9c7e5676c98b54f4a5fe09b6e24d4" kind="function"><name>hex</name></member>
     <member refid="structfaiss_1_1simd32uint8_1ac962d91b9b95592d27786049f756b9fd" kind="function"><name>dec</name></member>
     <member refid="structfaiss_1_1simd32uint8_1aa5f0d78560238a22d1c2195ebe920aa8" kind="function"><name>set1</name></member>
-    <member refid="structfaiss_1_1simd32uint8_1a721bdd92857caa1ee42ec612ad4eeae5" kind="function"><name>operator&amp;</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a70bd47ca12a7960c5766cf2f2a963b88" kind="function"><name>operator&amp;</name></member>
     <member refid="structfaiss_1_1simd32uint8_1a5a798e078468d52680065e303f0dcd69" kind="function"><name>operator+</name></member>
     <member refid="structfaiss_1_1simd32uint8_1a3e7e14811119074e4f425eed96b6ed3a" kind="function"><name>lookup_2_lanes</name></member>
     <member refid="structfaiss_1_1simd32uint8_1a784675cb1a2d01a089ef4958d6c7f79a" kind="function"><name>operator+=</name></member>
@@ -3849,7 +3850,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04" kind="variable"><name>reserveVecs</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d" kind="variable"><name>storeTransposed</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397" kind="variable"><name>verbose</name></member>
-    <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1ac99efd0c009e45cc2ae23951697e13b9" kind="function"><name>ToGpuClonerMultiple</name></member>
+    <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a3335f799be19f7b19cd895c12cec74aa" kind="function"><name>ToGpuClonerMultiple</name></member>
     <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1aadb501df2f2cd16d4a09cba558f239e1" kind="function"><name>ToGpuClonerMultiple</name></member>
     <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a84da27fde8ad58baa5473b4f9c5c3e77" kind="function"><name>copy_ivf_shard</name></member>
     <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a71f1471f9d5e56bd73be48c575041a66" kind="function"><name>clone_Index_to_shards</name></member>
@@ -3886,8 +3887,6 @@
     <member refid="structfaiss_1_1ReadOnlyInvertedLists_1a0734538244d8c5969e3e23e38faf1c0c" kind="function"><name>add_entries</name></member>
     <member refid="structfaiss_1_1ReadOnlyInvertedLists_1a33c3a5174bcf6709dcefec8bdc4b9a52" kind="function"><name>update_entries</name></member>
     <member refid="structfaiss_1_1ReadOnlyInvertedLists_1a7b65c76388ba2fbc17a7060f6cf87039" kind="function"><name>resize</name></member>
-    <member refid="structfaiss_1_1InvertedLists_1ad9bd9641ac86e0851d39a96119db3e78" kind="function"><name>release_ids</name></member>
-    <member refid="structfaiss_1_1InvertedLists_1aa661652a062ecb58b02f10d2a671c9fe" kind="function"><name>prefetch_lists</name></member>
     <member refid="structfaiss_1_1InvertedLists_1a5b4328db9d4e2832de1a66bc6aa479de" kind="function"><name>add_entry</name></member>
     <member refid="structfaiss_1_1InvertedLists_1aa4fca5b69a56ab5b65274f3ff5ca7705" kind="function"><name>update_entry</name></member>
     <member refid="structfaiss_1_1InvertedLists_1ada14d9bbf04c21b36f61971abece616e" kind="function"><name>reset</name></member>
@@ -4101,11 +4100,11 @@
   </compound>
   <compound refid="namespacefaiss_1_1gpu" kind="namespace"><name>faiss::gpu</name>
     <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268" kind="enum"><name>DistanceDataType</name></member>
-    <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268a44ad4ef5a76e6aa6fb3e3fa079a54fda" kind="enumvalue"><name>F32</name></member>
-    <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268a56d8353718e6fdc78b8d69078a2cdb94" kind="enumvalue"><name>F16</name></member>
+    <member refid="dummy_1aa22865a7603feb994c5946c7c4d12268a44ad4ef5a76e6aa6fb3e3fa079a54fda" kind="enumvalue"><name>F32</name></member>
+    <member refid="dummy_1aa22865a7603feb994c5946c7c4d12268a56d8353718e6fdc78b8d69078a2cdb94" kind="enumvalue"><name>F16</name></member>
     <member refid="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480" kind="enum"><name>IndicesDataType</name></member>
-    <member refid="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480ae7e62f6928f76df671b5a0379793fab6" kind="enumvalue"><name>I64</name></member>
-    <member refid="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480ad878ea6016bfe01729548bf442de5a8b" kind="enumvalue"><name>I32</name></member>
+    <member refid="dummy_1a6b68daa1ef37853ef9cab2ae9007b480ae7e62f6928f76df671b5a0379793fab6" kind="enumvalue"><name>I64</name></member>
+    <member refid="dummy_1a6b68daa1ef37853ef9cab2ae9007b480ad878ea6016bfe01729548bf442de5a8b" kind="enumvalue"><name>I32</name></member>
     <member refid="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459" kind="enum"><name>IndicesOptions</name></member>
     <member refid="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a588811aea072aa57c268dec24d16ad81" kind="enumvalue"><name>INDICES_CPU</name></member>
     <member refid="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a86cdd363f1311a43e0e99ebdc909311c" kind="enumvalue"><name>INDICES_IVF</name></member>
@@ -4125,7 +4124,7 @@
     <member refid="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67a0ee0f76a9dabbd16f80c5382472af6d6" kind="enumvalue"><name>Unified</name></member>
     <member refid="GpuCloner_8h_1a500b37234fbe71aed08ff67c3d7926dd" kind="function"><name>index_gpu_to_cpu</name></member>
     <member refid="GpuCloner_8h_1a05cb0b5db1ebcd508cb0a259d4b536ab" kind="function"><name>index_cpu_to_gpu</name></member>
-    <member refid="GpuCloner_8h_1a70e1ea3a49957b88b2de70f21b588735" kind="function"><name>index_cpu_to_gpu_multiple</name></member>
+    <member refid="GpuCloner_8h_1ab26ee0f17fbf17d28c91d9107e19f921" kind="function"><name>index_cpu_to_gpu_multiple</name></member>
     <member refid="GpuDistance_8h_1a29928698b9b3bae60ff6f7e7d79e0354" kind="function"><name>bfKnn</name></member>
     <member refid="GpuDistance_8h_1a36de9d33475f2c592eaf24a0f82f43b7" kind="function"><name>bruteForceKnn</name></member>
     <member refid="GpuResources_8h_1a01cfc3c8a312c3e60e1909eeb0941301" kind="function"><name>allocTypeToString</name></member>

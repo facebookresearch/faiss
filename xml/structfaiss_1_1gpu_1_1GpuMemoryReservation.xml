@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1gpu_1_1GpuMemoryReservation" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuMemoryReservation</compoundname>
     <includes refid="GpuResources_8h" local="no">GpuResources.h</includes>
@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="176" column="16" bodyfile="faiss/gpu/GpuResources.h" bodystart="176" bodyend="-1"/>
+        <location file="faiss/gpu/GpuResources.h" line="176" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="176" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a88f82c738e2527dfec47cf526237757c" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -28,7 +28,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="177" column="7" bodyfile="faiss/gpu/GpuResources.h" bodystart="177" bodyend="-1"/>
+        <location file="faiss/gpu/GpuResources.h" line="177" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="177" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1ae42376827d02e31fe88ca0d79eab557a" prot="public" static="no" mutable="no">
         <type>cudaStream_t</type>
@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="178" column="16" bodyfile="faiss/gpu/GpuResources.h" bodystart="178" bodyend="-1"/>
+        <location file="faiss/gpu/GpuResources.h" line="178" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="178" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1ae8b2f577d470cccf55e138708151cba1" prot="public" static="no" mutable="no">
         <type>void *</type>
@@ -54,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="179" column="8" bodyfile="faiss/gpu/GpuResources.h" bodystart="179" bodyend="-1"/>
+        <location file="faiss/gpu/GpuResources.h" line="179" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="179" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a9d6c29b2ff05c2b3aa6bc0183719444e" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -67,7 +67,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="180" column="10" bodyfile="faiss/gpu/GpuResources.h" bodystart="180" bodyend="-1"/>
+        <location file="faiss/gpu/GpuResources.h" line="180" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="180" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -82,7 +82,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="161" column="3"/>
+        <location file="faiss/gpu/GpuResources.h" line="161" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a21e29e3f8f04d34f03718c3eaad3d7ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -115,9 +115,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="162" column="3"/>
+        <location file="faiss/gpu/GpuResources.h" line="162" column="1"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a9f40022a8ca5ff60fe704b9d462fa096" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a9f40022a8ca5ff60fe704b9d462fa096" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::GpuMemoryReservation::GpuMemoryReservation</definition>
         <argsstring>(GpuMemoryReservation &amp;&amp;m) noexcept</argsstring>
@@ -132,7 +132,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="167" column="3"/>
+        <location file="faiss/gpu/GpuResources.h" line="167" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a24a41906bdc0f87e5ad3f0849df09c63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -145,7 +145,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="168" column="3"/>
+        <location file="faiss/gpu/GpuResources.h" line="168" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a2e36ac15a92691b0037d2f0ec9db833b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref> &amp;</type>
@@ -162,7 +162,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="170" column="24"/>
+        <location file="faiss/gpu/GpuResources.h" line="170" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a4894ba319a954367fc9a7d8e17ce0200" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void *</type>
@@ -175,7 +175,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="172" column="15" bodyfile="faiss/gpu/GpuResources.h" bodystart="172" bodyend="172"/>
+        <location file="faiss/gpu/GpuResources.h" line="172" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="172" bodyend="172"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a3420ab9b0a349ca60b9763268174c120" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -188,28 +188,27 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="174" column="8"/>
+        <location file="faiss/gpu/GpuResources.h" line="174" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>A RAII object that manages a temporary memory request. </para>
-    </briefdescription>
+<para>A RAII object that manages a temporary memory request. </para>    </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <collaborationgraph>
-      <node id="2">
+      <node id="237">
         <label>faiss::gpu::GpuResources</label>
         <link refid="classfaiss_1_1gpu_1_1GpuResources"/>
       </node>
-      <node id="1">
+      <node id="236">
         <label>faiss::gpu::GpuMemoryReservation</label>
         <link refid="structfaiss_1_1gpu_1_1GpuMemoryReservation"/>
-        <childnode refid="2" relation="usage">
+        <childnode refid="237" relation="usage">
           <edgelabel>res</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuResources.h" line="160" column="27" bodyfile="faiss/gpu/GpuResources.h" bodystart="160" bodyend="181"/>
+    <location file="faiss/gpu/GpuResources.h" line="160" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="160" bodyend="181"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1ae8b2f577d470cccf55e138708151cba1" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>data</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a88f82c738e2527dfec47cf526237757c" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>device</name></member>

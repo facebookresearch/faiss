@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="AlignedTable_8h" kind="file" language="C++">
     <compoundname>AlignedTable.h</compoundname>
     <includes local="no">cstdint</includes>
@@ -13,77 +13,77 @@
     <includedby refid="IndexPQFastScan_8h" local="no">faiss/IndexPQFastScan.h</includedby>
     <includedby refid="BlockInvertedLists_8h" local="no">faiss/invlists/BlockInvertedLists.h</includedby>
     <incdepgraph>
-      <node id="7">
-        <label>faiss/impl/platform_macros.h</label>
-      </node>
-      <node id="2">
-        <label>cstdint</label>
-      </node>
-      <node id="4">
-        <label>cassert</label>
-      </node>
-      <node id="3">
-        <label>cstdlib</label>
-      </node>
-      <node id="6">
-        <label>algorithm</label>
-      </node>
-      <node id="1">
+      <node id="1233">
         <label>faiss/utils/AlignedTable.h</label>
         <link refid="AlignedTable_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1234" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="1235" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="1236" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="1237" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="1238" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="1239" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="1239">
+        <label>faiss/impl/platform_macros.h</label>
+      </node>
+      <node id="1234">
+        <label>cstdint</label>
+      </node>
+      <node id="1236">
+        <label>cassert</label>
+      </node>
+      <node id="1235">
+        <label>cstdlib</label>
+      </node>
+      <node id="1238">
+        <label>algorithm</label>
+      </node>
+      <node id="1237">
         <label>cstring</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="6">
-        <label>faiss/invlists/BlockInvertedLists.h</label>
-        <link refid="BlockInvertedLists_8h_source"/>
-      </node>
-      <node id="4">
-        <label>faiss/IndexIVFPQR.h</label>
-        <link refid="IndexIVFPQR_8h_source"/>
-      </node>
-      <node id="2">
+      <node id="1241">
         <label>faiss/IndexIVFPQ.h</label>
         <link refid="IndexIVFPQ_8h_source"/>
-        <childnode refid="3" relation="include">
+        <childnode refid="1242" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="1243" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>faiss/IndexIVFPQFastScan.h</label>
-        <link refid="IndexIVFPQFastScan_8h_source"/>
+      <node id="1240">
+        <label>faiss/utils/AlignedTable.h</label>
+        <link refid="AlignedTable_8h"/>
+        <childnode refid="1241" relation="include">
+        </childnode>
+        <childnode refid="1242" relation="include">
+        </childnode>
+        <childnode refid="1244" relation="include">
+        </childnode>
+        <childnode refid="1245" relation="include">
+        </childnode>
       </node>
-      <node id="5">
+      <node id="1244">
         <label>faiss/IndexPQFastScan.h</label>
         <link refid="IndexPQFastScan_8h_source"/>
       </node>
-      <node id="1">
-        <label>faiss/utils/AlignedTable.h</label>
-        <link refid="AlignedTable_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
+      <node id="1242">
+        <label>faiss/IndexIVFPQFastScan.h</label>
+        <link refid="IndexIVFPQFastScan_8h_source"/>
+      </node>
+      <node id="1243">
+        <label>faiss/IndexIVFPQR.h</label>
+        <link refid="IndexIVFPQR_8h_source"/>
+      </node>
+      <node id="1245">
+        <label>faiss/invlists/BlockInvertedLists.h</label>
+        <link refid="BlockInvertedLists_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1AlignedTableTightAlloc" prot="public">faiss::AlignedTableTightAlloc</innerclass>
@@ -162,8 +162,8 @@
 <codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>numel;<sp/>}</highlight></codeline>
 <codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nbytes()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>numel<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(T);<sp/>}</highlight></codeline>
 <codeline lineno="68"><highlight class="normal"></highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/>get()<sp/>{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ptr;<sp/>}</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/>get()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ptr;<sp/>}</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/></highlight><highlight class="keyword">get</highlight><highlight class="normal">()<sp/>{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ptr;<sp/>}</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/></highlight><highlight class="keyword">get</highlight><highlight class="normal">()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ptr;<sp/>}</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/>data()<sp/>{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ptr;<sp/>}</highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/>data()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ptr;<sp/>}</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>&amp;<sp/>operator<sp/>[]<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)<sp/><sp/>{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ptr[i];<sp/>}</highlight></codeline>
@@ -222,8 +222,8 @@
 <codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>numel;<sp/>}</highlight></codeline>
 <codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nbytes()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>numel<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(T);<sp/>}</highlight></codeline>
 <codeline lineno="128"><highlight class="normal"></highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/>get()<sp/>{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>tab.get();<sp/>}</highlight></codeline>
-<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/>get()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>tab.get();<sp/>}</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/></highlight><highlight class="keyword">get</highlight><highlight class="normal">()<sp/>{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>tab.get();<sp/>}</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/></highlight><highlight class="keyword">get</highlight><highlight class="normal">()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>tab.get();<sp/>}</highlight></codeline>
 <codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/>data()<sp/>{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>tab.get();<sp/>}</highlight></codeline>
 <codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/>data()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>tab.get();<sp/>}</highlight></codeline>
 <codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>&amp;<sp/>operator<sp/>[]<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)<sp/><sp/>{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>tab.ptr[i];<sp/>}</highlight></codeline>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kind="struct" language="C++" prot="protected">
     <compoundname>faiss::gpu::StackDeviceMemory::Stack</compoundname>
       <sectiondef kind="public-attrib">
@@ -9,13 +9,12 @@
         <argsstring></argsstring>
         <name>res_</name>
         <briefdescription>
-<para>Our <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> object. </para>
-        </briefdescription>
+<para>Our <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> object. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="79" column="18" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="79" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="79" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="79" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a0950e30ddd0008367a0fb109db9c01b9" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -23,13 +22,12 @@
         <argsstring></argsstring>
         <name>device_</name>
         <briefdescription>
-<para>Device this allocation is on. </para>
-        </briefdescription>
+<para>Device this allocation is on. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="82" column="9" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="82" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="82" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="82" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ad856213491fe150e623daf1732da6909" prot="public" static="no" mutable="no">
         <type>char *</type>
@@ -39,11 +37,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Where our temporary memory buffer is allocated; we allocate starting 16 bytes into this </para>
-        </detaileddescription>
+<para>Where our temporary memory buffer is allocated; we allocate starting 16 bytes into this </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="86" column="10" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="86" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="86" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="86" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ae85e9575618031342319550a9994b24c" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -51,13 +48,12 @@
         <argsstring></argsstring>
         <name>allocSize_</name>
         <briefdescription>
-<para>Total size of our allocation. </para>
-        </briefdescription>
+<para>Total size of our allocation. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="89" column="12" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="89" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="89" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="89" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aed64654e7d498114fdd48a6f1cdb1aa2" prot="public" static="no" mutable="no">
         <type>char *</type>
@@ -65,13 +61,12 @@
         <argsstring></argsstring>
         <name>start_</name>
         <briefdescription>
-<para>Our temporary memory region; [start_, end_) is valid. </para>
-        </briefdescription>
+<para>Our temporary memory region; [start_, end_) is valid. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="92" column="10" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="92" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="92" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="92" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a1db5eeb343fc59b9dc3f0303558c692b" prot="public" static="no" mutable="no">
         <type>char *</type>
@@ -84,7 +79,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="93" column="10" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="93" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="93" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="93" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a140d3dc4577883704708ecca493813ff" prot="public" static="no" mutable="no">
         <type>char *</type>
@@ -92,13 +87,12 @@
         <argsstring></argsstring>
         <name>head_</name>
         <briefdescription>
-<para><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref> head within [start, end) </para>
-        </briefdescription>
+<para><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref> head within [start, end) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="96" column="10" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="96" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="96" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="96" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9fc42fbbe671faee41ea85a68bdb6b1e" prot="public" static="no" mutable="no">
         <type>std::list&lt; <ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range" kindref="compound">Range</ref> &gt;</type>
@@ -108,11 +102,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>List of previous last users of allocations on our stack, for possible synchronization purposes </para>
-        </detaileddescription>
+<para>List of previous last users of allocations on our stack, for possible synchronization purposes </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="100" column="15" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="100" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="100" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="100" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aa05c1f4a5280fe723c9888937182df75" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -122,11 +115,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>What&apos;s the high water mark in terms of memory used from the temporary buffer? </para>
-        </detaileddescription>
+<para>What&apos;s the high water mark in terms of memory used from the temporary buffer? </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="104" column="12" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="104" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="104" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="104" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -148,13 +140,12 @@
           <declname>size</declname>
         </param>
         <briefdescription>
-<para>Constructor that allocates memory via cudaMalloc. </para>
-        </briefdescription>
+<para>Constructor that allocates memory via cudaMalloc. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="60" column="5"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="60" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a79be10f299ef6152040bff6c0cdd51ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -167,7 +158,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="62" column="5"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="62" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a897d537bc1505843de36e104c1c9163c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -177,11 +168,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Returns how much size is available for an allocation without calling cudaMalloc </para>
-        </detaileddescription>
+<para>Returns how much size is available for an allocation without calling cudaMalloc </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="66" column="12"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="66" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a2ff2675de5f5dbfc50d8ca8400845396" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>char *</type>
@@ -199,11 +189,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Obtains an allocation; all allocations are guaranteed to be 16 byte aligned </para>
-        </detaileddescription>
+<para>Obtains an allocation; all allocations are guaranteed to be 16 byte aligned </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="70" column="10"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="70" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a5c652c126c2bf37149995cdb9d46a382" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -223,13 +212,12 @@
           <declname>stream</declname>
         </param>
         <briefdescription>
-<para>Returns an allocation. </para>
-        </briefdescription>
+<para>Returns an allocation. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="73" column="10"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="73" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a85a65314a9a97a91d36bf1398f07f17d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -237,13 +225,12 @@
         <argsstring>() const</argsstring>
         <name>toString</name>
         <briefdescription>
-<para>Returns the stack state. </para>
-        </briefdescription>
+<para>Returns the stack state. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="76" column="17"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="76" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -251,19 +238,19 @@
     <detaileddescription>
     </detaileddescription>
     <collaborationgraph>
-      <node id="2">
+      <node id="824">
         <label>faiss::gpu::GpuResources</label>
         <link refid="classfaiss_1_1gpu_1_1GpuResources"/>
       </node>
-      <node id="1">
+      <node id="823">
         <label>faiss::gpu::StackDeviceMemory::Stack</label>
         <link refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack"/>
-        <childnode refid="2" relation="usage">
+        <childnode refid="824" relation="usage">
           <edgelabel>res_</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/utils/StackDeviceMemory.h" line="58" column="14" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="58" bodyend="105"/>
+    <location file="faiss/gpu/utils/StackDeviceMemory.h" line="58" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="58" bodyend="105"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ad856213491fe150e623daf1732da6909" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory::Stack</scope><name>alloc_</name></member>
       <member refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ae85e9575618031342319550a9994b24c" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory::Stack</scope><name>allocSize_</name></member>

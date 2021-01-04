@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1IndexBinaryFlat" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexBinaryFlat</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexBinary" prot="public" virt="non-virtual">faiss::IndexBinary</basecompoundref>
@@ -11,13 +11,12 @@
         <argsstring></argsstring>
         <name>xb</name>
         <briefdescription>
-<para>database vectors, size ntotal * d / 8 </para>
-        </briefdescription>
+<para>database vectors, size ntotal * d / 8 </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="23" column="15" bodyfile="faiss/IndexBinaryFlat.h" bodystart="23" bodyend="-1"/>
+        <location file="faiss/IndexBinaryFlat.h" line="23" column="1" bodyfile="faiss/IndexBinaryFlat.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryFlat_1a9fa80e22a4accee4da0ee152a4910c1b" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -28,11 +27,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Select between using a heap or counting to select the k smallest values when scanning inverted lists. </para>
-        </detaileddescription>
+<para>Select between using a heap or counting to select the k smallest values when scanning inverted lists. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="28" column="8" bodyfile="faiss/IndexBinaryFlat.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/IndexBinaryFlat.h" line="28" column="1" bodyfile="faiss/IndexBinaryFlat.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryFlat_1a7f0b7f4b7c17add8e4f0106c52f4d889" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -46,7 +44,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="30" column="10" bodyfile="faiss/IndexBinaryFlat.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/IndexBinaryFlat.h" line="30" column="1" bodyfile="faiss/IndexBinaryFlat.h" bodystart="30" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -54,13 +52,12 @@
         <argsstring></argsstring>
         <name>d</name>
         <briefdescription>
-<para>vector dimension </para>
-        </briefdescription>
+<para>vector dimension </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="41" column="7" bodyfile="faiss/IndexBinary.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/IndexBinary.h" line="41" column="1" bodyfile="faiss/IndexBinary.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -68,13 +65,12 @@
         <argsstring></argsstring>
         <name>code_size</name>
         <briefdescription>
-<para>number of bytes per vector ( = d / 8 ) </para>
-        </briefdescription>
+<para>number of bytes per vector ( = d / 8 ) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="42" column="7" bodyfile="faiss/IndexBinary.h" bodystart="42" bodyend="-1"/>
+        <location file="faiss/IndexBinary.h" line="42" column="1" bodyfile="faiss/IndexBinary.h" bodystart="42" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinary_1a41b6759d127475d5fcd2b3982a8f355e" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IndexBinary_1a01749bbdbd3b7ec6bb9390257ab16c5c" kindref="member">idx_t</ref></type>
@@ -82,13 +78,12 @@
         <argsstring></argsstring>
         <name>ntotal</name>
         <briefdescription>
-<para>total nb of indexed vectors </para>
-        </briefdescription>
+<para>total nb of indexed vectors </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="43" column="9" bodyfile="faiss/IndexBinary.h" bodystart="43" bodyend="-1"/>
+        <location file="faiss/IndexBinary.h" line="43" column="1" bodyfile="faiss/IndexBinary.h" bodystart="43" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinary_1a1656c00d77d55999becd71e3d8ea6dd7" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -96,13 +91,12 @@
         <argsstring></argsstring>
         <name>verbose</name>
         <briefdescription>
-<para>verbosity level </para>
-        </briefdescription>
+<para>verbosity level </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="44" column="8" bodyfile="faiss/IndexBinary.h" bodystart="44" bodyend="-1"/>
+        <location file="faiss/IndexBinary.h" line="44" column="1" bodyfile="faiss/IndexBinary.h" bodystart="44" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinary_1a132119ae93e240b54621c5c669853c7f" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -110,13 +104,12 @@
         <argsstring></argsstring>
         <name>is_trained</name>
         <briefdescription>
-<para>set if the <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> does not require training, or if training is done already </para>
-        </briefdescription>
+<para>set if the <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> does not require training, or if training is done already </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="47" column="8" bodyfile="faiss/IndexBinary.h" bodystart="47" bodyend="-1"/>
+        <location file="faiss/IndexBinary.h" line="47" column="1" bodyfile="faiss/IndexBinary.h" bodystart="47" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinary_1a344529c829717012b530ef9c13b145b7" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
@@ -124,13 +117,12 @@
         <argsstring></argsstring>
         <name>metric_type</name>
         <briefdescription>
-<para>type of metric this index uses for search </para>
-        </briefdescription>
+<para>type of metric this index uses for search </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="50" column="14" bodyfile="faiss/IndexBinary.h" bodystart="50" bodyend="-1"/>
+        <location file="faiss/IndexBinary.h" line="50" column="1" bodyfile="faiss/IndexBinary.h" bodystart="50" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -149,7 +141,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="32" column="12"/>
+        <location file="faiss/IndexBinaryFlat.h" line="32" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1ad2e6f7d9e4672caff89b6045cd2a808a" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -168,21 +160,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Add n vectors of dimension d to the index.</para>
-<para>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 <parameterlist kind="param"><parameteritem>
+<para>Add n vectors of dimension d to the index.</para><para>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input matrix, size n * d / 8 </para>
-</parameterdescription>
+<para>input matrix, size n * d / 8 </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="34" column="8"/>
+        <location file="faiss/IndexBinaryFlat.h" line="34" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1a1765bac1dad81f86e226446483b5470e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -191,13 +180,12 @@
         <name>reset</name>
         <reimplements refid="structfaiss_1_1IndexBinary_1a11bff8bcaa366c563076a3d18f3ae30c">reset</reimplements>
         <briefdescription>
-<para>Removes all elements from the database. </para>
-        </briefdescription>
+<para>Removes all elements from the database. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="36" column="8"/>
+        <location file="faiss/IndexBinaryFlat.h" line="36" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1a473e35ebabadc79869ca89f987553b13" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -228,38 +216,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Query n vectors of dimension d to the index.</para>
-<para>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Query n vectors of dimension d to the index.</para><para>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors to search, size n * d / 8 </para>
-</parameterdescription>
+<para>input vectors to search, size n * d / 8 </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>labels</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output labels of the NNs, size n*k </para>
-</parameterdescription>
+<para>output labels of the NNs, size n*k </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>distances</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output pairwise distances, size n*k </para>
-</parameterdescription>
+<para>output pairwise distances, size n*k </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="38" column="8"/>
+        <location file="faiss/IndexBinaryFlat.h" line="38" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1a342f5711a7c720a1a52e59d2eaecbec6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -286,38 +268,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Query n vectors of dimension d to the index.</para>
-<para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory). The distances are converted to float to reuse the RangeSearchResult structure, but they are integer. By convention, only distances &lt; radius (strict comparison) are returned, ie. radius = 0 does not return any result and 1 returns only exact same vectors.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Query n vectors of dimension d to the index.</para><para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory). The distances are converted to float to reuse the RangeSearchResult structure, but they are integer. By convention, only distances &lt; radius (strict comparison) are returned, ie. radius = 0 does not return any result and 1 returns only exact same vectors.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors to search, size n * d / 8 </para>
-</parameterdescription>
+<para>input vectors to search, size n * d / 8 </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>radius</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>search radius </para>
-</parameterdescription>
+<para>search radius </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>result</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>result table </para>
-</parameterdescription>
+<para>result table </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="41" column="8"/>
+        <location file="faiss/IndexBinaryFlat.h" line="41" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1a65c83fa2f2740fc17089e63dc7b70076" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -336,29 +312,25 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Reconstruct a stored vector.</para>
-<para>This function may not be defined for some indexes. <parameterlist kind="param"><parameteritem>
+<para>Reconstruct a stored vector.</para><para>This function may not be defined for some indexes. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>key</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>id of the vector to reconstruct </para>
-</parameterdescription>
+<para>id of the vector to reconstruct </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstucted vector (size d / 8) </para>
-</parameterdescription>
+<para>reconstucted vector (size d / 8) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="44" column="8"/>
+        <location file="faiss/IndexBinaryFlat.h" line="44" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1ae5127fb557880bf5996531714f32b3d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -373,11 +345,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Remove some ids. Note that because of the indexing structure, the semantics of this operation are different from the usual ones: the new ids are shifted. </para>
-        </detaileddescription>
+<para>Remove some ids. Note that because of the indexing structure, the semantics of this operation are different from the usual ones: the new ids are shifted. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="49" column="10"/>
+        <location file="faiss/IndexBinaryFlat.h" line="49" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1aed44f8312ec3b3190e3d09c180fb8c46" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -390,7 +361,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="51" column="3" bodyfile="faiss/IndexBinaryFlat.h" bodystart="51" bodyend="51"/>
+        <location file="faiss/IndexBinaryFlat.h" line="51" column="1" bodyfile="faiss/IndexBinaryFlat.h" bodystart="51" bodyend="51"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a3c0ffd1655d8a5486660cb025340c9a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -411,29 +382,25 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Perform training on a representative set of vectors.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Perform training on a representative set of vectors.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>nb of training vectors </para>
-</parameterdescription>
+<para>nb of training vectors </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>training vecors, size n * d / 8 </para>
-</parameterdescription>
+<para>training vecors, size n * d / 8 </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="70" column="16"/>
+        <location file="faiss/IndexBinary.h" line="70" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -457,22 +424,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Same as add, but stores xids instead of sequential ids.</para>
-<para>The default implementation fails with an assertion, as it is not supported by all indexes.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Same as add, but stores xids instead of sequential ids.</para><para>The default implementation fails with an assertion, as it is not supported by all indexes.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>xids</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>if non-null, ids to store for the vectors (size n) </para>
-</parameterdescription>
+<para>if non-null, ids to store for the vectors (size n) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="86" column="16"/>
+        <location file="faiss/IndexBinary.h" line="86" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1aa706d8807d29c91e0a148553a8202bc9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -499,29 +462,25 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the indexes of the k vectors closest to the query x.</para>
-<para>This function is identical to search but only returns labels of neighbors. <parameterlist kind="param"><parameteritem>
+<para>Return the indexes of the k vectors closest to the query x.</para><para>This function is identical to search but only returns labels of neighbors. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors to search, size n * d / 8 </para>
-</parameterdescription>
+<para>input vectors to search, size n * d / 8 </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>labels</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output labels of the NNs, size n*k </para>
-</parameterdescription>
+<para>output labels of the NNs, size n*k </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="123" column="8"/>
+        <location file="faiss/IndexBinary.h" line="123" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -544,21 +503,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Reconstruct vectors i0 to i0 + ni - 1.</para>
-<para>This function may not be defined for some indexes. <parameterlist kind="param"><parameteritem>
+<para>Reconstruct vectors i0 to i0 + ni - 1.</para><para>This function may not be defined for some indexes. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstucted vectors (size ni * d / 8) </para>
-</parameterdescription>
+<para>reconstucted vectors (size ni * d / 8) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="146" column="16"/>
+        <location file="faiss/IndexBinary.h" line="146" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1ae7a4b9bdbe6f4392d00cf4e44120409e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -593,22 +549,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</para>
-<para>If there are not enough results for a query, the resulting array is padded with -1s.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</para><para>If there are not enough results for a query, the resulting array is padded with -1s.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstructed vectors size (n, k, d) </para>
-</parameterdescription>
+<para>reconstructed vectors size (n, k, d) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="156" column="16"/>
+        <location file="faiss/IndexBinary.h" line="156" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -618,11 +570,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Display the actual class name and some more info. </para>
-        </detaileddescription>
+<para>Display the actual class name and some more info. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="161" column="8"/>
+        <location file="faiss/IndexBinary.h" line="161" column="1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-type">
@@ -632,13 +583,12 @@
         <argsstring></argsstring>
         <name>idx_t</name>
         <briefdescription>
-<para>all indices are this type </para>
-        </briefdescription>
+<para>all indices are this type </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="37" column="3" bodyfile="faiss/IndexBinary.h" bodystart="37" bodyend="-1"/>
+        <location file="faiss/IndexBinary.h" line="37" column="1" bodyfile="faiss/IndexBinary.h" bodystart="37" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1IndexBinary_1aaa0f338d22575d508cd6141972addaa6" prot="public" static="no">
         <type>uint8_t</type>
@@ -651,7 +601,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="38" column="3" bodyfile="faiss/IndexBinary.h" bodystart="38" bodyend="-1"/>
+        <location file="faiss/IndexBinary.h" line="38" column="1" bodyfile="faiss/IndexBinary.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1IndexBinary_1af958aa9b51dac1fcc433014959cad20c" prot="public" static="no">
         <type>int32_t</type>
@@ -664,39 +614,38 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="39" column="3" bodyfile="faiss/IndexBinary.h" bodystart="39" bodyend="-1"/>
+        <location file="faiss/IndexBinary.h" line="39" column="1" bodyfile="faiss/IndexBinary.h" bodystart="39" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> that stores the full vectors and performs exhaustive search. </para>
-    </detaileddescription>
+<para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> that stores the full vectors and performs exhaustive search. </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="1">
+      <node id="342">
         <label>faiss::IndexBinaryFlat</label>
         <link refid="structfaiss_1_1IndexBinaryFlat"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="343" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
+      <node id="343">
         <label>faiss::IndexBinary</label>
         <link refid="structfaiss_1_1IndexBinary"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="1">
+      <node id="344">
         <label>faiss::IndexBinaryFlat</label>
         <link refid="structfaiss_1_1IndexBinaryFlat"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="345" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
+      <node id="345">
         <label>faiss::IndexBinary</label>
         <link refid="structfaiss_1_1IndexBinary"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexBinaryFlat.h" line="21" column="34" bodyfile="faiss/IndexBinaryFlat.h" bodystart="21" bodyend="52"/>
+    <location file="faiss/IndexBinaryFlat.h" line="21" column="1" bodyfile="faiss/IndexBinaryFlat.h" bodystart="21" bodyend="52"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexBinaryFlat_1ad2e6f7d9e4672caff89b6045cd2a808a" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>add_with_ids</name></member>

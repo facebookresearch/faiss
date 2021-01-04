@@ -1,152 +1,152 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="DirectMap_8h" kind="file" language="C++">
     <compoundname>DirectMap.h</compoundname>
     <includes refid="InvertedLists_8h" local="no">faiss/invlists/InvertedLists.h</includes>
     <includes local="no">unordered_map</includes>
     <includedby refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includedby>
     <incdepgraph>
-      <node id="1">
-        <label>faiss/invlists/DirectMap.h</label>
-        <link refid="DirectMap_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>string</label>
-      </node>
-      <node id="7">
-        <label>typeinfo</label>
-      </node>
-      <node id="6">
-        <label>cstdio</label>
-      </node>
-      <node id="3">
-        <label>vector</label>
-      </node>
-      <node id="9">
-        <label>sstream</label>
-      </node>
-      <node id="2">
+      <node id="1033">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
-        <childnode refid="3" relation="include">
+        <childnode refid="1034" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="1035" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="1039">
+        <label>string</label>
+      </node>
+      <node id="1038">
+        <label>typeinfo</label>
+      </node>
+      <node id="1037">
+        <label>cstdio</label>
+      </node>
+      <node id="1034">
+        <label>vector</label>
+      </node>
+      <node id="1040">
+        <label>sstream</label>
+      </node>
+      <node id="1041">
         <label>unordered_map</label>
       </node>
-      <node id="4">
+      <node id="1035">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="5" relation="include">
+        <childnode refid="1036" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="1037" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="1038" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="1039" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="1040" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="1036">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>
-    </incdepgraph>
-    <invincdepgraph>
-      <node id="7">
-        <label>faiss/IndexBinaryIVF.h</label>
-        <link refid="IndexBinaryIVF_8h_source"/>
-      </node>
-      <node id="1">
+      <node id="1032">
         <label>faiss/invlists/DirectMap.h</label>
         <link refid="DirectMap_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1033" relation="include">
+        </childnode>
+        <childnode refid="1041" relation="include">
         </childnode>
       </node>
-      <node id="15">
-        <label>faiss/IVFlib.h</label>
-        <link refid="IVFlib_8h_source"/>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1050">
+        <label>faiss/IndexIVFPQ.h</label>
+        <link refid="IndexIVFPQ_8h_source"/>
+        <childnode refid="1051" relation="include">
+        </childnode>
+        <childnode refid="1052" relation="include">
+        </childnode>
       </node>
-      <node id="5">
+      <node id="1043">
+        <label>faiss/IndexIVF.h</label>
+        <link refid="IndexIVF_8h_source"/>
+        <childnode refid="1044" relation="include">
+        </childnode>
+        <childnode refid="1047" relation="include">
+        </childnode>
+        <childnode refid="1048" relation="include">
+        </childnode>
+        <childnode refid="1049" relation="include">
+        </childnode>
+        <childnode refid="1050" relation="include">
+        </childnode>
+        <childnode refid="1053" relation="include">
+        </childnode>
+        <childnode refid="1054" relation="include">
+        </childnode>
+        <childnode refid="1055" relation="include">
+        </childnode>
+        <childnode refid="1056" relation="include">
+        </childnode>
+      </node>
+      <node id="1046">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
       </node>
-      <node id="11">
-        <label>faiss/IndexIVFPQR.h</label>
-        <link refid="IndexIVFPQR_8h_source"/>
-      </node>
-      <node id="6">
-        <label>faiss/Index2Layer.h</label>
-        <link refid="Index2Layer_8h_source"/>
-      </node>
-      <node id="12">
+      <node id="1053">
         <label>faiss/IndexIVFSpectralHash.h</label>
         <link refid="IndexIVFSpectralHash_8h_source"/>
       </node>
-      <node id="14">
-        <label>faiss/invlists/OnDiskInvertedLists.h</label>
-        <link refid="OnDiskInvertedLists_8h_source"/>
-      </node>
-      <node id="8">
+      <node id="1049">
         <label>faiss/IndexIVFFlat.h</label>
         <link refid="IndexIVFFlat_8h_source"/>
       </node>
-      <node id="4">
-        <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
-        <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
+      <node id="1055">
+        <label>faiss/invlists/OnDiskInvertedLists.h</label>
+        <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
-      <node id="9">
-        <label>faiss/IndexIVFPQ.h</label>
-        <link refid="IndexIVFPQ_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
+      <node id="1054">
+        <label>faiss/IndexLattice.h</label>
+        <link refid="IndexLattice_8h_source"/>
       </node>
-      <node id="3">
+      <node id="1048">
+        <label>faiss/IndexBinaryIVF.h</label>
+        <link refid="IndexBinaryIVF_8h_source"/>
+      </node>
+      <node id="1044">
         <label>faiss/IndexScalarQuantizer.h</label>
         <link refid="IndexScalarQuantizer_8h_source"/>
-        <childnode refid="4" relation="include">
+        <childnode refid="1045" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="1046" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="1051">
         <label>faiss/IndexIVFPQFastScan.h</label>
         <link refid="IndexIVFPQFastScan_8h_source"/>
       </node>
-      <node id="2">
-        <label>faiss/IndexIVF.h</label>
-        <link refid="IndexIVF_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
+      <node id="1047">
+        <label>faiss/Index2Layer.h</label>
+        <link refid="Index2Layer_8h_source"/>
+      </node>
+      <node id="1052">
+        <label>faiss/IndexIVFPQR.h</label>
+        <link refid="IndexIVFPQR_8h_source"/>
+      </node>
+      <node id="1045">
+        <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
+        <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
+      </node>
+      <node id="1042">
+        <label>faiss/invlists/DirectMap.h</label>
+        <link refid="DirectMap_8h"/>
+        <childnode refid="1043" relation="include">
         </childnode>
       </node>
-      <node id="13">
-        <label>faiss/IndexLattice.h</label>
-        <link refid="IndexLattice_8h_source"/>
+      <node id="1056">
+        <label>faiss/IVFlib.h</label>
+        <link refid="IVFlib_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1DirectMap" prot="public">faiss::DirectMap</innerclass>
@@ -213,7 +213,7 @@
 <codeline lineno="54"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1DirectMap_1a860f8dd0fb1d96532b43e492f201cb84" kindref="member">set_type</ref><sp/>(Type<sp/>new_type,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*invlists,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ntotal);</highlight></codeline>
 <codeline lineno="55"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="56"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>get<sp/>an<sp/>entry</highlight></codeline>
-<codeline lineno="57"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/><ref refid="structfaiss_1_1DirectMap_1a032a4c2fbc9cfa556a84f8d8c1288ac7" kindref="member">get</ref><sp/>(idx_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/></highlight><highlight class="keyword">get</highlight><highlight class="normal"><sp/>(idx_t<sp/>id)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="58"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="59"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>for<sp/>quick<sp/>checks</highlight></codeline>
 <codeline lineno="60" refid="structfaiss_1_1DirectMap_1a27e7208053589c02cdc9002bbfb857d3" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1DirectMap_1a27e7208053589c02cdc9002bbfb857d3" kindref="member">no</ref><sp/>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>type<sp/>==<sp/>NoMap;<sp/>}</highlight></codeline>
@@ -266,7 +266,7 @@
 <codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DirectMapAdd" kindref="compound">DirectMapAdd</ref><sp/>(<ref refid="structfaiss_1_1DirectMap" kindref="compound">DirectMap</ref><sp/>&amp;direct_map,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t<sp/>*xids);</highlight></codeline>
 <codeline lineno="108"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="109"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>add<sp/>vector<sp/>i<sp/>(with<sp/>id<sp/>xids[i])<sp/>at<sp/>list_no<sp/>and<sp/>offset</highlight></codeline>
-<codeline lineno="110"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1DirectMapAdd_1af80ac88a6ba7c8eb07c41e4c8cce70f6" kindref="member">add</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i,<sp/>idx_t<sp/>list_no,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>offset);</highlight></codeline>
+<codeline lineno="110"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i,<sp/>idx_t<sp/>list_no,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>offset);</highlight></codeline>
 <codeline lineno="111"><highlight class="normal"></highlight></codeline>
 <codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1DirectMapAdd" kindref="compound">DirectMapAdd</ref><sp/>();</highlight></codeline>
 <codeline lineno="113"><highlight class="normal">};</highlight></codeline>

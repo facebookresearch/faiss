@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="simdlib__avx2_8h" kind="file" language="C++">
     <compoundname>simdlib_avx2.h</compoundname>
     <includes local="no">string</includes>
@@ -7,28 +7,28 @@
     <includes local="no">immintrin.h</includes>
     <includes local="no">faiss/impl/platform_macros.h</includes>
     <incdepgraph>
-      <node id="5">
+      <node id="1371">
         <label>faiss/impl/platform_macros.h</label>
       </node>
-      <node id="3">
+      <node id="1369">
         <label>cstdint</label>
       </node>
-      <node id="4">
+      <node id="1370">
         <label>immintrin.h</label>
       </node>
-      <node id="2">
+      <node id="1368">
         <label>string</label>
       </node>
-      <node id="1">
+      <node id="1367">
         <label>faiss/utils/simdlib_avx2.h</label>
         <link refid="simdlib__avx2_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1368" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="1369" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="1370" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="1371" relation="include">
         </childnode>
       </node>
     </incdepgraph>
@@ -254,8 +254,8 @@
 <codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref>(_mm256_min_epu16(a.i,<sp/>b.i));</highlight></codeline>
 <codeline lineno="210"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="211"><highlight class="normal"></highlight></codeline>
-<codeline lineno="212"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd16uint16<sp/>max(simd16uint16<sp/>a,<sp/>simd16uint16<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd16uint16(_mm256_max_epu16(a.i,<sp/>b.i));</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>max(<ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>a,<sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref>(_mm256_max_epu16(a.i,<sp/>b.i));</highlight></codeline>
 <codeline lineno="214"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="215"><highlight class="normal"></highlight></codeline>
 <codeline lineno="216"><highlight class="normal"></highlight></codeline>
@@ -263,17 +263,17 @@
 <codeline lineno="218"><highlight class="normal"></highlight><highlight class="comment">//<sp/>decompose<sp/>in<sp/>128-lanes:<sp/>a<sp/>=<sp/>(a0,<sp/>a1),<sp/>b<sp/>=<sp/>(b0,<sp/>b1)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="219"><highlight class="normal"></highlight><highlight class="comment">//<sp/>return<sp/>(a0<sp/>+<sp/>a1,<sp/>b0<sp/>+<sp/>b1)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="220"><highlight class="normal"></highlight><highlight class="comment">//<sp/>TODO<sp/>find<sp/>a<sp/>better<sp/>name</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="221"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd16uint16<sp/>combine2x2(simd16uint16<sp/>a,<sp/>simd16uint16<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>combine2x2(<ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>a,<sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>b)<sp/>{</highlight></codeline>
 <codeline lineno="222"><highlight class="normal"></highlight></codeline>
 <codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/>__m256i<sp/>a1b0<sp/>=<sp/>_mm256_permute2f128_si256(a.i,<sp/>b.i,<sp/>0x21);</highlight></codeline>
 <codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/>__m256i<sp/>a0b1<sp/>=<sp/>_mm256_blend_epi32(a.i,<sp/>b.i,<sp/>0xF0);</highlight></codeline>
 <codeline lineno="225"><highlight class="normal"></highlight></codeline>
-<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd16uint16(a1b0)<sp/>+<sp/>simd16uint16(a0b1);</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref>(a1b0)<sp/>+<sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref>(a0b1);</highlight></codeline>
 <codeline lineno="227"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="228"><highlight class="normal"></highlight></codeline>
 <codeline lineno="229"><highlight class="normal"></highlight><highlight class="comment">//<sp/>compare<sp/>d0<sp/>and<sp/>d1<sp/>to<sp/>thr,<sp/>return<sp/>32<sp/>bits<sp/>corresponding<sp/>to<sp/>the<sp/>concatenation</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="230"><highlight class="normal"></highlight><highlight class="comment">//<sp/>of<sp/>d0<sp/>and<sp/>d1<sp/>with<sp/>thr</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="231"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>uint32_t<sp/>cmp_ge32(simd16uint16<sp/>d0,<sp/>simd16uint16<sp/>d1,<sp/>simd16uint16<sp/>thr)<sp/>{</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>uint32_t<sp/>cmp_ge32(<ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>d0,<sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>d1,<sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>thr)<sp/>{</highlight></codeline>
 <codeline lineno="232"><highlight class="normal"></highlight></codeline>
 <codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/>__m256i<sp/>max0<sp/>=<sp/>_mm256_max_epu16(d0.i,<sp/>thr.i);</highlight></codeline>
 <codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/>__m256i<sp/>ge0<sp/>=<sp/>_mm256_cmpeq_epi16(d0.i,<sp/>max0);</highlight></codeline>
@@ -291,7 +291,7 @@
 <codeline lineno="246"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="247"><highlight class="normal"></highlight></codeline>
 <codeline lineno="248"><highlight class="normal"></highlight></codeline>
-<codeline lineno="249"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>uint32_t<sp/>cmp_le32(simd16uint16<sp/>d0,<sp/>simd16uint16<sp/>d1,<sp/>simd16uint16<sp/>thr)<sp/>{</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>uint32_t<sp/>cmp_le32(<ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>d0,<sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>d1,<sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>thr)<sp/>{</highlight></codeline>
 <codeline lineno="250"><highlight class="normal"></highlight></codeline>
 <codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/>__m256i<sp/>max0<sp/>=<sp/>_mm256_min_epu16(d0.i,<sp/>thr.i);</highlight></codeline>
 <codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/>__m256i<sp/>ge0<sp/>=<sp/>_mm256_cmpeq_epi16(d0.i,<sp/>max0);</highlight></codeline>
@@ -489,17 +489,17 @@
 <codeline lineno="444"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref>(_mm256_hadd_ps(a.f,<sp/>b.f));</highlight></codeline>
 <codeline lineno="445"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="446"><highlight class="normal"></highlight></codeline>
-<codeline lineno="447"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpacklo(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="448"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_unpacklo_ps(a.f,<sp/>b.f));</highlight></codeline>
+<codeline lineno="447"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>unpacklo(<ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>a,<sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="448"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref>(_mm256_unpacklo_ps(a.f,<sp/>b.f));</highlight></codeline>
 <codeline lineno="449"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="450"><highlight class="normal"></highlight></codeline>
-<codeline lineno="451"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpackhi(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="452"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_unpackhi_ps(a.f,<sp/>b.f));</highlight></codeline>
+<codeline lineno="451"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>unpackhi(<ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>a,<sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="452"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref>(_mm256_unpackhi_ps(a.f,<sp/>b.f));</highlight></codeline>
 <codeline lineno="453"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="454"><highlight class="normal"></highlight></codeline>
 <codeline lineno="455"><highlight class="normal"></highlight><highlight class="comment">//<sp/>compute<sp/>a<sp/>*<sp/>b<sp/>+<sp/>c</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="456"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>fmadd(simd8float32<sp/>a,<sp/>simd8float32<sp/>b,<sp/>simd8float32<sp/>c)<sp/>{</highlight></codeline>
-<codeline lineno="457"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_fmadd_ps(a.f,<sp/>b.f,<sp/>c.f));</highlight></codeline>
+<codeline lineno="456"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>fmadd(<ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>a,<sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>b,<sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>c)<sp/>{</highlight></codeline>
+<codeline lineno="457"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref>(_mm256_fmadd_ps(a.f,<sp/>b.f,<sp/>c.f));</highlight></codeline>
 <codeline lineno="458"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="459"><highlight class="normal"></highlight></codeline>
 <codeline lineno="460"><highlight class="normal"></highlight></codeline>

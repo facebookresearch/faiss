@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1IVFSearchParameters" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IVFSearchParameters</compoundname>
     <derivedcompoundref refid="structfaiss_1_1IVFPQSearchParameters" prot="public" virt="non-virtual">faiss::IVFPQSearchParameters</derivedcompoundref>
@@ -10,13 +10,12 @@
         <argsstring></argsstring>
         <name>nprobe</name>
         <briefdescription>
-<para>number of probes at query time </para>
-        </briefdescription>
+<para>number of probes at query time </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="70" column="12" bodyfile="faiss/IndexIVF.h" bodystart="70" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="70" column="1" bodyfile="faiss/IndexIVF.h" bodystart="70" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IVFSearchParameters_1ac3e01728f6376ad727340525b2138782" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -24,13 +23,12 @@
         <argsstring></argsstring>
         <name>max_codes</name>
         <briefdescription>
-<para>max nb of codes to visit to do a query </para>
-        </briefdescription>
+<para>max nb of codes to visit to do a query </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="71" column="12" bodyfile="faiss/IndexIVF.h" bodystart="71" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="71" column="1" bodyfile="faiss/IndexIVF.h" bodystart="71" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -45,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="72" column="5" bodyfile="faiss/IndexIVF.h" bodystart="72" bodyend="72"/>
+        <location file="faiss/IndexIVF.h" line="72" column="1" bodyfile="faiss/IndexIVF.h" bodystart="72" bodyend="72"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IVFSearchParameters_1a06b15b5593c71acc1e03c35fba7520ce" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -58,7 +56,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="73" column="13" bodyfile="faiss/IndexIVF.h" bodystart="73" bodyend="73"/>
+        <location file="faiss/IndexIVF.h" line="73" column="1" bodyfile="faiss/IndexIVF.h" bodystart="73" bodyend="73"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -66,18 +64,18 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
+      <node id="657">
         <label>faiss::IVFSearchParameters</label>
         <link refid="structfaiss_1_1IVFSearchParameters"/>
       </node>
-      <node id="2">
+      <node id="658">
         <label>faiss::IVFPQSearchParameters</label>
         <link refid="structfaiss_1_1IVFPQSearchParameters"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="657" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/IndexIVF.h" line="69" column="26" bodyfile="faiss/IndexIVF.h" bodystart="69" bodyend="74"/>
+    <location file="faiss/IndexIVF.h" line="69" column="1" bodyfile="faiss/IndexIVF.h" bodystart="69" bodyend="74"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IVFSearchParameters_1a176fda7175cf94806caac1e553e151e3" prot="public" virt="non-virtual"><scope>faiss::IVFSearchParameters</scope><name>IVFSearchParameters</name></member>
       <member refid="structfaiss_1_1IVFSearchParameters_1ac3e01728f6376ad727340525b2138782" prot="public" virt="non-virtual"><scope>faiss::IVFSearchParameters</scope><name>max_codes</name></member>

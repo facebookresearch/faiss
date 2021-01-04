@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1MatrixStats_1_1PerDimStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::MatrixStats::PerDimStats</compoundname>
       <sectiondef kind="public-attrib">
@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="36" column="16" bodyfile="faiss/MatrixStats.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="36" column="1" bodyfile="faiss/MatrixStats.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1aeb2a2627c4b81e44016fba44ebf43560" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="36" column="18" bodyfile="faiss/MatrixStats.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="36" column="1" bodyfile="faiss/MatrixStats.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a798961b570c2906e0ecdd9e1932ce1fe" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="36" column="24" bodyfile="faiss/MatrixStats.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="36" column="1" bodyfile="faiss/MatrixStats.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a2b7a2d8232f3fa3c09833d8cd6962fe1" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -53,7 +53,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="36" column="30" bodyfile="faiss/MatrixStats.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="36" column="1" bodyfile="faiss/MatrixStats.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1afbbef55ed677db21add1f0847dd2427c" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -66,7 +66,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="38" column="15" bodyfile="faiss/MatrixStats.h" bodystart="38" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="38" column="1" bodyfile="faiss/MatrixStats.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a055fdde358a6159f4eca99cb6801415b" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -79,7 +79,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="38" column="19" bodyfile="faiss/MatrixStats.h" bodystart="38" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="38" column="1" bodyfile="faiss/MatrixStats.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1af7b66d8bee2301bf0e48b755e29f7145" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -92,7 +92,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="39" column="16" bodyfile="faiss/MatrixStats.h" bodystart="39" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="39" column="1" bodyfile="faiss/MatrixStats.h" bodystart="39" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a12f17876bcb0df55cd191001b1f569d3" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -105,7 +105,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="39" column="20" bodyfile="faiss/MatrixStats.h" bodystart="39" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="39" column="1" bodyfile="faiss/MatrixStats.h" bodystart="39" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a12c78f5ef7c6ffd2287f1184a03a88fe" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -118,7 +118,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="41" column="16" bodyfile="faiss/MatrixStats.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="41" column="1" bodyfile="faiss/MatrixStats.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a78d220cd08414efb1fb31c5181472a57" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -131,7 +131,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="42" column="16" bodyfile="faiss/MatrixStats.h" bodystart="42" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="42" column="1" bodyfile="faiss/MatrixStats.h" bodystart="42" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a4a8222891e00c0a34cf8c415d85b3034" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -144,7 +144,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="42" column="21" bodyfile="faiss/MatrixStats.h" bodystart="42" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="42" column="1" bodyfile="faiss/MatrixStats.h" bodystart="42" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -159,7 +159,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="44" column="9"/>
+        <location file="faiss/MatrixStats.h" line="44" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1aa375fcebcf96dd460552e8a415d1d1b2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -176,7 +176,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="45" column="14"/>
+        <location file="faiss/MatrixStats.h" line="45" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1ab2b27edb089cbe1d2faca98cc82d2aa0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -189,14 +189,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="46" column="14"/>
+        <location file="faiss/MatrixStats.h" line="46" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/MatrixStats.h" line="35" column="22" bodyfile="faiss/MatrixStats.h" bodystart="35" bodyend="47"/>
+    <location file="faiss/MatrixStats.h" line="35" column="1" bodyfile="faiss/MatrixStats.h" bodystart="35" bodyend="47"/>
     <listofallmembers>
       <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1aa375fcebcf96dd460552e8a415d1d1b2" prot="public" virt="non-virtual"><scope>faiss::MatrixStats::PerDimStats</scope><name>add</name></member>
       <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1ab2b27edb089cbe1d2faca98cc82d2aa0" prot="public" virt="non-virtual"><scope>faiss::MatrixStats::PerDimStats</scope><name>compute_mean_std</name></member>

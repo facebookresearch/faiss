@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1IndexPQStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexPQStats</compoundname>
     <includes refid="IndexPQ_8h" local="no">IndexPQ.h</includes>
@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="134" column="12" bodyfile="faiss/IndexPQ.h" bodystart="134" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="134" column="1" bodyfile="faiss/IndexPQ.h" bodystart="134" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQStats_1ae40dc36c4942b567cc258957cc3c5dfd" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -28,7 +28,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="135" column="12" bodyfile="faiss/IndexPQ.h" bodystart="135" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="135" column="1" bodyfile="faiss/IndexPQ.h" bodystart="135" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQStats_1aa73b0ed2ddb178432ca5219262683aab" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="137" column="12" bodyfile="faiss/IndexPQ.h" bodystart="137" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="137" column="1" bodyfile="faiss/IndexPQ.h" bodystart="137" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -56,7 +56,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="139" column="5" bodyfile="faiss/IndexPQ.h" bodystart="139" bodyend="139"/>
+        <location file="faiss/IndexPQ.h" line="139" column="1" bodyfile="faiss/IndexPQ.h" bodystart="139" bodyend="139"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQStats_1a06a463f2381c1f7edf526e916b679fe3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -69,15 +69,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="140" column="10"/>
+        <location file="faiss/IndexPQ.h" line="140" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>statistics are robust to internal threading, but not if <ref refid="structfaiss_1_1IndexPQ_1a491ba3ed34093513e6a850fbca0abdd2" kindref="member">IndexPQ::search</ref> is called by multiple threads </para>
-    </detaileddescription>
-    <location file="faiss/IndexPQ.h" line="133" column="19" bodyfile="faiss/IndexPQ.h" bodystart="133" bodyend="141"/>
+<para>statistics are robust to internal threading, but not if <ref refid="structfaiss_1_1IndexPQ_1a491ba3ed34093513e6a850fbca0abdd2" kindref="member">IndexPQ::search</ref> is called by multiple threads </para>    </detaileddescription>
+    <location file="faiss/IndexPQ.h" line="133" column="1" bodyfile="faiss/IndexPQ.h" bodystart="133" bodyend="141"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexPQStats_1af0e230009735f3edf2f47ddc23fef643" prot="public" virt="non-virtual"><scope>faiss::IndexPQStats</scope><name>IndexPQStats</name></member>
       <member refid="structfaiss_1_1IndexPQStats_1aa73b0ed2ddb178432ca5219262683aab" prot="public" virt="non-virtual"><scope>faiss::IndexPQStats</scope><name>n_hamming_pass</name></member>

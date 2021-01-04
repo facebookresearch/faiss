@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="dir_71a5f2b83da87e7fb52bb1a9a3fef9ad" kind="dir">
     <compoundname>faiss/invlists</compoundname>
     <innerfile refid="BlockInvertedLists_8h">BlockInvertedLists.h</innerfile>

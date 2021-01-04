@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="MatrixStats_8h" kind="file" language="C++">
     <compoundname>MatrixStats.h</compoundname>
     <includes local="no">vector</includes>
@@ -7,28 +7,28 @@
     <includes local="no">unordered_map</includes>
     <includes local="no">stdint.h</includes>
     <incdepgraph>
-      <node id="1">
+      <node id="1148">
         <label>faiss/MatrixStats.h</label>
         <link refid="MatrixStats_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1149" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="1150" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="1151" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="1152" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="1152">
         <label>stdint.h</label>
       </node>
-      <node id="3">
+      <node id="1150">
         <label>string</label>
       </node>
-      <node id="2">
+      <node id="1149">
         <label>vector</label>
       </node>
-      <node id="4">
+      <node id="1151">
         <label>unordered_map</label>
       </node>
     </incdepgraph>

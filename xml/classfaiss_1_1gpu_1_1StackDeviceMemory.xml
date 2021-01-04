@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="classfaiss_1_1gpu_1_1StackDeviceMemory" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::StackDeviceMemory</compoundname>
     <includes refid="StackDeviceMemory_8h" local="no">StackDeviceMemory.h</includes>
@@ -12,13 +12,12 @@
         <argsstring></argsstring>
         <name>device_</name>
         <briefdescription>
-<para>Our device. </para>
-        </briefdescription>
+<para>Our device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="108" column="7" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="108" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="108" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="108" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a323a632f397eaf3df3034595762c6a29" prot="protected" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref></type>
@@ -26,13 +25,12 @@
         <argsstring></argsstring>
         <name>stack_</name>
         <briefdescription>
-<para>Memory stack. </para>
-        </briefdescription>
+<para>Memory stack. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="111" column="9" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="111" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="111" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="111" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -54,13 +52,12 @@
           <declname>allocPerDevice</declname>
         </param>
         <briefdescription>
-<para>Allocate a new region of memory that we manage. </para>
-        </briefdescription>
+<para>Allocate a new region of memory that we manage. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="25" column="3"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="25" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1afd7a84b8cd1f747d873cdd1ab07e8a4b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -86,11 +83,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Manage a region of memory for a particular device, with or without ownership </para>
-        </detaileddescription>
+<para>Manage a region of memory for a particular device, with or without ownership </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="31" column="3"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="31" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1ab9c08b79317d9d2dae9208b41dba7826" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -103,7 +99,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="33" column="3"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="33" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1ab4d6a319417fb80e56cce4d28124ea89" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -116,7 +112,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="35" column="7"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="35" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a24c4533f998df2a186ab6588257dd5fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void *</type>
@@ -132,13 +128,12 @@
           <declname>size</declname>
         </param>
         <briefdescription>
-<para>All allocations requested should be a multiple of 16 bytes. </para>
-        </briefdescription>
+<para>All allocations requested should be a multiple of 16 bytes. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="38" column="8"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="38" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a59d4cd8b4ef1b4968c5954c2c778d83f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -166,7 +161,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="39" column="8"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="39" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a58431176d97b990ab8144bb30d7c2bd5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -179,7 +174,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="41" column="10"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="41" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1adc327179a0f60e889bad08dfb0ad5b0d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -192,35 +187,34 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="42" column="15"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="42" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Device memory manager that provides temporary memory allocations out of a region of memory, for a single device </para>
-    </detaileddescription>
+<para>Device memory manager that provides temporary memory allocations out of a region of memory, for a single device </para>    </detaileddescription>
     <collaborationgraph>
-      <node id="3">
+      <node id="828">
         <label>faiss::gpu::GpuResources</label>
         <link refid="classfaiss_1_1gpu_1_1GpuResources"/>
       </node>
-      <node id="2">
+      <node id="827">
         <label>faiss::gpu::StackDeviceMemory::Stack</label>
         <link refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack"/>
-        <childnode refid="3" relation="usage">
+        <childnode refid="828" relation="usage">
           <edgelabel>res_</edgelabel>
         </childnode>
       </node>
-      <node id="1">
+      <node id="826">
         <label>faiss::gpu::StackDeviceMemory</label>
         <link refid="classfaiss_1_1gpu_1_1StackDeviceMemory"/>
-        <childnode refid="2" relation="usage">
+        <childnode refid="827" relation="usage">
           <edgelabel>stack_</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/utils/StackDeviceMemory.h" line="22" column="24" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="22" bodyend="112"/>
+    <location file="faiss/gpu/utils/StackDeviceMemory.h" line="22" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="22" bodyend="112"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a24c4533f998df2a186ab6588257dd5fa" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory</scope><name>allocMemory</name></member>
       <member refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a59d4cd8b4ef1b4968c5954c2c778d83f" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory</scope><name>deallocMemory</name></member>

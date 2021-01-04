@@ -1,65 +1,65 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="python__callbacks_8h" kind="file" language="C++">
     <compoundname>python_callbacks.h</compoundname>
     <includes local="yes">Python.h</includes>
     <includes local="no">faiss/impl/io.h</includes>
     <includes refid="InvertedLists_8h" local="no">faiss/invlists/InvertedLists.h</includes>
     <incdepgraph>
-      <node id="10">
-        <label>string</label>
-      </node>
-      <node id="9">
-        <label>typeinfo</label>
-      </node>
-      <node id="8">
-        <label>cstdio</label>
-      </node>
-      <node id="2">
-        <label>Python.h</label>
-      </node>
-      <node id="5">
-        <label>vector</label>
-      </node>
-      <node id="11">
-        <label>sstream</label>
-      </node>
-      <node id="4">
+      <node id="1224">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
-        <childnode refid="5" relation="include">
+        <childnode refid="1225" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="1226" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>faiss/impl/io.h</label>
+      <node id="1230">
+        <label>string</label>
       </node>
-      <node id="1">
+      <node id="1229">
+        <label>typeinfo</label>
+      </node>
+      <node id="1228">
+        <label>cstdio</label>
+      </node>
+      <node id="1222">
+        <label>Python.h</label>
+      </node>
+      <node id="1225">
+        <label>vector</label>
+      </node>
+      <node id="1231">
+        <label>sstream</label>
+      </node>
+      <node id="1221">
         <label>faiss/python/python_callbacks.h</label>
         <link refid="python__callbacks_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1222" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="1223" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="1224" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="1223">
+        <label>faiss/impl/io.h</label>
+      </node>
+      <node id="1226">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="7" relation="include">
+        <childnode refid="1227" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="1228" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="1229" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="1230" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="1231" relation="include">
         </childnode>
       </node>
-      <node id="7">
+      <node id="1227">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>
@@ -115,7 +115,7 @@
 <codeline lineno="42"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="43"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Callback:<sp/>Python<sp/>function<sp/>that<sp/>takes<sp/>a<sp/>size<sp/>and<sp/>returns<sp/>a</highlight></codeline>
 <codeline lineno="44"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>bytes<sp/>object<sp/>with<sp/>the<sp/>resulting<sp/>read<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structPyCallbackIOReader_1a718f82e79ff6e2ffbd0cfd4635587da8" kindref="member">PyCallbackIOReader</ref>(PyObject<sp/>*callback,</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structPyCallbackIOReader" kindref="compound">PyCallbackIOReader</ref>(PyObject<sp/>*callback,</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bs<sp/>=<sp/>1024<sp/>*<sp/>1024);</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"></highlight></codeline>
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>operator()(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*ptrv,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nitems)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>

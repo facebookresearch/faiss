@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1CMin" kind="struct" language="C++" prot="public">
     <compoundname>faiss::CMin</compoundname>
     <templateparamlist>
@@ -22,7 +22,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/ordered_key_value.h" line="44" column="16" bodyfile="faiss/utils/ordered_key_value.h" bodystart="44" bodyend="-1"/>
+        <location file="faiss/utils/ordered_key_value.h" line="44" column="1" bodyfile="faiss/utils/ordered_key_value.h" bodystart="44" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1CMin_1aef7cdaa338899fd09f988aa69a9c155e" prot="public" static="no">
         <type>TI_</type>
@@ -35,7 +35,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/ordered_key_value.h" line="45" column="17" bodyfile="faiss/utils/ordered_key_value.h" bodystart="45" bodyend="-1"/>
+        <location file="faiss/utils/ordered_key_value.h" line="45" column="1" bodyfile="faiss/utils/ordered_key_value.h" bodystart="45" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1CMin_1ac3e75e2ec6af3946e74b71a97e5c7697" prot="public" static="no">
         <type><ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; T_, TI_ &gt;</type>
@@ -48,7 +48,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/ordered_key_value.h" line="46" column="18" bodyfile="faiss/utils/ordered_key_value.h" bodystart="46" bodyend="-1"/>
+        <location file="faiss/utils/ordered_key_value.h" line="46" column="1" bodyfile="faiss/utils/ordered_key_value.h" bodystart="46" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-static-attrib">
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/ordered_key_value.h" line="53" column="23" bodyfile="faiss/utils/ordered_key_value.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/utils/ordered_key_value.h" line="53" column="1" bodyfile="faiss/utils/ordered_key_value.h" bodystart="53" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-static-func">
@@ -87,7 +87,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/ordered_key_value.h" line="47" column="24" bodyfile="faiss/utils/ordered_key_value.h" bodystart="47" bodyend="49"/>
+        <location file="faiss/utils/ordered_key_value.h" line="47" column="1" bodyfile="faiss/utils/ordered_key_value.h" bodystart="47" bodyend="49"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1CMin_1af0f4d36dd0f4f44453986d9d73fbfa4d" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>T</type>
@@ -100,7 +100,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/ordered_key_value.h" line="50" column="21" bodyfile="faiss/utils/ordered_key_value.h" bodystart="50" bodyend="52"/>
+        <location file="faiss/utils/ordered_key_value.h" line="50" column="1" bodyfile="faiss/utils/ordered_key_value.h" bodystart="50" bodyend="52"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1CMin_1a37ab277ca36fca8d8681655da3b54b68" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>T</type>
@@ -117,14 +117,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/ordered_key_value.h" line="55" column="21" bodyfile="faiss/utils/ordered_key_value.h" bodystart="55" bodyend="57"/>
+        <location file="faiss/utils/ordered_key_value.h" line="55" column="1" bodyfile="faiss/utils/ordered_key_value.h" bodystart="55" bodyend="57"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/ordered_key_value.h" line="43" column="11" bodyfile="faiss/utils/ordered_key_value.h" bodystart="43" bodyend="58"/>
+    <location file="faiss/utils/ordered_key_value.h" line="43" column="1" bodyfile="faiss/utils/ordered_key_value.h" bodystart="43" bodyend="58"/>
     <listofallmembers>
       <member refid="structfaiss_1_1CMin_1a89143e2cd7f0cf758952178ee55ed88b" prot="public" virt="non-virtual"><scope>faiss::CMin</scope><name>cmp</name></member>
       <member refid="structfaiss_1_1CMin_1ac3e75e2ec6af3946e74b71a97e5c7697" prot="public" virt="non-virtual"><scope>faiss::CMin</scope><name>Crev</name></member>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structPyCallbackIOReader" kind="struct" language="C++" prot="public">
     <compoundname>PyCallbackIOReader</compoundname>
     <basecompoundref prot="public" virt="non-virtual">IOReader</basecompoundref>
@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="40" column="15" bodyfile="faiss/python/python_callbacks.h" bodystart="40" bodyend="-1"/>
+        <location file="faiss/python/python_callbacks.h" line="40" column="1" bodyfile="faiss/python/python_callbacks.h" bodystart="40" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structPyCallbackIOReader_1ad632a8a6945adf7f30e1ca6ad6bbce11" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -28,7 +28,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="41" column="12" bodyfile="faiss/python/python_callbacks.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/python/python_callbacks.h" line="41" column="1" bodyfile="faiss/python/python_callbacks.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -49,11 +49,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Callback: Python function that takes a size and returns a bytes object with the resulting read </para>
-        </detaileddescription>
+<para>Callback: Python function that takes a size and returns a bytes object with the resulting read </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="45" column="14"/>
+        <location file="faiss/python/python_callbacks.h" line="45" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structPyCallbackIOReader_1a4224ba74d895e3026d40ecf4a13d2c3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -78,7 +77,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="48" column="12"/>
+        <location file="faiss/python/python_callbacks.h" line="48" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structPyCallbackIOReader_1a71af3f17d57c83c3b85ec45dcfc34d01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -91,7 +90,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="50" column="5"/>
+        <location file="faiss/python/python_callbacks.h" line="50" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -99,28 +98,28 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
+      <node id="746">
         <label>PyCallbackIOReader</label>
         <link refid="structPyCallbackIOReader"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="747" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
+      <node id="747">
         <label>faiss::IOReader</label>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="1">
+      <node id="748">
         <label>PyCallbackIOReader</label>
         <link refid="structPyCallbackIOReader"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="749" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
+      <node id="749">
         <label>faiss::IOReader</label>
       </node>
     </collaborationgraph>
-    <location file="faiss/python/python_callbacks.h" line="39" column="41" bodyfile="faiss/python/python_callbacks.h" bodystart="39" bodyend="52"/>
+    <location file="faiss/python/python_callbacks.h" line="39" column="1" bodyfile="faiss/python/python_callbacks.h" bodystart="39" bodyend="52"/>
     <listofallmembers>
       <member refid="structPyCallbackIOReader_1ad632a8a6945adf7f30e1ca6ad6bbce11" prot="public" virt="non-virtual"><scope>PyCallbackIOReader</scope><name>bs</name></member>
       <member refid="structPyCallbackIOReader_1a35ac91eee581c708fc03af11b6f0f6f6" prot="public" virt="non-virtual"><scope>PyCallbackIOReader</scope><name>callback</name></member>

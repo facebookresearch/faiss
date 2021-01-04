@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="Heap_8h" kind="file" language="C++">
     <compoundname>Heap.h</compoundname>
     <includes local="no">climits</includes>
@@ -18,186 +18,186 @@
     <includedby refid="extra__distances_8h" local="no">faiss/utils/extra_distances.h</includedby>
     <includedby refid="hamming_8h" local="no">faiss/utils/hamming.h</includedby>
     <incdepgraph>
-      <node id="8">
+      <node id="1297">
         <label>limits</label>
       </node>
-      <node id="1">
-        <label>faiss/utils/Heap.h</label>
-        <link refid="Heap_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
+      <node id="1296">
         <label>stdint.h</label>
       </node>
-      <node id="4">
+      <node id="1293">
         <label>cmath</label>
       </node>
-      <node id="5">
+      <node id="1294">
         <label>cassert</label>
       </node>
-      <node id="6">
+      <node id="1295">
         <label>cstdio</label>
       </node>
-      <node id="2">
-        <label>climits</label>
+      <node id="1290">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h"/>
+        <childnode refid="1291" relation="include">
+        </childnode>
+        <childnode refid="1292" relation="include">
+        </childnode>
+        <childnode refid="1293" relation="include">
+        </childnode>
+        <childnode refid="1294" relation="include">
+        </childnode>
+        <childnode refid="1295" relation="include">
+        </childnode>
+        <childnode refid="1296" relation="include">
+        </childnode>
+        <childnode refid="1297" relation="include">
+        </childnode>
+        <childnode refid="1298" relation="include">
+        </childnode>
       </node>
-      <node id="9">
+      <node id="1298">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1291" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="1293" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="1297" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="1291">
+        <label>climits</label>
+      </node>
+      <node id="1292">
         <label>cstring</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="7">
-        <label>faiss/IndexBinaryIVF.h</label>
-        <link refid="IndexBinaryIVF_8h_source"/>
-      </node>
-      <node id="16">
-        <label>faiss/IndexBinaryHash.h</label>
-        <link refid="IndexBinaryHash_8h_source"/>
-      </node>
-      <node id="1">
-        <label>faiss/utils/Heap.h</label>
-        <link refid="Heap_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-      </node>
-      <node id="15">
-        <label>faiss/IVFlib.h</label>
-        <link refid="IVFlib_8h_source"/>
-      </node>
-      <node id="5">
-        <label>faiss/IndexHNSW.h</label>
-        <link refid="IndexHNSW_8h_source"/>
-      </node>
-      <node id="11">
-        <label>faiss/IndexIVFPQR.h</label>
-        <link refid="IndexIVFPQR_8h_source"/>
-      </node>
-      <node id="20">
-        <label>faiss/utils/extra_distances.h</label>
-        <link refid="extra__distances_8h_source"/>
-      </node>
-      <node id="6">
-        <label>faiss/Index2Layer.h</label>
-        <link refid="Index2Layer_8h_source"/>
-      </node>
-      <node id="19">
+      <node id="1317">
         <label>faiss/utils/distances.h</label>
         <link refid="distances_8h_source"/>
       </node>
-      <node id="12">
-        <label>faiss/IndexIVFSpectralHash.h</label>
-        <link refid="IndexIVFSpectralHash_8h_source"/>
-      </node>
-      <node id="14">
-        <label>faiss/invlists/OnDiskInvertedLists.h</label>
-        <link refid="OnDiskInvertedLists_8h_source"/>
-      </node>
-      <node id="8">
-        <label>faiss/IndexIVFFlat.h</label>
-        <link refid="IndexIVFFlat_8h_source"/>
-      </node>
-      <node id="4">
-        <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
-        <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
-      </node>
-      <node id="9">
+      <node id="1307">
         <label>faiss/IndexIVFPQ.h</label>
         <link refid="IndexIVFPQ_8h_source"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="1308" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>faiss/IndexScalarQuantizer.h</label>
-        <link refid="IndexScalarQuantizer_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="1309" relation="include">
         </childnode>
       </node>
-      <node id="10">
-        <label>faiss/IndexIVFPQFastScan.h</label>
-        <link refid="IndexIVFPQFastScan_8h_source"/>
+      <node id="1318">
+        <label>faiss/utils/extra_distances.h</label>
+        <link refid="extra__distances_8h_source"/>
       </node>
-      <node id="2">
-        <label>faiss/IndexIVF.h</label>
-        <link refid="IndexIVF_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-      </node>
-      <node id="17">
-        <label>faiss/utils/utils.h</label>
-        <link refid="utils_8h_source"/>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="18">
+      <node id="1316">
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
       </node>
-      <node id="13">
+      <node id="1300">
+        <label>faiss/IndexIVF.h</label>
+        <link refid="IndexIVF_8h_source"/>
+        <childnode refid="1301" relation="include">
+        </childnode>
+        <childnode refid="1304" relation="include">
+        </childnode>
+        <childnode refid="1305" relation="include">
+        </childnode>
+        <childnode refid="1306" relation="include">
+        </childnode>
+        <childnode refid="1307" relation="include">
+        </childnode>
+        <childnode refid="1310" relation="include">
+        </childnode>
+        <childnode refid="1311" relation="include">
+        </childnode>
+        <childnode refid="1312" relation="include">
+        </childnode>
+        <childnode refid="1313" relation="include">
+        </childnode>
+      </node>
+      <node id="1303">
+        <label>faiss/IndexHNSW.h</label>
+        <link refid="IndexHNSW_8h_source"/>
+      </node>
+      <node id="1310">
+        <label>faiss/IndexIVFSpectralHash.h</label>
+        <link refid="IndexIVFSpectralHash_8h_source"/>
+      </node>
+      <node id="1319">
+        <label>faiss/utils/hamming.h</label>
+        <link refid="hamming_8h_source"/>
+      </node>
+      <node id="1306">
+        <label>faiss/IndexIVFFlat.h</label>
+        <link refid="IndexIVFFlat_8h_source"/>
+      </node>
+      <node id="1312">
+        <label>faiss/invlists/OnDiskInvertedLists.h</label>
+        <link refid="OnDiskInvertedLists_8h_source"/>
+      </node>
+      <node id="1311">
         <label>faiss/IndexLattice.h</label>
         <link refid="IndexLattice_8h_source"/>
       </node>
-      <node id="21">
-        <label>faiss/utils/hamming.h</label>
-        <link refid="hamming_8h_source"/>
+      <node id="1305">
+        <label>faiss/IndexBinaryIVF.h</label>
+        <link refid="IndexBinaryIVF_8h_source"/>
+      </node>
+      <node id="1314">
+        <label>faiss/IndexBinaryHash.h</label>
+        <link refid="IndexBinaryHash_8h_source"/>
+      </node>
+      <node id="1299">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h"/>
+        <childnode refid="1300" relation="include">
+        </childnode>
+        <childnode refid="1314" relation="include">
+        </childnode>
+        <childnode refid="1315" relation="include">
+        </childnode>
+        <childnode refid="1305" relation="include">
+        </childnode>
+        <childnode refid="1317" relation="include">
+        </childnode>
+        <childnode refid="1318" relation="include">
+        </childnode>
+        <childnode refid="1319" relation="include">
+        </childnode>
+      </node>
+      <node id="1301">
+        <label>faiss/IndexScalarQuantizer.h</label>
+        <link refid="IndexScalarQuantizer_8h_source"/>
+        <childnode refid="1302" relation="include">
+        </childnode>
+        <childnode refid="1303" relation="include">
+        </childnode>
+      </node>
+      <node id="1308">
+        <label>faiss/IndexIVFPQFastScan.h</label>
+        <link refid="IndexIVFPQFastScan_8h_source"/>
+      </node>
+      <node id="1304">
+        <label>faiss/Index2Layer.h</label>
+        <link refid="Index2Layer_8h_source"/>
+      </node>
+      <node id="1309">
+        <label>faiss/IndexIVFPQR.h</label>
+        <link refid="IndexIVFPQR_8h_source"/>
+      </node>
+      <node id="1302">
+        <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
+        <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
+      </node>
+      <node id="1315">
+        <label>faiss/utils/utils.h</label>
+        <link refid="utils_8h_source"/>
+        <childnode refid="1316" relation="include">
+        </childnode>
+        <childnode refid="1303" relation="include">
+        </childnode>
+      </node>
+      <node id="1313">
+        <label>faiss/IVFlib.h</label>
+        <link refid="IVFlib_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1HeapArray" prot="public">faiss::HeapArray</innerclass>
@@ -521,18 +521,18 @@
 <codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>TI;</highlight></codeline>
 <codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>T;</highlight></codeline>
 <codeline lineno="314"><highlight class="normal"></highlight></codeline>
-<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1aad477a3907c3496159eaf4b375be4432" kindref="member">nh</ref>;<sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>heaps</highlight></codeline>
-<codeline lineno="316"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>allocated<sp/>size<sp/>per<sp/>heap</highlight></codeline>
-<codeline lineno="317" refid="structfaiss_1_1HeapArray_1aad477a3907c3496159eaf4b375be4432" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TI<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" kindref="member">ids</ref>;<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>identifiers<sp/>(size<sp/>nh<sp/>*<sp/>k)</highlight></codeline>
-<codeline lineno="318" refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53" kindref="member">val</ref>;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>values<sp/>(distances<sp/>or<sp/>similarities),<sp/>size<sp/>nh<sp/>*<sp/>k</highlight></codeline>
-<codeline lineno="319" refid="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" refkind="member"><highlight class="comment"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="320" refid="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53" refkind="member"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Return<sp/>the<sp/>list<sp/>of<sp/>values<sp/>for<sp/>a<sp/>heap</highlight></codeline>
-<codeline lineno="321"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858" kindref="member">get_val</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>key)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53" kindref="member">val</ref><sp/>+<sp/>key<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="315" refid="structfaiss_1_1HeapArray_1aad477a3907c3496159eaf4b375be4432" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1aad477a3907c3496159eaf4b375be4432" kindref="member">nh</ref>;<sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>heaps</highlight></codeline>
+<codeline lineno="316" refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>allocated<sp/>size<sp/>per<sp/>heap</highlight></codeline>
+<codeline lineno="317" refid="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TI<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" kindref="member">ids</ref>;<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>identifiers<sp/>(size<sp/>nh<sp/>*<sp/>k)</highlight></codeline>
+<codeline lineno="318" refid="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53" kindref="member">val</ref>;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>values<sp/>(distances<sp/>or<sp/>similarities),<sp/>size<sp/>nh<sp/>*<sp/>k</highlight></codeline>
+<codeline lineno="319"><highlight class="comment"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="320"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Return<sp/>the<sp/>list<sp/>of<sp/>values<sp/>for<sp/>a<sp/>heap</highlight></codeline>
+<codeline lineno="321" refid="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858" kindref="member">get_val</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>key)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>val<sp/>+<sp/>key<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;<sp/>}</highlight></codeline>
 <codeline lineno="322"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="323" refid="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858" refkind="member"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Correspponding<sp/>identifiers</highlight></codeline>
-<codeline lineno="324"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TI<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49" kindref="member">get_ids</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>key)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" kindref="member">ids</ref><sp/>+<sp/>key<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="323"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Correspponding<sp/>identifiers</highlight></codeline>
+<codeline lineno="324" refid="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TI<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49" kindref="member">get_ids</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>key)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ids<sp/>+<sp/>key<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;<sp/>}</highlight></codeline>
 <codeline lineno="325"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="326" refid="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49" refkind="member"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>prepare<sp/>all<sp/>the<sp/>heaps<sp/>before<sp/>adding</highlight></codeline>
+<codeline lineno="326"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>prepare<sp/>all<sp/>the<sp/>heaps<sp/>before<sp/>adding</highlight></codeline>
 <codeline lineno="327"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a48afc496c73e982b8e10fde786628292" kindref="member">heapify</ref><sp/>();</highlight></codeline>
 <codeline lineno="328"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="329"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>add<sp/>nj<sp/>elements<sp/>to<sp/>heaps<sp/>i0:i0+ni,<sp/>with<sp/>sequential<sp/>ids</highlight></codeline>
@@ -615,7 +615,7 @@
 <codeline lineno="406"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>bh_ids)</highlight></codeline>
 <codeline lineno="407"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="408"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids--;<sp/></highlight><highlight class="comment">/*<sp/>Use<sp/>1-based<sp/>indexing<sp/>for<sp/>easier<sp/>node-&gt;child<sp/>translation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="409"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[bh_ids[k]];</highlight></codeline>
+<codeline lineno="409"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[bh_ids[<ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>]];</highlight></codeline>
 <codeline lineno="410"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>1;</highlight></codeline>
 <codeline lineno="411"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(1)<sp/>{</highlight></codeline>
 <codeline lineno="412"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i1<sp/>=<sp/>i<sp/>&lt;&lt;<sp/>1;</highlight></codeline>
@@ -635,7 +635,7 @@
 <codeline lineno="426"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i2;</highlight></codeline>
 <codeline lineno="427"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="428"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="429"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>bh_ids[k];</highlight></codeline>
+<codeline lineno="429"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>bh_ids[<ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>];</highlight></codeline>
 <codeline lineno="430"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="431"><highlight class="normal"></highlight></codeline>
 <codeline lineno="432"><highlight class="normal"></highlight></codeline>
@@ -648,7 +648,7 @@
 <codeline lineno="439"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="440"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids--;<sp/></highlight><highlight class="comment">/*<sp/>Use<sp/>1-based<sp/>indexing<sp/>for<sp/>easier<sp/>node-&gt;child<sp/>translation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="441"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[id];</highlight></codeline>
-<codeline lineno="442"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>k;</highlight></codeline>
+<codeline lineno="442"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;</highlight></codeline>
 <codeline lineno="443"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(i<sp/>&gt;<sp/>1)<sp/>{</highlight></codeline>
 <codeline lineno="444"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i_father<sp/>=<sp/>i<sp/>&gt;&gt;<sp/>1;</highlight></codeline>
 <codeline lineno="445"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!C::cmp<sp/>(val,<sp/>bh_val[bh_ids[i_father]]))</highlight></codeline>

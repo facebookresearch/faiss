@@ -1,150 +1,150 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="IndexIVFSpectralHash_8h" kind="file" language="C++">
     <compoundname>IndexIVFSpectralHash.h</compoundname>
     <includes local="no">vector</includes>
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
     <incdepgraph>
-      <node id="13">
-        <label>faiss/invlists/DirectMap.h</label>
-        <link refid="DirectMap_8h_source"/>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-      <node id="21">
+      <node id="865">
         <label>limits</label>
       </node>
-      <node id="15">
+      <node id="859">
         <label>faiss/impl/platform_macros.h</label>
       </node>
-      <node id="16">
-        <label>faiss/utils/Heap.h</label>
-        <link refid="Heap_8h_source"/>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>stdint.h</label>
-      </node>
-      <node id="19">
-        <label>cmath</label>
-      </node>
-      <node id="20">
-        <label>cassert</label>
-      </node>
-      <node id="14">
+      <node id="858">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="850" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>string</label>
-      </node>
-      <node id="1">
-        <label>faiss/IndexIVFSpectralHash.h</label>
-        <link refid="IndexIVFSpectralHash_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="846" relation="include">
         </childnode>
       </node>
-      <node id="9">
-        <label>typeinfo</label>
+      <node id="849">
+        <label>stdint.h</label>
       </node>
-      <node id="8">
-        <label>cstdio</label>
-      </node>
-      <node id="3">
+      <node id="847">
         <label>faiss/IndexIVF.h</label>
         <link refid="IndexIVF_8h_source"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="846" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="848" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="849" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="850" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="856" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="857" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="858" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="859" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="860" relation="include">
         </childnode>
       </node>
-      <node id="2">
-        <label>vector</label>
-      </node>
-      <node id="11">
-        <label>sstream</label>
-      </node>
-      <node id="12">
+      <node id="856">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="846" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="850" relation="include">
         </childnode>
       </node>
-      <node id="4">
-        <label>unordered_map</label>
+      <node id="863">
+        <label>cmath</label>
       </node>
-      <node id="17">
-        <label>climits</label>
+      <node id="864">
+        <label>cassert</label>
       </node>
-      <node id="22">
+      <node id="854">
+        <label>string</label>
+      </node>
+      <node id="845">
+        <label>faiss/IndexIVFSpectralHash.h</label>
+        <link refid="IndexIVFSpectralHash_8h"/>
+        <childnode refid="846" relation="include">
+        </childnode>
+        <childnode refid="847" relation="include">
+        </childnode>
+      </node>
+      <node id="853">
+        <label>typeinfo</label>
+      </node>
+      <node id="852">
+        <label>cstdio</label>
+      </node>
+      <node id="846">
+        <label>vector</label>
+      </node>
+      <node id="855">
+        <label>sstream</label>
+      </node>
+      <node id="860">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="861" relation="include">
+        </childnode>
+        <childnode refid="862" relation="include">
+        </childnode>
+        <childnode refid="863" relation="include">
+        </childnode>
+        <childnode refid="864" relation="include">
+        </childnode>
+        <childnode refid="852" relation="include">
+        </childnode>
+        <childnode refid="849" relation="include">
+        </childnode>
+        <childnode refid="865" relation="include">
+        </childnode>
+        <childnode refid="866" relation="include">
+        </childnode>
+      </node>
+      <node id="866">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="17" relation="include">
+        <childnode refid="861" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="863" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="865" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="848">
+        <label>unordered_map</label>
+      </node>
+      <node id="861">
+        <label>climits</label>
+      </node>
+      <node id="850">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="7" relation="include">
+        <childnode refid="851" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="852" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="853" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="854" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="855" relation="include">
         </childnode>
       </node>
-      <node id="18">
-        <label>cstring</label>
-      </node>
-      <node id="7">
+      <node id="851">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+      </node>
+      <node id="857">
+        <label>faiss/invlists/DirectMap.h</label>
+        <link refid="DirectMap_8h_source"/>
+        <childnode refid="856" relation="include">
+        </childnode>
+        <childnode refid="848" relation="include">
+        </childnode>
+      </node>
+      <node id="862">
+        <label>cstring</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1IndexIVFSpectralHash" prot="public">faiss::IndexIVFSpectralHash</innerclass>

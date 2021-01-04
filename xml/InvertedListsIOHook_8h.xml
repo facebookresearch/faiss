@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="InvertedListsIOHook_8h" kind="file" language="C++">
     <compoundname>InvertedListsIOHook.h</compoundname>
     <includes local="no">string</includes>
@@ -8,76 +8,76 @@
     <includedby refid="BlockInvertedLists_8h" local="no">faiss/invlists/BlockInvertedLists.h</includedby>
     <includedby refid="OnDiskInvertedLists_8h" local="no">faiss/invlists/OnDiskInvertedLists.h</includedby>
     <incdepgraph>
-      <node id="2">
-        <label>string</label>
-      </node>
-      <node id="8">
-        <label>typeinfo</label>
-      </node>
-      <node id="7">
-        <label>cstdio</label>
-      </node>
-      <node id="4">
-        <label>vector</label>
-      </node>
-      <node id="9">
-        <label>sstream</label>
-      </node>
-      <node id="1">
-        <label>faiss/invlists/InvertedListsIOHook.h</label>
-        <link refid="InvertedListsIOHook_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
+      <node id="1087">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
-        <childnode refid="4" relation="include">
+        <childnode refid="1088" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="1089" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="1086">
+        <label>string</label>
+      </node>
+      <node id="1092">
+        <label>typeinfo</label>
+      </node>
+      <node id="1091">
+        <label>cstdio</label>
+      </node>
+      <node id="1088">
+        <label>vector</label>
+      </node>
+      <node id="1093">
+        <label>sstream</label>
+      </node>
+      <node id="1094">
         <label>faiss/impl/io.h</label>
       </node>
-      <node id="5">
+      <node id="1089">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="1090" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="1091" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="1092" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
+        <childnode refid="1086" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="1093" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="1090">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>
+      <node id="1085">
+        <label>faiss/invlists/InvertedListsIOHook.h</label>
+        <link refid="InvertedListsIOHook_8h"/>
+        <childnode refid="1086" relation="include">
+        </childnode>
+        <childnode refid="1087" relation="include">
+        </childnode>
+        <childnode refid="1094" relation="include">
+        </childnode>
+      </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="2">
-        <label>faiss/invlists/BlockInvertedLists.h</label>
-        <link refid="BlockInvertedLists_8h_source"/>
-      </node>
-      <node id="3">
+      <node id="1097">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
         <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
-      <node id="1">
+      <node id="1096">
+        <label>faiss/invlists/BlockInvertedLists.h</label>
+        <link refid="BlockInvertedLists_8h_source"/>
+      </node>
+      <node id="1095">
         <label>faiss/invlists/InvertedListsIOHook.h</label>
         <link refid="InvertedListsIOHook_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1096" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="1097" relation="include">
         </childnode>
       </node>
     </invincdepgraph>
@@ -119,7 +119,7 @@
 <codeline lineno="29" refid="structfaiss_1_1InvertedListsIOHook_1a81292158052e31c66fc0f175310113ae" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="structfaiss_1_1InvertedListsIOHook_1a81292158052e31c66fc0f175310113ae" kindref="member">key</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>string<sp/>version<sp/>of<sp/>the<sp/>fourcc</highlight></codeline>
 <codeline lineno="30" refid="structfaiss_1_1InvertedListsIOHook_1aaf9a95368179893d044d1670a29a7a71" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="structfaiss_1_1InvertedListsIOHook_1aaf9a95368179893d044d1670a29a7a71" kindref="member">classname</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>typeid.name</highlight></codeline>
 <codeline lineno="31"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedListsIOHook" kindref="compound">InvertedListsIOHook</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/><ref refid="structfaiss_1_1InvertedListsIOHook_1a81292158052e31c66fc0f175310113ae" kindref="member">key</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/><ref refid="structfaiss_1_1InvertedListsIOHook_1aaf9a95368179893d044d1670a29a7a71" kindref="member">classname</ref>);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedListsIOHook" kindref="compound">InvertedListsIOHook</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/>key,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/>classname);</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="34"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>write<sp/>the<sp/>index<sp/>to<sp/>the<sp/>IOWriter<sp/>(including<sp/>the<sp/>fourcc)</highlight></codeline>
 <codeline lineno="35"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedListsIOHook_1a0334e4a98a6a2645e6ca9963295f3cf7" kindref="member">write</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*ils,<sp/>IOWriter<sp/>*f)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
@@ -140,13 +140,13 @@
 <codeline lineno="50"><highlight class="normal"></highlight></codeline>
 <codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1InvertedListsIOHook" kindref="compound">InvertedListsIOHook</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"></highlight></codeline>
-<codeline lineno="53"><highlight class="normal"></highlight><highlight class="comment"><sp/><sp/><sp/><sp/>/****************************<sp/>Manage<sp/>the<sp/>set<sp/>of<sp/>callbacks<sp/>******/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/****************************<sp/>Manage<sp/>the<sp/>set<sp/>of<sp/>callbacks<sp/>******/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="54"><highlight class="normal"></highlight></codeline>
 <codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>transfers<sp/>ownership</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add_callback(<ref refid="structfaiss_1_1InvertedListsIOHook" kindref="compound">InvertedListsIOHook</ref><sp/>*);</highlight></codeline>
 <codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>print_callbacks();</highlight></codeline>
 <codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedListsIOHook" kindref="compound">InvertedListsIOHook</ref>*<sp/>lookup(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>h);</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedListsIOHook" kindref="compound">InvertedListsIOHook</ref>*<sp/>lookup_classname(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/><ref refid="structfaiss_1_1InvertedListsIOHook_1aaf9a95368179893d044d1670a29a7a71" kindref="member">classname</ref>);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedListsIOHook" kindref="compound">InvertedListsIOHook</ref>*<sp/>lookup_classname(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/>classname);</highlight></codeline>
 <codeline lineno="60"><highlight class="normal"></highlight></codeline>
 <codeline lineno="61"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"></highlight></codeline>

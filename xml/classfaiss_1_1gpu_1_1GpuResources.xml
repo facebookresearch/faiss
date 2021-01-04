@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="classfaiss_1_1gpu_1_1GpuResources" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::gpu::GpuResources</compoundname>
     <derivedcompoundref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" prot="public" virt="non-virtual">faiss::gpu::StandardGpuResourcesImpl</derivedcompoundref>
@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="187" column="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="187" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a1f7f4e220ce279257e1daf929c3b0d4e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -31,11 +31,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Call to pre-allocate resources for a particular device. If this is not called, then resources will be allocated at the first time of demand </para>
-        </detaileddescription>
+<para>Call to pre-allocate resources for a particular device. If this is not called, then resources will be allocated at the first time of demand </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="192" column="16"/>
+        <location file="faiss/gpu/GpuResources.h" line="192" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1aa2682b8503dfdab4f7f5ef867035ad29" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>cublasHandle_t</type>
@@ -48,13 +47,12 @@
           <declname>device</declname>
         </param>
         <briefdescription>
-<para>Returns the cuBLAS handle that we use for the given device. </para>
-        </briefdescription>
+<para>Returns the cuBLAS handle that we use for the given device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="195" column="26"/>
+        <location file="faiss/gpu/GpuResources.h" line="195" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a6c564198df6ba675920c993e2af34b8c" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>cudaStream_t</type>
@@ -69,11 +67,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Returns the stream that we order all computation on for the given device </para>
-        </detaileddescription>
+<para>Returns the stream that we order all computation on for the given device </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="199" column="24"/>
+        <location file="faiss/gpu/GpuResources.h" line="199" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1ac7a6bad94585904e17907844736165ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -92,11 +89,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Overrides the default stream for a device to the user-supplied stream. The resources object does not own this stream (i.e., it will not destroy it). </para>
-        </detaileddescription>
+<para>Overrides the default stream for a device to the user-supplied stream. The resources object does not own this stream (i.e., it will not destroy it). </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="203" column="16"/>
+        <location file="faiss/gpu/GpuResources.h" line="203" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1afb469bf3b107f43ef0d6abe4a014bb5b" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>std::vector&lt; cudaStream_t &gt;</type>
@@ -109,13 +105,12 @@
           <declname>device</declname>
         </param>
         <briefdescription>
-<para>Returns the set of alternative streams that we use for the given device. </para>
-        </briefdescription>
+<para>Returns the set of alternative streams that we use for the given device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="206" column="23"/>
+        <location file="faiss/gpu/GpuResources.h" line="206" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a4f29fea84dc03a44931d2e985ee39d82" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void *</type>
@@ -130,11 +125,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Memory management Returns an allocation from the given memory space, ordered with respect to the given stream (i.e., the first user will be a kernel in this stream). All allocations are sized internally to be the next highest multiple of 16 bytes, and all allocations returned are guaranteed to be 16 byte aligned. </para>
-        </detaileddescription>
+<para>Memory management Returns an allocation from the given memory space, ordered with respect to the given stream (i.e., the first user will be a kernel in this stream). All allocations are sized internally to be the next highest multiple of 16 bytes, and all allocations returned are guaranteed to be 16 byte aligned. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="213" column="16"/>
+        <location file="faiss/gpu/GpuResources.h" line="213" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a0f444157f93f8c99cf1ce12591818d3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -151,13 +145,12 @@
           <declname>in</declname>
         </param>
         <briefdescription>
-<para>Returns a previous allocation. </para>
-        </briefdescription>
+<para>Returns a previous allocation. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="216" column="16"/>
+        <location file="faiss/gpu/GpuResources.h" line="216" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1abfad190786252900370003ed02b3f411" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>size_t</type>
@@ -172,11 +165,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>For MemorySpace::Temporary, how much space is immediately available without cudaMalloc allocation? </para>
-        </detaileddescription>
+<para>For MemorySpace::Temporary, how much space is immediately available without cudaMalloc allocation? </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="220" column="18"/>
+        <location file="faiss/gpu/GpuResources.h" line="220" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1ad1b018745239e03d0044b659335c17a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>std::pair&lt; void *, size_t &gt;</type>
@@ -185,13 +177,12 @@
         <name>getPinnedMemory</name>
         <reimplementedby refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a86dea0d55d2ab7226f173e2ec998c6b4">getPinnedMemory</reimplementedby>
         <briefdescription>
-<para>Returns the available CPU pinned memory buffer. </para>
-        </briefdescription>
+<para>Returns the available CPU pinned memory buffer. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="223" column="21"/>
+        <location file="faiss/gpu/GpuResources.h" line="223" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a104b291ed4116033752144e90856c2e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>cudaStream_t</type>
@@ -204,13 +195,12 @@
           <declname>device</declname>
         </param>
         <briefdescription>
-<para>Returns the stream on which we perform async CPU &lt;-&gt; GPU copies. </para>
-        </briefdescription>
+<para>Returns the stream on which we perform async CPU &lt;-&gt; GPU copies. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="226" column="24"/>
+        <location file="faiss/gpu/GpuResources.h" line="226" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a00cb7bcbc5f1a00da673f30749149b12" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>cublasHandle_t</type>
@@ -218,14 +208,12 @@
         <argsstring>()</argsstring>
         <name>getBlasHandleCurrentDevice</name>
         <briefdescription>
-<para>Calls getBlasHandle with the current device. </para>
-        </briefdescription>
+<para>Calls getBlasHandle with the current device. </para>        </briefdescription>
         <detaileddescription>
-<para>Functions provided by default </para>
-        </detaileddescription>
+<para>Functions provided by default </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="233" column="18"/>
+        <location file="faiss/gpu/GpuResources.h" line="233" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1aa0354aa570c24e17a9f8a6a45b153ed2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>cudaStream_t</type>
@@ -233,13 +221,12 @@
         <argsstring>()</argsstring>
         <name>getDefaultStreamCurrentDevice</name>
         <briefdescription>
-<para>Calls getDefaultStream with the current device. </para>
-        </briefdescription>
+<para>Calls getDefaultStream with the current device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="236" column="16"/>
+        <location file="faiss/gpu/GpuResources.h" line="236" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1aeb57bc66a9823aaf140324e22985a71d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -247,13 +234,12 @@
         <argsstring>() const</argsstring>
         <name>getTempMemoryAvailableCurrentDevice</name>
         <briefdescription>
-<para>Calls getTempMemoryAvailable with the current device. </para>
-        </briefdescription>
+<para>Calls getTempMemoryAvailable with the current device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="239" column="10"/>
+        <location file="faiss/gpu/GpuResources.h" line="239" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1af0949f87d4f522b7ee5be17ad760b266" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref></type>
@@ -265,13 +251,12 @@
           <declname>req</declname>
         </param>
         <briefdescription>
-<para>Returns a temporary memory allocation via a RAII object. </para>
-        </briefdescription>
+<para>Returns a temporary memory allocation via a RAII object. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="242" column="24"/>
+        <location file="faiss/gpu/GpuResources.h" line="242" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a130deab9f6d49cbdde8f9da45ce868fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -285,11 +270,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Synchronizes the CPU with respect to the default stream for the given device </para>
-        </detaileddescription>
+<para>Synchronizes the CPU with respect to the default stream for the given device </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="247" column="8"/>
+        <location file="faiss/gpu/GpuResources.h" line="247" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1adf6a5653ec2bbb0e9d58a0e1dd73897f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -297,13 +281,12 @@
         <argsstring>()</argsstring>
         <name>syncDefaultStreamCurrentDevice</name>
         <briefdescription>
-<para>Calls syncDefaultStream for the current device. </para>
-        </briefdescription>
+<para>Calls syncDefaultStream for the current device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="250" column="8"/>
+        <location file="faiss/gpu/GpuResources.h" line="250" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a2104e59caebc31d9f98729281b616acc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; cudaStream_t &gt;</type>
@@ -311,13 +294,12 @@
         <argsstring>()</argsstring>
         <name>getAlternateStreamsCurrentDevice</name>
         <briefdescription>
-<para>Calls getAlternateStreams for the current device. </para>
-        </briefdescription>
+<para>Calls getAlternateStreams for the current device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="253" column="15"/>
+        <location file="faiss/gpu/GpuResources.h" line="253" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1aefb90d15fade57cdfcff03ec800183d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>cudaStream_t</type>
@@ -325,33 +307,31 @@
         <argsstring>()</argsstring>
         <name>getAsyncCopyStreamCurrentDevice</name>
         <briefdescription>
-<para>Calls getAsyncCopyStream for the current device. </para>
-        </briefdescription>
+<para>Calls getAsyncCopyStream for the current device. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="256" column="16"/>
+        <location file="faiss/gpu/GpuResources.h" line="256" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Base class of GPU-side resource provider; hides provision of cuBLAS handles, CUDA streams and all device memory allocation performed </para>
-    </detaileddescription>
+<para>Base class of GPU-side resource provider; hides provision of cuBLAS handles, CUDA streams and all device memory allocation performed </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="2">
+      <node id="248">
         <label>faiss::gpu::StandardGpuResourcesImpl</label>
         <link refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="247" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="1">
+      <node id="247">
         <label>faiss::gpu::GpuResources</label>
         <link refid="classfaiss_1_1gpu_1_1GpuResources"/>
       </node>
     </inheritancegraph>
-    <location file="faiss/gpu/GpuResources.h" line="185" column="19" bodyfile="faiss/gpu/GpuResources.h" bodystart="185" bodyend="257"/>
+    <location file="faiss/gpu/GpuResources.h" line="185" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="185" bodyend="257"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1GpuResources_1a4f29fea84dc03a44931d2e985ee39d82" prot="public" virt="pure-virtual"><scope>faiss::gpu::GpuResources</scope><name>allocMemory</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuResources_1af0949f87d4f522b7ee5be17ad760b266" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuResources</scope><name>allocMemoryHandle</name></member>

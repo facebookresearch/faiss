@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1gpu_1_1GpuIndexFlatConfig" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuIndexFlatConfig</compoundname>
     <basecompoundref refid="structfaiss_1_1gpu_1_1GpuIndexConfig" prot="public" virt="non-virtual">faiss::gpu::GpuIndexConfig</basecompoundref>
@@ -10,13 +10,12 @@
         <argsstring></argsstring>
         <name>useFloat16</name>
         <briefdescription>
-<para>Whether or not data is stored as float16. </para>
-        </briefdescription>
+<para>Whether or not data is stored as float16. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexFlat.h" line="33" column="8" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexFlat.h" line="33" column="1" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a0342a26f5e59563bfe04f3f80e3b27f0" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -26,11 +25,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Whether or not data is stored (transparently) in a transposed layout, enabling use of the NN GEMM call, which is ~10% faster. This will improve the speed of the flat index, but will substantially slow down any add() calls made, as all data must be transposed, and will increase storage requirements (we store data in both transposed and non-transposed layouts). </para>
-        </detaileddescription>
+<para>Whether or not data is stored (transparently) in a transposed layout, enabling use of the NN GEMM call, which is ~10% faster. This will improve the speed of the flat index, but will substantially slow down any add() calls made, as all data must be transposed, and will increase storage requirements (we store data in both transposed and non-transposed layouts). </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexFlat.h" line="41" column="8" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexFlat.h" line="41" column="1" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -38,13 +36,12 @@
         <argsstring></argsstring>
         <name>device</name>
         <briefdescription>
-<para>GPU device on which the index is resident. </para>
-        </briefdescription>
+<para>GPU device on which the index is resident. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="23" column="7" bodyfile="faiss/gpu/GpuIndex.h" bodystart="23" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="23" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" static="no" mutable="no">
         <type>MemorySpace</type>
@@ -54,11 +51,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>What memory space to use for primary storage. On Pascal and above (CC 6+) architectures, allows GPUs to use more memory than is available on the GPU. </para>
-        </detaileddescription>
+<para>What memory space to use for primary storage. On Pascal and above (CC 6+) architectures, allows GPUs to use more memory than is available on the GPU. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="28" column="15" bodyfile="faiss/gpu/GpuIndex.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="28" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -73,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexFlat.h" line="27" column="10" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="27" bodyend="30"/>
+        <location file="faiss/gpu/GpuIndexFlat.h" line="27" column="1" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="27" bodyend="30"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -81,30 +77,30 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
+      <node id="127">
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
       </node>
-      <node id="1">
+      <node id="126">
         <label>faiss::gpu::GpuIndexFlatConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="127" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
+      <node id="129">
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
       </node>
-      <node id="1">
+      <node id="128">
         <label>faiss::gpu::GpuIndexFlatConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="129" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuIndexFlat.h" line="26" column="47" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="26" bodyend="42"/>
+    <location file="faiss/gpu/GpuIndexFlat.h" line="26" column="1" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="26" bodyend="42"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlatConfig</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adabe0f431b8dec6968ef0abe91b17189" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlatConfig</scope><name>GpuIndexConfig</name></member>

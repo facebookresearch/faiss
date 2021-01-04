@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1IndexIVFPQR" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexIVFPQR</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexIVFPQ" prot="public" virt="non-virtual">faiss::IndexIVFPQ</basecompoundref>
@@ -11,13 +11,12 @@
         <argsstring></argsstring>
         <name>refine_pq</name>
         <briefdescription>
-<para>3rd level quantizer </para>
-        </briefdescription>
+<para>3rd level quantizer </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="23" column="22" bodyfile="faiss/IndexIVFPQR.h" bodystart="23" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQR.h" line="23" column="1" bodyfile="faiss/IndexIVFPQR.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQR_1a588bd0b733c8db18eaeb7bc287afd16e" prot="public" static="no" mutable="no">
         <type>std::vector&lt; uint8_t &gt;</type>
@@ -25,13 +24,12 @@
         <argsstring></argsstring>
         <name>refine_codes</name>
         <briefdescription>
-<para>corresponding codes </para>
-        </briefdescription>
+<para>corresponding codes </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="24" column="18" bodyfile="faiss/IndexIVFPQR.h" bodystart="24" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQR.h" line="24" column="1" bodyfile="faiss/IndexIVFPQR.h" bodystart="24" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQR_1a0b02a4151ceacc070352f8b15cc0ee0b" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -39,13 +37,12 @@
         <argsstring></argsstring>
         <name>k_factor</name>
         <briefdescription>
-<para>factor between k requested in search and the k requested from the IVFPQ </para>
-        </briefdescription>
+<para>factor between k requested in search and the k requested from the IVFPQ </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="27" column="11" bodyfile="faiss/IndexIVFPQR.h" bodystart="27" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQR.h" line="27" column="1" bodyfile="faiss/IndexIVFPQR.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQ_1afd13b471df293ae5a6e895704c69a4c3" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -53,13 +50,12 @@
         <argsstring></argsstring>
         <name>by_residual</name>
         <briefdescription>
-<para>Encode residual or plain vector? </para>
-        </briefdescription>
+<para>Encode residual or plain vector? </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="39" column="10" bodyfile="faiss/IndexIVFPQ.h" bodystart="39" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="39" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="39" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQ_1a007303be116c8da65b6d058e3fc77d16" prot="public" static="no" mutable="no">
         <type>ProductQuantizer</type>
@@ -67,13 +63,12 @@
         <argsstring></argsstring>
         <name>pq</name>
         <briefdescription>
-<para>produces the codes </para>
-        </briefdescription>
+<para>produces the codes </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="41" column="22" bodyfile="faiss/IndexIVFPQ.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="41" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQ_1a9d5373633df7a9bec4de69400b9adeed" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -81,13 +76,12 @@
         <argsstring></argsstring>
         <name>do_polysemous_training</name>
         <briefdescription>
-<para>reorder PQ centroids after training? </para>
-        </briefdescription>
+<para>reorder PQ centroids after training? </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="43" column="10" bodyfile="faiss/IndexIVFPQ.h" bodystart="43" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="43" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="43" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQ_1a2b14cbb5acb3fc28a4df8fde3f5567cd" prot="public" static="no" mutable="no">
         <type>PolysemousTraining *</type>
@@ -95,13 +89,12 @@
         <argsstring></argsstring>
         <name>polysemous_training</name>
         <briefdescription>
-<para>if NULL, use default </para>
-        </briefdescription>
+<para>if NULL, use default </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="44" column="24" bodyfile="faiss/IndexIVFPQ.h" bodystart="44" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="44" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="44" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQ_1a7430fc4fa030c96497abced3b68358d4" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -109,13 +102,12 @@
         <argsstring></argsstring>
         <name>scan_table_threshold</name>
         <briefdescription>
-<para>use table computation or on-the-fly? </para>
-        </briefdescription>
+<para>use table computation or on-the-fly? </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="47" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="47" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="47" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="47" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQ_1a3093a0a3e128eafce6e0583b75e9662e" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -123,13 +115,12 @@
         <argsstring></argsstring>
         <name>polysemous_ht</name>
         <briefdescription>
-<para>Hamming thresh for polysemous filtering. </para>
-        </briefdescription>
+<para>Hamming thresh for polysemous filtering. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="48" column="9" bodyfile="faiss/IndexIVFPQ.h" bodystart="48" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="48" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="48" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQ_1a1c66ff073c18a1edbe8444c24d870583" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -139,11 +130,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Precompute table that speed up query preprocessing at some memory cost (used only for by_residual with L2 metric) </para>
-        </detaileddescription>
+<para>Precompute table that speed up query preprocessing at some memory cost (used only for by_residual with L2 metric) </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="53" column="9" bodyfile="faiss/IndexIVFPQ.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="53" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="53" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQ_1a1b6a77049a9f79844afa9f461611e43d" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1AlignedTable" kindref="compound">AlignedTable</ref>&lt; float &gt;</type>
@@ -153,11 +143,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>if use_precompute_table size nlist * pq.M * pq.ksub </para>
-        </detaileddescription>
+<para>if use_precompute_table size nlist * pq.M * pq.ksub </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="57" column="18" bodyfile="faiss/IndexIVFPQ.h" bodystart="57" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="57" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="57" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1aa0e8fc5e04cbd8e0dde61f98bc7dd0bc" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -165,13 +154,12 @@
         <argsstring></argsstring>
         <name>invlists</name>
         <briefdescription>
-<para>Access to the actual data. </para>
-        </briefdescription>
+<para>Access to the actual data. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="103" column="19" bodyfile="faiss/IndexIVF.h" bodystart="103" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="103" column="1" bodyfile="faiss/IndexIVF.h" bodystart="103" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1a5743b18d78fe1b9910d8ff8670f207d7" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -184,7 +172,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="104" column="10" bodyfile="faiss/IndexIVF.h" bodystart="104" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="104" column="1" bodyfile="faiss/IndexIVF.h" bodystart="104" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1a46d1aeddb60643c5b3f096147c3e028f" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -192,13 +180,12 @@
         <argsstring></argsstring>
         <name>code_size</name>
         <briefdescription>
-<para>code size per vector in bytes </para>
-        </briefdescription>
+<para>code size per vector in bytes </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="106" column="12" bodyfile="faiss/IndexIVF.h" bodystart="106" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="106" column="1" bodyfile="faiss/IndexIVF.h" bodystart="106" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1affed235eadf27a13d753ee4d33a1dc58" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -206,13 +193,12 @@
         <argsstring></argsstring>
         <name>nprobe</name>
         <briefdescription>
-<para>number of probes at query time </para>
-        </briefdescription>
+<para>number of probes at query time </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="108" column="12" bodyfile="faiss/IndexIVF.h" bodystart="108" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="108" column="1" bodyfile="faiss/IndexIVF.h" bodystart="108" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1a7f2dd34f66f8770acba74a0a591fa4a8" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -220,13 +206,12 @@
         <argsstring></argsstring>
         <name>max_codes</name>
         <briefdescription>
-<para>max nb of codes to visit to do a query </para>
-        </briefdescription>
+<para>max nb of codes to visit to do a query </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="109" column="12" bodyfile="faiss/IndexIVF.h" bodystart="109" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="109" column="1" bodyfile="faiss/IndexIVF.h" bodystart="109" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1a244ec2067da495ff1493687e0048ae02" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -236,13 +221,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Parallel mode determines how queries are parallelized with OpenMP</para>
-<para>0 (default): split over queries 1: parallelize over inverted lists 2: parallelize over both 3: split over queries with a finer granularity</para>
-<para>PARALLEL_MODE_NO_HEAP_INIT: binary or with the previous to prevent the heap to be initialized and finalized </para>
-        </detaileddescription>
+<para>Parallel mode determines how queries are parallelized with OpenMP</para><para>0 (default): split over queries 1: parallelize over inverted lists 2: parallelize over both 3: split over queries with a finer granularity</para><para>PARALLEL_MODE_NO_HEAP_INIT: binary or with the previous to prevent the heap to be initialized and finalized </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="121" column="9" bodyfile="faiss/IndexIVF.h" bodystart="121" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="121" column="1" bodyfile="faiss/IndexIVF.h" bodystart="121" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1aa221f301cca11e1ab59d6c12e08a0240" prot="public" static="no" mutable="no">
         <type>const int</type>
@@ -256,7 +238,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="122" column="15" bodyfile="faiss/IndexIVF.h" bodystart="122" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="122" column="1" bodyfile="faiss/IndexIVF.h" bodystart="122" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1ae1267a1770ef6c8fa111891110e6fa69" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1DirectMap" kindref="compound">DirectMap</ref></type>
@@ -266,11 +248,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>optional map that maps back ids to invlist entries. This enables <ref refid="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39" kindref="member">reconstruct()</ref> </para>
-        </detaileddescription>
+<para>optional map that maps back ids to invlist entries. This enables <ref refid="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39" kindref="member">reconstruct()</ref> </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="126" column="15" bodyfile="faiss/IndexIVF.h" bodystart="126" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="126" column="1" bodyfile="faiss/IndexIVF.h" bodystart="126" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -278,13 +259,12 @@
         <argsstring></argsstring>
         <name>d</name>
         <briefdescription>
-<para>vector dimension </para>
-        </briefdescription>
+<para>vector dimension </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="57" column="9" bodyfile="faiss/Index.h" bodystart="57" bodyend="-1"/>
+        <location file="faiss/Index.h" line="57" column="1" bodyfile="faiss/Index.h" bodystart="57" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
@@ -292,13 +272,12 @@
         <argsstring></argsstring>
         <name>ntotal</name>
         <briefdescription>
-<para>total nb of indexed vectors </para>
-        </briefdescription>
+<para>total nb of indexed vectors </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="58" column="11" bodyfile="faiss/Index.h" bodystart="58" bodyend="-1"/>
+        <location file="faiss/Index.h" line="58" column="1" bodyfile="faiss/Index.h" bodystart="58" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -306,13 +285,12 @@
         <argsstring></argsstring>
         <name>verbose</name>
         <briefdescription>
-<para>verbosity level </para>
-        </briefdescription>
+<para>verbosity level </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="59" column="10" bodyfile="faiss/Index.h" bodystart="59" bodyend="-1"/>
+        <location file="faiss/Index.h" line="59" column="1" bodyfile="faiss/Index.h" bodystart="59" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -322,11 +300,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>set if the <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> does not require training, or if training is done already </para>
-        </detaileddescription>
+<para>set if the <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> does not require training, or if training is done already </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="63" column="10" bodyfile="faiss/Index.h" bodystart="63" bodyend="-1"/>
+        <location file="faiss/Index.h" line="63" column="1" bodyfile="faiss/Index.h" bodystart="63" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
@@ -334,13 +311,12 @@
         <argsstring></argsstring>
         <name>metric_type</name>
         <briefdescription>
-<para>type of metric this index uses for search </para>
-        </briefdescription>
+<para>type of metric this index uses for search </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="66" column="16" bodyfile="faiss/Index.h" bodystart="66" bodyend="-1"/>
+        <location file="faiss/Index.h" line="66" column="1" bodyfile="faiss/Index.h" bodystart="66" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -348,13 +324,12 @@
         <argsstring></argsstring>
         <name>metric_arg</name>
         <briefdescription>
-<para>argument of the metric type </para>
-        </briefdescription>
+<para>argument of the metric type </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="67" column="11" bodyfile="faiss/Index.h" bodystart="67" bodyend="-1"/>
+        <location file="faiss/Index.h" line="67" column="1" bodyfile="faiss/Index.h" bodystart="67" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1a3cf99e2ee92b8558a066f821efab95d5" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -362,13 +337,12 @@
         <argsstring></argsstring>
         <name>quantizer</name>
         <briefdescription>
-<para>quantizer that maps vectors to inverted lists </para>
-        </briefdescription>
+<para>quantizer that maps vectors to inverted lists </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="35" column="12" bodyfile="faiss/IndexIVF.h" bodystart="35" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="35" column="1" bodyfile="faiss/IndexIVF.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1a1c4fc9d874d9492ee0ea27a5be388fa7" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -376,13 +350,12 @@
         <argsstring></argsstring>
         <name>nlist</name>
         <briefdescription>
-<para>number of possible key values </para>
-        </briefdescription>
+<para>number of possible key values </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="36" column="12" bodyfile="faiss/IndexIVF.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="36" column="1" bodyfile="faiss/IndexIVF.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1a1dcea762fc322fdcffe64f78994edea0" prot="public" static="no" mutable="no">
         <type>char</type>
@@ -392,11 +365,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>= 0: use the quantizer as index in a kmeans training = 1: just pass on the training set to the train() of the quantizer = 2: kmeans training on a flat index + add the centroids to the quantizer </para>
-        </detaileddescription>
+<para>= 0: use the quantizer as index in a kmeans training = 1: just pass on the training set to the train() of the quantizer = 2: kmeans training on a flat index + add the centroids to the quantizer </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="43" column="10" bodyfile="faiss/IndexIVF.h" bodystart="43" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="43" column="1" bodyfile="faiss/IndexIVF.h" bodystart="43" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1ab688c629cd42122d73517078b87f483d" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -404,13 +376,12 @@
         <argsstring></argsstring>
         <name>own_fields</name>
         <briefdescription>
-<para>whether object owns the quantizer </para>
-        </briefdescription>
+<para>whether object owns the quantizer </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="44" column="10" bodyfile="faiss/IndexIVF.h" bodystart="44" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="44" column="1" bodyfile="faiss/IndexIVF.h" bodystart="44" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1ClusteringParameters" kindref="compound">ClusteringParameters</ref></type>
@@ -418,13 +389,12 @@
         <argsstring></argsstring>
         <name>cp</name>
         <briefdescription>
-<para>to override default clustering params </para>
-        </briefdescription>
+<para>to override default clustering params </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="46" column="26" bodyfile="faiss/IndexIVF.h" bodystart="46" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="46" column="1" bodyfile="faiss/IndexIVF.h" bodystart="46" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -432,13 +402,12 @@
         <argsstring></argsstring>
         <name>clustering_index</name>
         <briefdescription>
-<para>to override index used during clustering </para>
-        </briefdescription>
+<para>to override index used during clustering </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="47" column="11" bodyfile="faiss/IndexIVF.h" bodystart="47" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="47" column="1" bodyfile="faiss/IndexIVF.h" bodystart="47" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -481,7 +450,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="29" column="5"/>
+        <location file="faiss/IndexIVFPQR.h" line="29" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQR_1ae0e979a014a9defe2254e9543657b075" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -490,13 +459,12 @@
         <name>reset</name>
         <reimplements refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f">reset</reimplements>
         <briefdescription>
-<para>removes all elements from the database. </para>
-        </briefdescription>
+<para>removes all elements from the database. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="34" column="10"/>
+        <location file="faiss/IndexIVFPQR.h" line="34" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQR_1aabe4bb3b249f15af977c954f36e81147" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -509,13 +477,12 @@
           <declname>sel</declname>
         </param>
         <briefdescription>
-<para>Dataset manipulation functions. </para>
-        </briefdescription>
+<para>Dataset manipulation functions. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="36" column="12"/>
+        <location file="faiss/IndexIVFPQR.h" line="36" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQR_1a68ed7cae5bec89fcdcb6a1d2addbd5a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -532,13 +499,12 @@
           <declname>x</declname>
         </param>
         <briefdescription>
-<para>trains the two product quantizers </para>
-        </briefdescription>
+<para>trains the two product quantizers </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="39" column="10"/>
+        <location file="faiss/IndexIVFPQR.h" line="39" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQR_1ae526b4722b470a33643d40ef30cf27f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -559,13 +525,12 @@
           <declname>xids</declname>
         </param>
         <briefdescription>
-<para>default implementation that calls encode_vectors </para>
-        </briefdescription>
+<para>default implementation that calls encode_vectors </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="41" column="10"/>
+        <location file="faiss/IndexIVFPQR.h" line="41" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQR_1a98fb389c786bb1fb6db47af13659082c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -590,13 +555,12 @@
           <defval>nullptr</defval>
         </param>
         <briefdescription>
-<para>same as add_with_ids, but optionally use the precomputed list ids </para>
-        </briefdescription>
+<para>same as add_with_ids, but optionally use the precomputed list ids </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="44" column="10"/>
+        <location file="faiss/IndexIVFPQR.h" line="44" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQR_1a66645a61eb106f718fb5c8a7bac1f070" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -619,12 +583,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Reconstruct a vector given the location in terms of (inv list index + inv list offset) instead of the id.</para>
-<para>Useful for reconstructing when the direct_map is not maintained and the inv list offset is computed by <ref refid="structfaiss_1_1IndexIVFPQR_1a681e937fcfd9bd93cac5f9eff9d6021a" kindref="member">search_preassigned()</ref> with <computeroutput>store_pairs</computeroutput> set. </para>
-        </detaileddescription>
+<para>Reconstruct a vector given the location in terms of (inv list index + inv list offset) instead of the id.</para><para>Useful for reconstructing when the direct_map is not maintained and the inv list offset is computed by <ref refid="structfaiss_1_1IndexIVFPQR_1a681e937fcfd9bd93cac5f9eff9d6021a" kindref="member">search_preassigned()</ref> with <computeroutput>store_pairs</computeroutput> set. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="47" column="10"/>
+        <location file="faiss/IndexIVFPQR.h" line="47" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQR_1a31a1fec2a88b410ea96ce5be7d527be9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -643,11 +605,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal </para>
-        </detaileddescription>
+<para>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="50" column="10"/>
+        <location file="faiss/IndexIVFPQR.h" line="50" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQR_1a681e937fcfd9bd93cac5f9eff9d6021a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -700,85 +661,74 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>search a set of vectors, that are pre-quantized by the IVF quantizer. Fill in the corresponding heaps with the query results. The default implementation uses InvertedListScanners to do the search.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>search a set of vectors, that are pre-quantized by the IVF quantizer. Fill in the corresponding heaps with the query results. The default implementation uses InvertedListScanners to do the search.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>nb of vectors to query </para>
-</parameterdescription>
+<para>nb of vectors to query </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>query vectors, size nx * d </para>
-</parameterdescription>
+<para>query vectors, size nx * d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>assign</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>coarse quantization indices, size nx * nprobe </para>
-</parameterdescription>
+<para>coarse quantization indices, size nx * nprobe </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>centroid_dis</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>distances to coarse centroids, size nx * nprobe </para>
-</parameterdescription>
+<para>distances to coarse centroids, size nx * nprobe </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>distance</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output distances, size n * k </para>
-</parameterdescription>
+<para>output distances, size n * k </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>labels</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output labels, size n * k </para>
-</parameterdescription>
+<para>output labels, size n * k </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>store_pairs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>store inv list index + inv list offset instead in upper/lower 32 bit of result, instead of ids (used for reranking). </para>
-</parameterdescription>
+<para>store inv list index + inv list offset instead in upper/lower 32 bit of result, instead of ids (used for reranking). </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>params</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>used to override the object&apos;s search parameters </para>
-</parameterdescription>
+<para>used to override the object&apos;s search parameters </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>stats</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>search stats to be updated (can be null) </para>
-</parameterdescription>
+<para>search stats to be updated (can be null) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="53" column="10"/>
+        <location file="faiss/IndexIVFPQR.h" line="53" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQR_1a5ddb847015b10835c2f879238535fa45" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -791,7 +741,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQR.h" line="62" column="5"/>
+        <location file="faiss/IndexIVFPQR.h" line="62" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQ_1a6350ed3e2b070ad01b37dff14dc2fe2a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -823,37 +773,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Encodes a set of vectors as they would appear in the inverted lists</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Encodes a set of vectors as they would appear in the inverted lists</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>list_nos</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>inverted list ids as returned by the quantizer (size n). -1s are ignored. </para>
-</parameterdescription>
+<para>inverted list ids as returned by the quantizer (size n). -1s are ignored. </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>codes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output codes, size n * code_size </para>
-</parameterdescription>
+<para>output codes, size n * code_size </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>include_listno</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>include the list ids in the code (in this case add ceil(log8(nlist)) to the code size) </para>
-</parameterdescription>
+<para>include the list ids in the code (in this case add ceil(log8(nlist)) to the code size) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="66" column="10"/>
+        <location file="faiss/IndexIVFPQ.h" line="66" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQ_1adb7494c07ce7812226ad41c8b6dca992" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -876,37 +821,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>encode a set of vectors</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>encode a set of vectors</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of vectors </para>
-</parameterdescription>
+<para>number of vectors </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>bytes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input encoded vectors, size n * <ref refid="structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d" kindref="member">sa_code_size()</ref> </para>
-</parameterdescription>
+<para>input encoded vectors, size n * <ref refid="structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d" kindref="member">sa_code_size()</ref> </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output vectors, size n * d </para>
-</parameterdescription>
+<para>output vectors, size n * d </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="71" column="10"/>
+        <location file="faiss/IndexIVFPQ.h" line="71" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQ_1a8f3ee1073d04464acdc4ce12ea3440eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -938,14 +878,11 @@
         </briefdescription>
         <detaileddescription>
 <para>same as add_core, also:<itemizedlist>
-<listitem><para>output 2nd level residuals if residuals_2 != NULL</para>
-</listitem><listitem><para>use precomputed list numbers if precomputed_idx != NULL </para>
-</listitem></itemizedlist>
-</para>
-        </detaileddescription>
+<listitem><para>output 2nd level residuals if residuals_2 != NULL</para></listitem><listitem><para>use precomputed list numbers if precomputed_idx != NULL </para></listitem></itemizedlist>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="78" column="10"/>
+        <location file="faiss/IndexIVFPQ.h" line="78" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQ_1a4e06f04853dcb424dc393de5f641e917" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -965,13 +902,12 @@
           <declname>residuals_2</declname>
         </param>
         <briefdescription>
-<para>same as train_residual, also output 2nd level residuals </para>
-        </briefdescription>
+<para>same as train_residual, also output 2nd level residuals </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="86" column="10"/>
+        <location file="faiss/IndexIVFPQ.h" line="86" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQ_1a0d29813956d053b5262132edcc1cf527" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -989,32 +925,26 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Find exact duplicates in the dataset.</para>
-<para>the duplicates are returned in pre-allocated arrays (see the max sizes).</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Find exact duplicates in the dataset.</para><para>the duplicates are returned in pre-allocated arrays (see the max sizes).</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>lims</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>limits between groups of duplicates (max size ntotal / 2 + 1) </para>
-</parameterdescription>
+<para>limits between groups of duplicates (max size ntotal / 2 + 1) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>ids</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>ids[lims[i]] : ids[lims[i+1]-1] is a group of duplicates (max size ntotal) </para>
-</parameterdescription>
+<para>ids[lims[i]] : ids[lims[i+1]-1] is a group of duplicates (max size ntotal) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>n number of groups found </para>
-</simplesect>
-</para>
-        </detaileddescription>
+<simplesect kind="return"><para>n number of groups found </para></simplesect>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="102" column="12"/>
+        <location file="faiss/IndexIVFPQ.h" line="102" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQ_1aaf34e32cb715cf716d17db18679fb1ab" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1039,7 +969,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="105" column="10"/>
+        <location file="faiss/IndexIVFPQ.h" line="105" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQ_1a5c52e3a7cf6d5c13b54395f8c646587c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1070,53 +1000,46 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Encode multiple vectors</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Encode multiple vectors</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>nb vectors to encode </para>
-</parameterdescription>
+<para>nb vectors to encode </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>keys</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>posting list ids for those vectors (size n) </para>
-</parameterdescription>
+<para>posting list ids for those vectors (size n) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>vectors (size n * d) </para>
-</parameterdescription>
+<para>vectors (size n * d) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>codes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output codes (size n * code_size) </para>
-</parameterdescription>
+<para>output codes (size n * code_size) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>compute_keys</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>if false, assume keys are precomputed, otherwise compute them </para>
-</parameterdescription>
+<para>if false, assume keys are precomputed, otherwise compute them </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="116" column="10"/>
+        <location file="faiss/IndexIVFPQ.h" line="116" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQ_1ad074686c530454b0138f30a488078236" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1140,13 +1063,12 @@
           <declname>x</declname>
         </param>
         <briefdescription>
-<para>inverse of encode_multiple </para>
-        </briefdescription>
+<para>inverse of encode_multiple </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="121" column="10"/>
+        <location file="faiss/IndexIVFPQ.h" line="121" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQ_1a2e872f50fd1e1e89b2c3049fd24e2430" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> *</type>
@@ -1159,13 +1081,12 @@
           <declname>store_pairs</declname>
         </param>
         <briefdescription>
-<para>get a scanner for this index (store_pairs means ignore labels) </para>
-        </briefdescription>
+<para>get a scanner for this index (store_pairs means ignore labels) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="124" column="25"/>
+        <location file="faiss/IndexIVFPQ.h" line="124" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQ_1ad99c215aeaf92e995cb97f4044c4d267" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1173,13 +1094,12 @@
         <argsstring>()</argsstring>
         <name>precompute_table</name>
         <briefdescription>
-<para>build precomputed table </para>
-        </briefdescription>
+<para>build precomputed table </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="128" column="10"/>
+        <location file="faiss/IndexIVFPQ.h" line="128" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1197,13 +1117,12 @@
           <declname>x</declname>
         </param>
         <briefdescription>
-<para>Trains the quantizer and calls train_residual to train sub-quantizers. </para>
-        </briefdescription>
+<para>Trains the quantizer and calls train_residual to train sub-quantizers. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="140" column="10"/>
+        <location file="faiss/IndexIVF.h" line="140" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1220,13 +1139,12 @@
           <declname>x</declname>
         </param>
         <briefdescription>
-<para>Calls add_with_ids with NULL ids. </para>
-        </briefdescription>
+<para>Calls add_with_ids with NULL ids. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="143" column="10"/>
+        <location file="faiss/IndexIVF.h" line="143" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1ae2fd47b7d52603659e269aa8f6abb613" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1258,11 +1176,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>assign the vectors, then call search_preassign </para>
-        </detaileddescription>
+<para>assign the vectors, then call search_preassign </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="195" column="10"/>
+        <location file="faiss/IndexIVF.h" line="195" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a5b7b4b3dc5ea40f7076a00c81cc83d66" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1290,38 +1207,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>query n vectors of dimension d to the index.</para>
-<para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>query n vectors of dimension d to the index.</para><para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors to search, size n * d </para>
-</parameterdescription>
+<para>input vectors to search, size n * d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>radius</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>search radius </para>
-</parameterdescription>
+<para>search radius </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>result</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>result table </para>
-</parameterdescription>
+<para>result table </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="198" column="10"/>
+        <location file="faiss/IndexIVF.h" line="198" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1ae51e8f23f3283feb2f262d791f2f167c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1373,7 +1284,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="201" column="10"/>
+        <location file="faiss/IndexIVF.h" line="201" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1392,11 +1303,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>reconstruct a vector. Works only if maintain_direct_map is set to 1 or 2 </para>
-        </detaileddescription>
+<para>reconstruct a vector. Works only if maintain_direct_map is set to 1 or 2 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="214" column="10"/>
+        <location file="faiss/IndexIVF.h" line="214" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a297563f801130e43485c1818b0e13901" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1419,38 +1329,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Update a subset of vectors.</para>
-<para>The index must have a direct_map</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Update a subset of vectors.</para><para>The index must have a direct_map</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>nv</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>nb of vectors to update </para>
-</parameterdescription>
+<para>nb of vectors to update </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>idx</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>vector indices to update, size nv </para>
-</parameterdescription>
+<para>vector indices to update, size nv </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>v</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>vectors of new values, size nv*d </para>
-</parameterdescription>
+<para>vectors of new values, size nv*d </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="224" column="18"/>
+        <location file="faiss/IndexIVF.h" line="224" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a7cc286dfbd8bfd43ea4b22173e28231c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1473,38 +1377,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Reconstruct a subset of the indexed vectors.</para>
-<para>Overrides default implementation to bypass <ref refid="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39" kindref="member">reconstruct()</ref> which requires direct_map to be maintained.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Reconstruct a subset of the indexed vectors.</para><para>Overrides default implementation to bypass <ref refid="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39" kindref="member">reconstruct()</ref> which requires direct_map to be maintained.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>i0</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>first vector to reconstruct </para>
-</parameterdescription>
+<para>first vector to reconstruct </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>ni</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>nb of vectors to reconstruct </para>
-</parameterdescription>
+<para>nb of vectors to reconstruct </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output array of reconstructed vectors, size ni * d </para>
-</parameterdescription>
+<para>output array of reconstructed vectors, size ni * d </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="235" column="10"/>
+        <location file="faiss/IndexIVF.h" line="235" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a77aec24920024a09f7661790d9534c10" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1539,22 +1437,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</para>
-<para>Overrides default implementation to avoid having to maintain direct_map and instead fetch the code offsets through the <computeroutput>store_pairs</computeroutput> flag in <ref refid="structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6" kindref="member">search_preassigned()</ref>.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</para><para>Overrides default implementation to avoid having to maintain direct_map and instead fetch the code offsets through the <computeroutput>store_pairs</computeroutput> flag in <ref refid="structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6" kindref="member">search_preassigned()</ref>.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstructed vectors size (n, k, d) </para>
-</parameterdescription>
+<para>reconstructed vectors size (n, k, d) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="246" column="10"/>
+        <location file="faiss/IndexIVF.h" line="246" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a76d85d286f3b58bba42b1d3c73dc9620" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1568,11 +1462,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </para>
-        </detaileddescription>
+<para>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="268" column="10"/>
+        <location file="faiss/IndexIVF.h" line="268" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1598,12 +1491,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>copy a subset of the entries index to the other index</para>
-<para>if subset_type == 0: copies ids in [a1, a2) if subset_type == 1: copies ids if id % a1 == a2 if subset_type == 2: copies inverted lists such that a1 elements are left before and a2 elements are after </para>
-        </detaileddescription>
+<para>copy a subset of the entries index to the other index</para><para>if subset_type == 0: copies ids in [a1, a2) if subset_type == 1: copies ids if id % a1 == a2 if subset_type == 2: copies inverted lists such that a1 elements are left before and a2 elements are after </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="282" column="18"/>
+        <location file="faiss/IndexIVF.h" line="282" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -1620,7 +1511,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="287" column="12" bodyfile="faiss/IndexIVF.h" bodystart="287" bodyend="288"/>
+        <location file="faiss/IndexIVF.h" line="287" column="1" bodyfile="faiss/IndexIVF.h" bodystart="287" bodyend="288"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1635,21 +1526,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>intialize a direct map</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>intialize a direct map</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>new_maintain_direct_map</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>if true, create a direct map, else clear it </para>
-</parameterdescription>
+<para>if true, create a direct map, else clear it </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="295" column="10"/>
+        <location file="faiss/IndexIVF.h" line="295" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1666,7 +1554,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="297" column="10"/>
+        <location file="faiss/IndexIVF.h" line="297" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1683,13 +1571,12 @@
           <defval>false</defval>
         </param>
         <briefdescription>
-<para>replace the inverted lists, old one is deallocated if own_invlists </para>
-        </briefdescription>
+<para>replace the inverted lists, old one is deallocated if own_invlists </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="301" column="10"/>
+        <location file="faiss/IndexIVF.h" line="301" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -1700,11 +1587,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>size of the produced codes in bytes </para>
-        </detaileddescription>
+<para>size of the produced codes in bytes </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="304" column="12"/>
+        <location file="faiss/IndexIVF.h" line="304" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a9d28b314ee008589eb41ce2823a088b6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1727,37 +1613,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>encode a set of vectors</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>encode a set of vectors</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of vectors </para>
-</parameterdescription>
+<para>number of vectors </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors, size n * d </para>
-</parameterdescription>
+<para>input vectors, size n * d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>bytes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output encoded vectors, size n * <ref refid="structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d" kindref="member">sa_code_size()</ref> </para>
-</parameterdescription>
+<para>output encoded vectors, size n * <ref refid="structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d" kindref="member">sa_code_size()</ref> </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="306" column="10"/>
+        <location file="faiss/IndexIVF.h" line="306" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1785,29 +1666,25 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>return the indexes of the k vectors closest to the query x.</para>
-<para>This function is identical as search but only return labels of neighbors. <parameterlist kind="param"><parameteritem>
+<para>return the indexes of the k vectors closest to the query x.</para><para>This function is identical as search but only return labels of neighbors. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors to search, size n * d </para>
-</parameterdescription>
+<para>input vectors to search, size n * d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>labels</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output labels of the NNs, size n*k </para>
-</parameterdescription>
+<para>output labels of the NNs, size n*k </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="136" column="18"/>
+        <location file="faiss/Index.h" line="136" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1831,38 +1708,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Computes a residual vector after indexing encoding.</para>
-<para>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s methods.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Computes a residual vector after indexing encoding.</para><para>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s methods.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vector, size d </para>
-</parameterdescription>
+<para>input vector, size d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>residual</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output residual vector, size d </para>
-</parameterdescription>
+<para>output residual vector, size d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>key</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>encoded index, as returned by search and assign </para>
-</parameterdescription>
+<para>encoded index, as returned by search and assign </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="184" column="18"/>
+        <location file="faiss/Index.h" line="184" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1890,46 +1761,39 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Computes a residual vector after indexing encoding (batch form). Equivalent to calling compute_residual for each vector.</para>
-<para>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s methods.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Computes a residual vector after indexing encoding (batch form). Equivalent to calling compute_residual for each vector.</para><para>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s methods.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of vectors </para>
-</parameterdescription>
+<para>number of vectors </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>xs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors, size (n x d) </para>
-</parameterdescription>
+<para>input vectors, size (n x d) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>residuals</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output residual vectors, size (n x d) </para>
-</parameterdescription>
+<para>output residual vectors, size (n x d) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>keys</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>encoded index, as returned by search and assign </para>
-</parameterdescription>
+<para>encoded index, as returned by search and assign </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="200" column="18"/>
+        <location file="faiss/Index.h" line="200" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>DistanceComputer *</type>
@@ -1944,12 +1808,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para>
-<para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>
-        </detaileddescription>
+<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para><para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="210" column="31"/>
+        <location file="faiss/Index.h" line="210" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a0069a6ee1e32c2e0c1c7df9a95740dd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1973,13 +1835,12 @@
           <declname>metric_type</declname>
         </param>
         <briefdescription>
-<para>Trains the quantizer and calls train_residual to train sub-quantizers. </para>
-        </briefdescription>
+<para>Trains the quantizer and calls train_residual to train sub-quantizers. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="50" column="10"/>
+        <location file="faiss/IndexIVF.h" line="50" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -1987,13 +1848,12 @@
         <argsstring>() const</argsstring>
         <name>coarse_code_size</name>
         <briefdescription>
-<para>compute the number of bytes required to store list ids </para>
-        </briefdescription>
+<para>compute the number of bytes required to store list ids </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="55" column="12"/>
+        <location file="faiss/IndexIVF.h" line="55" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a8d36d811aaf11daeae2a3f580747c5b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2014,7 +1874,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="56" column="10"/>
+        <location file="faiss/IndexIVF.h" line="56" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a64f28832f84e8559f9b76ccd3a3046d3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref></type>
@@ -2031,7 +1891,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="57" column="18"/>
+        <location file="faiss/IndexIVF.h" line="57" column="1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-type">
@@ -2041,13 +1901,12 @@
         <argsstring></argsstring>
         <name>idx_t</name>
         <briefdescription>
-<para>all indices are this type </para>
-        </briefdescription>
+<para>all indices are this type </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="53" column="5" bodyfile="faiss/Index.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/Index.h" line="53" column="1" bodyfile="faiss/Index.h" bodystart="53" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" static="no">
         <type>float</type>
@@ -2060,7 +1919,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="54" column="5" bodyfile="faiss/Index.h" bodystart="54" bodyend="-1"/>
+        <location file="faiss/Index.h" line="54" column="1" bodyfile="faiss/Index.h" bodystart="54" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" static="no">
         <type>float</type>
@@ -2073,114 +1932,113 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="55" column="5" bodyfile="faiss/Index.h" bodystart="55" bodyend="-1"/>
+        <location file="faiss/Index.h" line="55" column="1" bodyfile="faiss/Index.h" bodystart="55" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> with an additional level of PQ refinement </para>
-    </detaileddescription>
+<para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> with an additional level of PQ refinement </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="5">
+      <node id="522">
         <label>faiss::Level1Quantizer</label>
         <link refid="structfaiss_1_1Level1Quantizer"/>
       </node>
-      <node id="3">
+      <node id="520">
         <label>faiss::IndexIVF</label>
         <link refid="structfaiss_1_1IndexIVF"/>
-        <childnode refid="4" relation="public-inheritance">
+        <childnode refid="521" relation="public-inheritance">
         </childnode>
-        <childnode refid="5" relation="public-inheritance">
+        <childnode refid="522" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
+      <node id="519">
         <label>faiss::IndexIVFPQ</label>
         <link refid="structfaiss_1_1IndexIVFPQ"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="520" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="521">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
-      <node id="1">
+      <node id="518">
         <label>faiss::IndexIVFPQR</label>
         <link refid="structfaiss_1_1IndexIVFPQR"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="519" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="10">
+      <node id="532">
         <label>faiss::AlignedTableTightAlloc&lt; float, 32 &gt;</label>
         <link refid="structfaiss_1_1AlignedTableTightAlloc"/>
       </node>
-      <node id="5">
+      <node id="527">
         <label>faiss::Level1Quantizer</label>
         <link refid="structfaiss_1_1Level1Quantizer"/>
-        <childnode refid="6" relation="usage">
+        <childnode refid="528" relation="usage">
           <edgelabel>cp</edgelabel>
         </childnode>
-        <childnode refid="4" relation="usage">
+        <childnode refid="526" relation="usage">
           <edgelabel>clustering_index</edgelabel>
           <edgelabel>quantizer</edgelabel>
         </childnode>
       </node>
-      <node id="8">
+      <node id="530">
         <label>faiss::InvertedLists</label>
         <link refid="structfaiss_1_1InvertedLists"/>
       </node>
-      <node id="3">
+      <node id="525">
         <label>faiss::IndexIVF</label>
         <link refid="structfaiss_1_1IndexIVF"/>
-        <childnode refid="4" relation="public-inheritance">
+        <childnode refid="526" relation="public-inheritance">
         </childnode>
-        <childnode refid="5" relation="public-inheritance">
+        <childnode refid="527" relation="public-inheritance">
         </childnode>
-        <childnode refid="7" relation="usage">
+        <childnode refid="529" relation="usage">
           <edgelabel>direct_map</edgelabel>
         </childnode>
-        <childnode refid="8" relation="usage">
+        <childnode refid="530" relation="usage">
           <edgelabel>invlists</edgelabel>
         </childnode>
       </node>
-      <node id="6">
+      <node id="528">
         <label>faiss::ClusteringParameters</label>
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
-      <node id="2">
+      <node id="524">
         <label>faiss::IndexIVFPQ</label>
         <link refid="structfaiss_1_1IndexIVFPQ"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="525" relation="public-inheritance">
         </childnode>
-        <childnode refid="9" relation="usage">
+        <childnode refid="531" relation="usage">
           <edgelabel>precomputed_table</edgelabel>
         </childnode>
       </node>
-      <node id="4">
+      <node id="526">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
-      <node id="7">
+      <node id="529">
         <label>faiss::DirectMap</label>
         <link refid="structfaiss_1_1DirectMap"/>
       </node>
-      <node id="9">
+      <node id="531">
         <label>faiss::AlignedTable&lt; float &gt;</label>
         <link refid="structfaiss_1_1AlignedTable"/>
-        <childnode refid="10" relation="usage">
+        <childnode refid="532" relation="usage">
           <edgelabel>tab</edgelabel>
         </childnode>
       </node>
-      <node id="1">
+      <node id="523">
         <label>faiss::IndexIVFPQR</label>
         <link refid="structfaiss_1_1IndexIVFPQR"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="524" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFPQR.h" line="22" column="29" bodyfile="faiss/IndexIVFPQR.h" bodystart="22" bodyend="63"/>
+    <location file="faiss/IndexIVFPQR.h" line="22" column="1" bodyfile="faiss/IndexIVFPQR.h" bodystart="22" bodyend="63"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFPQR</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVFPQR_1a98fb389c786bb1fb6db47af13659082c" prot="public" virt="non-virtual"><scope>faiss::IndexIVFPQR</scope><name>add_core</name></member>

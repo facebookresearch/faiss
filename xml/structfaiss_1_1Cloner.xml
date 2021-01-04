@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1Cloner" kind="struct" language="C++" prot="public">
     <compoundname>faiss::Cloner</compoundname>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1ToCPUCloner" prot="public" virt="non-virtual">faiss::gpu::ToCPUCloner</derivedcompoundref>
@@ -21,7 +21,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/clone_index.h" line="30" column="29"/>
+        <location file="faiss/clone_index.h" line="30" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Cloner_1a7ac2ec88faa769d2db29f3cf8625c4e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/clone_index.h" line="31" column="19"/>
+        <location file="faiss/clone_index.h" line="31" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -56,7 +56,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/clone_index.h" line="32" column="22"/>
+        <location file="faiss/clone_index.h" line="32" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Cloner_1a2931dddcacef11d21a6a26b923fcb990" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -69,39 +69,38 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/clone_index.h" line="33" column="13" bodyfile="faiss/clone_index.h" bodystart="33" bodyend="33"/>
+        <location file="faiss/clone_index.h" line="33" column="1" bodyfile="faiss/clone_index.h" bodystart="33" bodyend="33"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para><ref refid="structfaiss_1_1Cloner" kindref="compound">Cloner</ref> class, useful to override classes with other cloning functions. The cloning function above just calls Cloner::clone_Index. </para>
-    </detaileddescription>
+<para><ref refid="structfaiss_1_1Cloner" kindref="compound">Cloner</ref> class, useful to override classes with other cloning functions. The cloning function above just calls Cloner::clone_Index. </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="1">
+      <node id="38">
         <label>faiss::Cloner</label>
         <link refid="structfaiss_1_1Cloner"/>
       </node>
-      <node id="2">
+      <node id="39">
         <label>faiss::gpu::ToCPUCloner</label>
         <link refid="structfaiss_1_1gpu_1_1ToCPUCloner"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="38" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="41">
         <label>faiss::gpu::ToGpuClonerMultiple</label>
         <link refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="38" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="40">
         <label>faiss::gpu::ToGpuCloner</label>
         <link refid="structfaiss_1_1gpu_1_1ToGpuCloner"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="38" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/clone_index.h" line="29" column="13" bodyfile="faiss/clone_index.h" bodystart="29" bodyend="34"/>
+    <location file="faiss/clone_index.h" line="29" column="1" bodyfile="faiss/clone_index.h" bodystart="29" bodyend="34"/>
     <listofallmembers>
       <member refid="structfaiss_1_1Cloner_1a7ac2ec88faa769d2db29f3cf8625c4e9" prot="public" virt="virtual"><scope>faiss::Cloner</scope><name>clone_Index</name></member>
       <member refid="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" virt="virtual"><scope>faiss::Cloner</scope><name>clone_IndexIVF</name></member>

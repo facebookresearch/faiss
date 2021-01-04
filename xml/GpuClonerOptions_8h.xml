@@ -1,31 +1,31 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="GpuClonerOptions_8h" kind="file" language="C++">
     <compoundname>GpuClonerOptions.h</compoundname>
     <includes refid="GpuIndicesOptions_8h" local="no">faiss/gpu/GpuIndicesOptions.h</includes>
     <includedby refid="GpuCloner_8h" local="no">faiss/gpu/GpuCloner.h</includedby>
     <incdepgraph>
-      <node id="2">
+      <node id="76">
+        <label>faiss/gpu/GpuClonerOptions.h</label>
+        <link refid="GpuClonerOptions_8h"/>
+        <childnode refid="77" relation="include">
+        </childnode>
+      </node>
+      <node id="77">
         <label>faiss/gpu/GpuIndicesOptions.h</label>
         <link refid="GpuIndicesOptions_8h_source"/>
       </node>
-      <node id="1">
-        <label>faiss/gpu/GpuClonerOptions.h</label>
-        <link refid="GpuClonerOptions_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="2">
-        <label>faiss/gpu/GpuCloner.h</label>
-        <link refid="GpuCloner_8h_source"/>
-      </node>
-      <node id="1">
+      <node id="78">
         <label>faiss/gpu/GpuClonerOptions.h</label>
         <link refid="GpuClonerOptions_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="79" relation="include">
         </childnode>
+      </node>
+      <node id="79">
+        <label>faiss/gpu/GpuCloner.h</label>
+        <link refid="GpuCloner_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuClonerOptions" prot="public">faiss::gpu::GpuClonerOptions</innerclass>

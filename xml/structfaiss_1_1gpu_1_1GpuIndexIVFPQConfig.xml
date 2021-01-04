@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuIndexIVFPQConfig</compoundname>
     <basecompoundref refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig" prot="public" virt="non-virtual">faiss::gpu::GpuIndexIVFConfig</basecompoundref>
@@ -12,11 +12,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Whether or not float16 residual distance tables are used in the list scanning kernels. When subQuantizers * 2^bitsPerCode &gt; 16384, this is required. </para>
-        </detaileddescription>
+<para>Whether or not float16 residual distance tables are used in the list scanning kernels. When subQuantizers * 2^bitsPerCode &gt; 16384, this is required. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="33" column="8" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="33" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1ae5b5c7acc06743e5bcca197bc33c30ec" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -26,11 +25,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Whether or not we enable the precomputed table option for search, which can substantially increase the memory requirement. </para>
-        </detaileddescription>
+<para>Whether or not we enable the precomputed table option for search, which can substantially increase the memory requirement. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="37" column="8" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="37" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="37" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="37" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1a3698bd46d5a0003ec43d434a58794532" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -40,11 +38,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Use the alternative memory layout for the IVF lists WARNING: this is a feature under development, do not use! </para>
-        </detaileddescription>
+<para>Use the alternative memory layout for the IVF lists WARNING: this is a feature under development, do not use! </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="41" column="8" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="41" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1a45b88d1deb299970d887a4aa3ec8dd2a" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -54,12 +51,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Use GEMM-backed computation of PQ code distances for the no precomputed table version of IVFPQ. This is for debugging purposes, it should not substantially affect the results one way for another.</para>
-<para>Note that MM code distance is enabled automatically if one uses a number of dimensions per sub-quantizer that is not natively specialized (an odd number like 7 or so). </para>
-        </detaileddescription>
+<para>Use GEMM-backed computation of PQ code distances for the no precomputed table version of IVFPQ. This is for debugging purposes, it should not substantially affect the results one way for another.</para><para>Note that MM code distance is enabled automatically if one uses a number of dimensions per sub-quantizer that is not natively specialized (an odd number like 7 or so). </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="51" column="8" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="51" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="51" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="51" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1af432221761d48e4753f501208a60264d" prot="public" static="no" mutable="no">
         <type>IndicesOptions</type>
@@ -67,13 +62,12 @@
         <argsstring></argsstring>
         <name>indicesOptions</name>
         <briefdescription>
-<para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> storage options for the GPU. </para>
-        </briefdescription>
+<para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> storage options for the GPU. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="28" column="18" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="28" column="1" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a6d357a9a67a2fed9c8e7b139712d30f6" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig" kindref="compound">GpuIndexFlatConfig</ref></type>
@@ -81,13 +75,12 @@
         <argsstring></argsstring>
         <name>flatConfig</name>
         <briefdescription>
-<para>Configuration for the coarse quantizer object. </para>
-        </briefdescription>
+<para>Configuration for the coarse quantizer object. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="31" column="22" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="31" column="1" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -95,13 +88,12 @@
         <argsstring></argsstring>
         <name>device</name>
         <briefdescription>
-<para>GPU device on which the index is resident. </para>
-        </briefdescription>
+<para>GPU device on which the index is resident. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="23" column="7" bodyfile="faiss/gpu/GpuIndex.h" bodystart="23" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="23" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" static="no" mutable="no">
         <type>MemorySpace</type>
@@ -111,11 +103,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>What memory space to use for primary storage. On Pascal and above (CC 6+) architectures, allows GPUs to use more memory than is available on the GPU. </para>
-        </detaileddescription>
+<para>What memory space to use for primary storage. On Pascal and above (CC 6+) architectures, allows GPUs to use more memory than is available on the GPU. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="28" column="15" bodyfile="faiss/gpu/GpuIndex.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="28" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -130,7 +121,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="23" column="10" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="23" bodyend="28"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="23" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="23" bodyend="28"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -138,51 +129,51 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
+      <node id="207">
         <label>faiss::gpu::GpuIndexIVFPQConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="208" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="209">
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
       </node>
-      <node id="2">
+      <node id="208">
         <label>faiss::gpu::GpuIndexIVFConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="209" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="1">
+      <node id="210">
         <label>faiss::gpu::GpuIndexIVFPQConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="211" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="212">
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
       </node>
-      <node id="2">
+      <node id="211">
         <label>faiss::gpu::GpuIndexIVFConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="212" relation="public-inheritance">
         </childnode>
-        <childnode refid="4" relation="usage">
+        <childnode refid="213" relation="usage">
           <edgelabel>flatConfig</edgelabel>
         </childnode>
       </node>
-      <node id="4">
+      <node id="213">
         <label>faiss::gpu::GpuIndexFlatConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="212" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuIndexIVFPQ.h" line="22" column="51" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="22" bodyend="52"/>
+    <location file="faiss/gpu/GpuIndexIVFPQ.h" line="22" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="22" bodyend="52"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQConfig</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a6d357a9a67a2fed9c8e7b139712d30f6" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQConfig</scope><name>flatConfig</name></member>

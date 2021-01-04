@@ -1,18 +1,18 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="clone__index_8h" kind="file" language="C++">
     <compoundname>clone_index.h</compoundname>
     <includedby refid="GpuCloner_8h" local="no">faiss/gpu/GpuCloner.h</includedby>
     <invincdepgraph>
-      <node id="2">
-        <label>faiss/gpu/GpuCloner.h</label>
-        <link refid="GpuCloner_8h_source"/>
-      </node>
-      <node id="1">
+      <node id="15">
         <label>faiss/clone_index.h</label>
         <link refid="clone__index_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
+      </node>
+      <node id="16">
+        <label>faiss/gpu/GpuCloner.h</label>
+        <link refid="GpuCloner_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1Cloner" prot="public">faiss::Cloner</innerclass>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuIndexIVFPQ</compoundname>
     <basecompoundref refid="classfaiss_1_1gpu_1_1GpuIndexIVF" prot="public" virt="non-virtual">faiss::gpu::GpuIndexIVF</basecompoundref>
@@ -11,13 +11,12 @@
         <argsstring></argsstring>
         <name>ivfpqConfig_</name>
         <briefdescription>
-<para>Our configuration options that we were initialized with. </para>
-        </briefdescription>
+<para>Our configuration options that we were initialized with. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="151" column="29" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="151" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="151" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="151" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ae687f3d1b19bc2da4864ececf84b944b" prot="protected" static="no" mutable="no">
         <type>bool</type>
@@ -25,13 +24,12 @@
         <argsstring></argsstring>
         <name>usePrecomputedTables_</name>
         <briefdescription>
-<para>Runtime override: whether or not we use precomputed tables. </para>
-        </briefdescription>
+<para>Runtime override: whether or not we use precomputed tables. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="154" column="8" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="154" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="154" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="154" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a1e0d550a362813a21de6af150ab67b7f" prot="protected" static="no" mutable="no">
         <type>int</type>
@@ -39,13 +37,12 @@
         <argsstring></argsstring>
         <name>subQuantizers_</name>
         <briefdescription>
-<para>Number of sub-quantizers per encoded vector. </para>
-        </briefdescription>
+<para>Number of sub-quantizers per encoded vector. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="157" column="7" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="157" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="157" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="157" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a56a4264e54409db885f439a06501ef11" prot="protected" static="no" mutable="no">
         <type>int</type>
@@ -53,13 +50,12 @@
         <argsstring></argsstring>
         <name>bitsPerCode_</name>
         <briefdescription>
-<para>Bits per sub-quantizer code. </para>
-        </briefdescription>
+<para>Bits per sub-quantizer code. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="160" column="7" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="160" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="160" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="160" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a145c8862f7e7ffd3b062a0ca38d6c6ec" prot="protected" static="no" mutable="no">
         <type>size_t</type>
@@ -67,13 +63,12 @@
         <argsstring></argsstring>
         <name>reserveMemoryVecs_</name>
         <briefdescription>
-<para>Desired inverted list memory reservation. </para>
-        </briefdescription>
+<para>Desired inverted list memory reservation. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="163" column="10" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="163" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="163" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="163" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1aee2cdc21caa1cdac1e7973c5904ea091" prot="protected" static="no" mutable="no">
         <type>std::unique_ptr&lt; IVFPQ &gt;</type>
@@ -83,11 +78,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>The product quantizer instance that we own; contains the inverted lists </para>
-        </detaileddescription>
+<para>The product quantizer instance that we own; contains the inverted lists </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="167" column="19" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="167" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="167" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="167" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a7e25b7ac093961ab0f58f1bc72f6ea43" prot="protected" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig" kindref="compound">GpuIndexIVFConfig</ref></type>
@@ -95,13 +89,12 @@
         <argsstring></argsstring>
         <name>ivfConfig_</name>
         <briefdescription>
-<para>Our configuration options. </para>
-        </briefdescription>
+<para>Our configuration options. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="103" column="27" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="103" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="103" column="1" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="103" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndex_1a5f6bffd99291b2198ef601ef7e5c5a30" prot="protected" static="no" mutable="no">
         <type>std::shared_ptr&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> &gt;</type>
@@ -109,13 +102,12 @@
         <argsstring></argsstring>
         <name>resources_</name>
         <briefdescription>
-<para>Manages streams, cuBLAS handles and scratch memory for devices. </para>
-        </briefdescription>
+<para>Manages streams, cuBLAS handles and scratch memory for devices. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="147" column="19" bodyfile="faiss/gpu/GpuIndex.h" bodystart="147" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="147" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="147" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndex_1ab62da82105579618d1b89a810d61e3bd" prot="protected" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1gpu_1_1GpuIndexConfig" kindref="compound">GpuIndexConfig</ref></type>
@@ -123,13 +115,12 @@
         <argsstring></argsstring>
         <name>config_</name>
         <briefdescription>
-<para>Our configuration options. </para>
-        </briefdescription>
+<para>Our configuration options. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="150" column="24" bodyfile="faiss/gpu/GpuIndex.h" bodystart="150" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="150" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="150" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndex_1a32a08664fc4dca2f9405e07ea5bc206f" prot="protected" static="no" mutable="no">
         <type>size_t</type>
@@ -137,13 +128,12 @@
         <argsstring></argsstring>
         <name>minPagedSize_</name>
         <briefdescription>
-<para>Size above which we page copies from the CPU to GPU. </para>
-        </briefdescription>
+<para>Size above which we page copies from the CPU to GPU. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="153" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="153" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="153" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="153" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -168,11 +158,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Construct from a pre-existing <ref refid="structfaiss_1_1IndexIVFPQ" kindref="compound">faiss::IndexIVFPQ</ref> instance, copying data over to the given GPU, if the input index is trained. </para>
-        </detaileddescription>
+<para>Construct from a pre-existing <ref refid="structfaiss_1_1IndexIVFPQ" kindref="compound">faiss::IndexIVFPQ</ref> instance, copying data over to the given GPU, if the input index is trained. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="59" column="3"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="59" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a6160437520c5959dca4ae6b7201ec242" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -209,13 +198,12 @@
           <defval><ref refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig" kindref="compound">GpuIndexIVFPQConfig</ref>()</defval>
         </param>
         <briefdescription>
-<para>Construct an empty index. </para>
-        </briefdescription>
+<para>Construct an empty index. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="64" column="3"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="64" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ab105c6666af5697b4f1b3cb99a1f7bf6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -228,7 +216,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="72" column="3"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="72" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a8d48f79af9080b55706050244fc24f0e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -242,11 +230,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Reserve space on the GPU for the inverted lists for <computeroutput>num</computeroutput> vectors, assumed equally distributed among Initialize ourselves from the given CPU index; will overwrite all data in ourselves </para>
-        </detaileddescription>
+<para>Reserve space on the GPU for the inverted lists for <computeroutput>num</computeroutput> vectors, assumed equally distributed among Initialize ourselves from the given CPU index; will overwrite all data in ourselves </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="79" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="79" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1abdea07beafa14bb3d7fe9ad2c8dc34df" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -260,11 +247,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Copy ourselves to the given CPU index; will overwrite all data in the index instance </para>
-        </detaileddescription>
+<para>Copy ourselves to the given CPU index; will overwrite all data in the index instance </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="83" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="83" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a4e7d62e21f7e23fa4e94c69131389eea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -276,13 +262,12 @@
           <declname>numVecs</declname>
         </param>
         <briefdescription>
-<para>Reserve GPU memory in our inverted lists for this number of vectors. </para>
-        </briefdescription>
+<para>Reserve GPU memory in our inverted lists for this number of vectors. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="86" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="86" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1afda2894c0ce520e0d3d06eeca5ed5f0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -294,13 +279,12 @@
           <declname>enable</declname>
         </param>
         <briefdescription>
-<para>Enable or disable pre-computed codes. </para>
-        </briefdescription>
+<para>Enable or disable pre-computed codes. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="89" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="89" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a518ebeefff55ed18c217d3c824f25676" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -308,13 +292,12 @@
         <argsstring>() const</argsstring>
         <name>getPrecomputedCodes</name>
         <briefdescription>
-<para>Are pre-computed codes enabled? </para>
-        </briefdescription>
+<para>Are pre-computed codes enabled? </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="92" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="92" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a7ed87c230b75e0d859704a7d5b9daead" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -322,13 +305,12 @@
         <argsstring>() const</argsstring>
         <name>getNumSubQuantizers</name>
         <briefdescription>
-<para>Return the number of sub-quantizers we are using. </para>
-        </briefdescription>
+<para>Return the number of sub-quantizers we are using. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="95" column="7"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="95" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a0fa38b70f5a2bc7e6e359b47b4c1e73c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -336,13 +318,12 @@
         <argsstring>() const</argsstring>
         <name>getBitsPerCode</name>
         <briefdescription>
-<para>Return the number of bits per PQ code. </para>
-        </briefdescription>
+<para>Return the number of bits per PQ code. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="98" column="7"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="98" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a7d8e89e73eeb7a936c144f28e613de23" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -350,13 +331,12 @@
         <argsstring>() const</argsstring>
         <name>getCentroidsPerSubQuantizer</name>
         <briefdescription>
-<para>Return the number of centroids per PQ code (2^bits per code) </para>
-        </briefdescription>
+<para>Return the number of centroids per PQ code (2^bits per code) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="101" column="7"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="101" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a83831088d9593f753560965172ccb0a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -366,11 +346,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>After adding vectors, one can call this to reclaim device memory to exactly the amount needed. Returns space reclaimed in bytes </para>
-        </detaileddescription>
+<para>After adding vectors, one can call this to reclaim device memory to exactly the amount needed. Returns space reclaimed in bytes </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="105" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="105" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a3a43a70461e09ef87bdb7b48ec420dd2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -381,11 +360,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Clears out all inverted lists, but retains the coarse and product centroid information </para>
-        </detaileddescription>
+<para>Clears out all inverted lists, but retains the coarse and product centroid information </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="109" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="109" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ac4814acafa4bc340a4c4bdcafd469b56" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -402,13 +380,12 @@
           <declname>x</declname>
         </param>
         <briefdescription>
-<para>Trains the coarse and product quantizer based on the given vector data. </para>
-        </briefdescription>
+<para>Trains the coarse and product quantizer based on the given vector data. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="112" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="112" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ae9b275308a633114cf2e8a005b42bc08" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>int</type>
@@ -421,13 +398,12 @@
           <declname>listId</declname>
         </param>
         <briefdescription>
-<para>Returns the number of vectors present in a particular inverted list. </para>
-        </briefdescription>
+<para>Returns the number of vectors present in a particular inverted list. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="115" column="7"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="115" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ab2ce111a45fe511a4bcc807c5b84c8f9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>std::vector&lt; uint8_t &gt;</type>
@@ -447,11 +423,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the encoded vector data contained in a particular inverted list, for debugging purposes. If gpuFormat is true, the data is returned as it is encoded in the GPU-side representation. Otherwise, it is converted to the CPU format. compliant format, while the native GPU format may differ. </para>
-        </detaileddescription>
+<para>Return the encoded vector data contained in a particular inverted list, for debugging purposes. If gpuFormat is true, the data is returned as it is encoded in the GPU-side representation. Otherwise, it is converted to the CPU format. compliant format, while the native GPU format may differ. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="124" column="3"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="124" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a62eddda61a10b790541ec1efe97a249d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>std::vector&lt; <ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref> &gt;</type>
@@ -466,11 +441,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the vector indices contained in a particular inverted list, for debugging purposes. </para>
-        </detaileddescription>
+<para>Return the vector indices contained in a particular inverted list, for debugging purposes. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="128" column="15"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="128" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a94c2c171f9a2d27085dea9101067bdf2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -482,13 +456,12 @@
           <declname>index</declname>
         </param>
         <briefdescription>
-<para>Copy what we need from the CPU equivalent. </para>
-        </briefdescription>
+<para>Copy what we need from the CPU equivalent. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="51" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="51" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a9153ac747b50b454d85416edcf484bd3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -500,13 +473,12 @@
           <declname>index</declname>
         </param>
         <briefdescription>
-<para>Copy what we have to the CPU equivalent. </para>
-        </briefdescription>
+<para>Copy what we have to the CPU equivalent. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="54" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="54" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a008b31e78482337f8ca9ae72d9815be0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -514,13 +486,12 @@
         <argsstring>() const</argsstring>
         <name>getNumLists</name>
         <briefdescription>
-<para>Returns the number of inverted lists we&apos;re managing. </para>
-        </briefdescription>
+<para>Returns the number of inverted lists we&apos;re managing. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="57" column="7"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="57" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1ae8ede11bab8c6f2296aa797986006511" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">GpuIndexFlat</ref> *</type>
@@ -528,13 +499,12 @@
         <argsstring>()</argsstring>
         <name>getQuantizer</name>
         <briefdescription>
-<para>Return the quantizer we&apos;re using. </para>
-        </briefdescription>
+<para>Return the quantizer we&apos;re using. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="76" column="16"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="76" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a1efac4b9801d57fa6d0085d6aed9c1f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -546,13 +516,12 @@
           <declname>nprobe</declname>
         </param>
         <briefdescription>
-<para>Sets the number of list probes per query. </para>
-        </briefdescription>
+<para>Sets the number of list probes per query. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="79" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="79" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1aa231de06057f6f024679291fed7d8c3a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -560,13 +529,12 @@
         <argsstring>() const</argsstring>
         <name>getNumProbes</name>
         <briefdescription>
-<para>Returns our current number of list probes per query. </para>
-        </briefdescription>
+<para>Returns our current number of list probes per query. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="82" column="7"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="82" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1af4f02c713f639bd70e09af8afebd0f51" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -574,13 +542,12 @@
         <argsstring>() const</argsstring>
         <name>getDevice</name>
         <briefdescription>
-<para>Returns the device that this index is resident on. </para>
-        </briefdescription>
+<para>Returns the device that this index is resident on. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="40" column="7"/>
+        <location file="faiss/gpu/GpuIndex.h" line="40" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a2eb235a51b0a70bdbc2c814a48a0917d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::shared_ptr&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> &gt;</type>
@@ -590,11 +557,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Returns a reference to our <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> object that manages memory, stream and handle resources on the GPU </para>
-        </detaileddescription>
+<para>Returns a reference to our <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> object that manages memory, stream and handle resources on the GPU </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="44" column="19"/>
+        <location file="faiss/gpu/GpuIndex.h" line="44" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a6c82cbea6b02cc996d634f822c1d310b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -608,11 +574,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Set the minimum data size for searches (in MiB) for which we use CPU -&gt; GPU paging </para>
-        </detaileddescription>
+<para>Set the minimum data size for searches (in MiB) for which we use CPU -&gt; GPU paging </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="48" column="8"/>
+        <location file="faiss/gpu/GpuIndex.h" line="48" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a6402d93925d2a403dc187dc1a7aab1e3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -620,13 +585,12 @@
         <argsstring>() const</argsstring>
         <name>getMinPagingSize</name>
         <briefdescription>
-<para>Returns the current minimum data size for paged searches. </para>
-        </briefdescription>
+<para>Returns the current minimum data size for paged searches. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="51" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="51" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1ac6ac307f55a1b44dbf185e22c83b0a10" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -645,11 +609,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para><computeroutput>x</computeroutput> can be resident on the CPU or any GPU; copies are performed as needed Handles paged adds if the add set is too large; calls addInternal_ </para>
-        </detaileddescription>
+<para><computeroutput>x</computeroutput> can be resident on the CPU or any GPU; copies are performed as needed Handles paged adds if the add set is too large; calls addInternal_ </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="56" column="8"/>
+        <location file="faiss/gpu/GpuIndex.h" line="56" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a47f6969fe60d82b8e3407557ba9eec88" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -672,11 +635,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para><computeroutput>x</computeroutput> and <computeroutput>ids</computeroutput> can be resident on the CPU or any GPU; copies are performed as needed Handles paged adds if the add set is too large; calls addInternal_ </para>
-        </detaileddescription>
+<para><computeroutput>x</computeroutput> and <computeroutput>ids</computeroutput> can be resident on the CPU or any GPU; copies are performed as needed Handles paged adds if the add set is too large; calls addInternal_ </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="61" column="8"/>
+        <location file="faiss/gpu/GpuIndex.h" line="61" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1ac108456e9c7cde162d77f64cc9c0dcdb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -704,11 +666,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para><computeroutput>x</computeroutput> and <computeroutput>labels</computeroutput> can be resident on the CPU or any GPU; copies are performed as needed </para>
-        </detaileddescription>
+<para><computeroutput>x</computeroutput> and <computeroutput>labels</computeroutput> can be resident on the CPU or any GPU; copies are performed as needed </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="67" column="8"/>
+        <location file="faiss/gpu/GpuIndex.h" line="67" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a4564ff946e4339156173b39449562971" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -739,11 +700,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para><computeroutput>x</computeroutput>, <computeroutput>distances</computeroutput> and <computeroutput>labels</computeroutput> can be resident on the CPU or any GPU; copies are performed as needed </para>
-        </detaileddescription>
+<para><computeroutput>x</computeroutput>, <computeroutput>distances</computeroutput> and <computeroutput>labels</computeroutput> can be resident on the CPU or any GPU; copies are performed as needed </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="74" column="8"/>
+        <location file="faiss/gpu/GpuIndex.h" line="74" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a1c68659822d9e330a7737c8a6aaacae2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -767,11 +727,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Overridden to force GPU indices to provide their own GPU-friendly implementation </para>
-        </detaileddescription>
+<para>Overridden to force GPU indices to provide their own GPU-friendly implementation </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="82" column="8"/>
+        <location file="faiss/gpu/GpuIndex.h" line="82" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1aac69097d303830c3d48c4016c1e6a955" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -799,11 +758,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Overridden to force GPU indices to provide their own GPU-friendly implementation </para>
-        </detaileddescription>
+<para>Overridden to force GPU indices to provide their own GPU-friendly implementation </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="88" column="8"/>
+        <location file="faiss/gpu/GpuIndex.h" line="88" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -833,38 +791,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>query n vectors of dimension d to the index.</para>
-<para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>query n vectors of dimension d to the index.</para><para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors to search, size n * d </para>
-</parameterdescription>
+<para>input vectors to search, size n * d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>radius</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>search radius </para>
-</parameterdescription>
+<para>search radius </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>result</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>result table </para>
-</parameterdescription>
+<para>result table </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="127" column="18"/>
+        <location file="faiss/Index.h" line="127" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -884,11 +836,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>removes IDs from the index. Not supported by all indexes. Returns the number of elements removed. </para>
-        </detaileddescription>
+<para>removes IDs from the index. Not supported by all indexes. Returns the number of elements removed. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="144" column="20"/>
+        <location file="faiss/Index.h" line="144" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -901,10 +852,10 @@
         <reimplementedby refid="structfaiss_1_1IndexPQ_1a20913df3bfd8caa5187112641e8d9bc7">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1a8fb8680f64465d643d96119da58099f3">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1af2e505c14e62234eb251fcb37ef012d2">reconstruct</reimplementedby>
+        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad690b0d256903730605ce36d64720fbf">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1a660e5c8de1ba9c71bf3fe1f3bf0c8812">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1aa5bd578560419955a4bf7035cf09a392">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39">reconstruct</reimplementedby>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad690b0d256903730605ce36d64720fbf">reconstruct</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
           <declname>key</declname>
@@ -916,29 +867,25 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Reconstruct a stored vector (or an approximation if lossy coding)</para>
-<para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
+<para>Reconstruct a stored vector (or an approximation if lossy coding)</para><para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>key</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>id of the vector to reconstruct </para>
-</parameterdescription>
+<para>id of the vector to reconstruct </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstucted vector (size d) </para>
-</parameterdescription>
+<para>reconstucted vector (size d) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="152" column="18"/>
+        <location file="faiss/Index.h" line="152" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -949,8 +896,8 @@
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a02ebb27dd56aec9a93c50bd6b96184e7">reconstruct_n</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1a06e6935b75f0b209f65fffa1c9e1477c">reconstruct_n</reimplementedby>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1a226daedaa05c0e0bb3a0afb78d5aa120">reconstruct_n</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVF_1a7cc286dfbd8bfd43ea4b22173e28231c">reconstruct_n</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1aae123842b90fe5f6b9efbd030ce5a7d1">reconstruct_n</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVF_1a7cc286dfbd8bfd43ea4b22173e28231c">reconstruct_n</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
           <declname>i0</declname>
@@ -966,21 +913,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Reconstruct vectors i0 to i0 + ni - 1</para>
-<para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
+<para>Reconstruct vectors i0 to i0 + ni - 1</para><para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstucted vector (size ni * d) </para>
-</parameterdescription>
+<para>reconstucted vector (size ni * d) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="159" column="18"/>
+        <location file="faiss/Index.h" line="159" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1016,22 +960,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</para>
-<para>If there are not enough results for a query, the resulting arrays is padded with -1s.</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</para><para>If there are not enough results for a query, the resulting arrays is padded with -1s.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstructed vectors size (n, k, d) </para>
-</parameterdescription>
+<para>reconstructed vectors size (n, k, d) </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="169" column="18"/>
+        <location file="faiss/Index.h" line="169" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>DistanceComputer *</type>
@@ -1046,12 +986,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para>
-<para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>
-        </detaileddescription>
+<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para><para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="210" column="31"/>
+        <location file="faiss/Index.h" line="210" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -1069,11 +1007,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>size of the produced codes in bytes </para>
-        </detaileddescription>
+<para>size of the produced codes in bytes </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="216" column="20"/>
+        <location file="faiss/Index.h" line="216" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1102,37 +1039,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>encode a set of vectors</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>encode a set of vectors</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of vectors </para>
-</parameterdescription>
+<para>number of vectors </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors, size n * d </para>
-</parameterdescription>
+<para>input vectors, size n * d </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>bytes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output encoded vectors, size n * <ref refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" kindref="member">sa_code_size()</ref> </para>
-</parameterdescription>
+<para>output encoded vectors, size n * <ref refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" kindref="member">sa_code_size()</ref> </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="224" column="18"/>
+        <location file="faiss/Index.h" line="224" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1163,37 +1095,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>encode a set of vectors</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>encode a set of vectors</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of vectors </para>
-</parameterdescription>
+<para>number of vectors </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>bytes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input encoded vectors, size n * <ref refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" kindref="member">sa_code_size()</ref> </para>
-</parameterdescription>
+<para>input encoded vectors, size n * <ref refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" kindref="member">sa_code_size()</ref> </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output vectors, size n * d </para>
-</parameterdescription>
+<para>output vectors, size n * d </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="233" column="18"/>
+        <location file="faiss/Index.h" line="233" column="1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="protected-func">
@@ -1216,13 +1143,12 @@
           <declname>ids</declname>
         </param>
         <briefdescription>
-<para>Called from <ref refid="classfaiss_1_1gpu_1_1GpuIndex" kindref="compound">GpuIndex</ref> for add/add_with_ids. </para>
-        </briefdescription>
+<para>Called from <ref refid="classfaiss_1_1gpu_1_1GpuIndex" kindref="compound">GpuIndex</ref> for add/add_with_ids. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="132" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="132" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a73a06501e87117e5f620bb07d7c1e54d" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1251,13 +1177,12 @@
           <declname>labels</declname>
         </param>
         <briefdescription>
-<para>Called from <ref refid="classfaiss_1_1gpu_1_1GpuIndex" kindref="compound">GpuIndex</ref> for search. </para>
-        </briefdescription>
+<para>Called from <ref refid="classfaiss_1_1gpu_1_1GpuIndex" kindref="compound">GpuIndex</ref> for search. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="137" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="137" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a93a5cdb61826376c8d4d8698d7a3ccc8" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1265,13 +1190,12 @@
         <argsstring>() const</argsstring>
         <name>verifySettings_</name>
         <briefdescription>
-<para>Throws errors if configuration settings are improper. </para>
-        </briefdescription>
+<para>Throws errors if configuration settings are improper. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="144" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="144" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a9252f1f86146658759fa0d0077b67dce" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1287,13 +1211,12 @@
           <declname>x</declname>
         </param>
         <briefdescription>
-<para>Trains the PQ quantizer based on the given vector data. </para>
-        </briefdescription>
+<para>Trains the PQ quantizer based on the given vector data. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="147" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="147" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1305,13 +1228,12 @@
           <declname>index</declname>
         </param>
         <briefdescription>
-<para>Copy what we need from the CPU equivalent. </para>
-        </briefdescription>
+<para>Copy what we need from the CPU equivalent. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="95" column="8"/>
+        <location file="faiss/gpu/GpuIndex.h" line="95" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1323,13 +1245,12 @@
           <declname>index</declname>
         </param>
         <briefdescription>
-<para>Copy what we have to the CPU equivalent. </para>
-        </briefdescription>
+<para>Copy what we have to the CPU equivalent. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="98" column="8"/>
+        <location file="faiss/gpu/GpuIndex.h" line="98" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a69731ab85d119127e1fe603757b28400" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>bool</type>
@@ -1340,11 +1261,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Does addImpl_ require IDs? If so, and no IDs are provided, we will generate them sequentially based on the order in which the IDs are added </para>
-        </detaileddescription>
+<para>Does addImpl_ require IDs? If so, and no IDs are provided, we will generate them sequentially based on the order in which the IDs are added </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="85" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="85" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a8f64aaab0221591c82825c1594432c72" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1365,7 +1285,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="86" column="8"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="86" column="1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -1375,13 +1295,12 @@
         <argsstring></argsstring>
         <name>cp</name>
         <briefdescription>
-<para>Exposing this like the CPU version for manipulation. </para>
-        </briefdescription>
+<para>Exposing this like the CPU version for manipulation. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="90" column="24" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="90" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="90" column="1" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="90" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a7d06649d5ae58b7a637a8b348d6f16b3" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -1389,13 +1308,12 @@
         <argsstring></argsstring>
         <name>nlist</name>
         <briefdescription>
-<para>Exposing this like the CPU version for query. </para>
-        </briefdescription>
+<para>Exposing this like the CPU version for query. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="93" column="7" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="93" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="93" column="1" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="93" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a83cdbddf42124d7f6c0d9ef232e0c558" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -1403,13 +1321,12 @@
         <argsstring></argsstring>
         <name>nprobe</name>
         <briefdescription>
-<para>Exposing this like the CPU version for manipulation. </para>
-        </briefdescription>
+<para>Exposing this like the CPU version for manipulation. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="96" column="7" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="96" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="96" column="1" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="96" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1ac741fa8825e3ef533cbe9a45aa22a8fe" prot="public" static="no" mutable="no">
         <type><ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">GpuIndexFlat</ref> *</type>
@@ -1417,13 +1334,12 @@
         <argsstring></argsstring>
         <name>quantizer</name>
         <briefdescription>
-<para>Exposeing this like the CPU version for query. </para>
-        </briefdescription>
+<para>Exposeing this like the CPU version for query. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="99" column="16" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="99" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="99" column="1" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="99" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -1431,13 +1347,12 @@
         <argsstring></argsstring>
         <name>d</name>
         <briefdescription>
-<para>vector dimension </para>
-        </briefdescription>
+<para>vector dimension </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="57" column="9" bodyfile="faiss/Index.h" bodystart="57" bodyend="-1"/>
+        <location file="faiss/Index.h" line="57" column="1" bodyfile="faiss/Index.h" bodystart="57" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
@@ -1445,13 +1360,12 @@
         <argsstring></argsstring>
         <name>ntotal</name>
         <briefdescription>
-<para>total nb of indexed vectors </para>
-        </briefdescription>
+<para>total nb of indexed vectors </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="58" column="11" bodyfile="faiss/Index.h" bodystart="58" bodyend="-1"/>
+        <location file="faiss/Index.h" line="58" column="1" bodyfile="faiss/Index.h" bodystart="58" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -1459,13 +1373,12 @@
         <argsstring></argsstring>
         <name>verbose</name>
         <briefdescription>
-<para>verbosity level </para>
-        </briefdescription>
+<para>verbosity level </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="59" column="10" bodyfile="faiss/Index.h" bodystart="59" bodyend="-1"/>
+        <location file="faiss/Index.h" line="59" column="1" bodyfile="faiss/Index.h" bodystart="59" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -1475,11 +1388,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>set if the <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> does not require training, or if training is done already </para>
-        </detaileddescription>
+<para>set if the <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> does not require training, or if training is done already </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="63" column="10" bodyfile="faiss/Index.h" bodystart="63" bodyend="-1"/>
+        <location file="faiss/Index.h" line="63" column="1" bodyfile="faiss/Index.h" bodystart="63" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
@@ -1487,13 +1399,12 @@
         <argsstring></argsstring>
         <name>metric_type</name>
         <briefdescription>
-<para>type of metric this index uses for search </para>
-        </briefdescription>
+<para>type of metric this index uses for search </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="66" column="16" bodyfile="faiss/Index.h" bodystart="66" bodyend="-1"/>
+        <location file="faiss/Index.h" line="66" column="1" bodyfile="faiss/Index.h" bodystart="66" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -1501,13 +1412,12 @@
         <argsstring></argsstring>
         <name>metric_arg</name>
         <briefdescription>
-<para>argument of the metric type </para>
-        </briefdescription>
+<para>argument of the metric type </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="67" column="11" bodyfile="faiss/Index.h" bodystart="67" bodyend="-1"/>
+        <location file="faiss/Index.h" line="67" column="1" bodyfile="faiss/Index.h" bodystart="67" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-type">
@@ -1517,13 +1427,12 @@
         <argsstring></argsstring>
         <name>idx_t</name>
         <briefdescription>
-<para>all indices are this type </para>
-        </briefdescription>
+<para>all indices are this type </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="53" column="5" bodyfile="faiss/Index.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/Index.h" line="53" column="1" bodyfile="faiss/Index.h" bodystart="53" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" static="no">
         <type>float</type>
@@ -1536,7 +1445,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="54" column="5" bodyfile="faiss/Index.h" bodystart="54" bodyend="-1"/>
+        <location file="faiss/Index.h" line="54" column="1" bodyfile="faiss/Index.h" bodystart="54" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" static="no">
         <type>float</type>
@@ -1549,116 +1458,115 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="55" column="5" bodyfile="faiss/Index.h" bodystart="55" bodyend="-1"/>
+        <location file="faiss/Index.h" line="55" column="1" bodyfile="faiss/Index.h" bodystart="55" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>IVFPQ index for the GPU. </para>
-    </briefdescription>
+<para>IVFPQ index for the GPU. </para>    </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="3">
+      <node id="195">
         <label>faiss::gpu::GpuIndex</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndex"/>
-        <childnode refid="4" relation="public-inheritance">
+        <childnode refid="196" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="1">
+      <node id="193">
         <label>faiss::gpu::GpuIndexIVFPQ</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="194" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
+      <node id="194">
         <label>faiss::gpu::GpuIndexIVF</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexIVF"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="195" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="196">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="10">
+      <node id="206">
         <label>faiss::gpu::GpuIndexIVFPQConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig"/>
-        <childnode refid="9" relation="public-inheritance">
+        <childnode refid="205" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="199">
         <label>faiss::gpu::GpuIndex</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndex"/>
-        <childnode refid="4" relation="public-inheritance">
+        <childnode refid="200" relation="public-inheritance">
         </childnode>
-        <childnode refid="5" relation="usage">
+        <childnode refid="201" relation="usage">
           <edgelabel>config_</edgelabel>
         </childnode>
       </node>
-      <node id="5">
+      <node id="201">
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
       </node>
-      <node id="1">
+      <node id="197">
         <label>faiss::gpu::GpuIndexIVFPQ</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ"/>
-        <childnode refid="2" relation="public-inheritance">
+        <childnode refid="198" relation="public-inheritance">
         </childnode>
-        <childnode refid="10" relation="usage">
+        <childnode refid="206" relation="usage">
           <edgelabel>ivfpqConfig_</edgelabel>
         </childnode>
       </node>
-      <node id="7">
+      <node id="203">
         <label>faiss::gpu::GpuIndexFlat</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexFlat"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="199" relation="public-inheritance">
         </childnode>
-        <childnode refid="8" relation="usage">
+        <childnode refid="204" relation="usage">
           <edgelabel>flatConfig_</edgelabel>
         </childnode>
       </node>
-      <node id="6">
+      <node id="202">
         <label>faiss::ClusteringParameters</label>
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
-      <node id="9">
+      <node id="205">
         <label>faiss::gpu::GpuIndexIVFConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig"/>
-        <childnode refid="5" relation="public-inheritance">
+        <childnode refid="201" relation="public-inheritance">
         </childnode>
-        <childnode refid="8" relation="usage">
+        <childnode refid="204" relation="usage">
           <edgelabel>flatConfig</edgelabel>
         </childnode>
       </node>
-      <node id="2">
+      <node id="198">
         <label>faiss::gpu::GpuIndexIVF</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexIVF"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="199" relation="public-inheritance">
         </childnode>
-        <childnode refid="6" relation="usage">
+        <childnode refid="202" relation="usage">
           <edgelabel>cp</edgelabel>
         </childnode>
-        <childnode refid="7" relation="usage">
+        <childnode refid="203" relation="usage">
           <edgelabel>quantizer</edgelabel>
         </childnode>
-        <childnode refid="9" relation="usage">
+        <childnode refid="205" relation="usage">
           <edgelabel>ivfConfig_</edgelabel>
         </childnode>
       </node>
-      <node id="4">
+      <node id="200">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
-      <node id="8">
+      <node id="204">
         <label>faiss::gpu::GpuIndexFlatConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig"/>
-        <childnode refid="5" relation="public-inheritance">
+        <childnode refid="201" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuIndexIVFPQ.h" line="55" column="39" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="55" bodyend="168"/>
+    <location file="faiss/gpu/GpuIndexIVFPQ.h" line="55" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="55" bodyend="168"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1ac6ac307f55a1b44dbf185e22c83b0a10" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>add</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a47f6969fe60d82b8e3407557ba9eec88" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>add_with_ids</name></member>

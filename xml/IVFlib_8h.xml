@@ -1,150 +1,150 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="IVFlib_8h" kind="file" language="C++">
     <compoundname>IVFlib.h</compoundname>
     <includes local="no">vector</includes>
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
     <incdepgraph>
-      <node id="13">
-        <label>faiss/invlists/DirectMap.h</label>
-        <link refid="DirectMap_8h_source"/>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-      <node id="21">
+      <node id="1145">
         <label>limits</label>
       </node>
-      <node id="15">
+      <node id="1139">
         <label>faiss/impl/platform_macros.h</label>
       </node>
-      <node id="16">
-        <label>faiss/utils/Heap.h</label>
-        <link refid="Heap_8h_source"/>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-      </node>
-      <node id="1">
-        <label>faiss/IVFlib.h</label>
-        <link refid="IVFlib_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>stdint.h</label>
-      </node>
-      <node id="19">
-        <label>cmath</label>
-      </node>
-      <node id="20">
-        <label>cassert</label>
-      </node>
-      <node id="14">
+      <node id="1138">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="1130" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
+        <childnode refid="1126" relation="include">
         </childnode>
       </node>
-      <node id="10">
-        <label>string</label>
+      <node id="1129">
+        <label>stdint.h</label>
       </node>
-      <node id="9">
-        <label>typeinfo</label>
-      </node>
-      <node id="8">
-        <label>cstdio</label>
-      </node>
-      <node id="3">
+      <node id="1127">
         <label>faiss/IndexIVF.h</label>
         <link refid="IndexIVF_8h_source"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1126" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="1128" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="1129" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="1130" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="1136" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="1137" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="1138" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="1139" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="1140" relation="include">
         </childnode>
       </node>
-      <node id="2">
-        <label>vector</label>
-      </node>
-      <node id="11">
-        <label>sstream</label>
-      </node>
-      <node id="12">
+      <node id="1136">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1126" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="1130" relation="include">
         </childnode>
       </node>
-      <node id="4">
-        <label>unordered_map</label>
+      <node id="1143">
+        <label>cmath</label>
       </node>
-      <node id="17">
-        <label>climits</label>
+      <node id="1144">
+        <label>cassert</label>
       </node>
-      <node id="22">
+      <node id="1134">
+        <label>string</label>
+      </node>
+      <node id="1133">
+        <label>typeinfo</label>
+      </node>
+      <node id="1132">
+        <label>cstdio</label>
+      </node>
+      <node id="1126">
+        <label>vector</label>
+      </node>
+      <node id="1135">
+        <label>sstream</label>
+      </node>
+      <node id="1140">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="1141" relation="include">
+        </childnode>
+        <childnode refid="1142" relation="include">
+        </childnode>
+        <childnode refid="1143" relation="include">
+        </childnode>
+        <childnode refid="1144" relation="include">
+        </childnode>
+        <childnode refid="1132" relation="include">
+        </childnode>
+        <childnode refid="1129" relation="include">
+        </childnode>
+        <childnode refid="1145" relation="include">
+        </childnode>
+        <childnode refid="1146" relation="include">
+        </childnode>
+      </node>
+      <node id="1146">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="17" relation="include">
+        <childnode refid="1141" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="1143" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="1145" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="1128">
+        <label>unordered_map</label>
+      </node>
+      <node id="1141">
+        <label>climits</label>
+      </node>
+      <node id="1130">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="7" relation="include">
+        <childnode refid="1131" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="1132" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="1133" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="1134" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="1135" relation="include">
         </childnode>
       </node>
-      <node id="18">
-        <label>cstring</label>
-      </node>
-      <node id="7">
+      <node id="1131">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+      </node>
+      <node id="1137">
+        <label>faiss/invlists/DirectMap.h</label>
+        <link refid="DirectMap_8h_source"/>
+        <childnode refid="1136" relation="include">
+        </childnode>
+        <childnode refid="1128" relation="include">
+        </childnode>
+      </node>
+      <node id="1142">
+        <label>cstring</label>
+      </node>
+      <node id="1125">
+        <label>faiss/IVFlib.h</label>
+        <link refid="IVFlib_8h"/>
+        <childnode refid="1126" relation="include">
+        </childnode>
+        <childnode refid="1127" relation="include">
+        </childnode>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow" prot="public">faiss::ivflib::SlidingIndexWindow</innerclass>
@@ -258,7 +258,7 @@
 <codeline lineno="101" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6dfc430601d194c428c2a25e3afa4492" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;std::vector&lt;size_t&gt;<sp/>&gt;<sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6dfc430601d194c428c2a25e3afa4492" kindref="member">sizes</ref>;</highlight></codeline>
 <codeline lineno="102"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="103"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>index<sp/>should<sp/>be<sp/>initially<sp/>empty<sp/>and<sp/>trained</highlight></codeline>
-<codeline lineno="104"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6347809123313ca945defdc7ddcd1465" kindref="member">SlidingIndexWindow</ref><sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" kindref="member">index</ref>);</highlight></codeline>
+<codeline lineno="104"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6347809123313ca945defdc7ddcd1465" kindref="member">SlidingIndexWindow</ref><sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index);</highlight></codeline>
 <codeline lineno="105"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="106"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Add<sp/>one<sp/>index<sp/>to<sp/>the<sp/>current<sp/>index<sp/>and<sp/>remove<sp/>the<sp/>oldest<sp/>one.</highlight></codeline>
 <codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
@@ -270,11 +270,11 @@
 <codeline lineno="113"><highlight class="normal"></highlight></codeline>
 <codeline lineno="114"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="115"><highlight class="comment">///<sp/>Get<sp/>a<sp/>subset<sp/>of<sp/>inverted<sp/>lists<sp/>[i0,<sp/>i1)</highlight></codeline>
-<codeline lineno="116"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref><sp/>*<sp/>get_invlist_range<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index,</highlight></codeline>
+<codeline lineno="116"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref><sp/>*<sp/>get_invlist_range<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" kindref="member">index</ref>,</highlight></codeline>
 <codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i0,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i1);</highlight></codeline>
 <codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="119"><highlight class="comment">///<sp/>Set<sp/>a<sp/>subset<sp/>of<sp/>inverted<sp/>lists</highlight></codeline>
-<codeline lineno="120"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_invlist_range<sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i0,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i1,</highlight></codeline>
+<codeline lineno="120"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_invlist_range<sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" kindref="member">index</ref>,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i0,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i1,</highlight></codeline>
 <codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref><sp/>*<sp/>src);</highlight></codeline>
 <codeline lineno="122"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="123"><highlight class="comment">/**<sp/>search<sp/>an<sp/>IndexIVF,<sp/>possibly<sp/>embedded<sp/>in<sp/>an<sp/>IndexPreTransform<sp/>with</highlight></codeline>
@@ -288,7 +288,7 @@
 <codeline lineno="131"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[2]:<sp/>list<sp/>scanning</highlight></codeline>
 <codeline lineno="132"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="133"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search_with_parameters<sp/>(</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index,</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" kindref="member">index</ref>,</highlight></codeline>
 <codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*x,<sp/>idx_t<sp/>k,</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*distances,<sp/>idx_t<sp/>*labels,</highlight></codeline>
 <codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IVFSearchParameters" kindref="compound">IVFSearchParameters</ref><sp/>*params,</highlight></codeline>
@@ -297,7 +297,7 @@
 <codeline lineno="140"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="141"><highlight class="comment">/**<sp/>same<sp/>as<sp/>search_with_parameters<sp/>but<sp/>for<sp/>range<sp/>search<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="142"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>range_search_with_parameters<sp/>(</highlight></codeline>
-<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index,</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" kindref="member">index</ref>,</highlight></codeline>
 <codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>radius,</highlight></codeline>
 <codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RangeSearchResult<sp/>*result,</highlight></codeline>
 <codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IVFSearchParameters" kindref="compound">IVFSearchParameters</ref><sp/>*params,</highlight></codeline>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="WorkerThread_8h" kind="file" language="C++">
     <compoundname>WorkerThread.h</compoundname>
     <includes local="no">condition_variable</includes>
@@ -7,28 +7,28 @@
     <includes local="no">deque</includes>
     <includes local="no">thread</includes>
     <incdepgraph>
-      <node id="1">
-        <label>faiss/utils/WorkerThread.h</label>
-        <link refid="WorkerThread_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
+      <node id="1395">
         <label>condition_variable</label>
       </node>
-      <node id="3">
+      <node id="1396">
         <label>future</label>
       </node>
-      <node id="4">
+      <node id="1394">
+        <label>faiss/utils/WorkerThread.h</label>
+        <link refid="WorkerThread_8h"/>
+        <childnode refid="1395" relation="include">
+        </childnode>
+        <childnode refid="1396" relation="include">
+        </childnode>
+        <childnode refid="1397" relation="include">
+        </childnode>
+        <childnode refid="1398" relation="include">
+        </childnode>
+      </node>
+      <node id="1397">
         <label>deque</label>
       </node>
-      <node id="5">
+      <node id="1398">
         <label>thread</label>
       </node>
     </incdepgraph>

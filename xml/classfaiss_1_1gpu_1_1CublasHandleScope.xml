@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="classfaiss_1_1gpu_1_1CublasHandleScope" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::CublasHandleScope</compoundname>
     <includes refid="DeviceUtils_8h" local="no">DeviceUtils.h</includes>
@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="98" column="18" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="98" bodyend="-1"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="98" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="98" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="92" column="3"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="92" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CublasHandleScope_1aebc00829e05d127f84f6502c61911109" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="93" column="3"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="93" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CublasHandleScope_1ad72c3f76d76df0a5b8947b4a07a37cb5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>cublasHandle_t</type>
@@ -56,15 +56,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="95" column="18" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="95" bodyend="95"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="95" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="95" bodyend="95"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>RAII object to manage a cublasHandle_t. </para>
-    </briefdescription>
+<para>RAII object to manage a cublasHandle_t. </para>    </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/utils/DeviceUtils.h" line="90" column="24" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="90" bodyend="99"/>
+    <location file="faiss/gpu/utils/DeviceUtils.h" line="90" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="90" bodyend="99"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1CublasHandleScope_1a990a8e8805606bba7a6450404c6d05d1" prot="private" virt="non-virtual"><scope>faiss::gpu::CublasHandleScope</scope><name>blasHandle_</name></member>
       <member refid="classfaiss_1_1gpu_1_1CublasHandleScope_1a7bcf61f669741a93cab18a0fa71b8df7" prot="public" virt="non-virtual"><scope>faiss::gpu::CublasHandleScope</scope><name>CublasHandleScope</name></member>

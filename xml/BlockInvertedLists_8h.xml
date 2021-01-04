@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="BlockInvertedLists_8h" kind="file" language="C++">
     <compoundname>BlockInvertedLists.h</compoundname>
     <includes refid="InvertedLists_8h" local="no">faiss/invlists/InvertedLists.h</includes>
@@ -7,117 +7,117 @@
     <includes refid="AlignedTable_8h" local="no">faiss/utils/AlignedTable.h</includes>
     <includes refid="index__io_8h" local="no">faiss/index_io.h</includes>
     <incdepgraph>
-      <node id="1">
-        <label>faiss/invlists/BlockInvertedLists.h</label>
-        <link refid="BlockInvertedLists_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-      </node>
-      <node id="18">
-        <label>faiss/impl/platform_macros.h</label>
-      </node>
-      <node id="13">
-        <label>cstdint</label>
-      </node>
-      <node id="15">
-        <label>cassert</label>
-      </node>
-      <node id="8">
-        <label>string</label>
-      </node>
-      <node id="7">
-        <label>typeinfo</label>
-      </node>
-      <node id="6">
-        <label>cstdio</label>
-      </node>
-      <node id="3">
-        <label>vector</label>
-      </node>
-      <node id="9">
-        <label>sstream</label>
-      </node>
-      <node id="19">
-        <label>faiss/index_io.h</label>
-        <link refid="index__io_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>faiss/invlists/InvertedListsIOHook.h</label>
-        <link refid="InvertedListsIOHook_8h_source"/>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="14">
-        <label>cstdlib</label>
-      </node>
-      <node id="2">
-        <label>faiss/invlists/InvertedLists.h</label>
-        <link refid="InvertedLists_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-      <node id="11">
-        <label>faiss/impl/io.h</label>
-      </node>
-      <node id="4">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="17">
-        <label>algorithm</label>
-      </node>
-      <node id="12">
+      <node id="1023">
         <label>faiss/utils/AlignedTable.h</label>
         <link refid="AlignedTable_8h_source"/>
-        <childnode refid="13" relation="include">
+        <childnode refid="1024" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="1025" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="1026" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="1027" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="1028" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="1029" relation="include">
         </childnode>
       </node>
-      <node id="16">
-        <label>cstring</label>
+      <node id="1029">
+        <label>faiss/impl/platform_macros.h</label>
       </node>
-      <node id="5">
+      <node id="1024">
+        <label>cstdint</label>
+      </node>
+      <node id="1013">
+        <label>faiss/invlists/InvertedLists.h</label>
+        <link refid="InvertedLists_8h_source"/>
+        <childnode refid="1014" relation="include">
+        </childnode>
+        <childnode refid="1015" relation="include">
+        </childnode>
+      </node>
+      <node id="1026">
+        <label>cassert</label>
+      </node>
+      <node id="1019">
+        <label>string</label>
+      </node>
+      <node id="1018">
+        <label>typeinfo</label>
+      </node>
+      <node id="1017">
+        <label>cstdio</label>
+      </node>
+      <node id="1014">
+        <label>vector</label>
+      </node>
+      <node id="1020">
+        <label>sstream</label>
+      </node>
+      <node id="1025">
+        <label>cstdlib</label>
+      </node>
+      <node id="1022">
+        <label>faiss/impl/io.h</label>
+      </node>
+      <node id="1015">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="1016" relation="include">
+        </childnode>
+        <childnode refid="1017" relation="include">
+        </childnode>
+        <childnode refid="1018" relation="include">
+        </childnode>
+        <childnode refid="1019" relation="include">
+        </childnode>
+        <childnode refid="1020" relation="include">
+        </childnode>
+      </node>
+      <node id="1016">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+      </node>
+      <node id="1012">
+        <label>faiss/invlists/BlockInvertedLists.h</label>
+        <link refid="BlockInvertedLists_8h"/>
+        <childnode refid="1013" relation="include">
+        </childnode>
+        <childnode refid="1021" relation="include">
+        </childnode>
+        <childnode refid="1023" relation="include">
+        </childnode>
+        <childnode refid="1030" relation="include">
+        </childnode>
+      </node>
+      <node id="1030">
+        <label>faiss/index_io.h</label>
+        <link refid="index__io_8h_source"/>
+        <childnode refid="1017" relation="include">
+        </childnode>
+        <childnode refid="1018" relation="include">
+        </childnode>
+        <childnode refid="1019" relation="include">
+        </childnode>
+        <childnode refid="1014" relation="include">
+        </childnode>
+      </node>
+      <node id="1021">
+        <label>faiss/invlists/InvertedListsIOHook.h</label>
+        <link refid="InvertedListsIOHook_8h_source"/>
+        <childnode refid="1019" relation="include">
+        </childnode>
+        <childnode refid="1013" relation="include">
+        </childnode>
+        <childnode refid="1022" relation="include">
+        </childnode>
+      </node>
+      <node id="1028">
+        <label>algorithm</label>
+      </node>
+      <node id="1027">
+        <label>cstring</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1BlockInvertedLists" prot="public">faiss::BlockInvertedLists</innerclass>
@@ -198,8 +198,8 @@
 <codeline lineno="68"><highlight class="normal"></highlight></codeline>
 <codeline lineno="69" refid="structfaiss_1_1BlockInvertedListsIOHook" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BlockInvertedListsIOHook" kindref="compound">BlockInvertedListsIOHook</ref><sp/>:<sp/><ref refid="structfaiss_1_1InvertedListsIOHook" kindref="compound">InvertedListsIOHook</ref><sp/>{</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1BlockInvertedListsIOHook" kindref="compound">BlockInvertedListsIOHook</ref>();</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BlockInvertedListsIOHook_1aeedbfa2077ea85b271fd015561c6194c" kindref="member">write</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*ils,<sp/>IOWriter<sp/>*f)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*<sp/><ref refid="structfaiss_1_1BlockInvertedListsIOHook_1a7ba61c792255f9ca46b88d89371f2f09" kindref="member">read</ref>(IOReader<sp/>*f,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>io_flags)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>write(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*ils,<sp/>IOWriter<sp/>*f)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref><sp/>*<sp/>read(IOReader<sp/>*f,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>io_flags)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="73"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"></highlight></codeline>
 <codeline lineno="75"><highlight class="normal"></highlight></codeline>

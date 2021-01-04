@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1InvertedListsIOHook" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::InvertedListsIOHook</compoundname>
     <derivedcompoundref refid="structfaiss_1_1BlockInvertedListsIOHook" prot="public" virt="non-virtual">faiss::BlockInvertedListsIOHook</derivedcompoundref>
@@ -12,13 +12,12 @@
         <argsstring></argsstring>
         <name>key</name>
         <briefdescription>
-<para>string version of the fourcc </para>
-        </briefdescription>
+<para>string version of the fourcc </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="29" column="23" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="29" column="1" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1InvertedListsIOHook_1aaf9a95368179893d044d1670a29a7a71" prot="public" static="no" mutable="no">
         <type>const std::string</type>
@@ -26,13 +25,12 @@
         <argsstring></argsstring>
         <name>classname</name>
         <briefdescription>
-<para>typeid.name </para>
-        </briefdescription>
+<para>typeid.name </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="30" column="23" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="30" column="1" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="30" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -55,7 +53,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="32" column="5"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="32" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListsIOHook_1a0334e4a98a6a2645e6ca9963295f3cf7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -73,13 +71,12 @@
           <declname>f</declname>
         </param>
         <briefdescription>
-<para>write the index to the IOWriter (including the fourcc) </para>
-        </briefdescription>
+<para>write the index to the IOWriter (including the fourcc) </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="35" column="18"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="35" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListsIOHook_1a6a3164e33b638f4a9b0103bb19f5bd08" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -97,13 +94,12 @@
           <declname>io_flags</declname>
         </param>
         <briefdescription>
-<para>called when the fourcc matches this class&apos;s fourcc </para>
-        </briefdescription>
+<para>called when the fourcc matches this class&apos;s fourcc </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="38" column="28"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="38" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListsIOHook_1ae4fdbb6eff8075eddda3d3273a0ccd31" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -134,12 +130,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>read from a <ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref> into this invertedlist type. For this to work, the callback has to be enabled and the io_flag has to be set to IO_FLAG_SKIP_IVF_DATA | (16 upper bits of the fourcc)</para>
-<para>(default implementation fails) </para>
-        </detaileddescription>
+<para>read from a <ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref> into this invertedlist type. For this to work, the callback has to be enabled and the io_flag has to be set to IO_FLAG_SKIP_IVF_DATA | (16 upper bits of the fourcc)</para><para>(default implementation fails) </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="46" column="28"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="46" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListsIOHook_1a9c095acee228154c916db2844443f630" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -152,7 +146,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="51" column="13" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="51" bodyend="51"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="51" column="1" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="51" bodyend="51"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-static-func">
@@ -170,7 +164,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="56" column="17"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="56" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListsIOHook_1a6f602d3d0f4f06eaf0ebe99e45d7c53b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -183,7 +177,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="57" column="17"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="57" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListsIOHook_1afea628376e67f00243952ae6e5aa2bc4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1InvertedListsIOHook" kindref="compound">InvertedListsIOHook</ref> *</type>
@@ -200,7 +194,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="58" column="32"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="58" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListsIOHook_1a2f4b40119498c66604b04cac588340a6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1InvertedListsIOHook" kindref="compound">InvertedListsIOHook</ref> *</type>
@@ -217,39 +211,34 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="59" column="32"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="59" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Callbacks to handle other types of InvertedList objects.</para>
-<para>The callbacks should be registered with add_callback before calling read_index or read_InvertedLists. The callbacks for <ref refid="structfaiss_1_1OnDiskInvertedLists" kindref="compound">OnDiskInvertedLists</ref> are registrered by default. The invlist type is identified by:</para>
-<para><itemizedlist>
-<listitem><para>the key (a fourcc) at read time</para>
-</listitem><listitem><para>the class name (as given by typeid.name) at write time </para>
-</listitem></itemizedlist>
-</para>
-    </detaileddescription>
+<para>Callbacks to handle other types of InvertedList objects.</para><para>The callbacks should be registered with add_callback before calling read_index or read_InvertedLists. The callbacks for <ref refid="structfaiss_1_1OnDiskInvertedLists" kindref="compound">OnDiskInvertedLists</ref> are registrered by default. The invlist type is identified by:</para><para><itemizedlist>
+<listitem><para>the key (a fourcc) at read time</para></listitem><listitem><para>the class name (as given by typeid.name) at write time </para></listitem></itemizedlist>
+</para>    </detaileddescription>
     <inheritancegraph>
-      <node id="2">
+      <node id="636">
         <label>faiss::BlockInvertedListsIOHook</label>
         <link refid="structfaiss_1_1BlockInvertedListsIOHook"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="635" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="1">
+      <node id="635">
         <label>faiss::InvertedListsIOHook</label>
         <link refid="structfaiss_1_1InvertedListsIOHook"/>
       </node>
-      <node id="3">
+      <node id="637">
         <label>faiss::OnDiskInvertedListsIOHook</label>
         <link refid="structfaiss_1_1OnDiskInvertedListsIOHook"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="635" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/invlists/InvertedListsIOHook.h" line="28" column="26" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="28" bodyend="61"/>
+    <location file="faiss/invlists/InvertedListsIOHook.h" line="28" column="1" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="28" bodyend="61"/>
     <listofallmembers>
       <member refid="structfaiss_1_1InvertedListsIOHook_1a7852d13afc3e94745f6738c58858098c" prot="public" virt="non-virtual"><scope>faiss::InvertedListsIOHook</scope><name>add_callback</name></member>
       <member refid="structfaiss_1_1InvertedListsIOHook_1aaf9a95368179893d044d1670a29a7a71" prot="public" virt="non-virtual"><scope>faiss::InvertedListsIOHook</scope><name>classname</name></member>

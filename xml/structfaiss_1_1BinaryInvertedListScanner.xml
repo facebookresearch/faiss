@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1BinaryInvertedListScanner" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::BinaryInvertedListScanner</compoundname>
       <sectiondef kind="public-type">
@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="181" column="5" bodyfile="faiss/IndexBinaryIVF.h" bodystart="181" bodyend="-1"/>
+        <location file="faiss/IndexBinaryIVF.h" line="181" column="1" bodyfile="faiss/IndexBinaryIVF.h" bodystart="181" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -28,13 +28,12 @@
           <declname>query_vector</declname>
         </param>
         <briefdescription>
-<para>from now on we handle this query. </para>
-        </briefdescription>
+<para>from now on we handle this query. </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="184" column="18"/>
+        <location file="faiss/IndexBinaryIVF.h" line="184" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1ae28e1381cb4c16ff9941c909fe9c4122" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -50,13 +49,12 @@
           <declname>coarse_dis</declname>
         </param>
         <briefdescription>
-<para>following codes come from this inverted list </para>
-        </briefdescription>
+<para>following codes come from this inverted list </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="187" column="18"/>
+        <location file="faiss/IndexBinaryIVF.h" line="187" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1ac33be0f074b682e9afc44bd7cf0741b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>uint32_t</type>
@@ -68,13 +66,12 @@
           <declname>code</declname>
         </param>
         <briefdescription>
-<para>compute a single query-to-code distance </para>
-        </briefdescription>
+<para>compute a single query-to-code distance </para>        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="190" column="22"/>
+        <location file="faiss/IndexBinaryIVF.h" line="190" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1a9ddb2bb0b513829b39528463c46f90f5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>size_t</type>
@@ -108,61 +105,53 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>compute the distances to codes. (distances, labels) should be organized as a min- or max-heap</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>compute the distances to codes. (distances, labels) should be organized as a min- or max-heap</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of codes to scan </para>
-</parameterdescription>
+<para>number of codes to scan </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>codes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>codes to scan (n * code_size) </para>
-</parameterdescription>
+<para>codes to scan (n * code_size) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>ids</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>corresponding ids (ignored if store_pairs) </para>
-</parameterdescription>
+<para>corresponding ids (ignored if store_pairs) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>distances</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>heap distances (size k) </para>
-</parameterdescription>
+<para>heap distances (size k) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>labels</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>heap labels (size k) </para>
-</parameterdescription>
+<para>heap labels (size k) </para></parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>k</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>heap size </para>
-</parameterdescription>
+<para>heap size </para></parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
-        </detaileddescription>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="202" column="20"/>
+        <location file="faiss/IndexBinaryIVF.h" line="202" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1aa3efb4bb46f7dab5b8ac56727d624b17" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -195,7 +184,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="208" column="18"/>
+        <location file="faiss/IndexBinaryIVF.h" line="208" column="1"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1afc7ad755907a2aba53cdd1ad034d9c04" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -208,14 +197,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="214" column="13" bodyfile="faiss/IndexBinaryIVF.h" bodystart="214" bodyend="214"/>
+        <location file="faiss/IndexBinaryIVF.h" line="214" column="1" bodyfile="faiss/IndexBinaryIVF.h" bodystart="214" bodyend="214"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/IndexBinaryIVF.h" line="179" column="32" bodyfile="faiss/IndexBinaryIVF.h" bodystart="179" bodyend="216"/>
+    <location file="faiss/IndexBinaryIVF.h" line="179" column="1" bodyfile="faiss/IndexBinaryIVF.h" bodystart="179" bodyend="216"/>
     <listofallmembers>
       <member refid="structfaiss_1_1BinaryInvertedListScanner_1ac33be0f074b682e9afc44bd7cf0741b2" prot="public" virt="pure-virtual"><scope>faiss::BinaryInvertedListScanner</scope><name>distance_to_code</name></member>
       <member refid="structfaiss_1_1BinaryInvertedListScanner_1a79acbd6558c3a0e6b3261e5cc53292af" prot="public" virt="non-virtual"><scope>faiss::BinaryInvertedListScanner</scope><name>idx_t</name></member>

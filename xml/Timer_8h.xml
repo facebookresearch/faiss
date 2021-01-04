@@ -1,23 +1,23 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="Timer_8h" kind="file" language="C++">
     <compoundname>Timer.h</compoundname>
     <includes local="no">cuda_runtime.h</includes>
     <includes local="no">time.h</includes>
     <incdepgraph>
-      <node id="2">
+      <node id="423">
         <label>cuda_runtime.h</label>
       </node>
-      <node id="1">
+      <node id="424">
+        <label>time.h</label>
+      </node>
+      <node id="422">
         <label>faiss/gpu/utils/Timer.h</label>
         <link refid="Timer_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="423" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="424" relation="include">
         </childnode>
-      </node>
-      <node id="3">
-        <label>time.h</label>
       </node>
     </incdepgraph>
     <innerclass refid="classfaiss_1_1gpu_1_1KernelTimer" prot="public">faiss::gpu::KernelTimer</innerclass>
@@ -71,10 +71,10 @@
 <codeline lineno="40" refid="classfaiss_1_1gpu_1_1CpuTimer" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1CpuTimer" kindref="compound">CpuTimer</ref><sp/>{</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="42"><highlight class="comment"><sp/><sp/>///<sp/>Creates<sp/>and<sp/>starts<sp/>a<sp/>new<sp/>timer</highlight></codeline>
-<codeline lineno="43"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CpuTimer_1af2f8e832b4c5425e152834ae7aa2af49" kindref="member">CpuTimer</ref>();</highlight></codeline>
+<codeline lineno="43"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CpuTimer" kindref="compound">CpuTimer</ref>();</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="45"><highlight class="comment"><sp/><sp/>///<sp/>Returns<sp/>elapsed<sp/>time<sp/>in<sp/>milliseconds</highlight></codeline>
-<codeline lineno="46"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CpuTimer_1a4a2795debf10bc7eb904d62356e41f0d" kindref="member">elapsedMilliseconds</ref>();</highlight></codeline>
+<codeline lineno="46"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5" kindref="member">elapsedMilliseconds</ref>();</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"></highlight></codeline>
 <codeline lineno="48"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">timespec<sp/>start_;</highlight></codeline>

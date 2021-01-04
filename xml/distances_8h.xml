@@ -1,73 +1,73 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="distances_8h" kind="file" language="C++">
     <compoundname>distances.h</compoundname>
     <includes local="no">stdint.h</includes>
     <includes refid="Heap_8h" local="no">faiss/utils/Heap.h</includes>
     <includes local="no">faiss/impl/platform_macros.h</includes>
     <incdepgraph>
-      <node id="9">
-        <label>limits</label>
-      </node>
-      <node id="11">
-        <label>faiss/impl/platform_macros.h</label>
-      </node>
-      <node id="3">
-        <label>faiss/utils/Heap.h</label>
-        <link refid="Heap_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>stdint.h</label>
-      </node>
-      <node id="6">
-        <label>cmath</label>
-      </node>
-      <node id="7">
-        <label>cassert</label>
-      </node>
-      <node id="1">
+      <node id="1246">
         <label>faiss/utils/distances.h</label>
         <link refid="distances_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="1247" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="1248" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="1256" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="1254">
+        <label>limits</label>
+      </node>
+      <node id="1256">
+        <label>faiss/impl/platform_macros.h</label>
+      </node>
+      <node id="1247">
+        <label>stdint.h</label>
+      </node>
+      <node id="1251">
+        <label>cmath</label>
+      </node>
+      <node id="1252">
+        <label>cassert</label>
+      </node>
+      <node id="1253">
         <label>cstdio</label>
       </node>
-      <node id="4">
-        <label>climits</label>
+      <node id="1248">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="1249" relation="include">
+        </childnode>
+        <childnode refid="1250" relation="include">
+        </childnode>
+        <childnode refid="1251" relation="include">
+        </childnode>
+        <childnode refid="1252" relation="include">
+        </childnode>
+        <childnode refid="1253" relation="include">
+        </childnode>
+        <childnode refid="1247" relation="include">
+        </childnode>
+        <childnode refid="1254" relation="include">
+        </childnode>
+        <childnode refid="1255" relation="include">
+        </childnode>
       </node>
-      <node id="10">
+      <node id="1255">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="4" relation="include">
+        <childnode refid="1249" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="1251" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="1254" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="1249">
+        <label>climits</label>
+      </node>
+      <node id="1250">
         <label>cstring</label>
       </node>
     </incdepgraph>
@@ -99,7 +99,7 @@
 <codeline lineno="20"><highlight class="normal"></highlight></codeline>
 <codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment"><sp/>/*********************************************************</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/></highlight><highlight class="comment">/*********************************************************</highlight></codeline>
 <codeline lineno="24"><highlight class="comment"><sp/>*<sp/>Optimized<sp/>distance/norm/inner<sp/>prod<sp/>computations</highlight></codeline>
 <codeline lineno="25"><highlight class="comment"><sp/>*********************************************************/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight></codeline>

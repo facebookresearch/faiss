@@ -1,44 +1,44 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="IndexRefine_8h" kind="file" language="C++">
     <compoundname>IndexRefine.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <incdepgraph>
-      <node id="6">
+      <node id="958">
         <label>string</label>
       </node>
-      <node id="5">
+      <node id="957">
         <label>typeinfo</label>
       </node>
-      <node id="4">
+      <node id="956">
         <label>cstdio</label>
       </node>
-      <node id="7">
+      <node id="959">
         <label>sstream</label>
       </node>
-      <node id="2">
+      <node id="954">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="3" relation="include">
+        <childnode refid="955" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="956" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="957" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="958" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="1">
-        <label>faiss/IndexRefine.h</label>
-        <link refid="IndexRefine_8h"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="959" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="955">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+      </node>
+      <node id="953">
+        <label>faiss/IndexRefine.h</label>
+        <link refid="IndexRefine_8h"/>
+        <childnode refid="954" relation="include">
+        </childnode>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1IndexRefine" prot="public">faiss::IndexRefine</innerclass>
@@ -83,7 +83,7 @@
 <codeline lineno="32" refid="structfaiss_1_1IndexRefine_1a520e756ea6610d94edb3fe34c31869cc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexRefine_1a520e756ea6610d94edb3fe34c31869cc" kindref="member">k_factor</ref><sp/>=<sp/>1;</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="34"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>intitialize<sp/>from<sp/>empty<sp/>index</highlight></codeline>
-<codeline lineno="35"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexRefine" kindref="compound">IndexRefine</ref><sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<ref refid="structfaiss_1_1IndexRefine_1a37ee42fdfa98d629a09d23fb0916b972" kindref="member">base_index</ref>,<sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<ref refid="structfaiss_1_1IndexRefine_1a226cf986bc8653321a4a10e6f93e5e88" kindref="member">refine_index</ref>);</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexRefine" kindref="compound">IndexRefine</ref><sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*base_index,<sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*refine_index);</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexRefine" kindref="compound">IndexRefine</ref><sp/>();</highlight></codeline>
 <codeline lineno="38"><highlight class="normal"></highlight></codeline>
@@ -109,11 +109,11 @@
 <codeline lineno="58"><highlight class="comment"><sp/>*<sp/>index<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="59" refid="structfaiss_1_1IndexRefineFlat" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexRefineFlat" kindref="compound">IndexRefineFlat</ref>:<sp/><ref refid="structfaiss_1_1IndexRefine" kindref="compound">IndexRefine</ref><sp/>{</highlight></codeline>
 <codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexRefineFlat" kindref="compound">IndexRefineFlat</ref><sp/>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<ref refid="structfaiss_1_1IndexRefine_1a37ee42fdfa98d629a09d23fb0916b972" kindref="member">base_index</ref>);</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexRefineFlat" kindref="compound">IndexRefineFlat</ref>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<ref refid="structfaiss_1_1IndexRefine_1a37ee42fdfa98d629a09d23fb0916b972" kindref="member">base_index</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*xb);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexRefineFlat" kindref="compound">IndexRefineFlat</ref>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*base_index,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>*xb);</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"></highlight></codeline>
 <codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexRefineFlat" kindref="compound">IndexRefineFlat</ref>();</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"></highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexRefineFlat_1ad04444de1e2c26c463cc52f3c076dd41" kindref="member">search</ref>(</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexRefine_1a954fe37f8741fafda9a6aba740044dc4" kindref="member">search</ref>(</highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref><sp/>k,</highlight></codeline>
 <codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,<sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref>*<sp/>labels)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="68"><highlight class="normal"></highlight></codeline>
