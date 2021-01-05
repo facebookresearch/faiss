@@ -70,8 +70,6 @@ const IndexIVF * try_extract_index_ivf (const Index * index)
     } else if (auto *idmap2 =
         dynamic_cast<const IndexIDMap2 *>(index)) {
         index = idmap2->index;
-    } else {
-        return nullptr;
     }
 
     return dynamic_cast<const IndexIVF *>(index);
