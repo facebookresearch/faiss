@@ -383,7 +383,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
          * that are in common between the two
          ******************************************************/
 
-        // intialize + reorder a result heap
+        // initialize + reorder a result heap
 
         auto init_result = [&](float *simi, idx_t *idxi) {
             if (!do_heap_init) return;
@@ -417,7 +417,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
         };
 
         // single list scan using the current scanner (with query
-        // set porperly) and storing results in simi and idxi
+        // set properly) and storing results in simi and idxi
         auto scan_one_list = [&] (idx_t key, float coarse_dis_i,
                                   float *simi, idx_t *idxi) {
 

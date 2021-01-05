@@ -60,23 +60,21 @@ void check_compatible_for_merge (const Index * index0,
 
 const IndexIVF * try_extract_index_ivf (const Index * index)
 {
+    if(index == nullptr) return nullptr;
     if (auto *pt =
         dynamic_cast<const IndexPreTransform *>(index)) {
         index = pt->index;
-    }
-
-    if (auto *idmap =
+    } else if (auto *idmap =
         dynamic_cast<const IndexIDMap *>(index)) {
         index = idmap->index;
-    }
-    if (auto *idmap =
+    } else if (auto *idmap2 =
         dynamic_cast<const IndexIDMap2 *>(index)) {
-        index = idmap->index;
+        index = idmap2->index;
+    } else {
+        return nullptr;
     }
 
-    auto *ivf = dynamic_cast<const IndexIVF *>(index);
-
-    return ivf;
+    return dynamic_cast<const IndexIVF *>(index);
 }
 
 IndexIVF * try_extract_index_ivf (Index * index) {
