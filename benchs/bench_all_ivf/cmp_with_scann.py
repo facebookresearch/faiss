@@ -270,6 +270,8 @@ def faiss_eval_search(
           "by residual=", index.by_residual)
 
     print("adding a refine index")
+    flat_index = faiss.IndexFlat(index.d, index.metric_type)
+    flat_index.add(xb)
     index_refine = faiss.IndexRefineFlat(index, faiss.swig_ptr(xb))
 
     print("set single thread")

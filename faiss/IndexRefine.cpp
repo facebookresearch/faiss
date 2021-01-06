@@ -29,10 +29,12 @@ IndexRefine::IndexRefine (Index *base_index, Index *refine_index):
     refine_index (refine_index)
 {
     own_fields = own_refine_index = false;
-    FAISS_THROW_IF_NOT (base_index->d == refine_index->d);
-    FAISS_THROW_IF_NOT (base_index->metric_type == refine_index->metric_type);
-    is_trained = base_index->is_trained && refine_index->is_trained;
-    FAISS_THROW_IF_NOT (base_index->ntotal == refine_index->ntotal);
+    if (refine_index != nullptr) {
+        FAISS_THROW_IF_NOT (base_index->d == refine_index->d);
+        FAISS_THROW_IF_NOT (base_index->metric_type == refine_index->metric_type);
+        is_trained = base_index->is_trained && refine_index->is_trained;
+        FAISS_THROW_IF_NOT (base_index->ntotal == refine_index->ntotal);
+    } // other case is useful only to construct an IndexRefineFlat
     ntotal = base_index->ntotal;
 }
 
@@ -183,12 +185,13 @@ IndexRefineFlat::IndexRefineFlat (Index *base_index):
 
 
 IndexRefineFlat::IndexRefineFlat (Index *base_index, const float *xb):
-    IndexRefine (base_index, new IndexFlat(base_index->d, base_index->metric_type))
+    IndexRefine (base_index, nullptr)
 {
     is_trained = base_index->is_trained;
+    refine_index = new IndexFlat(base_index->d, base_index->metric_type);
     own_refine_index = true;
     refine_index->add (base_index->ntotal, xb);
-    ntotal = base_index->ntotal;
+
 }
 
 IndexRefineFlat::IndexRefineFlat():
