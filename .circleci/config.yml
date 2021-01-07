@@ -101,6 +101,20 @@ jobs:
             cd conda
             conda build faiss --python 3.7
 
+  build_windows_gpu:
+    machine:
+      resource_class: windows.gpu.nvidia.medium
+      image: windows-server-2019-nvidia:stable
+    steps:
+      - checkout
+      - run:
+          name: Build/test
+          command: |
+            conda install conda-build
+            conda install -c pytorch pytorch
+            cd conda
+            conda build faiss-gpu --python 3.7
+
   build_linux_gpu:
     machine:
       resource_class: gpu.nvidia.small
@@ -224,6 +238,10 @@ workflows:
           name: OSX
       - build_windows:
           name: Windows
+      - build_windows_gpu:
+          name: Windows GPU
+          requires:
+            - Windows
       - deploy_linux:
           name: Linux packages
           filters:
