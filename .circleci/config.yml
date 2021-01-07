@@ -108,6 +108,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install CUDA
+          command: |
+            CUDA_VERSION=10.1 ./.circleci/scripts/windows_cuda_install.sh
+      - run:
           name: Build/test
           command: |
             conda install conda-build

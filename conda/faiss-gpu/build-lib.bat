@@ -15,6 +15,8 @@ cmake -B _build ^
 -DFAISS_ENABLE_PYTHON=OFF ^
 -DBLA_VENDOR=Intel10_64_dyn ^
 .
+cat _build/CMakeFiles/CMakeOutput.log
+cat _build/CMakeFiles/CMakeError.log
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 cmake --build _build --config Release -j %CPU_COUNT%
