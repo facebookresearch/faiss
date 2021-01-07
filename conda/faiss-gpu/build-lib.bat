@@ -11,9 +11,9 @@ cmake -B _build ^
 -DBUILD_SHARED_LIBS=ON ^
 -DBUILD_TESTING=OFF ^
 -DFAISS_ENABLE_GPU=ON ^
+-DCMAKE_CUDA_ARCHITECTURES="%CUDA_ARCHS%" \
 -DFAISS_ENABLE_PYTHON=OFF ^
 -DBLA_VENDOR=Intel10_64_dyn ^
--DCMAKE_BUILD_TYPE=Release ^
 .
 if %errorlevel% neq 0 exit /b %errorlevel%
 

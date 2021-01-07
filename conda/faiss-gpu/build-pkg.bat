@@ -10,7 +10,6 @@ cmake -B _build_python_%PY_VER% ^
 -G "Visual Studio 16 2019" ^
 -DFAISS_ENABLE_GPU=ON ^
 -DPython_EXECUTABLE=%PYTHON% ^
--DCMAKE_BUILD_TYPE=Release ^
 faiss/python
 if %errorlevel% neq 0 exit /b %errorlevel%
 
