@@ -11,6 +11,7 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/Tensor.cuh>
 #include <faiss/gpu/utils/StaticUtils.h>
+#include <algorithm>
 #include <math_constants.h> // in CUDA SDK, for CUDART_NAN_F
 
 namespace faiss { namespace gpu {

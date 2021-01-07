@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <algorithm>
 
 #include <faiss/gpu/impl/IVFUtils.cuh>
 #include <faiss/gpu/utils/DeviceUtils.h>

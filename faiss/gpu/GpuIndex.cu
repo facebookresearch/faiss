@@ -12,6 +12,7 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
+#include <algorithm>
 #include <limits>
 #include <memory>
 
