@@ -113,7 +113,7 @@ jobs:
             conda install conda-build
             conda install -c pytorch pytorch
             cd conda
-            conda build faiss-gpu --python 3.7
+            conda build faiss-gpu --python 3.7 --variants '{ "cudatoolkit": "10.1" }'
 
   build_linux_gpu:
     machine:
