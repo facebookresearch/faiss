@@ -16,6 +16,8 @@
 #include <faiss/gpu/utils/WarpPackedBits.cuh>
 #include <faiss/gpu/utils/WarpShuffles.cuh>
 
+#include <algorithm>
+
 namespace faiss {
 namespace gpu {
 
