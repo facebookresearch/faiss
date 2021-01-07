@@ -240,8 +240,9 @@ workflows:
           name: Windows
       - build_windows_gpu:
           name: Windows GPU
-          requires:
-            - Windows
+          # FIXME: Re-enable this before merge.
+          # requires:
+          #   - Windows
       - deploy_linux:
           name: Linux packages
           filters:
