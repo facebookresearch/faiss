@@ -18,6 +18,7 @@
 #include "AutoTune_c.h"
 #include "GpuAutoTune_c.h"
 #include "StandardGpuResources_c.h"
+#include "DeviceUtils_c.h"
 
 #define FAISS_TRY(C)                                       \
     {                                                      \
@@ -34,6 +35,11 @@ double drand() {
 int main() {
     time_t seed = time(NULL);
     srand(seed);
+
+    int gpus = -1;
+    FAISS_TRY(faiss_get_num_gpus(&gpus));
+    printf("%d GPU devices are available\n", gpus);
+
     printf("Generating some data...\n");
     int d = 128;                           // dimension
     int nb = 100000;                       // database size
