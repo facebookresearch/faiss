@@ -10,6 +10,7 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/impl/FaissAssert.h>
+#include <algorithm>
 #include <sstream>
 
 namespace faiss { namespace gpu {
