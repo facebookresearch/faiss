@@ -49,9 +49,13 @@ knn = faiss.knn
 
 
 
-def range_search_gpu(xq, r2, index_gpu, xb):
-    """ GPU does not support range search, so we emulate it with
-    knn search + fallback to CPU index """
+def range_search_gpu(xq, r2, index_gpu, index_cpu):
+    """GPU does not support range search, so we emulate it with
+    knn search + fallback to CPU index.
+
+    The index_cpu can either be a CPU index or a numpy table that will
+    be used to construct a Flat index if needed.
+    """
     nq, d = xq.shape
     LOG.debug("GPU search %d queries" % nq)
     k = min(index_gpu.ntotal, 1024)
@@ -62,8 +66,11 @@ def range_search_gpu(xq, r2, index_gpu, xb):
         mask = D[:, k - 1] > r2
     if mask.sum() > 0:
         LOG.debug("CPU search remain %d" % mask.sum())
-        index_cpu = faiss.IndexFlat(d, index_gpu.metric_type)
-        index_cpu.add(xb)
+        if isinstance(index_cpu, np.ndarray):
+            # then it in fact an array that we have to make flat
+            xb = index_cpu
+            index_cpu = faiss.IndexFlat(d, index_gpu.metric_type)
+            index_cpu.add(xb)
         lim_remain, D_remain, I_remain = index_cpu.range_search(xq[mask], r2)
     LOG.debug("combine")
     D_res, I_res = [], []
@@ -99,7 +106,7 @@ def range_ground_truth(xq, db_iterator, threshold, metric_type=faiss.METRIC_L2,
     if ngpu == -1:
         ngpu = faiss.get_num_gpus()
     if ngpu:
-        LOG.info('running on %d GPUs' % faiss.get_num_gpus())
+        LOG.info('running on %d GPUs' % ngpu)
         co = faiss.GpuMultipleClonerOptions()
         co.shard = shard
         index_gpu = faiss.index_cpu_to_all_gpus(index, co=co, ngpu=ngpu)
@@ -140,7 +147,7 @@ def range_ground_truth(xq, db_iterator, threshold, metric_type=faiss.METRIC_L2,
     return lims, np.hstack(D), np.hstack(I)
 
 
-def threshold_radius(nres, dis, ids, thresh):
+def threshold_radius_nres(nres, dis, ids, thresh):
     """ select a set of results """
     mask = dis < thresh
     new_nres = np.zeros_like(nres)
@@ -152,9 +159,20 @@ def threshold_radius(nres, dis, ids, thresh):
     return new_nres, dis[mask], ids[mask]
 
 
+def threshold_radius(lims, dis, ids, thresh):
+    """ restrict range-search results to those below a given radius """
+    mask = dis < thresh
+    new_lims = np.zeros_like(lims)
+    n = len(lims) - 1
+    for i in range(n):
+        l0, l1 = lims[i], lims[i + 1]
+        new_lims[i + 1] = new_lims[i] + mask[l0:l1].sum()
+    return new_lims, dis[mask], ids[mask]
+
+
 def apply_maxres(res_batches, target_nres):
     """find radius that reduces number of results to target_nres, and
-    applies it in-place to the result batches"""
+    applies it in-place to the result batches used in range_search_max_results"""
     alldis = np.hstack([dis for _, dis, _ in res_batches])
     alldis.partition(target_nres)
     radius = alldis[target_nres]
@@ -163,25 +181,39 @@ def apply_maxres(res_batches, target_nres):
         radius = float(radius)
     else:
         radius = int(radius)
-    print('   setting radius to %s' % radius)
+    LOG.debug('   setting radius to %s' % radius)
     totres = 0
     for i, (nres, dis, ids) in enumerate(res_batches):
-        nres, dis, ids = threshold_radius(nres, dis, ids, radius)
+        nres, dis, ids = threshold_radius_nres(nres, dis, ids, radius)
         totres += len(dis)
         res_batches[i] = nres, dis, ids
-    print('   updated previous results, new nb results %d' % totres)
+    LOG.debug('   updated previous results, new nb results %d' % totres)
     return radius, totres
 
 
 def range_search_max_results(index, query_iterator, radius,
-                             max_results=None, min_results=None):
-    """ Performs a range search with many queries (given by an iterator)
+                             max_results=None, min_results=None,
+                             shard=False, ngpu=0):
+    """Performs a range search with many queries (given by an iterator)
     and adjusts the threshold on-the-fly so that the total results
-    table does not grow larger than max_results """
+    table does not grow larger than max_results.
+
+    If ngpu != 0, the function moves the index to this many GPUs to
+    speed up search.
+    """
 
     if max_results is not None:
         if min_results is None:
             min_results = int(0.8 * max_results)
+
+    if ngpu == -1:
+        ngpu = faiss.get_num_gpus()
+
+    if ngpu:
+        LOG.info('running on %d GPUs' % ngpu)
+        co = faiss.GpuMultipleClonerOptions()
+        co.shard = shard
+        index_gpu = faiss.index_cpu_to_all_gpus(index, co=co, ngpu=ngpu)
 
     t_start = time.time()
     t_search = t_post_process = 0
@@ -190,7 +222,11 @@ def range_search_max_results(index, query_iterator, radius,
 
     for xqi in query_iterator:
         t0 = time.time()
-        lims_i, Di, Ii = index.range_search(xqi, radius)
+        if ngpu > 0:
+            lims_i, Di, Ii = range_search_gpu(xqi, radius, index_gpu, index)
+        else:
+            lims_i, Di, Ii = index.range_search(xqi, radius)
+
         nres_i = lims_i[1:] - lims_i[:-1]
         raw_totres += len(Di)
         qtot += len(xqi)
