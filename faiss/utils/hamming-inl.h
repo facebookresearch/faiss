@@ -8,7 +8,7 @@
 namespace faiss {
 
 
-inline BitstringWriter::BitstringWriter(uint8_t *code, int code_size):
+inline BitstringWriter::BitstringWriter(uint8_t *code, size_t code_size):
     code (code), code_size (code_size), i(0)
 {
     memset (code, 0, code_size);
@@ -24,7 +24,7 @@ inline void BitstringWriter::write(uint64_t x, int nbit) {
         i += nbit;
         return;
     } else {
-        int j = i >> 3;
+        size_t j = i >> 3;
         code[j++] |= x << (i & 7);
         i += nbit;
         x >>= na;
@@ -36,7 +36,7 @@ inline void BitstringWriter::write(uint64_t x, int nbit) {
 }
 
 
-inline BitstringReader::BitstringReader(const uint8_t *code, int code_size):
+inline BitstringReader::BitstringReader(const uint8_t *code, size_t code_size):
     code (code), code_size (code_size), i(0)
 {}
 
@@ -52,7 +52,7 @@ inline uint64_t BitstringReader::read(int nbit) {
         return res;
     } else {
         int ofs = na;
-        int j = (i >> 3) + 1;
+        size_t j = (i >> 3) + 1;
         i += nbit;
         nbit -= na;
         while (nbit > 8) {

@@ -179,3 +179,19 @@ class TestKnn(unittest.TestCase):
         self.assertGreater(3, abs(nfound[(0, 7)] - nfound[(1, 7)]))
         self.assertGreater(nfound[(3, 7)], nfound[(1, 7)])
         self.assertGreater(nfound[(5, 7)], nfound[(3, 7)])
+
+
+
+# this is an expensive test, so we don't run it by default
+class TestLargeIndexWrite:   # (unittest.TestCase):
+
+    def test_write_580M(self):
+        dim = 8
+        nhash = 1
+        num_million = 580 # changing to 570 works
+        index1 = faiss.IndexBinaryMultiHash(dim, nhash, int(dim/nhash))
+        random_hash_codes = np.random.randint(0, 256, (
+            num_million * int(1e6), int(dim/8))).astype("uint8")
+        index1.add(random_hash_codes)
+        faiss.write_index_binary(index1, "/tmp/tmp.faiss")
+        index2 = faiss.read_index_binary("/tmp/tmp.faiss")
