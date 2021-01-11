@@ -374,7 +374,7 @@ bool canUseIndexType() {
 
 template <typename IndexType, typename T, typename... U>
 bool canUseIndexType(const T& arg, const U&... args) {
-  return arg.template canUseIndexType() &&
+  return arg.template canUseIndexType<IndexType>() &&
     canUseIndexType(args...);
 }
 

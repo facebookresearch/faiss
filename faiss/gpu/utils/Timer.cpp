@@ -9,6 +9,7 @@
 #include <faiss/gpu/utils/Timer.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/impl/FaissAssert.h>
+#include <chrono>
 
 namespace faiss { namespace gpu {
 
@@ -43,18 +44,16 @@ KernelTimer::elapsedMilliseconds() {
 }
 
 CpuTimer::CpuTimer() {
-  clock_gettime(CLOCK_REALTIME, &start_);
+  start_ = std::chrono::steady_clock::now();
 }
 
 float
 CpuTimer::elapsedMilliseconds() {
-  struct timespec end;
-  clock_gettime(CLOCK_REALTIME, &end);
+  auto end = std::chrono::steady_clock::now();
 
-  auto diffS = end.tv_sec - start_.tv_sec;
-  auto diffNs = end.tv_nsec - start_.tv_nsec;
+  std::chrono::duration<float, std::milli> duration = end - start_;
 
-  return 1000.0f * (float) diffS + ((float) diffNs) / 1000000.0f;
+  return duration.count();
 }
 
 } } // namespace

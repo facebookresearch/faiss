@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cuda_runtime.h>
-#include <time.h>
+#include <chrono>
 
 namespace faiss { namespace gpu {
 
@@ -46,7 +46,7 @@ class CpuTimer {
   float elapsedMilliseconds();
 
  private:
-  struct timespec start_;
+  std::chrono::time_point<std::chrono::steady_clock> start_;
 };
 
 } } // namespace

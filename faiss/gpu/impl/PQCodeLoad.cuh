@@ -49,7 +49,7 @@ inline __device__ unsigned int getByte(unsigned int v,
   return getBitfield(v, pos, width);
 }
 
-inline __device__ unsigned int getByte(unsigned long v,
+inline __device__ unsigned int getByte(uint64_t v,
                                        int pos,
                                        int width) {
   return getBitfield(v, pos, width);
