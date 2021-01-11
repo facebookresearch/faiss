@@ -189,7 +189,7 @@
 <codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i;<sp/></highlight><highlight class="comment">//<sp/>current<sp/>bit<sp/>offset</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="87"><highlight class="normal"></highlight></codeline>
 <codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>code_size<sp/>in<sp/>bytes</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1BitstringWriter" kindref="compound">BitstringWriter</ref>(uint8_t<sp/>*code,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1BitstringWriter" kindref="compound">BitstringWriter</ref>(uint8_t<sp/>*code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>code_size);</highlight></codeline>
 <codeline lineno="90"><highlight class="normal"></highlight></codeline>
 <codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>write<sp/>the<sp/>nbit<sp/>low<sp/>bits<sp/>of<sp/>x</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>write(uint64_t<sp/>x,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nbit);</highlight></codeline>
@@ -201,7 +201,7 @@
 <codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i;</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"></highlight></codeline>
 <codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>code_size<sp/>in<sp/>bytes</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1BitstringReader" kindref="compound">BitstringReader</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t<sp/>*code,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size);</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1BitstringReader" kindref="compound">BitstringReader</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t<sp/>*code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>code_size);</highlight></codeline>
 <codeline lineno="102"><highlight class="normal"></highlight></codeline>
 <codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>read<sp/>nbit<sp/>bits<sp/>from<sp/>the<sp/>code</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>read(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nbit);</highlight></codeline>

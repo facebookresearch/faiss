@@ -113,14 +113,14 @@
     <member refid="structfaiss_1_1BitstringReader_1a923b543ec505de62bc9a571027cb7e62" kind="variable"><name>code</name></member>
     <member refid="structfaiss_1_1BitstringReader_1aff839ea7bd1813717c2bc1feabab2773" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1BitstringReader_1ae0a26c23a5659205cd1221b7f9e379eb" kind="variable"><name>i</name></member>
-    <member refid="structfaiss_1_1BitstringReader_1a072091ffc6244d551489564317396b1f" kind="function"><name>BitstringReader</name></member>
+    <member refid="structfaiss_1_1BitstringReader_1ae4ce587dda2c41d64f445019781d9f86" kind="function"><name>BitstringReader</name></member>
     <member refid="structfaiss_1_1BitstringReader_1a9d9f24ba35ee13dbdc8a90fd74d76066" kind="function"><name>read</name></member>
   </compound>
   <compound refid="structfaiss_1_1BitstringWriter" kind="struct"><name>faiss::BitstringWriter</name>
     <member refid="structfaiss_1_1BitstringWriter_1af185df9f141d8e45c8d092f551de68a6" kind="variable"><name>code</name></member>
     <member refid="structfaiss_1_1BitstringWriter_1a869df71e23e6e611247580c22fe49ac1" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1BitstringWriter_1a1e1f882a539150a6bf0d06bf0f1dba89" kind="variable"><name>i</name></member>
-    <member refid="structfaiss_1_1BitstringWriter_1a2089ae88dda9878016af84f8518f4bf7" kind="function"><name>BitstringWriter</name></member>
+    <member refid="structfaiss_1_1BitstringWriter_1a56261b182f76de9984d586477b5649c6" kind="function"><name>BitstringWriter</name></member>
     <member refid="structfaiss_1_1BitstringWriter_1af8f527858ffdcc241a02408d2e791817" kind="function"><name>write</name></member>
   </compound>
   <compound refid="structfaiss_1_1BlockInvertedLists" kind="struct"><name>faiss::BlockInvertedLists</name>
