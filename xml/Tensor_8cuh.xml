@@ -383,7 +383,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>IndexType,<sp/>typename<sp/>T,<sp/>typename...<sp/>U&gt;</highlight></codeline>
 <codeline><highlight class="normal">bool<sp/>canUseIndexType(const<sp/>T&amp;<sp/>arg,<sp/>const<sp/>U&amp;...<sp/>args)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>arg.template<sp/>canUseIndexType()<sp/>&amp;&amp;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>return<sp/>arg.template<sp/>canUseIndexType&lt;IndexType&gt;()<sp/>&amp;&amp;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>canUseIndexType(args...);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>

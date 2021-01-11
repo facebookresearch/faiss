@@ -250,7 +250,7 @@
     <member refid="structfaiss_1_1CMin_1a37ab277ca36fca8d8681655da3b54b68" kind="function"><name>nextafter</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1CpuTimer" kind="class"><name>faiss::gpu::CpuTimer</name>
-    <member refid="classfaiss_1_1gpu_1_1CpuTimer_1a9ee5ff7a6ce21c7aa8251fe0e18f1521" kind="variable"><name>start_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1CpuTimer_1a6714256dcd528ad4c33d7c9eb6969ac4" kind="variable"><name>start_</name></member>
     <member refid="classfaiss_1_1gpu_1_1CpuTimer_1af2f8e832b4c5425e152834ae7aa2af49" kind="function"><name>CpuTimer</name></member>
     <member refid="classfaiss_1_1gpu_1_1CpuTimer_1a4a2795debf10bc7eb904d62356e41f0d" kind="function"><name>elapsedMilliseconds</name></member>
   </compound>

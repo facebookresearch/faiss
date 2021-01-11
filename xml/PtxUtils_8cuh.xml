@@ -36,8 +36,8 @@
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">__device__<sp/>__forceinline__</highlight></codeline>
-<codeline><highlight class="normal">unsigned<sp/>long<sp/>getBitfield(unsigned<sp/>long<sp/>val,<sp/>int<sp/>pos,<sp/>int<sp/>len)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>unsigned<sp/>long<sp/>ret;</highlight></codeline>
+<codeline><highlight class="normal">uint64_t<sp/>getBitfield(uint64_t<sp/>val,<sp/>int<sp/>pos,<sp/>int<sp/>len)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>uint64_t<sp/>ret;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/>asm(&quot;bfe.u64<sp/>%0,<sp/>%1,<sp/>%2,<sp/>%3;&quot;<sp/>:<sp/>&quot;=l&quot;(ret)<sp/>:<sp/>&quot;l&quot;(val),<sp/>&quot;r&quot;(pos),<sp/>&quot;r&quot;(len));</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/>return<sp/>ret;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>

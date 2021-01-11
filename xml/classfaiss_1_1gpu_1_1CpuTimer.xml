@@ -4,9 +4,9 @@
     <compoundname>faiss::gpu::CpuTimer</compoundname>
     <includes refid="Timer_8h" local="no">Timer.h</includes>
       <sectiondef kind="private-attrib">
-      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1CpuTimer_1a9ee5ff7a6ce21c7aa8251fe0e18f1521" prot="private" static="no" mutable="no">
-        <type>struct timespec</type>
-        <definition>struct timespec faiss::gpu::CpuTimer::start_</definition>
+      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1CpuTimer_1a6714256dcd528ad4c33d7c9eb6969ac4" prot="private" static="no" mutable="no">
+        <type>std::chrono::time_point&lt; std::chrono::steady_clock &gt;</type>
+        <definition>std::chrono::time_point&lt;std::chrono::steady_clock&gt; faiss::gpu::CpuTimer::start_</definition>
         <argsstring></argsstring>
         <name>start_</name>
         <briefdescription>
@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="46" column="1" bodyfile="faiss/gpu/utils/Timer.h" bodystart="49" bodyend="-1"/>
+        <location file="faiss/gpu/utils/Timer.h" line="49" column="1" bodyfile="faiss/gpu/utils/Timer.h" bodystart="49" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -54,7 +54,7 @@
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1CpuTimer_1af2f8e832b4c5425e152834ae7aa2af49" prot="public" virt="non-virtual"><scope>faiss::gpu::CpuTimer</scope><name>CpuTimer</name></member>
       <member refid="classfaiss_1_1gpu_1_1CpuTimer_1a4a2795debf10bc7eb904d62356e41f0d" prot="public" virt="non-virtual"><scope>faiss::gpu::CpuTimer</scope><name>elapsedMilliseconds</name></member>
-      <member refid="classfaiss_1_1gpu_1_1CpuTimer_1a9ee5ff7a6ce21c7aa8251fe0e18f1521" prot="private" virt="non-virtual"><scope>faiss::gpu::CpuTimer</scope><name>start_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1CpuTimer_1a6714256dcd528ad4c33d7c9eb6969ac4" prot="private" virt="non-virtual"><scope>faiss::gpu::CpuTimer</scope><name>start_</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>
