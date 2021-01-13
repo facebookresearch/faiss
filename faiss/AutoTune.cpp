@@ -450,7 +450,7 @@ void ParameterSpace::set_index_parameters (
          tok = strtok_r (nullptr, " ,", &ptr)) {
         char name[100];
         double val;
-        int ret = sscanf (tok, "%100[^=]=%lf", name, &val);
+        int ret = sscanf (tok, "%99[^=]=%lf", name, &val);
         FAISS_THROW_IF_NOT_FMT (
            ret == 2, "could not interpret parameters %s", tok);
         set_index_parameter (index, name, val);
