@@ -9,6 +9,8 @@
 #include <cstdlib>
 #include <random>
 
+#include <omp.h>
+
 #include <gtest/gtest.h>
 
 #include <faiss/IndexIVFPQ.h>
@@ -49,6 +51,22 @@ double eval_codec_error (long ncentroids, long m, const std::vector<float> &v)
 }  // namespace
 
 
+
+bool runs_on_sandcastle() {
+    // see discussion here https://fburl.com/qc5kpdo2
+    const char * sandcastle = getenv("SANDCASTLE");
+    if (sandcastle && !strcmp(sandcastle, "1")) {
+        return true;
+    }
+    const char * tw_job_user = getenv("TW_JOB_USER");
+    if (tw_job_user && !strcmp(tw_job_user, "sandcastle")) {
+        return true;
+    }
+
+    return false;
+}
+
+
 TEST(IVFPQ, codec) {
 
     std::vector <float> database (nb * d);
@@ -56,6 +74,11 @@ TEST(IVFPQ, codec) {
     std::uniform_real_distribution<> distrib;
     for (size_t i = 0; i < nb * d; i++) {
         database[i] = distrib(rng);
+    }
+
+    // limit number of threads when running on heavily parallelized test environment
+    if (runs_on_sandcastle()) {
+        omp_set_num_threads(2);
     }
 
     double err0 = eval_codec_error(16, 8, database);
