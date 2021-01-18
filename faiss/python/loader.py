@@ -9,32 +9,45 @@ import subprocess
 import logging
 
 
-def supports_AVX2():
+def instruction_set():
+    """
+    Returns a dictionary for supported instruction sets, see
+    https://github.com/numpy/numpy/blob/master/numpy/core/src/common/npy_cpu_features.h
+    for the list of features that this dictionary contains per architecture.
+
+    Example:
+    >>> instruction_set()  # for x86
+    {"SSE2": True, "AVX2": False, ...}
+    >>> instruction_set()  # for PPC
+    {"VSX": True, "VSX2": False, ...}
+    >>> instruction_set()  # for ARM
+    {"NEON": True, "ASIMD": False, ...}
+    """
     import numpy
     if LooseVersion(numpy.__version__) >= "1.19":
         # use private API as next-best thing until numpy/numpy#18058 is solved
         from numpy.core._multiarray_umath import __cpu_features__
-        return __cpu_features__["AVX2"]
+        return __cpu_features__
 
-    # platform-dependent fallback before numpy 1.19, no windows
+    # platform-dependent legacy fallback before numpy 1.19, no windows
     if platform.system() == "Darwin":
         if subprocess.check_output(["/usr/sbin/sysctl", "hw.optional.avx2_0"])[-1] == '1':
-            return True
+            return {"AVX2": True}
         else:
-            return False
+            return {"AVX2": False}
     elif platform.system() == "Linux":
         import numpy.distutils.cpuinfo
         if "avx2" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
-            return True
+            return {"AVX2": True}
         else:
-            return False
-    return False
+            return {"AVX2": False}
+    return {"AVX2": False}
 
 
 logger = logging.getLogger(__name__)
 
 try:
-    has_AVX2 = supports_AVX2()
+    has_AVX2 = instruction_set()["AVX2"]  # dict-values of instruction_set() are True or False
     if has_AVX2:
         logger.info("Loading faiss with AVX2 support.")
         from .swigfaiss_avx2 import *
