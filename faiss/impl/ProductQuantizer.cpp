@@ -186,7 +186,7 @@ ProductQuantizer::ProductQuantizer ()
 
 void ProductQuantizer::set_derived_values () {
     // quite a few derived values
-    FAISS_THROW_IF_NOT (d % M == 0);
+    FAISS_THROW_IF_NOT_MSG (d % M == 0, "The dimension of the vector (d) should be a multiple of the number of subquantizers (M)");
     dsub = d / M;
     code_size = (nbits * M + 7) / 8;
     ksub = 1 << nbits;
