@@ -22,6 +22,7 @@
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceUtils.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/StaticUtils.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;stdint.h&gt;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
@@ -86,7 +87,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT<sp/>totalSize)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/>for<sp/>(IndexT<sp/>i<sp/>=<sp/>blockIdx.x<sp/>*<sp/>blockDim.x<sp/>+<sp/>threadIdx.x;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>&lt;<sp/>totalSize;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>+=<sp/>gridDim.x<sp/>+<sp/>blockDim.x)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>+=<sp/>gridDim.x<sp/>*<sp/>blockDim.x)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>inputOffset<sp/>=<sp/>TensorInfoOffset&lt;T,<sp/>IndexT,<sp/>DimInput&gt;::get(input,<sp/>i);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>outputOffset<sp/>=<sp/>TensorInfoOffset&lt;T,<sp/>IndexT,<sp/>DimOutput&gt;::get(output,<sp/>i);</highlight></codeline>
 <codeline></codeline>
@@ -95,6 +96,22 @@
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>output.data[outputOffset]<sp/>=<sp/>input.data[inputOffset];</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Transpose<sp/>contiguous<sp/>t1<sp/>t2<sp/>i1<sp/>-&gt;<sp/>t2<sp/>t1<sp/>i1</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>IndexT&gt;</highlight></codeline>
+<codeline><highlight class="normal">__global__<sp/>void<sp/>transposeOuter(const<sp/>T*<sp/>in,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T*<sp/>out,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT<sp/>t1,<sp/>IndexT<sp/>t2,<sp/>IndexT<sp/>i1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>IndexT<sp/>gt1<sp/>=<sp/>blockIdx.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>IndexT<sp/>gt2<sp/>=<sp/>blockIdx.x;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>in<sp/>+=<sp/>i1<sp/>*<sp/>(gt1<sp/>*<sp/>t2<sp/>+<sp/>gt2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>out<sp/>+=<sp/>i1<sp/>*<sp/>(gt2<sp/>*<sp/>t1<sp/>+<sp/>gt1);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>for<sp/>(IndexT<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>i1;<sp/>i<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>out[i]<sp/>=<sp/>in[i];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
@@ -118,6 +135,12 @@
 <codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(dim1<sp/>!=<sp/>dim2);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(dim1<sp/>&lt;<sp/>Dim<sp/>&amp;&amp;<sp/>dim2<sp/>&lt;<sp/>Dim);</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//<sp/>Rearrange<sp/>dim1<sp/>and<sp/>dim2<sp/>in<sp/>increasing<sp/>order<sp/>in<sp/>order<sp/>to<sp/>see<sp/>if<sp/>this<sp/>is<sp/>an</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//<sp/>outer<sp/>dimension<sp/>transposition<sp/>(below)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>if<sp/>(dim1<sp/>&gt;<sp/>dim2)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::swap(dim1,<sp/>dim2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/>int<sp/>outSize[Dim];</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Dim;<sp/>++i)<sp/>{</highlight></codeline>
@@ -130,33 +153,66 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(out.getSize(i)<sp/>==<sp/>outSize[i]);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>size_t<sp/>totalSize<sp/>=<sp/>in.numElements();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>size_t<sp/>block<sp/>=<sp/>std::min((size_t)<sp/>getMaxThreadsCurrentDevice(),<sp/>totalSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>auto<sp/>maxThreads<sp/>=<sp/>getMaxThreadsCurrentDevice();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>auto<sp/>totalSize<sp/>=<sp/>in.numElements();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(totalSize<sp/>&lt;=<sp/>(size_t)<sp/>std::numeric_limits&lt;int&gt;::max())<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>div/mod<sp/>seems<sp/>faster<sp/>with<sp/>unsigned<sp/>types</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>inInfo<sp/>=<sp/>getTensorInfo&lt;T,<sp/>unsigned<sp/>int,<sp/>Dim&gt;(in);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>outInfo<sp/>=<sp/>getTensorInfo&lt;T,<sp/>unsigned<sp/>int,<sp/>Dim&gt;(out);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//<sp/>Is<sp/>this<sp/>a<sp/>transposition<sp/>of<sp/>the<sp/>two<sp/>outer<sp/>dimensions?</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>bool<sp/>isTransposeOuter<sp/>=<sp/>(Dim<sp/>&gt;=<sp/>3)<sp/>&amp;&amp;<sp/>(dim1<sp/>==<sp/>0)<sp/>&amp;&amp;<sp/>(dim2<sp/>==<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>if<sp/>(isTransposeOuter)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Outer<sp/>dimension<sp/>transposition<sp/>only<sp/>(there<sp/>is<sp/>a<sp/>contiguous<sp/>inner</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>dimension)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>size_t<sp/>innerSize<sp/>=<sp/>1;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>2;<sp/>i<sp/>&lt;<sp/>Dim;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>innerSize<sp/>*=<sp/>in.getSize(i);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::swap(inInfo.sizes[dim1],<sp/>inInfo.sizes[dim2]);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::swap(inInfo.strides[dim1],<sp/>inInfo.strides[dim2]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>grid<sp/>=<sp/>dim3(in.getSize(1),<sp/>in.getSize(0));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>block<sp/>=<sp/>(innerSize<sp/>&lt;<sp/>maxThreads)<sp/>?<sp/>innerSize<sp/>:<sp/>maxThreads;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>grid<sp/>=<sp/>std::min(utils::divUp(totalSize,<sp/>block),<sp/>(size_t)<sp/>4096);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>transposeAny&lt;T,<sp/>unsigned<sp/>int,<sp/>Dim,<sp/>-1&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;&lt;grid,<sp/>block,<sp/>0,<sp/>stream&gt;&gt;&gt;(inInfo,<sp/>outInfo,<sp/>totalSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(totalSize<sp/>&lt;=<sp/>(size_t)<sp/>std::numeric_limits&lt;int&gt;::max())<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>transposeOuter&lt;T,<sp/>int32_t&gt;&lt;&lt;&lt;grid,<sp/>block,<sp/>0,<sp/>stream&gt;&gt;&gt;(in.data(),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out.data(),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>in.getSize(0),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>in.getSize(1),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>innerSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>transposeOuter&lt;T,<sp/>int64_t&gt;&lt;&lt;&lt;grid,<sp/>block,<sp/>0,<sp/>stream&gt;&gt;&gt;(in.data(),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out.data(),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>in.getSize(0),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>in.getSize(1),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>innerSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>inInfo<sp/>=<sp/>getTensorInfo&lt;T,<sp/>unsigned<sp/>long,<sp/>Dim&gt;(in);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>outInfo<sp/>=<sp/>getTensorInfo&lt;T,<sp/>unsigned<sp/>long,<sp/>Dim&gt;(out);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>block<sp/>=<sp/>(totalSize<sp/>&lt;<sp/>maxThreads)<sp/>?<sp/>totalSize<sp/>:<sp/>maxThreads;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::swap(inInfo.sizes[dim1],<sp/>inInfo.sizes[dim2]);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::swap(inInfo.strides[dim1],<sp/>inInfo.strides[dim2]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Non-outer<sp/>transposition</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(totalSize<sp/>&lt;=<sp/>(size_t)<sp/>std::numeric_limits&lt;int&gt;::max())<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>General<sp/>transposition</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>div/mod<sp/>seems<sp/>faster<sp/>with<sp/>unsigned<sp/>types</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>inInfo<sp/>=<sp/>getTensorInfo&lt;T,<sp/>uint32_t,<sp/>Dim&gt;(in);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>outInfo<sp/>=<sp/>getTensorInfo&lt;T,<sp/>uint32_t,<sp/>Dim&gt;(out);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>grid<sp/>=<sp/>std::min(utils::divUp(totalSize,<sp/>block),<sp/>(size_t)<sp/>4096);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::swap(inInfo.sizes[dim1],<sp/>inInfo.sizes[dim2]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::swap(inInfo.strides[dim1],<sp/>inInfo.strides[dim2]);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>transposeAny&lt;T,<sp/>unsigned<sp/>long,<sp/>Dim,<sp/>-1&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;&lt;grid,<sp/>block,<sp/>0,<sp/>stream&gt;&gt;&gt;(inInfo,<sp/>outInfo,<sp/>totalSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>grid<sp/>=<sp/>std::min(utils::divUp(totalSize,<sp/>block),<sp/>(size_t)<sp/>4096);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>transposeAny&lt;T,<sp/>uint32_t,<sp/>Dim,<sp/>-1&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;&lt;grid,<sp/>block,<sp/>0,<sp/>stream&gt;&gt;&gt;(inInfo,<sp/>outInfo,<sp/>totalSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>inInfo<sp/>=<sp/>getTensorInfo&lt;T,<sp/>uint64_t,<sp/>Dim&gt;(in);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>outInfo<sp/>=<sp/>getTensorInfo&lt;T,<sp/>uint64_t,<sp/>Dim&gt;(out);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::swap(inInfo.sizes[dim1],<sp/>inInfo.sizes[dim2]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::swap(inInfo.strides[dim1],<sp/>inInfo.strides[dim2]);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>grid<sp/>=<sp/>std::min(utils::divUp(totalSize,<sp/>block),<sp/>(size_t)<sp/>4096);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>transposeAny&lt;T,<sp/>uint64_t,<sp/>Dim,<sp/>-1&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;&lt;grid,<sp/>block,<sp/>0,<sp/>stream&gt;&gt;&gt;(inInfo,<sp/>outInfo,<sp/>totalSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/>CUDA_TEST_ERROR();</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
