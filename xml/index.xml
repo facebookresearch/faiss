@@ -4032,10 +4032,13 @@
     <member refid="namespacefaiss_1af860acfd5b9adbb6a50d4b458d0df8b7" kind="function"><name>hamming</name></member>
     <member refid="namespacefaiss_1a1d40aec5723474516de576263cc03048" kind="function"><name>heap_pop</name></member>
     <member refid="namespacefaiss_1acbe85976d4f73309622f6b62c4d7af2b" kind="function"><name>heap_push</name></member>
+    <member refid="namespacefaiss_1ae2b2237197d94a5414eef24eb7b93700" kind="function"><name>heap_replace_top</name></member>
     <member refid="namespacefaiss_1a6007eab1211f86326246114757ee8c41" kind="function"><name>minheap_pop</name></member>
     <member refid="namespacefaiss_1a34d5f3d2e6e58005727989c3b2def7fe" kind="function"><name>minheap_push</name></member>
+    <member refid="namespacefaiss_1a56261d03ad06ddadde7f9c8161c48f88" kind="function"><name>minheap_replace_top</name></member>
     <member refid="namespacefaiss_1af1853d9d3e0c4c0d3ebf204c1f50c30c" kind="function"><name>maxheap_pop</name></member>
     <member refid="namespacefaiss_1a8c87f0f0d3f96ede4b6cd031592aaed1" kind="function"><name>maxheap_push</name></member>
+    <member refid="namespacefaiss_1a0060a794c9aa0f221dec2ed996f4cab6" kind="function"><name>maxheap_replace_top</name></member>
     <member refid="namespacefaiss_1a8617ea308e081aed83d4a084a9d31f70" kind="function"><name>heap_heapify</name></member>
     <member refid="namespacefaiss_1a74010fa2ad110134f8b7c5e3af54a98b" kind="function"><name>minheap_heapify</name></member>
     <member refid="namespacefaiss_1ad80324df320ebcc1e5deecbe4e8626d0" kind="function"><name>maxheap_heapify</name></member>

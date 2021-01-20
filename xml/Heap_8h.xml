@@ -313,356 +313,404 @@
 <codeline lineno="104"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="105"><highlight class="normal"></highlight></codeline>
 <codeline lineno="106"><highlight class="normal"></highlight></codeline>
-<codeline lineno="107"><highlight class="normal"></highlight></codeline>
-<codeline lineno="108"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Partial<sp/>instanciation<sp/>for<sp/>heaps<sp/>with<sp/>TI<sp/>=<sp/>int64_t<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="109"><highlight class="normal"></highlight></codeline>
-<codeline lineno="110"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="111"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>minheap_pop<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids)</highlight></codeline>
-<codeline lineno="112"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_pop&lt;CMin&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids);</highlight></codeline>
-<codeline lineno="114"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="115"><highlight class="normal"></highlight></codeline>
-<codeline lineno="116"><highlight class="normal"></highlight></codeline>
-<codeline lineno="117"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="118"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>minheap_push<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids,<sp/>T<sp/>val,<sp/>int64_t<sp/>ids)</highlight></codeline>
-<codeline lineno="119"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_push&lt;CMin&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>val,<sp/>ids);</highlight></codeline>
-<codeline lineno="121"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="122"><highlight class="normal"></highlight></codeline>
-<codeline lineno="123"><highlight class="normal"></highlight></codeline>
-<codeline lineno="124"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="125"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>maxheap_pop<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids)</highlight></codeline>
-<codeline lineno="126"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_pop&lt;CMax&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids);</highlight></codeline>
-<codeline lineno="128"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"></highlight></codeline>
-<codeline lineno="130"><highlight class="normal"></highlight></codeline>
-<codeline lineno="131"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="132"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>maxheap_push<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids,<sp/>T<sp/>val,<sp/>int64_t<sp/>ids)</highlight></codeline>
-<codeline lineno="133"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_push&lt;CMax&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>val,<sp/>ids);</highlight></codeline>
-<codeline lineno="135"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="136"><highlight class="normal"></highlight></codeline>
-<codeline lineno="137"><highlight class="normal"></highlight></codeline>
-<codeline lineno="138"><highlight class="normal"></highlight></codeline>
-<codeline lineno="139"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
-<codeline lineno="140"><highlight class="comment"><sp/>*<sp/>Heap<sp/>initialization</highlight></codeline>
-<codeline lineno="141"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="108"><highlight class="comment">/**<sp/>Replace<sp/>the<sp/>top<sp/>element<sp/>from<sp/>the<sp/>heap<sp/>defined<sp/>by<sp/>bh_val[0..k-1]<sp/>and</highlight></codeline>
+<codeline lineno="109"><highlight class="comment"><sp/>*<sp/>bh_ids[0..k-1].</highlight></codeline>
+<codeline lineno="110"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112" refid="namespacefaiss_1ae2b2237197d94a5414eef24eb7b93700" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ae2b2237197d94a5414eef24eb7b93700" kindref="member">heap_replace_top</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>bh_val,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>bh_ids,</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>ids)</highlight></codeline>
+<codeline lineno="115"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_val--;<sp/></highlight><highlight class="comment">/*<sp/>Use<sp/>1-based<sp/>indexing<sp/>for<sp/>easier<sp/>node-&gt;child<sp/>translation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids--;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>1,<sp/>i1,<sp/>i2;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(1)<sp/>{</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i1<sp/>=<sp/>i<sp/>&lt;&lt;<sp/>1;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i2<sp/>=<sp/>i1<sp/>+<sp/>1;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(i1<sp/>&gt;<sp/>k)</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(i2<sp/>==<sp/>k<sp/>+<sp/>1<sp/>||<sp/>C::cmp(bh_val[i1],<sp/>bh_val[i2]))<sp/>{</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(val,<sp/>bh_val[i1]))</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_val[i]<sp/>=<sp/>bh_val[i1];</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>bh_ids[i1];</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i1;</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(val,<sp/>bh_val[i2]))</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_val[i]<sp/>=<sp/>bh_val[i2];</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>bh_ids[i2];</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i2;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_val[i]<sp/>=<sp/>val;</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>ids;</highlight></codeline>
+<codeline lineno="141"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="142"><highlight class="normal"></highlight></codeline>
-<codeline lineno="143"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Initialization<sp/>phase<sp/>for<sp/>the<sp/>heap<sp/>(with<sp/>unconditionnal<sp/>pushes).</highlight></codeline>
-<codeline lineno="144"><highlight class="comment"><sp/>*<sp/>Store<sp/>k0<sp/>elements<sp/>in<sp/>a<sp/>heap<sp/>containing<sp/>up<sp/>to<sp/>k<sp/>values.<sp/>Note<sp/>that</highlight></codeline>
-<codeline lineno="145"><highlight class="comment"><sp/>*<sp/>(bh_val,<sp/>bh_ids)<sp/>can<sp/>be<sp/>the<sp/>same<sp/>as<sp/>(x,<sp/>ids)<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="146"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="147"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>heap_heapify<sp/>(</highlight></codeline>
-<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/><sp/>bh_val,</highlight></codeline>
-<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/><sp/>bh_ids,</highlight></codeline>
-<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>x<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>ids<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k0<sp/>=<sp/>0)</highlight></codeline>
-<codeline lineno="154"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(k0<sp/>&gt;<sp/>0)<sp/>assert<sp/>(x);</highlight></codeline>
-<codeline lineno="156"><highlight class="normal"></highlight></codeline>
-<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ids)<sp/>{</highlight></codeline>
-<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>k0;<sp/>i++)</highlight></codeline>
-<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap_push&lt;C&gt;<sp/>(i+1,<sp/>bh_val,<sp/>bh_ids,<sp/>x[i],<sp/>ids[i]);</highlight></codeline>
-<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>k0;<sp/>i++)</highlight></codeline>
-<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap_push&lt;C&gt;<sp/>(i+1,<sp/>bh_val,<sp/>bh_ids,<sp/>x[i],<sp/>i);</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="164"><highlight class="normal"></highlight></codeline>
-<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>k0;<sp/>i<sp/>&lt;<sp/>k;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_val[i]<sp/>=<sp/>C::neutral();</highlight></codeline>
-<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>-1;</highlight></codeline>
-<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="169"><highlight class="normal"></highlight></codeline>
-<codeline lineno="170"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="171"><highlight class="normal"></highlight></codeline>
-<codeline lineno="172"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="173"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>minheap_heapify<sp/>(</highlight></codeline>
-<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/><sp/>bh_val,</highlight></codeline>
-<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>*<sp/>bh_ids,</highlight></codeline>
-<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/>x<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t<sp/>*<sp/>ids<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k0<sp/>=<sp/>0)</highlight></codeline>
-<codeline lineno="179"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_heapify&lt;<sp/>CMin&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>x,<sp/>ids,<sp/>k0);</highlight></codeline>
-<codeline lineno="181"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="182"><highlight class="normal"></highlight></codeline>
-<codeline lineno="183"><highlight class="normal"></highlight></codeline>
-<codeline lineno="184"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="185"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>maxheap_heapify<sp/>(</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T<sp/>*<sp/>bh_val,</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>*<sp/>bh_ids,</highlight></codeline>
-<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/>x<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t<sp/>*<sp/>ids<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k0<sp/>=<sp/>0)</highlight></codeline>
-<codeline lineno="192"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_heapify&lt;<sp/>CMax&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>x,<sp/>ids,<sp/>k0);</highlight></codeline>
-<codeline lineno="194"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="195"><highlight class="normal"></highlight></codeline>
-<codeline lineno="196"><highlight class="normal"></highlight></codeline>
-<codeline lineno="197"><highlight class="normal"></highlight></codeline>
-<codeline lineno="198"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
-<codeline lineno="199"><highlight class="comment"><sp/>*<sp/>Add<sp/>n<sp/>elements<sp/>to<sp/>the<sp/>heap</highlight></codeline>
-<codeline lineno="200"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="201"><highlight class="normal"></highlight></codeline>
-<codeline lineno="202"><highlight class="normal"></highlight></codeline>
-<codeline lineno="203"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Add<sp/>some<sp/>elements<sp/>to<sp/>the<sp/>heap<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="204"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="205"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>heap_addn<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>bh_val,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>bh_ids,</highlight></codeline>
-<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>x,</highlight></codeline>
-<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>ids,</highlight></codeline>
-<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n)</highlight></codeline>
-<codeline lineno="210"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i;</highlight></codeline>
-<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ids)</highlight></codeline>
-<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp<sp/>(bh_val[0],<sp/>x[i]))<sp/>{</highlight></codeline>
-<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap_pop&lt;C&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids);</highlight></codeline>
-<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap_push&lt;C&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>x[i],<sp/>ids[i]);</highlight></codeline>
-<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp<sp/>(bh_val[0],<sp/>x[i]))<sp/>{</highlight></codeline>
-<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap_pop&lt;C&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids);</highlight></codeline>
-<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap_push&lt;C&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>x[i],<sp/>i);</highlight></codeline>
-<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="226"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="227"><highlight class="normal"></highlight></codeline>
-<codeline lineno="228"><highlight class="normal"></highlight></codeline>
-<codeline lineno="229"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Partial<sp/>instanciation<sp/>for<sp/>heaps<sp/>with<sp/>TI<sp/>=<sp/>int64_t<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="230"><highlight class="normal"></highlight></codeline>
-<codeline lineno="231"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="232"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>minheap_addn<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids,</highlight></codeline>
-<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/>x,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t<sp/>*<sp/>ids,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n)</highlight></codeline>
-<codeline lineno="234"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_addn&lt;CMin&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>x,<sp/>ids,<sp/>n);</highlight></codeline>
-<codeline lineno="236"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="237"><highlight class="normal"></highlight></codeline>
-<codeline lineno="238"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="239"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>maxheap_addn<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids,</highlight></codeline>
-<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/>x,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t<sp/>*<sp/>ids,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n)</highlight></codeline>
-<codeline lineno="241"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_addn&lt;CMax&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>x,<sp/>ids,<sp/>n);</highlight></codeline>
-<codeline lineno="243"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="244"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Partial<sp/>instanciation<sp/>for<sp/>heaps<sp/>with<sp/>TI<sp/>=<sp/>int64_t<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>minheap_pop<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids)</highlight></codeline>
+<codeline lineno="149"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_pop&lt;CMin&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids);</highlight></codeline>
+<codeline lineno="151"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>minheap_push<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids,<sp/>T<sp/>val,<sp/>int64_t<sp/>ids)</highlight></codeline>
+<codeline lineno="156"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_push&lt;CMin&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>val,<sp/>ids);</highlight></codeline>
+<codeline lineno="158"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>minheap_replace_top<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids,<sp/>T<sp/>val,<sp/>int64_t<sp/>ids)</highlight></codeline>
+<codeline lineno="163"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_replace_top&lt;CMin&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>val,<sp/>ids);</highlight></codeline>
+<codeline lineno="165"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>maxheap_pop<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids)</highlight></codeline>
+<codeline lineno="170"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_pop&lt;CMax&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids);</highlight></codeline>
+<codeline lineno="172"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>maxheap_push<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids,<sp/>T<sp/>val,<sp/>int64_t<sp/>ids)</highlight></codeline>
+<codeline lineno="177"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_push&lt;CMax&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>val,<sp/>ids);</highlight></codeline>
+<codeline lineno="179"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>maxheap_replace_top<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids,<sp/>T<sp/>val,<sp/>int64_t<sp/>ids)</highlight></codeline>
+<codeline lineno="184"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_replace_top&lt;CMax&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>val,<sp/>ids);</highlight></codeline>
+<codeline lineno="186"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
+<codeline lineno="190"><highlight class="comment"><sp/>*<sp/>Heap<sp/>initialization</highlight></codeline>
+<codeline lineno="191"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Initialization<sp/>phase<sp/>for<sp/>the<sp/>heap<sp/>(with<sp/>unconditionnal<sp/>pushes).</highlight></codeline>
+<codeline lineno="194"><highlight class="comment"><sp/>*<sp/>Store<sp/>k0<sp/>elements<sp/>in<sp/>a<sp/>heap<sp/>containing<sp/>up<sp/>to<sp/>k<sp/>values.<sp/>Note<sp/>that</highlight></codeline>
+<codeline lineno="195"><highlight class="comment"><sp/>*<sp/>(bh_val,<sp/>bh_ids)<sp/>can<sp/>be<sp/>the<sp/>same<sp/>as<sp/>(x,<sp/>ids)<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>heap_heapify<sp/>(</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/><sp/>bh_val,</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/><sp/>bh_ids,</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>x<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>ids<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k0<sp/>=<sp/>0)</highlight></codeline>
+<codeline lineno="204"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(k0<sp/>&gt;<sp/>0)<sp/>assert<sp/>(x);</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ids)<sp/>{</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>k0;<sp/>i++)</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap_push&lt;C&gt;<sp/>(i+1,<sp/>bh_val,<sp/>bh_ids,<sp/>x[i],<sp/>ids[i]);</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>k0;<sp/>i++)</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap_push&lt;C&gt;<sp/>(i+1,<sp/>bh_val,<sp/>bh_ids,<sp/>x[i],<sp/>i);</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>k0;<sp/>i<sp/>&lt;<sp/>k;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_val[i]<sp/>=<sp/>C::neutral();</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>-1;</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"></highlight></codeline>
+<codeline lineno="220"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"></highlight></codeline>
+<codeline lineno="222"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="223"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>minheap_heapify<sp/>(</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/><sp/>bh_val,</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>*<sp/>bh_ids,</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/>x<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t<sp/>*<sp/>ids<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k0<sp/>=<sp/>0)</highlight></codeline>
+<codeline lineno="229"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_heapify&lt;<sp/>CMin&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>x,<sp/>ids,<sp/>k0);</highlight></codeline>
+<codeline lineno="231"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight></codeline>
+<codeline lineno="233"><highlight class="normal"></highlight></codeline>
+<codeline lineno="234"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>maxheap_heapify<sp/>(</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T<sp/>*<sp/>bh_val,</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>*<sp/>bh_ids,</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/>x<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t<sp/>*<sp/>ids<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k0<sp/>=<sp/>0)</highlight></codeline>
+<codeline lineno="242"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_heapify&lt;<sp/>CMax&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>x,<sp/>ids,<sp/>k0);</highlight></codeline>
+<codeline lineno="244"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="245"><highlight class="normal"></highlight></codeline>
 <codeline lineno="246"><highlight class="normal"></highlight></codeline>
 <codeline lineno="247"><highlight class="normal"></highlight></codeline>
-<codeline lineno="248"><highlight class="normal"></highlight></codeline>
-<codeline lineno="249"><highlight class="normal"></highlight></codeline>
-<codeline lineno="250"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
-<codeline lineno="251"><highlight class="comment"><sp/>*<sp/>Heap<sp/>finalization<sp/>(reorder<sp/>elements)</highlight></codeline>
-<codeline lineno="252"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="253"><highlight class="normal"></highlight></codeline>
-<codeline lineno="254"><highlight class="normal"></highlight></codeline>
-<codeline lineno="255"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>function<sp/>maps<sp/>a<sp/>binary<sp/>heap<sp/>into<sp/>an<sp/>sorted<sp/>structure.</highlight></codeline>
-<codeline lineno="256"><highlight class="comment"><sp/><sp/><sp/>It<sp/>returns<sp/>the<sp/>number<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="257"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="258"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>heap_reorder<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>bh_val,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>bh_ids)</highlight></codeline>
-<codeline lineno="259"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i,<sp/>ii;</highlight></codeline>
-<codeline lineno="261"><highlight class="normal"></highlight></codeline>
-<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0,<sp/>ii<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>k;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>top<sp/>element<sp/>should<sp/>be<sp/>put<sp/>at<sp/>the<sp/>end<sp/>of<sp/>the<sp/>list<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[0];</highlight></codeline>
-<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal"><sp/>=<sp/>bh_ids[0];</highlight></codeline>
-<codeline lineno="266"><highlight class="normal"></highlight></codeline>
-<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>boundary<sp/>case:<sp/>we<sp/>will<sp/>over-ride<sp/>this<sp/>value<sp/>if<sp/>not<sp/>a<sp/>true<sp/>element<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap_pop&lt;C&gt;<sp/>(k-i,<sp/>bh_val,<sp/>bh_ids);</highlight></codeline>
-<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_val[k-ii-1]<sp/>=<sp/>val;</highlight></codeline>
-<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[k-ii-1]<sp/>=<sp/>id;</highlight></codeline>
-<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">id</highlight><highlight class="normal"><sp/>!=<sp/>-1)<sp/>ii++;</highlight></codeline>
-<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Count<sp/>the<sp/>number<sp/>of<sp/>elements<sp/>which<sp/>are<sp/>effectively<sp/>returned<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nel<sp/>=<sp/>ii;</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
+<codeline lineno="249"><highlight class="comment"><sp/>*<sp/>Add<sp/>n<sp/>elements<sp/>to<sp/>the<sp/>heap</highlight></codeline>
+<codeline lineno="250"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="251"><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal"></highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Add<sp/>some<sp/>elements<sp/>to<sp/>the<sp/>heap<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="255"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>heap_addn<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>bh_val,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>bh_ids,</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>x,</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>ids,</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n)</highlight></codeline>
+<codeline lineno="260"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i;</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ids)</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp<sp/>(bh_val[0],<sp/>x[i]))<sp/>{</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap_replace_top&lt;C&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>x[i],<sp/>ids[i]);</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp<sp/>(bh_val[0],<sp/>x[i]))<sp/>{</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap_replace_top&lt;C&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>x[i],<sp/>i);</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="274"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="275"><highlight class="normal"></highlight></codeline>
-<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/>memmove<sp/>(bh_val,<sp/>bh_val+k-ii,<sp/>ii<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(*bh_val));</highlight></codeline>
-<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/>memmove<sp/>(bh_ids,<sp/>bh_ids+k-ii,<sp/>ii<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(*bh_ids));</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"></highlight></codeline>
+<codeline lineno="277"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Partial<sp/>instanciation<sp/>for<sp/>heaps<sp/>with<sp/>TI<sp/>=<sp/>int64_t<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="278"><highlight class="normal"></highlight></codeline>
-<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(;<sp/>ii<sp/>&lt;<sp/>k;<sp/>ii++)<sp/>{</highlight></codeline>
-<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_val[ii]<sp/>=<sp/>C::neutral();</highlight></codeline>
-<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[ii]<sp/>=<sp/>-1;</highlight></codeline>
-<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>nel;</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="280"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>minheap_addn<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids,</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/>x,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t<sp/>*<sp/>ids,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n)</highlight></codeline>
+<codeline lineno="282"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_addn&lt;CMin&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>x,<sp/>ids,<sp/>n);</highlight></codeline>
 <codeline lineno="284"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="285"><highlight class="normal"></highlight></codeline>
 <codeline lineno="286"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="287"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>minheap_reorder<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids)</highlight></codeline>
-<codeline lineno="288"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>heap_reorder&lt;<sp/>CMin&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids);</highlight></codeline>
-<codeline lineno="290"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="291"><highlight class="normal"></highlight></codeline>
-<codeline lineno="292"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="293"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>maxheap_reorder<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids)</highlight></codeline>
-<codeline lineno="294"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>heap_reorder&lt;<sp/>CMax&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids);</highlight></codeline>
-<codeline lineno="296"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>maxheap_addn<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids,</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*<sp/>x,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t<sp/>*<sp/>ids,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n)</highlight></codeline>
+<codeline lineno="289"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/>heap_addn&lt;CMax&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids,<sp/>x,<sp/>ids,<sp/>n);</highlight></codeline>
+<codeline lineno="291"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"></highlight></codeline>
+<codeline lineno="293"><highlight class="normal"></highlight></codeline>
+<codeline lineno="294"><highlight class="normal"></highlight></codeline>
+<codeline lineno="295"><highlight class="normal"></highlight></codeline>
+<codeline lineno="296"><highlight class="normal"></highlight></codeline>
 <codeline lineno="297"><highlight class="normal"></highlight></codeline>
-<codeline lineno="298"><highlight class="normal"></highlight></codeline>
-<codeline lineno="299"><highlight class="normal"></highlight></codeline>
-<codeline lineno="300"><highlight class="normal"></highlight></codeline>
+<codeline lineno="298"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
+<codeline lineno="299"><highlight class="comment"><sp/>*<sp/>Heap<sp/>finalization<sp/>(reorder<sp/>elements)</highlight></codeline>
+<codeline lineno="300"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="301"><highlight class="normal"></highlight></codeline>
-<codeline lineno="302"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
-<codeline lineno="303"><highlight class="comment"><sp/>*<sp/>Operations<sp/>on<sp/>heap<sp/>arrays</highlight></codeline>
-<codeline lineno="304"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="305"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="306"><highlight class="comment">/**<sp/>a<sp/>template<sp/>structure<sp/>for<sp/>a<sp/>set<sp/>of<sp/>[min|max]-heaps<sp/>it<sp/>is<sp/>tailored</highlight></codeline>
-<codeline lineno="307"><highlight class="comment"><sp/>*<sp/>so<sp/>that<sp/>the<sp/>actual<sp/>data<sp/>of<sp/>the<sp/>heaps<sp/>can<sp/>just<sp/>live<sp/>in<sp/>compact</highlight></codeline>
-<codeline lineno="308"><highlight class="comment"><sp/>*<sp/>arrays.</highlight></codeline>
-<codeline lineno="309"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="310"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
-<codeline lineno="311" refid="structfaiss_1_1HeapArray" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref><sp/>{</highlight></codeline>
-<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>TI;</highlight></codeline>
-<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>T;</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"></highlight></codeline>
+<codeline lineno="303"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>function<sp/>maps<sp/>a<sp/>binary<sp/>heap<sp/>into<sp/>an<sp/>sorted<sp/>structure.</highlight></codeline>
+<codeline lineno="304"><highlight class="comment"><sp/><sp/><sp/>It<sp/>returns<sp/>the<sp/>number<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="305"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="306"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>heap_reorder<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>bh_val,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>bh_ids)</highlight></codeline>
+<codeline lineno="307"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i,<sp/>ii;</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"></highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0,<sp/>ii<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>k;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>top<sp/>element<sp/>should<sp/>be<sp/>put<sp/>at<sp/>the<sp/>end<sp/>of<sp/>the<sp/>list<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[0];</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal"><sp/>=<sp/>bh_ids[0];</highlight></codeline>
 <codeline lineno="314"><highlight class="normal"></highlight></codeline>
-<codeline lineno="315" refid="structfaiss_1_1HeapArray_1aad477a3907c3496159eaf4b375be4432" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1aad477a3907c3496159eaf4b375be4432" kindref="member">nh</ref>;<sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>heaps</highlight></codeline>
-<codeline lineno="316" refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>allocated<sp/>size<sp/>per<sp/>heap</highlight></codeline>
-<codeline lineno="317" refid="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TI<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" kindref="member">ids</ref>;<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>identifiers<sp/>(size<sp/>nh<sp/>*<sp/>k)</highlight></codeline>
-<codeline lineno="318" refid="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53" kindref="member">val</ref>;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>values<sp/>(distances<sp/>or<sp/>similarities),<sp/>size<sp/>nh<sp/>*<sp/>k</highlight></codeline>
-<codeline lineno="319"><highlight class="comment"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="320"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Return<sp/>the<sp/>list<sp/>of<sp/>values<sp/>for<sp/>a<sp/>heap</highlight></codeline>
-<codeline lineno="321" refid="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858" kindref="member">get_val</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>key)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>val<sp/>+<sp/>key<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;<sp/>}</highlight></codeline>
-<codeline lineno="322"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="323"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Correspponding<sp/>identifiers</highlight></codeline>
-<codeline lineno="324" refid="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TI<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49" kindref="member">get_ids</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>key)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ids<sp/>+<sp/>key<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;<sp/>}</highlight></codeline>
-<codeline lineno="325"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="326"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>prepare<sp/>all<sp/>the<sp/>heaps<sp/>before<sp/>adding</highlight></codeline>
-<codeline lineno="327"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a48afc496c73e982b8e10fde786628292" kindref="member">heapify</ref><sp/>();</highlight></codeline>
-<codeline lineno="328"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="329"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>add<sp/>nj<sp/>elements<sp/>to<sp/>heaps<sp/>i0:i0+ni,<sp/>with<sp/>sequential<sp/>ids</highlight></codeline>
-<codeline lineno="330"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
-<codeline lineno="331"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>nj<sp/><sp/><sp/><sp/>nb<sp/>of<sp/>elements<sp/>to<sp/>add<sp/>to<sp/>each<sp/>heap</highlight></codeline>
-<codeline lineno="332"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>vin<sp/><sp/><sp/>elements<sp/>to<sp/>add,<sp/>size<sp/>ni<sp/>*<sp/>nj</highlight></codeline>
-<codeline lineno="333"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>j0<sp/><sp/><sp/><sp/>add<sp/>this<sp/>to<sp/>the<sp/>ids<sp/>that<sp/>are<sp/>added</highlight></codeline>
-<codeline lineno="334"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>i0<sp/><sp/><sp/><sp/>first<sp/>heap<sp/>to<sp/>update</highlight></codeline>
-<codeline lineno="335"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>ni<sp/><sp/><sp/><sp/>nb<sp/>of<sp/>elements<sp/>to<sp/>update<sp/>(-1<sp/>=<sp/>use<sp/>nh)</highlight></codeline>
-<codeline lineno="336"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a293d8646fba26cfe726d529f3fb58923" kindref="member">addn</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nj,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*vin,<sp/>TI<sp/>j0<sp/>=<sp/>0,</highlight></codeline>
-<codeline lineno="338"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i0<sp/>=<sp/>0,<sp/>int64_t<sp/>ni<sp/>=<sp/>-1);</highlight></codeline>
-<codeline lineno="339"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="340"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>same<sp/>as<sp/>addn</highlight></codeline>
-<codeline lineno="341"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
-<codeline lineno="342"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>id_in<sp/><sp/><sp/><sp/><sp/>ids<sp/>of<sp/>the<sp/>elements<sp/>to<sp/>add,<sp/>size<sp/>ni<sp/>*<sp/>nj</highlight></codeline>
-<codeline lineno="343"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>id_stride<sp/>stride<sp/>for<sp/>id_in</highlight></codeline>
-<codeline lineno="344"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="345"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a75cbbd8f60dd00f0523e8515e5072d06" kindref="member">addn_with_ids</ref><sp/>(</highlight></codeline>
-<codeline lineno="346"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nj,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*vin,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TI<sp/>*id_in<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="347"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>id_stride<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i0<sp/>=<sp/>0,<sp/>int64_t<sp/>ni<sp/>=<sp/>-1);</highlight></codeline>
-<codeline lineno="348"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="349"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>reorder<sp/>all<sp/>the<sp/>heaps</highlight></codeline>
-<codeline lineno="350"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec" kindref="member">reorder</ref><sp/>();</highlight></codeline>
-<codeline lineno="351"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="352"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>this<sp/>is<sp/>not<sp/>really<sp/>a<sp/>heap<sp/>function.<sp/>It<sp/>just<sp/>finds<sp/>the<sp/>per-line</highlight></codeline>
-<codeline lineno="353"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/><sp/><sp/>extrema<sp/>of<sp/>each<sp/>line<sp/>of<sp/>array<sp/>D</highlight></codeline>
-<codeline lineno="354"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>vals_out<sp/><sp/><sp/><sp/>extreme<sp/>value<sp/>of<sp/>each<sp/>line<sp/>(size<sp/>nh,<sp/>or<sp/>NULL)</highlight></codeline>
-<codeline lineno="355"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>idx_out<sp/><sp/><sp/><sp/><sp/>index<sp/>of<sp/>extreme<sp/>value<sp/>(size<sp/>nh<sp/>or<sp/>NULL)</highlight></codeline>
-<codeline lineno="356"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="357"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b" kindref="member">per_line_extrema</ref><sp/>(T<sp/>*vals_out,<sp/>TI<sp/>*idx_out)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="358"><highlight class="normal"></highlight></codeline>
-<codeline lineno="359"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="360"><highlight class="normal"></highlight></codeline>
-<codeline lineno="361"><highlight class="normal"></highlight></codeline>
-<codeline lineno="362"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Define<sp/>useful<sp/>heaps<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="363"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMin&lt;float, int64_t&gt;</ref><sp/>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_minheap_array_t</ref>;</highlight></codeline>
-<codeline lineno="364"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMin&lt;int, int64_t&gt;</ref><sp/>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">int_minheap_array_t</ref>;</highlight></codeline>
-<codeline lineno="365"><highlight class="normal"></highlight></codeline>
-<codeline lineno="366"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMax&lt;float, int64_t&gt;</ref><sp/>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_maxheap_array_t</ref>;</highlight></codeline>
-<codeline lineno="367"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMax&lt;int, int64_t&gt;</ref><sp/>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">int_maxheap_array_t</ref>;</highlight></codeline>
-<codeline lineno="368"><highlight class="normal"></highlight></codeline>
-<codeline lineno="369"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>heap<sp/>templates<sp/>are<sp/>instanciated<sp/>explicitly<sp/>in<sp/>Heap.cpp</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="370"><highlight class="normal"></highlight></codeline>
-<codeline lineno="371"><highlight class="normal"></highlight></codeline>
-<codeline lineno="372"><highlight class="normal"></highlight></codeline>
-<codeline lineno="373"><highlight class="normal"></highlight></codeline>
-<codeline lineno="374"><highlight class="normal"></highlight></codeline>
-<codeline lineno="375"><highlight class="normal"></highlight></codeline>
-<codeline lineno="376"><highlight class="normal"></highlight></codeline>
-<codeline lineno="377"><highlight class="normal"></highlight></codeline>
-<codeline lineno="378"><highlight class="normal"></highlight></codeline>
-<codeline lineno="379"><highlight class="normal"></highlight></codeline>
-<codeline lineno="380"><highlight class="normal"></highlight></codeline>
-<codeline lineno="381"><highlight class="normal"></highlight></codeline>
-<codeline lineno="382"><highlight class="normal"></highlight></codeline>
-<codeline lineno="383"><highlight class="normal"></highlight></codeline>
-<codeline lineno="384"><highlight class="normal"></highlight></codeline>
-<codeline lineno="385"><highlight class="normal"></highlight></codeline>
-<codeline lineno="386"><highlight class="normal"></highlight></codeline>
-<codeline lineno="387"><highlight class="normal"></highlight></codeline>
-<codeline lineno="388"><highlight class="normal"></highlight></codeline>
-<codeline lineno="389"><highlight class="normal"></highlight><highlight class="comment">/*********************************************************************</highlight></codeline>
-<codeline lineno="390"><highlight class="comment"><sp/>*<sp/>Indirect<sp/>heaps:<sp/>instead<sp/>of<sp/>having</highlight></codeline>
-<codeline lineno="391"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="392"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node<sp/>i<sp/>=<sp/>(bh_ids[i],<sp/>bh_val[i]),</highlight></codeline>
-<codeline lineno="393"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="394"><highlight class="comment"><sp/>*<sp/>in<sp/>indirect<sp/>heaps,</highlight></codeline>
-<codeline lineno="395"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="396"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node<sp/>i<sp/>=<sp/>(bh_ids[i],<sp/>bh_val[bh_ids[i]]),</highlight></codeline>
-<codeline lineno="397"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="398"><highlight class="comment"><sp/>*********************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="399"><highlight class="normal"></highlight></codeline>
-<codeline lineno="400"><highlight class="normal"></highlight></codeline>
-<codeline lineno="401"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
-<codeline lineno="402"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="403"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>indirect_heap_pop<sp/>(</highlight></codeline>
-<codeline lineno="404"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="405"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>bh_val,</highlight></codeline>
-<codeline lineno="406"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>bh_ids)</highlight></codeline>
-<codeline lineno="407"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="408"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids--;<sp/></highlight><highlight class="comment">/*<sp/>Use<sp/>1-based<sp/>indexing<sp/>for<sp/>easier<sp/>node-&gt;child<sp/>translation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="409"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[bh_ids[<ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>]];</highlight></codeline>
-<codeline lineno="410"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>1;</highlight></codeline>
-<codeline lineno="411"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(1)<sp/>{</highlight></codeline>
-<codeline lineno="412"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i1<sp/>=<sp/>i<sp/>&lt;&lt;<sp/>1;</highlight></codeline>
-<codeline lineno="413"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i2<sp/>=<sp/>i1<sp/>+<sp/>1;</highlight></codeline>
-<codeline lineno="414"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(i1<sp/>&gt;<sp/>k)</highlight></codeline>
-<codeline lineno="415"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="416"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>id1<sp/>=<sp/>bh_ids[i1],<sp/>id2<sp/>=<sp/>bh_ids[i2];</highlight></codeline>
-<codeline lineno="417"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(i2<sp/>==<sp/>k<sp/>+<sp/>1<sp/>||<sp/>C::cmp(bh_val[id1],<sp/>bh_val[id2]))<sp/>{</highlight></codeline>
-<codeline lineno="418"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(val,<sp/>bh_val[id1]))</highlight></codeline>
-<codeline lineno="419"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="420"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id1;</highlight></codeline>
-<codeline lineno="421"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i1;</highlight></codeline>
-<codeline lineno="422"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="423"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(val,<sp/>bh_val[id2]))</highlight></codeline>
-<codeline lineno="424"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="425"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id2;</highlight></codeline>
-<codeline lineno="426"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i2;</highlight></codeline>
-<codeline lineno="427"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="428"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="429"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>bh_ids[<ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>];</highlight></codeline>
-<codeline lineno="430"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>boundary<sp/>case:<sp/>we<sp/>will<sp/>over-ride<sp/>this<sp/>value<sp/>if<sp/>not<sp/>a<sp/>true<sp/>element<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap_pop&lt;C&gt;<sp/>(k-i,<sp/>bh_val,<sp/>bh_ids);</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_val[k-ii-1]<sp/>=<sp/>val;</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[k-ii-1]<sp/>=<sp/>id;</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">id</highlight><highlight class="normal"><sp/>!=<sp/>-1)<sp/>ii++;</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Count<sp/>the<sp/>number<sp/>of<sp/>elements<sp/>which<sp/>are<sp/>effectively<sp/>returned<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nel<sp/>=<sp/>ii;</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"></highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/>memmove<sp/>(bh_val,<sp/>bh_val+k-ii,<sp/>ii<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(*bh_val));</highlight></codeline>
+<codeline lineno="325"><highlight class="normal"><sp/><sp/><sp/><sp/>memmove<sp/>(bh_ids,<sp/>bh_ids+k-ii,<sp/>ii<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(*bh_ids));</highlight></codeline>
+<codeline lineno="326"><highlight class="normal"></highlight></codeline>
+<codeline lineno="327"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(;<sp/>ii<sp/>&lt;<sp/>k;<sp/>ii++)<sp/>{</highlight></codeline>
+<codeline lineno="328"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_val[ii]<sp/>=<sp/>C::neutral();</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[ii]<sp/>=<sp/>-1;</highlight></codeline>
+<codeline lineno="330"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="331"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>nel;</highlight></codeline>
+<codeline lineno="332"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="333"><highlight class="normal"></highlight></codeline>
+<codeline lineno="334"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="335"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>minheap_reorder<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids)</highlight></codeline>
+<codeline lineno="336"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>heap_reorder&lt;<sp/>CMin&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids);</highlight></codeline>
+<codeline lineno="338"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"></highlight></codeline>
+<codeline lineno="340"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="341"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>maxheap_reorder<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T<sp/>*<sp/>bh_val,<sp/>int64_t<sp/>*<sp/>bh_ids)</highlight></codeline>
+<codeline lineno="342"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>heap_reorder&lt;<sp/>CMax&lt;T,<sp/>int64_t&gt;<sp/>&gt;<sp/>(k,<sp/>bh_val,<sp/>bh_ids);</highlight></codeline>
+<codeline lineno="344"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"></highlight></codeline>
+<codeline lineno="346"><highlight class="normal"></highlight></codeline>
+<codeline lineno="347"><highlight class="normal"></highlight></codeline>
+<codeline lineno="348"><highlight class="normal"></highlight></codeline>
+<codeline lineno="349"><highlight class="normal"></highlight></codeline>
+<codeline lineno="350"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************************</highlight></codeline>
+<codeline lineno="351"><highlight class="comment"><sp/>*<sp/>Operations<sp/>on<sp/>heap<sp/>arrays</highlight></codeline>
+<codeline lineno="352"><highlight class="comment"><sp/>*******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="353"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="354"><highlight class="comment">/**<sp/>a<sp/>template<sp/>structure<sp/>for<sp/>a<sp/>set<sp/>of<sp/>[min|max]-heaps<sp/>it<sp/>is<sp/>tailored</highlight></codeline>
+<codeline lineno="355"><highlight class="comment"><sp/>*<sp/>so<sp/>that<sp/>the<sp/>actual<sp/>data<sp/>of<sp/>the<sp/>heaps<sp/>can<sp/>just<sp/>live<sp/>in<sp/>compact</highlight></codeline>
+<codeline lineno="356"><highlight class="comment"><sp/>*<sp/>arrays.</highlight></codeline>
+<codeline lineno="357"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="358"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
+<codeline lineno="359" refid="structfaiss_1_1HeapArray" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref><sp/>{</highlight></codeline>
+<codeline lineno="360"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>TI;</highlight></codeline>
+<codeline lineno="361"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>T;</highlight></codeline>
+<codeline lineno="362"><highlight class="normal"></highlight></codeline>
+<codeline lineno="363" refid="structfaiss_1_1HeapArray_1aad477a3907c3496159eaf4b375be4432" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1aad477a3907c3496159eaf4b375be4432" kindref="member">nh</ref>;<sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>heaps</highlight></codeline>
+<codeline lineno="364" refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>allocated<sp/>size<sp/>per<sp/>heap</highlight></codeline>
+<codeline lineno="365" refid="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TI<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" kindref="member">ids</ref>;<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>identifiers<sp/>(size<sp/>nh<sp/>*<sp/>k)</highlight></codeline>
+<codeline lineno="366" refid="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53" kindref="member">val</ref>;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>values<sp/>(distances<sp/>or<sp/>similarities),<sp/>size<sp/>nh<sp/>*<sp/>k</highlight></codeline>
+<codeline lineno="367"><highlight class="comment"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="368"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Return<sp/>the<sp/>list<sp/>of<sp/>values<sp/>for<sp/>a<sp/>heap</highlight></codeline>
+<codeline lineno="369" refid="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858" kindref="member">get_val</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>key)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>val<sp/>+<sp/>key<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="370"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="371"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Correspponding<sp/>identifiers</highlight></codeline>
+<codeline lineno="372" refid="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TI<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49" kindref="member">get_ids</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>key)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ids<sp/>+<sp/>key<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="373"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="374"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>prepare<sp/>all<sp/>the<sp/>heaps<sp/>before<sp/>adding</highlight></codeline>
+<codeline lineno="375"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a48afc496c73e982b8e10fde786628292" kindref="member">heapify</ref><sp/>();</highlight></codeline>
+<codeline lineno="376"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="377"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>add<sp/>nj<sp/>elements<sp/>to<sp/>heaps<sp/>i0:i0+ni,<sp/>with<sp/>sequential<sp/>ids</highlight></codeline>
+<codeline lineno="378"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="379"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>nj<sp/><sp/><sp/><sp/>nb<sp/>of<sp/>elements<sp/>to<sp/>add<sp/>to<sp/>each<sp/>heap</highlight></codeline>
+<codeline lineno="380"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>vin<sp/><sp/><sp/>elements<sp/>to<sp/>add,<sp/>size<sp/>ni<sp/>*<sp/>nj</highlight></codeline>
+<codeline lineno="381"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>j0<sp/><sp/><sp/><sp/>add<sp/>this<sp/>to<sp/>the<sp/>ids<sp/>that<sp/>are<sp/>added</highlight></codeline>
+<codeline lineno="382"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>i0<sp/><sp/><sp/><sp/>first<sp/>heap<sp/>to<sp/>update</highlight></codeline>
+<codeline lineno="383"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>ni<sp/><sp/><sp/><sp/>nb<sp/>of<sp/>elements<sp/>to<sp/>update<sp/>(-1<sp/>=<sp/>use<sp/>nh)</highlight></codeline>
+<codeline lineno="384"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="385"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a293d8646fba26cfe726d529f3fb58923" kindref="member">addn</ref><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nj,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*vin,<sp/>TI<sp/>j0<sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="386"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i0<sp/>=<sp/>0,<sp/>int64_t<sp/>ni<sp/>=<sp/>-1);</highlight></codeline>
+<codeline lineno="387"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="388"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>same<sp/>as<sp/>addn</highlight></codeline>
+<codeline lineno="389"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="390"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>id_in<sp/><sp/><sp/><sp/><sp/>ids<sp/>of<sp/>the<sp/>elements<sp/>to<sp/>add,<sp/>size<sp/>ni<sp/>*<sp/>nj</highlight></codeline>
+<codeline lineno="391"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>id_stride<sp/>stride<sp/>for<sp/>id_in</highlight></codeline>
+<codeline lineno="392"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="393"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a75cbbd8f60dd00f0523e8515e5072d06" kindref="member">addn_with_ids</ref><sp/>(</highlight></codeline>
+<codeline lineno="394"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nj,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>*vin,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TI<sp/>*id_in<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="395"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>id_stride<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i0<sp/>=<sp/>0,<sp/>int64_t<sp/>ni<sp/>=<sp/>-1);</highlight></codeline>
+<codeline lineno="396"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="397"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>reorder<sp/>all<sp/>the<sp/>heaps</highlight></codeline>
+<codeline lineno="398"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec" kindref="member">reorder</ref><sp/>();</highlight></codeline>
+<codeline lineno="399"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="400"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>this<sp/>is<sp/>not<sp/>really<sp/>a<sp/>heap<sp/>function.<sp/>It<sp/>just<sp/>finds<sp/>the<sp/>per-line</highlight></codeline>
+<codeline lineno="401"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/><sp/><sp/>extrema<sp/>of<sp/>each<sp/>line<sp/>of<sp/>array<sp/>D</highlight></codeline>
+<codeline lineno="402"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>vals_out<sp/><sp/><sp/><sp/>extreme<sp/>value<sp/>of<sp/>each<sp/>line<sp/>(size<sp/>nh,<sp/>or<sp/>NULL)</highlight></codeline>
+<codeline lineno="403"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>idx_out<sp/><sp/><sp/><sp/><sp/>index<sp/>of<sp/>extreme<sp/>value<sp/>(size<sp/>nh<sp/>or<sp/>NULL)</highlight></codeline>
+<codeline lineno="404"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="405"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b" kindref="member">per_line_extrema</ref><sp/>(T<sp/>*vals_out,<sp/>TI<sp/>*idx_out)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="406"><highlight class="normal"></highlight></codeline>
+<codeline lineno="407"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="408"><highlight class="normal"></highlight></codeline>
+<codeline lineno="409"><highlight class="normal"></highlight></codeline>
+<codeline lineno="410"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Define<sp/>useful<sp/>heaps<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="411"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMin&lt;float, int64_t&gt;</ref><sp/>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_minheap_array_t</ref>;</highlight></codeline>
+<codeline lineno="412"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMin&lt;int, int64_t&gt;</ref><sp/>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">int_minheap_array_t</ref>;</highlight></codeline>
+<codeline lineno="413"><highlight class="normal"></highlight></codeline>
+<codeline lineno="414"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMax&lt;float, int64_t&gt;</ref><sp/>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_maxheap_array_t</ref>;</highlight></codeline>
+<codeline lineno="415"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMax&lt;int, int64_t&gt;</ref><sp/>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">int_maxheap_array_t</ref>;</highlight></codeline>
+<codeline lineno="416"><highlight class="normal"></highlight></codeline>
+<codeline lineno="417"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>heap<sp/>templates<sp/>are<sp/>instanciated<sp/>explicitly<sp/>in<sp/>Heap.cpp</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="418"><highlight class="normal"></highlight></codeline>
+<codeline lineno="419"><highlight class="normal"></highlight></codeline>
+<codeline lineno="420"><highlight class="normal"></highlight></codeline>
+<codeline lineno="421"><highlight class="normal"></highlight></codeline>
+<codeline lineno="422"><highlight class="normal"></highlight></codeline>
+<codeline lineno="423"><highlight class="normal"></highlight></codeline>
+<codeline lineno="424"><highlight class="normal"></highlight></codeline>
+<codeline lineno="425"><highlight class="normal"></highlight></codeline>
+<codeline lineno="426"><highlight class="normal"></highlight></codeline>
+<codeline lineno="427"><highlight class="normal"></highlight></codeline>
+<codeline lineno="428"><highlight class="normal"></highlight></codeline>
+<codeline lineno="429"><highlight class="normal"></highlight></codeline>
+<codeline lineno="430"><highlight class="normal"></highlight></codeline>
 <codeline lineno="431"><highlight class="normal"></highlight></codeline>
 <codeline lineno="432"><highlight class="normal"></highlight></codeline>
 <codeline lineno="433"><highlight class="normal"></highlight></codeline>
-<codeline lineno="434"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
-<codeline lineno="435"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="436"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>indirect_heap_push<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="437"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>bh_val,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>bh_ids,</highlight></codeline>
-<codeline lineno="438"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="439"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="440"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids--;<sp/></highlight><highlight class="comment">/*<sp/>Use<sp/>1-based<sp/>indexing<sp/>for<sp/>easier<sp/>node-&gt;child<sp/>translation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="441"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[id];</highlight></codeline>
-<codeline lineno="442"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;</highlight></codeline>
-<codeline lineno="443"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(i<sp/>&gt;<sp/>1)<sp/>{</highlight></codeline>
-<codeline lineno="444"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i_father<sp/>=<sp/>i<sp/>&gt;&gt;<sp/>1;</highlight></codeline>
-<codeline lineno="445"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!C::cmp<sp/>(val,<sp/>bh_val[bh_ids[i_father]]))</highlight></codeline>
-<codeline lineno="446"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="447"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>bh_ids[i_father];</highlight></codeline>
-<codeline lineno="448"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i_father;</highlight></codeline>
-<codeline lineno="449"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="450"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id;</highlight></codeline>
-<codeline lineno="451"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="452"><highlight class="normal"></highlight></codeline>
-<codeline lineno="453"><highlight class="normal"></highlight></codeline>
-<codeline lineno="454"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="455"><highlight class="normal"></highlight></codeline>
-<codeline lineno="456"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">/*<sp/>FAISS_Heap_h<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
+<codeline lineno="434"><highlight class="normal"></highlight></codeline>
+<codeline lineno="435"><highlight class="normal"></highlight></codeline>
+<codeline lineno="436"><highlight class="normal"></highlight></codeline>
+<codeline lineno="437"><highlight class="normal"></highlight><highlight class="comment">/*********************************************************************</highlight></codeline>
+<codeline lineno="438"><highlight class="comment"><sp/>*<sp/>Indirect<sp/>heaps:<sp/>instead<sp/>of<sp/>having</highlight></codeline>
+<codeline lineno="439"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="440"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node<sp/>i<sp/>=<sp/>(bh_ids[i],<sp/>bh_val[i]),</highlight></codeline>
+<codeline lineno="441"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="442"><highlight class="comment"><sp/>*<sp/>in<sp/>indirect<sp/>heaps,</highlight></codeline>
+<codeline lineno="443"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="444"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node<sp/>i<sp/>=<sp/>(bh_ids[i],<sp/>bh_val[bh_ids[i]]),</highlight></codeline>
+<codeline lineno="445"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="446"><highlight class="comment"><sp/>*********************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="447"><highlight class="normal"></highlight></codeline>
+<codeline lineno="448"><highlight class="normal"></highlight></codeline>
+<codeline lineno="449"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
+<codeline lineno="450"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="451"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>indirect_heap_pop<sp/>(</highlight></codeline>
+<codeline lineno="452"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="453"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>bh_val,</highlight></codeline>
+<codeline lineno="454"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>bh_ids)</highlight></codeline>
+<codeline lineno="455"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="456"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids--;<sp/></highlight><highlight class="comment">/*<sp/>Use<sp/>1-based<sp/>indexing<sp/>for<sp/>easier<sp/>node-&gt;child<sp/>translation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="457"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[bh_ids[<ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>]];</highlight></codeline>
+<codeline lineno="458"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="459"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(1)<sp/>{</highlight></codeline>
+<codeline lineno="460"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i1<sp/>=<sp/>i<sp/>&lt;&lt;<sp/>1;</highlight></codeline>
+<codeline lineno="461"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i2<sp/>=<sp/>i1<sp/>+<sp/>1;</highlight></codeline>
+<codeline lineno="462"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(i1<sp/>&gt;<sp/>k)</highlight></codeline>
+<codeline lineno="463"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="464"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>id1<sp/>=<sp/>bh_ids[i1],<sp/>id2<sp/>=<sp/>bh_ids[i2];</highlight></codeline>
+<codeline lineno="465"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(i2<sp/>==<sp/>k<sp/>+<sp/>1<sp/>||<sp/>C::cmp(bh_val[id1],<sp/>bh_val[id2]))<sp/>{</highlight></codeline>
+<codeline lineno="466"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(val,<sp/>bh_val[id1]))</highlight></codeline>
+<codeline lineno="467"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="468"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id1;</highlight></codeline>
+<codeline lineno="469"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i1;</highlight></codeline>
+<codeline lineno="470"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="471"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(val,<sp/>bh_val[id2]))</highlight></codeline>
+<codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id2;</highlight></codeline>
+<codeline lineno="474"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i2;</highlight></codeline>
+<codeline lineno="475"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="476"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="477"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>bh_ids[<ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>];</highlight></codeline>
+<codeline lineno="478"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="479"><highlight class="normal"></highlight></codeline>
+<codeline lineno="480"><highlight class="normal"></highlight></codeline>
+<codeline lineno="481"><highlight class="normal"></highlight></codeline>
+<codeline lineno="482"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
+<codeline lineno="483"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="484"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>indirect_heap_push<sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="485"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>*<sp/>bh_val,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>*<sp/>bh_ids,</highlight></codeline>
+<codeline lineno="486"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="487"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="488"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids--;<sp/></highlight><highlight class="comment">/*<sp/>Use<sp/>1-based<sp/>indexing<sp/>for<sp/>easier<sp/>node-&gt;child<sp/>translation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="489"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[id];</highlight></codeline>
+<codeline lineno="490"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;</highlight></codeline>
+<codeline lineno="491"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(i<sp/>&gt;<sp/>1)<sp/>{</highlight></codeline>
+<codeline lineno="492"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i_father<sp/>=<sp/>i<sp/>&gt;&gt;<sp/>1;</highlight></codeline>
+<codeline lineno="493"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!C::cmp<sp/>(val,<sp/>bh_val[bh_ids[i_father]]))</highlight></codeline>
+<codeline lineno="494"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="495"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>bh_ids[i_father];</highlight></codeline>
+<codeline lineno="496"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i_father;</highlight></codeline>
+<codeline lineno="497"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="498"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id;</highlight></codeline>
+<codeline lineno="499"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="500"><highlight class="normal"></highlight></codeline>
+<codeline lineno="501"><highlight class="normal"></highlight></codeline>
+<codeline lineno="502"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="503"><highlight class="normal"></highlight></codeline>
+<codeline lineno="504"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">/*<sp/>FAISS_Heap_h<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/Heap.h"/>
   </compounddef>
