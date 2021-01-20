@@ -183,7 +183,9 @@ class TestBinaryIVF(unittest.TestCase):
         index.add(self.xb)
         Divfflat, _ = index.search(self.xq, 10)
 
-        self.assertEqual((self.Dref == Divfflat).sum(), 4122)
+        # Some centroids are equidistant from the query points.
+        # So the answer will depend on the implementation of the heap.
+        self.assertGreater((self.Dref == Divfflat).sum(), 4100)
 
     def test_ivf_range(self):
         d = self.xq.shape[1] * 8

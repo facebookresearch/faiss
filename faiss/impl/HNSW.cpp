@@ -539,8 +539,7 @@ int HNSW::search_from_candidates(
     if (nres < k) {
       faiss::maxheap_push(++nres, D, I, d, v1);
     } else if (d < D[0]) {
-      faiss::maxheap_pop(nres--, D, I);
-      faiss::maxheap_push(++nres, D, I, d, v1);
+      faiss::maxheap_replace_top(nres, D, I, d, v1);
     }
     vt.set(v1);
   }
@@ -578,8 +577,7 @@ int HNSW::search_from_candidates(
       if (nres < k) {
         faiss::maxheap_push(++nres, D, I, d, v1);
       } else if (d < D[0]) {
-        faiss::maxheap_pop(nres--, D, I);
-        faiss::maxheap_push(++nres, D, I, d, v1);
+        faiss::maxheap_replace_top(nres, D, I, d, v1);
       }
       candidates.push(v1, d);
     }

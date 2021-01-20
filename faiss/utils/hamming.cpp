@@ -292,8 +292,7 @@ void hammings_knn_hc (
         for (j = j0; j < j1; j++, bs2_+= bytes_per_code) {
           dis = hc.hamming (bs2_);
           if (dis < bh_val_[0]) {
-            faiss::maxheap_pop<hamdis_t> (k, bh_val_, bh_ids_);
-            faiss::maxheap_push<hamdis_t> (k, bh_val_, bh_ids_, dis, j);
+            faiss::maxheap_replace_top<hamdis_t> (k, bh_val_, bh_ids_, dis, j);
           }
         }
       }
@@ -391,8 +390,7 @@ void hammings_knn_hc_1 (
         for (j = 0; j < n2; j++, bs2_+= nwords) {
             dis = popcount64 (bs1_ ^ *bs2_);
             if (dis < bh_val_0) {
-                faiss::maxheap_pop<hamdis_t> (k, bh_val_, bh_ids_);
-                faiss::maxheap_push<hamdis_t> (k, bh_val_, bh_ids_, dis, j);
+                faiss::maxheap_replace_top<hamdis_t> (k, bh_val_, bh_ids_, dis, j);
                 bh_val_0 = bh_val_[0];
             }
         }
@@ -818,8 +816,7 @@ static void hamming_dis_inner_loop (
         int ndiff = hc.hamming (cb);
         cb += code_size;
         if (ndiff < bh_val_[0]) {
-            maxheap_pop<hamdis_t> (k, bh_val_, bh_ids_);
-            maxheap_push<hamdis_t> (k, bh_val_, bh_ids_, ndiff, j);
+            maxheap_replace_top<hamdis_t> (k, bh_val_, bh_ids_, ndiff, j);
         }
     }
 }

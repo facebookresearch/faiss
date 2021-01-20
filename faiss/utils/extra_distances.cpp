@@ -176,8 +176,7 @@ void knn_extra_metrics_template (
                 float disij = vd (x_i, y_j);
 
                 if (disij < simi[0]) {
-                    maxheap_pop (k, simi, idxi);
-                    maxheap_push (k, simi, idxi, disij, j);
+                    maxheap_replace_top (k, simi, idxi, disij, j);
                 }
                 y_j += d;
             }

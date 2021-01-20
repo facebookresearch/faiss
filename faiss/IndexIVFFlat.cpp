@@ -159,9 +159,8 @@ struct IVFFlatScanner: InvertedListScanner {
             float dis = metric == METRIC_INNER_PRODUCT ?
                 fvec_inner_product (xi, yj, d) : fvec_L2sqr (xi, yj, d);
             if (C::cmp (simi[0], dis)) {
-                heap_pop<C> (k, simi, idxi);
                 int64_t id = store_pairs ? lo_build (list_no, j) : ids[j];
-                heap_push<C> (k, simi, idxi, dis, id);
+                heap_replace_top<C> (k, simi, idxi, dis, id);
                 nup++;
             }
         }

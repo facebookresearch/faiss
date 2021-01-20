@@ -828,9 +828,8 @@ struct KnnSearchResults {
 
     inline void add (idx_t j, float dis) {
         if (C::cmp (heap_sim[0], dis)) {
-            heap_pop<C> (k, heap_sim, heap_ids);
             idx_t id = ids ? ids[j] : lo_build (key, j);
-            heap_push<C> (k, heap_sim, heap_ids, dis, id);
+            heap_replace_top<C> (k, heap_sim, heap_ids, dis, id);
             nup++;
         }
     }
