@@ -13,7 +13,7 @@ DEBUGFLAG=-DNDEBUG # no debugging
 LIBNAME=libfaiss
 CLIBNAME=libgpufaiss_c
 LIBGPUCOBJ=GpuAutoTune_c.o GpuClonerOptions_c.o GpuIndex_c.o GpuResources_c.o \
-	StandardGpuResources_c.o
+	StandardGpuResources_c.o DeviceUtils_c.o
 LIBCOBJ=../libfaiss_c.a
 CFLAGS=-fPIC -m64 -Wno-sign-compare -g -O3 -Wall -Wextra
 CUDACFLAGS=-I$(CUDA_ROOT)/include
@@ -61,3 +61,6 @@ GpuResources_c.o: GpuResources_c.cpp GpuResources_c.h ../../gpu/GpuResources.h .
 
 StandardGpuResources_c.o: CXXFLAGS += -I.. -I../.. -I../../gpu -I../../impl $(CUDACFLAGS) $(DEBUGFLAG)
 StandardGpuResources_c.o: StandardGpuResources_c.cpp StandardGpuResources_c.h ../../gpu/StandardGpuResources.h ../macros_impl.h
+
+DeviceUtils_c.o: CXXFLAGS += -I.. -I../.. -I../../gpu -I../../impl $(CUDACFLAGS) $(DEBUGFLAG)
+DeviceUtils_c.o: DeviceUtils_c.cpp DeviceUtils_c.h ../../gpu/utils/DeviceUtils.h ../macros_impl.h
