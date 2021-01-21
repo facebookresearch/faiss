@@ -33,14 +33,10 @@ def instruction_set():
     if platform.system() == "Darwin":
         if subprocess.check_output(["/usr/sbin/sysctl", "hw.optional.avx2_0"])[-1] == '1':
             return {"AVX2": True}
-        else:
-            return {"AVX2": False}
     elif platform.system() == "Linux":
         import numpy.distutils.cpuinfo
         if "avx2" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
             return {"AVX2": True}
-        else:
-            return {"AVX2": False}
     return {"AVX2": False}
 
 
