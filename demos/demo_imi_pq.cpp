@@ -125,7 +125,7 @@ int main ()
                 elapsed() - t0, nb);
 
         std::vector <float> database (nb * d);
-        std::vector <long> ids (nb);
+        std::vector <faiss::Index::idx_t> ids (nb);
         for (size_t i = 0; i < nb; i++) {
             for (size_t j = 0; j < d; j++) {
                 database[i * d + j] = distrib(rng);
@@ -166,7 +166,7 @@ int main ()
     // - given a vector float *x, finding which k centroids are
     //   closest to it (ie to find the nearest neighbors) can be done with
     //
-    //   long *centroid_ids = new long[k];
+    //   faiss::Index::idx_t *centroid_ids = new faiss::Index::idx_t[k];
     //   float *distances = new float[k];
     //   index.quantizer->search (1, x, k, dis, centroids_ids);
     //
