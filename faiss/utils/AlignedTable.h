@@ -58,7 +58,7 @@ struct AlignedTableTightAlloc {
             new_ptr = nullptr;
         }
         numel = n;
-        free(ptr);
+        posix_memalign_free(ptr);
         ptr = new_ptr;
     }
 
