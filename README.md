@@ -4,7 +4,9 @@ Faiss is a library for efficient similarity search and clustering of dense vecto
 
 ## NEWS
 
-*NEW: version 1.6.5 (2020-11-20) pytorch / faiss interoperability improvements *
+*NEW: version 1.7.0 (2021-01-27) Support for in-register 4-bit PQ search*
+
+*NEW: version 1.6.5 (2020-11-20) pytorch / faiss interoperability improvements*
 
 *NEW: version 1.6.4 (2020-10-20) Move to cmake -- Windows support*
 
