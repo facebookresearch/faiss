@@ -430,7 +430,7 @@
       </memberdef>
       <memberdef kind="define" id="Index_8h_1a49e6fc2ba70a6aaa5043a657b0b53ca8" prot="public" static="no">
         <name>FAISS_VERSION_MINOR</name>
-        <initializer>6</initializer>
+        <initializer>7</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -441,7 +441,7 @@
       </memberdef>
       <memberdef kind="define" id="Index_8h_1abaa30cb4993a34c8e9b3b5057529613a" prot="public" static="no">
         <name>FAISS_VERSION_PATCH</name>
-        <initializer>5</initializer>
+        <initializer>0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -475,8 +475,8 @@
 <codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sstream&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_MAJOR<sp/>1</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_MINOR<sp/>6</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_PATCH<sp/>5</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_MINOR<sp/>7</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_PATCH<sp/>0</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="23"><highlight class="comment">/**</highlight></codeline>
 <codeline lineno="24"><highlight class="comment"><sp/>*<sp/>@namespace<sp/>faiss</highlight></codeline>
