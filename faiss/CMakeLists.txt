@@ -26,6 +26,7 @@ add_library(faiss
   IndexPQFastScan.cpp
   IndexIVFSpectralHash.cpp
   IndexLSH.cpp
+  IndexNNDescent.cpp
   IndexLattice.cpp
   IndexPQ.cpp
   IndexPreTransform.cpp
@@ -51,6 +52,7 @@ add_library(faiss
   impl/pq4_fast_scan_search_qbs.cpp
   impl/io.cpp
   impl/lattice_Zn.cpp
+  impl/NNDescent.cpp
   invlists/DirectMap.cpp
   invlists/InvertedLists.cpp
   invlists/BlockInvertedLists.cpp
@@ -90,6 +92,7 @@ set(FAISS_HEADERS
   IndexIVFSpectralHash.h
   IndexLSH.h
   IndexLattice.h
+  IndexNNDescent.h
   IndexPQ.h
   IndexPreTransform.h
   IndexReplicas.h
@@ -116,6 +119,7 @@ set(FAISS_HEADERS
   impl/io.h
   impl/io_macros.h
   impl/lattice_Zn.h
+  impl/NNDescent.h
   impl/pq4_fast_scan.h
   impl/simd_result_handlers.h
   impl/platform_macros.h
