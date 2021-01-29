@@ -43,7 +43,10 @@ def instruction_set():
 logger = logging.getLogger(__name__)
 
 try:
-    has_AVX2 = instruction_set()["AVX2"]  # dict-values of instruction_set() are True or False
+    instr_set = instruction_set()
+    # dict-values of instr_set are True or False, but do not have
+    # uniform keys across arches -> use fallback value of False
+    has_AVX2 = instr_set.get("AVX2", False)
     if has_AVX2:
         logger.info("Loading faiss with AVX2 support.")
         from .swigfaiss_avx2 import *
