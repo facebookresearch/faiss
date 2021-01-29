@@ -128,6 +128,28 @@ def handle_Index(the_class):
         self.train_c(n, swig_ptr(x))
 
     def replacement_search(self, x, k, D=None, I=None):
+        """Search k nearest neighbors of the set of vectors x in the index.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        k : int
+            Number of nearest neighbors.
+        D : array_like
+            Distance array to store the result 
+        I : array_like 
+            Labels array to store the results 
+
+        Returns
+        -------
+        D : array_like
+            Distances of the nearest neighbors, shape (n, k)
+        I : array_like
+            Labels of the nearest neighbors, shape (n, k)
+        """
+      
         n, d = x.shape
         assert d == self.d
 
@@ -941,9 +963,37 @@ def knn(xq, xb, k, distance_type=METRIC_L2):
 
 
 class Kmeans:
-    """shallow wrapper around the Clustering object. The important method
-    is train()."""
-
+    """Object that performs k-means clustering and manages the centroids.
+    The `Kmeans` class is essentially a wrapper around the C++ `Clustering` object.
+    
+    Parameters
+    ----------
+    d : int 
+       dimension of the vectors to cluster
+    k : int
+       number of clusters        
+    gpu: bool or int
+       False: don't use GPU
+       True: use all GPUs 
+       number: use this many GPUs
+    
+    Subsequent parameters are fields of the Clustring object. The most important are: 
+       
+    niter: int 
+       clustering iterations
+    nredo: int
+       redo clustering this many times and keep best
+    verbose: bool 
+    spherical: bool 
+       do we want normalized centroids?
+    int_centroids: bool
+       round centroids coordinates to integer
+    seed: int 
+       seed for the random number generator
+    
+    """
+  
+  
     def __init__(self, d, k, **kwargs):
         """d: input dimension, k: nb of centroids. Additional
          parameters are passed on the ClusteringParameters object,
@@ -963,6 +1013,31 @@ class Kmeans:
         self.centroids = None
 
     def train(self, x, weights=None, init_centroids=None):
+        """ Perform k-means clustering. 
+        On output of the function call: 
+        
+        - the centroids are in the centroids field of size (`k`, `d`). 
+        
+        - the objective value at each iteration is in the array obj (size `niter`)
+        
+        - detailed optimization statistics are in the array iteration_stats. 
+        
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, d), `dtype` must be float32 and n should 
+            be larger than the number of clusters `k`.
+        weights : array_like
+            weight associated to each vector, shape `n`
+        init_centroids : array_like
+            initial set of centroids, shape (n, d)
+            
+        Returns
+        -------
+        final_obj: float 
+            final optimization objective
+            
+        """
         n, d = x.shape
         assert d == self.d
         clus = Clustering(d, self.k, self.cp)
