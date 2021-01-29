@@ -9,18 +9,18 @@ import subprocess
 import logging
 
 
-def instruction_set():
+def supported_instruction_sets():
     """
     Returns the set of supported CPU features, see
     https://github.com/numpy/numpy/blob/master/numpy/core/src/common/npy_cpu_features.h
     for the list of features that this set may contain per architecture.
 
     Example:
-    >>> instruction_set()  # for x86
+    >>> supported_instruction_sets()  # for x86
     {"SSE2", "AVX2", ...}
-    >>> instruction_set()  # for PPC
+    >>> supported_instruction_sets()  # for PPC
     {"VSX", "VSX2", ...}
-    >>> instruction_set()  # for ARM
+    >>> supported_instruction_sets()  # for ARM
     {"NEON", "ASIMD", ...}
     """
     import numpy
@@ -46,7 +46,7 @@ def instruction_set():
 logger = logging.getLogger(__name__)
 
 try:
-    has_AVX2 = "AVX2" in instruction_set()
+    has_AVX2 = "AVX2" in supported_instruction_sets()
     if has_AVX2:
         logger.info("Loading faiss with AVX2 support.")
         from .swigfaiss_avx2 import *
