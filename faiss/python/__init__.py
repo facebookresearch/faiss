@@ -128,6 +128,28 @@ def handle_Index(the_class):
         self.train_c(n, swig_ptr(x))
 
     def replacement_search(self, x, k, D=None, I=None):
+        """Search k nearest neighbors of the set of vectors x in the index.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        k : int
+            Number of nearest neighbors.
+        D : array_like, optional
+            Distance array to store the result 
+        I : array_like, optional
+            Labels array to store the results 
+
+        Returns
+        -------
+        D : array_like
+            Distances of the nearest neighbors, shape (n, k)
+        I : array_like
+            Labels of the nearest neighbors, shape (n, k)
+        """
+      
         n, d = x.shape
         assert d == self.d
 
@@ -549,6 +571,36 @@ def index_cpu_to_gpus_list(index, co=None, gpus=None, ngpu=-1):
 
 # allows numpy ndarray usage with bfKnn
 def knn_gpu(res, xb, xq, k, D=None, I=None, metric=METRIC_L2):
+    """ 
+    Compute the k nearest neighbors of a vector on one GPU without constructing an index
+    
+
+    Parameters
+    ----------
+    res : StandardGpuResources
+        GPU resources to use during computation 
+    xq : array_like
+        Query vectors, shape (nq, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    xb : array_like
+        Database vectors, shape (nb, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    k : int
+        Number of nearest neighbors.
+    D : array_like, optional
+        Output array for distances of the nearest neighbors, shape (nq, k)
+    I : array_like, optional
+        Output array for the nearest neighbors, shape (nq, k)
+    distance_type : MetricType, optional
+        distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
+        
+    Returns
+    -------
+    D : array_like
+        Distances of the nearest neighbors, shape (nq, k)
+    I : array_like
+        Labels of the nearest neighbors, shape (nq, k)
+    """
     nq, d = xq.shape
     if xq.flags.c_contiguous:
         xq_row_major = True
@@ -904,7 +956,30 @@ def range_search_with_parameters(index, x, radius, params=None, output_stats=Fal
 ######################################################
 
 def knn(xq, xb, k, distance_type=METRIC_L2):
-    """ wrapper around the faiss knn functions without index """
+    """ 
+    Compute the k nearest neighbors of a vector without constructing an index
+    
+
+    Parameters
+    ----------
+    xq : array_like
+        Query vectors, shape (nq, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    xb : array_like
+        Database vectors, shape (nb, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    k : int
+        Number of nearest neighbors.
+    distance_type : MetricType, optional
+        distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
+        
+    Returns
+    -------
+    D : array_like
+        Distances of the nearest neighbors, shape (nq, k)
+    I : array_like
+        Labels of the nearest neighbors, shape (nq, k)
+    """
     nq, d = xq.shape
     nb, d2 = xb.shape
     assert d == d2
@@ -941,9 +1016,37 @@ def knn(xq, xb, k, distance_type=METRIC_L2):
 
 
 class Kmeans:
-    """shallow wrapper around the Clustering object. The important method
-    is train()."""
-
+    """Object that performs k-means clustering and manages the centroids.
+    The `Kmeans` class is essentially a wrapper around the C++ `Clustering` object.
+    
+    Parameters
+    ----------
+    d : int 
+       dimension of the vectors to cluster
+    k : int
+       number of clusters        
+    gpu: bool or int, optional
+       False: don't use GPU
+       True: use all GPUs 
+       number: use this many GPUs
+    
+    Subsequent parameters are fields of the Clustring object. The most important are: 
+       
+    niter: int, optional
+       clustering iterations
+    nredo: int, optional
+       redo clustering this many times and keep best
+    verbose: bool, optional
+    spherical: bool, optional
+       do we want normalized centroids?
+    int_centroids: bool, optional
+       round centroids coordinates to integer
+    seed: int, optional
+       seed for the random number generator
+    
+    """
+  
+  
     def __init__(self, d, k, **kwargs):
         """d: input dimension, k: nb of centroids. Additional
          parameters are passed on the ClusteringParameters object,
@@ -963,6 +1066,31 @@ class Kmeans:
         self.centroids = None
 
     def train(self, x, weights=None, init_centroids=None):
+        """ Perform k-means clustering. 
+        On output of the function call: 
+        
+        - the centroids are in the centroids field of size (`k`, `d`). 
+        
+        - the objective value at each iteration is in the array obj (size `niter`)
+        
+        - detailed optimization statistics are in the array iteration_stats. 
+        
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, d), `dtype` must be float32 and n should 
+            be larger than the number of clusters `k`.
+        weights : array_like
+            weight associated to each vector, shape `n`
+        init_centroids : array_like
+            initial set of centroids, shape (n, d)
+            
+        Returns
+        -------
+        final_obj: float 
+            final optimization objective
+            
+        """
         n, d = x.shape
         assert d == self.d
         clus = Clustering(d, self.k, self.cp)
