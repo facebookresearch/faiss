@@ -353,6 +353,14 @@
 </dd></dl>
 
 </div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Variables</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss20hamdis_tab_ham_bytesE">
+<span id="_CPPv3N5faiss20hamdis_tab_ham_bytesE"></span><span id="_CPPv2N5faiss20hamdis_tab_ham_bytesE"></span><span id="faiss::hamdis_tab_ham_bytes__uint8_tCA"></span><span class="target" id="namespacefaiss_1a7d8fdd4c4c76390042cc6916bdbe6b9e"></span><em class="property">const</em> uint8_t <code class="sig-name descname">hamdis_tab_ham_bytes</code>[256]<a class="headerlink" href="#_CPPv4N5faiss20hamdis_tab_ham_bytesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss20GenHammingComputer16E">
 <span id="_CPPv3N5faiss20GenHammingComputer16E"></span><span id="_CPPv2N5faiss20GenHammingComputer16E"></span><span id="faiss::GenHammingComputer16"></span><span class="target" id="structfaiss_1_1GenHammingComputer16"></span><em class="property">struct </em><code class="sig-name descname">GenHammingComputer16</code><a class="headerlink" href="#_CPPv4N5faiss20GenHammingComputer16E" title="Permalink to this definition">¶</a><br /></dt>
@@ -484,7 +492,7 @@
 
 <dl class="cpp struct">
 <dt id="_CPPv4I_iEN5faiss15HammingComputerE">
-<span id="_CPPv3I_iEN5faiss15HammingComputerE"></span><span id="_CPPv2I_iEN5faiss15HammingComputerE"></span>template&lt;int <code class="sig-name descname">CODE_SIZE</code>&gt;<br /><span class="target" id="structfaiss_1_1HammingComputer"></span><em class="property">struct </em><code class="sig-name descname">HammingComputer</code> : <em class="property">public</em> <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="#_CPPv4N5faiss17HammingComputerM8E" title="faiss::HammingComputerM8">HammingComputerM8</a><a class="headerlink" href="#_CPPv4I_iEN5faiss15HammingComputerE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I_iEN5faiss15HammingComputerE"></span><span id="_CPPv2I_iEN5faiss15HammingComputerE"></span>template&lt;int <code class="sig-name descname">CODE_SIZE</code>&gt;<br /><span class="target" id="structfaiss_1_1HammingComputer"></span><em class="property">struct </em><code class="sig-name descname">HammingComputer</code> : <em class="property">public</em> <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="#_CPPv4N5faiss22HammingComputerDefaultE" title="faiss::HammingComputerDefault">HammingComputerDefault</a><a class="headerlink" href="#_CPPv4I_iEN5faiss15HammingComputerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
@@ -494,25 +502,30 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15HammingComputer3setEPK7uint8_ti">
-<span id="_CPPv3N5faiss15HammingComputer3setEPK7uint8_ti"></span><span id="_CPPv2N5faiss15HammingComputer3setEPK7uint8_ti"></span><span id="faiss::HammingComputer::set__uint8_tCP.i"></span><span class="target" id="structfaiss_1_1HammingComputerM8_1a099424f3a1ea7d4da78a6e288376c9ac"></span>void <code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="property">const</em> uint8_t *<em>a8</em>, int <em>code_size</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15HammingComputer3setEPK7uint8_ti" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss15HammingComputer3setEPK7uint8_ti"></span><span id="_CPPv2N5faiss15HammingComputer3setEPK7uint8_ti"></span><span id="faiss::HammingComputer::set__uint8_tCP.i"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8"></span>void <code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="property">const</em> uint8_t *<em>a8</em>, int <em>code_size</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15HammingComputer3setEPK7uint8_ti" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss15HammingComputer7hammingEPK7uint8_t">
-<span id="_CPPv3NK5faiss15HammingComputer7hammingEPK7uint8_t"></span><span id="_CPPv2NK5faiss15HammingComputer7hammingEPK7uint8_t"></span><span id="faiss::HammingComputer::hamming__uint8_tCPC"></span><span class="target" id="structfaiss_1_1HammingComputerM8_1a10741cb74d89712eb3217f9740c7ac3b"></span>int <code class="sig-name descname">hamming</code><span class="sig-paren">(</span><em class="property">const</em> uint8_t *<em>b8</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss15HammingComputer7hammingEPK7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5faiss15HammingComputer7hammingEPK7uint8_t"></span><span id="_CPPv2NK5faiss15HammingComputer7hammingEPK7uint8_t"></span><span id="faiss::HammingComputer::hamming__uint8_tCPC"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1"></span>int <code class="sig-name descname">hamming</code><span class="sig-paren">(</span><em class="property">const</em> uint8_t *<em>b8</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5faiss15HammingComputer7hammingEPK7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss15HammingComputer1aE">
-<span id="_CPPv3N5faiss15HammingComputer1aE"></span><span id="_CPPv2N5faiss15HammingComputer1aE"></span><span id="faiss::HammingComputer::a__uint64_tCP"></span><span class="target" id="structfaiss_1_1HammingComputerM8_1a30add67883789b4dd0fd39969e01afb9"></span><em class="property">const</em> uint64_t *<code class="sig-name descname">a</code><a class="headerlink" href="#_CPPv4N5faiss15HammingComputer1aE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5faiss15HammingComputer2a8E">
+<span id="_CPPv3N5faiss15HammingComputer2a8E"></span><span id="_CPPv2N5faiss15HammingComputer2a8E"></span><span id="faiss::HammingComputer::a8__uint8_tCP"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1a5849e85860177e7334aa4273f74c8f32"></span><em class="property">const</em> uint8_t *<code class="sig-name descname">a8</code><a class="headerlink" href="#_CPPv4N5faiss15HammingComputer2a8E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss15HammingComputer1nE">
-<span id="_CPPv3N5faiss15HammingComputer1nE"></span><span id="_CPPv2N5faiss15HammingComputer1nE"></span><span id="faiss::HammingComputer::n__i"></span><span class="target" id="structfaiss_1_1HammingComputerM8_1a2c69b8d3ad9c8f0b08d4f18956ea76ac"></span>int <code class="sig-name descname">n</code><a class="headerlink" href="#_CPPv4N5faiss15HammingComputer1nE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5faiss15HammingComputer9quotient8E">
+<span id="_CPPv3N5faiss15HammingComputer9quotient8E"></span><span id="_CPPv2N5faiss15HammingComputer9quotient8E"></span><span id="faiss::HammingComputer::quotient8__i"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1a690b6cdae0726c448e6da15ca03817bd"></span>int <code class="sig-name descname">quotient8</code><a class="headerlink" href="#_CPPv4N5faiss15HammingComputer9quotient8E" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss15HammingComputer10remainder8E">
+<span id="_CPPv3N5faiss15HammingComputer10remainder8E"></span><span id="_CPPv2N5faiss15HammingComputer10remainder8E"></span><span id="faiss::HammingComputer::remainder8__i"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1a2653ab8230299d8f03f33c202a349850"></span>int <code class="sig-name descname">remainder8</code><a class="headerlink" href="#_CPPv4N5faiss15HammingComputer10remainder8E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -802,7 +815,8 @@
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss22HammingComputerDefaultE">
 <span id="_CPPv3N5faiss22HammingComputerDefaultE"></span><span id="_CPPv2N5faiss22HammingComputerDefaultE"></span><span id="faiss::HammingComputerDefault"></span><span class="target" id="structfaiss_1_1HammingComputerDefault"></span><em class="property">struct </em><code class="sig-name descname">HammingComputerDefault</code><a class="headerlink" href="#_CPPv4N5faiss22HammingComputerDefaultE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1HammingComputer.html#structfaiss_1_1HammingComputer"><span class="std std-ref">faiss::HammingComputer&lt; CODE_SIZE &gt;</span></a></p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss22HammingComputerDefault22HammingComputerDefaultEv">
@@ -828,13 +842,18 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss22HammingComputerDefault1aE">
-<span id="_CPPv3N5faiss22HammingComputerDefault1aE"></span><span id="_CPPv2N5faiss22HammingComputerDefault1aE"></span><span id="faiss::HammingComputerDefault::a__uint8_tCP"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1aa807b4b3b14c5573acf27bad2cdd4b58"></span><em class="property">const</em> uint8_t *<code class="sig-name descname">a</code><a class="headerlink" href="#_CPPv4N5faiss22HammingComputerDefault1aE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5faiss22HammingComputerDefault2a8E">
+<span id="_CPPv3N5faiss22HammingComputerDefault2a8E"></span><span id="_CPPv2N5faiss22HammingComputerDefault2a8E"></span><span id="faiss::HammingComputerDefault::a8__uint8_tCP"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1a5849e85860177e7334aa4273f74c8f32"></span><em class="property">const</em> uint8_t *<code class="sig-name descname">a8</code><a class="headerlink" href="#_CPPv4N5faiss22HammingComputerDefault2a8E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss22HammingComputerDefault1nE">
-<span id="_CPPv3N5faiss22HammingComputerDefault1nE"></span><span id="_CPPv2N5faiss22HammingComputerDefault1nE"></span><span id="faiss::HammingComputerDefault::n__i"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1a8a8acbafc83cfa495b52c00ed4155312"></span>int <code class="sig-name descname">n</code><a class="headerlink" href="#_CPPv4N5faiss22HammingComputerDefault1nE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5faiss22HammingComputerDefault9quotient8E">
+<span id="_CPPv3N5faiss22HammingComputerDefault9quotient8E"></span><span id="_CPPv2N5faiss22HammingComputerDefault9quotient8E"></span><span id="faiss::HammingComputerDefault::quotient8__i"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1a690b6cdae0726c448e6da15ca03817bd"></span>int <code class="sig-name descname">quotient8</code><a class="headerlink" href="#_CPPv4N5faiss22HammingComputerDefault9quotient8E" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss22HammingComputerDefault10remainder8E">
+<span id="_CPPv3N5faiss22HammingComputerDefault10remainder8E"></span><span id="_CPPv2N5faiss22HammingComputerDefault10remainder8E"></span><span id="faiss::HammingComputerDefault::remainder8__i"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1a2653ab8230299d8f03f33c202a349850"></span>int <code class="sig-name descname">remainder8</code><a class="headerlink" href="#_CPPv4N5faiss22HammingComputerDefault10remainder8E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -884,8 +903,7 @@
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss17HammingComputerM8E">
 <span id="_CPPv3N5faiss17HammingComputerM8E"></span><span id="_CPPv2N5faiss17HammingComputerM8E"></span><span id="faiss::HammingComputerM8"></span><span class="target" id="structfaiss_1_1HammingComputerM8"></span><em class="property">struct </em><code class="sig-name descname">HammingComputerM8</code><a class="headerlink" href="#_CPPv4N5faiss17HammingComputerM8E" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1HammingComputer.html#structfaiss_1_1HammingComputer"><span class="std std-ref">faiss::HammingComputer&lt; CODE_SIZE &gt;</span></a></p>
-<div class="breathe-sectiondef docutils container">
+<dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss17HammingComputerM817HammingComputerM8Ev">
