@@ -23,7 +23,6 @@ target_sources(faiss PRIVATE
   impl/BroadcastSum.cu
   impl/Distance.cu
   impl/FlatIndex.cu
-  impl/InterleavedCodes.cpp
   impl/IVFAppend.cu
   impl/IVFBase.cu
   impl/IVFFlat.cu
@@ -33,6 +32,7 @@ target_sources(faiss PRIVATE
   impl/IVFUtils.cu
   impl/IVFUtilsSelect1.cu
   impl/IVFUtilsSelect2.cu
+  impl/InterleavedCodes.cpp
   impl/L2Norm.cu
   impl/L2Select.cu
   impl/PQScanMultiPassPrecomputed.cu
@@ -105,11 +105,11 @@ set(FAISS_GPU_HEADERS
   GpuClonerOptions.h
   GpuDistance.h
   GpuFaissAssert.h
+  GpuIndex.h
   GpuIndexBinaryFlat.h
   GpuIndexFlat.h
-  GpuIndex.h
-  GpuIndexIVFFlat.h
   GpuIndexIVF.h
+  GpuIndexIVFFlat.h
   GpuIndexIVFPQ.h
   GpuIndexIVFScalarQuantizer.h
   GpuIndicesOptions.h
@@ -131,32 +131,31 @@ set(FAISS_GPU_HEADERS
   impl/IVFUtils.cuh
   impl/L2Norm.cuh
   impl/L2Select.cuh
-  impl/PQCodeDistances.cuh
   impl/PQCodeDistances-inl.cuh
+  impl/PQCodeDistances.cuh
   impl/PQCodeLoad.cuh
-  impl/PQScanMultiPassNoPrecomputed.cuh
   impl/PQScanMultiPassNoPrecomputed-inl.cuh
+  impl/PQScanMultiPassNoPrecomputed.cuh
   impl/PQScanMultiPassPrecomputed.cuh
   impl/RemapIndices.h
   impl/VectorResidual.cuh
-  utils/blockselect/BlockSelectImpl.cuh
   utils/BlockSelectKernel.cuh
   utils/Comparators.cuh
   utils/ConversionOperators.cuh
   utils/CopyUtils.cuh
   utils/DeviceDefs.cuh
-  utils/DeviceTensor.cuh
   utils/DeviceTensor-inl.cuh
+  utils/DeviceTensor.cuh
   utils/DeviceUtils.h
   utils/DeviceVector.cuh
   utils/Float16.cuh
-  utils/HostTensor.cuh
   utils/HostTensor-inl.cuh
+  utils/HostTensor.cuh
   utils/Limits.cuh
   utils/LoadStoreOperators.cuh
   utils/MathOperators.cuh
-  utils/MatrixMult.cuh
   utils/MatrixMult-inl.cuh
+  utils/MatrixMult.cuh
   utils/MergeNetworkBlock.cuh
   utils/MergeNetworkUtils.cuh
   utils/MergeNetworkWarp.cuh
@@ -168,14 +167,15 @@ set(FAISS_GPU_HEADERS
   utils/Select.cuh
   utils/StackDeviceMemory.h
   utils/StaticUtils.h
-  utils/Tensor.cuh
   utils/Tensor-inl.cuh
+  utils/Tensor.cuh
   utils/ThrustAllocator.cuh
   utils/Timer.h
   utils/Transpose.cuh
   utils/WarpSelectKernel.cuh
-  utils/warpselect/WarpSelectImpl.cuh
   utils/WarpShuffles.cuh
+  utils/blockselect/BlockSelectImpl.cuh
+  utils/warpselect/WarpSelectImpl.cuh
 )
 
 # Export FAISS_HEADERS variable to parent scope.
