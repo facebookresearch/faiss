@@ -127,8 +127,10 @@ set(FAISS_GPU_HEADERS
   impl/IVFBase.cuh
   impl/IVFFlat.cuh
   impl/IVFFlatScan.cuh
+  impl/IVFInterleaved.cuh
   impl/IVFPQ.cuh
   impl/IVFUtils.cuh
+  impl/InterleavedCodes.h
   impl/L2Norm.cuh
   impl/L2Select.cuh
   impl/PQCodeDistances-inl.cuh
@@ -172,6 +174,7 @@ set(FAISS_GPU_HEADERS
   utils/ThrustAllocator.cuh
   utils/Timer.h
   utils/Transpose.cuh
+  utils/WarpPackedBits.cuh
   utils/WarpSelectKernel.cuh
   utils/WarpShuffles.cuh
   utils/blockselect/BlockSelectImpl.cuh

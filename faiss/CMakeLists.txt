@@ -110,6 +110,7 @@ set(FAISS_HEADERS
   impl/PolysemousTraining.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
+  impl/ResultHandler.h
   impl/ScalarQuantizer.h
   impl/ThreadedIndex-inl.h
   impl/ThreadedIndex.h
