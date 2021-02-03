@@ -235,8 +235,8 @@ struct HammingComputerDefault {
     int hamming (const uint8_t *b8) const {
         int accu = 0;
 
-        auto a64 = reinterpret_cast<const uint64_t *>(a8);
-        auto b64 = reinterpret_cast<const uint64_t *>(b8);
+        const uint64_t *a64 = reinterpret_cast<const uint64_t *>(a8);
+        const uint64_t *b64 = reinterpret_cast<const uint64_t *>(b8);
         int i = 0, len = quotient8;
         switch (len & 7) {
             default:
@@ -253,8 +253,8 @@ struct HammingComputerDefault {
                 }
         }
         if (remainder8) {
-            auto a = a8 + 8 * quotient8;
-            auto b = b8 + 8 * quotient8;
+            const uint8_t *a = a8 + 8 * quotient8;
+            const uint8_t *b = b8 + 8 * quotient8;
             switch (remainder8) {
                 case 7: accu += hamdis_tab_ham_bytes[a[6] ^ b[6]];
                 case 6: accu += hamdis_tab_ham_bytes[a[5] ^ b[5]];
