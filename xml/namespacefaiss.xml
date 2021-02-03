@@ -568,6 +568,19 @@
         </inbodydescription>
         <location file="faiss/utils/distances.h" line="165" column="1"/>
       </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a7d8fdd4c4c76390042cc6916bdbe6b9e" prot="public" static="no" mutable="no">
+        <type>const uint8_t</type>
+        <definition>const uint8_t faiss::hamdis_tab_ham_bytes[256]</definition>
+        <argsstring>[256]</argsstring>
+        <name>hamdis_tab_ham_bytes</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="10" column="1"/>
+      </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a1c1a7ffff3e34768b027b77d0d9f96df" prot="public" static="no" mutable="no">
         <type>FAISS_API size_t</type>
         <definition>FAISS_API size_t faiss::hamming_batch_size</definition>
@@ -2389,7 +2402,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="313" column="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="347" column="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1acb4e4208ec84a403e02dba1b18b29840" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -2405,7 +2418,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="314" column="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="348" column="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a138c0f4e83d2e8b7fdd90ef895f8c6f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -2421,7 +2434,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="315" column="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="349" column="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a965aa1292a3957feaaec0f4ed1b54f85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -2437,7 +2450,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="316" column="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="350" column="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a69f0b96e4d8c59be97ee73aedafac0a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -2453,7 +2466,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="317" column="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="351" column="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aadcee2efcbb11d2c1d284589ba12b8ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -2469,7 +2482,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="318" column="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="352" column="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a69337e23232a204be3e1464713fee62d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -2486,7 +2499,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="329" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="329" bodyend="335"/>
+        <location file="faiss/utils/hamming-inl.h" line="363" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="363" bodyend="369"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a31146ebd95375313ae7c02ba06209ca0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2524,7 +2537,7 @@
 <para>generalized Hamming distances (= count number of code bytes that are the same) </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="411" column="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="445" column="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a0e10b0864a93653945dbd950b9fcdacf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

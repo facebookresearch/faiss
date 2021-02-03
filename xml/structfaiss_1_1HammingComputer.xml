@@ -2,7 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
   <compounddef id="structfaiss_1_1HammingComputer" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HammingComputer</compoundname>
-    <basecompoundref refid="structfaiss_1_1HammingComputerM8" prot="public" virt="non-virtual">faiss::HammingComputerM8</basecompoundref>
+    <basecompoundref refid="structfaiss_1_1HammingComputerDefault" prot="public" virt="non-virtual">faiss::HammingComputerDefault</basecompoundref>
     <templateparamlist>
       <param>
         <type>int</type>
@@ -30,11 +30,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="302" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="302" bodyend="303"/>
+        <location file="faiss/utils/hamming-inl.h" line="336" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="336" bodyend="337"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HammingComputerM8_1a099424f3a1ea7d4da78a6e288376c9ac" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>void faiss::HammingComputerM8::set</definition>
+        <definition>void faiss::HammingComputerDefault::set</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>set</name>
         <param>
@@ -51,11 +51,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="252" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="252" bodyend="256"/>
+        <location file="faiss/utils/hamming-inl.h" line="229" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="229" bodyend="233"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HammingComputerM8_1a10741cb74d89712eb3217f9740c7ac3b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
-        <definition>int faiss::HammingComputerM8::hamming</definition>
+        <definition>int faiss::HammingComputerDefault::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
         <param>
@@ -68,35 +68,48 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="258" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="258" bodyend="264"/>
+        <location file="faiss/utils/hamming-inl.h" line="235" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="235" bodyend="271"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1HammingComputerM8_1a30add67883789b4dd0fd39969e01afb9" prot="public" static="no" mutable="no">
-        <type>const uint64_t *</type>
-        <definition>const uint64_t* faiss::HammingComputerM8::a</definition>
+      <memberdef kind="variable" id="structfaiss_1_1HammingComputerDefault_1a5849e85860177e7334aa4273f74c8f32" prot="public" static="no" mutable="no">
+        <type>const uint8_t *</type>
+        <definition>const uint8_t* faiss::HammingComputerDefault::a8</definition>
         <argsstring></argsstring>
-        <name>a</name>
+        <name>a8</name>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="243" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="243" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="219" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="219" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1HammingComputerM8_1a2c69b8d3ad9c8f0b08d4f18956ea76ac" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1HammingComputerDefault_1a690b6cdae0726c448e6da15ca03817bd" prot="public" static="no" mutable="no">
         <type>int</type>
-        <definition>int faiss::HammingComputerM8::n</definition>
+        <definition>int faiss::HammingComputerDefault::quotient8</definition>
         <argsstring></argsstring>
-        <name>n</name>
+        <name>quotient8</name>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="244" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="244" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="220" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="220" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HammingComputerDefault_1a2653ab8230299d8f03f33c202a349850" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HammingComputerDefault::remainder8</definition>
+        <argsstring></argsstring>
+        <name>remainder8</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="221" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="221" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -105,8 +118,8 @@
     </detaileddescription>
     <inheritancegraph>
       <node id="254">
-        <label>faiss::HammingComputerM8</label>
-        <link refid="structfaiss_1_1HammingComputerM8"/>
+        <label>faiss::HammingComputerDefault</label>
+        <link refid="structfaiss_1_1HammingComputerDefault"/>
       </node>
       <node id="253">
         <label>faiss::HammingComputer&lt; CODE_SIZE &gt;</label>
@@ -117,8 +130,8 @@
     </inheritancegraph>
     <collaborationgraph>
       <node id="256">
-        <label>faiss::HammingComputerM8</label>
-        <link refid="structfaiss_1_1HammingComputerM8"/>
+        <label>faiss::HammingComputerDefault</label>
+        <link refid="structfaiss_1_1HammingComputerDefault"/>
       </node>
       <node id="255">
         <label>faiss::HammingComputer&lt; CODE_SIZE &gt;</label>
@@ -127,15 +140,16 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/utils/hamming-inl.h" line="301" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="301" bodyend="304"/>
+    <location file="faiss/utils/hamming-inl.h" line="335" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="335" bodyend="338"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1HammingComputerM8_1a30add67883789b4dd0fd39969e01afb9" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>a</name></member>
-      <member refid="structfaiss_1_1HammingComputerM8_1a10741cb74d89712eb3217f9740c7ac3b" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>hamming</name></member>
+      <member refid="structfaiss_1_1HammingComputerDefault_1a5849e85860177e7334aa4273f74c8f32" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>a8</name></member>
+      <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>hamming</name></member>
       <member refid="structfaiss_1_1HammingComputer_1a08ae6f504ef5b2bcd81df5f6ee45f8e4" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>HammingComputer</name></member>
-      <member refid="structfaiss_1_1HammingComputerM8_1ac1cf28a150bab758028e2b3885f509ec" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>HammingComputerM8</name></member>
-      <member refid="structfaiss_1_1HammingComputerM8_1a33e9ebd57c6621f0b777784962a85213" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>HammingComputerM8</name></member>
-      <member refid="structfaiss_1_1HammingComputerM8_1a2c69b8d3ad9c8f0b08d4f18956ea76ac" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>n</name></member>
-      <member refid="structfaiss_1_1HammingComputerM8_1a099424f3a1ea7d4da78a6e288376c9ac" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>set</name></member>
+      <member refid="structfaiss_1_1HammingComputerDefault_1a7de248d27a0a9bad5f551206f1f7e87c" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>HammingComputerDefault</name></member>
+      <member refid="structfaiss_1_1HammingComputerDefault_1a811e3f5db91b6a5f6eba731e514910fa" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>HammingComputerDefault</name></member>
+      <member refid="structfaiss_1_1HammingComputerDefault_1a690b6cdae0726c448e6da15ca03817bd" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>quotient8</name></member>
+      <member refid="structfaiss_1_1HammingComputerDefault_1a2653ab8230299d8f03f33c202a349850" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>remainder8</name></member>
+      <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>set</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

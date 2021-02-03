@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="370" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="370" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="404" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="404" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1GenHammingComputer32_1afed23c54eb8f2a5058ff7bb5da04001d" prot="public" static="no" mutable="no">
         <type>uint64_t</type>
@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="370" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="370" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="404" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="404" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1GenHammingComputer32_1ae6891a7ab323435d52965be30d8c1eab" prot="public" static="no" mutable="no">
         <type>uint64_t</type>
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="370" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="370" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="404" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="404" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1GenHammingComputer32_1a2f34e7a27e6c8296adde76b2d276ba8d" prot="public" static="no" mutable="no">
         <type>uint64_t</type>
@@ -53,7 +53,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="370" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="370" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="404" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="404" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -76,7 +76,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="372" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="372" bodyend="376"/>
+        <location file="faiss/utils/hamming-inl.h" line="406" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="406" bodyend="410"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1GenHammingComputer32_1afb7d108eadd7adb7ebbc8bc6a45f5f28" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -93,14 +93,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="378" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="378" bodyend="384"/>
+        <location file="faiss/utils/hamming-inl.h" line="412" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="412" bodyend="418"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/hamming-inl.h" line="369" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="369" bodyend="386"/>
+    <location file="faiss/utils/hamming-inl.h" line="403" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="403" bodyend="420"/>
     <listofallmembers>
       <member refid="structfaiss_1_1GenHammingComputer32_1a44491cd17453bcc3609ed0d1ea33697e" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputer32</scope><name>a0</name></member>
       <member refid="structfaiss_1_1GenHammingComputer32_1afed23c54eb8f2a5058ff7bb5da04001d" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputer32</scope><name>a1</name></member>

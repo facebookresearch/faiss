@@ -995,10 +995,11 @@
   </compound>
   <compound refid="structfaiss_1_1HammingComputer" kind="struct"><name>faiss::HammingComputer</name>
     <member refid="structfaiss_1_1HammingComputer_1a08ae6f504ef5b2bcd81df5f6ee45f8e4" kind="function"><name>HammingComputer</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a099424f3a1ea7d4da78a6e288376c9ac" kind="function"><name>set</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a10741cb74d89712eb3217f9740c7ac3b" kind="function"><name>hamming</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a30add67883789b4dd0fd39969e01afb9" kind="variable"><name>a</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a2c69b8d3ad9c8f0b08d4f18956ea76ac" kind="variable"><name>n</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a5849e85860177e7334aa4273f74c8f32" kind="variable"><name>a8</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a690b6cdae0726c448e6da15ca03817bd" kind="variable"><name>quotient8</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a2653ab8230299d8f03f33c202a349850" kind="variable"><name>remainder8</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer16" kind="struct"><name>faiss::HammingComputer16</name>
     <member refid="structfaiss_1_1HammingComputer16_1ac4340a237b6cf38bad084fe520ce4f38" kind="variable"><name>a0</name></member>
@@ -1056,8 +1057,9 @@
     <member refid="structfaiss_1_1HammingComputer8_1a1725426ae8afcc13132cea6b49e13058" kind="function"><name>hamming</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputerDefault" kind="struct"><name>faiss::HammingComputerDefault</name>
-    <member refid="structfaiss_1_1HammingComputerDefault_1aa807b4b3b14c5573acf27bad2cdd4b58" kind="variable"><name>a</name></member>
-    <member refid="structfaiss_1_1HammingComputerDefault_1a8a8acbafc83cfa495b52c00ed4155312" kind="variable"><name>n</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a5849e85860177e7334aa4273f74c8f32" kind="variable"><name>a8</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a690b6cdae0726c448e6da15ca03817bd" kind="variable"><name>quotient8</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a2653ab8230299d8f03f33c202a349850" kind="variable"><name>remainder8</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a7de248d27a0a9bad5f551206f1f7e87c" kind="function"><name>HammingComputerDefault</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a811e3f5db91b6a5f6eba731e514910fa" kind="function"><name>HammingComputerDefault</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
@@ -3950,6 +3952,7 @@
     <member refid="namespacefaiss_1a70eb5be4a6af3b9d948bcb8f949a4e9f" kind="variable"><name>distance_compute_blas_query_bs</name></member>
     <member refid="namespacefaiss_1acbd29d880c5aeaf1caf6266483253953" kind="variable"><name>distance_compute_blas_database_bs</name></member>
     <member refid="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" kind="variable"><name>distance_compute_min_k_reservoir</name></member>
+    <member refid="namespacefaiss_1a7d8fdd4c4c76390042cc6916bdbe6b9e" kind="variable"><name>hamdis_tab_ham_bytes</name></member>
     <member refid="namespacefaiss_1a1c1a7ffff3e34768b027b77d0d9f96df" kind="variable"><name>hamming_batch_size</name></member>
     <member refid="namespacefaiss_1ae2bb09d8026f83d03936dcddee878a04" kind="variable"><name>partition_stats</name></member>
     <member refid="namespacefaiss_1a71dedb2a0d42fcaf8348a30112401069" kind="function"><name>clone_index</name></member>

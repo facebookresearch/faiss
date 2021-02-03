@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="339" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="339" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="373" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="373" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -37,7 +37,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="341" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="341" bodyend="344"/>
+        <location file="faiss/utils/hamming-inl.h" line="375" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="375" bodyend="378"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1GenHammingComputer8_1ab01942dac234ae10c2dbf72782c9de3c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -54,14 +54,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="346" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="346" bodyend="348"/>
+        <location file="faiss/utils/hamming-inl.h" line="380" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="380" bodyend="382"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/hamming-inl.h" line="338" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="338" bodyend="350"/>
+    <location file="faiss/utils/hamming-inl.h" line="372" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="372" bodyend="384"/>
     <listofallmembers>
       <member refid="structfaiss_1_1GenHammingComputer8_1aced7fedc6ffd9ee99f92d3c59324e256" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputer8</scope><name>a0</name></member>
       <member refid="structfaiss_1_1GenHammingComputer8_1a435b03f06449e1948609f658c2bb0af3" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputer8</scope><name>GenHammingComputer8</name></member>
