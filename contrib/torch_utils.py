@@ -3,6 +3,24 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+"""
+
+This is a set of function wrappers that override the default numpy versions.
+
+Interoperability functions for pytorch and Faiss: Importing this will allow
+pytorch Tensors (CPU or GPU) to be used as arguments to Faiss indexes and
+other functions. Torch GPU tensors can only be used with Faiss GPU indexes.
+If this is imported with a package that supports Faiss GPU, the necessary
+stream synchronization with the current pytorch stream will be automatically
+performed.
+
+Numpy ndarrays can continue to be used in the Faiss python interface after
+importing this file. All arguments must be uniformly either numpy ndarrays
+or Torch tensors; no mixing is allowed.
+
+"""
+
+
 import faiss
 import torch
 import contextlib
@@ -472,10 +490,10 @@ for symbol in dir(faiss_module):
             handle_torch_Index(the_class)
 
 # allows torch tensor usage with bfKnn
-def torch_replacement_knn_gpu(res, xb, xq, k, D=None, I=None, metric=faiss.METRIC_L2):
+def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRIC_L2):
     if type(xb) is np.ndarray:
         # Forward to faiss __init__.py base method
-        return faiss.knn_gpu_numpy(res, xb, xq, k, D, I, metric)
+        return faiss.knn_gpu_numpy(res, xq, xb, k, D, I, metric)
 
     nb, d = xb.size()
     if xb.is_contiguous():

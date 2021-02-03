@@ -40,7 +40,7 @@ class TestComputeGT(unittest.TestCase):
         ds = datasets.SyntheticDataset(32, 0, 1000, 10)
         xq = ds.get_queries()
         xb = ds.get_database()
-        D, I = faiss.knn(xq, xb, 10, distance_type=metric)
+        D, I = faiss.knn(xq, xb, 10, metric=metric)
         threshold = float(D[:, -1].mean())
 
         index = faiss.IndexFlat(32, metric)

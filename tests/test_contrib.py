@@ -101,7 +101,7 @@ class TestExhaustiveSearch(unittest.TestCase):
         index.add(xb)
         Dref, Iref = index.search(xq, 10)
 
-        Dnew, Inew = knn(xq, xb, 10, distance_type=faiss.METRIC_INNER_PRODUCT)
+        Dnew, Inew = knn(xq, xb, 10, metric=faiss.METRIC_INNER_PRODUCT)
 
         assert np.all(Inew == Iref)
         assert np.allclose(Dref, Dnew)
@@ -110,7 +110,7 @@ class TestExhaustiveSearch(unittest.TestCase):
         ds = datasets.SyntheticDataset(32, 0, 1000, 10)
         xq = ds.get_queries()
         xb = ds.get_database()
-        D, I = faiss.knn(xq, xb, 10, distance_type=metric)
+        D, I = faiss.knn(xq, xb, 10, metric=metric)
         threshold = float(D[:, -1].mean())
 
         index = faiss.IndexFlat(32, metric)
@@ -136,7 +136,7 @@ class TestExhaustiveSearch(unittest.TestCase):
         ds = datasets.SyntheticDataset(32, 0, 1000, 1000)
         xq = ds.get_queries()
         xb = ds.get_database()
-        D, I = faiss.knn(xq, xb, 10, distance_type=metric)
+        D, I = faiss.knn(xq, xb, 10, metric=metric)
         threshold = float(D[:, -1].mean())
         print(threshold)
 
