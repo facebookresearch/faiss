@@ -44,7 +44,7 @@ namespace faiss {
 
 size_t hamming_batch_size = 65536;
 
-static const uint8_t hamdis_tab_ham_bytes[256] = {
+const uint8_t hamdis_tab_ham_bytes[256] = {
     0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
     1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
     1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
@@ -579,14 +579,9 @@ void hammings_knn_hc (
             (32, ha, a, b, nb, order, true);
         break;
     default:
-        if(ncodes % 8 == 0) {
-            hammings_knn_hc<faiss::HammingComputerM8>
-                (ncodes, ha, a, b, nb, order, true);
-        } else {
-            hammings_knn_hc<faiss::HammingComputerDefault>
-                (ncodes, ha, a, b, nb, order, true);
-
-        }
+        hammings_knn_hc<faiss::HammingComputerDefault>
+            (ncodes, ha, a, b, nb, order, true);
+        break;
     }
 }
 
@@ -624,15 +619,10 @@ void hammings_knn_mc(
         );
         break;
     default:
-        if(ncodes % 8 == 0) {
-            hammings_knn_mc<faiss::HammingComputerM8>(
-              ncodes, a, b, na, nb, k, distances, labels
-            );
-        } else {
-            hammings_knn_mc<faiss::HammingComputerDefault>(
-              ncodes, a, b, na, nb, k, distances, labels
-            );
-        }
+        hammings_knn_mc<faiss::HammingComputerDefault>(
+          ncodes, a, b, na, nb, k, distances, labels
+        );
+        break;
     }
 }
 template <class HammingComputer>
@@ -686,12 +676,7 @@ void hamming_range_search (
     case 8: HC(HammingComputer8); break;
     case 16: HC(HammingComputer16); break;
     case 32: HC(HammingComputer32); break;
-    default:
-        if (code_size % 8 == 0) {
-            HC(HammingComputerM8);
-        } else {
-            HC(HammingComputerDefault);
-        }
+    default: HC(HammingComputerDefault); break;
     }
 #undef HC
 }
