@@ -339,7 +339,18 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t">
 <span id="_CPPv3NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t"></span><span id="_CPPv2NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t"></span><span id="faiss::IntersectionCriterion::evaluate__floatCP.idx_tCPC"></span><span class="target" id="structfaiss_1_1IntersectionCriterion_1a6f7aef25852931b22298f7bb4c358791"></span>double <code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="property">const</em> float *<em>D</em>, <em class="property">const</em> <a class="reference internal" href="../file/AutoTune_8h.html#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t">idx_t</a> *<em>I</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
-<dd></dd></dl>
+<dd><p>Evaluate the criterion.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the criterion, between 0 and 1. Larger is better. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">D</span></code>: size nq * nnn </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">I</span></code>: size nq * nnn </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss21IntersectionCriterionD0Ev">
@@ -354,22 +365,6 @@
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">gt_D_in</span></code>: size nq * gt_nnn </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gt_I_in</span></code>: size nq * gt_nnn </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt>
-<span class="target" id="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47"></span>double <code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="property">const</em> float *<em>D</em>, <em class="property">const</em> <a class="reference internal" href="../file/AutoTune_8h.html#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t">idx_t</a> *<em>I</em><span class="sig-paren">)</span> <em class="property">const</em> = 0<br /></dt>
-<dd><p>Evaluate the criterion.</p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>the criterion, between 0 and 1. Larger is better. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">D</span></code>: size nq * nnn </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">I</span></code>: size nq * nnn </p></li>
 </ul>
 </dd>
 </dl>

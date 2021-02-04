@@ -298,7 +298,7 @@
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <a class="reference internal" href="../struct/structfaiss_1_1IndexPreTransform.html#structfaiss_1_1IndexPreTransform"><span class="std std-ref">IndexPreTransform</span></a>.</p>
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
-<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.In this file are the implementations of extra metrics beyond L2 and inner product</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</p>
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <div class="breathe-sectiondef docutils container">
@@ -421,18 +421,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="structfaiss_1_1InvertedLists_1a0a2adbbd1d6b4f8ed1cbfa9bb93f4401"></span>size_t <code class="sig-name descname">add_entries</code><span class="sig-paren">(</span>size_t <em>list_no</em>, size_t <em>n_entry</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss18ArrayInvertedLists5idx_tE" title="faiss::ArrayInvertedLists::idx_t">idx_t</a> *<em>ids</em>, <em class="property">const</em> uint8_t *<em>code</em><span class="sig-paren">)</span> = 0<br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
 <dt id="_CPPv4N5faiss18ArrayInvertedLists12update_entryE6size_t6size_t5idx_tPK7uint8_t">
 <span id="_CPPv3N5faiss18ArrayInvertedLists12update_entryE6size_t6size_t5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss18ArrayInvertedLists12update_entryE6size_t6size_t5idx_tPK7uint8_t"></span><span id="faiss::ArrayInvertedLists::update_entry__s.s.idx_t.uint8_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1aa4fca5b69a56ab5b65274f3ff5ca7705"></span>void <code class="sig-name descname">update_entry</code><span class="sig-paren">(</span>size_t <em>list_no</em>, size_t <em>offset</em>, <a class="reference internal" href="#_CPPv4N5faiss18ArrayInvertedLists5idx_tE" title="faiss::ArrayInvertedLists::idx_t">idx_t</a> <em>id</em>, <em class="property">const</em> uint8_t *<em>code</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss18ArrayInvertedLists12update_entryE6size_t6size_t5idx_tPK7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt>
-<span class="target" id="structfaiss_1_1InvertedLists_1afb45f0f325bf82f73737d804f8dbf49e"></span>void <code class="sig-name descname">update_entries</code><span class="sig-paren">(</span>size_t <em>list_no</em>, size_t <em>offset</em>, size_t <em>n_entry</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss18ArrayInvertedLists5idx_tE" title="faiss::ArrayInvertedLists::idx_t">idx_t</a> *<em>ids</em>, <em class="property">const</em> uint8_t *<em>code</em><span class="sig-paren">)</span> = 0<br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -1347,8 +1337,7 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss18SliceInvertedLists11release_idsE6size_tPK5idx_t">
 <span id="_CPPv3NK5faiss18SliceInvertedLists11release_idsE6size_tPK5idx_t"></span><span id="_CPPv2NK5faiss18SliceInvertedLists11release_idsE6size_tPK5idx_t"></span><span id="faiss::SliceInvertedLists::release_ids__s.idx_tCPC"></span><span class="target" id="structfaiss_1_1SliceInvertedLists_1ad3001048c22bcff5a1a8fb3c13d6a9ca"></span>void <code class="sig-name descname">release_ids</code><span class="sig-paren">(</span>size_t <em>list_no</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss18SliceInvertedLists5idx_tE" title="faiss::SliceInvertedLists::idx_t">idx_t</a> *<em>ids</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK5faiss18SliceInvertedLists11release_idsE6size_tPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>release ids returned by get_ids </p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss18SliceInvertedLists13get_single_idE6size_t6size_t">
@@ -1373,8 +1362,7 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss18SliceInvertedLists14prefetch_listsEPK5idx_ti">
 <span id="_CPPv3NK5faiss18SliceInvertedLists14prefetch_listsEPK5idx_ti"></span><span id="_CPPv2NK5faiss18SliceInvertedLists14prefetch_listsEPK5idx_ti"></span><span id="faiss::SliceInvertedLists::prefetch_lists__idx_tCP.iC"></span><span class="target" id="structfaiss_1_1SliceInvertedLists_1a40f74e21271fa5492fb9b78bb04a514f"></span>void <code class="sig-name descname">prefetch_lists</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss18SliceInvertedLists5idx_tE" title="faiss::SliceInvertedLists::idx_t">idx_t</a> *<em>list_nos</em>, int <em>nlist</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK5faiss18SliceInvertedLists14prefetch_listsEPK5idx_ti" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>prepare the following lists (default does nothing) a list can be -1 hence the signed long </p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss18SliceInvertedLists11add_entriesE6size_t6size_tPK5idx_tPK7uint8_t">
@@ -1390,6 +1378,18 @@
 <dt id="_CPPv4N5faiss18SliceInvertedLists6resizeE6size_t6size_t">
 <span id="_CPPv3N5faiss18SliceInvertedLists6resizeE6size_t6size_t"></span><span id="_CPPv2N5faiss18SliceInvertedLists6resizeE6size_t6size_t"></span><span id="faiss::SliceInvertedLists::resize__s.s"></span><span class="target" id="structfaiss_1_1ReadOnlyInvertedLists_1a7b65c76388ba2fbc17a7060f6cf87039"></span>void <code class="sig-name descname">resize</code><span class="sig-paren">(</span>size_t <em>list_no</em>, size_t <em>new_size</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss18SliceInvertedLists6resizeE6size_t6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1InvertedLists_1ad9bd9641ac86e0851d39a96119db3e78"></span>void <code class="sig-name descname">release_ids</code><span class="sig-paren">(</span>size_t <em>list_no</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss18SliceInvertedLists5idx_tE" title="faiss::SliceInvertedLists::idx_t">idx_t</a> *<em>ids</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>release ids returned by get_ids </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1InvertedLists_1aa661652a062ecb58b02f10d2a671c9fe"></span>void <code class="sig-name descname">prefetch_lists</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss18SliceInvertedLists5idx_tE" title="faiss::SliceInvertedLists::idx_t">idx_t</a> *<em>list_nos</em>, int <em>nlist</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>prepare the following lists (default does nothing) a list can be -1 hence the signed long </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss18SliceInvertedLists9add_entryE6size_t5idx_tPK7uint8_t">
@@ -1706,8 +1706,7 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss19VStackInvertedLists11release_idsE6size_tPK5idx_t">
 <span id="_CPPv3NK5faiss19VStackInvertedLists11release_idsE6size_tPK5idx_t"></span><span id="_CPPv2NK5faiss19VStackInvertedLists11release_idsE6size_tPK5idx_t"></span><span id="faiss::VStackInvertedLists::release_ids__s.idx_tCPC"></span><span class="target" id="structfaiss_1_1VStackInvertedLists_1a3048d4656332d160502cd95b22b53be5"></span>void <code class="sig-name descname">release_ids</code><span class="sig-paren">(</span>size_t <em>list_no</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss19VStackInvertedLists5idx_tE" title="faiss::VStackInvertedLists::idx_t">idx_t</a> *<em>ids</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK5faiss19VStackInvertedLists11release_idsE6size_tPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>release ids returned by get_ids </p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss19VStackInvertedLists13get_single_idE6size_t6size_t">
@@ -1732,8 +1731,7 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss19VStackInvertedLists14prefetch_listsEPK5idx_ti">
 <span id="_CPPv3NK5faiss19VStackInvertedLists14prefetch_listsEPK5idx_ti"></span><span id="_CPPv2NK5faiss19VStackInvertedLists14prefetch_listsEPK5idx_ti"></span><span id="faiss::VStackInvertedLists::prefetch_lists__idx_tCP.iC"></span><span class="target" id="structfaiss_1_1VStackInvertedLists_1af37c2171d22f7f9200fa5cdedb363471"></span>void <code class="sig-name descname">prefetch_lists</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss19VStackInvertedLists5idx_tE" title="faiss::VStackInvertedLists::idx_t">idx_t</a> *<em>list_nos</em>, int <em>nlist</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK5faiss19VStackInvertedLists14prefetch_listsEPK5idx_ti" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>prepare the following lists (default does nothing) a list can be -1 hence the signed long </p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss19VStackInvertedLists11add_entriesE6size_t6size_tPK5idx_tPK7uint8_t">
@@ -1749,6 +1747,18 @@
 <dt id="_CPPv4N5faiss19VStackInvertedLists6resizeE6size_t6size_t">
 <span id="_CPPv3N5faiss19VStackInvertedLists6resizeE6size_t6size_t"></span><span id="_CPPv2N5faiss19VStackInvertedLists6resizeE6size_t6size_t"></span><span id="faiss::VStackInvertedLists::resize__s.s"></span><span class="target" id="structfaiss_1_1ReadOnlyInvertedLists_1a7b65c76388ba2fbc17a7060f6cf87039"></span>void <code class="sig-name descname">resize</code><span class="sig-paren">(</span>size_t <em>list_no</em>, size_t <em>new_size</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N5faiss19VStackInvertedLists6resizeE6size_t6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1InvertedLists_1ad9bd9641ac86e0851d39a96119db3e78"></span>void <code class="sig-name descname">release_ids</code><span class="sig-paren">(</span>size_t <em>list_no</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss19VStackInvertedLists5idx_tE" title="faiss::VStackInvertedLists::idx_t">idx_t</a> *<em>ids</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>release ids returned by get_ids </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1InvertedLists_1aa661652a062ecb58b02f10d2a671c9fe"></span>void <code class="sig-name descname">prefetch_lists</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5faiss19VStackInvertedLists5idx_tE" title="faiss::VStackInvertedLists::idx_t">idx_t</a> *<em>list_nos</em>, int <em>nlist</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<dd><p>prepare the following lists (default does nothing) a list can be -1 hence the signed long </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss19VStackInvertedLists9add_entryE6size_t5idx_tPK7uint8_t">
