@@ -21,18 +21,18 @@ add_library(faiss
   IndexIVF.cpp
   IndexIVFFlat.cpp
   IndexIVFPQ.cpp
-  IndexIVFPQR.cpp
   IndexIVFPQFastScan.cpp
-  IndexPQFastScan.cpp
+  IndexIVFPQR.cpp
   IndexIVFSpectralHash.cpp
   IndexLSH.cpp
   IndexLattice.cpp
   IndexPQ.cpp
+  IndexPQFastScan.cpp
   IndexPreTransform.cpp
+  IndexRefine.cpp
   IndexReplicas.cpp
   IndexScalarQuantizer.cpp
   IndexShards.cpp
-  IndexRefine.cpp
   MatrixStats.cpp
   MetaIndexes.cpp
   VectorTransform.cpp
@@ -46,14 +46,14 @@ add_library(faiss
   impl/ScalarQuantizer.cpp
   impl/index_read.cpp
   impl/index_write.cpp
+  impl/io.cpp
+  impl/lattice_Zn.cpp
   impl/pq4_fast_scan.cpp
   impl/pq4_fast_scan_search_1.cpp
   impl/pq4_fast_scan_search_qbs.cpp
-  impl/io.cpp
-  impl/lattice_Zn.cpp
+  invlists/BlockInvertedLists.cpp
   invlists/DirectMap.cpp
   invlists/InvertedLists.cpp
-  invlists/BlockInvertedLists.cpp
   invlists/InvertedListsIOHook.cpp
   utils/Heap.cpp
   utils/WorkerThread.cpp
@@ -84,18 +84,18 @@ set(FAISS_HEADERS
   IndexIVF.h
   IndexIVFFlat.h
   IndexIVFPQ.h
-  IndexIVFPQR.h
   IndexIVFPQFastScan.h
-  IndexPQFastScan.h
+  IndexIVFPQR.h
   IndexIVFSpectralHash.h
   IndexLSH.h
   IndexLattice.h
   IndexPQ.h
+  IndexPQFastScan.h
   IndexPreTransform.h
+  IndexRefine.h
   IndexReplicas.h
   IndexScalarQuantizer.h
   IndexShards.h
-  IndexRefine.h
   MatrixStats.h
   MetaIndexes.h
   MetricType.h
@@ -110,21 +110,22 @@ set(FAISS_HEADERS
   impl/PolysemousTraining.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
+  impl/ResultHandler.h
   impl/ScalarQuantizer.h
   impl/ThreadedIndex-inl.h
   impl/ThreadedIndex.h
   impl/io.h
   impl/io_macros.h
   impl/lattice_Zn.h
+  impl/platform_macros.h
   impl/pq4_fast_scan.h
   impl/simd_result_handlers.h
-  impl/platform_macros.h
-  invlists/InvertedLists.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h
+  invlists/InvertedLists.h
   invlists/InvertedListsIOHook.h
-  utils/Heap.h
   utils/AlignedTable.h
+  utils/Heap.h
   utils/WorkerThread.h
   utils/distances.h
   utils/extra_distances.h
@@ -135,8 +136,8 @@ set(FAISS_HEADERS
   utils/quantize_lut.h
   utils/random.h
   utils/simdlib.h
-  utils/simdlib_emulated.h
   utils/simdlib_avx2.h
+  utils/simdlib_emulated.h
   utils/utils.h
 )
 
