@@ -26,18 +26,8 @@
 <codeline><highlight class="normal">#error<sp/>&quot;CUDA<sp/>&gt;=<sp/>8.0<sp/>is<sp/>required&quot;</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#ifdef<sp/>__CUDA_ARCH__</highlight></codeline>
-<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&lt;=<sp/>800</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>We<sp/>validate<sp/>this<sp/>against<sp/>the<sp/>actual<sp/>architecture<sp/>in<sp/>device<sp/>initialization</highlight></codeline>
 <codeline><highlight class="normal">constexpr<sp/>int<sp/>kWarpSize<sp/>=<sp/>32;</highlight></codeline>
-<codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal">#error<sp/>Unknown<sp/>__CUDA_ARCH__;<sp/>please<sp/>define<sp/>parameters<sp/>for<sp/>compute<sp/>capability</highlight></codeline>
-<codeline><highlight class="normal">#endif<sp/>//<sp/>__CUDA_ARCH__<sp/>types</highlight></codeline>
-<codeline><highlight class="normal">#endif<sp/>//<sp/>__CUDA_ARCH__</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">#ifndef<sp/>__CUDA_ARCH__</highlight></codeline>
-<codeline><highlight class="normal">//<sp/>dummy<sp/>value<sp/>for<sp/>host<sp/>compiler</highlight></codeline>
-<codeline><highlight class="normal">constexpr<sp/>int<sp/>kWarpSize<sp/>=<sp/>32;</highlight></codeline>
-<codeline><highlight class="normal">#endif<sp/>//<sp/>!__CUDA_ARCH__</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>This<sp/>is<sp/>a<sp/>memory<sp/>barrier<sp/>for<sp/>intra-warp<sp/>writes<sp/>to<sp/>shared<sp/>memory.</highlight></codeline>
 <codeline><highlight class="normal">__forceinline__<sp/>__device__<sp/>void<sp/>warpFence()<sp/>{</highlight></codeline>
