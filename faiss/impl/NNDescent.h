@@ -35,8 +35,9 @@ namespace faiss {
  *  Dong, Wei, Charikar Moses, and Kai Li, WWW 2011
  *
  * This implmentation is heavily influenced by the efanna
- * implementation by Cong Fu
+ * implementation by Cong Fu and the KGraph library by Wei Dong
  * (https://github.com/ZJULearning/efanna_graph)
+ * (https://github.com/aaalgo/kgraph)
  *
  * The NNDescent object stores only the neighbor link structure,
  * see IndexNNDescent.h for the full index object.
@@ -44,7 +45,6 @@ namespace faiss {
 
 struct VisitedTable;
 struct DistanceComputer;
-typedef std::lock_guard<std::mutex> LockGuard;
 
 namespace nndescent {
 
@@ -64,13 +64,13 @@ struct Neighbor {
 
 struct Nhood {
   std::mutex lock;
-  std::vector<Neighbor> pool;
-  int M;
+  std::vector<Neighbor> pool; // candidate pool
+  int M;                      // number of new nodes to be operated
 
-  std::vector<int> nn_old;
-  std::vector<int> nn_new;
-  std::vector<int> rnn_old;
-  std::vector<int> rnn_new;
+  std::vector<int> nn_old;  // old neighbors
+  std::vector<int> nn_new;  // new neighbors
+  std::vector<int> rnn_old; // reverse old neighbors
+  std::vector<int> rnn_new; // reverse new neighbors
 
   Nhood() = default;
 
@@ -105,28 +105,36 @@ struct NNDescent {
 
   void reset();
 
+  /// Initialize the KNN graph randomly
   void init_graph(DistanceComputer &qdis);
 
+  /// Perform NNDescent algorithm
   void nndescent(DistanceComputer &qdis, bool verbose);
 
+  /// Perform local join on each node
   void join(DistanceComputer &qdis);
 
+  /// Combine forward and reverse links
   void update();
 
+  /// Sample a small number of points to evaluate the quality of KNNG built
   void generate_eval_set(DistanceComputer &qdis, std::vector<int> &c,
                          std::vector<std::vector<int>> &v, int N);
 
+  /// Evaluate the quality of KNNG built
   float eval_recall(std::vector<int> &ctrl_points,
                     std::vector<std::vector<int>> &acc_eval_set);
 
   bool has_built;
 
-  int K;
-  int S, R, L, iter;
-  int search_L;
+  int K;    // K in KNN graph
+  int S;    // number of sample neighbors to be updated for each node
+  int R;    // size of reverse links, 0 means the reverse links will not be used
+  int L;    // size of the candidate pool in building
+  int iter; // number of iterations to iterate over
+  int search_L; // size of candidate pool in searching
 
-  // dimensions
-  int d;
+  int d; // dimensions
 
   int ntotal;
 

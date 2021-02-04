@@ -17,6 +17,8 @@
 
 namespace faiss {
 
+using LockGuard = std::lock_guard<std::mutex>;
+
 namespace nndescent {
 
 void gen_random(std::mt19937 &rng, int *addr, const int size, const int N);
@@ -25,10 +27,10 @@ Nhood::Nhood(int l, int s, std::mt19937 &rng, int N) {
   M = s;
   nn_new.resize(s * 2);
   gen_random(rng, &nn_new[0], (int)nn_new.size(), N);
-  nn_new.reserve(s * 2);
   pool.reserve(l);
 }
 
+/// Copy operator
 Nhood &Nhood::operator=(const Nhood &other) {
   M = other.M;
   std::copy(other.nn_new.begin(), other.nn_new.end(),
@@ -37,6 +39,7 @@ Nhood &Nhood::operator=(const Nhood &other) {
   pool.reserve(other.pool.capacity());
 }
 
+/// Copy constructor
 Nhood::Nhood(const Nhood &other) {
   M = other.M;
   std::copy(other.nn_new.begin(), other.nn_new.end(),
@@ -126,19 +129,27 @@ void NNDescent::join(DistanceComputer &qdis) {
 }
 
 void NNDescent::update() {
+
+  // Step 1.
+  // Clear all nn_new and nn_old
 #pragma omp parallel for
   for (int i = 0; i < ntotal; i++) {
     std::vector<int>().swap(graph[i].nn_new);
     std::vector<int>().swap(graph[i].nn_old);
   }
 
+  // Step 2.
+  // Compute the number of neighbors which is new i.e. flag is true
+  // in the candidate pool. This must not exceed the sample number S.
 #pragma omp parallel for
   for (int n = 0; n < ntotal; ++n) {
     auto &nn = graph[n];
     std::sort(nn.pool.begin(), nn.pool.end());
+
     if (nn.pool.size() > L)
       nn.pool.resize(L);
-    nn.pool.reserve(L);
+    nn.pool.reserve(L); // keep the pool size be L
+
     int maxl = std::min(nn.M + S, (int)nn.pool.size());
     int c = 0;
     int l = 0;
@@ -150,62 +161,74 @@ void NNDescent::update() {
     }
     nn.M = l;
   }
+
+  // Step 3.
+  // Find reverse links for each node
+  // Randomly choose R reverse links.
 #pragma omp parallel for
   for (int n = 0; n < ntotal; ++n) {
-    auto &nnhd = graph[n];
-    auto &nn_new = nnhd.nn_new;
-    auto &nn_old = nnhd.nn_old;
-    for (int l = 0; l < nnhd.M; ++l) {
-      auto &nn = nnhd.pool[l];
-      auto &nhood_o = graph[nn.id]; // nn on the other side of the edge
+    auto &node = graph[n];
+    auto &nn_new = node.nn_new;
+    auto &nn_old = node.nn_old;
 
-      if (nn.flag) {
+    for (int l = 0; l < node.M; ++l) {
+      auto &nn = node.pool[l];
+      auto &other = graph[nn.id]; // the other side of the edge
+
+      if (nn.flag) { // the node is inserted newly
+        // push the neighbor into nn_new
         nn_new.push_back(nn.id);
-        if (nn.distance > nhood_o.pool.back().distance) {
-          LockGuard guard(nhood_o.lock);
-          if (nhood_o.rnn_new.size() < R)
-            nhood_o.rnn_new.push_back(n);
+        // push itself into other.rnn_new if it is not in
+        // the candidate pool of the other side
+        if (nn.distance > other.pool.back().distance) {
+          LockGuard guard(other.lock);
+          if (other.rnn_new.size() < R)
+            other.rnn_new.push_back(n);
           else {
             int pos = rand() % R;
-            nhood_o.rnn_new[pos] = n;
+            other.rnn_new[pos] = n;
           }
         }
         nn.flag = false;
-      } else {
+
+      } else { // the node is old
+        // push the neighbor into nn_old
         nn_old.push_back(nn.id);
-        if (nn.distance > nhood_o.pool.back().distance) {
-          LockGuard guard(nhood_o.lock);
-          if (nhood_o.rnn_old.size() < R)
-            nhood_o.rnn_old.push_back(n);
+        // push itself into other.rnn_old if it is not in
+        // the candidate pool of the other side
+        if (nn.distance > other.pool.back().distance) {
+          LockGuard guard(other.lock);
+          if (other.rnn_old.size() < R)
+            other.rnn_old.push_back(n);
           else {
             int pos = rand() % R;
-            nhood_o.rnn_old[pos] = n;
+            other.rnn_old[pos] = n;
           }
         }
       }
     }
-    std::make_heap(nnhd.pool.begin(), nnhd.pool.end());
+
+    // make heap to join later (in join() function)
+    std::make_heap(node.pool.begin(), node.pool.end());
   }
+
+  // Step 4.
+  // Combine the forward and the reverse links
+  // R = 0 means no reverse links are used.
 #pragma omp parallel for
   for (int i = 0; i < ntotal; ++i) {
     auto &nn_new = graph[i].nn_new;
     auto &nn_old = graph[i].nn_old;
     auto &rnn_new = graph[i].rnn_new;
     auto &rnn_old = graph[i].rnn_old;
-    if (R && rnn_new.size() > R) {
-      std::random_shuffle(rnn_new.begin(), rnn_new.end());
-      rnn_new.resize(R);
-    }
+
     nn_new.insert(nn_new.end(), rnn_new.begin(), rnn_new.end());
-    if (R && rnn_old.size() > R) {
-      std::random_shuffle(rnn_old.begin(), rnn_old.end());
-      rnn_old.resize(R);
-    }
     nn_old.insert(nn_old.end(), rnn_old.begin(), rnn_old.end());
     if (nn_old.size() > R * 2) {
       nn_old.resize(R * 2);
       nn_old.reserve(R * 2);
     }
+
     std::vector<int>().swap(graph[i].rnn_new);
     std::vector<int>().swap(graph[i].rnn_old);
   }
