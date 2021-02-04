@@ -668,6 +668,11 @@ float fvec_Linf (const float * x, const float * y, size_t d)
     return fvec_Linf_ref (x, y, d);
 }
 
+void fvec_inner_products_ny (float * dis, const float * x,
+                        const float * y, size_t d, size_t ny) {
+    fvec_inner_products_ny_ref (dis, x, y, d, ny);
+}
+
 
 #else
 // scalar implementation

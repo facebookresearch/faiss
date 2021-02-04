@@ -7,6 +7,7 @@
 
 namespace faiss {
 
+extern const uint8_t hamdis_tab_ham_bytes[256];
 
 inline BitstringWriter::BitstringWriter(uint8_t *code, size_t code_size):
     code (code), code_size (code_size), i(0)
@@ -214,10 +215,10 @@ struct HammingComputer64 {
 
 };
 
-// very inefficient...
 struct HammingComputerDefault {
-    const uint8_t *a;
-    int n;
+    const uint8_t *a8;
+    int quotient8;
+    int remainder8;
 
     HammingComputerDefault () {}
 
@@ -226,19 +227,52 @@ struct HammingComputerDefault {
     }
 
     void set (const uint8_t *a8, int code_size) {
-        a =  a8;
-        n = code_size;
+        this->a8 = a8;
+        quotient8 = code_size / 8;
+        remainder8 = code_size % 8;
     }
 
     int hamming (const uint8_t *b8) const {
         int accu = 0;
-        for (int i = 0; i < n; i++)
-            accu += popcount64 (a[i] ^ b8[i]);
+
+        const uint64_t *a64 = reinterpret_cast<const uint64_t *>(a8);
+        const uint64_t *b64 = reinterpret_cast<const uint64_t *>(b8);
+        int i = 0, len = quotient8;
+        switch (len & 7) {
+            default:
+                while (len > 7) {
+                    len -= 8;
+                    accu += popcount64(a64[i] ^ b64[i]); i++;
+                    case 7: accu += popcount64(a64[i] ^ b64[i]); i++;
+                    case 6: accu += popcount64(a64[i] ^ b64[i]); i++;
+                    case 5: accu += popcount64(a64[i] ^ b64[i]); i++;
+                    case 4: accu += popcount64(a64[i] ^ b64[i]); i++;
+                    case 3: accu += popcount64(a64[i] ^ b64[i]); i++;
+                    case 2: accu += popcount64(a64[i] ^ b64[i]); i++;
+                    case 1: accu += popcount64(a64[i] ^ b64[i]); i++;
+                }
+        }
+        if (remainder8) {
+            const uint8_t *a = a8 + 8 * quotient8;
+            const uint8_t *b = b8 + 8 * quotient8;
+            switch (remainder8) {
+                case 7: accu += hamdis_tab_ham_bytes[a[6] ^ b[6]];
+                case 6: accu += hamdis_tab_ham_bytes[a[5] ^ b[5]];
+                case 5: accu += hamdis_tab_ham_bytes[a[4] ^ b[4]];
+                case 4: accu += hamdis_tab_ham_bytes[a[3] ^ b[3]];
+                case 3: accu += hamdis_tab_ham_bytes[a[2] ^ b[2]];
+                case 2: accu += hamdis_tab_ham_bytes[a[1] ^ b[1]];
+                case 1: accu += hamdis_tab_ham_bytes[a[0] ^ b[0]];
+                default: break;
+            }
+        }
+
         return accu;
     }
 
 };
 
+// more inefficient than HammingComputerDefault (obsolete)
 struct HammingComputerM8 {
     const uint64_t *a;
     int n;
@@ -265,7 +299,7 @@ struct HammingComputerM8 {
 
 };
 
-// even more inefficient!
+// more inefficient than HammingComputerDefault (obsolete)
 struct HammingComputerM4 {
     const uint32_t *a;
     int n;
@@ -298,9 +332,9 @@ struct HammingComputerM4 {
 
 // default template
 template<int CODE_SIZE>
-struct HammingComputer: HammingComputerM8 {
+struct HammingComputer: HammingComputerDefault {
     HammingComputer (const uint8_t *a, int code_size):
-    HammingComputerM8(a, code_size) {}
+    HammingComputerDefault(a, code_size) {}
 };
 
 #define SPECIALIZED_HC(CODE_SIZE)                     \

@@ -121,13 +121,32 @@ ToGpuCloner::ToGpuCloner(GpuResourcesProvider *prov, int device,
 
 Index *ToGpuCloner::clone_Index(const Index *index)
 {
+    using idx_t = Index::idx_t;
     if(auto ifl = dynamic_cast<const IndexFlat *>(index)) {
         GpuIndexFlatConfig config;
         config.device = device;
         config.useFloat16 = useFloat16;
         config.storeTransposed = storeTransposed;
-
         return new GpuIndexFlat(provider, ifl, config);
+    } else if (
+        dynamic_cast<const IndexScalarQuantizer *>(index) &&
+        static_cast<const IndexScalarQuantizer *>(index)->sq.qtype ==
+            ScalarQuantizer::QT_fp16) {
+        GpuIndexFlatConfig config;
+        config.device = device;
+        config.useFloat16 = true;
+        GpuIndexFlat *gif = new GpuIndexFlat(
+            provider, index->d, index->metric_type, config);
+        // transfer data by blocks
+        idx_t bs = 1024 * 1024;
+        for (idx_t i0 = 0; i0 < index->ntotal; i0 += bs) {
+            idx_t i1 = std::min(i0 + bs, index->ntotal);
+            std::vector<float> buffer((i1 - i0) * index->d);
+            index->reconstruct_n(i0, i1 - i0, buffer.data());
+            gif->add(i1 - i0, buffer.data());
+        }
+        assert(gif->getNumVecs() == index->ntotal);
+        return gif;
     } else if(auto ifl = dynamic_cast<const faiss::IndexIVFFlat *>(index)) {
         GpuIndexIVFFlatConfig config;
         config.device = device;
@@ -170,12 +189,13 @@ Index *ToGpuCloner::clone_Index(const Index *index)
         res->copyFrom(ifl);
         return res;
     } else if(auto ipq = dynamic_cast<const faiss::IndexIVFPQ *>(index)) {
-        if(verbose)
+        if(verbose) {
             printf("  IndexIVFPQ size %ld -> GpuIndexIVFPQ "
                    "indicesOptions=%d "
                    "usePrecomputed=%d useFloat16=%d reserveVecs=%ld\n",
                    ipq->ntotal, indicesOptions, usePrecomputed,
                    useFloat16, reserveVecs);
+        }
         GpuIndexIVFPQConfig config;
         config.device = device;
         config.indicesOptions = indicesOptions;
@@ -192,6 +212,7 @@ Index *ToGpuCloner::clone_Index(const Index *index)
 
         return res;
     } else {
+        // default: use CPU cloner
         return Cloner::clone_Index(index);
     }
 }
