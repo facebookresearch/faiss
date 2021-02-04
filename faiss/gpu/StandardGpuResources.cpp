@@ -299,6 +299,11 @@ StandardGpuResourcesImpl::initializeForDevice(int device) {
                    "need 3.0+ compute capability",
                    device, prop.major, prop.minor);
 
+  // Our code is pre-built with and expects warpSize == 32, validate that
+  FAISS_ASSERT_FMT(prop.warpSize == 32,
+                   "Device id %d does not have expected warpSize of 32",
+                   device);
+
   // Create streams
   cudaStream_t defaultStream = 0;
   CUDA_VERIFY(cudaStreamCreateWithFlags(&defaultStream,
@@ -398,10 +403,10 @@ StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
     return nullptr;
   }
 
-  // Make sure that the allocation is a multiple of 16 bytes for alignment
-  // purposes
+  // cudaMalloc guarantees allocation alignment to 256 bytes; do the same here
+  // for alignment purposes (to reduce memory transaction overhead etc)
   auto adjReq = req;
-  adjReq.size = utils::roundUp(adjReq.size, (size_t) 16);
+  adjReq.size = utils::roundUp(adjReq.size, (size_t) 256);
 
   void* p = nullptr;
 

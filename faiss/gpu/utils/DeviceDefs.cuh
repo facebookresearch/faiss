@@ -17,18 +17,8 @@ namespace faiss { namespace gpu {
 #error "CUDA >= 8.0 is required"
 #endif
 
-#ifdef __CUDA_ARCH__
-#if __CUDA_ARCH__ <= 800
+// We validate this against the actual architecture in device initialization
 constexpr int kWarpSize = 32;
-#else
-#error Unknown __CUDA_ARCH__; please define parameters for compute capability
-#endif // __CUDA_ARCH__ types
-#endif // __CUDA_ARCH__
-
-#ifndef __CUDA_ARCH__
-// dummy value for host compiler
-constexpr int kWarpSize = 32;
-#endif // !__CUDA_ARCH__
 
 // This is a memory barrier for intra-warp writes to shared memory.
 __forceinline__ __device__ void warpFence() {
