@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="structfaiss_1_1HeapArray" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HeapArray</compoundname>
     <includes refid="Heap_8h" local="no">Heap.h</includes>
@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="360" column="1" bodyfile="faiss/utils/Heap.h" bodystart="360" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="362" column="28" bodyfile="faiss/utils/Heap.h" bodystart="362" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1HeapArray_1a46eb2eae9e79a0dd7ab720283619a5a9" prot="public" static="no">
         <type>C::T</type>
@@ -33,7 +33,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="361" column="1" bodyfile="faiss/utils/Heap.h" bodystart="361" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="363" column="27" bodyfile="faiss/utils/Heap.h" bodystart="363" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -43,12 +43,13 @@
         <argsstring></argsstring>
         <name>nh</name>
         <briefdescription>
-<para>number of heaps </para>        </briefdescription>
+<para>number of heaps </para>
+        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="363" column="1" bodyfile="faiss/utils/Heap.h" bodystart="363" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="365" column="12" bodyfile="faiss/utils/Heap.h" bodystart="365" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -56,12 +57,13 @@
         <argsstring></argsstring>
         <name>k</name>
         <briefdescription>
-<para>allocated size per heap </para>        </briefdescription>
+<para>allocated size per heap </para>
+        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="364" column="1" bodyfile="faiss/utils/Heap.h" bodystart="364" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="366" column="12" bodyfile="faiss/utils/Heap.h" bodystart="366" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" prot="public" static="no" mutable="no">
         <type>TI *</type>
@@ -69,12 +71,13 @@
         <argsstring></argsstring>
         <name>ids</name>
         <briefdescription>
-<para>identifiers (size nh * k) </para>        </briefdescription>
+<para>identifiers (size nh * k) </para>
+        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="365" column="1" bodyfile="faiss/utils/Heap.h" bodystart="365" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="367" column="9" bodyfile="faiss/utils/Heap.h" bodystart="367" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53" prot="public" static="no" mutable="no">
         <type>T *</type>
@@ -82,12 +85,13 @@
         <argsstring></argsstring>
         <name>val</name>
         <briefdescription>
-<para>values (distances or similarities), size nh * k </para>        </briefdescription>
+<para>values (distances or similarities), size nh * k </para>
+        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="366" column="1" bodyfile="faiss/utils/Heap.h" bodystart="366" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="368" column="8" bodyfile="faiss/utils/Heap.h" bodystart="368" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -101,12 +105,13 @@
           <declname>key</declname>
         </param>
         <briefdescription>
-<para>Return the list of values for a heap. </para>        </briefdescription>
+<para>Return the list of values for a heap. </para>
+        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="369" column="1" bodyfile="faiss/utils/Heap.h" bodystart="369" bodyend="369"/>
+        <location file="faiss/utils/Heap.h" line="371" column="8" bodyfile="faiss/utils/Heap.h" bodystart="371" bodyend="371"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>TI *</type>
@@ -118,12 +123,13 @@
           <declname>key</declname>
         </param>
         <briefdescription>
-<para>Correspponding identifiers. </para>        </briefdescription>
+<para>Correspponding identifiers. </para>
+        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="372" column="1" bodyfile="faiss/utils/Heap.h" bodystart="372" bodyend="372"/>
+        <location file="faiss/utils/Heap.h" line="374" column="9" bodyfile="faiss/utils/Heap.h" bodystart="374" bodyend="374"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a48afc496c73e982b8e10fde786628292" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -131,12 +137,13 @@
         <argsstring>()</argsstring>
         <name>heapify</name>
         <briefdescription>
-<para>prepare all the heaps before adding </para>        </briefdescription>
+<para>prepare all the heaps before adding </para>
+        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="375" column="1"/>
+        <location file="faiss/utils/Heap.h" line="377" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a293d8646fba26cfe726d529f3fb58923" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -169,46 +176,53 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>add nj elements to heaps i0:i0+ni, with sequential ids</para><para><parameterlist kind="param"><parameteritem>
+<para>add nj elements to heaps i0:i0+ni, with sequential ids</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>nj</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>nb of elements to add to each heap </para></parameterdescription>
+<para>nb of elements to add to each heap </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>vin</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>elements to add, size ni * nj </para></parameterdescription>
+<para>elements to add, size ni * nj </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>j0</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>add this to the ids that are added </para></parameterdescription>
+<para>add this to the ids that are added </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>i0</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>first heap to update </para></parameterdescription>
+<para>first heap to update </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>ni</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>nb of elements to update (-1 = use nh) </para></parameterdescription>
+<para>nb of elements to update (-1 = use nh) </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="385" column="1"/>
+        <location file="faiss/utils/Heap.h" line="387" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a75cbbd8f60dd00f0523e8515e5072d06" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -246,25 +260,29 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>same as addn</para><para><parameterlist kind="param"><parameteritem>
+<para>same as addn</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>id_in</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>ids of the elements to add, size ni * nj </para></parameterdescription>
+<para>ids of the elements to add, size ni * nj </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>id_stride</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>stride for id_in </para></parameterdescription>
+<para>stride for id_in </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="393" column="1"/>
+        <location file="faiss/utils/Heap.h" line="395" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -272,12 +290,13 @@
         <argsstring>()</argsstring>
         <name>reorder</name>
         <briefdescription>
-<para>reorder all the heaps </para>        </briefdescription>
+<para>reorder all the heaps </para>
+        </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="398" column="1"/>
+        <location file="faiss/utils/Heap.h" line="400" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -300,27 +319,31 @@
 <parametername>vals_out</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>extreme value of each line (size nh, or NULL) </para></parameterdescription>
+<para>extreme value of each line (size nh, or NULL) </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>idx_out</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>index of extreme value (size nh or NULL) </para></parameterdescription>
+<para>index of extreme value (size nh or NULL) </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="405" column="1"/>
+        <location file="faiss/utils/Heap.h" line="407" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>a template structure for a set of [min|max]-heaps it is tailored so that the actual data of the heaps can just live in compact arrays. </para>    </detaileddescription>
-    <location file="faiss/utils/Heap.h" line="359" column="1" bodyfile="faiss/utils/Heap.h" bodystart="359" bodyend="407"/>
+<para>a template structure for a set of [min|max]-heaps it is tailored so that the actual data of the heaps can just live in compact arrays. </para>
+    </detaileddescription>
+    <location file="faiss/utils/Heap.h" line="359" column="16" bodyfile="faiss/utils/Heap.h" bodystart="359" bodyend="407"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HeapArray_1a293d8646fba26cfe726d529f3fb58923" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>addn</name></member>
       <member refid="structfaiss_1_1HeapArray_1a75cbbd8f60dd00f0523e8515e5072d06" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>addn_with_ids</name></member>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="IndexIVFPQFastScan_8h" kind="file" language="C++">
     <compoundname>IndexIVFPQFastScan.h</compoundname>
     <includes local="no">memory</includes>
@@ -7,213 +7,213 @@
     <includes local="no">faiss/impl/ProductQuantizer.h</includes>
     <includes refid="AlignedTable_8h" local="no">faiss/utils/AlignedTable.h</includes>
     <incdepgraph>
-      <node id="784">
+      <node id="3">
         <label>faiss/IndexIVFPQ.h</label>
         <link refid="IndexIVFPQ_8h_source"/>
-        <childnode refid="785" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="786" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="806" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="798" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="809" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
       </node>
-      <node id="809">
+      <node id="28">
         <label>faiss/utils/AlignedTable.h</label>
         <link refid="AlignedTable_8h_source"/>
-        <childnode refid="810" relation="include">
+        <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="811" relation="include">
+        <childnode refid="30" relation="include">
         </childnode>
-        <childnode refid="803" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="801" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="812" relation="include">
+        <childnode refid="31" relation="include">
         </childnode>
-        <childnode refid="798" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="804">
+      <node id="23">
         <label>limits</label>
       </node>
-      <node id="798">
+      <node id="17">
         <label>faiss/impl/platform_macros.h</label>
       </node>
-      <node id="810">
+      <node id="29">
         <label>cstdint</label>
       </node>
-      <node id="806">
+      <node id="25">
         <label>faiss/IndexPQ.h</label>
         <link refid="IndexPQ_8h_source"/>
-        <childnode refid="788" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="785" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="789" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="807" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="808" relation="include">
+        <childnode refid="27" relation="include">
         </childnode>
-        <childnode refid="798" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="797">
+      <node id="16">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h_source"/>
-        <childnode refid="789" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="785" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="788">
+      <node id="7">
         <label>stdint.h</label>
       </node>
-      <node id="786">
+      <node id="5">
         <label>faiss/IndexIVF.h</label>
         <link refid="IndexIVF_8h_source"/>
-        <childnode refid="785" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="787" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="788" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="789" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="795" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="796" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="797" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="798" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="799" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="795">
+      <node id="14">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
-        <childnode refid="785" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="789" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="802">
+      <node id="21">
         <label>cmath</label>
       </node>
-      <node id="803">
+      <node id="22">
         <label>cassert</label>
       </node>
-      <node id="808">
+      <node id="27">
         <label>faiss/impl/PolysemousTraining.h</label>
       </node>
-      <node id="793">
+      <node id="12">
         <label>string</label>
       </node>
-      <node id="792">
+      <node id="11">
         <label>typeinfo</label>
       </node>
-      <node id="791">
+      <node id="10">
         <label>cstdio</label>
       </node>
-      <node id="785">
+      <node id="4">
         <label>vector</label>
       </node>
-      <node id="794">
+      <node id="13">
         <label>sstream</label>
       </node>
-      <node id="799">
+      <node id="18">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
-        <childnode refid="800" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="801" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="802" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="803" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="791" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="788" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="804" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="805" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
       </node>
-      <node id="805">
+      <node id="24">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="800" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="802" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="804" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
-      <node id="782">
+      <node id="1">
         <label>faiss/IndexIVFPQFastScan.h</label>
         <link refid="IndexIVFPQFastScan_8h"/>
-        <childnode refid="783" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="784" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="807" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="809" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
       </node>
-      <node id="807">
+      <node id="26">
         <label>faiss/impl/ProductQuantizer.h</label>
       </node>
-      <node id="811">
+      <node id="30">
         <label>cstdlib</label>
       </node>
-      <node id="787">
+      <node id="6">
         <label>unordered_map</label>
       </node>
-      <node id="800">
+      <node id="19">
         <label>climits</label>
       </node>
-      <node id="789">
+      <node id="8">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="790" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="791" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="792" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="793" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="794" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="790">
+      <node id="9">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
       </node>
-      <node id="796">
+      <node id="15">
         <label>faiss/invlists/DirectMap.h</label>
         <link refid="DirectMap_8h_source"/>
-        <childnode refid="795" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="787" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="812">
+      <node id="31">
         <label>algorithm</label>
       </node>
-      <node id="801">
+      <node id="20">
         <label>cstring</label>
       </node>
-      <node id="783">
+      <node id="2">
         <label>memory</label>
       </node>
     </incdepgraph>
@@ -381,8 +381,8 @@
 <codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Mcy_reservoir_at(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i)<sp/>{</highlight></codeline>
 <codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>reservoir_times[i]<sp/>/<sp/>(1000*1000.0);</highlight></codeline>
 <codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref>()<sp/>{<ref refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" kindref="member">reset</ref>();}</highlight></codeline>
-<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" kindref="member">reset</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref>()<sp/>{reset();}</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>reset()<sp/>{</highlight></codeline>
 <codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>memset(</highlight><highlight class="keyword">this</highlight><highlight class="normal">,<sp/>0,<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">));</highlight></codeline>
 <codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="161"><highlight class="normal">};</highlight></codeline>

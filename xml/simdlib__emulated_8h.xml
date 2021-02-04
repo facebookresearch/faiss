@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="simdlib__emulated_8h" kind="file" language="C++">
     <compoundname>simdlib_emulated.h</compoundname>
     <includes local="no">string</includes>
@@ -9,44 +9,44 @@
     <includes local="no">algorithm</includes>
     <includedby refid="simdlib_8h" local="no">faiss/utils/simdlib.h</includedby>
     <incdepgraph>
-      <node id="1377">
+      <node id="5">
         <label>functional</label>
       </node>
-      <node id="1375">
+      <node id="3">
         <label>cstdint</label>
       </node>
-      <node id="1374">
+      <node id="2">
         <label>string</label>
       </node>
-      <node id="1373">
+      <node id="1">
         <label>faiss/utils/simdlib_emulated.h</label>
         <link refid="simdlib__emulated_8h"/>
-        <childnode refid="1374" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1375" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1376" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="1377" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="1378" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="1378">
+      <node id="6">
         <label>algorithm</label>
       </node>
-      <node id="1376">
+      <node id="4">
         <label>cstring</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="1379">
+      <node id="1">
         <label>faiss/utils/simdlib_emulated.h</label>
         <link refid="simdlib__emulated_8h"/>
-        <childnode refid="1380" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="1380">
+      <node id="2">
         <label>faiss/utils/simdlib.h</label>
         <link refid="simdlib_8h_source"/>
       </node>

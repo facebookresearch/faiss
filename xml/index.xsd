@@ -41,6 +41,7 @@
       <xsd:enumeration value="page"/>
       <xsd:enumeration value="example"/>
       <xsd:enumeration value="dir"/>
+      <xsd:enumeration value="type"/>
     </xsd:restriction>
   </xsd:simpleType>
 
