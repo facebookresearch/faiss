@@ -401,7 +401,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/HNSW.h>
 %include  <faiss/IndexHNSW.h>
 
-%ignore faiss::Nhood::lock;
+%ignore faiss::nndescent::Nhood::lock;
 %include  <faiss/impl/NNDescent.h>
 %include  <faiss/IndexNNDescent.h>
 

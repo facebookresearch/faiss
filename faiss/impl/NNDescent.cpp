@@ -17,8 +17,87 @@
 
 namespace faiss {
 
+namespace nndescent {
+
+void gen_random(std::mt19937 &rng, int *addr, const int size, const int N);
+
+Nhood::Nhood(int l, int s, std::mt19937 &rng, int N) {
+  M = s;
+  nn_new.resize(s * 2);
+  gen_random(rng, &nn_new[0], (int)nn_new.size(), N);
+  nn_new.reserve(s * 2);
+  pool.reserve(l);
+}
+
+Nhood &Nhood::operator=(const Nhood &other) {
+  M = other.M;
+  std::copy(other.nn_new.begin(), other.nn_new.end(),
+            std::back_inserter(nn_new));
+  nn_new.reserve(other.nn_new.capacity());
+  pool.reserve(other.pool.capacity());
+}
+
+Nhood::Nhood(const Nhood &other) {
+  M = other.M;
+  std::copy(other.nn_new.begin(), other.nn_new.end(),
+            std::back_inserter(nn_new));
+  nn_new.reserve(other.nn_new.capacity());
+  pool.reserve(other.pool.capacity());
+}
+
+void Nhood::insert(int id, float dist) {
+  LockGuard guard(lock);
+  if (dist > pool.front().distance)
+    return;
+  for (int i = 0; i < pool.size(); i++) {
+    if (id == pool[i].id)
+      return;
+  }
+  if (pool.size() < pool.capacity()) {
+    pool.push_back(Neighbor(id, dist, true));
+    std::push_heap(pool.begin(), pool.end());
+  } else {
+    std::pop_heap(pool.begin(), pool.end());
+    pool[pool.size() - 1] = Neighbor(id, dist, true);
+    std::push_heap(pool.begin(), pool.end());
+  }
+}
+
+template <typename C> void Nhood::join(C callback) const {
+  for (int const i : nn_new) {
+    for (int const j : nn_new) {
+      if (i < j) {
+        callback(i, j);
+      }
+    }
+    for (int j : nn_old) {
+      callback(i, j);
+    }
+  }
+}
+
+void gen_random(std::mt19937 &rng, int *addr, const int size, const int N) {
+  for (int i = 0; i < size; ++i) {
+    addr[i] = rng() % (N - size);
+  }
+  std::sort(addr, addr + size);
+  for (int i = 1; i < size; ++i) {
+    if (addr[i] <= addr[i - 1]) {
+      addr[i] = addr[i - 1] + 1;
+    }
+  }
+  int off = rng() % N;
+  for (int i = 0; i < size; ++i) {
+    addr[i] = (addr[i] + off) % N;
+  }
+}
+
+} // namespace nndescent
+
+using namespace nndescent;
+
 constexpr int NUM_EVAL_POINTS = 100;
-inline int insert_into_pool(Neighbor *addr, int size, Neighbor nn);
+int insert_into_pool(Neighbor *addr, int size, Neighbor nn);
 
 NNDescent::NNDescent(const int d, const int K) : d(d), K(K), rng(2021) {
 
@@ -155,6 +234,8 @@ void NNDescent::generate_eval_set(DistanceComputer &qdis, std::vector<int> &c,
   for (int i = 0; i < c.size(); i++) {
     std::vector<Neighbor> tmp;
     for (int j = 0; j < N; j++) {
+      if (i == j)
+        continue; // skip itself
       float dist = qdis.symmetric_dis(c[i], j);
       tmp.push_back(Neighbor(j, dist, true));
     }
@@ -308,23 +389,7 @@ void NNDescent::reset() {
   std::vector<int>().swap(final_graph);
 }
 
-void gen_random(std::mt19937 &rng, int *addr, const int size, const int N) {
-  for (int i = 0; i < size; ++i) {
-    addr[i] = rng() % (N - size);
-  }
-  std::sort(addr, addr + size);
-  for (int i = 1; i < size; ++i) {
-    if (addr[i] <= addr[i - 1]) {
-      addr[i] = addr[i - 1] + 1;
-    }
-  }
-  int off = rng() % N;
-  for (int i = 0; i < size; ++i) {
-    addr[i] = (addr[i] + off) % N;
-  }
-}
-
-inline int insert_into_pool(Neighbor *addr, int size, Neighbor nn) {
+int insert_into_pool(Neighbor *addr, int size, Neighbor nn) {
   // find the location to insert
   int left = 0, right = size - 1;
   if (addr[left].distance > nn.distance) {

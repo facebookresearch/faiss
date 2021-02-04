@@ -43,18 +43,56 @@ namespace faiss {
  */
 
 struct VisitedTable;
-struct Neighbor;
-struct Nhood;
 struct DistanceComputer;
-
 typedef std::lock_guard<std::mutex> LockGuard;
+
+namespace nndescent {
+
+struct Neighbor {
+  int id;
+  float distance;
+  bool flag;
+
+  Neighbor() = default;
+  Neighbor(int id, float distance, bool f)
+      : id(id), distance(distance), flag(f) {}
+
+  inline bool operator<(const Neighbor &other) const {
+    return distance < other.distance;
+  }
+};
+
+struct Nhood {
+  std::mutex lock;
+  std::vector<Neighbor> pool;
+  int M;
+
+  std::vector<int> nn_old;
+  std::vector<int> nn_new;
+  std::vector<int> rnn_old;
+  std::vector<int> rnn_new;
+
+  Nhood() = default;
+
+  Nhood(int l, int s, std::mt19937 &rng, int N);
+
+  Nhood &operator=(const Nhood &other);
+
+  Nhood(const Nhood &other);
+
+  void insert(int id, float dist);
+
+  template <typename C> void join(C callback) const;
+};
+
+} // namespace nndescent
 
 struct NNDescent {
 
   using storage_idx_t = int;
   using idx_t = Index::idx_t;
 
-  using KNNGraph = std::vector<Nhood>;
+  using KNNGraph = std::vector<nndescent::Nhood>;
 
   explicit NNDescent(const int d, const int K);
 
@@ -96,91 +134,6 @@ struct NNDescent {
 
   KNNGraph graph;
   std::vector<int> final_graph;
-};
-
-void gen_random(std::mt19937 &rng, int *addr, const int size, const int N);
-
-
-struct Neighbor {
-  int id;
-  float distance;
-  bool flag;
-
-  Neighbor() = default;
-  Neighbor(int id, float distance, bool f)
-      : id(id), distance(distance), flag(f) {}
-
-  inline bool operator<(const Neighbor &other) const {
-    return distance < other.distance;
-  }
-};
-
-struct Nhood {
-  std::mutex lock;
-  std::vector<Neighbor> pool;
-  int M;
-
-  std::vector<int> nn_old;
-  std::vector<int> nn_new;
-  std::vector<int> rnn_old;
-  std::vector<int> rnn_new;
-
-  Nhood() {}
-
-  Nhood(int l, int s, std::mt19937 &rng, int N) {
-    M = s;
-    nn_new.resize(s * 2);
-    gen_random(rng, &nn_new[0], (int)nn_new.size(), N);
-    nn_new.reserve(s * 2);
-    pool.reserve(l);
-  }
-
-  Nhood& operator=(const Nhood &other) {
-    M = other.M;
-    std::copy(other.nn_new.begin(), other.nn_new.end(),
-              std::back_inserter(nn_new));
-    nn_new.reserve(other.nn_new.capacity());
-    pool.reserve(other.pool.capacity());
-  }
-
-  Nhood(const Nhood &other) {
-    M = other.M;
-    std::copy(other.nn_new.begin(), other.nn_new.end(),
-              std::back_inserter(nn_new));
-    nn_new.reserve(other.nn_new.capacity());
-    pool.reserve(other.pool.capacity());
-  }
-
-  void insert(int id, float dist) {
-    LockGuard guard(lock);
-    if (dist > pool.front().distance)
-      return;
-    for (int i = 0; i < pool.size(); i++) {
-      if (id == pool[i].id)
-        return;
-    }
-    if (pool.size() < pool.capacity()) {
-      pool.push_back(Neighbor(id, dist, true));
-      std::push_heap(pool.begin(), pool.end());
-    } else {
-      std::pop_heap(pool.begin(), pool.end());
-      pool[pool.size() - 1] = Neighbor(id, dist, true);
-      std::push_heap(pool.begin(), pool.end());
-    }
-  }
-
-  template <typename C> void join(C callback) const {
-    for (int const i : nn_new) {
-      for (int const j : nn_new) {
-        if (i < j) {
-          callback(i, j);
-        }
-      }
-      for (int j : nn_old) {
-        callback(i, j);
-      }
-    }
-  }
 };
 
 } // namespace faiss
