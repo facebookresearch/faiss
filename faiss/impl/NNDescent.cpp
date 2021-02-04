@@ -223,7 +223,7 @@ void NNDescent::nndescent(DistanceComputer &qdis, bool verbose) {
 
     if (verbose) {
       float recall = eval_recall(eval_points, acc_eval_set);
-      std::cout << "iter: " << it << " recall: " << recall << std::endl;
+      printf("Iter: %d, recall@%d: %lf\n", it, K, recall);
     }
   }
 }
@@ -323,7 +323,9 @@ void NNDescent::build(DistanceComputer &qdis, const int n, bool verbose) {
   std::vector<Nhood>().swap(graph);
   has_built = true;
 
-  std::cout << "Added " << ntotal << " points into index" << std::endl;
+  if (verbose) {
+    printf("Addes %d points into the index\n", ntotal);
+  }
 }
 
 void NNDescent::search(DistanceComputer &qdis, const int topk, idx_t *indices,
