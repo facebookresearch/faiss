@@ -306,19 +306,11 @@ void NNDescent::build(DistanceComputer &qdis, const int n, bool verbose) {
   final_graph.resize(ntotal * K);
 
   for (int i = 0; i < ntotal; i++) {
-    // std::vector<int> tmp;
     std::sort(graph[i].pool.begin(), graph[i].pool.end());
     for (int j = 0; j < K; j++) {
-      // tmp.push_back(graph[i].pool[j].id);
       FAISS_ASSERT(graph[i].pool[j].id < ntotal);
       final_graph[i * K + j] = graph[i].pool[j].id;
     }
-
-    std::vector<Neighbor>().swap(graph[i].pool);
-    std::vector<int>().swap(graph[i].nn_new);
-    std::vector<int>().swap(graph[i].nn_old);
-    std::vector<int>().swap(graph[i].rnn_new);
-    std::vector<int>().swap(graph[i].rnn_new);
   }
   std::vector<Nhood>().swap(graph);
   has_built = true;
@@ -332,23 +324,22 @@ void NNDescent::search(DistanceComputer &qdis, const int topk, idx_t *indices,
                        float *dists, VisitedTable &vt) const {
 
   FAISS_THROW_IF_NOT_MSG(has_built, "The index is not build yet.");
-  FAISS_THROW_IF_NOT_MSG(search_L >= topk,
-                         "search_L should be >= k in NNDescent.search");
+  int L = std::max(search_L, topk);
 
-  std::vector<Neighbor> retset(search_L + 1);
-  std::vector<int> init_ids(search_L);
-  gen_random(rng, init_ids.data(), search_L, ntotal);
+  std::vector<Neighbor> retset(L + 1);
+  std::vector<int> init_ids(L);
+  gen_random(rng, init_ids.data(), L, ntotal);
 
-  for (int i = 0; i < search_L; i++) {
+  for (int i = 0; i < L; i++) {
     int id = init_ids[i];
     float dist = qdis(id);
     retset[i] = Neighbor(id, dist, true);
   }
 
-  std::sort(retset.begin(), retset.begin() + search_L);
+  std::sort(retset.begin(), retset.begin() + L);
   int k = 0;
-  while (k < search_L) {
-    int nk = search_L;
+  while (k < L) {
+    int nk = L;
 
     if (retset[k].flag) {
       retset[k].flag = false;
@@ -361,16 +352,15 @@ void NNDescent::search(DistanceComputer &qdis, const int topk, idx_t *indices,
 
         vt.set(id);
         float dist = qdis(id);
-        if (dist >= retset[search_L - 1].distance)
+        if (dist >= retset[L - 1].distance)
           continue;
 
         Neighbor nn(id, dist, true);
-        int r = insert_into_pool(retset.data(), search_L, nn);
+        int r = insert_into_pool(retset.data(), L, nn);
 
         if (r < nk)
           nk = r;
       }
-      // lock to here
     }
     if (nk <= k)
       k = nk;
