@@ -144,6 +144,8 @@ jobs:
         default: main
       cuda:
         type: string
+      cuda_archs:
+        type: string
     machine:
       resource_class: gpu.nvidia.small
       image: ubuntu-1604-cuda-10.1:201909-23
@@ -155,7 +157,7 @@ jobs:
           command: |
             docker build -t faiss -f conda/Dockerfile.cuda<<parameters.cuda>> .
             docker run --gpus all \
-              -e CUDA_ARCHS="35;52;60;61;70;72;75" \
+              -e CUDA_ARCHS="<<parameters.cuda_archs>>" \
               -e ANACONDA_API_TOKEN=$ANACONDA_API_TOKEN \
               faiss \
               conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>" }' \
@@ -234,6 +236,7 @@ workflows:
       - deploy_linux_gpu:
           name: Linux GPU packages (CUDA 10.1)
           cuda: "10.1"
+          cuda_archs: "35;52;60;61;70;72;75"
           filters:
             tags:
               only: /^v.*/
@@ -242,6 +245,7 @@ workflows:
       - deploy_linux_gpu:
           name: Linux GPU packages (CUDA 10.2)
           cuda: "10.2"
+          cuda_archs: "35;52;60;61;70;72;75"
           filters:
             tags:
               only: /^v.*/
@@ -250,6 +254,7 @@ workflows:
       - deploy_linux_gpu:
           name: Linux GPU packages (CUDA 11.0)
           cuda: "11.0"
+          cuda_archs: "35;52;60;61;70;72;75;80;86"
           filters:
             tags:
               only: /^v.*/
@@ -285,14 +290,17 @@ workflows:
       - deploy_linux_gpu:
           name: Linux GPU nightlies (CUDA 10.1)
           cuda: "10.1"
+          cuda_archs: "35;52;60;61;70;72;75"
           label: nightly
       - deploy_linux_gpu:
           name: Linux GPU nightlies (CUDA 10.2)
           cuda: "10.2"
+          cuda_archs: "35;52;60;61;70;72;75"
           label: nightly
       - deploy_linux_gpu:
           name: Linux GPU nightlies (CUDA 11.0)
           cuda: "11.0"
+          cuda_archs: "35;52;60;61;70;72;75;80;86"
           label: nightly
       - deploy_windows:
           name: Windows nightlies
