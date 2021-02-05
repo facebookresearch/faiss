@@ -665,12 +665,14 @@ class TestNNDescentKNNG(unittest.TestCase):
 
         index.add(xb)
         graph = index.nndescent.final_graph
+        graph = faiss.vector_to_array(graph)
+        graph = graph.reshape(nb, K)
 
         recalls = 0
         for i in range(nb):
             for j in range(K):
                 for k in range(K):
-                    if graph.at(i * K + j) == knn[i, k]:
+                    if graph[i, j] == knn[i, k]:
                         recalls += 1
                         break
         recall = 1.0 * recalls / (nb * K)

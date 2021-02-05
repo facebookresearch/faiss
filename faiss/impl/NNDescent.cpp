@@ -48,6 +48,7 @@ Nhood::Nhood(const Nhood &other) {
   pool.reserve(other.pool.capacity());
 }
 
+/// Insert a point into the candidate pool
 void Nhood::insert(int id, float dist) {
   LockGuard guard(lock);
   if (dist > pool.front().distance)
@@ -66,6 +67,8 @@ void Nhood::insert(int id, float dist) {
   }
 }
 
+/// In local join, two objects are compared only if at least
+/// one of them is new.
 template <typename C> void Nhood::join(C callback) const {
   for (int const i : nn_new) {
     for (int const j : nn_new) {
@@ -128,6 +131,8 @@ void NNDescent::join(DistanceComputer &qdis) {
   }
 }
 
+/// Sample neighbors for each node to peform local join later
+/// Store them in nn_new and nn_old
 void NNDescent::update() {
 
   // Step 1.
@@ -141,6 +146,7 @@ void NNDescent::update() {
   // Step 2.
   // Compute the number of neighbors which is new i.e. flag is true
   // in the candidate pool. This must not exceed the sample number S.
+  // That means We only select S new neighbors.
 #pragma omp parallel for
   for (int n = 0; n < ntotal; ++n) {
     auto &nn = graph[n];
@@ -251,6 +257,7 @@ void NNDescent::nndescent(DistanceComputer &qdis, bool verbose) {
   }
 }
 
+/// Sample a small number of points to evaluate the quality of KNNG built
 void NNDescent::generate_eval_set(DistanceComputer &qdis, std::vector<int> &c,
                                   std::vector<std::vector<int>> &v, int N) {
 #pragma omp parallel for
@@ -270,6 +277,7 @@ void NNDescent::generate_eval_set(DistanceComputer &qdis, std::vector<int> &c,
   }
 }
 
+/// Evaluate the quality of KNNG built
 float NNDescent::eval_recall(std::vector<int> &eval_points,
                              std::vector<std::vector<int>> &acc_eval_set) {
   float mean_acc = 0.0f;
@@ -290,6 +298,7 @@ float NNDescent::eval_recall(std::vector<int> &eval_points,
   return mean_acc / eval_points.size();
 }
 
+/// Initialize the KNN graph randomly
 void NNDescent::init_graph(DistanceComputer &qdis) {
 
   graph.reserve(ntotal);
@@ -328,6 +337,8 @@ void NNDescent::build(DistanceComputer &qdis, const int n, bool verbose) {
 
   final_graph.resize(ntotal * K);
 
+  // Store the neighbor link structure into final_graph
+  // Clear the old graph
   for (int i = 0; i < ntotal; i++) {
     std::sort(graph[i].pool.begin(), graph[i].pool.end());
     for (int j = 0; j < K; j++) {
@@ -349,18 +360,24 @@ void NNDescent::search(DistanceComputer &qdis, const int topk, idx_t *indices,
   FAISS_THROW_IF_NOT_MSG(has_built, "The index is not build yet.");
   int L = std::max(search_L, topk);
 
+  // candidate pool, the K best items is the result.
   std::vector<Neighbor> retset(L + 1);
+
+  // Randomly choose L points to intialize the candidate pool
   std::vector<int> init_ids(L);
   gen_random(rng, init_ids.data(), L, ntotal);
-
   for (int i = 0; i < L; i++) {
     int id = init_ids[i];
     float dist = qdis(id);
     retset[i] = Neighbor(id, dist, true);
   }
 
+  // Maintain the candidate pool in ascending order
   std::sort(retset.begin(), retset.begin() + L);
+
   int k = 0;
+
+  // Stop until the smallest position updated is >= L
   while (k < L) {
     int nk = L;
 
@@ -404,6 +421,7 @@ void NNDescent::reset() {
   std::vector<int>().swap(final_graph);
 }
 
+// Insert a new point into the candidate pool in ascending order
 int insert_into_pool(Neighbor *addr, int size, Neighbor nn) {
   // find the location to insert
   int left = 0, right = size - 1;

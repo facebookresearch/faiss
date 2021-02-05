@@ -64,8 +64,8 @@ struct Neighbor {
 
 struct Nhood {
   std::mutex lock;
-  std::vector<Neighbor> pool; // candidate pool
-  int M;                      // number of new nodes to be operated
+  std::vector<Neighbor> pool; // candidate pool (a max heap)
+  int M;                      // number of new neighbors to be operated
 
   std::vector<int> nn_old;  // old neighbors
   std::vector<int> nn_new;  // new neighbors
@@ -114,7 +114,7 @@ struct NNDescent {
   /// Perform local join on each node
   void join(DistanceComputer &qdis);
 
-  /// Combine forward and reverse links
+  /// Sample new neighbors for each node to peform local join later
   void update();
 
   /// Sample a small number of points to evaluate the quality of KNNG built
