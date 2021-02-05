@@ -548,7 +548,7 @@ def index_cpu_to_gpus_list(index, co=None, gpus=None, ngpu=-1):
     return index_gpu
 
 # allows numpy ndarray usage with bfKnn
-def knn_gpu(res, xb, xq, k, D=None, I=None, metric=METRIC_L2):
+def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
     nq, d = xq.shape
     if xq.flags.c_contiguous:
         xq_row_major = True
@@ -903,7 +903,7 @@ def range_search_with_parameters(index, x, radius, params=None, output_stats=Fal
 # KNN function
 ######################################################
 
-def knn(xq, xb, k, distance_type=METRIC_L2):
+def knn(xq, xb, k, metric=METRIC_L2):
     """ wrapper around the faiss knn functions without index """
     nq, d = xq.shape
     nb, d2 = xb.shape
@@ -912,7 +912,7 @@ def knn(xq, xb, k, distance_type=METRIC_L2):
     I = np.empty((nq, k), dtype='int64')
     D = np.empty((nq, k), dtype='float32')
 
-    if distance_type == METRIC_L2:
+    if metric == METRIC_L2:
         heaps = float_maxheap_array_t()
         heaps.k = k
         heaps.nh = nq
@@ -922,7 +922,7 @@ def knn(xq, xb, k, distance_type=METRIC_L2):
             swig_ptr(xq), swig_ptr(xb),
             d, nq, nb, heaps
         )
-    elif distance_type == METRIC_INNER_PRODUCT:
+    elif metric == METRIC_INNER_PRODUCT:
         heaps = float_minheap_array_t()
         heaps.k = k
         heaps.nh = nq
@@ -932,6 +932,8 @@ def knn(xq, xb, k, distance_type=METRIC_L2):
             swig_ptr(xq), swig_ptr(xb),
             d, nq, nb, heaps
         )
+    else:
+        raise NotImplementedError("only L2 and INNER_PRODUCT are supported")
     return D, I
 
 

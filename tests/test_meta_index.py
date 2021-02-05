@@ -213,7 +213,6 @@ class Merge(unittest.TestCase):
             id_list = gen.permutation(nb * 7)[:nb].astype('int64')
             index.add_with_ids(xb, id_list)
 
-
         print('ref search ntotal=%d' % index.ntotal)
         Dref, Iref = index.search(xq, k)
 
@@ -242,13 +241,17 @@ class Merge(unittest.TestCase):
         D, I = index.search(xq, k)
 
         # make sure results are in the same order with even ones removed
+        ndiff = 0
         for i in range(nq):
             j2 = 0
             for j in range(k):
                 if Iref[i, j] % 2 != 0:
-                    assert I[i, j2] == Iref[i, j]
+                    if I[i, j2] != Iref[i, j]:
+                        ndiff += 1
                     assert abs(D[i, j2] - Dref[i, j]) < 1e-5
                     j2 += 1
+        # draws are ordered arbitrarily
+        assert ndiff < 5
 
     def test_remove(self):
         self.do_test_remove(1)

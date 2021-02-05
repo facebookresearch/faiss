@@ -328,7 +328,6 @@ class TestImplem15(TestImplems):
     def test_2_64(self):
         self.do_with_params(32, (2, 64))
 
-@unittest.skipIf(platform.system() == "Windows", "heap corruption on windows")
 class TestAdd(unittest.TestCase):
 
     def do_test_add(self, d, bbs):

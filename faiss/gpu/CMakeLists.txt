@@ -23,7 +23,6 @@ target_sources(faiss PRIVATE
   impl/BroadcastSum.cu
   impl/Distance.cu
   impl/FlatIndex.cu
-  impl/InterleavedCodes.cpp
   impl/IVFAppend.cu
   impl/IVFBase.cu
   impl/IVFFlat.cu
@@ -33,6 +32,7 @@ target_sources(faiss PRIVATE
   impl/IVFUtils.cu
   impl/IVFUtilsSelect1.cu
   impl/IVFUtilsSelect2.cu
+  impl/InterleavedCodes.cpp
   impl/L2Norm.cu
   impl/L2Select.cu
   impl/PQScanMultiPassPrecomputed.cu
@@ -54,49 +54,49 @@ target_sources(faiss PRIVATE
   utils/WarpSelectFloat.cu
   utils/WarpSelectHalf.cu
   utils/blockselect/BlockSelectFloat1.cu
-  utils/blockselect/BlockSelectFloat128.cu
-  utils/blockselect/BlockSelectFloat256.cu
   utils/blockselect/BlockSelectFloat32.cu
   utils/blockselect/BlockSelectFloat64.cu
+  utils/blockselect/BlockSelectFloat128.cu
+  utils/blockselect/BlockSelectFloat256.cu
+  utils/blockselect/BlockSelectFloatF512.cu
   utils/blockselect/BlockSelectFloatF1024.cu
   utils/blockselect/BlockSelectFloatF2048.cu
-  utils/blockselect/BlockSelectFloatF512.cu
+  utils/blockselect/BlockSelectFloatT512.cu
   utils/blockselect/BlockSelectFloatT1024.cu
   utils/blockselect/BlockSelectFloatT2048.cu
-  utils/blockselect/BlockSelectFloatT512.cu
   utils/blockselect/BlockSelectHalf1.cu
-  utils/blockselect/BlockSelectHalf128.cu
-  utils/blockselect/BlockSelectHalf256.cu
   utils/blockselect/BlockSelectHalf32.cu
   utils/blockselect/BlockSelectHalf64.cu
+  utils/blockselect/BlockSelectHalf128.cu
+  utils/blockselect/BlockSelectHalf256.cu
+  utils/blockselect/BlockSelectHalfF512.cu
   utils/blockselect/BlockSelectHalfF1024.cu
   utils/blockselect/BlockSelectHalfF2048.cu
-  utils/blockselect/BlockSelectHalfF512.cu
+  utils/blockselect/BlockSelectHalfT512.cu
   utils/blockselect/BlockSelectHalfT1024.cu
   utils/blockselect/BlockSelectHalfT2048.cu
-  utils/blockselect/BlockSelectHalfT512.cu
   utils/warpselect/WarpSelectFloat1.cu
-  utils/warpselect/WarpSelectFloat128.cu
-  utils/warpselect/WarpSelectFloat256.cu
   utils/warpselect/WarpSelectFloat32.cu
   utils/warpselect/WarpSelectFloat64.cu
+  utils/warpselect/WarpSelectFloat128.cu
+  utils/warpselect/WarpSelectFloat256.cu
+  utils/warpselect/WarpSelectFloatF512.cu
   utils/warpselect/WarpSelectFloatF1024.cu
   utils/warpselect/WarpSelectFloatF2048.cu
-  utils/warpselect/WarpSelectFloatF512.cu
+  utils/warpselect/WarpSelectFloatT512.cu
   utils/warpselect/WarpSelectFloatT1024.cu
   utils/warpselect/WarpSelectFloatT2048.cu
-  utils/warpselect/WarpSelectFloatT512.cu
   utils/warpselect/WarpSelectHalf1.cu
-  utils/warpselect/WarpSelectHalf128.cu
-  utils/warpselect/WarpSelectHalf256.cu
   utils/warpselect/WarpSelectHalf32.cu
   utils/warpselect/WarpSelectHalf64.cu
+  utils/warpselect/WarpSelectHalf128.cu
+  utils/warpselect/WarpSelectHalf256.cu
+  utils/warpselect/WarpSelectHalfF512.cu
   utils/warpselect/WarpSelectHalfF1024.cu
   utils/warpselect/WarpSelectHalfF2048.cu
-  utils/warpselect/WarpSelectHalfF512.cu
+  utils/warpselect/WarpSelectHalfT512.cu
   utils/warpselect/WarpSelectHalfT1024.cu
   utils/warpselect/WarpSelectHalfT2048.cu
-  utils/warpselect/WarpSelectHalfT512.cu
 )
 
 set(FAISS_GPU_HEADERS
@@ -105,11 +105,11 @@ set(FAISS_GPU_HEADERS
   GpuClonerOptions.h
   GpuDistance.h
   GpuFaissAssert.h
+  GpuIndex.h
   GpuIndexBinaryFlat.h
   GpuIndexFlat.h
-  GpuIndex.h
-  GpuIndexIVFFlat.h
   GpuIndexIVF.h
+  GpuIndexIVFFlat.h
   GpuIndexIVFPQ.h
   GpuIndexIVFScalarQuantizer.h
   GpuIndicesOptions.h
@@ -127,36 +127,37 @@ set(FAISS_GPU_HEADERS
   impl/IVFBase.cuh
   impl/IVFFlat.cuh
   impl/IVFFlatScan.cuh
+  impl/IVFInterleaved.cuh
   impl/IVFPQ.cuh
   impl/IVFUtils.cuh
+  impl/InterleavedCodes.h
   impl/L2Norm.cuh
   impl/L2Select.cuh
-  impl/PQCodeDistances.cuh
   impl/PQCodeDistances-inl.cuh
+  impl/PQCodeDistances.cuh
   impl/PQCodeLoad.cuh
-  impl/PQScanMultiPassNoPrecomputed.cuh
   impl/PQScanMultiPassNoPrecomputed-inl.cuh
+  impl/PQScanMultiPassNoPrecomputed.cuh
   impl/PQScanMultiPassPrecomputed.cuh
   impl/RemapIndices.h
   impl/VectorResidual.cuh
-  utils/blockselect/BlockSelectImpl.cuh
   utils/BlockSelectKernel.cuh
   utils/Comparators.cuh
   utils/ConversionOperators.cuh
   utils/CopyUtils.cuh
   utils/DeviceDefs.cuh
-  utils/DeviceTensor.cuh
   utils/DeviceTensor-inl.cuh
+  utils/DeviceTensor.cuh
   utils/DeviceUtils.h
   utils/DeviceVector.cuh
   utils/Float16.cuh
-  utils/HostTensor.cuh
   utils/HostTensor-inl.cuh
+  utils/HostTensor.cuh
   utils/Limits.cuh
   utils/LoadStoreOperators.cuh
   utils/MathOperators.cuh
-  utils/MatrixMult.cuh
   utils/MatrixMult-inl.cuh
+  utils/MatrixMult.cuh
   utils/MergeNetworkBlock.cuh
   utils/MergeNetworkUtils.cuh
   utils/MergeNetworkWarp.cuh
@@ -168,14 +169,16 @@ set(FAISS_GPU_HEADERS
   utils/Select.cuh
   utils/StackDeviceMemory.h
   utils/StaticUtils.h
-  utils/Tensor.cuh
   utils/Tensor-inl.cuh
+  utils/Tensor.cuh
   utils/ThrustAllocator.cuh
   utils/Timer.h
   utils/Transpose.cuh
+  utils/WarpPackedBits.cuh
   utils/WarpSelectKernel.cuh
-  utils/warpselect/WarpSelectImpl.cuh
   utils/WarpShuffles.cuh
+  utils/blockselect/BlockSelectImpl.cuh
+  utils/warpselect/WarpSelectImpl.cuh
 )
 
 # Export FAISS_HEADERS variable to parent scope.
