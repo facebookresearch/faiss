@@ -154,6 +154,7 @@ class TestSmallData(unittest.TestCase):
 
     def test_small_data(self):
         d = 20
+        # nlist = (2^4)^2 = 256
         index = faiss.index_factory(d, 'IMI2x4,Flat')
 
         rs = np.random.RandomState(123)
@@ -166,7 +167,7 @@ class TestSmallData(unittest.TestCase):
         xq = rs.rand(10, d).astype('float32')
 
         ref_D, ref_I = index.search(xq, k)
-        D, I = search_single_scan(index, xq, k, bs=10)
+        D, I = faiss.knn(xq, xb, k)
 
         assert np.all(D == ref_D)
         assert np.all(I == ref_I)
