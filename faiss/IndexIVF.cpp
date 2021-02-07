@@ -277,10 +277,10 @@ void IndexIVF::set_direct_map_type (DirectMap::Type type)
 void IndexIVF::search (idx_t n, const float *x, idx_t k,
                          float *distances, idx_t *labels) const
 {
-
+    size_t nprobe = std::min(nlist, this->nprobe);
 
     // search function for a subset of queries
-    auto sub_search_func = [this, k]
+    auto sub_search_func = [this, k, nprobe]
             (idx_t n, const float *x, float *distances, idx_t *labels,
              IndexIVFStats *ivf_stats) {
 
@@ -352,6 +352,8 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
                                    IndexIVFStats *ivf_stats) const
 {
     long nprobe = params ? params->nprobe : this->nprobe;
+    nprobe = std::min((long)nlist, nprobe);
+
     long max_codes = params ? params->max_codes : this->max_codes;
 
     size_t nlistv = 0, ndis = 0, nheap = 0;

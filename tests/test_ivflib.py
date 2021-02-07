@@ -31,7 +31,8 @@ def search_single_scan(index, xq, k, bs=128):
         index = faiss.downcast_index(index.index)
 
     # coarse assignment
-    coarse_dis, assign = index.quantizer.search(xq, index.nprobe)
+    nprobe = min(index.nprobe, index.nlist)
+    coarse_dis, assign = index.quantizer.search(xq, nprobe)
     nlist = index.nlist
     assign_buckets = assign // bs
     nq = len(xq)
@@ -146,3 +147,26 @@ class TestSearchWithParameters(unittest.TestCase):
         np.testing.assert_array_equal(Dnew, Dref)
 
         self.assertEqual(stats2["ndis"], ref_ndis)
+
+
+class TestSmallData(unittest.TestCase):
+    """Test in case of nprobe > nlist"""
+
+    def test_small_data(self):
+        d = 20
+        index = faiss.index_factory(d, 'IMI2x4,Flat')
+
+        rs = np.random.RandomState(123)
+        xt = rs.rand(100, d).astype('float32')
+        xb = rs.rand(1000, d).astype('float32')
+        index.train(xt)
+        index.add(xb)
+        index.nprobe = 2048
+        k = 5
+        xq = rs.rand(10, d).astype('float32')
+
+        ref_D, ref_I = index.search(xq, k)
+        D, I = search_single_scan(index, xq, k, bs=10)
+
+        assert np.all(D == ref_D)
+        assert np.all(I == ref_I)
