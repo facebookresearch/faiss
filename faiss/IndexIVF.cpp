@@ -277,7 +277,7 @@ void IndexIVF::set_direct_map_type (DirectMap::Type type)
 void IndexIVF::search (idx_t n, const float *x, idx_t k,
                          float *distances, idx_t *labels) const
 {
-    size_t nprobe = std::min(nlist, this->nprobe);
+    const size_t nprobe = std::min(nlist, this->nprobe);
 
     // search function for a subset of queries
     auto sub_search_func = [this, k, nprobe]
@@ -351,10 +351,10 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
                                    const IVFSearchParameters *params,
                                    IndexIVFStats *ivf_stats) const
 {
-    long nprobe = params ? params->nprobe : this->nprobe;
-    nprobe = std::min((long)nlist, nprobe);
+    idx_t nprobe = params ? params->nprobe : this->nprobe;
+    nprobe = std::min((idx_t)nlist, nprobe);
 
-    long max_codes = params ? params->max_codes : this->max_codes;
+    idx_t max_codes = params ? params->max_codes : this->max_codes;
 
     size_t nlistv = 0, ndis = 0, nheap = 0;
 
@@ -487,7 +487,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
 
                 init_result (simi, idxi);
 
-                long nscan = 0;
+                idx_t nscan = 0;
 
                 // loop over probes
                 for (size_t ik = 0; ik < nprobe; ik++) {
@@ -520,7 +520,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
                 init_result (local_dis.data(), local_idx.data());
 
 #pragma omp for schedule(dynamic)
-                for (long ik = 0; ik < nprobe; ik++) {
+                for (idx_t ik = 0; ik < nprobe; ik++) {
                     ndis += scan_one_list
                         (keys [i * nprobe + ik],
                          coarse_dis[i * nprobe + ik],
@@ -603,6 +603,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
 void IndexIVF::range_search (idx_t nx, const float *x, float radius,
                              RangeSearchResult *result) const
 {
+    const size_t nprobe = std::min(nlist, this->nprobe);
     std::unique_ptr<idx_t[]> keys (new idx_t[nx * nprobe]);
     std::unique_ptr<float []> coarse_dis (new float[nx * nprobe]);
 
@@ -627,8 +628,9 @@ void IndexIVF::range_search_preassigned (
          const IVFSearchParameters *params,
          IndexIVFStats *stats) const
 {
-    long nprobe = params ? params->nprobe : this->nprobe;
-    long max_codes = params ? params->max_codes : this->max_codes;
+    idx_t nprobe = params ? params->nprobe : this->nprobe;
+    nprobe = std::min((idx_t)nlist, nprobe);
+    idx_t max_codes = params ? params->max_codes : this->max_codes;
 
     size_t nlistv = 0, ndis = 0;
 
@@ -815,6 +817,7 @@ void IndexIVF::search_and_reconstruct (idx_t n, const float *x, idx_t k,
                                        float *distances, idx_t *labels,
                                        float *recons) const
 {
+    const size_t nprobe = std::min(nlist, this->nprobe);
     idx_t * idx = new idx_t [n * nprobe];
     ScopeDeleter<idx_t> del (idx);
     float * coarse_dis = new float [n * nprobe];
