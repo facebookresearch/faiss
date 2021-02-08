@@ -247,6 +247,14 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
+      - deploy_linux_gpu:
+          name: Linux GPU packages (CUDA 11.0)
+          cuda: "11.0"
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - deploy_windows:
           name: Windows packages
           filters:
@@ -281,6 +289,10 @@ workflows:
       - deploy_linux_gpu:
           name: Linux GPU nightlies (CUDA 10.2)
           cuda: "10.2"
+          label: nightly
+      - deploy_linux_gpu:
+          name: Linux GPU nightlies (CUDA 11.0)
+          cuda: "11.0"
           label: nightly
       - deploy_windows:
           name: Windows nightlies
