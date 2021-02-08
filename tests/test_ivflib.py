@@ -161,6 +161,7 @@ class TestSmallData(unittest.TestCase):
         rs = np.random.RandomState(123)
         xt = rs.rand(100, d).astype('float32')
         xb = rs.rand(1000, d).astype('float32')
+
         index.train(xt)
         index.add(xb)
         index.nprobe = 2048
