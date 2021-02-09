@@ -250,6 +250,8 @@ void IndexBinaryHash::search(idx_t n, const uint8_t *x, idx_t k,
 
         search_single_query (*this, q, res, n0, nlist, ndis);
 
+        heap_reorder<HeapForL2> (k, simi, idxi);
+
     }
     indexBinaryHash_stats.nq += n;
     indexBinaryHash_stats.n0 += n0;
@@ -459,6 +461,8 @@ void IndexBinaryMultiHash::search(idx_t n, const uint8_t *x, idx_t k,
         const uint8_t *q = x + i * code_size;
 
         search_1_query_multihash (*this, q, res, n0, nlist, ndis);
+
+        heap_reorder<HeapForL2> (k, simi, idxi);
 
     }
     indexBinaryHash_stats.nq += n;
