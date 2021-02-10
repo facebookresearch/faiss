@@ -57,6 +57,24 @@
 <codeline><highlight class="normal"><sp/><sp/>auto<sp/>cAT<sp/>=<sp/>GetCudaType&lt;AT&gt;::Type;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/>auto<sp/>cBT<sp/>=<sp/>GetCudaType&lt;BT&gt;::Type;</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//<sp/>FIXME:<sp/>some<sp/>weird<sp/>CUDA<sp/>11<sp/>bug?<sp/>where<sp/>cublasSgemmEx<sp/>on</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//<sp/>f16<sp/>(8,<sp/>64)<sp/>x<sp/>f16<sp/>(64,<sp/>64)&apos;<sp/>=<sp/>f32<sp/>(8,<sp/>64)<sp/>returns<sp/>&quot;not<sp/>supported&quot;.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//<sp/>cublasGemmEx<sp/>using<sp/>CUBLAS_COMPUTE_32F<sp/>also<sp/>fails,<sp/>but</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//<sp/>CUBLAS_COMPUTE_32F_PEDANTIC<sp/>does<sp/>not<sp/>fail<sp/>(as<sp/>seen<sp/>on<sp/>a<sp/>V100).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//<sp/>Only<sp/>use<sp/>the<sp/>PEDANTIC<sp/>implementation<sp/>if<sp/>the<sp/>input<sp/>matrices<sp/>are<sp/>f16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//<sp/>and<sp/>we<sp/>are<sp/>on<sp/>CUDA<sp/>11+</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>11000</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>if<sp/>(cAT<sp/>==<sp/>CUDA_R_16F<sp/>||<sp/>cBT<sp/>==<sp/>CUDA_R_16F)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>cublasGemmEx(handle,<sp/>transa,<sp/>transb,<sp/>m,<sp/>n,<sp/>k,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;fAlpha,<sp/>A,<sp/>cAT,<sp/>lda,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>B,<sp/>cBT,<sp/>ldb,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;fBeta,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>C,<sp/>CUDA_R_32F,<sp/>ldc,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUBLAS_COMPUTE_32F_PEDANTIC,<sp/>CUBLAS_GEMM_DEFAULT);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/>//<sp/>Always<sp/>accumulate<sp/>in<sp/>f32</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/>return<sp/>cublasSgemmEx(handle,<sp/>transa,<sp/>transb,<sp/>m,<sp/>n,<sp/>k,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;fAlpha,<sp/>A,<sp/>cAT,<sp/>lda,</highlight></codeline>
@@ -164,11 +182,16 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT_FMT(err<sp/>==<sp/>CUBLAS_STATUS_SUCCESS,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;cublas<sp/>failed<sp/>(%d):<sp/>&quot;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;(%d,<sp/>%d)%s<sp/>x<sp/>(%d,<sp/>%d)%s<sp/>=<sp/>(%d,<sp/>%d)%s&quot;,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;(%d,<sp/>%d)%s<sp/>x<sp/>(%d,<sp/>%d)%s<sp/>=<sp/>(%d,<sp/>%d)%s<sp/>&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;gemm<sp/>params<sp/>m<sp/>%d<sp/>n<sp/>%d<sp/>k<sp/>%d<sp/>trA<sp/>%s<sp/>trB<sp/>%s<sp/>lda<sp/>%d<sp/>ldb<sp/>%d<sp/>ldc<sp/>%d&quot;,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int)<sp/>err,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a.getSize(0),<sp/>a.getSize(1),<sp/>transA<sp/>?<sp/>&quot;&apos;&quot;<sp/>:<sp/>&quot;&quot;,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>b.getSize(0),<sp/>b.getSize(1),<sp/>transB<sp/>?<sp/>&quot;&apos;&quot;<sp/>:<sp/>&quot;&quot;,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>c.getSize(0),<sp/>c.getSize(1),<sp/>transC<sp/>?<sp/>&quot;&apos;&quot;<sp/>:<sp/>&quot;&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>c.getSize(0),<sp/>c.getSize(1),<sp/>transC<sp/>?<sp/>&quot;&apos;&quot;<sp/>:<sp/>&quot;&quot;,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m,<sp/>n,<sp/>k,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gemmTrA<sp/>==<sp/>CUBLAS_OP_T<sp/>?<sp/>&quot;T&quot;<sp/>:<sp/>&quot;N&quot;,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gemmTrB<sp/>==<sp/>CUBLAS_OP_T<sp/>?<sp/>&quot;T&quot;<sp/>:<sp/>&quot;N&quot;,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lda,<sp/>ldb,<sp/>ldc);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/>CUDA_TEST_ERROR();</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
