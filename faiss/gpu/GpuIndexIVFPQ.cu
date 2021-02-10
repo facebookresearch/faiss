@@ -9,7 +9,6 @@
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFPQ.h>
-#include <faiss/impl/ProductQuantizer.h>
 #include <faiss/utils/utils.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuResources.h>
@@ -30,6 +29,7 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResourcesProvider* provider,
                 index->metric_arg,
                 index->nlist,
                 config),
+    pq(index->pq),
     ivfpqConfig_(config),
     usePrecomputedTables_(config.usePrecomputedTables),
     subQuantizers_(0),
@@ -51,6 +51,7 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(GpuResourcesProvider* provider,
                 0,
                 nlist,
                 config),
+    pq(dims, subQuantizers, bitsPerCode),
     ivfpqConfig_(config),
     usePrecomputedTables_(config.usePrecomputedTables),
     subQuantizers_(subQuantizers),
@@ -74,6 +75,7 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
   // Clear out our old data
   index_.reset();
 
+  pq = index->pq;
   subQuantizers_ = index->pq.M;
   bitsPerCode_ = index->pq.nbits;
 
@@ -228,10 +230,6 @@ GpuIndexIVFPQ::reset() {
 
 void
 GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
-  // Just use the CPU product quantizer to determine sub-centroids
-  faiss::ProductQuantizer pq(this->d, subQuantizers_, bitsPerCode_);
-  pq.verbose = verbose;
-
   // Code largely copied from faiss::IndexIVFPQ
   auto x_in = x;
 
@@ -260,7 +258,26 @@ GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
            subQuantizers_, getCentroidsPerSubQuantizer(), n, this->d);
   }
 
-  pq.train(n, residuals.data());
+  // For PQ training purposes, accelerate it by using a GPU clustering index if
+  // a clustering index has not already been assigned
+  if (!pq.assign_index) {
+    try {
+      GpuIndexFlatConfig config;
+      config.device = ivfpqConfig_.device;
+      GpuIndexFlatL2 pqIndex(resources_, pq.dsub, config);
+
+      pq.assign_index = &pqIndex;
+      pq.train(n, residuals.data());
+    } catch (...) {
+      pq.assign_index = nullptr;
+      throw;
+    }
+
+    pq.assign_index = nullptr;
+  } else {
+    // use the currently assigned clustering index
+    pq.train(n, residuals.data());
+  }
 
   index_.reset(new IVFPQ(resources_.get(),
                          metric_type,

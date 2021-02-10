@@ -203,15 +203,15 @@ class TestInterleavedIVFPQLayout(unittest.TestCase):
             # Try without precomputed codes
             d_g, i_g = idx_gpu.search(xq, 10)
             d_c, i_c = idx_cpu.search(xq, 10)
-            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
-            self.assertTrue(np.allclose(d_g, d_c))
+            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 25)
+            self.assertTrue(np.allclose(d_g, d_c, rtol=5e-5, atol=3e-1))
 
             # Try with precomputed codes (different kernel)
             idx_gpu.setPrecomputedCodes(True)
             d_g, i_g = idx_gpu.search(xq, 10)
             d_c, i_c = idx_cpu.search(xq, 10)
-            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
-            self.assertTrue(np.allclose(d_g, d_c))
+            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 25)
+            self.assertTrue(np.allclose(d_g, d_c, rtol=5e-5, atol=3e-1))
 
     def test_copy_to_cpu(self):
         res = faiss.StandardGpuResources()
@@ -247,14 +247,14 @@ class TestInterleavedIVFPQLayout(unittest.TestCase):
             # Try without precomputed codes
             d_g, i_g = idx_gpu.search(xq, 10)
             d_c, i_c = idx_cpu.search(xq, 10)
-            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
+            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 20)
             self.assertTrue(np.allclose(d_g, d_c))
 
             # Try with precomputed codes (different kernel)
             idx_gpu.setPrecomputedCodes(True)
             d_g, i_g = idx_gpu.search(xq, 10)
             d_c, i_c = idx_cpu.search(xq, 10)
-            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
+            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 20)
             self.assertTrue(np.allclose(d_g, d_c))
 
     def test_copy_to_gpu(self):
@@ -291,14 +291,14 @@ class TestInterleavedIVFPQLayout(unittest.TestCase):
             # Try without precomputed codes
             d_g, i_g = idx_gpu.search(xq, 10)
             d_c, i_c = idx_cpu.search(xq, 10)
-            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
+            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 20)
             self.assertTrue(np.allclose(d_g, d_c))
 
             # Try with precomputed codes (different kernel)
             idx_gpu.setPrecomputedCodes(True)
             d_g, i_g = idx_gpu.search(xq, 10)
             d_c, i_c = idx_cpu.search(xq, 10)
-            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
+            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 20)
             self.assertTrue(np.allclose(d_g, d_c))
 
 

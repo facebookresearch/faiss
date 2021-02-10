@@ -48,6 +48,24 @@ rawGemm(cublasHandle_t handle,
   auto cAT = GetCudaType<AT>::Type;
   auto cBT = GetCudaType<BT>::Type;
 
+  // FIXME: some weird CUDA 11 bug? where cublasSgemmEx on
+  // f16 (8, 64) x f16 (64, 64)' = f32 (8, 64) returns "not supported".
+  // cublasGemmEx using CUBLAS_COMPUTE_32F also fails, but
+  // CUBLAS_COMPUTE_32F_PEDANTIC does not fail (as seen on a V100).
+  //
+  // Only use the PEDANTIC implementation if the input matrices are f16
+  // and we are on CUDA 11+
+#if CUDA_VERSION >= 11000
+  if (cAT == CUDA_R_16F || cBT == CUDA_R_16F) {
+    return cublasGemmEx(handle, transa, transb, m, n, k,
+                        &fAlpha, A, cAT, lda,
+                        B, cBT, ldb,
+                        &fBeta,
+                        C, CUDA_R_32F, ldc,
+                        CUBLAS_COMPUTE_32F_PEDANTIC, CUBLAS_GEMM_DEFAULT);
+  }
+#endif
+
   // Always accumulate in f32
   return cublasSgemmEx(handle, transa, transb, m, n, k,
                        &fAlpha, A, cAT, lda,
@@ -155,11 +173,16 @@ runMatrixMult(Tensor<float, 2, true>& c, bool transC,
 
   FAISS_ASSERT_FMT(err == CUBLAS_STATUS_SUCCESS,
                    "cublas failed (%d): "
-                   "(%d, %d)%s x (%d, %d)%s = (%d, %d)%s",
+                   "(%d, %d)%s x (%d, %d)%s = (%d, %d)%s "
+                   "gemm params m %d n %d k %d trA %s trB %s lda %d ldb %d ldc %d",
                    (int) err,
                    a.getSize(0), a.getSize(1), transA ? "'" : "",
                    b.getSize(0), b.getSize(1), transB ? "'" : "",
-                   c.getSize(0), c.getSize(1), transC ? "'" : "");
+                   c.getSize(0), c.getSize(1), transC ? "'" : "",
+                   m, n, k,
+                   gemmTrA == CUBLAS_OP_T ? "T" : "N",
+                   gemmTrB == CUBLAS_OP_T ? "T" : "N",
+                   lda, ldb, ldc);
   CUDA_TEST_ERROR();
 }
 

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <faiss/gpu/GpuIndexIVF.h>
+#include <faiss/impl/ProductQuantizer.h>
 #include <memory>
 #include <vector>
 
@@ -126,6 +127,11 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
   /// Return the vector indices contained in a particular inverted list, for
   /// debugging purposes.
   std::vector<Index::idx_t> getListIndices(int listId) const override;
+
+ public:
+  /// Like the CPU version, we expose a publically-visible ProductQuantizer for
+  /// manipulation
+  ProductQuantizer pq;
 
  protected:
   /// Called from GpuIndex for add/add_with_ids
