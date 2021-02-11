@@ -93,6 +93,10 @@ jobs:
             pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
       - store_test_results:
           path: test-results
+      - run:
+          name: Build C API
+          command: |
+            make -C build -j faiss_c
 
   build_windows:
     executor:
