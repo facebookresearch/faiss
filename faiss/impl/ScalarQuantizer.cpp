@@ -40,7 +40,7 @@ namespace faiss {
  ********************************************************************/
 
 #ifdef __AVX2__
-#ifdef __F16C__
+#if defined(__F16C__) || defined(_MSC_VER)
 #define USE_F16C
 #else
 #warning "Cannot enable AVX optimizations in scalar quantizer if -mf16c is not set as well"
