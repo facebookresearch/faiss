@@ -9,7 +9,7 @@
 // -*- c++ -*-
 
 #include <cstring>
-#include "AutoTune.h"
+#include <faiss/AutoTune.h>
 #include "AutoTune_c.h"
 #include "macros_impl.h"
 

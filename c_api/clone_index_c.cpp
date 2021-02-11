@@ -9,8 +9,8 @@
 // -*- c++ -*-
 // I/O code for indexes
 
+#include <faiss/clone_index.h>
 #include "clone_index_c.h"
-#include "clone_index.h"
 #include "macros_impl.h"
 
 using faiss::Index;

@@ -8,8 +8,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
+#include <faiss/IndexLSH.h>
 #include "IndexLSH_c.h"
-#include "IndexLSH.h"
 #include "macros_impl.h"
 
 using faiss::Index;
