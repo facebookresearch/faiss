@@ -45,16 +45,19 @@ def supported_instruction_sets():
 
 logger = logging.getLogger(__name__)
 
-try:
-    has_AVX2 = "AVX2" in supported_instruction_sets()
-    if has_AVX2:
+has_AVX2 = "AVX2" in supported_instruction_sets()
+if has_AVX2:
+    try:
         logger.info("Loading faiss with AVX2 support.")
         from .swigfaiss_avx2 import *
-    else:
-        logger.info("Loading faiss.")
-        from .swigfaiss import *
+        logger.info("Successfully loaded faiss with AVX2 support.")
+    except ImportError as e:
+        logger.info(f"Could not load library with AVX2 support due to:\n{e!r}")
+        # reset so that we load without AVX2 below
+        has_AVX2 = False
 
-except ImportError:
+if not has_AVX2:
     # we import * so that the symbol X can be accessed as faiss.X
     logger.info("Loading faiss.")
     from .swigfaiss import *
+    logger.info("Successfully loaded faiss.")
