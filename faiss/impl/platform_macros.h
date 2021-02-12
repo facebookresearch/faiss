@@ -52,7 +52,7 @@ inline int __builtin_clzll(uint64_t x) {
 #define __builtin_popcount __popcnt
 #define __builtin_popcountl __popcnt64
 
-// VS does not define __SSEx__, and _M_IX86_FP is only defined on 32-bit processors
+// MSVC does not define __SSEx__, and _M_IX86_FP is only defined on 32-bit processors
 // cf. https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros
 #ifdef __AVX__
 #define __SSE__ 1
@@ -60,6 +60,14 @@ inline int __builtin_clzll(uint64_t x) {
 #define __SSE3__ 1
 #define __SSE4_1__ 1
 #define __SSE4_2__ 1
+#endif
+
+// MSVC sets FMA and F16C automatically when using AVX2
+// Ref. FMA (under /arch:AVX2): https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64
+// Ref. F16C (2nd paragraph): https://walbourn.github.io/directxmath-avx2/
+#ifdef __AVX2__
+#define __FMA__ 1
+#define __F16C__ 1
 #endif
 
 #else
