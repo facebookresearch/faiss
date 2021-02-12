@@ -25,7 +25,7 @@ set(FAISS_C_SRC
   index_factory_c.cpp
   index_io_c.cpp
 )
-add_library(faiss_c STATIC ${FAISS_C_SRC})
+add_library(faiss_c ${FAISS_C_SRC})
 target_link_libraries(faiss_c PRIVATE faiss)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/faiss/c_api/
