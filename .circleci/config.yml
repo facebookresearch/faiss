@@ -15,7 +15,7 @@ jobs:
       - run:
           name: Build faiss library
           command: |
-            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=ON \
+            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
                   -DFAISS_ENABLE_C_API=ON \
                   -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
             make -C build -j faiss
