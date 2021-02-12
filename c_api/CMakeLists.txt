@@ -9,13 +9,27 @@ project(faiss_c_library LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 11)
 
-file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/c_api/*.cpp")
-add_library(faiss_c STATIC ${SOURCES})
+set(FAISS_C_SRC
+  AutoTune_c.cpp
+  Clustering_c.cpp
+  IndexFlat_c.cpp
+  IndexIVFFlat_c.cpp
+  IndexIVF_c.cpp
+  IndexLSH_c.cpp
+  IndexPreTransform_c.cpp
+  IndexShards_c.cpp
+  Index_c.cpp
+  MetaIndexes_c.cpp
+  clone_index_c.cpp
+  error_impl.cpp
+  index_factory_c.cpp
+  index_io_c.cpp
+)
+add_library(faiss_c STATIC ${FAISS_C_SRC})
 target_link_libraries(faiss_c PRIVATE faiss)
-
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/c_api/
+install(DIRECTORY ${PROJECT_SOURCE_DIR}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/faiss/c_api/
         FILES_MATCHING PATTERN "*.h")
 
-add_executable(example_c example_c.c)
+add_executable(example_c EXCLUDE_FROM_ALL example_c.c)
 target_link_libraries(example_c PRIVATE faiss_c)
