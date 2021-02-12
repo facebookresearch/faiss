@@ -49,6 +49,7 @@ inline int __builtin_clzll(uint64_t x) {
     return (int)__lzcnt64(x);
 }
 
+#define __builtin_popcount __popcnt
 #define __builtin_popcountl __popcnt64
 
 // VS does not define __SSEx__, and _M_IX86_FP is only defined on 32-bit processors
