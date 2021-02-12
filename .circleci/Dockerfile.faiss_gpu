@@ -16,7 +16,8 @@ COPY . /faiss
 
 WORKDIR /faiss
 
-RUN cmake -B build \
+RUN export EXT_SUFFIX=$(python3 -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))") && \
+    cmake -B build \
         -DFAISS_ENABLE_GPU=ON \
         -DFAISS_ENABLE_PYTHON=ON \
         -DBUILD_TESTING=ON \
