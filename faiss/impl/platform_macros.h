@@ -51,6 +51,16 @@ inline int __builtin_clzll(uint64_t x) {
 
 #define __builtin_popcountl __popcnt64
 
+// VS does not define __SSEx__, and _M_IX86_FP is only defined on 32-bit processors
+// cf. https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros
+#ifdef __AVX__
+#define __SSE__ 1
+#define __SSE2__ 1
+#define __SSE3__ 1
+#define __SSE4_1__ 1
+#define __SSE4_2__ 1
+#endif
+
 #else
 /*******************************************************
  * Linux and OSX

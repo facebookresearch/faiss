@@ -16,6 +16,7 @@
 
 #include <faiss/utils/simdlib.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/platform_macros.h>
 
 #ifdef __SSE3__
 #include <immintrin.h>
