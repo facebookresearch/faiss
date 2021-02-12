@@ -6,9 +6,6 @@
 
 set -e
 
-# needed by CMakeLists.txt for correct extension
-export EXT_SUFFIX=$(python -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))")
-echo "Setting environment variable EXT_SUFFIX to \"${EXT_SUFFIX}\" (from python-sysconfig)"
 
 # Build avx2 version.
 cmake -B _build_python_${PY_VER}_avx2 \

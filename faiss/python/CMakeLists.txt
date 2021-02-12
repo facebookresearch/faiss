@@ -61,9 +61,10 @@ swig_add_library(swigfaiss
   SOURCES swigfaiss.swig
 )
 
-# This is set to the value of sysconfig.get_config_var('EXT_SUFFIX') in build-pkg.{bat|sh}
-# For example, PyPy does not recognize the plain "so"-extension; see https://github.com/swig/swig/issues/1912
-set_target_properties(swigfaiss PROPERTIES SUFFIX $ENV{EXT_SUFFIX})
+if(NOT WIN32)
+  # NOTE: Python does not recognize the dylib extension.
+  set_target_properties(swigfaiss PROPERTIES SUFFIX .so)
+endif()
 
 if(FAISS_ENABLE_GPU)
   find_package(CUDAToolkit REQUIRED)

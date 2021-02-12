@@ -7,7 +7,6 @@ from __future__ import print_function
 from setuptools import setup, find_packages
 import os
 import shutil
-import sysconfig
 import platform
 
 # make the faiss python package dir
@@ -18,7 +17,7 @@ shutil.copyfile("__init__.py", "faiss/__init__.py")
 shutil.copyfile("loader.py", "faiss/loader.py")
 shutil.copyfile("swigfaiss.py", "faiss/swigfaiss.py")
 
-ext = sysconfig.get_config_var('EXT_SUFFIX')
+ext = ".pyd" if platform.system() == 'Windows' else ".so"
 prefix = "Release/" * (platform.system() == 'Windows')
 shutil.copyfile(f"{prefix}_swigfaiss{ext}", f"faiss/_swigfaiss{ext}")
 

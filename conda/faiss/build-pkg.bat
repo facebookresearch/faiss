@@ -3,10 +3,6 @@
 :: This source code is licensed under the MIT license found in the
 :: LICENSE file in the root directory of this source tree.
 
-:: needed by CMakeLists.txt for correct extension
-for /f "delims=" %%i in ('python -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))"') do set "EXT_SUFFIX=%%i"
-echo Setting environment variable EXT_SUFFIX to "%EXT_SUFFIX%" (from python-sysconfig)
-
 :: Build vanilla version (no avx).
 cmake -B _build_python_%PY_VER% ^
       -T v141 ^
