@@ -30,6 +30,7 @@ author = 'Hervé Jégou, Matthijs Douze, Jeff Johnson, Lucas Hosseini'
 extensions = [
     "breathe",
     "sphinx_tabs.tabs",
+    "sphinx.ext.githubpages",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -44,6 +45,8 @@ pygments_style ='sphinx'
 
 
 # -- Options for HTML output -------------------------------------------------
+
+html_baseurl = 'https://faiss.ai'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
