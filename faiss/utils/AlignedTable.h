@@ -82,7 +82,8 @@ struct AlignedTableTightAlloc {
         return *this;
     }
 
-    AlignedTableTightAlloc(const AlignedTableTightAlloc<T, A> & other) {
+    AlignedTableTightAlloc(const AlignedTableTightAlloc<T, A> & other):
+      ptr(nullptr), numel(0) {
         *this = other;
     }
 

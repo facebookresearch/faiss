@@ -140,3 +140,13 @@ class TestCloneSize(unittest.TestCase):
         index.add(xb)
         index2 = faiss.clone_index(index)
         assert index2.ntotal == 100
+
+class TestCloneIVFPQ(unittest.TestCase):
+
+    def test_clone(self):
+        index = faiss.index_factory(16, 'IVF10,PQ4np')
+        xb = faiss.rand((1000, 16))
+        index.train(xb)
+        index.add(xb)
+        index2 = faiss.clone_index(index)
+        assert index2.ntotal == index.ntotal
