@@ -882,7 +882,8 @@ void IndexIVFPQFastScan::search_implem_10(
                 handler->id_map = ids.get();
 
 #define DISPATCH(classHC) \
-                if(auto *res = dynamic_cast<classHC* > (handler.get())) { \
+                if(dynamic_cast<classHC* > (handler.get())) { \
+                    auto *res = static_cast<classHC* > (handler.get()); \
                     pq4_accumulate_loop( \
                             1, roundup(ls, bbs), bbs, M2, \
                             codes.get(), LUT, \
@@ -1063,7 +1064,8 @@ void IndexIVFPQFastScan::search_implem_12(
         uint64_t tt1 = get_cy();
 
 #define DISPATCH(classHC) \
-        if(auto *res = dynamic_cast<classHC* > (handler.get())) { \
+        if(dynamic_cast<classHC* > (handler.get())) { \
+            auto *res = static_cast<classHC* > (handler.get()); \
             pq4_accumulate_loop_qbs( \
                     qbs, list_size, M2, \
                     codes.get(), LUT.get(), \

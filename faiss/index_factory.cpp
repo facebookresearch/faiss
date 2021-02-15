@@ -90,6 +90,7 @@ bool str_ends_with_digits(const std::string& s, const std::string& suffix)
 
 void find_matching_parentheses(const std::string &s, int & i0, int & i1) {
     int st = 0;
+    i0 = i1 = 0;
     for (int i = 0; i < s.length(); i++) {
         if (s[i] == '(') {
             if (st == 0) {

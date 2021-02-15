@@ -500,10 +500,10 @@ void bitvec_shuffle (size_t n, size_t da, size_t db,
         const uint8_t *ai = a + i * lda;
         uint8_t *bi = b + i * ldb;
         memset (bi, 0, ldb);
-        for(size_t i = 0; i < db; i++) {
-            int o = order[i];
+        for(size_t j = 0; j < db; j++) {
+            int o = order[j];
             uint8_t the_bit = (ai[o >> 3] >> (o & 7)) & 1;
-            bi[i >> 3] |= the_bit << (i & 7);
+            bi[j >> 3] |= the_bit << (j & 7);
         }
     }
 

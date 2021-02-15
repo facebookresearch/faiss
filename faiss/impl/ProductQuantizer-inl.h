@@ -112,9 +112,9 @@ uint64_t PQDecoderGeneric::decode() {
 
 
 inline
-PQDecoder8::PQDecoder8(const uint8_t *code, int nbits)
+PQDecoder8::PQDecoder8(const uint8_t *code, int nbits_in)
     : code(code) {
-    assert(8 == nbits);
+    assert(8 == nbits_in);
 }
 
 inline
@@ -124,9 +124,9 @@ uint64_t PQDecoder8::decode() {
 
 
 inline
-PQDecoder16::PQDecoder16(const uint8_t *code, int nbits)
+PQDecoder16::PQDecoder16(const uint8_t *code, int nbits_in)
     : code((uint16_t *)code) {
-     assert(16 == nbits);
+     assert(16 == nbits_in);
 }
 
 inline
