@@ -24,11 +24,15 @@ set(FAISS_C_SRC
   error_impl.cpp
   index_factory_c.cpp
   index_io_c.cpp
+  impl/AuxIndexStructures_c.cpp
 )
 add_library(faiss_c ${FAISS_C_SRC})
 target_link_libraries(faiss_c PRIVATE faiss)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/faiss/c_api/
+        FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ${PROJECT_SOURCE_DIR}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/faiss/c_api/impl/
         FILES_MATCHING PATTERN "*.h")
 
 add_executable(example_c EXCLUDE_FROM_ALL example_c.c)

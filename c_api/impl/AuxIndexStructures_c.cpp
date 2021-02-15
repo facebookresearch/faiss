@@ -8,10 +8,10 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
-#include "AuxIndexStructures_c.h"
-#include "../../impl/AuxIndexStructures.h"
-#include "../macros_impl.h"
 #include <iostream>
+#include <faiss/impl/AuxIndexStructures.h>
+#include "AuxIndexStructures_c.h"
+#include "../macros_impl.h"
 
 using faiss::BufferList;
 using faiss::IDSelector;
