@@ -8,8 +8,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
+#include <faiss/MetaIndexes.h>
 #include "MetaIndexes_c.h"
-#include "MetaIndexes.h"
 #include "macros_impl.h"
 
 using faiss::Index;

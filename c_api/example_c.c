@@ -57,7 +57,7 @@ int main() {
     FAISS_TRY(faiss_index_factory(&index, d, "Flat", METRIC_L2));  // use factory to create index
     printf("is_trained = %s\n", faiss_Index_is_trained(index) ? "true" : "false");
     FAISS_TRY(faiss_Index_add(index, nb, xb));                     // add vectors to the index
-    printf("ntotal = %ld\n", faiss_Index_ntotal(index));
+    printf("ntotal = %lld\n", faiss_Index_ntotal(index));
 
     printf("Searching...\n");
     int k = 5;
@@ -68,7 +68,8 @@ int main() {
         FAISS_TRY(faiss_Index_search(index, 5, xb, k, D, I));
         printf("I=\n");
         for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < k; j++) printf("%5ld (d=%2.3f)  ", I[i * k + j], D[i * k + j]);
+            for(int j = 0; j < k; j++)
+                printf("%5lld (d=%2.3f)  ", I[i * k + j], D[i * k + j]);
             printf("\n");
         }
         free(I);
@@ -80,7 +81,8 @@ int main() {
         FAISS_TRY(faiss_Index_search(index, 5, xb, k, D, I));
         printf("I=\n");
         for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < k; j++) printf("%5ld (d=%2.3f)  ", I[i * k + j], D[i * k + j]);
+            for(int j = 0; j < k; j++)
+                printf("%5lld (d=%2.3f)  ", I[i * k + j], D[i * k + j]);
             printf("\n");
         }
         free(I);

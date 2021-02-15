@@ -13,11 +13,11 @@
 #ifndef MACROS_IMPL_H
 #define MACROS_IMPL_H
 
-#include "faiss_c.h"
-#include "FaissException.h"
-#include "error_impl.h"
-#include <stdexcept>
 #include <iostream>
+#include <stdexcept>
+#include <faiss/impl/FaissException.h>
+#include "error_impl.h"
+#include "faiss_c.h"
 
 #ifdef NDEBUG
 #define CATCH_AND_HANDLE                              \

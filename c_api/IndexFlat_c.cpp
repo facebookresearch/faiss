@@ -8,9 +8,9 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexRefine.h>
 #include "IndexFlat_c.h"
-#include "IndexFlat.h"
-#include "Index.h"
 #include "macros_impl.h"
 
 extern "C" {
@@ -19,7 +19,6 @@ using faiss::Index;
 using faiss::IndexFlat;
 using faiss::IndexFlatIP;
 using faiss::IndexFlatL2;
-using faiss::IndexFlatL2BaseShift;
 using faiss::IndexRefineFlat;
 using faiss::IndexFlat1D;
 
@@ -91,14 +90,6 @@ int faiss_IndexFlatL2_new_with(FaissIndexFlatL2** p_index, idx_t d) {
     try {
         IndexFlatL2* index = new IndexFlatL2(d);
         *p_index = reinterpret_cast<FaissIndexFlatL2*>(index);
-        return 0;
-    } CATCH_AND_HANDLE
-}
-
-int faiss_IndexFlatL2BaseShift_new(FaissIndexFlatL2BaseShift** p_index, idx_t d, size_t nshift, const float *shift) {
-    try {
-        IndexFlatL2BaseShift* index = new IndexFlatL2BaseShift(d, nshift, shift);
-        *p_index = reinterpret_cast<FaissIndexFlatL2BaseShift*>(index);
         return 0;
     } CATCH_AND_HANDLE
 }

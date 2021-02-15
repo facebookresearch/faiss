@@ -9,7 +9,7 @@
 // -*- c++ -*-
 
 #include <cstring>
-#include "index_factory.h"
+#include <faiss/index_factory.h>
 #include "index_factory_c.h"
 #include "macros_impl.h"
 

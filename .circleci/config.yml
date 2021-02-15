@@ -16,6 +16,7 @@ jobs:
           name: Build faiss library
           command: |
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
+                  -DFAISS_ENABLE_C_API=ON \
                   -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
             make -C build -j faiss
       - run:
@@ -39,6 +40,10 @@ jobs:
             pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
       - store_test_results:
           path: test-results
+      - run:
+          name: Build C API
+          command: |
+            make -C build -j faiss_c
 
   build_osx:
     macos:
@@ -59,7 +64,7 @@ jobs:
           name: Generate Makefiles
           command: |
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
-                  -DCMAKE_BUILD_TYPE=Release \
+                  -DCMAKE_BUILD_TYPE=Release -DFAISS_ENABLE_C_API=ON \
                   -DPython_EXECUTABLE=/usr/local/bin/python3 .
       - run:
           name: Build faiss library
@@ -86,6 +91,10 @@ jobs:
             pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
       - store_test_results:
           path: test-results
+      - run:
+          name: Build C API
+          command: |
+            make -C build -j faiss_c
 
   build_windows:
     executor:

@@ -8,8 +8,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
+#include <faiss/IndexPreTransform.h>
 #include "IndexPreTransform_c.h"
-#include "IndexPreTransform.h"
 #include "macros_impl.h"
 
 using faiss::Index;

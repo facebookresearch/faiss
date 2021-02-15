@@ -8,10 +8,10 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
-#include "Clustering_c.h"
-#include "Clustering.h"
-#include "Index.h"
 #include <vector>
+#include <faiss/Clustering.h>
+#include <faiss/Index.h>
+#include "Clustering_c.h"
 #include "macros_impl.h"
 
 extern "C" {

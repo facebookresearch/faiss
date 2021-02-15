@@ -8,10 +8,10 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
-#include "Index_c.h"
+#include <faiss/IndexIVF.h>
 #include "Clustering_c.h"
+#include "Index_c.h"
 #include "IndexIVF_c.h"
-#include "IndexIVF.h"
 #include "macros_impl.h"
 
 using faiss::IndexIVF;

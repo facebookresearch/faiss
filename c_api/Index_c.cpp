@@ -8,8 +8,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
+#include <faiss/Index.h>
 #include "Index_c.h"
-#include "Index.h"
 #include "macros_impl.h"
 
 extern "C" {

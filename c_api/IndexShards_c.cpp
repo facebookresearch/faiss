@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/IndexShards.h>
 #include "IndexShards_c.h"
-#include "IndexShards.h"
 #include "macros_impl.h"
 
 using faiss::Index;
