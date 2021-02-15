@@ -272,14 +272,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="85" column="5" bodyfile="faiss/utils/AlignedTable.h" bodystart="85" bodyend="87"/>
+        <location file="faiss/utils/AlignedTable.h" line="85" column="5" bodyfile="faiss/utils/AlignedTable.h" bodystart="85" bodyend="88"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/AlignedTable.h" line="32" column="29" bodyfile="faiss/utils/AlignedTable.h" bodystart="32" bodyend="89"/>
+    <location file="faiss/utils/AlignedTable.h" line="32" column="29" bodyfile="faiss/utils/AlignedTable.h" bodystart="32" bodyend="90"/>
     <listofallmembers>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1adfa5bdd33fd82107cabdd6c20f65c119" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>AlignedTableTightAlloc</name></member>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1a33196314d0a8c11ab2bb0c010d9f1324" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>AlignedTableTightAlloc</name></member>
