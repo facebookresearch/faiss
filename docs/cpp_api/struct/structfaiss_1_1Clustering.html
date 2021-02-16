@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -321,7 +320,7 @@
 <h1>Struct faiss::Clustering<a class="headerlink" href="#struct-faiss-clustering" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss10ClusteringE">
-<span id="_CPPv3N5faiss10ClusteringE"></span><span id="_CPPv2N5faiss10ClusteringE"></span><span id="faiss::Clustering"></span><span class="target" id="structfaiss_1_1Clustering"></span><em class="property">struct </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Clustering</code> : <em class="property">public</em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss20ClusteringParametersE" title="faiss::ClusteringParameters">ClusteringParameters</a><br /></dt>
+<span id="_CPPv3N5faiss10ClusteringE"></span><span id="_CPPv2N5faiss10ClusteringE"></span><span id="faiss::Clustering"></span><span class="target" id="structfaiss_1_1Clustering"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">Clustering</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss20ClusteringParametersE" title="faiss::ClusteringParameters"><span class="pre">ClusteringParameters</span></a><br /></dt>
 <dd><p>K-means clustering based on assignment - centroid update iterations</p>
 <p>The clustering is based on an <a class="reference internal" href="structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> object that assigns training points to the centroids. Therefore, at each iteration the centroids are added to the index.</p>
 <p>On output, the centoids table is set to the latest version of the centroids and they are also added to the index. If the centroids table it is not empty on input, it is also used for initialization. </p>
@@ -329,7 +328,7 @@
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss10Clustering5idx_tE">
-<span id="_CPPv3N5faiss10Clustering5idx_tE"></span><span id="_CPPv2N5faiss10Clustering5idx_tE"></span><span id="faiss::Clustering::idx_t"></span><span class="target" id="structfaiss_1_1Clustering_1ad61a631598a1ac0975c091bda9072da7"></span><em class="property">typedef </em><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> <code class="sig-name descname">idx_t</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering5idx_tE"></span><span id="_CPPv2N5faiss10Clustering5idx_tE"></span><span id="faiss::Clustering::idx_t"></span><span class="target" id="structfaiss_1_1Clustering_1ad61a631598a1ac0975c091bda9072da7"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a><span class="pre">::</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t"><span class="pre">idx_t</span></a> <code class="sig-name descname"><span class="pre">idx_t</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -337,17 +336,17 @@
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss10Clustering10ClusteringEii">
-<span id="_CPPv3N5faiss10Clustering10ClusteringEii"></span><span id="_CPPv2N5faiss10Clustering10ClusteringEii"></span><span id="faiss::Clustering::Clustering__i.i"></span><span class="target" id="structfaiss_1_1Clustering_1a2fa90a2681dc42faaf2435e63a5ae9b4"></span><code class="sig-name descname">Clustering</code><span class="sig-paren">(</span>int <em>d</em>, int <em>k</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss10Clustering10ClusteringEii"></span><span id="_CPPv2N5faiss10Clustering10ClusteringEii"></span><span id="faiss::Clustering::Clustering__i.i"></span><span class="target" id="structfaiss_1_1Clustering_1a2fa90a2681dc42faaf2435e63a5ae9b4"></span><code class="sig-name descname"><span class="pre">Clustering</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">d</span></em>, <span class="pre">int</span> <em><span class="pre">k</span></em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss10Clustering10ClusteringEiiRK20ClusteringParameters">
-<span id="_CPPv3N5faiss10Clustering10ClusteringEiiRK20ClusteringParameters"></span><span id="_CPPv2N5faiss10Clustering10ClusteringEiiRK20ClusteringParameters"></span><span id="faiss::Clustering::Clustering__i.i.ClusteringParametersCR"></span><span class="target" id="structfaiss_1_1Clustering_1afd25cc6832b576ce4d0d7430e8ee3bff"></span><code class="sig-name descname">Clustering</code><span class="sig-paren">(</span>int <em>d</em>, int <em>k</em>, <em class="property">const</em> <a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss20ClusteringParametersE" title="faiss::ClusteringParameters">ClusteringParameters</a> &amp;<em>cp</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss10Clustering10ClusteringEiiRK20ClusteringParameters"></span><span id="_CPPv2N5faiss10Clustering10ClusteringEiiRK20ClusteringParameters"></span><span id="faiss::Clustering::Clustering__i.i.ClusteringParametersCR"></span><span class="target" id="structfaiss_1_1Clustering_1afd25cc6832b576ce4d0d7430e8ee3bff"></span><code class="sig-name descname"><span class="pre">Clustering</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">d</span></em>, <span class="pre">int</span> <em><span class="pre">k</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss20ClusteringParametersE" title="faiss::ClusteringParameters"><span class="pre">ClusteringParameters</span></a> <span class="pre">&amp;</span><em><span class="pre">cp</span></em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss10Clustering5trainE5idx_tPKfRN5faiss5IndexEPKf">
-<span id="_CPPv3N5faiss10Clustering5trainE5idx_tPKfRN5faiss5IndexEPKf"></span><span id="_CPPv2N5faiss10Clustering5trainE5idx_tPKfRN5faiss5IndexEPKf"></span><span id="faiss::Clustering::train__idx_t.floatCP.faiss::IndexR.floatCP"></span><span class="target" id="structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2"></span>void <code class="sig-name descname">train</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss10Clustering5idx_tE" title="faiss::Clustering::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> &amp;<em>index</em>, <em class="property">const</em> float *<em>x_weights</em> = nullptr<span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss10Clustering5trainE5idx_tPKfRN5faiss5IndexEPKf"></span><span id="_CPPv2N5faiss10Clustering5trainE5idx_tPKfRN5faiss5IndexEPKf"></span><span id="faiss::Clustering::train__idx_t.floatCP.faiss::IndexR.floatCP"></span><span class="target" id="structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss10Clustering5idx_tE" title="faiss::Clustering::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a> <span class="pre">&amp;</span><em><span class="pre">index</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x_weights</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>run k-means training</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -362,7 +361,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss10Clustering13train_encodedE5idx_tPK7uint8_tPK5IndexR5IndexPKf">
-<span id="_CPPv3N5faiss10Clustering13train_encodedE5idx_tPK7uint8_tPK5IndexR5IndexPKf"></span><span id="_CPPv2N5faiss10Clustering13train_encodedE5idx_tPK7uint8_tPK5IndexR5IndexPKf"></span><span id="faiss::Clustering::train_encoded__idx_t.uint8_tCP.IndexCP.IndexR.floatCP"></span><span class="target" id="structfaiss_1_1Clustering_1ad6ee36738660eaab7e11b3b5ee278912"></span>void <code class="sig-name descname">train_encoded</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss10Clustering5idx_tE" title="faiss::Clustering::idx_t">idx_t</a> <em>nx</em>, <em class="property">const</em> uint8_t *<em>x_in</em>, <em class="property">const</em> <a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> *<em>codec</em>, <a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> &amp;<em>index</em>, <em class="property">const</em> float *<em>weights</em> = nullptr<span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss10Clustering13train_encodedE5idx_tPK7uint8_tPK5IndexR5IndexPKf"></span><span id="_CPPv2N5faiss10Clustering13train_encodedE5idx_tPK7uint8_tPK5IndexR5IndexPKf"></span><span id="faiss::Clustering::train_encoded__idx_t.uint8_tCP.IndexCP.IndexR.floatCP"></span><span class="target" id="structfaiss_1_1Clustering_1ad6ee36738660eaab7e11b3b5ee278912"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">train_encoded</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss10Clustering5idx_tE" title="faiss::Clustering::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">nx</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x_in</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a> <span class="pre">*</span><em><span class="pre">codec</span></em>, <a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a> <span class="pre">&amp;</span><em><span class="pre">index</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">weights</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>run with encoded vectors</p>
 <p>win addition to <a class="reference internal" href="#structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2"><span class="std std-ref">train()</span></a>’s parameters takes a codec as parameter to decode the input vectors.</p>
 <p><dl class="simple">
@@ -376,13 +375,13 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss10Clustering22post_process_centroidsEv">
-<span id="_CPPv3N5faiss10Clustering22post_process_centroidsEv"></span><span id="_CPPv2N5faiss10Clustering22post_process_centroidsEv"></span><span id="faiss::Clustering::post_process_centroids"></span><span class="target" id="structfaiss_1_1Clustering_1adcb47440a792267bb9218c10378cf1a8"></span>void <code class="sig-name descname">post_process_centroids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss10Clustering22post_process_centroidsEv"></span><span id="_CPPv2N5faiss10Clustering22post_process_centroidsEv"></span><span id="faiss::Clustering::post_process_centroids"></span><span class="target" id="structfaiss_1_1Clustering_1adcb47440a792267bb9218c10378cf1a8"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">post_process_centroids</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Post-process the centroids after each centroid update. includes optional L2 normalization and nearest integer rounding </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss10ClusteringD0Ev">
-<span id="_CPPv3N5faiss10ClusteringD0Ev"></span><span id="_CPPv2N5faiss10ClusteringD0Ev"></span><span id="faiss::Clustering::~Clustering"></span><span class="target" id="structfaiss_1_1Clustering_1a17403e70a0daaa43c67ac3ea098ce5b3"></span><code class="sig-name descname">~Clustering</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss10ClusteringD0Ev"></span><span id="_CPPv2N5faiss10ClusteringD0Ev"></span><span id="faiss::Clustering::~Clustering"></span><span class="target" id="structfaiss_1_1Clustering_1a17403e70a0daaa43c67ac3ea098ce5b3"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">virtual</span></em> <code class="sig-name descname"><span class="pre">~Clustering</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -390,90 +389,90 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering1dE">
-<span id="_CPPv3N5faiss10Clustering1dE"></span><span id="_CPPv2N5faiss10Clustering1dE"></span><span id="faiss::Clustering::d__s"></span><span class="target" id="structfaiss_1_1Clustering_1afbf6efacae54c58586b75ed790facd74"></span>size_t <code class="sig-name descname">d</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering1dE"></span><span id="_CPPv2N5faiss10Clustering1dE"></span><span id="faiss::Clustering::d__s"></span><span class="target" id="structfaiss_1_1Clustering_1afbf6efacae54c58586b75ed790facd74"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">d</span></code><br /></dt>
 <dd><p>dimension of the vectors </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering1kE">
-<span id="_CPPv3N5faiss10Clustering1kE"></span><span id="_CPPv2N5faiss10Clustering1kE"></span><span id="faiss::Clustering::k__s"></span><span class="target" id="structfaiss_1_1Clustering_1a87581785d9516c683bbc7c9392bfa993"></span>size_t <code class="sig-name descname">k</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering1kE"></span><span id="_CPPv2N5faiss10Clustering1kE"></span><span id="faiss::Clustering::k__s"></span><span class="target" id="structfaiss_1_1Clustering_1a87581785d9516c683bbc7c9392bfa993"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">k</span></code><br /></dt>
 <dd><p>nb of centroids </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering9centroidsE">
-<span id="_CPPv3N5faiss10Clustering9centroidsE"></span><span id="_CPPv2N5faiss10Clustering9centroidsE"></span><span id="faiss::Clustering::centroids__std::vector:float:"></span><span class="target" id="structfaiss_1_1Clustering_1a64c5ec0b4a7967d8be2872974b455ff1"></span>std::vector&lt;float&gt; <code class="sig-name descname">centroids</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering9centroidsE"></span><span id="_CPPv2N5faiss10Clustering9centroidsE"></span><span id="faiss::Clustering::centroids__std::vector:float:"></span><span class="target" id="structfaiss_1_1Clustering_1a64c5ec0b4a7967d8be2872974b455ff1"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">vector</span><span class="pre">&lt;</span><span class="pre">float</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">centroids</span></code><br /></dt>
 <dd><p>centroids (k * d) if centroids are set on input to train, they will be used as initialization </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering15iteration_statsE">
-<span id="_CPPv3N5faiss10Clustering15iteration_statsE"></span><span id="_CPPv2N5faiss10Clustering15iteration_statsE"></span><span id="faiss::Clustering::iteration_stats__std::vector:ClusteringIterationStats:"></span><span class="target" id="structfaiss_1_1Clustering_1a2ea2382ac486aa661ee0338cfb836a02"></span>std::vector&lt;<a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss24ClusteringIterationStatsE" title="faiss::ClusteringIterationStats">ClusteringIterationStats</a>&gt; <code class="sig-name descname">iteration_stats</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering15iteration_statsE"></span><span id="_CPPv2N5faiss10Clustering15iteration_statsE"></span><span id="faiss::Clustering::iteration_stats__std::vector:ClusteringIterationStats:"></span><span class="target" id="structfaiss_1_1Clustering_1a2ea2382ac486aa661ee0338cfb836a02"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">vector</span><span class="pre">&lt;</span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss24ClusteringIterationStatsE" title="faiss::ClusteringIterationStats"><span class="pre">ClusteringIterationStats</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">iteration_stats</span></code><br /></dt>
 <dd><p>stats at every iteration of clustering </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering5niterE">
-<span id="_CPPv3N5faiss10Clustering5niterE"></span><span id="_CPPv2N5faiss10Clustering5niterE"></span><span id="faiss::Clustering::niter__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9"></span>int <code class="sig-name descname">niter</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering5niterE"></span><span id="_CPPv2N5faiss10Clustering5niterE"></span><span id="faiss::Clustering::niter__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">niter</span></code><br /></dt>
 <dd><p>clustering iterations </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering5nredoE">
-<span id="_CPPv3N5faiss10Clustering5nredoE"></span><span id="_CPPv2N5faiss10Clustering5nredoE"></span><span id="faiss::Clustering::nredo__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a11a049c40c376c57ac6cc3b8d5d1d58b"></span>int <code class="sig-name descname">nredo</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering5nredoE"></span><span id="_CPPv2N5faiss10Clustering5nredoE"></span><span id="faiss::Clustering::nredo__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a11a049c40c376c57ac6cc3b8d5d1d58b"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">nredo</span></code><br /></dt>
 <dd><p>redo clustering this many times and keep best </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering7verboseE">
-<span id="_CPPv3N5faiss10Clustering7verboseE"></span><span id="_CPPv2N5faiss10Clustering7verboseE"></span><span id="faiss::Clustering::verbose__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a932139ba9b62b37d9121b4c6a4518b52"></span>bool <code class="sig-name descname">verbose</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering7verboseE"></span><span id="_CPPv2N5faiss10Clustering7verboseE"></span><span id="faiss::Clustering::verbose__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a932139ba9b62b37d9121b4c6a4518b52"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">verbose</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering9sphericalE">
-<span id="_CPPv3N5faiss10Clustering9sphericalE"></span><span id="_CPPv2N5faiss10Clustering9sphericalE"></span><span id="faiss::Clustering::spherical__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d"></span>bool <code class="sig-name descname">spherical</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering9sphericalE"></span><span id="_CPPv2N5faiss10Clustering9sphericalE"></span><span id="faiss::Clustering::spherical__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">spherical</span></code><br /></dt>
 <dd><p>do we want normalized centroids? </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering13int_centroidsE">
-<span id="_CPPv3N5faiss10Clustering13int_centroidsE"></span><span id="_CPPv2N5faiss10Clustering13int_centroidsE"></span><span id="faiss::Clustering::int_centroids__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4"></span>bool <code class="sig-name descname">int_centroids</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering13int_centroidsE"></span><span id="_CPPv2N5faiss10Clustering13int_centroidsE"></span><span id="faiss::Clustering::int_centroids__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">int_centroids</span></code><br /></dt>
 <dd><p>round centroids coordinates to integer </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering12update_indexE">
-<span id="_CPPv3N5faiss10Clustering12update_indexE"></span><span id="_CPPv2N5faiss10Clustering12update_indexE"></span><span id="faiss::Clustering::update_index__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91"></span>bool <code class="sig-name descname">update_index</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering12update_indexE"></span><span id="_CPPv2N5faiss10Clustering12update_indexE"></span><span id="faiss::Clustering::update_index__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">update_index</span></code><br /></dt>
 <dd><p>re-train index after each iteration? </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering16frozen_centroidsE">
-<span id="_CPPv3N5faiss10Clustering16frozen_centroidsE"></span><span id="_CPPv2N5faiss10Clustering16frozen_centroidsE"></span><span id="faiss::Clustering::frozen_centroids__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215"></span>bool <code class="sig-name descname">frozen_centroids</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering16frozen_centroidsE"></span><span id="_CPPv2N5faiss10Clustering16frozen_centroidsE"></span><span id="faiss::Clustering::frozen_centroids__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">frozen_centroids</span></code><br /></dt>
 <dd><p>use the centroids provided as input and do not change them during iterations </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering23min_points_per_centroidE">
-<span id="_CPPv3N5faiss10Clustering23min_points_per_centroidE"></span><span id="_CPPv2N5faiss10Clustering23min_points_per_centroidE"></span><span id="faiss::Clustering::min_points_per_centroid__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a5af907901147a9b1e748b13305839924"></span>int <code class="sig-name descname">min_points_per_centroid</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering23min_points_per_centroidE"></span><span id="_CPPv2N5faiss10Clustering23min_points_per_centroidE"></span><span id="faiss::Clustering::min_points_per_centroid__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a5af907901147a9b1e748b13305839924"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">min_points_per_centroid</span></code><br /></dt>
 <dd><p>otherwise you get a warning </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering23max_points_per_centroidE">
-<span id="_CPPv3N5faiss10Clustering23max_points_per_centroidE"></span><span id="_CPPv2N5faiss10Clustering23max_points_per_centroidE"></span><span id="faiss::Clustering::max_points_per_centroid__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953"></span>int <code class="sig-name descname">max_points_per_centroid</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering23max_points_per_centroidE"></span><span id="_CPPv2N5faiss10Clustering23max_points_per_centroidE"></span><span id="faiss::Clustering::max_points_per_centroid__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">max_points_per_centroid</span></code><br /></dt>
 <dd><p>to limit size of dataset </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering4seedE">
-<span id="_CPPv3N5faiss10Clustering4seedE"></span><span id="_CPPv2N5faiss10Clustering4seedE"></span><span id="faiss::Clustering::seed__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579"></span>int <code class="sig-name descname">seed</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering4seedE"></span><span id="_CPPv2N5faiss10Clustering4seedE"></span><span id="faiss::Clustering::seed__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">seed</span></code><br /></dt>
 <dd><p>seed for the random number generator </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss10Clustering17decode_block_sizeE">
-<span id="_CPPv3N5faiss10Clustering17decode_block_sizeE"></span><span id="_CPPv2N5faiss10Clustering17decode_block_sizeE"></span><span id="faiss::Clustering::decode_block_size__s"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f"></span>size_t <code class="sig-name descname">decode_block_size</code><br /></dt>
+<span id="_CPPv3N5faiss10Clustering17decode_block_sizeE"></span><span id="_CPPv2N5faiss10Clustering17decode_block_sizeE"></span><span id="faiss::Clustering::decode_block_size__s"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">decode_block_size</span></code><br /></dt>
 <dd><p>how many vectors at a time to decode </p>
 </dd></dl>
 

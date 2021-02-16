@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -321,34 +320,34 @@
 <h1>Struct faiss::DirectMap<a class="headerlink" href="#struct-faiss-directmap" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss9DirectMapE">
-<span id="_CPPv3N5faiss9DirectMapE"></span><span id="_CPPv2N5faiss9DirectMapE"></span><span id="faiss::DirectMap"></span><span class="target" id="structfaiss_1_1DirectMap"></span><em class="property">struct </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">DirectMap</code><br /></dt>
+<span id="_CPPv3N5faiss9DirectMapE"></span><span id="_CPPv2N5faiss9DirectMapE"></span><span id="faiss::DirectMap"></span><span class="target" id="structfaiss_1_1DirectMap"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">DirectMap</span></code><br /></dt>
 <dd><p>Direct map: a way to map back from ids to inverted lists </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp enum">
 <dt id="_CPPv4N5faiss9DirectMap4TypeE">
-<span id="_CPPv3N5faiss9DirectMap4TypeE"></span><span id="_CPPv2N5faiss9DirectMap4TypeE"></span><span class="target" id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085e"></span><em class="property">enum </em><code class="sig-name descname">Type</code><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap4TypeE"></span><span id="_CPPv2N5faiss9DirectMap4TypeE"></span><span class="target" id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085e"></span><em class="property"><span class="pre">enum</span> </em><code class="sig-name descname"><span class="pre">Type</span></code><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss9DirectMap4Type5NoMapE">
-<span id="_CPPv3N5faiss9DirectMap4Type5NoMapE"></span><span id="_CPPv2N5faiss9DirectMap4Type5NoMapE"></span><span class="target" id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085ea69e597c47ff96b59750caf4e3b1c1595"></span><em class="property">enumerator </em><code class="sig-name descname">NoMap</code><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap4Type5NoMapE"></span><span id="_CPPv2N5faiss9DirectMap4Type5NoMapE"></span><span class="target" id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085ea69e597c47ff96b59750caf4e3b1c1595"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">NoMap</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss9DirectMap4Type5ArrayE">
-<span id="_CPPv3N5faiss9DirectMap4Type5ArrayE"></span><span id="_CPPv2N5faiss9DirectMap4Type5ArrayE"></span><span class="target" id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085eadbc69c719b291fd020f9453537e7f9fc"></span><em class="property">enumerator </em><code class="sig-name descname">Array</code><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap4Type5ArrayE"></span><span id="_CPPv2N5faiss9DirectMap4Type5ArrayE"></span><span class="target" id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085eadbc69c719b291fd020f9453537e7f9fc"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">Array</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss9DirectMap4Type9HashtableE">
-<span id="_CPPv3N5faiss9DirectMap4Type9HashtableE"></span><span id="_CPPv2N5faiss9DirectMap4Type9HashtableE"></span><span class="target" id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085eafd50054291023bc688cd56d37eabfdc4"></span><em class="property">enumerator </em><code class="sig-name descname">Hashtable</code><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap4Type9HashtableE"></span><span id="_CPPv2N5faiss9DirectMap4Type9HashtableE"></span><span class="target" id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085eafd50054291023bc688cd56d37eabfdc4"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">Hashtable</span></code><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss9DirectMap5idx_tE">
-<span id="_CPPv3N5faiss9DirectMap5idx_tE"></span><span id="_CPPv2N5faiss9DirectMap5idx_tE"></span><span id="faiss::DirectMap::idx_t"></span><span class="target" id="structfaiss_1_1DirectMap_1a501137926cd0eed359b945346ef055e9"></span><em class="property">typedef </em><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> <code class="sig-name descname">idx_t</code><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap5idx_tE"></span><span id="_CPPv2N5faiss9DirectMap5idx_tE"></span><span id="faiss::DirectMap::idx_t"></span><span class="target" id="structfaiss_1_1DirectMap_1a501137926cd0eed359b945346ef055e9"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a><span class="pre">::</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t"><span class="pre">idx_t</span></a> <code class="sig-name descname"><span class="pre">idx_t</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -356,56 +355,56 @@
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9DirectMap9DirectMapEv">
-<span id="_CPPv3N5faiss9DirectMap9DirectMapEv"></span><span id="_CPPv2N5faiss9DirectMap9DirectMapEv"></span><span id="faiss::DirectMap::DirectMap"></span><span class="target" id="structfaiss_1_1DirectMap_1adc5c8d5b6b22b1f94c6349f26e8eb0b6"></span><code class="sig-name descname">DirectMap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap9DirectMapEv"></span><span id="_CPPv2N5faiss9DirectMap9DirectMapEv"></span><span id="faiss::DirectMap::DirectMap"></span><span class="target" id="structfaiss_1_1DirectMap_1adc5c8d5b6b22b1f94c6349f26e8eb0b6"></span><code class="sig-name descname"><span class="pre">DirectMap</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9DirectMap8set_typeE4TypePK13InvertedLists6size_t">
-<span id="_CPPv3N5faiss9DirectMap8set_typeE4TypePK13InvertedLists6size_t"></span><span id="_CPPv2N5faiss9DirectMap8set_typeE4TypePK13InvertedLists6size_t"></span><span id="faiss::DirectMap::set_type__Type.InvertedListsCP.s"></span><span class="target" id="structfaiss_1_1DirectMap_1a860f8dd0fb1d96532b43e492f201cb84"></span>void <code class="sig-name descname">set_type</code><span class="sig-paren">(</span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap4TypeE" title="faiss::DirectMap::Type">Type</a> <em>new_type</em>, <em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists">InvertedLists</a> *<em>invlists</em>, size_t <em>ntotal</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap8set_typeE4TypePK13InvertedLists6size_t"></span><span id="_CPPv2N5faiss9DirectMap8set_typeE4TypePK13InvertedLists6size_t"></span><span id="faiss::DirectMap::set_type__Type.InvertedListsCP.s"></span><span class="target" id="structfaiss_1_1DirectMap_1a860f8dd0fb1d96532b43e492f201cb84"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">set_type</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap4TypeE" title="faiss::DirectMap::Type"><span class="pre">Type</span></a> <em><span class="pre">new_type</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="pre">InvertedLists</span></a> <span class="pre">*</span><em><span class="pre">invlists</span></em>, <span class="pre">size_t</span> <em><span class="pre">ntotal</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>set type and initialize </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss9DirectMap3getE5idx_t">
-<span id="_CPPv3NK5faiss9DirectMap3getE5idx_t"></span><span id="_CPPv2NK5faiss9DirectMap3getE5idx_t"></span><span id="faiss::DirectMap::get__idx_tC"></span><span class="target" id="structfaiss_1_1DirectMap_1a032a4c2fbc9cfa556a84f8d8c1288ac7"></span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t">idx_t</a> <code class="sig-name descname">get</code><span class="sig-paren">(</span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t">idx_t</a> <em>id</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss9DirectMap3getE5idx_t"></span><span id="_CPPv2NK5faiss9DirectMap3getE5idx_t"></span><span id="faiss::DirectMap::get__idx_tC"></span><span class="target" id="structfaiss_1_1DirectMap_1a032a4c2fbc9cfa556a84f8d8c1288ac7"></span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t"><span class="pre">idx_t</span></a> <code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">id</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>get an entry </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss9DirectMap2noEv">
-<span id="_CPPv3NK5faiss9DirectMap2noEv"></span><span id="_CPPv2NK5faiss9DirectMap2noEv"></span><span id="faiss::DirectMap::noC"></span><span class="target" id="structfaiss_1_1DirectMap_1a27e7208053589c02cdc9002bbfb857d3"></span>bool <code class="sig-name descname">no</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss9DirectMap2noEv"></span><span id="_CPPv2NK5faiss9DirectMap2noEv"></span><span id="faiss::DirectMap::noC"></span><span class="target" id="structfaiss_1_1DirectMap_1a27e7208053589c02cdc9002bbfb857d3"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">bool</span> <code class="sig-name descname"><span class="pre">no</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>for quick checks </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9DirectMap13check_can_addEPK5idx_t">
-<span id="_CPPv3N5faiss9DirectMap13check_can_addEPK5idx_t"></span><span id="_CPPv2N5faiss9DirectMap13check_can_addEPK5idx_t"></span><span id="faiss::DirectMap::check_can_add__idx_tCP"></span><span class="target" id="structfaiss_1_1DirectMap_1af436d21abce89e513dc1eb2d3a57ca78"></span>void <code class="sig-name descname">check_can_add</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t">idx_t</a> *<em>ids</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap13check_can_addEPK5idx_t"></span><span id="_CPPv2N5faiss9DirectMap13check_can_addEPK5idx_t"></span><span id="faiss::DirectMap::check_can_add__idx_tCP"></span><span class="target" id="structfaiss_1_1DirectMap_1af436d21abce89e513dc1eb2d3a57ca78"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">check_can_add</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">ids</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>throw if Array and ids is not NULL </p>
 <p>update the direct_map </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9DirectMap13add_single_idE5idx_t5idx_t6size_t">
-<span id="_CPPv3N5faiss9DirectMap13add_single_idE5idx_t5idx_t6size_t"></span><span id="_CPPv2N5faiss9DirectMap13add_single_idE5idx_t5idx_t6size_t"></span><span id="faiss::DirectMap::add_single_id__idx_t.idx_t.s"></span><span class="target" id="structfaiss_1_1DirectMap_1a2280a6a2b3b199988c052e6f918cd0e2"></span>void <code class="sig-name descname">add_single_id</code><span class="sig-paren">(</span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t">idx_t</a> <em>id</em>, <a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t">idx_t</a> <em>list_no</em>, size_t <em>offset</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap13add_single_idE5idx_t5idx_t6size_t"></span><span id="_CPPv2N5faiss9DirectMap13add_single_idE5idx_t5idx_t6size_t"></span><span id="faiss::DirectMap::add_single_id__idx_t.idx_t.s"></span><span class="target" id="structfaiss_1_1DirectMap_1a2280a6a2b3b199988c052e6f918cd0e2"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">add_single_id</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">id</span></em>, <a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">list_no</span></em>, <span class="pre">size_t</span> <em><span class="pre">offset</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>non thread-safe version </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9DirectMap5clearEv">
-<span id="_CPPv3N5faiss9DirectMap5clearEv"></span><span id="_CPPv2N5faiss9DirectMap5clearEv"></span><span id="faiss::DirectMap::clear"></span><span class="target" id="structfaiss_1_1DirectMap_1a1a0303d38971a9aac20eb861b070af24"></span>void <code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap5clearEv"></span><span id="_CPPv2N5faiss9DirectMap5clearEv"></span><span id="faiss::DirectMap::clear"></span><span class="target" id="structfaiss_1_1DirectMap_1a1a0303d38971a9aac20eb861b070af24"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>remove all entries </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9DirectMap10remove_idsERK10IDSelectorP13InvertedLists">
-<span id="_CPPv3N5faiss9DirectMap10remove_idsERK10IDSelectorP13InvertedLists"></span><span id="_CPPv2N5faiss9DirectMap10remove_idsERK10IDSelectorP13InvertedLists"></span><span id="faiss::DirectMap::remove_ids__IDSelectorCR.InvertedListsP"></span><span class="target" id="structfaiss_1_1DirectMap_1abe74c8ce6beb15af58c26da044274e2f"></span>size_t <code class="sig-name descname">remove_ids</code><span class="sig-paren">(</span><em class="property">const</em> IDSelector &amp;<em>sel</em>, <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists">InvertedLists</a> *<em>invlists</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap10remove_idsERK10IDSelectorP13InvertedLists"></span><span id="_CPPv2N5faiss9DirectMap10remove_idsERK10IDSelectorP13InvertedLists"></span><span id="faiss::DirectMap::remove_ids__IDSelectorCR.InvertedListsP"></span><span class="target" id="structfaiss_1_1DirectMap_1abe74c8ce6beb15af58c26da044274e2f"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">remove_ids</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">IDSelector</span> <span class="pre">&amp;</span><em><span class="pre">sel</span></em>, <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="pre">InvertedLists</span></a> <span class="pre">*</span><em><span class="pre">invlists</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>remove ids from the <a class="reference internal" href="structfaiss_1_1InvertedLists.html#structfaiss_1_1InvertedLists"><span class="std std-ref">InvertedLists</span></a>, possibly using the direct map </p>
 <p>operations on inverted lists that require translation with a <a class="reference internal" href="#structfaiss_1_1DirectMap"><span class="std std-ref">DirectMap</span></a> </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9DirectMap12update_codesEP13InvertedListsiPK5idx_tPK5idx_tPK7uint8_t">
-<span id="_CPPv3N5faiss9DirectMap12update_codesEP13InvertedListsiPK5idx_tPK5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss9DirectMap12update_codesEP13InvertedListsiPK5idx_tPK5idx_tPK7uint8_t"></span><span id="faiss::DirectMap::update_codes__InvertedListsP.i.idx_tCP.idx_tCP.uint8_tCP"></span><span class="target" id="structfaiss_1_1DirectMap_1a0426251cccf9f756d82d1b40229b9391"></span>void <code class="sig-name descname">update_codes</code><span class="sig-paren">(</span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists">InvertedLists</a> *<em>invlists</em>, int <em>n</em>, <em class="property">const</em> <a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t">idx_t</a> *<em>ids</em>, <em class="property">const</em> <a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t">idx_t</a> *<em>list_nos</em>, <em class="property">const</em> uint8_t *<em>codes</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap12update_codesEP13InvertedListsiPK5idx_tPK5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss9DirectMap12update_codesEP13InvertedListsiPK5idx_tPK5idx_tPK7uint8_t"></span><span id="faiss::DirectMap::update_codes__InvertedListsP.i.idx_tCP.idx_tCP.uint8_tCP"></span><span class="target" id="structfaiss_1_1DirectMap_1a0426251cccf9f756d82d1b40229b9391"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">update_codes</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="pre">InvertedLists</span></a> <span class="pre">*</span><em><span class="pre">invlists</span></em>, <span class="pre">int</span> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">ids</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">list_nos</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">codes</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>update entries, using the direct map </p>
 </dd></dl>
 
@@ -414,18 +413,18 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss9DirectMap4typeE">
-<span id="_CPPv3N5faiss9DirectMap4typeE"></span><span id="_CPPv2N5faiss9DirectMap4typeE"></span><span id="faiss::DirectMap::type__Type"></span><span class="target" id="structfaiss_1_1DirectMap_1af32d92c20410dab605b1852117d84413"></span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap4TypeE" title="faiss::DirectMap::Type">Type</a> <code class="sig-name descname">type</code><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap4typeE"></span><span id="_CPPv2N5faiss9DirectMap4typeE"></span><span id="faiss::DirectMap::type__Type"></span><span class="target" id="structfaiss_1_1DirectMap_1af32d92c20410dab605b1852117d84413"></span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap4TypeE" title="faiss::DirectMap::Type"><span class="pre">Type</span></a> <code class="sig-name descname"><span class="pre">type</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss9DirectMap5arrayE">
-<span id="_CPPv3N5faiss9DirectMap5arrayE"></span><span id="_CPPv2N5faiss9DirectMap5arrayE"></span><span id="faiss::DirectMap::array__std::vector:idx_t:"></span><span class="target" id="structfaiss_1_1DirectMap_1a5372a8a241fd5cd2940518c523ace9dc"></span>std::vector&lt;<a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t">idx_t</a>&gt; <code class="sig-name descname">array</code><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap5arrayE"></span><span id="_CPPv2N5faiss9DirectMap5arrayE"></span><span id="faiss::DirectMap::array__std::vector:idx_t:"></span><span class="target" id="structfaiss_1_1DirectMap_1a5372a8a241fd5cd2940518c523ace9dc"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">vector</span><span class="pre">&lt;</span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t"><span class="pre">idx_t</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">array</span></code><br /></dt>
 <dd><p>map for direct access to the elements. Map ids to LO-encoded entries. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss9DirectMap9hashtableE">
-<span id="_CPPv3N5faiss9DirectMap9hashtableE"></span><span id="_CPPv2N5faiss9DirectMap9hashtableE"></span><span id="faiss::DirectMap::hashtable__std::unordered_map:idx_t.idx_t:"></span><span class="target" id="structfaiss_1_1DirectMap_1a5328b57d925865e464733f3512b0563f"></span>std::unordered_map&lt;<a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t">idx_t</a>, <a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t">idx_t</a>&gt; <code class="sig-name descname">hashtable</code><br /></dt>
+<span id="_CPPv3N5faiss9DirectMap9hashtableE"></span><span id="_CPPv2N5faiss9DirectMap9hashtableE"></span><span id="faiss::DirectMap::hashtable__std::unordered_map:idx_t.idx_t:"></span><span class="target" id="structfaiss_1_1DirectMap_1a5328b57d925865e464733f3512b0563f"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">unordered_map</span><span class="pre">&lt;</span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t"><span class="pre">idx_t</span></a><span class="pre">,</span> <a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap5idx_tE" title="faiss::DirectMap::idx_t"><span class="pre">idx_t</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">hashtable</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>

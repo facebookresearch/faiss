@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -321,13 +320,13 @@
 <h1>Struct faiss::CenteringTransform<a class="headerlink" href="#struct-faiss-centeringtransform" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss18CenteringTransformE">
-<span id="_CPPv3N5faiss18CenteringTransformE"></span><span id="_CPPv2N5faiss18CenteringTransformE"></span><span id="faiss::CenteringTransform"></span><span class="target" id="structfaiss_1_1CenteringTransform"></span><em class="property">struct </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CenteringTransform</code> : <em class="property">public</em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15VectorTransformE" title="faiss::VectorTransform">VectorTransform</a><br /></dt>
+<span id="_CPPv3N5faiss18CenteringTransformE"></span><span id="_CPPv2N5faiss18CenteringTransformE"></span><span id="faiss::CenteringTransform"></span><span class="target" id="structfaiss_1_1CenteringTransform"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">CenteringTransform</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15VectorTransformE" title="faiss::VectorTransform"><span class="pre">VectorTransform</span></a><br /></dt>
 <dd><p>Subtract the mean of each component from the vectors. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss18CenteringTransform5idx_tE">
-<span id="_CPPv3N5faiss18CenteringTransform5idx_tE"></span><span id="_CPPv2N5faiss18CenteringTransform5idx_tE"></span><span id="faiss::CenteringTransform::idx_t"></span><span class="target" id="structfaiss_1_1VectorTransform_1a410516b4efdae041546d87f6bef2e422"></span><em class="property">typedef </em><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> <code class="sig-name descname">idx_t</code><br /></dt>
+<span id="_CPPv3N5faiss18CenteringTransform5idx_tE"></span><span id="_CPPv2N5faiss18CenteringTransform5idx_tE"></span><span id="faiss::CenteringTransform::idx_t"></span><span class="target" id="structfaiss_1_1VectorTransform_1a410516b4efdae041546d87f6bef2e422"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a><span class="pre">::</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t"><span class="pre">idx_t</span></a> <code class="sig-name descname"><span class="pre">idx_t</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -335,30 +334,30 @@
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss18CenteringTransform18CenteringTransformEi">
-<span id="_CPPv3N5faiss18CenteringTransform18CenteringTransformEi"></span><span id="_CPPv2N5faiss18CenteringTransform18CenteringTransformEi"></span><span id="faiss::CenteringTransform::CenteringTransform__i"></span><span class="target" id="structfaiss_1_1CenteringTransform_1a4a2345b2c3c17a64a89574ddbbf2fef3"></span><code class="sig-name descname">CenteringTransform</code><span class="sig-paren">(</span>int <em>d</em> = 0<span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss18CenteringTransform18CenteringTransformEi"></span><span id="_CPPv2N5faiss18CenteringTransform18CenteringTransformEi"></span><span id="faiss::CenteringTransform::CenteringTransform__i"></span><span class="target" id="structfaiss_1_1CenteringTransform_1a4a2345b2c3c17a64a89574ddbbf2fef3"></span><em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">CenteringTransform</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">d</span></em> <span class="pre">=</span> <span class="pre">0</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss18CenteringTransform5trainE5idx_tPKf">
-<span id="_CPPv3N5faiss18CenteringTransform5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss18CenteringTransform5trainE5idx_tPKf"></span><span id="faiss::CenteringTransform::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1CenteringTransform_1ae63f2afed997c435fda588b5a8642893"></span>void <code class="sig-name descname">train</code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss18CenteringTransform5idx_tE" title="faiss::CenteringTransform::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<span id="_CPPv3N5faiss18CenteringTransform5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss18CenteringTransform5trainE5idx_tPKf"></span><span id="faiss::CenteringTransform::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1CenteringTransform_1ae63f2afed997c435fda588b5a8642893"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss18CenteringTransform5idx_tE" title="faiss::CenteringTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>train on n vectors. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss18CenteringTransform13apply_noallocE5idx_tPKfPf">
-<span id="_CPPv3NK5faiss18CenteringTransform13apply_noallocE5idx_tPKfPf"></span><span id="_CPPv2NK5faiss18CenteringTransform13apply_noallocE5idx_tPKfPf"></span><span id="faiss::CenteringTransform::apply_noalloc__idx_t.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1CenteringTransform_1a0d9a07e911c43a598f64981f23afec0a"></span>void <code class="sig-name descname">apply_noalloc</code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss18CenteringTransform5idx_tE" title="faiss::CenteringTransform::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, float *<em>xt</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<span id="_CPPv3NK5faiss18CenteringTransform13apply_noallocE5idx_tPKfPf"></span><span id="_CPPv2NK5faiss18CenteringTransform13apply_noallocE5idx_tPKfPf"></span><span id="faiss::CenteringTransform::apply_noalloc__idx_t.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1CenteringTransform_1a0d9a07e911c43a598f64981f23afec0a"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">apply_noalloc</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss18CenteringTransform5idx_tE" title="faiss::CenteringTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">xt</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>subtract the mean </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss18CenteringTransform17reverse_transformE5idx_tPKfPf">
-<span id="_CPPv3NK5faiss18CenteringTransform17reverse_transformE5idx_tPKfPf"></span><span id="_CPPv2NK5faiss18CenteringTransform17reverse_transformE5idx_tPKfPf"></span><span id="faiss::CenteringTransform::reverse_transform__idx_t.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1CenteringTransform_1a01aacceb0950fcb39b0f5e18103ea6d5"></span>void <code class="sig-name descname">reverse_transform</code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss18CenteringTransform5idx_tE" title="faiss::CenteringTransform::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>xt</em>, float *<em>x</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<span id="_CPPv3NK5faiss18CenteringTransform17reverse_transformE5idx_tPKfPf"></span><span id="_CPPv2NK5faiss18CenteringTransform17reverse_transformE5idx_tPKfPf"></span><span id="faiss::CenteringTransform::reverse_transform__idx_t.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1CenteringTransform_1a01aacceb0950fcb39b0f5e18103ea6d5"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reverse_transform</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss18CenteringTransform5idx_tE" title="faiss::CenteringTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">xt</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>add the mean </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss18CenteringTransform5applyE5idx_tPKf">
-<span id="_CPPv3NK5faiss18CenteringTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss18CenteringTransform5applyE5idx_tPKf"></span><span id="faiss::CenteringTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span>float *<code class="sig-name descname">apply</code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss18CenteringTransform5idx_tE" title="faiss::CenteringTransform::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss18CenteringTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss18CenteringTransform5applyE5idx_tPKf"></span><span id="faiss::CenteringTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss18CenteringTransform5idx_tE" title="faiss::CenteringTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>apply the random roation, return new allocated matrix <dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
 </dd>
@@ -375,24 +374,24 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss18CenteringTransform4meanE">
-<span id="_CPPv3N5faiss18CenteringTransform4meanE"></span><span id="_CPPv2N5faiss18CenteringTransform4meanE"></span><span id="faiss::CenteringTransform::mean__std::vector:float:"></span><span class="target" id="structfaiss_1_1CenteringTransform_1af96e272f0f51d71ed098cdfe3e4ff87d"></span>std::vector&lt;float&gt; <code class="sig-name descname">mean</code><br /></dt>
+<span id="_CPPv3N5faiss18CenteringTransform4meanE"></span><span id="_CPPv2N5faiss18CenteringTransform4meanE"></span><span id="faiss::CenteringTransform::mean__std::vector:float:"></span><span class="target" id="structfaiss_1_1CenteringTransform_1af96e272f0f51d71ed098cdfe3e4ff87d"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">vector</span><span class="pre">&lt;</span><span class="pre">float</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">mean</span></code><br /></dt>
 <dd><p>Mean, size d_in = d_out. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss18CenteringTransform4d_inE">
-<span id="_CPPv3N5faiss18CenteringTransform4d_inE"></span><span id="_CPPv2N5faiss18CenteringTransform4d_inE"></span><span id="faiss::CenteringTransform::d_in__i"></span><span class="target" id="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6"></span>int <code class="sig-name descname">d_in</code><br /></dt>
+<span id="_CPPv3N5faiss18CenteringTransform4d_inE"></span><span id="_CPPv2N5faiss18CenteringTransform4d_inE"></span><span id="faiss::CenteringTransform::d_in__i"></span><span class="target" id="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">d_in</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss18CenteringTransform5d_outE">
-<span id="_CPPv3N5faiss18CenteringTransform5d_outE"></span><span id="_CPPv2N5faiss18CenteringTransform5d_outE"></span><span id="faiss::CenteringTransform::d_out__i"></span><span class="target" id="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9"></span>int <code class="sig-name descname">d_out</code><br /></dt>
+<span id="_CPPv3N5faiss18CenteringTransform5d_outE"></span><span id="_CPPv2N5faiss18CenteringTransform5d_outE"></span><span id="faiss::CenteringTransform::d_out__i"></span><span class="target" id="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">d_out</span></code><br /></dt>
 <dd><p>! input dimension </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss18CenteringTransform10is_trainedE">
-<span id="_CPPv3N5faiss18CenteringTransform10is_trainedE"></span><span id="_CPPv2N5faiss18CenteringTransform10is_trainedE"></span><span id="faiss::CenteringTransform::is_trained__b"></span><span class="target" id="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02"></span>bool <code class="sig-name descname">is_trained</code><br /></dt>
+<span id="_CPPv3N5faiss18CenteringTransform10is_trainedE"></span><span id="_CPPv2N5faiss18CenteringTransform10is_trainedE"></span><span id="faiss::CenteringTransform::is_trained__b"></span><span class="target" id="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">is_trained</span></code><br /></dt>
 <dd><p>set if the <a class="reference internal" href="structfaiss_1_1VectorTransform.html#structfaiss_1_1VectorTransform"><span class="std std-ref">VectorTransform</span></a> does not require training, or if training is done already </p>
 </dd></dl>
 

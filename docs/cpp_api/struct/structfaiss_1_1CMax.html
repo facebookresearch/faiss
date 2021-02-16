@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -321,7 +320,7 @@
 <h1>Struct faiss::CMax<a class="headerlink" href="#struct-faiss-cmax" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
 <dt id="_CPPv4I00EN5faiss4CMaxE">
-<span id="_CPPv3I00EN5faiss4CMaxE"></span><span id="_CPPv2I00EN5faiss4CMaxE"></span>template&lt;typename <code class="sig-name descname">T_</code>, typename <code class="sig-name descname">TI_</code>&gt;<br /><span class="target" id="structfaiss_1_1CMax"></span><em class="property">struct </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CMax</code><br /></dt>
+<span id="_CPPv3I00EN5faiss4CMaxE"></span><span id="_CPPv2I00EN5faiss4CMaxE"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">T_</span></code><span class="pre">,</span> <span class="pre">typename</span> <code class="sig-name descname"><span class="pre">TI_</span></code><span class="pre">&gt;</span><br /><span class="target" id="structfaiss_1_1CMax"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">CMax</span></code><br /></dt>
 <dd><p>The C object gives the type T of the values of a key-value storage, the type of the keys, TI and the comparison that is done: <a class="reference internal" href="#structfaiss_1_1CMax"><span class="std std-ref">CMax</span></a> for a decreasing series and <a class="reference internal" href="structfaiss_1_1CMin.html#structfaiss_1_1CMin"><span class="std std-ref">CMin</span></a> for increasing series. In other words, for a given threshold threshold, an incoming value x is kept if <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">C</span><span class="p">::</span><span class="n">cmp</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -331,17 +330,17 @@
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss4CMax1TE">
-<span id="_CPPv3N5faiss4CMax1TE"></span><span id="_CPPv2N5faiss4CMax1TE"></span><span id="faiss::CMax::T"></span><span class="target" id="structfaiss_1_1CMax_1a4b83239e1d9b4aced927ba7ff4173d00"></span><em class="property">typedef </em><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4I00EN5faiss4CMaxE" title="faiss::CMax::T_">T_</a> <code class="sig-name descname">T</code><br /></dt>
+<span id="_CPPv3N5faiss4CMax1TE"></span><span id="_CPPv2N5faiss4CMax1TE"></span><span id="faiss::CMax::T"></span><span class="target" id="structfaiss_1_1CMax_1a4b83239e1d9b4aced927ba7ff4173d00"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4I00EN5faiss4CMaxE" title="faiss::CMax::T_"><span class="pre">T_</span></a> <code class="sig-name descname"><span class="pre">T</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss4CMax2TIE">
-<span id="_CPPv3N5faiss4CMax2TIE"></span><span id="_CPPv2N5faiss4CMax2TIE"></span><span id="faiss::CMax::TI"></span><span class="target" id="structfaiss_1_1CMax_1a3dee03ea7f714941e312c5e8a0fac424"></span><em class="property">typedef </em><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4I00EN5faiss4CMaxE" title="faiss::CMax::TI_">TI_</a> <code class="sig-name descname">TI</code><br /></dt>
+<span id="_CPPv3N5faiss4CMax2TIE"></span><span id="_CPPv2N5faiss4CMax2TIE"></span><span id="faiss::CMax::TI"></span><span class="target" id="structfaiss_1_1CMax_1a3dee03ea7f714941e312c5e8a0fac424"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4I00EN5faiss4CMaxE" title="faiss::CMax::TI_"><span class="pre">TI_</span></a> <code class="sig-name descname"><span class="pre">TI</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss4CMax4CrevE">
-<span id="_CPPv3N5faiss4CMax4CrevE"></span><span id="_CPPv2N5faiss4CMax4CrevE"></span><span id="faiss::CMax::Crev"></span><span class="target" id="structfaiss_1_1CMax_1ac85b44ba294f5e0f308c0ff2af3d5488"></span><em class="property">typedef </em><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4I00EN5faiss4CMinE" title="faiss::CMin">CMin</a>&lt;<a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4I00EN5faiss4CMaxE" title="faiss::CMax::T_">T_</a>, <a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4I00EN5faiss4CMaxE" title="faiss::CMax::TI_">TI_</a>&gt; <code class="sig-name descname">Crev</code><br /></dt>
+<span id="_CPPv3N5faiss4CMax4CrevE"></span><span id="_CPPv2N5faiss4CMax4CrevE"></span><span id="faiss::CMax::Crev"></span><span class="target" id="structfaiss_1_1CMax_1ac85b44ba294f5e0f308c0ff2af3d5488"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4I00EN5faiss4CMinE" title="faiss::CMin"><span class="pre">CMin</span></a><span class="pre">&lt;</span><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4I00EN5faiss4CMaxE" title="faiss::CMax::T_"><span class="pre">T_</span></a><span class="pre">,</span> <a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4I00EN5faiss4CMaxE" title="faiss::CMax::TI_"><span class="pre">TI_</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">Crev</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -349,17 +348,17 @@
 <p class="breathe-sectiondef-title rubric">Public Static Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss4CMax3cmpE1T1T">
-<span id="_CPPv3N5faiss4CMax3cmpE1T1T"></span><span id="_CPPv2N5faiss4CMax3cmpE1T1T"></span><span id="faiss::CMax::cmp__T.T"></span><span class="target" id="structfaiss_1_1CMax_1aaf234ed1f1829f1f7c4a4f7b03baa63e"></span>bool <code class="sig-name descname">cmp</code><span class="sig-paren">(</span><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4N5faiss4CMax1TE" title="faiss::CMax::T">T</a> <em>a</em>, <a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4N5faiss4CMax1TE" title="faiss::CMax::T">T</a> <em>b</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss4CMax3cmpE1T1T"></span><span id="_CPPv2N5faiss4CMax3cmpE1T1T"></span><span id="faiss::CMax::cmp__T.T"></span><span class="target" id="structfaiss_1_1CMax_1aaf234ed1f1829f1f7c4a4f7b03baa63e"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">bool</span> <code class="sig-name descname"><span class="pre">cmp</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4N5faiss4CMax1TE" title="faiss::CMax::T"><span class="pre">T</span></a> <em><span class="pre">a</span></em>, <a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4N5faiss4CMax1TE" title="faiss::CMax::T"><span class="pre">T</span></a> <em><span class="pre">b</span></em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss4CMax7neutralEv">
-<span id="_CPPv3N5faiss4CMax7neutralEv"></span><span id="_CPPv2N5faiss4CMax7neutralEv"></span><span id="faiss::CMax::neutral"></span><span class="target" id="structfaiss_1_1CMax_1a6852fb868eaca69477c92c21c34c80d2"></span><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4N5faiss4CMax1TE" title="faiss::CMax::T">T</a> <code class="sig-name descname">neutral</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss4CMax7neutralEv"></span><span id="_CPPv2N5faiss4CMax7neutralEv"></span><span id="faiss::CMax::neutral"></span><span class="target" id="structfaiss_1_1CMax_1a6852fb868eaca69477c92c21c34c80d2"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4N5faiss4CMax1TE" title="faiss::CMax::T"><span class="pre">T</span></a> <code class="sig-name descname"><span class="pre">neutral</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss4CMax9nextafterE1T">
-<span id="_CPPv3N5faiss4CMax9nextafterE1T"></span><span id="_CPPv2N5faiss4CMax9nextafterE1T"></span><span id="faiss::CMax::nextafter__T"></span><span class="target" id="structfaiss_1_1CMax_1a6190ab95ec589abea37578ca7922310e"></span><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4N5faiss4CMax1TE" title="faiss::CMax::T">T</a> <code class="sig-name descname">nextafter</code><span class="sig-paren">(</span><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4N5faiss4CMax1TE" title="faiss::CMax::T">T</a> <em>x</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss4CMax9nextafterE1T"></span><span id="_CPPv2N5faiss4CMax9nextafterE1T"></span><span id="faiss::CMax::nextafter__T"></span><span class="target" id="structfaiss_1_1CMax_1a6190ab95ec589abea37578ca7922310e"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4N5faiss4CMax1TE" title="faiss::CMax::T"><span class="pre">T</span></a> <code class="sig-name descname"><span class="pre">nextafter</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/ordered__key__value_8h.html#_CPPv4N5faiss4CMax1TE" title="faiss::CMax::T"><span class="pre">T</span></a> <em><span class="pre">x</span></em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -367,7 +366,7 @@
 <p class="breathe-sectiondef-title rubric">Public Static Attributes</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss4CMax6is_maxE">
-<span id="_CPPv3N5faiss4CMax6is_maxE"></span><span id="_CPPv2N5faiss4CMax6is_maxE"></span><span id="faiss::CMax::is_max__bC"></span><span class="target" id="structfaiss_1_1CMax_1aa9bb565770641c21b5975cfc06f16ab8"></span><em class="property">const</em> bool <code class="sig-name descname">is_max</code> = true<br /></dt>
+<span id="_CPPv3N5faiss4CMax6is_maxE"></span><span id="_CPPv2N5faiss4CMax6is_maxE"></span><span id="faiss::CMax::is_max__bC"></span><span class="target" id="structfaiss_1_1CMax_1aa9bb565770641c21b5975cfc06f16ab8"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">bool</span> <code class="sig-name descname"><span class="pre">is_max</span></code> <span class="pre">=</span> <span class="pre">true</span><br /></dt>
 <dd></dd></dl>
 
 </div>

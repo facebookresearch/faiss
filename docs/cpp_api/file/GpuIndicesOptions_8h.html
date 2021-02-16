@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -285,7 +284,7 @@
 <h1>File GpuIndicesOptions.h<a class="headerlink" href="#file-gpuindicesoptions-h" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp type">
 <dt id="_CPPv45faiss">
-<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property">namespace </em><code class="sig-name descname">faiss</code><br /></dt>
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">faiss</span></code><br /></dt>
 <dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
@@ -304,35 +303,35 @@
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss3gpuE">
-<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><em class="property">namespace </em><code class="sig-name descname">gpu</code><br /></dt>
+<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">gpu</span></code><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Enums</p>
 <dl class="cpp enum">
 <dt id="_CPPv4N5faiss3gpu14IndicesOptionsE">
-<span id="_CPPv3N5faiss3gpu14IndicesOptionsE"></span><span id="_CPPv2N5faiss3gpu14IndicesOptionsE"></span><span class="target" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459"></span><em class="property">enum </em><code class="sig-name descname">IndicesOptions</code><a class="headerlink" href="#_CPPv4N5faiss3gpu14IndicesOptionsE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu14IndicesOptionsE"></span><span id="_CPPv2N5faiss3gpu14IndicesOptionsE"></span><span class="target" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459"></span><em class="property"><span class="pre">enum</span> </em><code class="sig-name descname"><span class="pre">IndicesOptions</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu14IndicesOptionsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>How user vector index data is stored on the GPU. </p>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss3gpu14IndicesOptions11INDICES_CPUE">
-<span id="_CPPv3N5faiss3gpu14IndicesOptions11INDICES_CPUE"></span><span id="_CPPv2N5faiss3gpu14IndicesOptions11INDICES_CPUE"></span><span class="target" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a588811aea072aa57c268dec24d16ad81"></span><em class="property">enumerator </em><code class="sig-name descname">INDICES_CPU</code><a class="headerlink" href="#_CPPv4N5faiss3gpu14IndicesOptions11INDICES_CPUE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu14IndicesOptions11INDICES_CPUE"></span><span id="_CPPv2N5faiss3gpu14IndicesOptions11INDICES_CPUE"></span><span class="target" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a588811aea072aa57c268dec24d16ad81"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">INDICES_CPU</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu14IndicesOptions11INDICES_CPUE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The user indices are only stored on the CPU; the GPU returns (inverted list, offset) to the CPU which is then translated to the real user index. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss3gpu14IndicesOptions11INDICES_IVFE">
-<span id="_CPPv3N5faiss3gpu14IndicesOptions11INDICES_IVFE"></span><span id="_CPPv2N5faiss3gpu14IndicesOptions11INDICES_IVFE"></span><span class="target" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a86cdd363f1311a43e0e99ebdc909311c"></span><em class="property">enumerator </em><code class="sig-name descname">INDICES_IVF</code><a class="headerlink" href="#_CPPv4N5faiss3gpu14IndicesOptions11INDICES_IVFE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu14IndicesOptions11INDICES_IVFE"></span><span id="_CPPv2N5faiss3gpu14IndicesOptions11INDICES_IVFE"></span><span class="target" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a86cdd363f1311a43e0e99ebdc909311c"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">INDICES_IVF</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu14IndicesOptions11INDICES_IVFE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The indices are not stored at all, on either the CPU or GPU. Only (inverted list, offset) is returned to the user as the index. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss3gpu14IndicesOptions14INDICES_32_BITE">
-<span id="_CPPv3N5faiss3gpu14IndicesOptions14INDICES_32_BITE"></span><span id="_CPPv2N5faiss3gpu14IndicesOptions14INDICES_32_BITE"></span><span class="target" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459ad702a8b1a6bcefaa8d731762e4f88936"></span><em class="property">enumerator </em><code class="sig-name descname">INDICES_32_BIT</code><a class="headerlink" href="#_CPPv4N5faiss3gpu14IndicesOptions14INDICES_32_BITE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu14IndicesOptions14INDICES_32_BITE"></span><span id="_CPPv2N5faiss3gpu14IndicesOptions14INDICES_32_BITE"></span><span class="target" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459ad702a8b1a6bcefaa8d731762e4f88936"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">INDICES_32_BIT</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu14IndicesOptions14INDICES_32_BITE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Indices are stored as 32 bit integers on the GPU, but returned as 64 bit integers </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss3gpu14IndicesOptions14INDICES_64_BITE">
-<span id="_CPPv3N5faiss3gpu14IndicesOptions14INDICES_64_BITE"></span><span id="_CPPv2N5faiss3gpu14IndicesOptions14INDICES_64_BITE"></span><span class="target" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a3173a4e316b70ff921a20943bc055aac"></span><em class="property">enumerator </em><code class="sig-name descname">INDICES_64_BIT</code><a class="headerlink" href="#_CPPv4N5faiss3gpu14IndicesOptions14INDICES_64_BITE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu14IndicesOptions14INDICES_64_BITE"></span><span id="_CPPv2N5faiss3gpu14IndicesOptions14INDICES_64_BITE"></span><span class="target" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a3173a4e316b70ff921a20943bc055aac"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">INDICES_64_BIT</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu14IndicesOptions14INDICES_64_BITE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Indices are stored as 64 bit integers on the GPU. </p>
 </dd></dl>
 

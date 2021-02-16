@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -321,48 +320,48 @@
 <h1>Struct faiss::IndexPQ<a class="headerlink" href="#struct-faiss-indexpq" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss7IndexPQE">
-<span id="_CPPv3N5faiss7IndexPQE"></span><span id="_CPPv2N5faiss7IndexPQE"></span><span id="faiss::IndexPQ"></span><span class="target" id="structfaiss_1_1IndexPQ"></span><em class="property">struct </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">IndexPQ</code> : <em class="property">public</em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQE"></span><span id="_CPPv2N5faiss7IndexPQE"></span><span id="faiss::IndexPQ"></span><span class="target" id="structfaiss_1_1IndexPQ"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">IndexPQ</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a><br /></dt>
 <dd><p><a class="reference internal" href="structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> based on a product quantizer. Stored vectors are approximated by PQ codes. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp enum">
 <dt id="_CPPv4N5faiss7IndexPQ13Search_type_tE">
-<span id="_CPPv3N5faiss7IndexPQ13Search_type_tE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_tE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fe"></span><em class="property">enum </em><code class="sig-name descname">Search_type_t</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ13Search_type_tE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_tE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fe"></span><em class="property"><span class="pre">enum</span> </em><code class="sig-name descname"><span class="pre">Search_type_t</span></code><br /></dt>
 <dd><p>how to perform the search in search_core </p>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss7IndexPQ13Search_type_t5ST_PQE">
-<span id="_CPPv3N5faiss7IndexPQ13Search_type_t5ST_PQE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_t5ST_PQE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fea00f77a4f8209c30c3ef37ccfd3d0c10a"></span><em class="property">enumerator </em><code class="sig-name descname">ST_PQ</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ13Search_type_t5ST_PQE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_t5ST_PQE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fea00f77a4f8209c30c3ef37ccfd3d0c10a"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">ST_PQ</span></code><br /></dt>
 <dd><p>asymmetric product quantizer (default) </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss7IndexPQ13Search_type_t5ST_HEE">
-<span id="_CPPv3N5faiss7IndexPQ13Search_type_t5ST_HEE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_t5ST_HEE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fea903849f87cca2e7fbbfe034edbb81718"></span><em class="property">enumerator </em><code class="sig-name descname">ST_HE</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ13Search_type_t5ST_HEE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_t5ST_HEE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fea903849f87cca2e7fbbfe034edbb81718"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">ST_HE</span></code><br /></dt>
 <dd><p>Hamming distance on codes. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss7IndexPQ13Search_type_t17ST_generalized_HEE">
-<span id="_CPPv3N5faiss7IndexPQ13Search_type_t17ST_generalized_HEE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_t17ST_generalized_HEE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fea237afca36629dae511c0ac56effbfaa6"></span><em class="property">enumerator </em><code class="sig-name descname">ST_generalized_HE</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ13Search_type_t17ST_generalized_HEE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_t17ST_generalized_HEE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fea237afca36629dae511c0ac56effbfaa6"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">ST_generalized_HE</span></code><br /></dt>
 <dd><p>nb of same codes </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss7IndexPQ13Search_type_t6ST_SDCE">
-<span id="_CPPv3N5faiss7IndexPQ13Search_type_t6ST_SDCE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_t6ST_SDCE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fea4287cbc83d1d5f0d1a02f014e5fe692c"></span><em class="property">enumerator </em><code class="sig-name descname">ST_SDC</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ13Search_type_t6ST_SDCE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_t6ST_SDCE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fea4287cbc83d1d5f0d1a02f014e5fe692c"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">ST_SDC</span></code><br /></dt>
 <dd><p>symmetric product quantizer (SDC) </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss7IndexPQ13Search_type_t13ST_polysemousE">
-<span id="_CPPv3N5faiss7IndexPQ13Search_type_t13ST_polysemousE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_t13ST_polysemousE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42feaf06a0e6b53f9cbe1c791c6912169b738"></span><em class="property">enumerator </em><code class="sig-name descname">ST_polysemous</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ13Search_type_t13ST_polysemousE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_t13ST_polysemousE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42feaf06a0e6b53f9cbe1c791c6912169b738"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">ST_polysemous</span></code><br /></dt>
 <dd><p>HE filter (using ht) + PQ combination. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt id="_CPPv4N5faiss7IndexPQ13Search_type_t24ST_polysemous_generalizeE">
-<span id="_CPPv3N5faiss7IndexPQ13Search_type_t24ST_polysemous_generalizeE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_t24ST_polysemous_generalizeE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42feaef79af61798670a362434b7bc9ced45e"></span><em class="property">enumerator </em><code class="sig-name descname">ST_polysemous_generalize</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ13Search_type_t24ST_polysemous_generalizeE"></span><span id="_CPPv2N5faiss7IndexPQ13Search_type_t24ST_polysemous_generalizeE"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42feaef79af61798670a362434b7bc9ced45e"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">ST_polysemous_generalize</span></code><br /></dt>
 <dd><p>Filter on generalized Hamming. </p>
 </dd></dl>
 
@@ -370,18 +369,18 @@
 
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss7IndexPQ5idx_tE">
-<span id="_CPPv3N5faiss7IndexPQ5idx_tE"></span><span id="_CPPv2N5faiss7IndexPQ5idx_tE"></span><span class="target" id="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d"></span><em class="property">using </em><code class="sig-name descname">idx_t</code> = int64_t<br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ5idx_tE"></span><span id="_CPPv2N5faiss7IndexPQ5idx_tE"></span><span class="target" id="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d"></span><em class="property"><span class="pre">using</span> </em><code class="sig-name descname"><span class="pre">idx_t</span></code> <span class="pre">=</span> <span class="pre">int64_t</span><br /></dt>
 <dd><p>all indices are this type </p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss7IndexPQ11component_tE">
-<span id="_CPPv3N5faiss7IndexPQ11component_tE"></span><span id="_CPPv2N5faiss7IndexPQ11component_tE"></span><span class="target" id="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb"></span><em class="property">using </em><code class="sig-name descname">component_t</code> = float<br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ11component_tE"></span><span id="_CPPv2N5faiss7IndexPQ11component_tE"></span><span class="target" id="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb"></span><em class="property"><span class="pre">using</span> </em><code class="sig-name descname"><span class="pre">component_t</span></code> <span class="pre">=</span> <span class="pre">float</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss7IndexPQ10distance_tE">
-<span id="_CPPv3N5faiss7IndexPQ10distance_tE"></span><span id="_CPPv2N5faiss7IndexPQ10distance_tE"></span><span class="target" id="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f"></span><em class="property">using </em><code class="sig-name descname">distance_t</code> = float<br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ10distance_tE"></span><span id="_CPPv2N5faiss7IndexPQ10distance_tE"></span><span class="target" id="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f"></span><em class="property"><span class="pre">using</span> </em><code class="sig-name descname"><span class="pre">distance_t</span></code> <span class="pre">=</span> <span class="pre">float</span><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -389,7 +388,7 @@
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss7IndexPQ7IndexPQEi6size_t6size_t10MetricType">
-<span id="_CPPv3N5faiss7IndexPQ7IndexPQEi6size_t6size_t10MetricType"></span><span id="_CPPv2N5faiss7IndexPQ7IndexPQEi6size_t6size_t10MetricType"></span><span id="faiss::IndexPQ::IndexPQ__i.s.s.MetricType"></span><span class="target" id="structfaiss_1_1IndexPQ_1ab8d0bbf8a0dab39b236e0d1633923746"></span><code class="sig-name descname">IndexPQ</code><span class="sig-paren">(</span>int <em>d</em>, size_t <em>M</em>, size_t <em>nbits</em>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType">MetricType</a> <em>metric</em> = <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2">METRIC_L2</a><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ7IndexPQEi6size_t6size_t10MetricType"></span><span id="_CPPv2N5faiss7IndexPQ7IndexPQEi6size_t6size_t10MetricType"></span><span id="faiss::IndexPQ::IndexPQ__i.s.s.MetricType"></span><span class="target" id="structfaiss_1_1IndexPQ_1ab8d0bbf8a0dab39b236e0d1633923746"></span><code class="sig-name descname"><span class="pre">IndexPQ</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">d</span></em>, <span class="pre">size_t</span> <em><span class="pre">M</span></em>, <span class="pre">size_t</span> <em><span class="pre">nbits</span></em>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="pre">MetricType</span></a> <em><span class="pre">metric</span></em> <span class="pre">=</span> <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2"><span class="pre">METRIC_L2</span></a><span class="sig-paren">)</span><br /></dt>
 <dd><p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">d</span></code>: dimensionality of the input vectors </p></li>
@@ -413,12 +412,12 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss7IndexPQ7IndexPQEv">
-<span id="_CPPv3N5faiss7IndexPQ7IndexPQEv"></span><span id="_CPPv2N5faiss7IndexPQ7IndexPQEv"></span><span id="faiss::IndexPQ::IndexPQ"></span><span class="target" id="structfaiss_1_1IndexPQ_1a427d829a4c494b19b7e6efec2ce12bc6"></span><code class="sig-name descname">IndexPQ</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ7IndexPQEv"></span><span id="_CPPv2N5faiss7IndexPQ7IndexPQEv"></span><span id="faiss::IndexPQ::IndexPQ"></span><span class="target" id="structfaiss_1_1IndexPQ_1a427d829a4c494b19b7e6efec2ce12bc6"></span><code class="sig-name descname"><span class="pre">IndexPQ</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss7IndexPQ5trainE5idx_tPKf">
-<span id="_CPPv3N5faiss7IndexPQ5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss7IndexPQ5trainE5idx_tPKf"></span><span id="faiss::IndexPQ::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexPQ_1a87898add5ab4d86ba901ca79778fc11e"></span>void <code class="sig-name descname">train</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss7IndexPQ5trainE5idx_tPKf"></span><span id="faiss::IndexPQ::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexPQ_1a87898add5ab4d86ba901ca79778fc11e"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Perform training on a representative set of vectors</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -432,7 +431,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss7IndexPQ3addE5idx_tPKf">
-<span id="_CPPv3N5faiss7IndexPQ3addE5idx_tPKf"></span><span id="_CPPv2N5faiss7IndexPQ3addE5idx_tPKf"></span><span id="faiss::IndexPQ::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexPQ_1ac72c9b93f8fe7e5ec27fbe26bb38a7bf"></span>void <code class="sig-name descname">add</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ3addE5idx_tPKf"></span><span id="_CPPv2N5faiss7IndexPQ3addE5idx_tPKf"></span><span id="faiss::IndexPQ::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexPQ_1ac72c9b93f8fe7e5ec27fbe26bb38a7bf"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Add n vectors of dimension d to the index.</p>
 <p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chuncks smaller than blocksize_add and calls add_core. <dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -445,7 +444,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ6searchE5idx_tPKf5idx_tPfP5idx_t">
-<span id="_CPPv3NK5faiss7IndexPQ6searchE5idx_tPKf5idx_tPfP5idx_t"></span><span id="_CPPv2NK5faiss7IndexPQ6searchE5idx_tPKf5idx_tPfP5idx_t"></span><span id="faiss::IndexPQ::search__idx_t.floatCP.idx_t.floatP.idx_tPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1a491ba3ed34093513e6a850fbca0abdd2"></span>void <code class="sig-name descname">search</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>k</em>, float *<em>distances</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> *<em>labels</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ6searchE5idx_tPKf5idx_tPfP5idx_t"></span><span id="_CPPv2NK5faiss7IndexPQ6searchE5idx_tPKf5idx_tPfP5idx_t"></span><span id="faiss::IndexPQ::search__idx_t.floatCP.idx_t.floatP.idx_tPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1a491ba3ed34093513e6a850fbca0abdd2"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
 <p>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</p>
 <p><dl class="simple">
@@ -461,13 +460,13 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss7IndexPQ5resetEv">
-<span id="_CPPv3N5faiss7IndexPQ5resetEv"></span><span id="_CPPv2N5faiss7IndexPQ5resetEv"></span><span id="faiss::IndexPQ::reset"></span><span class="target" id="structfaiss_1_1IndexPQ_1a25e17da885cf55d84b176b46f3ad25b1"></span>void <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ5resetEv"></span><span id="_CPPv2N5faiss7IndexPQ5resetEv"></span><span id="faiss::IndexPQ::reset"></span><span class="target" id="structfaiss_1_1IndexPQ_1a25e17da885cf55d84b176b46f3ad25b1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reset</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>removes all elements from the database. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ13reconstruct_nE5idx_t5idx_tPf">
-<span id="_CPPv3NK5faiss7IndexPQ13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss7IndexPQ13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::IndexPQ::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1a99b187b1231a700617f7b228ec348ade"></span>void <code class="sig-name descname">reconstruct_n</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>i0</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>ni</em>, float *<em>recons</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss7IndexPQ13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::IndexPQ::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1a99b187b1231a700617f7b228ec348ade"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct_n</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">i0</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">ni</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
 <p>this function may not be defined for some indexes <dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -480,7 +479,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ11reconstructE5idx_tPf">
-<span id="_CPPv3NK5faiss7IndexPQ11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss7IndexPQ11reconstructE5idx_tPf"></span><span id="faiss::IndexPQ::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1a20913df3bfd8caa5187112641e8d9bc7"></span>void <code class="sig-name descname">reconstruct</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>key</em>, float *<em>recons</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss7IndexPQ11reconstructE5idx_tPf"></span><span id="faiss::IndexPQ::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1a20913df3bfd8caa5187112641e8d9bc7"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
 <p>this function may not be defined for some indexes <dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -494,19 +493,19 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss7IndexPQ10remove_idsERK10IDSelector">
-<span id="_CPPv3N5faiss7IndexPQ10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss7IndexPQ10remove_idsERK10IDSelector"></span><span id="faiss::IndexPQ::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1IndexPQ_1adf5573ec615caf66584e056a29452669"></span>size_t <code class="sig-name descname">remove_ids</code><span class="sig-paren">(</span><em class="property">const</em> IDSelector &amp;<em>sel</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss7IndexPQ10remove_idsERK10IDSelector"></span><span id="faiss::IndexPQ::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1IndexPQ_1adf5573ec615caf66584e056a29452669"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">remove_ids</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">IDSelector</span> <span class="pre">&amp;</span><em><span class="pre">sel</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>removes IDs from the index. Not supported by all indexes. Returns the number of elements removed. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ12sa_code_sizeEv">
-<span id="_CPPv3NK5faiss7IndexPQ12sa_code_sizeEv"></span><span id="_CPPv2NK5faiss7IndexPQ12sa_code_sizeEv"></span><span id="faiss::IndexPQ::sa_code_sizeC"></span><span class="target" id="structfaiss_1_1IndexPQ_1ae312739a391a32d77fc87699f2dc894c"></span>size_t <code class="sig-name descname">sa_code_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ12sa_code_sizeEv"></span><span id="_CPPv2NK5faiss7IndexPQ12sa_code_sizeEv"></span><span id="faiss::IndexPQ::sa_code_sizeC"></span><span class="target" id="structfaiss_1_1IndexPQ_1ae312739a391a32d77fc87699f2dc894c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">sa_code_size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>size of the produced codes in bytes </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ9sa_encodeE5idx_tPKfP7uint8_t">
-<span id="_CPPv3NK5faiss7IndexPQ9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss7IndexPQ9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexPQ::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1a438591a838aad52cd69e021c7b93110f"></span>void <code class="sig-name descname">sa_encode</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, uint8_t *<em>bytes</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss7IndexPQ9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexPQ::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1a438591a838aad52cd69e021c7b93110f"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_encode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -521,7 +520,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ9sa_decodeE5idx_tPK7uint8_tPf">
-<span id="_CPPv3NK5faiss7IndexPQ9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss7IndexPQ9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::IndexPQ::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1a104104a52149ebdcb8ab79dc01180b6e"></span>void <code class="sig-name descname">sa_decode</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> uint8_t *<em>bytes</em>, float *<em>x</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss7IndexPQ9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::IndexPQ::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1a104104a52149ebdcb8ab79dc01180b6e"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_decode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -536,19 +535,19 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ21get_distance_computerEv">
-<span id="_CPPv3NK5faiss7IndexPQ21get_distance_computerEv"></span><span id="_CPPv2NK5faiss7IndexPQ21get_distance_computerEv"></span><span id="faiss::IndexPQ::get_distance_computerC"></span><span class="target" id="structfaiss_1_1IndexPQ_1acb6744a8e64db9b01bfd58f4cf9fee77"></span>DistanceComputer *<code class="sig-name descname">get_distance_computer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ21get_distance_computerEv"></span><span id="_CPPv2NK5faiss7IndexPQ21get_distance_computerEv"></span><span id="faiss::IndexPQ::get_distance_computerC"></span><span class="target" id="structfaiss_1_1IndexPQ_1acb6744a8e64db9b01bfd58f4cf9fee77"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">DistanceComputer</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">get_distance_computer</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</p>
 <p>DistanceComputer is implemented for indexes that support random access of their vectors. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ22search_core_polysemousE5idx_tPKf5idx_tPfP5idx_t">
-<span id="_CPPv3NK5faiss7IndexPQ22search_core_polysemousE5idx_tPKf5idx_tPfP5idx_t"></span><span id="_CPPv2NK5faiss7IndexPQ22search_core_polysemousE5idx_tPKf5idx_tPfP5idx_t"></span><span id="faiss::IndexPQ::search_core_polysemous__idx_t.floatCP.idx_t.floatP.idx_tPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4d8792ee8942cd4897530f68169cea04"></span>void <code class="sig-name descname">search_core_polysemous</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>k</em>, float *<em>distances</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> *<em>labels</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ22search_core_polysemousE5idx_tPKf5idx_tPfP5idx_t"></span><span id="_CPPv2NK5faiss7IndexPQ22search_core_polysemousE5idx_tPKf5idx_tPfP5idx_t"></span><span id="faiss::IndexPQ::search_core_polysemous__idx_t.floatCP.idx_t.floatP.idx_tPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1a4d8792ee8942cd4897530f68169cea04"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_core_polysemous</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss7IndexPQ26hamming_distance_histogramE5idx_tPKf5idx_tPKfP7int64_t">
-<span id="_CPPv3N5faiss7IndexPQ26hamming_distance_histogramE5idx_tPKf5idx_tPKfP7int64_t"></span><span id="_CPPv2N5faiss7IndexPQ26hamming_distance_histogramE5idx_tPKf5idx_tPKfP7int64_t"></span><span id="faiss::IndexPQ::hamming_distance_histogram__idx_t.floatCP.idx_t.floatCP.int64_tP"></span><span class="target" id="structfaiss_1_1IndexPQ_1a0560fe2b1bd291d868822e7b2754ecf0"></span>void <code class="sig-name descname">hamming_distance_histogram</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>nb</em>, <em class="property">const</em> float *<em>xb</em>, int64_t *<em>dist_histogram</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ26hamming_distance_histogramE5idx_tPKf5idx_tPKfP7int64_t"></span><span id="_CPPv2N5faiss7IndexPQ26hamming_distance_histogramE5idx_tPKf5idx_tPKfP7int64_t"></span><span id="faiss::IndexPQ::hamming_distance_histogram__idx_t.floatCP.idx_t.floatCP.int64_tP"></span><span class="target" id="structfaiss_1_1IndexPQ_1a0560fe2b1bd291d868822e7b2754ecf0"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">hamming_distance_histogram</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">nb</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">xb</span></em>, <span class="pre">int64_t</span> <span class="pre">*</span><em><span class="pre">dist_histogram</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>prepare query for a polysemous search, but instead of computing the result, just get the histogram of Hamming distances. May be computed on a provided dataset if xb != NULL <dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">dist_histogram</span></code>: (M * nbits + 1) </p></li>
@@ -560,7 +559,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ22hamming_distance_tableE5idx_tPKfP7int32_t">
-<span id="_CPPv3NK5faiss7IndexPQ22hamming_distance_tableE5idx_tPKfP7int32_t"></span><span id="_CPPv2NK5faiss7IndexPQ22hamming_distance_tableE5idx_tPKfP7int32_t"></span><span id="faiss::IndexPQ::hamming_distance_table__idx_t.floatCP.int32_tPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1ac1c78cf420aada3a54e00bc65ba3eae6"></span>void <code class="sig-name descname">hamming_distance_table</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, int32_t *<em>dis</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ22hamming_distance_tableE5idx_tPKfP7int32_t"></span><span id="_CPPv2NK5faiss7IndexPQ22hamming_distance_tableE5idx_tPKfP7int32_t"></span><span id="faiss::IndexPQ::hamming_distance_table__idx_t.floatCP.int32_tPC"></span><span class="target" id="structfaiss_1_1IndexPQ_1ac1c78cf420aada3a54e00bc65ba3eae6"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">hamming_distance_table</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">int32_t</span> <span class="pre">*</span><em><span class="pre">dis</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>compute pairwise distances between queries and database</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -575,7 +574,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss7IndexPQ12add_with_idsE5idx_tPKfPK5idx_t">
-<span id="_CPPv3N5faiss7IndexPQ12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="_CPPv2N5faiss7IndexPQ12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="faiss::IndexPQ::add_with_ids__idx_t.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7"></span>void <code class="sig-name descname">add_with_ids</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <em class="property">const</em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> *<em>xids</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="_CPPv2N5faiss7IndexPQ12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="faiss::IndexPQ::add_with_ids__idx_t.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add_with_ids</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">xids</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>Same as add, but stores xids instead of sequential ids.</p>
 <p>The default implementation fails with an assertion, as it is not supported by all indexes.</p>
 <p><dl class="simple">
@@ -589,7 +588,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ12range_searchE5idx_tPKffP17RangeSearchResult">
-<span id="_CPPv3NK5faiss7IndexPQ12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss7IndexPQ12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::IndexPQ::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1"></span>void <code class="sig-name descname">range_search</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, float <em>radius</em>, RangeSearchResult *<em>result</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss7IndexPQ12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::IndexPQ::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
 <p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
 <p><dl class="simple">
@@ -605,7 +604,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ6assignE5idx_tPKfP5idx_t5idx_t">
-<span id="_CPPv3NK5faiss7IndexPQ6assignE5idx_tPKfP5idx_t5idx_t"></span><span id="_CPPv2NK5faiss7IndexPQ6assignE5idx_tPKfP5idx_t5idx_t"></span><span id="faiss::IndexPQ::assign__idx_t.floatCP.idx_tP.idx_tC"></span><span class="target" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa"></span>void <code class="sig-name descname">assign</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> *<em>labels</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>k</em> = 1<span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ6assignE5idx_tPKfP5idx_t5idx_t"></span><span id="_CPPv2NK5faiss7IndexPQ6assignE5idx_tPKfP5idx_t5idx_t"></span><span id="faiss::IndexPQ::assign__idx_t.floatCP.idx_tP.idx_tC"></span><span class="target" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">assign</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em> <span class="pre">=</span> <span class="pre">1</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>return the indexes of the k vectors closest to the query x.</p>
 <p>This function is identical as search but only return labels of neighbors. <dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -619,7 +618,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf">
-<span id="_CPPv3NK5faiss7IndexPQ22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss7IndexPQ22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::IndexPQ::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd"></span>void <code class="sig-name descname">search_and_reconstruct</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>k</em>, float *<em>distances</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> *<em>labels</em>, float *<em>recons</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss7IndexPQ22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::IndexPQ::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_and_reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
 <p>If there are not enough results for a query, the resulting arrays is padded with -1s.</p>
 <p><dl class="simple">
@@ -633,7 +632,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ16compute_residualEPKfPf5idx_t">
-<span id="_CPPv3NK5faiss7IndexPQ16compute_residualEPKfPf5idx_t"></span><span id="_CPPv2NK5faiss7IndexPQ16compute_residualEPKfPf5idx_t"></span><span id="faiss::IndexPQ::compute_residual__floatCP.floatP.idx_tC"></span><span class="target" id="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20"></span>void <code class="sig-name descname">compute_residual</code><span class="sig-paren">(</span><em class="property">const</em> float *<em>x</em>, float *<em>residual</em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>key</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ16compute_residualEPKfPf5idx_t"></span><span id="_CPPv2NK5faiss7IndexPQ16compute_residualEPKfPf5idx_t"></span><span id="faiss::IndexPQ::compute_residual__floatCP.floatP.idx_tC"></span><span class="target" id="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">compute_residual</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">residual</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Computes a residual vector after indexing encoding.</p>
 <p>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <a class="reference internal" href="structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a>’s methods.</p>
 <p><dl class="simple">
@@ -649,7 +648,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss7IndexPQ18compute_residual_nE5idx_tPKfPfPK5idx_t">
-<span id="_CPPv3NK5faiss7IndexPQ18compute_residual_nE5idx_tPKfPfPK5idx_t"></span><span id="_CPPv2NK5faiss7IndexPQ18compute_residual_nE5idx_tPKfPfPK5idx_t"></span><span id="faiss::IndexPQ::compute_residual_n__idx_t.floatCP.floatP.idx_tCPC"></span><span class="target" id="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa"></span>void <code class="sig-name descname">compute_residual_n</code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>xs</em>, float *<em>residuals</em>, <em class="property">const</em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> *<em>keys</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss7IndexPQ18compute_residual_nE5idx_tPKfPfPK5idx_t"></span><span id="_CPPv2NK5faiss7IndexPQ18compute_residual_nE5idx_tPKfPfPK5idx_t"></span><span id="faiss::IndexPQ::compute_residual_n__idx_t.floatCP.floatP.idx_tCPC"></span><span class="target" id="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">compute_residual_n</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">xs</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">residuals</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">keys</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Computes a residual vector after indexing encoding (batch form). Equivalent to calling compute_residual for each vector.</p>
 <p>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <a class="reference internal" href="structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a>’s methods.</p>
 <p><dl class="simple">
@@ -669,77 +668,77 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ2pqE">
-<span id="_CPPv3N5faiss7IndexPQ2pqE"></span><span id="_CPPv2N5faiss7IndexPQ2pqE"></span><span id="faiss::IndexPQ::pq__ProductQuantizer"></span><span class="target" id="structfaiss_1_1IndexPQ_1aa7b7cfe0c8dfd37c8a940fd93d12dc88"></span>ProductQuantizer <code class="sig-name descname">pq</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ2pqE"></span><span id="_CPPv2N5faiss7IndexPQ2pqE"></span><span id="faiss::IndexPQ::pq__ProductQuantizer"></span><span class="target" id="structfaiss_1_1IndexPQ_1aa7b7cfe0c8dfd37c8a940fd93d12dc88"></span><span class="pre">ProductQuantizer</span> <code class="sig-name descname"><span class="pre">pq</span></code><br /></dt>
 <dd><p>The product quantizer used to encode the vectors. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ5codesE">
-<span id="_CPPv3N5faiss7IndexPQ5codesE"></span><span id="_CPPv2N5faiss7IndexPQ5codesE"></span><span id="faiss::IndexPQ::codes__std::vector:uint8_t:"></span><span class="target" id="structfaiss_1_1IndexPQ_1a490b64b12384951ed66548a3a48f91e5"></span>std::vector&lt;uint8_t&gt; <code class="sig-name descname">codes</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ5codesE"></span><span id="_CPPv2N5faiss7IndexPQ5codesE"></span><span id="faiss::IndexPQ::codes__std::vector:uint8_t:"></span><span class="target" id="structfaiss_1_1IndexPQ_1a490b64b12384951ed66548a3a48f91e5"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">vector</span><span class="pre">&lt;</span><span class="pre">uint8_t</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">codes</span></code><br /></dt>
 <dd><p>Codes. Size ntotal * pq.code_size. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ22do_polysemous_trainingE">
-<span id="_CPPv3N5faiss7IndexPQ22do_polysemous_trainingE"></span><span id="_CPPv2N5faiss7IndexPQ22do_polysemous_trainingE"></span><span id="faiss::IndexPQ::do_polysemous_training__b"></span><span class="target" id="structfaiss_1_1IndexPQ_1af616e1f3c7bff7f62c2607b8079da43f"></span>bool <code class="sig-name descname">do_polysemous_training</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ22do_polysemous_trainingE"></span><span id="_CPPv2N5faiss7IndexPQ22do_polysemous_trainingE"></span><span id="faiss::IndexPQ::do_polysemous_training__b"></span><span class="target" id="structfaiss_1_1IndexPQ_1af616e1f3c7bff7f62c2607b8079da43f"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">do_polysemous_training</span></code><br /></dt>
 <dd><p>false = standard PQ </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ19polysemous_trainingE">
-<span id="_CPPv3N5faiss7IndexPQ19polysemous_trainingE"></span><span id="_CPPv2N5faiss7IndexPQ19polysemous_trainingE"></span><span id="faiss::IndexPQ::polysemous_training__PolysemousTraining"></span><span class="target" id="structfaiss_1_1IndexPQ_1a820cec27d1ef14bf59fb288b2e143b6a"></span>PolysemousTraining <code class="sig-name descname">polysemous_training</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ19polysemous_trainingE"></span><span id="_CPPv2N5faiss7IndexPQ19polysemous_trainingE"></span><span id="faiss::IndexPQ::polysemous_training__PolysemousTraining"></span><span class="target" id="structfaiss_1_1IndexPQ_1a820cec27d1ef14bf59fb288b2e143b6a"></span><span class="pre">PolysemousTraining</span> <code class="sig-name descname"><span class="pre">polysemous_training</span></code><br /></dt>
 <dd><p>parameters used for the polysemous training </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ11search_typeE">
-<span id="_CPPv3N5faiss7IndexPQ11search_typeE"></span><span id="_CPPv2N5faiss7IndexPQ11search_typeE"></span><span id="faiss::IndexPQ::search_type__Search_type_t"></span><span class="target" id="structfaiss_1_1IndexPQ_1a3fa0f0c6216e34930ef9110600f89fbd"></span><a class="reference internal" href="../file/IndexPQ_8h.html#_CPPv4N5faiss7IndexPQ13Search_type_tE" title="faiss::IndexPQ::Search_type_t">Search_type_t</a> <code class="sig-name descname">search_type</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ11search_typeE"></span><span id="_CPPv2N5faiss7IndexPQ11search_typeE"></span><span id="faiss::IndexPQ::search_type__Search_type_t"></span><span class="target" id="structfaiss_1_1IndexPQ_1a3fa0f0c6216e34930ef9110600f89fbd"></span><a class="reference internal" href="../file/IndexPQ_8h.html#_CPPv4N5faiss7IndexPQ13Search_type_tE" title="faiss::IndexPQ::Search_type_t"><span class="pre">Search_type_t</span></a> <code class="sig-name descname"><span class="pre">search_type</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ12encode_signsE">
-<span id="_CPPv3N5faiss7IndexPQ12encode_signsE"></span><span id="_CPPv2N5faiss7IndexPQ12encode_signsE"></span><span id="faiss::IndexPQ::encode_signs__b"></span><span class="target" id="structfaiss_1_1IndexPQ_1a553682b74c5b8ccb1ba0c44e1729db2d"></span>bool <code class="sig-name descname">encode_signs</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ12encode_signsE"></span><span id="_CPPv2N5faiss7IndexPQ12encode_signsE"></span><span id="faiss::IndexPQ::encode_signs__b"></span><span class="target" id="structfaiss_1_1IndexPQ_1a553682b74c5b8ccb1ba0c44e1729db2d"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">encode_signs</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ13polysemous_htE">
-<span id="_CPPv3N5faiss7IndexPQ13polysemous_htE"></span><span id="_CPPv2N5faiss7IndexPQ13polysemous_htE"></span><span id="faiss::IndexPQ::polysemous_ht__i"></span><span class="target" id="structfaiss_1_1IndexPQ_1aff455f2adff6064939494dad6e3017bc"></span>int <code class="sig-name descname">polysemous_ht</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ13polysemous_htE"></span><span id="_CPPv2N5faiss7IndexPQ13polysemous_htE"></span><span id="faiss::IndexPQ::polysemous_ht__i"></span><span class="target" id="structfaiss_1_1IndexPQ_1aff455f2adff6064939494dad6e3017bc"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">polysemous_ht</span></code><br /></dt>
 <dd><p>Hamming threshold used for polysemy. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ1dE">
-<span id="_CPPv3N5faiss7IndexPQ1dE"></span><span id="_CPPv2N5faiss7IndexPQ1dE"></span><span id="faiss::IndexPQ::d__i"></span><span class="target" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d"></span>int <code class="sig-name descname">d</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ1dE"></span><span id="_CPPv2N5faiss7IndexPQ1dE"></span><span id="faiss::IndexPQ::d__i"></span><span class="target" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">d</span></code><br /></dt>
 <dd><p>vector dimension </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ6ntotalE">
-<span id="_CPPv3N5faiss7IndexPQ6ntotalE"></span><span id="_CPPv2N5faiss7IndexPQ6ntotalE"></span><span id="faiss::IndexPQ::ntotal__idx_t"></span><span class="target" id="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd"></span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t">idx_t</a> <code class="sig-name descname">ntotal</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ6ntotalE"></span><span id="_CPPv2N5faiss7IndexPQ6ntotalE"></span><span id="faiss::IndexPQ::ntotal__idx_t"></span><span class="target" id="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd"></span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss7IndexPQ5idx_tE" title="faiss::IndexPQ::idx_t"><span class="pre">idx_t</span></a> <code class="sig-name descname"><span class="pre">ntotal</span></code><br /></dt>
 <dd><p>total nb of indexed vectors </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ7verboseE">
-<span id="_CPPv3N5faiss7IndexPQ7verboseE"></span><span id="_CPPv2N5faiss7IndexPQ7verboseE"></span><span id="faiss::IndexPQ::verbose__b"></span><span class="target" id="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23"></span>bool <code class="sig-name descname">verbose</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ7verboseE"></span><span id="_CPPv2N5faiss7IndexPQ7verboseE"></span><span id="faiss::IndexPQ::verbose__b"></span><span class="target" id="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">verbose</span></code><br /></dt>
 <dd><p>verbosity level </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ10is_trainedE">
-<span id="_CPPv3N5faiss7IndexPQ10is_trainedE"></span><span id="_CPPv2N5faiss7IndexPQ10is_trainedE"></span><span id="faiss::IndexPQ::is_trained__b"></span><span class="target" id="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f"></span>bool <code class="sig-name descname">is_trained</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ10is_trainedE"></span><span id="_CPPv2N5faiss7IndexPQ10is_trainedE"></span><span id="faiss::IndexPQ::is_trained__b"></span><span class="target" id="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">is_trained</span></code><br /></dt>
 <dd><p>set if the <a class="reference internal" href="structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> does not require training, or if training is done already </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ11metric_typeE">
-<span id="_CPPv3N5faiss7IndexPQ11metric_typeE"></span><span id="_CPPv2N5faiss7IndexPQ11metric_typeE"></span><span id="faiss::IndexPQ::metric_type__MetricType"></span><span class="target" id="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e"></span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType">MetricType</a> <code class="sig-name descname">metric_type</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ11metric_typeE"></span><span id="_CPPv2N5faiss7IndexPQ11metric_typeE"></span><span id="faiss::IndexPQ::metric_type__MetricType"></span><span class="target" id="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e"></span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="pre">MetricType</span></a> <code class="sig-name descname"><span class="pre">metric_type</span></code><br /></dt>
 <dd><p>type of metric this index uses for search </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss7IndexPQ10metric_argE">
-<span id="_CPPv3N5faiss7IndexPQ10metric_argE"></span><span id="_CPPv2N5faiss7IndexPQ10metric_argE"></span><span id="faiss::IndexPQ::metric_arg__float"></span><span class="target" id="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232"></span>float <code class="sig-name descname">metric_arg</code><br /></dt>
+<span id="_CPPv3N5faiss7IndexPQ10metric_argE"></span><span id="_CPPv2N5faiss7IndexPQ10metric_argE"></span><span id="faiss::IndexPQ::metric_arg__float"></span><span class="target" id="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232"></span><span class="pre">float</span> <code class="sig-name descname"><span class="pre">metric_arg</span></code><br /></dt>
 <dd><p>argument of the metric type </p>
 </dd></dl>
 

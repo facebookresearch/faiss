@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -285,7 +284,7 @@
 <h1>File MatrixStats.h<a class="headerlink" href="#file-matrixstats-h" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp type">
 <dt id="_CPPv45faiss">
-<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property">namespace </em><code class="sig-name descname">faiss</code><br /></dt>
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">faiss</span></code><br /></dt>
 <dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
@@ -304,19 +303,19 @@
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss11MatrixStatsE">
-<span id="_CPPv3N5faiss11MatrixStatsE"></span><span id="_CPPv2N5faiss11MatrixStatsE"></span><span id="faiss::MatrixStats"></span><span class="target" id="structfaiss_1_1MatrixStats"></span><em class="property">struct </em><code class="sig-name descname">MatrixStats</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStatsE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStatsE"></span><span id="_CPPv2N5faiss11MatrixStatsE"></span><span id="faiss::MatrixStats"></span><span class="target" id="structfaiss_1_1MatrixStats"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">MatrixStats</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStatsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><em>#include &lt;MatrixStats.h&gt;</em><p>Reports some statistics on a dataset and comments on them.</p>
 <p>It is a class rather than a function so that all stats can also be accessed from code </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss11MatrixStats11MatrixStatsE6size_t6size_tPKf">
-<span id="_CPPv3N5faiss11MatrixStats11MatrixStatsE6size_t6size_tPKf"></span><span id="_CPPv2N5faiss11MatrixStats11MatrixStatsE6size_t6size_tPKf"></span><span id="faiss::MatrixStats::MatrixStats__s.s.floatCP"></span><span class="target" id="structfaiss_1_1MatrixStats_1add5a53b274bce4decd3de1a91eeb1036"></span><code class="sig-name descname">MatrixStats</code><span class="sig-paren">(</span>size_t <em>n</em>, size_t <em>d</em>, <em class="property">const</em> float *<em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11MatrixStatsE6size_t6size_tPKf" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11MatrixStatsE6size_t6size_tPKf"></span><span id="_CPPv2N5faiss11MatrixStats11MatrixStatsE6size_t6size_tPKf"></span><span id="faiss::MatrixStats::MatrixStats__s.s.floatCP"></span><span class="target" id="structfaiss_1_1MatrixStats_1add5a53b274bce4decd3de1a91eeb1036"></span><code class="sig-name descname"><span class="pre">MatrixStats</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">n</span></em>, <span class="pre">size_t</span> <em><span class="pre">d</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11MatrixStatsE6size_t6size_tPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss11MatrixStats10do_commentEPKcz">
-<span id="_CPPv3N5faiss11MatrixStats10do_commentEPKcz"></span><span id="_CPPv2N5faiss11MatrixStats10do_commentEPKcz"></span><span id="faiss::MatrixStats::do_comment__cCP.z"></span><span class="target" id="structfaiss_1_1MatrixStats_1af3bd3fcc97e8752995e986da026adb46"></span>void <code class="sig-name descname">do_comment</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>fmt</em>, ...<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats10do_commentEPKcz" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats10do_commentEPKcz"></span><span id="_CPPv2N5faiss11MatrixStats10do_commentEPKcz"></span><span id="faiss::MatrixStats::do_comment__cCP.z"></span><span class="target" id="structfaiss_1_1MatrixStats_1af3bd3fcc97e8752995e986da026adb46"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">do_comment</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">char</span> <span class="pre">*</span><em><span class="pre">fmt</span></em>, <span class="pre">...</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats10do_commentEPKcz" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -324,78 +323,78 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats8commentsE">
-<span id="_CPPv3N5faiss11MatrixStats8commentsE"></span><span id="_CPPv2N5faiss11MatrixStats8commentsE"></span><span id="faiss::MatrixStats::comments__ss"></span><span class="target" id="structfaiss_1_1MatrixStats_1a4c8fa1b0c904e48d18ddc3a0a3c40dea"></span>std::string <code class="sig-name descname">comments</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats8commentsE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats8commentsE"></span><span id="_CPPv2N5faiss11MatrixStats8commentsE"></span><span id="faiss::MatrixStats::comments__ss"></span><span class="target" id="structfaiss_1_1MatrixStats_1a4c8fa1b0c904e48d18ddc3a0a3c40dea"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">comments</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats8commentsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats1nE">
-<span id="_CPPv3N5faiss11MatrixStats1nE"></span><span id="_CPPv2N5faiss11MatrixStats1nE"></span><span id="faiss::MatrixStats::n__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1aedb6ba91543e124fbfef68bc5ced5e02"></span>size_t <code class="sig-name descname">n</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats1nE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats1nE"></span><span id="_CPPv2N5faiss11MatrixStats1nE"></span><span id="faiss::MatrixStats::n__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1aedb6ba91543e124fbfef68bc5ced5e02"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">n</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats1nE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats1dE">
-<span id="_CPPv3N5faiss11MatrixStats1dE"></span><span id="_CPPv2N5faiss11MatrixStats1dE"></span><span id="faiss::MatrixStats::d__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1a204212670e82a7ad92de1018af72da7e"></span>size_t <code class="sig-name descname">d</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats1dE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats1dE"></span><span id="_CPPv2N5faiss11MatrixStats1dE"></span><span id="faiss::MatrixStats::d__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1a204212670e82a7ad92de1018af72da7e"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">d</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats1dE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11n_collisionE">
-<span id="_CPPv3N5faiss11MatrixStats11n_collisionE"></span><span id="_CPPv2N5faiss11MatrixStats11n_collisionE"></span><span id="faiss::MatrixStats::n_collision__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1a3a5ef65b99fef1bf1249e51925e4dd98"></span>size_t <code class="sig-name descname">n_collision</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11n_collisionE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11n_collisionE"></span><span id="_CPPv2N5faiss11MatrixStats11n_collisionE"></span><span id="faiss::MatrixStats::n_collision__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1a3a5ef65b99fef1bf1249e51925e4dd98"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">n_collision</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11n_collisionE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats7n_validE">
-<span id="_CPPv3N5faiss11MatrixStats7n_validE"></span><span id="_CPPv2N5faiss11MatrixStats7n_validE"></span><span id="faiss::MatrixStats::n_valid__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1a4d1496f745ed63ce4742319d0aa722c6"></span>size_t <code class="sig-name descname">n_valid</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats7n_validE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats7n_validE"></span><span id="_CPPv2N5faiss11MatrixStats7n_validE"></span><span id="faiss::MatrixStats::n_valid__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1a4d1496f745ed63ce4742319d0aa722c6"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">n_valid</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats7n_validE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats2n0E">
-<span id="_CPPv3N5faiss11MatrixStats2n0E"></span><span id="_CPPv2N5faiss11MatrixStats2n0E"></span><span id="faiss::MatrixStats::n0__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1a494ebb8acad6fc220fe80f8fd37f939e"></span>size_t <code class="sig-name descname">n0</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats2n0E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats2n0E"></span><span id="_CPPv2N5faiss11MatrixStats2n0E"></span><span id="faiss::MatrixStats::n0__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1a494ebb8acad6fc220fe80f8fd37f939e"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">n0</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats2n0E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats9min_norm2E">
-<span id="_CPPv3N5faiss11MatrixStats9min_norm2E"></span><span id="_CPPv2N5faiss11MatrixStats9min_norm2E"></span><span id="faiss::MatrixStats::min_norm2__double"></span><span class="target" id="structfaiss_1_1MatrixStats_1af5c803ddc5c517af17711fde8538eb3a"></span>double <code class="sig-name descname">min_norm2</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats9min_norm2E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats9min_norm2E"></span><span id="_CPPv2N5faiss11MatrixStats9min_norm2E"></span><span id="faiss::MatrixStats::min_norm2__double"></span><span class="target" id="structfaiss_1_1MatrixStats_1af5c803ddc5c517af17711fde8538eb3a"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">min_norm2</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats9min_norm2E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats9max_norm2E">
-<span id="_CPPv3N5faiss11MatrixStats9max_norm2E"></span><span id="_CPPv2N5faiss11MatrixStats9max_norm2E"></span><span id="faiss::MatrixStats::max_norm2__double"></span><span class="target" id="structfaiss_1_1MatrixStats_1ad6486a75bcbaf34af5312adac36f7252"></span>double <code class="sig-name descname">max_norm2</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats9max_norm2E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats9max_norm2E"></span><span id="_CPPv2N5faiss11MatrixStats9max_norm2E"></span><span id="faiss::MatrixStats::max_norm2__double"></span><span class="target" id="structfaiss_1_1MatrixStats_1ad6486a75bcbaf34af5312adac36f7252"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">max_norm2</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats9max_norm2E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats13per_dim_statsE">
-<span id="_CPPv3N5faiss11MatrixStats13per_dim_statsE"></span><span id="_CPPv2N5faiss11MatrixStats13per_dim_statsE"></span><span id="faiss::MatrixStats::per_dim_stats__std::vector:PerDimStats:"></span><span class="target" id="structfaiss_1_1MatrixStats_1a00f2d2a3ea1ed81ff4a36b5cbdbe218b"></span>std::vector&lt;<a class="reference internal" href="#_CPPv4N5faiss11MatrixStats11PerDimStatsE" title="faiss::MatrixStats::PerDimStats">PerDimStats</a>&gt; <code class="sig-name descname">per_dim_stats</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats13per_dim_statsE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats13per_dim_statsE"></span><span id="_CPPv2N5faiss11MatrixStats13per_dim_statsE"></span><span id="faiss::MatrixStats::per_dim_stats__std::vector:PerDimStats:"></span><span class="target" id="structfaiss_1_1MatrixStats_1a00f2d2a3ea1ed81ff4a36b5cbdbe218b"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">vector</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N5faiss11MatrixStats11PerDimStatsE" title="faiss::MatrixStats::PerDimStats"><span class="pre">PerDimStats</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">per_dim_stats</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats13per_dim_statsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11occurrencesE">
-<span id="_CPPv3N5faiss11MatrixStats11occurrencesE"></span><span id="_CPPv2N5faiss11MatrixStats11occurrencesE"></span><span id="faiss::MatrixStats::occurrences__std::unordered_map:uint64_t.Occurrence:"></span><span class="target" id="structfaiss_1_1MatrixStats_1ae072d04f76165117f77bec53aa24fd1a"></span>std::unordered_map&lt;uint64_t, <a class="reference internal" href="#_CPPv4N5faiss11MatrixStats10OccurrenceE" title="faiss::MatrixStats::Occurrence">Occurrence</a>&gt; <code class="sig-name descname">occurrences</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11occurrencesE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11occurrencesE"></span><span id="_CPPv2N5faiss11MatrixStats11occurrencesE"></span><span id="faiss::MatrixStats::occurrences__std::unordered_map:uint64_t.Occurrence:"></span><span class="target" id="structfaiss_1_1MatrixStats_1ae072d04f76165117f77bec53aa24fd1a"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">unordered_map</span><span class="pre">&lt;</span><span class="pre">uint64_t</span><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N5faiss11MatrixStats10OccurrenceE" title="faiss::MatrixStats::Occurrence"><span class="pre">Occurrence</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">occurrences</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11occurrencesE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats3bufE">
-<span id="_CPPv3N5faiss11MatrixStats3bufE"></span><span id="_CPPv2N5faiss11MatrixStats3bufE"></span><span id="faiss::MatrixStats::buf__cP"></span><span class="target" id="structfaiss_1_1MatrixStats_1a29fd8accddea0e4ba5773c7a4353292b"></span>char *<code class="sig-name descname">buf</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats3bufE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats3bufE"></span><span id="_CPPv2N5faiss11MatrixStats3bufE"></span><span id="faiss::MatrixStats::buf__cP"></span><span class="target" id="structfaiss_1_1MatrixStats_1a29fd8accddea0e4ba5773c7a4353292b"></span><span class="pre">char</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">buf</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats3bufE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats4nbufE">
-<span id="_CPPv3N5faiss11MatrixStats4nbufE"></span><span id="_CPPv2N5faiss11MatrixStats4nbufE"></span><span id="faiss::MatrixStats::nbuf__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1af44cf226b2ba9ecb3182d8ecae61d019"></span>size_t <code class="sig-name descname">nbuf</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats4nbufE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats4nbufE"></span><span id="_CPPv2N5faiss11MatrixStats4nbufE"></span><span id="faiss::MatrixStats::nbuf__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1af44cf226b2ba9ecb3182d8ecae61d019"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">nbuf</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats4nbufE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss11MatrixStats10OccurrenceE">
-<span id="_CPPv3N5faiss11MatrixStats10OccurrenceE"></span><span id="_CPPv2N5faiss11MatrixStats10OccurrenceE"></span><span id="faiss::MatrixStats::Occurrence"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1Occurrence"></span><em class="property">struct </em><code class="sig-name descname">Occurrence</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats10OccurrenceE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats10OccurrenceE"></span><span id="_CPPv2N5faiss11MatrixStats10OccurrenceE"></span><span id="faiss::MatrixStats::Occurrence"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1Occurrence"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">Occurrence</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats10OccurrenceE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats10Occurrence5firstE">
-<span id="_CPPv3N5faiss11MatrixStats10Occurrence5firstE"></span><span id="_CPPv2N5faiss11MatrixStats10Occurrence5firstE"></span><span id="faiss::MatrixStats::Occurrence::first__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1Occurrence_1a676322945bc00b01f75e5e979e87174c"></span>size_t <code class="sig-name descname">first</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats10Occurrence5firstE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats10Occurrence5firstE"></span><span id="_CPPv2N5faiss11MatrixStats10Occurrence5firstE"></span><span id="faiss::MatrixStats::Occurrence::first__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1Occurrence_1a676322945bc00b01f75e5e979e87174c"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">first</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats10Occurrence5firstE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats10Occurrence5countE">
-<span id="_CPPv3N5faiss11MatrixStats10Occurrence5countE"></span><span id="_CPPv2N5faiss11MatrixStats10Occurrence5countE"></span><span id="faiss::MatrixStats::Occurrence::count__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1Occurrence_1ad447aa2e5b2d087de3c1ff9dd6d2b442"></span>size_t <code class="sig-name descname">count</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats10Occurrence5countE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats10Occurrence5countE"></span><span id="_CPPv2N5faiss11MatrixStats10Occurrence5countE"></span><span id="faiss::MatrixStats::Occurrence::count__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1Occurrence_1ad447aa2e5b2d087de3c1ff9dd6d2b442"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">count</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats10Occurrence5countE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -403,22 +402,22 @@
 
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStatsE">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStatsE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStatsE"></span><span id="faiss::MatrixStats::PerDimStats"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats"></span><em class="property">struct </em><code class="sig-name descname">PerDimStats</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStatsE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStatsE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStatsE"></span><span id="faiss::MatrixStats::PerDimStats"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">PerDimStats</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStatsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats11PerDimStatsEv">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats11PerDimStatsEv"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats11PerDimStatsEv"></span><span id="faiss::MatrixStats::PerDimStats::PerDimStats"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a0974f23063edde22b5934008196b9c5b"></span><code class="sig-name descname">PerDimStats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats11PerDimStatsEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats11PerDimStatsEv"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats11PerDimStatsEv"></span><span id="faiss::MatrixStats::PerDimStats::PerDimStats"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a0974f23063edde22b5934008196b9c5b"></span><code class="sig-name descname"><span class="pre">PerDimStats</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats11PerDimStatsEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats3addEf">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats3addEf"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats3addEf"></span><span id="faiss::MatrixStats::PerDimStats::add__float"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1aa375fcebcf96dd460552e8a415d1d1b2"></span>void <code class="sig-name descname">add</code><span class="sig-paren">(</span>float <em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats3addEf" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats3addEf"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats3addEf"></span><span id="faiss::MatrixStats::PerDimStats::add__float"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1aa375fcebcf96dd460552e8a415d1d1b2"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">add</span></code><span class="sig-paren">(</span><span class="pre">float</span> <em><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats3addEf" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats16compute_mean_stdEv">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats16compute_mean_stdEv"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats16compute_mean_stdEv"></span><span id="faiss::MatrixStats::PerDimStats::compute_mean_std"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1ab2b27edb089cbe1d2faca98cc82d2aa0"></span>void <code class="sig-name descname">compute_mean_std</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats16compute_mean_stdEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats16compute_mean_stdEv"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats16compute_mean_stdEv"></span><span id="faiss::MatrixStats::PerDimStats::compute_mean_std"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1ab2b27edb089cbe1d2faca98cc82d2aa0"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">compute_mean_std</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats16compute_mean_stdEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -426,57 +425,57 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats1nE">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats1nE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats1nE"></span><span id="faiss::MatrixStats::PerDimStats::n__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a868f5f042ce9f8c1d9cbb18884ad7603"></span>size_t <code class="sig-name descname">n</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats1nE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats1nE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats1nE"></span><span id="faiss::MatrixStats::PerDimStats::n__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a868f5f042ce9f8c1d9cbb18884ad7603"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">n</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats1nE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats5n_nanE">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats5n_nanE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats5n_nanE"></span><span id="faiss::MatrixStats::PerDimStats::n_nan__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1aeb2a2627c4b81e44016fba44ebf43560"></span>size_t <code class="sig-name descname">n_nan</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats5n_nanE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats5n_nanE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats5n_nanE"></span><span id="faiss::MatrixStats::PerDimStats::n_nan__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1aeb2a2627c4b81e44016fba44ebf43560"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">n_nan</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats5n_nanE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats5n_infE">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats5n_infE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats5n_infE"></span><span id="faiss::MatrixStats::PerDimStats::n_inf__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a798961b570c2906e0ecdd9e1932ce1fe"></span>size_t <code class="sig-name descname">n_inf</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats5n_infE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats5n_infE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats5n_infE"></span><span id="faiss::MatrixStats::PerDimStats::n_inf__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a798961b570c2906e0ecdd9e1932ce1fe"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">n_inf</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats5n_infE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats2n0E">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats2n0E"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats2n0E"></span><span id="faiss::MatrixStats::PerDimStats::n0__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a2b7a2d8232f3fa3c09833d8cd6962fe1"></span>size_t <code class="sig-name descname">n0</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats2n0E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats2n0E"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats2n0E"></span><span id="faiss::MatrixStats::PerDimStats::n0__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a2b7a2d8232f3fa3c09833d8cd6962fe1"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">n0</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats2n0E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats3minE">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats3minE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats3minE"></span><span id="faiss::MatrixStats::PerDimStats::min__float"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1afbbef55ed677db21add1f0847dd2427c"></span>float <code class="sig-name descname">min</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats3minE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats3minE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats3minE"></span><span id="faiss::MatrixStats::PerDimStats::min__float"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1afbbef55ed677db21add1f0847dd2427c"></span><span class="pre">float</span> <code class="sig-name descname"><span class="pre">min</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats3minE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats3maxE">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats3maxE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats3maxE"></span><span id="faiss::MatrixStats::PerDimStats::max__float"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a055fdde358a6159f4eca99cb6801415b"></span>float <code class="sig-name descname">max</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats3maxE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats3maxE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats3maxE"></span><span id="faiss::MatrixStats::PerDimStats::max__float"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a055fdde358a6159f4eca99cb6801415b"></span><span class="pre">float</span> <code class="sig-name descname"><span class="pre">max</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats3maxE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats3sumE">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats3sumE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats3sumE"></span><span id="faiss::MatrixStats::PerDimStats::sum__double"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1af7b66d8bee2301bf0e48b755e29f7145"></span>double <code class="sig-name descname">sum</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats3sumE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats3sumE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats3sumE"></span><span id="faiss::MatrixStats::PerDimStats::sum__double"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1af7b66d8bee2301bf0e48b755e29f7145"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">sum</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats3sumE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats4sum2E">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats4sum2E"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats4sum2E"></span><span id="faiss::MatrixStats::PerDimStats::sum2__double"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a12f17876bcb0df55cd191001b1f569d3"></span>double <code class="sig-name descname">sum2</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats4sum2E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats4sum2E"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats4sum2E"></span><span id="faiss::MatrixStats::PerDimStats::sum2__double"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a12f17876bcb0df55cd191001b1f569d3"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">sum2</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats4sum2E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats7n_validE">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats7n_validE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats7n_validE"></span><span id="faiss::MatrixStats::PerDimStats::n_valid__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a12c78f5ef7c6ffd2287f1184a03a88fe"></span>size_t <code class="sig-name descname">n_valid</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats7n_validE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats7n_validE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats7n_validE"></span><span id="faiss::MatrixStats::PerDimStats::n_valid__s"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a12c78f5ef7c6ffd2287f1184a03a88fe"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">n_valid</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats7n_validE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats4meanE">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats4meanE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats4meanE"></span><span id="faiss::MatrixStats::PerDimStats::mean__double"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a78d220cd08414efb1fb31c5181472a57"></span>double <code class="sig-name descname">mean</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats4meanE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats4meanE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats4meanE"></span><span id="faiss::MatrixStats::PerDimStats::mean__double"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a78d220cd08414efb1fb31c5181472a57"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">mean</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats4meanE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11MatrixStats11PerDimStats6stddevE">
-<span id="_CPPv3N5faiss11MatrixStats11PerDimStats6stddevE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats6stddevE"></span><span id="faiss::MatrixStats::PerDimStats::stddev__double"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a4a8222891e00c0a34cf8c415d85b3034"></span>double <code class="sig-name descname">stddev</code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats6stddevE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11MatrixStats11PerDimStats6stddevE"></span><span id="_CPPv2N5faiss11MatrixStats11PerDimStats6stddevE"></span><span id="faiss::MatrixStats::PerDimStats::stddev__double"></span><span class="target" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a4a8222891e00c0a34cf8c415d85b3034"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">stddev</span></code><a class="headerlink" href="#_CPPv4N5faiss11MatrixStats11PerDimStats6stddevE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>

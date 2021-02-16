@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -321,7 +320,7 @@
 <h1>Struct faiss::InvertedLists<a class="headerlink" href="#struct-faiss-invertedlists" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss13InvertedListsE">
-<span id="_CPPv3N5faiss13InvertedListsE"></span><span id="_CPPv2N5faiss13InvertedListsE"></span><span id="faiss::InvertedLists"></span><span class="target" id="structfaiss_1_1InvertedLists"></span><em class="property">struct </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">InvertedLists</code><br /></dt>
+<span id="_CPPv3N5faiss13InvertedListsE"></span><span id="_CPPv2N5faiss13InvertedListsE"></span><span id="faiss::InvertedLists"></span><span class="target" id="structfaiss_1_1InvertedLists"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">InvertedLists</span></code><br /></dt>
 <dd><p>Table of inverted lists multithreading rules:<ul class="simple">
 <li><p>concurrent read accesses are allowed</p></li>
 <li><p>concurrent update accesses are allowed</p></li>
@@ -333,7 +332,7 @@
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss13InvertedLists5idx_tE">
-<span id="_CPPv3N5faiss13InvertedLists5idx_tE"></span><span id="_CPPv2N5faiss13InvertedLists5idx_tE"></span><span id="faiss::InvertedLists::idx_t"></span><span class="target" id="structfaiss_1_1InvertedLists_1a2bb406f72dcad45cf03974ff14bfa473"></span><em class="property">typedef </em><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> <code class="sig-name descname">idx_t</code><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists5idx_tE"></span><span id="_CPPv2N5faiss13InvertedLists5idx_tE"></span><span id="faiss::InvertedLists::idx_t"></span><span class="target" id="structfaiss_1_1InvertedLists_1a2bb406f72dcad45cf03974ff14bfa473"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a><span class="pre">::</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t"><span class="pre">idx_t</span></a> <code class="sig-name descname"><span class="pre">idx_t</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -341,18 +340,18 @@
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists13InvertedListsE6size_t6size_t">
-<span id="_CPPv3N5faiss13InvertedLists13InvertedListsE6size_t6size_t"></span><span id="_CPPv2N5faiss13InvertedLists13InvertedListsE6size_t6size_t"></span><span id="faiss::InvertedLists::InvertedLists__s.s"></span><span class="target" id="structfaiss_1_1InvertedLists_1a83d053d03720d938dc4fc4e2f674619c"></span><code class="sig-name descname">InvertedLists</code><span class="sig-paren">(</span>size_t <em>nlist</em>, size_t <em>code_size</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists13InvertedListsE6size_t6size_t"></span><span id="_CPPv2N5faiss13InvertedLists13InvertedListsE6size_t6size_t"></span><span id="faiss::InvertedLists::InvertedLists__s.s"></span><span class="target" id="structfaiss_1_1InvertedLists_1a83d053d03720d938dc4fc4e2f674619c"></span><code class="sig-name descname"><span class="pre">InvertedLists</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">nlist</span></em>, <span class="pre">size_t</span> <em><span class="pre">code_size</span></em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss13InvertedLists9list_sizeE6size_t">
-<span id="_CPPv3NK5faiss13InvertedLists9list_sizeE6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists9list_sizeE6size_t"></span><span id="faiss::InvertedLists::list_size__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a9bd256053ee360473842105460fe285f"></span>size_t <code class="sig-name descname">list_size</code><span class="sig-paren">(</span>size_t <em>list_no</em><span class="sig-paren">)</span> <em class="property">const</em> = 0<br /></dt>
+<span id="_CPPv3NK5faiss13InvertedLists9list_sizeE6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists9list_sizeE6size_t"></span><span id="faiss::InvertedLists::list_size__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a9bd256053ee360473842105460fe285f"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">list_size</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">list_no</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <span class="pre">=</span> <span class="pre">0</span><br /></dt>
 <dd><p>get the size of a list </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss13InvertedLists9get_codesE6size_t">
-<span id="_CPPv3NK5faiss13InvertedLists9get_codesE6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists9get_codesE6size_t"></span><span id="faiss::InvertedLists::get_codes__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a60b12f9efe940b617a8380adceef4032"></span><em class="property">const</em> uint8_t *<code class="sig-name descname">get_codes</code><span class="sig-paren">(</span>size_t <em>list_no</em><span class="sig-paren">)</span> <em class="property">const</em> = 0<br /></dt>
+<span id="_CPPv3NK5faiss13InvertedLists9get_codesE6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists9get_codesE6size_t"></span><span id="faiss::InvertedLists::get_codes__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a60b12f9efe940b617a8380adceef4032"></span><em class="property"><span class="pre">virtual</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">get_codes</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">list_no</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <span class="pre">=</span> <span class="pre">0</span><br /></dt>
 <dd><p>get the codes for an inverted list must be released by release_codes</p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>codes size list_size * code_size </p>
@@ -363,7 +362,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss13InvertedLists7get_idsE6size_t">
-<span id="_CPPv3NK5faiss13InvertedLists7get_idsE6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists7get_idsE6size_t"></span><span id="faiss::InvertedLists::get_ids__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a3ab6b389d8d85c5fbf23889064df7e95"></span><em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t">idx_t</a> *<code class="sig-name descname">get_ids</code><span class="sig-paren">(</span>size_t <em>list_no</em><span class="sig-paren">)</span> <em class="property">const</em> = 0<br /></dt>
+<span id="_CPPv3NK5faiss13InvertedLists7get_idsE6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists7get_idsE6size_t"></span><span id="faiss::InvertedLists::get_ids__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a3ab6b389d8d85c5fbf23889064df7e95"></span><em class="property"><span class="pre">virtual</span></em> <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">get_ids</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">list_no</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <span class="pre">=</span> <span class="pre">0</span><br /></dt>
 <dd><p>get the ids for an inverted list must be released by release_ids</p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>ids size list_size </p>
@@ -374,19 +373,19 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss13InvertedLists13release_codesE6size_tPK7uint8_t">
-<span id="_CPPv3NK5faiss13InvertedLists13release_codesE6size_tPK7uint8_t"></span><span id="_CPPv2NK5faiss13InvertedLists13release_codesE6size_tPK7uint8_t"></span><span id="faiss::InvertedLists::release_codes__s.uint8_tCPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a9a24bd313ece4e8e281f8bb28b5f528c"></span>void <code class="sig-name descname">release_codes</code><span class="sig-paren">(</span>size_t <em>list_no</em>, <em class="property">const</em> uint8_t *<em>codes</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss13InvertedLists13release_codesE6size_tPK7uint8_t"></span><span id="_CPPv2NK5faiss13InvertedLists13release_codesE6size_tPK7uint8_t"></span><span id="faiss::InvertedLists::release_codes__s.uint8_tCPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a9a24bd313ece4e8e281f8bb28b5f528c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">release_codes</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">list_no</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">codes</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>release codes returned by get_codes (default implementation is nop </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss13InvertedLists11release_idsE6size_tPK5idx_t">
-<span id="_CPPv3NK5faiss13InvertedLists11release_idsE6size_tPK5idx_t"></span><span id="_CPPv2NK5faiss13InvertedLists11release_idsE6size_tPK5idx_t"></span><span id="faiss::InvertedLists::release_ids__s.idx_tCPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1ad9bd9641ac86e0851d39a96119db3e78"></span>void <code class="sig-name descname">release_ids</code><span class="sig-paren">(</span>size_t <em>list_no</em>, <em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t">idx_t</a> *<em>ids</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss13InvertedLists11release_idsE6size_tPK5idx_t"></span><span id="_CPPv2NK5faiss13InvertedLists11release_idsE6size_tPK5idx_t"></span><span id="faiss::InvertedLists::release_ids__s.idx_tCPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1ad9bd9641ac86e0851d39a96119db3e78"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">release_ids</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">list_no</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">ids</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>release ids returned by get_ids </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss13InvertedLists13get_single_idE6size_t6size_t">
-<span id="_CPPv3NK5faiss13InvertedLists13get_single_idE6size_t6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists13get_single_idE6size_t6size_t"></span><span id="faiss::InvertedLists::get_single_id__s.sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1ac1fb72410cefa4f4d28ec90677c02ab3"></span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t">idx_t</a> <code class="sig-name descname">get_single_id</code><span class="sig-paren">(</span>size_t <em>list_no</em>, size_t <em>offset</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss13InvertedLists13get_single_idE6size_t6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists13get_single_idE6size_t6size_t"></span><span id="faiss::InvertedLists::get_single_id__s.sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1ac1fb72410cefa4f4d28ec90677c02ab3"></span><em class="property"><span class="pre">virtual</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t"><span class="pre">idx_t</span></a> <code class="sig-name descname"><span class="pre">get_single_id</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">list_no</span></em>, <span class="pre">size_t</span> <em><span class="pre">offset</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>a single id in an inverted list </p>
 </dd>
@@ -396,7 +395,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss13InvertedLists15get_single_codeE6size_t6size_t">
-<span id="_CPPv3NK5faiss13InvertedLists15get_single_codeE6size_t6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists15get_single_codeE6size_t6size_t"></span><span id="faiss::InvertedLists::get_single_code__s.sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a8d3382c2a672340abd227c00cf84ad42"></span><em class="property">const</em> uint8_t *<code class="sig-name descname">get_single_code</code><span class="sig-paren">(</span>size_t <em>list_no</em>, size_t <em>offset</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss13InvertedLists15get_single_codeE6size_t6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists15get_single_codeE6size_t6size_t"></span><span id="faiss::InvertedLists::get_single_code__s.sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a8d3382c2a672340abd227c00cf84ad42"></span><em class="property"><span class="pre">virtual</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">get_single_code</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">list_no</span></em>, <span class="pre">size_t</span> <em><span class="pre">offset</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>a single code in an inverted list (should be deallocated with release_codes) </p>
 </dd>
@@ -406,67 +405,67 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss13InvertedLists14prefetch_listsEPK5idx_ti">
-<span id="_CPPv3NK5faiss13InvertedLists14prefetch_listsEPK5idx_ti"></span><span id="_CPPv2NK5faiss13InvertedLists14prefetch_listsEPK5idx_ti"></span><span id="faiss::InvertedLists::prefetch_lists__idx_tCP.iC"></span><span class="target" id="structfaiss_1_1InvertedLists_1aa661652a062ecb58b02f10d2a671c9fe"></span>void <code class="sig-name descname">prefetch_lists</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t">idx_t</a> *<em>list_nos</em>, int <em>nlist</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss13InvertedLists14prefetch_listsEPK5idx_ti"></span><span id="_CPPv2NK5faiss13InvertedLists14prefetch_listsEPK5idx_ti"></span><span id="faiss::InvertedLists::prefetch_lists__idx_tCP.iC"></span><span class="target" id="structfaiss_1_1InvertedLists_1aa661652a062ecb58b02f10d2a671c9fe"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">prefetch_lists</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">list_nos</span></em>, <span class="pre">int</span> <em><span class="pre">nlist</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>prepare the following lists (default does nothing) a list can be -1 hence the signed long </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists9add_entryE6size_t5idx_tPK7uint8_t">
-<span id="_CPPv3N5faiss13InvertedLists9add_entryE6size_t5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss13InvertedLists9add_entryE6size_t5idx_tPK7uint8_t"></span><span id="faiss::InvertedLists::add_entry__s.idx_t.uint8_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1a5b4328db9d4e2832de1a66bc6aa479de"></span>size_t <code class="sig-name descname">add_entry</code><span class="sig-paren">(</span>size_t <em>list_no</em>, <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t">idx_t</a> <em>theid</em>, <em class="property">const</em> uint8_t *<em>code</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists9add_entryE6size_t5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss13InvertedLists9add_entryE6size_t5idx_tPK7uint8_t"></span><span id="faiss::InvertedLists::add_entry__s.idx_t.uint8_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1a5b4328db9d4e2832de1a66bc6aa479de"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">add_entry</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">list_no</span></em>, <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">theid</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">code</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>add one entry to an inverted list </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists11add_entriesE6size_t6size_tPK5idx_tPK7uint8_t">
-<span id="_CPPv3N5faiss13InvertedLists11add_entriesE6size_t6size_tPK5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss13InvertedLists11add_entriesE6size_t6size_tPK5idx_tPK7uint8_t"></span><span id="faiss::InvertedLists::add_entries__s.s.idx_tCP.uint8_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1a0a2adbbd1d6b4f8ed1cbfa9bb93f4401"></span>size_t <code class="sig-name descname">add_entries</code><span class="sig-paren">(</span>size_t <em>list_no</em>, size_t <em>n_entry</em>, <em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t">idx_t</a> *<em>ids</em>, <em class="property">const</em> uint8_t *<em>code</em><span class="sig-paren">)</span> = 0<br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists11add_entriesE6size_t6size_tPK5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss13InvertedLists11add_entriesE6size_t6size_tPK5idx_tPK7uint8_t"></span><span id="faiss::InvertedLists::add_entries__s.s.idx_tCP.uint8_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1a0a2adbbd1d6b4f8ed1cbfa9bb93f4401"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">add_entries</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">list_no</span></em>, <span class="pre">size_t</span> <em><span class="pre">n_entry</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">ids</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">code</span></em><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">0</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists12update_entryE6size_t6size_t5idx_tPK7uint8_t">
-<span id="_CPPv3N5faiss13InvertedLists12update_entryE6size_t6size_t5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss13InvertedLists12update_entryE6size_t6size_t5idx_tPK7uint8_t"></span><span id="faiss::InvertedLists::update_entry__s.s.idx_t.uint8_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1aa4fca5b69a56ab5b65274f3ff5ca7705"></span>void <code class="sig-name descname">update_entry</code><span class="sig-paren">(</span>size_t <em>list_no</em>, size_t <em>offset</em>, <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t">idx_t</a> <em>id</em>, <em class="property">const</em> uint8_t *<em>code</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists12update_entryE6size_t6size_t5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss13InvertedLists12update_entryE6size_t6size_t5idx_tPK7uint8_t"></span><span id="faiss::InvertedLists::update_entry__s.s.idx_t.uint8_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1aa4fca5b69a56ab5b65274f3ff5ca7705"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">update_entry</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">list_no</span></em>, <span class="pre">size_t</span> <em><span class="pre">offset</span></em>, <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">id</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">code</span></em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists14update_entriesE6size_t6size_t6size_tPK5idx_tPK7uint8_t">
-<span id="_CPPv3N5faiss13InvertedLists14update_entriesE6size_t6size_t6size_tPK5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss13InvertedLists14update_entriesE6size_t6size_t6size_tPK5idx_tPK7uint8_t"></span><span id="faiss::InvertedLists::update_entries__s.s.s.idx_tCP.uint8_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1afb45f0f325bf82f73737d804f8dbf49e"></span>void <code class="sig-name descname">update_entries</code><span class="sig-paren">(</span>size_t <em>list_no</em>, size_t <em>offset</em>, size_t <em>n_entry</em>, <em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t">idx_t</a> *<em>ids</em>, <em class="property">const</em> uint8_t *<em>code</em><span class="sig-paren">)</span> = 0<br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists14update_entriesE6size_t6size_t6size_tPK5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss13InvertedLists14update_entriesE6size_t6size_t6size_tPK5idx_tPK7uint8_t"></span><span id="faiss::InvertedLists::update_entries__s.s.s.idx_tCP.uint8_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1afb45f0f325bf82f73737d804f8dbf49e"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">update_entries</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">list_no</span></em>, <span class="pre">size_t</span> <em><span class="pre">offset</span></em>, <span class="pre">size_t</span> <em><span class="pre">n_entry</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">ids</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">code</span></em><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">0</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists6resizeE6size_t6size_t">
-<span id="_CPPv3N5faiss13InvertedLists6resizeE6size_t6size_t"></span><span id="_CPPv2N5faiss13InvertedLists6resizeE6size_t6size_t"></span><span id="faiss::InvertedLists::resize__s.s"></span><span class="target" id="structfaiss_1_1InvertedLists_1aae502a3372d94450e0b8ff4350b43610"></span>void <code class="sig-name descname">resize</code><span class="sig-paren">(</span>size_t <em>list_no</em>, size_t <em>new_size</em><span class="sig-paren">)</span> = 0<br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists6resizeE6size_t6size_t"></span><span id="_CPPv2N5faiss13InvertedLists6resizeE6size_t6size_t"></span><span id="faiss::InvertedLists::resize__s.s"></span><span class="target" id="structfaiss_1_1InvertedLists_1aae502a3372d94450e0b8ff4350b43610"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">resize</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">list_no</span></em>, <span class="pre">size_t</span> <em><span class="pre">new_size</span></em><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">0</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists5resetEv">
-<span id="_CPPv3N5faiss13InvertedLists5resetEv"></span><span id="_CPPv2N5faiss13InvertedLists5resetEv"></span><span id="faiss::InvertedLists::reset"></span><span class="target" id="structfaiss_1_1InvertedLists_1ada14d9bbf04c21b36f61971abece616e"></span>void <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists5resetEv"></span><span id="_CPPv2N5faiss13InvertedLists5resetEv"></span><span id="faiss::InvertedLists::reset"></span><span class="target" id="structfaiss_1_1InvertedLists_1ada14d9bbf04c21b36f61971abece616e"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reset</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists10merge_fromEP13InvertedLists6size_t">
-<span id="_CPPv3N5faiss13InvertedLists10merge_fromEP13InvertedLists6size_t"></span><span id="_CPPv2N5faiss13InvertedLists10merge_fromEP13InvertedLists6size_t"></span><span id="faiss::InvertedLists::merge_from__InvertedListsP.s"></span><span class="target" id="structfaiss_1_1InvertedLists_1ac2a0686121ef5bdd6eb70f7eb3cf9b3a"></span>void <code class="sig-name descname">merge_from</code><span class="sig-paren">(</span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists">InvertedLists</a> *<em>oivf</em>, size_t <em>add_id</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists10merge_fromEP13InvertedLists6size_t"></span><span id="_CPPv2N5faiss13InvertedLists10merge_fromEP13InvertedLists6size_t"></span><span id="faiss::InvertedLists::merge_from__InvertedListsP.s"></span><span class="target" id="structfaiss_1_1InvertedLists_1ac2a0686121ef5bdd6eb70f7eb3cf9b3a"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">merge_from</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="pre">InvertedLists</span></a> <span class="pre">*</span><em><span class="pre">oivf</span></em>, <span class="pre">size_t</span> <em><span class="pre">add_id</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>move all entries from oivf (empty on output) </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedListsD0Ev">
-<span id="_CPPv3N5faiss13InvertedListsD0Ev"></span><span id="_CPPv2N5faiss13InvertedListsD0Ev"></span><span id="faiss::InvertedLists::~InvertedLists"></span><span class="target" id="structfaiss_1_1InvertedLists_1a74508f4759d1b37c5a9e016c495d0dc1"></span><code class="sig-name descname">~InvertedLists</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedListsD0Ev"></span><span id="_CPPv2N5faiss13InvertedListsD0Ev"></span><span id="faiss::InvertedLists::~InvertedLists"></span><span class="target" id="structfaiss_1_1InvertedLists_1a74508f4759d1b37c5a9e016c495d0dc1"></span><em class="property"><span class="pre">virtual</span></em> <code class="sig-name descname"><span class="pre">~InvertedLists</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss13InvertedLists16imbalance_factorEv">
-<span id="_CPPv3NK5faiss13InvertedLists16imbalance_factorEv"></span><span id="_CPPv2NK5faiss13InvertedLists16imbalance_factorEv"></span><span id="faiss::InvertedLists::imbalance_factorC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a022deb11a08e2dad3386369e90f946a8"></span>double <code class="sig-name descname">imbalance_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss13InvertedLists16imbalance_factorEv"></span><span id="_CPPv2NK5faiss13InvertedLists16imbalance_factorEv"></span><span id="faiss::InvertedLists::imbalance_factorC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a022deb11a08e2dad3386369e90f946a8"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">imbalance_factor</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>1= perfectly balanced, &gt;1: imbalanced </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss13InvertedLists11print_statsEv">
-<span id="_CPPv3NK5faiss13InvertedLists11print_statsEv"></span><span id="_CPPv2NK5faiss13InvertedLists11print_statsEv"></span><span id="faiss::InvertedLists::print_statsC"></span><span class="target" id="structfaiss_1_1InvertedLists_1ac82ad98d664f6478aa919c0ec1b811cc"></span>void <code class="sig-name descname">print_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss13InvertedLists11print_statsEv"></span><span id="_CPPv2NK5faiss13InvertedLists11print_statsEv"></span><span id="faiss::InvertedLists::print_statsC"></span><span class="target" id="structfaiss_1_1InvertedLists_1ac82ad98d664f6478aa919c0ec1b811cc"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">print_stats</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>display some stats about the inverted lists </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss13InvertedLists14compute_ntotalEv">
-<span id="_CPPv3NK5faiss13InvertedLists14compute_ntotalEv"></span><span id="_CPPv2NK5faiss13InvertedLists14compute_ntotalEv"></span><span id="faiss::InvertedLists::compute_ntotalC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a903eed79c2fd1483c6e0eb500200da9f"></span>size_t <code class="sig-name descname">compute_ntotal</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss13InvertedLists14compute_ntotalEv"></span><span id="_CPPv2NK5faiss13InvertedLists14compute_ntotalEv"></span><span id="faiss::InvertedLists::compute_ntotalC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a903eed79c2fd1483c6e0eb500200da9f"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">compute_ntotal</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>sum up list sizes </p>
 </dd></dl>
 
@@ -475,13 +474,13 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss13InvertedLists5nlistE">
-<span id="_CPPv3N5faiss13InvertedLists5nlistE"></span><span id="_CPPv2N5faiss13InvertedLists5nlistE"></span><span id="faiss::InvertedLists::nlist__s"></span><span class="target" id="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8"></span>size_t <code class="sig-name descname">nlist</code><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists5nlistE"></span><span id="_CPPv2N5faiss13InvertedLists5nlistE"></span><span id="faiss::InvertedLists::nlist__s"></span><span class="target" id="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">nlist</span></code><br /></dt>
 <dd><p>number of possible key values </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss13InvertedLists9code_sizeE">
-<span id="_CPPv3N5faiss13InvertedLists9code_sizeE"></span><span id="_CPPv2N5faiss13InvertedLists9code_sizeE"></span><span id="faiss::InvertedLists::code_size__s"></span><span class="target" id="structfaiss_1_1InvertedLists_1ae06049e4259edb47d443ef87bdedc744"></span>size_t <code class="sig-name descname">code_size</code><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists9code_sizeE"></span><span id="_CPPv2N5faiss13InvertedLists9code_sizeE"></span><span id="faiss::InvertedLists::code_size__s"></span><span class="target" id="structfaiss_1_1InvertedLists_1ae06049e4259edb47d443ef87bdedc744"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">code_size</span></code><br /></dt>
 <dd><p>code size per vector in bytes </p>
 </dd></dl>
 
@@ -490,34 +489,34 @@
 <p class="breathe-sectiondef-title rubric">Public Static Attributes</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss13InvertedLists17INVALID_CODE_SIZEE">
-<span id="_CPPv3N5faiss13InvertedLists17INVALID_CODE_SIZEE"></span><span id="_CPPv2N5faiss13InvertedLists17INVALID_CODE_SIZEE"></span><span id="faiss::InvertedLists::INVALID_CODE_SIZE__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1aae4b0f912ddda23dfef1085b4b683af7"></span><em class="property">const</em> size_t <code class="sig-name descname">INVALID_CODE_SIZE</code> = static_cast&lt;size_t&gt;(-1)<br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists17INVALID_CODE_SIZEE"></span><span id="_CPPv2N5faiss13InvertedLists17INVALID_CODE_SIZEE"></span><span id="faiss::InvertedLists::INVALID_CODE_SIZE__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1aae4b0f912ddda23dfef1085b4b683af7"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">INVALID_CODE_SIZE</span></code> <span class="pre">=</span> <span class="pre">static_cast</span><span class="pre">&lt;</span><span class="pre">size_t</span><span class="pre">&gt;</span><span class="pre">(</span><span class="pre">-</span><span class="pre">1</span><span class="pre">)</span><br /></dt>
 <dd><p>used for <a class="reference internal" href="structfaiss_1_1BlockInvertedLists.html#structfaiss_1_1BlockInvertedLists"><span class="std std-ref">BlockInvertedLists</span></a>, where the codes are packed into groups and the individual code size is meaningless </p>
 </dd></dl>
 
 </div>
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss13InvertedLists11ScopedCodesE">
-<span id="_CPPv3N5faiss13InvertedLists11ScopedCodesE"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodesE"></span><span id="faiss::InvertedLists::ScopedCodes"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes"></span><em class="property">struct </em><code class="sig-name descname">ScopedCodes</code><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists11ScopedCodesE"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodesE"></span><span id="faiss::InvertedLists::ScopedCodes"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">ScopedCodes</span></code><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists11ScopedCodes11ScopedCodesEPK13InvertedLists6size_t">
-<span id="_CPPv3N5faiss13InvertedLists11ScopedCodes11ScopedCodesEPK13InvertedLists6size_t"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodes11ScopedCodesEPK13InvertedLists6size_t"></span><span id="faiss::InvertedLists::ScopedCodes::ScopedCodes__InvertedListsCP.s"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1af5b3c1198919eeabdae4819531d84ac5"></span><code class="sig-name descname">ScopedCodes</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists">InvertedLists</a> *<em>il</em>, size_t <em>list_no</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists11ScopedCodes11ScopedCodesEPK13InvertedLists6size_t"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodes11ScopedCodesEPK13InvertedLists6size_t"></span><span id="faiss::InvertedLists::ScopedCodes::ScopedCodes__InvertedListsCP.s"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1af5b3c1198919eeabdae4819531d84ac5"></span><em class="property"><span class="pre">inline</span></em> <code class="sig-name descname"><span class="pre">ScopedCodes</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="pre">InvertedLists</span></a> <span class="pre">*</span><em><span class="pre">il</span></em>, <span class="pre">size_t</span> <em><span class="pre">list_no</span></em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists11ScopedCodes11ScopedCodesEPK13InvertedLists6size_t6size_t">
-<span id="_CPPv3N5faiss13InvertedLists11ScopedCodes11ScopedCodesEPK13InvertedLists6size_t6size_t"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodes11ScopedCodesEPK13InvertedLists6size_t6size_t"></span><span id="faiss::InvertedLists::ScopedCodes::ScopedCodes__InvertedListsCP.s.s"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a78ff6ddb3ec12e8adba11e9637ef98d1"></span><code class="sig-name descname">ScopedCodes</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists">InvertedLists</a> *<em>il</em>, size_t <em>list_no</em>, size_t <em>offset</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists11ScopedCodes11ScopedCodesEPK13InvertedLists6size_t6size_t"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodes11ScopedCodesEPK13InvertedLists6size_t6size_t"></span><span id="faiss::InvertedLists::ScopedCodes::ScopedCodes__InvertedListsCP.s.s"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a78ff6ddb3ec12e8adba11e9637ef98d1"></span><em class="property"><span class="pre">inline</span></em> <code class="sig-name descname"><span class="pre">ScopedCodes</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="pre">InvertedLists</span></a> <span class="pre">*</span><em><span class="pre">il</span></em>, <span class="pre">size_t</span> <em><span class="pre">list_no</span></em>, <span class="pre">size_t</span> <em><span class="pre">offset</span></em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists11ScopedCodes3getEv">
-<span id="_CPPv3N5faiss13InvertedLists11ScopedCodes3getEv"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodes3getEv"></span><span id="faiss::InvertedLists::ScopedCodes::get"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1aaf6478daf36366fa07f1eb65065d942d"></span><em class="property">const</em> uint8_t *<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists11ScopedCodes3getEv"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodes3getEv"></span><span id="faiss::InvertedLists::ScopedCodes::get"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1aaf6478daf36366fa07f1eb65065d942d"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists11ScopedCodesD0Ev">
-<span id="_CPPv3N5faiss13InvertedLists11ScopedCodesD0Ev"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodesD0Ev"></span><span id="faiss::InvertedLists::ScopedCodes::~ScopedCodes"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1ac14920da79e4e6b758501401e72c6115"></span><code class="sig-name descname">~ScopedCodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists11ScopedCodesD0Ev"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodesD0Ev"></span><span id="faiss::InvertedLists::ScopedCodes::~ScopedCodes"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1ac14920da79e4e6b758501401e72c6115"></span><em class="property"><span class="pre">inline</span></em> <code class="sig-name descname"><span class="pre">~ScopedCodes</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -525,17 +524,17 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss13InvertedLists11ScopedCodes2ilE">
-<span id="_CPPv3N5faiss13InvertedLists11ScopedCodes2ilE"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodes2ilE"></span><span id="faiss::InvertedLists::ScopedCodes::il__InvertedListsCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a4b1977ab80c851569d5ca37eabc528c0"></span><em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists">InvertedLists</a> *<code class="sig-name descname">il</code><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists11ScopedCodes2ilE"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodes2ilE"></span><span id="faiss::InvertedLists::ScopedCodes::il__InvertedListsCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a4b1977ab80c851569d5ca37eabc528c0"></span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="pre">InvertedLists</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">il</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss13InvertedLists11ScopedCodes5codesE">
-<span id="_CPPv3N5faiss13InvertedLists11ScopedCodes5codesE"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodes5codesE"></span><span id="faiss::InvertedLists::ScopedCodes::codes__uint8_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a926fbb54841811b8457ac7e2aa815735"></span><em class="property">const</em> uint8_t *<code class="sig-name descname">codes</code><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists11ScopedCodes5codesE"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodes5codesE"></span><span id="faiss::InvertedLists::ScopedCodes::codes__uint8_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a926fbb54841811b8457ac7e2aa815735"></span><em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">codes</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss13InvertedLists11ScopedCodes7list_noE">
-<span id="_CPPv3N5faiss13InvertedLists11ScopedCodes7list_noE"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodes7list_noE"></span><span id="faiss::InvertedLists::ScopedCodes::list_no__s"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a7f659101d92e5a7b02cdbc780aeb3fd8"></span>size_t <code class="sig-name descname">list_no</code><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists11ScopedCodes7list_noE"></span><span id="_CPPv2N5faiss13InvertedLists11ScopedCodes7list_noE"></span><span id="faiss::InvertedLists::ScopedCodes::list_no__s"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a7f659101d92e5a7b02cdbc780aeb3fd8"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">list_no</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -543,27 +542,27 @@
 
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss13InvertedLists9ScopedIdsE">
-<span id="_CPPv3N5faiss13InvertedLists9ScopedIdsE"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIdsE"></span><span id="faiss::InvertedLists::ScopedIds"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds"></span><em class="property">struct </em><code class="sig-name descname">ScopedIds</code><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists9ScopedIdsE"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIdsE"></span><span id="faiss::InvertedLists::ScopedIds"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">ScopedIds</span></code><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists9ScopedIds9ScopedIdsEPK13InvertedLists6size_t">
-<span id="_CPPv3N5faiss13InvertedLists9ScopedIds9ScopedIdsEPK13InvertedLists6size_t"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIds9ScopedIdsEPK13InvertedLists6size_t"></span><span id="faiss::InvertedLists::ScopedIds::ScopedIds__InvertedListsCP.s"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a44bec3fb64ac74c91f63bb60361915c9"></span><code class="sig-name descname">ScopedIds</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists">InvertedLists</a> *<em>il</em>, size_t <em>list_no</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists9ScopedIds9ScopedIdsEPK13InvertedLists6size_t"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIds9ScopedIdsEPK13InvertedLists6size_t"></span><span id="faiss::InvertedLists::ScopedIds::ScopedIds__InvertedListsCP.s"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a44bec3fb64ac74c91f63bb60361915c9"></span><em class="property"><span class="pre">inline</span></em> <code class="sig-name descname"><span class="pre">ScopedIds</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="pre">InvertedLists</span></a> <span class="pre">*</span><em><span class="pre">il</span></em>, <span class="pre">size_t</span> <em><span class="pre">list_no</span></em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists9ScopedIds3getEv">
-<span id="_CPPv3N5faiss13InvertedLists9ScopedIds3getEv"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIds3getEv"></span><span id="faiss::InvertedLists::ScopedIds::get"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a8d364e731f2789a8856f5463f50e64e6"></span><em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t">idx_t</a> *<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists9ScopedIds3getEv"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIds3getEv"></span><span id="faiss::InvertedLists::ScopedIds::get"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a8d364e731f2789a8856f5463f50e64e6"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss13InvertedLists9ScopedIdsixE6size_t">
-<span id="_CPPv3NK5faiss13InvertedLists9ScopedIdsixE6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists9ScopedIdsixE6size_t"></span><span id="faiss::InvertedLists::ScopedIds::subscript-operator__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a4773050fbb34aaabc0e2447626976ffa"></span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t">idx_t</a> <code class="sig-name descname">operator[]</code><span class="sig-paren">(</span>size_t <em>i</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss13InvertedLists9ScopedIdsixE6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists9ScopedIdsixE6size_t"></span><span id="faiss::InvertedLists::ScopedIds::subscript-operator__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a4773050fbb34aaabc0e2447626976ffa"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t"><span class="pre">idx_t</span></a> <code class="sig-name descname"><span class="pre">operator[]</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">i</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13InvertedLists9ScopedIdsD0Ev">
-<span id="_CPPv3N5faiss13InvertedLists9ScopedIdsD0Ev"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIdsD0Ev"></span><span id="faiss::InvertedLists::ScopedIds::~ScopedIds"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1ac4b3370c7075ef1b79a873588d3e44dc"></span><code class="sig-name descname">~ScopedIds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists9ScopedIdsD0Ev"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIdsD0Ev"></span><span id="faiss::InvertedLists::ScopedIds::~ScopedIds"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1ac4b3370c7075ef1b79a873588d3e44dc"></span><em class="property"><span class="pre">inline</span></em> <code class="sig-name descname"><span class="pre">~ScopedIds</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -571,17 +570,17 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss13InvertedLists9ScopedIds2ilE">
-<span id="_CPPv3N5faiss13InvertedLists9ScopedIds2ilE"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIds2ilE"></span><span id="faiss::InvertedLists::ScopedIds::il__InvertedListsCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a070479c3744f3e7ce2733c51f57c3412"></span><em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists">InvertedLists</a> *<code class="sig-name descname">il</code><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists9ScopedIds2ilE"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIds2ilE"></span><span id="faiss::InvertedLists::ScopedIds::il__InvertedListsCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a070479c3744f3e7ce2733c51f57c3412"></span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="pre">InvertedLists</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">il</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss13InvertedLists9ScopedIds3idsE">
-<span id="_CPPv3N5faiss13InvertedLists9ScopedIds3idsE"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIds3idsE"></span><span id="faiss::InvertedLists::ScopedIds::ids__idx_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1af6da06a0f3fa92945bce458853a82899"></span><em class="property">const</em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t">idx_t</a> *<code class="sig-name descname">ids</code><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists9ScopedIds3idsE"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIds3idsE"></span><span id="faiss::InvertedLists::ScopedIds::ids__idx_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1af6da06a0f3fa92945bce458853a82899"></span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedLists5idx_tE" title="faiss::InvertedLists::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">ids</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss13InvertedLists9ScopedIds7list_noE">
-<span id="_CPPv3N5faiss13InvertedLists9ScopedIds7list_noE"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIds7list_noE"></span><span id="faiss::InvertedLists::ScopedIds::list_no__s"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a66f75ce4c81aaa2fa38f8e3de647354e"></span>size_t <code class="sig-name descname">list_no</code><br /></dt>
+<span id="_CPPv3N5faiss13InvertedLists9ScopedIds7list_noE"></span><span id="_CPPv2N5faiss13InvertedLists9ScopedIds7list_noE"></span><span id="faiss::InvertedLists::ScopedIds::list_no__s"></span><span class="target" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a66f75ce4c81aaa2fa38f8e3de647354e"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">list_no</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>

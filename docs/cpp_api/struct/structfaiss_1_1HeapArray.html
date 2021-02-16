@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -321,18 +320,18 @@
 <h1>Struct faiss::HeapArray<a class="headerlink" href="#struct-faiss-heaparray" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
 <dt id="_CPPv4I0EN5faiss9HeapArrayE">
-<span id="_CPPv3I0EN5faiss9HeapArrayE"></span><span id="_CPPv2I0EN5faiss9HeapArrayE"></span>template&lt;typename <code class="sig-name descname">C</code>&gt;<br /><span class="target" id="structfaiss_1_1HeapArray"></span><em class="property">struct </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">HeapArray</code><br /></dt>
+<span id="_CPPv3I0EN5faiss9HeapArrayE"></span><span id="_CPPv2I0EN5faiss9HeapArrayE"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">C</span></code><span class="pre">&gt;</span><br /><span class="target" id="structfaiss_1_1HeapArray"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">HeapArray</span></code><br /></dt>
 <dd><p>a template structure for a set of [min|max]-heaps it is tailored so that the actual data of the heaps can just live in compact arrays. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss9HeapArray2TIE">
-<span id="_CPPv3N5faiss9HeapArray2TIE"></span><span id="_CPPv2N5faiss9HeapArray2TIE"></span><span id="faiss::HeapArray::TI"></span><span class="target" id="structfaiss_1_1HeapArray_1a284762db4e64dd74d82984b6b457304a"></span><em class="property">typedef </em><a class="reference internal" href="../file/Heap_8h.html#_CPPv4I0EN5faiss9HeapArrayE" title="faiss::HeapArray::C">C</a>::TI <code class="sig-name descname">TI</code><br /></dt>
+<span id="_CPPv3N5faiss9HeapArray2TIE"></span><span id="_CPPv2N5faiss9HeapArray2TIE"></span><span id="faiss::HeapArray::TI"></span><span class="target" id="structfaiss_1_1HeapArray_1a284762db4e64dd74d82984b6b457304a"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="../file/Heap_8h.html#_CPPv4I0EN5faiss9HeapArrayE" title="faiss::HeapArray::C"><span class="pre">C</span></a><span class="pre">::</span><span class="pre">TI</span> <code class="sig-name descname"><span class="pre">TI</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss9HeapArray1TE">
-<span id="_CPPv3N5faiss9HeapArray1TE"></span><span id="_CPPv2N5faiss9HeapArray1TE"></span><span id="faiss::HeapArray::T"></span><span class="target" id="structfaiss_1_1HeapArray_1a46eb2eae9e79a0dd7ab720283619a5a9"></span><em class="property">typedef </em><a class="reference internal" href="../file/Heap_8h.html#_CPPv4I0EN5faiss9HeapArrayE" title="faiss::HeapArray::C">C</a>::T <code class="sig-name descname">T</code><br /></dt>
+<span id="_CPPv3N5faiss9HeapArray1TE"></span><span id="_CPPv2N5faiss9HeapArray1TE"></span><span id="faiss::HeapArray::T"></span><span class="target" id="structfaiss_1_1HeapArray_1a46eb2eae9e79a0dd7ab720283619a5a9"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="../file/Heap_8h.html#_CPPv4I0EN5faiss9HeapArrayE" title="faiss::HeapArray::C"><span class="pre">C</span></a><span class="pre">::</span><span class="pre">T</span> <code class="sig-name descname"><span class="pre">T</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -340,25 +339,25 @@
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9HeapArray7get_valE6size_t">
-<span id="_CPPv3N5faiss9HeapArray7get_valE6size_t"></span><span id="_CPPv2N5faiss9HeapArray7get_valE6size_t"></span><span id="faiss::HeapArray::get_val__s"></span><span class="target" id="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858"></span><a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T">T</a> *<code class="sig-name descname">get_val</code><span class="sig-paren">(</span>size_t <em>key</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9HeapArray7get_valE6size_t"></span><span id="_CPPv2N5faiss9HeapArray7get_valE6size_t"></span><span id="faiss::HeapArray::get_val__s"></span><span class="target" id="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T"><span class="pre">T</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">get_val</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">key</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>Return the list of values for a heap. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9HeapArray7get_idsE6size_t">
-<span id="_CPPv3N5faiss9HeapArray7get_idsE6size_t"></span><span id="_CPPv2N5faiss9HeapArray7get_idsE6size_t"></span><span id="faiss::HeapArray::get_ids__s"></span><span class="target" id="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49"></span><a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI">TI</a> *<code class="sig-name descname">get_ids</code><span class="sig-paren">(</span>size_t <em>key</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9HeapArray7get_idsE6size_t"></span><span id="_CPPv2N5faiss9HeapArray7get_idsE6size_t"></span><span id="faiss::HeapArray::get_ids__s"></span><span class="target" id="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI"><span class="pre">TI</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">get_ids</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">key</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>Correspponding identifiers. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9HeapArray7heapifyEv">
-<span id="_CPPv3N5faiss9HeapArray7heapifyEv"></span><span id="_CPPv2N5faiss9HeapArray7heapifyEv"></span><span id="faiss::HeapArray::heapify"></span><span class="target" id="structfaiss_1_1HeapArray_1a48afc496c73e982b8e10fde786628292"></span>void <code class="sig-name descname">heapify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9HeapArray7heapifyEv"></span><span id="_CPPv2N5faiss9HeapArray7heapifyEv"></span><span id="faiss::HeapArray::heapify"></span><span class="target" id="structfaiss_1_1HeapArray_1a48afc496c73e982b8e10fde786628292"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">heapify</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>prepare all the heaps before adding </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9HeapArray4addnE6size_tPK1T2TI6size_t7int64_t">
-<span id="_CPPv3N5faiss9HeapArray4addnE6size_tPK1T2TI6size_t7int64_t"></span><span id="_CPPv2N5faiss9HeapArray4addnE6size_tPK1T2TI6size_t7int64_t"></span><span id="faiss::HeapArray::addn__s.TCP.TI.s.int64_t"></span><span class="target" id="structfaiss_1_1HeapArray_1a293d8646fba26cfe726d529f3fb58923"></span>void <code class="sig-name descname">addn</code><span class="sig-paren">(</span>size_t <em>nj</em>, <em class="property">const</em> <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T">T</a> *<em>vin</em>, <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI">TI</a> <em>j0</em> = 0, size_t <em>i0</em> = 0, int64_t <em>ni</em> = -1<span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9HeapArray4addnE6size_tPK1T2TI6size_t7int64_t"></span><span id="_CPPv2N5faiss9HeapArray4addnE6size_tPK1T2TI6size_t7int64_t"></span><span id="faiss::HeapArray::addn__s.TCP.TI.s.int64_t"></span><span class="target" id="structfaiss_1_1HeapArray_1a293d8646fba26cfe726d529f3fb58923"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">addn</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">nj</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T"><span class="pre">T</span></a> <span class="pre">*</span><em><span class="pre">vin</span></em>, <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI"><span class="pre">TI</span></a> <em><span class="pre">j0</span></em> <span class="pre">=</span> <span class="pre">0</span>, <span class="pre">size_t</span> <em><span class="pre">i0</span></em> <span class="pre">=</span> <span class="pre">0</span>, <span class="pre">int64_t</span> <em><span class="pre">ni</span></em> <span class="pre">=</span> <span class="pre">-</span><span class="pre">1</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>add nj elements to heaps i0:i0+ni, with sequential ids</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -375,7 +374,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9HeapArray13addn_with_idsE6size_tPK1TPK2TI7int64_t6size_t7int64_t">
-<span id="_CPPv3N5faiss9HeapArray13addn_with_idsE6size_tPK1TPK2TI7int64_t6size_t7int64_t"></span><span id="_CPPv2N5faiss9HeapArray13addn_with_idsE6size_tPK1TPK2TI7int64_t6size_t7int64_t"></span><span id="faiss::HeapArray::addn_with_ids__s.TCP.TICP.int64_t.s.int64_t"></span><span class="target" id="structfaiss_1_1HeapArray_1a75cbbd8f60dd00f0523e8515e5072d06"></span>void <code class="sig-name descname">addn_with_ids</code><span class="sig-paren">(</span>size_t <em>nj</em>, <em class="property">const</em> <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T">T</a> *<em>vin</em>, <em class="property">const</em> <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI">TI</a> *<em>id_in</em> = nullptr, int64_t <em>id_stride</em> = 0, size_t <em>i0</em> = 0, int64_t <em>ni</em> = -1<span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9HeapArray13addn_with_idsE6size_tPK1TPK2TI7int64_t6size_t7int64_t"></span><span id="_CPPv2N5faiss9HeapArray13addn_with_idsE6size_tPK1TPK2TI7int64_t6size_t7int64_t"></span><span id="faiss::HeapArray::addn_with_ids__s.TCP.TICP.int64_t.s.int64_t"></span><span class="target" id="structfaiss_1_1HeapArray_1a75cbbd8f60dd00f0523e8515e5072d06"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">addn_with_ids</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">nj</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T"><span class="pre">T</span></a> <span class="pre">*</span><em><span class="pre">vin</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI"><span class="pre">TI</span></a> <span class="pre">*</span><em><span class="pre">id_in</span></em> <span class="pre">=</span> <span class="pre">nullptr</span>, <span class="pre">int64_t</span> <em><span class="pre">id_stride</span></em> <span class="pre">=</span> <span class="pre">0</span>, <span class="pre">size_t</span> <em><span class="pre">i0</span></em> <span class="pre">=</span> <span class="pre">0</span>, <span class="pre">int64_t</span> <em><span class="pre">ni</span></em> <span class="pre">=</span> <span class="pre">-</span><span class="pre">1</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>same as addn</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -389,13 +388,13 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9HeapArray7reorderEv">
-<span id="_CPPv3N5faiss9HeapArray7reorderEv"></span><span id="_CPPv2N5faiss9HeapArray7reorderEv"></span><span id="faiss::HeapArray::reorder"></span><span class="target" id="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec"></span>void <code class="sig-name descname">reorder</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss9HeapArray7reorderEv"></span><span id="_CPPv2N5faiss9HeapArray7reorderEv"></span><span id="faiss::HeapArray::reorder"></span><span class="target" id="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">reorder</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>reorder all the heaps </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss9HeapArray16per_line_extremaEP1TP2TI">
-<span id="_CPPv3NK5faiss9HeapArray16per_line_extremaEP1TP2TI"></span><span id="_CPPv2NK5faiss9HeapArray16per_line_extremaEP1TP2TI"></span><span id="faiss::HeapArray::per_line_extrema__TP.TIPC"></span><span class="target" id="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b"></span>void <code class="sig-name descname">per_line_extrema</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T">T</a> *<em>vals_out</em>, <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI">TI</a> *<em>idx_out</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss9HeapArray16per_line_extremaEP1TP2TI"></span><span id="_CPPv2NK5faiss9HeapArray16per_line_extremaEP1TP2TI"></span><span id="faiss::HeapArray::per_line_extrema__TP.TIPC"></span><span class="target" id="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">per_line_extrema</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T"><span class="pre">T</span></a> <span class="pre">*</span><em><span class="pre">vals_out</span></em>, <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI"><span class="pre">TI</span></a> <span class="pre">*</span><em><span class="pre">idx_out</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>this is not really a heap function. It just finds the per-line extrema of each line of array D <dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">vals_out</span></code>: extreme value of each line (size nh, or NULL) </p></li>
@@ -411,25 +410,25 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss9HeapArray2nhE">
-<span id="_CPPv3N5faiss9HeapArray2nhE"></span><span id="_CPPv2N5faiss9HeapArray2nhE"></span><span id="faiss::HeapArray::nh__s"></span><span class="target" id="structfaiss_1_1HeapArray_1aad477a3907c3496159eaf4b375be4432"></span>size_t <code class="sig-name descname">nh</code><br /></dt>
+<span id="_CPPv3N5faiss9HeapArray2nhE"></span><span id="_CPPv2N5faiss9HeapArray2nhE"></span><span id="faiss::HeapArray::nh__s"></span><span class="target" id="structfaiss_1_1HeapArray_1aad477a3907c3496159eaf4b375be4432"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">nh</span></code><br /></dt>
 <dd><p>number of heaps </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss9HeapArray1kE">
-<span id="_CPPv3N5faiss9HeapArray1kE"></span><span id="_CPPv2N5faiss9HeapArray1kE"></span><span id="faiss::HeapArray::k__s"></span><span class="target" id="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4"></span>size_t <code class="sig-name descname">k</code><br /></dt>
+<span id="_CPPv3N5faiss9HeapArray1kE"></span><span id="_CPPv2N5faiss9HeapArray1kE"></span><span id="faiss::HeapArray::k__s"></span><span class="target" id="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">k</span></code><br /></dt>
 <dd><p>allocated size per heap </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss9HeapArray3idsE">
-<span id="_CPPv3N5faiss9HeapArray3idsE"></span><span id="_CPPv2N5faiss9HeapArray3idsE"></span><span id="faiss::HeapArray::ids__TIP"></span><span class="target" id="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2"></span><a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI">TI</a> *<code class="sig-name descname">ids</code><br /></dt>
+<span id="_CPPv3N5faiss9HeapArray3idsE"></span><span id="_CPPv2N5faiss9HeapArray3idsE"></span><span id="faiss::HeapArray::ids__TIP"></span><span class="target" id="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2"></span><a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI"><span class="pre">TI</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">ids</span></code><br /></dt>
 <dd><p>identifiers (size nh * k) </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss9HeapArray3valE">
-<span id="_CPPv3N5faiss9HeapArray3valE"></span><span id="_CPPv2N5faiss9HeapArray3valE"></span><span id="faiss::HeapArray::val__TP"></span><span class="target" id="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53"></span><a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T">T</a> *<code class="sig-name descname">val</code><br /></dt>
+<span id="_CPPv3N5faiss9HeapArray3valE"></span><span id="_CPPv2N5faiss9HeapArray3valE"></span><span id="faiss::HeapArray::val__TP"></span><span class="target" id="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53"></span><a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T"><span class="pre">T</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">val</span></code><br /></dt>
 <dd><p>values (distances or similarities), size nh * k </p>
 </dd></dl>
 

@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -285,7 +284,7 @@
 <h1>File random.h<a class="headerlink" href="#file-random-h" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp type">
 <dt id="_CPPv45faiss">
-<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property">namespace </em><code class="sig-name descname">faiss</code><br /></dt>
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">faiss</span></code><br /></dt>
 <dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
@@ -306,73 +305,73 @@
 <p class="breathe-sectiondef-title rubric">Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss10float_randEPf6size_t7int64_t">
-<span id="_CPPv3N5faiss10float_randEPf6size_t7int64_t"></span><span id="_CPPv2N5faiss10float_randEPf6size_t7int64_t"></span><span id="faiss::float_rand__floatP.s.int64_t"></span><span class="target" id="namespacefaiss_1a5044a6332355bfa866dda113f81e9602"></span>void <code class="sig-name descname">float_rand</code><span class="sig-paren">(</span>float *<em>x</em>, size_t <em>n</em>, int64_t <em>seed</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss10float_randEPf6size_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss10float_randEPf6size_t7int64_t"></span><span id="_CPPv2N5faiss10float_randEPf6size_t7int64_t"></span><span id="faiss::float_rand__floatP.s.int64_t"></span><span class="target" id="namespacefaiss_1a5044a6332355bfa866dda113f81e9602"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">float_rand</span></code><span class="sig-paren">(</span><span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">size_t</span> <em><span class="pre">n</span></em>, <span class="pre">int64_t</span> <em><span class="pre">seed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss10float_randEPf6size_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss11float_randnEPf6size_t7int64_t">
-<span id="_CPPv3N5faiss11float_randnEPf6size_t7int64_t"></span><span id="_CPPv2N5faiss11float_randnEPf6size_t7int64_t"></span><span id="faiss::float_randn__floatP.s.int64_t"></span><span class="target" id="namespacefaiss_1aa149aec8f65085773f664bb7b5884743"></span>void <code class="sig-name descname">float_randn</code><span class="sig-paren">(</span>float *<em>x</em>, size_t <em>n</em>, int64_t <em>seed</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11float_randnEPf6size_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss11float_randnEPf6size_t7int64_t"></span><span id="_CPPv2N5faiss11float_randnEPf6size_t7int64_t"></span><span id="faiss::float_randn__floatP.s.int64_t"></span><span class="target" id="namespacefaiss_1aa149aec8f65085773f664bb7b5884743"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">float_randn</span></code><span class="sig-paren">(</span><span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">size_t</span> <em><span class="pre">n</span></em>, <span class="pre">int64_t</span> <em><span class="pre">seed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11float_randnEPf6size_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss10int64_randEP7int64_t6size_t7int64_t">
-<span id="_CPPv3N5faiss10int64_randEP7int64_t6size_t7int64_t"></span><span id="_CPPv2N5faiss10int64_randEP7int64_t6size_t7int64_t"></span><span id="faiss::int64_rand__int64_tP.s.int64_t"></span><span class="target" id="namespacefaiss_1aba416d6990d202bfc7eac244a7d874c8"></span>void <code class="sig-name descname">int64_rand</code><span class="sig-paren">(</span>int64_t *<em>x</em>, size_t <em>n</em>, int64_t <em>seed</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss10int64_randEP7int64_t6size_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss10int64_randEP7int64_t6size_t7int64_t"></span><span id="_CPPv2N5faiss10int64_randEP7int64_t6size_t7int64_t"></span><span id="faiss::int64_rand__int64_tP.s.int64_t"></span><span class="target" id="namespacefaiss_1aba416d6990d202bfc7eac244a7d874c8"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">int64_rand</span></code><span class="sig-paren">(</span><span class="pre">int64_t</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">size_t</span> <em><span class="pre">n</span></em>, <span class="pre">int64_t</span> <em><span class="pre">seed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss10int64_randEP7int64_t6size_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9byte_randEP7uint8_t6size_t7int64_t">
-<span id="_CPPv3N5faiss9byte_randEP7uint8_t6size_t7int64_t"></span><span id="_CPPv2N5faiss9byte_randEP7uint8_t6size_t7int64_t"></span><span id="faiss::byte_rand__uint8_tP.s.int64_t"></span><span class="target" id="namespacefaiss_1a4d573c579e00f4c78a8fa9a50a6a7100"></span>void <code class="sig-name descname">byte_rand</code><span class="sig-paren">(</span>uint8_t *<em>x</em>, size_t <em>n</em>, int64_t <em>seed</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss9byte_randEP7uint8_t6size_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss9byte_randEP7uint8_t6size_t7int64_t"></span><span id="_CPPv2N5faiss9byte_randEP7uint8_t6size_t7int64_t"></span><span id="faiss::byte_rand__uint8_tP.s.int64_t"></span><span class="target" id="namespacefaiss_1a4d573c579e00f4c78a8fa9a50a6a7100"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">byte_rand</span></code><span class="sig-paren">(</span><span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">size_t</span> <em><span class="pre">n</span></em>, <span class="pre">int64_t</span> <em><span class="pre">seed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss9byte_randEP7uint8_t6size_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss14int64_rand_maxEP7int64_t6size_t8uint64_t7int64_t">
-<span id="_CPPv3N5faiss14int64_rand_maxEP7int64_t6size_t8uint64_t7int64_t"></span><span id="_CPPv2N5faiss14int64_rand_maxEP7int64_t6size_t8uint64_t7int64_t"></span><span id="faiss::int64_rand_max__int64_tP.s.uint64_t.int64_t"></span><span class="target" id="namespacefaiss_1ac394a01fe370ddc30c394cdea9527fbe"></span>void <code class="sig-name descname">int64_rand_max</code><span class="sig-paren">(</span>int64_t *<em>x</em>, size_t <em>n</em>, uint64_t <em>max</em>, int64_t <em>seed</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss14int64_rand_maxEP7int64_t6size_t8uint64_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss14int64_rand_maxEP7int64_t6size_t8uint64_t7int64_t"></span><span id="_CPPv2N5faiss14int64_rand_maxEP7int64_t6size_t8uint64_t7int64_t"></span><span id="faiss::int64_rand_max__int64_tP.s.uint64_t.int64_t"></span><span class="target" id="namespacefaiss_1ac394a01fe370ddc30c394cdea9527fbe"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">int64_rand_max</span></code><span class="sig-paren">(</span><span class="pre">int64_t</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">size_t</span> <em><span class="pre">n</span></em>, <span class="pre">uint64_t</span> <em><span class="pre">max</span></em>, <span class="pre">int64_t</span> <em><span class="pre">seed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss14int64_rand_maxEP7int64_t6size_t8uint64_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9rand_permEPi6size_t7int64_t">
-<span id="_CPPv3N5faiss9rand_permEPi6size_t7int64_t"></span><span id="_CPPv2N5faiss9rand_permEPi6size_t7int64_t"></span><span id="faiss::rand_perm__iP.s.int64_t"></span><span class="target" id="namespacefaiss_1ad40228bb4ba7a96e0fe801b9f9b7c900"></span>void <code class="sig-name descname">rand_perm</code><span class="sig-paren">(</span>int *<em>perm</em>, size_t <em>n</em>, int64_t <em>seed</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss9rand_permEPi6size_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss9rand_permEPi6size_t7int64_t"></span><span id="_CPPv2N5faiss9rand_permEPi6size_t7int64_t"></span><span id="faiss::rand_perm__iP.s.int64_t"></span><span class="target" id="namespacefaiss_1ad40228bb4ba7a96e0fe801b9f9b7c900"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">rand_perm</span></code><span class="sig-paren">(</span><span class="pre">int</span> <span class="pre">*</span><em><span class="pre">perm</span></em>, <span class="pre">size_t</span> <em><span class="pre">n</span></em>, <span class="pre">int64_t</span> <em><span class="pre">seed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss9rand_permEPi6size_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss15RandomGeneratorE">
-<span id="_CPPv3N5faiss15RandomGeneratorE"></span><span id="_CPPv2N5faiss15RandomGeneratorE"></span><span id="faiss::RandomGenerator"></span><span class="target" id="structfaiss_1_1RandomGenerator"></span><em class="property">struct </em><code class="sig-name descname">RandomGenerator</code><a class="headerlink" href="#_CPPv4N5faiss15RandomGeneratorE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss15RandomGeneratorE"></span><span id="_CPPv2N5faiss15RandomGeneratorE"></span><span id="faiss::RandomGenerator"></span><span class="target" id="structfaiss_1_1RandomGenerator"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">RandomGenerator</span></code><a class="headerlink" href="#_CPPv4N5faiss15RandomGeneratorE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><em>#include &lt;random.h&gt;</em><p>random generator that can be used in multithreaded contexts </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15RandomGenerator8rand_intEv">
-<span id="_CPPv3N5faiss15RandomGenerator8rand_intEv"></span><span id="_CPPv2N5faiss15RandomGenerator8rand_intEv"></span><span id="faiss::RandomGenerator::rand_int"></span><span class="target" id="structfaiss_1_1RandomGenerator_1a583f124ecacdbe037ac96e23a44dd420"></span>int <code class="sig-name descname">rand_int</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator8rand_intEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss15RandomGenerator8rand_intEv"></span><span id="_CPPv2N5faiss15RandomGenerator8rand_intEv"></span><span id="faiss::RandomGenerator::rand_int"></span><span class="target" id="structfaiss_1_1RandomGenerator_1a583f124ecacdbe037ac96e23a44dd420"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">rand_int</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator8rand_intEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>random positive integer </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15RandomGenerator10rand_int64Ev">
-<span id="_CPPv3N5faiss15RandomGenerator10rand_int64Ev"></span><span id="_CPPv2N5faiss15RandomGenerator10rand_int64Ev"></span><span id="faiss::RandomGenerator::rand_int64"></span><span class="target" id="structfaiss_1_1RandomGenerator_1a3c1d4f4e81baf1507961409af6219da3"></span>int64_t <code class="sig-name descname">rand_int64</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator10rand_int64Ev" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss15RandomGenerator10rand_int64Ev"></span><span id="_CPPv2N5faiss15RandomGenerator10rand_int64Ev"></span><span id="faiss::RandomGenerator::rand_int64"></span><span class="target" id="structfaiss_1_1RandomGenerator_1a3c1d4f4e81baf1507961409af6219da3"></span><span class="pre">int64_t</span> <code class="sig-name descname"><span class="pre">rand_int64</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator10rand_int64Ev" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>random int64_t </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15RandomGenerator8rand_intEi">
-<span id="_CPPv3N5faiss15RandomGenerator8rand_intEi"></span><span id="_CPPv2N5faiss15RandomGenerator8rand_intEi"></span><span id="faiss::RandomGenerator::rand_int__i"></span><span class="target" id="structfaiss_1_1RandomGenerator_1aa460b9bac2593cd1d71305e10ab51af6"></span>int <code class="sig-name descname">rand_int</code><span class="sig-paren">(</span>int <em>max</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator8rand_intEi" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss15RandomGenerator8rand_intEi"></span><span id="_CPPv2N5faiss15RandomGenerator8rand_intEi"></span><span id="faiss::RandomGenerator::rand_int__i"></span><span class="target" id="structfaiss_1_1RandomGenerator_1aa460b9bac2593cd1d71305e10ab51af6"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">rand_int</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">max</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator8rand_intEi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>generate random integer between 0 and max-1 </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15RandomGenerator10rand_floatEv">
-<span id="_CPPv3N5faiss15RandomGenerator10rand_floatEv"></span><span id="_CPPv2N5faiss15RandomGenerator10rand_floatEv"></span><span id="faiss::RandomGenerator::rand_float"></span><span class="target" id="structfaiss_1_1RandomGenerator_1ac82a433d7bfa56d750907ba5cf74aed7"></span>float <code class="sig-name descname">rand_float</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator10rand_floatEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss15RandomGenerator10rand_floatEv"></span><span id="_CPPv2N5faiss15RandomGenerator10rand_floatEv"></span><span id="faiss::RandomGenerator::rand_float"></span><span class="target" id="structfaiss_1_1RandomGenerator_1ac82a433d7bfa56d750907ba5cf74aed7"></span><span class="pre">float</span> <code class="sig-name descname"><span class="pre">rand_float</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator10rand_floatEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>between 0 and 1 </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15RandomGenerator11rand_doubleEv">
-<span id="_CPPv3N5faiss15RandomGenerator11rand_doubleEv"></span><span id="_CPPv2N5faiss15RandomGenerator11rand_doubleEv"></span><span id="faiss::RandomGenerator::rand_double"></span><span class="target" id="structfaiss_1_1RandomGenerator_1abd824911e83a956b21d0168f8b4f2364"></span>double <code class="sig-name descname">rand_double</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator11rand_doubleEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss15RandomGenerator11rand_doubleEv"></span><span id="_CPPv2N5faiss15RandomGenerator11rand_doubleEv"></span><span id="faiss::RandomGenerator::rand_double"></span><span class="target" id="structfaiss_1_1RandomGenerator_1abd824911e83a956b21d0168f8b4f2364"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">rand_double</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator11rand_doubleEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15RandomGenerator15RandomGeneratorE7int64_t">
-<span id="_CPPv3N5faiss15RandomGenerator15RandomGeneratorE7int64_t"></span><span id="_CPPv2N5faiss15RandomGenerator15RandomGeneratorE7int64_t"></span><span id="faiss::RandomGenerator::RandomGenerator__int64_t"></span><span class="target" id="structfaiss_1_1RandomGenerator_1a8d2ce09ee883bb4e840e6aabafbbbdea"></span><code class="sig-name descname">RandomGenerator</code><span class="sig-paren">(</span>int64_t <em>seed</em> = 1234<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator15RandomGeneratorE7int64_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss15RandomGenerator15RandomGeneratorE7int64_t"></span><span id="_CPPv2N5faiss15RandomGenerator15RandomGeneratorE7int64_t"></span><span id="faiss::RandomGenerator::RandomGenerator__int64_t"></span><span class="target" id="structfaiss_1_1RandomGenerator_1a8d2ce09ee883bb4e840e6aabafbbbdea"></span><em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">RandomGenerator</span></code><span class="sig-paren">(</span><span class="pre">int64_t</span> <em><span class="pre">seed</span></em> <span class="pre">=</span> <span class="pre">1234</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator15RandomGeneratorE7int64_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -380,7 +379,7 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss15RandomGenerator2mtE">
-<span id="_CPPv3N5faiss15RandomGenerator2mtE"></span><span id="_CPPv2N5faiss15RandomGenerator2mtE"></span><span id="faiss::RandomGenerator::mt__std::mt19937"></span><span class="target" id="structfaiss_1_1RandomGenerator_1a1cb04ff503cdcdac5977274b8a2591d8"></span>std::mt19937 <code class="sig-name descname">mt</code><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator2mtE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss15RandomGenerator2mtE"></span><span id="_CPPv2N5faiss15RandomGenerator2mtE"></span><span id="faiss::RandomGenerator::mt__std::mt19937"></span><span class="target" id="structfaiss_1_1RandomGenerator_1a1cb04ff503cdcdac5977274b8a2591d8"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">mt19937</span> <code class="sig-name descname"><span class="pre">mt</span></code><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator2mtE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>

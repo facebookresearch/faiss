@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -287,20 +286,20 @@
 <p class="breathe-sectiondef-title rubric">Defines</p>
 <dl class="cpp macro">
 <dt id="c.__host__">
-<span class="target" id="StaticUtils_8h_1a803050db3c78e0db3ea59a0c35499622"></span><code class="sig-name descname">__host__</code><a class="headerlink" href="#c.__host__" title="Permalink to this definition">¶</a><br /></dt>
+<span class="target" id="StaticUtils_8h_1a803050db3c78e0db3ea59a0c35499622"></span><code class="sig-name descname"><span class="pre">__host__</span></code><a class="headerlink" href="#c.__host__" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. </p>
 </dd></dl>
 
 <dl class="cpp macro">
 <dt id="c.__device__">
-<span class="target" id="StaticUtils_8h_1ad54e07d96efd9a36dfca1a9f27776d62"></span><code class="sig-name descname">__device__</code><a class="headerlink" href="#c.__device__" title="Permalink to this definition">¶</a><br /></dt>
+<span class="target" id="StaticUtils_8h_1ad54e07d96efd9a36dfca1a9f27776d62"></span><code class="sig-name descname"><span class="pre">__device__</span></code><a class="headerlink" href="#c.__device__" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
 <dl class="cpp type">
 <dt id="_CPPv45faiss">
-<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property">namespace </em><code class="sig-name descname">faiss</code><br /></dt>
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">faiss</span></code><br /></dt>
 <dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
@@ -319,55 +318,55 @@
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss3gpuE">
-<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><em class="property">namespace </em><code class="sig-name descname">gpu</code><br /></dt>
+<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">gpu</span></code><br /></dt>
 <dd><dl class="cpp type">
 <dt id="_CPPv4N5faiss3gpu5utilsE">
-<span id="_CPPv3N5faiss3gpu5utilsE"></span><span id="_CPPv2N5faiss3gpu5utilsE"></span><span id="faiss::gpu::utils"></span><span class="target" id="namespacefaiss_1_1gpu_1_1utils"></span><em class="property">namespace </em><code class="sig-name descname">utils</code><a class="headerlink" href="#_CPPv4N5faiss3gpu5utilsE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu5utilsE"></span><span id="_CPPv2N5faiss3gpu5utilsE"></span><span id="faiss::gpu::utils"></span><span class="target" id="namespacefaiss_1_1gpu_1_1utils"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">utils</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu5utilsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Functions</p>
 <dl class="cpp function">
 <dt>
-<span class="target" id="StaticUtils_8h_1a3bc4691d4731a93fbf5fcec46f5cf04d"></span><code class="sig-name descname">template&lt;typename U, typename V&gt; constexpr __host__ __device__ auto divDown (U a, V b) -&gt; decltype(a+b)</code></dt>
+<span class="target" id="StaticUtils_8h_1a3bc4691d4731a93fbf5fcec46f5cf04d"></span><code class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">U,</span> <span class="pre">typename</span> <span class="pre">V&gt;</span> <span class="pre">constexpr</span> <span class="pre">__host__</span> <span class="pre">__device__</span> <span class="pre">auto</span> <span class="pre">divDown</span> <span class="pre">(U</span> <span class="pre">a,</span> <span class="pre">V</span> <span class="pre">b)</span> <span class="pre">-&gt;</span> <span class="pre">decltype(a+b)</span></code></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt>
-<span class="target" id="StaticUtils_8h_1a91e56461afb8b046dba4fdd8000e95af"></span><code class="sig-name descname">template&lt;typename U, typename V&gt; constexpr __host__ __device__ auto divUp (U a, V b) -&gt; decltype(a+b)</code></dt>
+<span class="target" id="StaticUtils_8h_1a91e56461afb8b046dba4fdd8000e95af"></span><code class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">U,</span> <span class="pre">typename</span> <span class="pre">V&gt;</span> <span class="pre">constexpr</span> <span class="pre">__host__</span> <span class="pre">__device__</span> <span class="pre">auto</span> <span class="pre">divUp</span> <span class="pre">(U</span> <span class="pre">a,</span> <span class="pre">V</span> <span class="pre">b)</span> <span class="pre">-&gt;</span> <span class="pre">decltype(a+b)</span></code></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt>
-<span class="target" id="StaticUtils_8h_1afbb2f1d0a5843abf8c3a836bfb387ab4"></span><code class="sig-name descname">template&lt;typename U, typename V&gt; constexpr __host__ __device__ auto roundDown (U a, V b) -&gt; decltype(a+b)</code></dt>
+<span class="target" id="StaticUtils_8h_1afbb2f1d0a5843abf8c3a836bfb387ab4"></span><code class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">U,</span> <span class="pre">typename</span> <span class="pre">V&gt;</span> <span class="pre">constexpr</span> <span class="pre">__host__</span> <span class="pre">__device__</span> <span class="pre">auto</span> <span class="pre">roundDown</span> <span class="pre">(U</span> <span class="pre">a,</span> <span class="pre">V</span> <span class="pre">b)</span> <span class="pre">-&gt;</span> <span class="pre">decltype(a+b)</span></code></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt>
-<span class="target" id="StaticUtils_8h_1a1f24706c84852e436a8b5dcad7d9f252"></span><code class="sig-name descname">template&lt;typename U, typename V&gt; constexpr __host__ __device__ auto roundUp (U a, V b) -&gt; decltype(a+b)</code></dt>
+<span class="target" id="StaticUtils_8h_1a1f24706c84852e436a8b5dcad7d9f252"></span><code class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">U,</span> <span class="pre">typename</span> <span class="pre">V&gt;</span> <span class="pre">constexpr</span> <span class="pre">__host__</span> <span class="pre">__device__</span> <span class="pre">auto</span> <span class="pre">roundUp</span> <span class="pre">(U</span> <span class="pre">a,</span> <span class="pre">V</span> <span class="pre">b)</span> <span class="pre">-&gt;</span> <span class="pre">decltype(a+b)</span></code></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt>
-<span class="target" id="StaticUtils_8h_1a1f3e4845c081c122a447cc5f520b7a93"></span><code class="sig-name descname">template&lt;class T&gt; constexpr __host__ __device__ T pow (T n, T power)</code></dt>
+<span class="target" id="StaticUtils_8h_1a1f3e4845c081c122a447cc5f520b7a93"></span><code class="sig-name descname"><span class="pre">template&lt;class</span> <span class="pre">T&gt;</span> <span class="pre">constexpr</span> <span class="pre">__host__</span> <span class="pre">__device__</span> <span class="pre">T</span> <span class="pre">pow</span> <span class="pre">(T</span> <span class="pre">n,</span> <span class="pre">T</span> <span class="pre">power)</span></code></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt>
-<span class="target" id="StaticUtils_8h_1aa90afbafb948f4fa36a2414120ff208c"></span><code class="sig-name descname">template&lt;class T&gt; constexpr __host__ __device__ T pow2 (T n)</code></dt>
+<span class="target" id="StaticUtils_8h_1aa90afbafb948f4fa36a2414120ff208c"></span><code class="sig-name descname"><span class="pre">template&lt;class</span> <span class="pre">T&gt;</span> <span class="pre">constexpr</span> <span class="pre">__host__</span> <span class="pre">__device__</span> <span class="pre">T</span> <span class="pre">pow2</span> <span class="pre">(T</span> <span class="pre">n)</span></code></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt>
-<span class="target" id="StaticUtils_8h_1aee56435daf563a79585c93c44e5375db"></span><code class="sig-name descname">template&lt;typename T&gt; constexpr __host__ __device__ int log2 (T n, int p=0)</code></dt>
+<span class="target" id="StaticUtils_8h_1aee56435daf563a79585c93c44e5375db"></span><code class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">T&gt;</span> <span class="pre">constexpr</span> <span class="pre">__host__</span> <span class="pre">__device__</span> <span class="pre">int</span> <span class="pre">log2</span> <span class="pre">(T</span> <span class="pre">n,</span> <span class="pre">int</span> <span class="pre">p=0)</span></code></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt>
-<span class="target" id="StaticUtils_8h_1a4d2f892d9242bffb150b3743b95eac33"></span><code class="sig-name descname">template&lt;typename T&gt; constexpr __host__ __device__ bool isPowerOf2 (T v)</code></dt>
+<span class="target" id="StaticUtils_8h_1a4d2f892d9242bffb150b3743b95eac33"></span><code class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">T&gt;</span> <span class="pre">constexpr</span> <span class="pre">__host__</span> <span class="pre">__device__</span> <span class="pre">bool</span> <span class="pre">isPowerOf2</span> <span class="pre">(T</span> <span class="pre">v)</span></code></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt>
-<span class="target" id="StaticUtils_8h_1ab55ab9059fa19bc3270a50dfe239a077"></span><code class="sig-name descname">template&lt;typename T&gt; constexpr __host__ __device__ T nextHighestPowerOf2 (T v)</code></dt>
+<span class="target" id="StaticUtils_8h_1ab55ab9059fa19bc3270a50dfe239a077"></span><code class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">T&gt;</span> <span class="pre">constexpr</span> <span class="pre">__host__</span> <span class="pre">__device__</span> <span class="pre">T</span> <span class="pre">nextHighestPowerOf2</span> <span class="pre">(T</span> <span class="pre">v)</span></code></dt>
 <dd></dd></dl>
 
 </div>

@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -321,23 +320,23 @@
 <h1>Struct PyCallbackIOReader<a class="headerlink" href="#struct-pycallbackioreader" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
 <dt id="_CPPv418PyCallbackIOReader">
-<span id="_CPPv318PyCallbackIOReader"></span><span id="_CPPv218PyCallbackIOReader"></span><span id="PyCallbackIOReader"></span><span class="target" id="structPyCallbackIOReader"></span><em class="property">struct </em><code class="sig-name descname">PyCallbackIOReader</code> : <em class="property">public</em> IOReader<br /></dt>
+<span id="_CPPv318PyCallbackIOReader"></span><span id="_CPPv218PyCallbackIOReader"></span><span id="PyCallbackIOReader"></span><span class="target" id="structPyCallbackIOReader"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">PyCallbackIOReader</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <span class="pre">IOReader</span><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N18PyCallbackIOReader18PyCallbackIOReaderEP8PyObject6size_t">
-<span id="_CPPv3N18PyCallbackIOReader18PyCallbackIOReaderEP8PyObject6size_t"></span><span id="_CPPv2N18PyCallbackIOReader18PyCallbackIOReaderEP8PyObject6size_t"></span><span id="PyCallbackIOReader::PyCallbackIOReader__PyObjectP.s"></span><span class="target" id="structPyCallbackIOReader_1a718f82e79ff6e2ffbd0cfd4635587da8"></span><code class="sig-name descname">PyCallbackIOReader</code><span class="sig-paren">(</span>PyObject *<em>callback</em>, size_t <em>bs</em> = 1024 * 1024<span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N18PyCallbackIOReader18PyCallbackIOReaderEP8PyObject6size_t"></span><span id="_CPPv2N18PyCallbackIOReader18PyCallbackIOReaderEP8PyObject6size_t"></span><span id="PyCallbackIOReader::PyCallbackIOReader__PyObjectP.s"></span><span class="target" id="structPyCallbackIOReader_1a718f82e79ff6e2ffbd0cfd4635587da8"></span><em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">PyCallbackIOReader</span></code><span class="sig-paren">(</span><span class="pre">PyObject</span> <span class="pre">*</span><em><span class="pre">callback</span></em>, <span class="pre">size_t</span> <em><span class="pre">bs</span></em> <span class="pre">=</span> <span class="pre">1024</span> <span class="pre">*</span> <span class="pre">1024</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Callback: Python function that takes a size and returns a bytes object with the resulting read </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N18PyCallbackIOReaderclEPv6size_t6size_t">
-<span id="_CPPv3N18PyCallbackIOReaderclEPv6size_t6size_t"></span><span id="_CPPv2N18PyCallbackIOReaderclEPv6size_t6size_t"></span><span id="PyCallbackIOReader::call-operator__voidP.s.s"></span><span class="target" id="structPyCallbackIOReader_1a4224ba74d895e3026d40ecf4a13d2c3d"></span>size_t <code class="sig-name descname">operator()</code><span class="sig-paren">(</span>void *<em>ptrv</em>, size_t <em>size</em>, size_t <em>nitems</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<span id="_CPPv3N18PyCallbackIOReaderclEPv6size_t6size_t"></span><span id="_CPPv2N18PyCallbackIOReaderclEPv6size_t6size_t"></span><span id="PyCallbackIOReader::call-operator__voidP.s.s"></span><span class="target" id="structPyCallbackIOReader_1a4224ba74d895e3026d40ecf4a13d2c3d"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">operator()</span></code><span class="sig-paren">(</span><span class="pre">void</span> <span class="pre">*</span><em><span class="pre">ptrv</span></em>, <span class="pre">size_t</span> <em><span class="pre">size</span></em>, <span class="pre">size_t</span> <em><span class="pre">nitems</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N18PyCallbackIOReaderD0Ev">
-<span id="_CPPv3N18PyCallbackIOReaderD0Ev"></span><span id="_CPPv2N18PyCallbackIOReaderD0Ev"></span><span id="PyCallbackIOReader::~PyCallbackIOReader"></span><span class="target" id="structPyCallbackIOReader_1a71af3f17d57c83c3b85ec45dcfc34d01"></span><code class="sig-name descname">~PyCallbackIOReader</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<span id="_CPPv3N18PyCallbackIOReaderD0Ev"></span><span id="_CPPv2N18PyCallbackIOReaderD0Ev"></span><span id="PyCallbackIOReader::~PyCallbackIOReader"></span><span class="target" id="structPyCallbackIOReader_1a71af3f17d57c83c3b85ec45dcfc34d01"></span><code class="sig-name descname"><span class="pre">~PyCallbackIOReader</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -345,12 +344,12 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N18PyCallbackIOReader8callbackE">
-<span id="_CPPv3N18PyCallbackIOReader8callbackE"></span><span id="_CPPv2N18PyCallbackIOReader8callbackE"></span><span id="PyCallbackIOReader::callback__PyObjectP"></span><span class="target" id="structPyCallbackIOReader_1a35ac91eee581c708fc03af11b6f0f6f6"></span>PyObject *<code class="sig-name descname">callback</code><br /></dt>
+<span id="_CPPv3N18PyCallbackIOReader8callbackE"></span><span id="_CPPv2N18PyCallbackIOReader8callbackE"></span><span id="PyCallbackIOReader::callback__PyObjectP"></span><span class="target" id="structPyCallbackIOReader_1a35ac91eee581c708fc03af11b6f0f6f6"></span><span class="pre">PyObject</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">callback</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N18PyCallbackIOReader2bsE">
-<span id="_CPPv3N18PyCallbackIOReader2bsE"></span><span id="_CPPv2N18PyCallbackIOReader2bsE"></span><span id="PyCallbackIOReader::bs__s"></span><span class="target" id="structPyCallbackIOReader_1ad632a8a6945adf7f30e1ca6ad6bbce11"></span>size_t <code class="sig-name descname">bs</code><br /></dt>
+<span id="_CPPv3N18PyCallbackIOReader2bsE"></span><span id="_CPPv2N18PyCallbackIOReader2bsE"></span><span id="PyCallbackIOReader::bs__s"></span><span class="target" id="structPyCallbackIOReader_1ad632a8a6945adf7f30e1ca6ad6bbce11"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">bs</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>

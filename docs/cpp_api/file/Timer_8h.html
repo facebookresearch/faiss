@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -285,7 +284,7 @@
 <h1>File Timer.h<a class="headerlink" href="#file-timer-h" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp type">
 <dt id="_CPPv45faiss">
-<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property">namespace </em><code class="sig-name descname">faiss</code><br /></dt>
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">faiss</span></code><br /></dt>
 <dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
@@ -304,22 +303,22 @@
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss3gpuE">
-<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><em class="property">namespace </em><code class="sig-name descname">gpu</code><br /></dt>
+<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">gpu</span></code><br /></dt>
 <dd><dl class="cpp class">
 <dt id="_CPPv4N5faiss3gpu8CpuTimerE">
-<span id="_CPPv3N5faiss3gpu8CpuTimerE"></span><span id="_CPPv2N5faiss3gpu8CpuTimerE"></span><span id="faiss::gpu::CpuTimer"></span><span class="target" id="classfaiss_1_1gpu_1_1CpuTimer"></span><em class="property">class </em><code class="sig-name descname">CpuTimer</code><br /></dt>
+<span id="_CPPv3N5faiss3gpu8CpuTimerE"></span><span id="_CPPv2N5faiss3gpu8CpuTimerE"></span><span id="faiss::gpu::CpuTimer"></span><span class="target" id="classfaiss_1_1gpu_1_1CpuTimer"></span><em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">CpuTimer</span></code><br /></dt>
 <dd><em>#include &lt;Timer.h&gt;</em><p>CPU wallclock elapsed timer. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss3gpu8CpuTimer8CpuTimerEv">
-<span id="_CPPv3N5faiss3gpu8CpuTimer8CpuTimerEv"></span><span id="_CPPv2N5faiss3gpu8CpuTimer8CpuTimerEv"></span><span id="faiss::gpu::CpuTimer::CpuTimer"></span><span class="target" id="classfaiss_1_1gpu_1_1CpuTimer_1af2f8e832b4c5425e152834ae7aa2af49"></span><code class="sig-name descname">CpuTimer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss3gpu8CpuTimer8CpuTimerEv"></span><span id="_CPPv2N5faiss3gpu8CpuTimer8CpuTimerEv"></span><span id="faiss::gpu::CpuTimer::CpuTimer"></span><span class="target" id="classfaiss_1_1gpu_1_1CpuTimer_1af2f8e832b4c5425e152834ae7aa2af49"></span><code class="sig-name descname"><span class="pre">CpuTimer</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Creates and starts a new timer. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss3gpu8CpuTimer19elapsedMillisecondsEv">
-<span id="_CPPv3N5faiss3gpu8CpuTimer19elapsedMillisecondsEv"></span><span id="_CPPv2N5faiss3gpu8CpuTimer19elapsedMillisecondsEv"></span><span id="faiss::gpu::CpuTimer::elapsedMilliseconds"></span><span class="target" id="classfaiss_1_1gpu_1_1CpuTimer_1a4a2795debf10bc7eb904d62356e41f0d"></span>float <code class="sig-name descname">elapsedMilliseconds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss3gpu8CpuTimer19elapsedMillisecondsEv"></span><span id="_CPPv2N5faiss3gpu8CpuTimer19elapsedMillisecondsEv"></span><span id="faiss::gpu::CpuTimer::elapsedMilliseconds"></span><span class="target" id="classfaiss_1_1gpu_1_1CpuTimer_1a4a2795debf10bc7eb904d62356e41f0d"></span><span class="pre">float</span> <code class="sig-name descname"><span class="pre">elapsedMilliseconds</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Returns elapsed time in milliseconds. </p>
 </dd></dl>
 
@@ -328,7 +327,7 @@
 <p class="breathe-sectiondef-title rubric">Private Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu8CpuTimer6start_E">
-<span id="_CPPv3N5faiss3gpu8CpuTimer6start_E"></span><span id="_CPPv2N5faiss3gpu8CpuTimer6start_E"></span><span id="faiss::gpu::CpuTimer::start___std::chrono::time_point:std::chrono::steady_clock:"></span><span class="target" id="classfaiss_1_1gpu_1_1CpuTimer_1a6714256dcd528ad4c33d7c9eb6969ac4"></span>std::chrono::time_point&lt;std::chrono::steady_clock&gt; <code class="sig-name descname">start_</code><br /></dt>
+<span id="_CPPv3N5faiss3gpu8CpuTimer6start_E"></span><span id="_CPPv2N5faiss3gpu8CpuTimer6start_E"></span><span id="faiss::gpu::CpuTimer::start___std::chrono::time_point:std::chrono::steady_clock:"></span><span class="target" id="classfaiss_1_1gpu_1_1CpuTimer_1a6714256dcd528ad4c33d7c9eb6969ac4"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">chrono</span><span class="pre">::</span><span class="pre">time_point</span><span class="pre">&lt;</span><span class="pre">std</span><span class="pre">::</span><span class="pre">chrono</span><span class="pre">::</span><span class="pre">steady_clock</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">start_</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -336,25 +335,25 @@
 
 <dl class="cpp class">
 <dt id="_CPPv4N5faiss3gpu11KernelTimerE">
-<span id="_CPPv3N5faiss3gpu11KernelTimerE"></span><span id="_CPPv2N5faiss3gpu11KernelTimerE"></span><span id="faiss::gpu::KernelTimer"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer"></span><em class="property">class </em><code class="sig-name descname">KernelTimer</code><br /></dt>
+<span id="_CPPv3N5faiss3gpu11KernelTimerE"></span><span id="_CPPv2N5faiss3gpu11KernelTimerE"></span><span id="faiss::gpu::KernelTimer"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer"></span><em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">KernelTimer</span></code><br /></dt>
 <dd><em>#include &lt;Timer.h&gt;</em><p>Utility class for timing execution of a kernel. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss3gpu11KernelTimer11KernelTimerE12cudaStream_t">
-<span id="_CPPv3N5faiss3gpu11KernelTimer11KernelTimerE12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu11KernelTimer11KernelTimerE12cudaStream_t"></span><span id="faiss::gpu::KernelTimer::KernelTimer__cudaStream_t"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1af533a5a8734243263032960c2445d233"></span><code class="sig-name descname">KernelTimer</code><span class="sig-paren">(</span>cudaStream_t <em>stream</em> = 0<span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss3gpu11KernelTimer11KernelTimerE12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu11KernelTimer11KernelTimerE12cudaStream_t"></span><span id="faiss::gpu::KernelTimer::KernelTimer__cudaStream_t"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1af533a5a8734243263032960c2445d233"></span><code class="sig-name descname"><span class="pre">KernelTimer</span></code><span class="sig-paren">(</span><span class="pre">cudaStream_t</span> <em><span class="pre">stream</span></em> <span class="pre">=</span> <span class="pre">0</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Constructor starts the timer and adds an event into the current device stream </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss3gpu11KernelTimerD0Ev">
-<span id="_CPPv3N5faiss3gpu11KernelTimerD0Ev"></span><span id="_CPPv2N5faiss3gpu11KernelTimerD0Ev"></span><span id="faiss::gpu::KernelTimer::~KernelTimer"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1af9883350bf0732b2452f1ce4670266fa"></span><code class="sig-name descname">~KernelTimer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss3gpu11KernelTimerD0Ev"></span><span id="_CPPv2N5faiss3gpu11KernelTimerD0Ev"></span><span id="faiss::gpu::KernelTimer::~KernelTimer"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1af9883350bf0732b2452f1ce4670266fa"></span><code class="sig-name descname"><span class="pre">~KernelTimer</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Destructor releases event resources. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss3gpu11KernelTimer19elapsedMillisecondsEv">
-<span id="_CPPv3N5faiss3gpu11KernelTimer19elapsedMillisecondsEv"></span><span id="_CPPv2N5faiss3gpu11KernelTimer19elapsedMillisecondsEv"></span><span id="faiss::gpu::KernelTimer::elapsedMilliseconds"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5"></span>float <code class="sig-name descname">elapsedMilliseconds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss3gpu11KernelTimer19elapsedMillisecondsEv"></span><span id="_CPPv2N5faiss3gpu11KernelTimer19elapsedMillisecondsEv"></span><span id="faiss::gpu::KernelTimer::elapsedMilliseconds"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5"></span><span class="pre">float</span> <code class="sig-name descname"><span class="pre">elapsedMilliseconds</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Adds a stop event then synchronizes on the stop event to get the actual GPU-side kernel timings for any kernels launched in the current stream. Returns the number of milliseconds elapsed. Can only be called once. </p>
 </dd></dl>
 
@@ -363,22 +362,22 @@
 <p class="breathe-sectiondef-title rubric">Private Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu11KernelTimer11startEvent_E">
-<span id="_CPPv3N5faiss3gpu11KernelTimer11startEvent_E"></span><span id="_CPPv2N5faiss3gpu11KernelTimer11startEvent_E"></span><span id="faiss::gpu::KernelTimer::startEvent___cudaEvent_t"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1ae02d1204dcac4dc5cff5be785312a7b4"></span>cudaEvent_t <code class="sig-name descname">startEvent_</code><br /></dt>
+<span id="_CPPv3N5faiss3gpu11KernelTimer11startEvent_E"></span><span id="_CPPv2N5faiss3gpu11KernelTimer11startEvent_E"></span><span id="faiss::gpu::KernelTimer::startEvent___cudaEvent_t"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1ae02d1204dcac4dc5cff5be785312a7b4"></span><span class="pre">cudaEvent_t</span> <code class="sig-name descname"><span class="pre">startEvent_</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu11KernelTimer10stopEvent_E">
-<span id="_CPPv3N5faiss3gpu11KernelTimer10stopEvent_E"></span><span id="_CPPv2N5faiss3gpu11KernelTimer10stopEvent_E"></span><span id="faiss::gpu::KernelTimer::stopEvent___cudaEvent_t"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1a53028f1e94f1f092208a6df69893b73f"></span>cudaEvent_t <code class="sig-name descname">stopEvent_</code><br /></dt>
+<span id="_CPPv3N5faiss3gpu11KernelTimer10stopEvent_E"></span><span id="_CPPv2N5faiss3gpu11KernelTimer10stopEvent_E"></span><span id="faiss::gpu::KernelTimer::stopEvent___cudaEvent_t"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1a53028f1e94f1f092208a6df69893b73f"></span><span class="pre">cudaEvent_t</span> <code class="sig-name descname"><span class="pre">stopEvent_</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu11KernelTimer7stream_E">
-<span id="_CPPv3N5faiss3gpu11KernelTimer7stream_E"></span><span id="_CPPv2N5faiss3gpu11KernelTimer7stream_E"></span><span id="faiss::gpu::KernelTimer::stream___cudaStream_t"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1aac90fea6973d68d2b12149d5fb928da8"></span>cudaStream_t <code class="sig-name descname">stream_</code><br /></dt>
+<span id="_CPPv3N5faiss3gpu11KernelTimer7stream_E"></span><span id="_CPPv2N5faiss3gpu11KernelTimer7stream_E"></span><span id="faiss::gpu::KernelTimer::stream___cudaStream_t"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1aac90fea6973d68d2b12149d5fb928da8"></span><span class="pre">cudaStream_t</span> <code class="sig-name descname"><span class="pre">stream_</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu11KernelTimer6valid_E">
-<span id="_CPPv3N5faiss3gpu11KernelTimer6valid_E"></span><span id="_CPPv2N5faiss3gpu11KernelTimer6valid_E"></span><span id="faiss::gpu::KernelTimer::valid___b"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1a7582d3003da51096c5740c8773d9c3ec"></span>bool <code class="sig-name descname">valid_</code><br /></dt>
+<span id="_CPPv3N5faiss3gpu11KernelTimer6valid_E"></span><span id="_CPPv2N5faiss3gpu11KernelTimer6valid_E"></span><span id="faiss::gpu::KernelTimer::valid___b"></span><span class="target" id="classfaiss_1_1gpu_1_1KernelTimer_1a7582d3003da51096c5740c8773d9c3ec"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">valid_</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>

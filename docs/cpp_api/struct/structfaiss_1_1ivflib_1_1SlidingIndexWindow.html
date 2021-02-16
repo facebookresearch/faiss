@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -321,19 +320,19 @@
 <h1>Struct faiss::ivflib::SlidingIndexWindow<a class="headerlink" href="#struct-faiss-ivflib-slidingindexwindow" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss6ivflib18SlidingIndexWindowE">
-<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindowE"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindowE"></span><span id="faiss::ivflib::SlidingIndexWindow"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow"></span><em class="property">struct </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a>::<a class="reference internal" href="../file/IVFlib_8h.html#_CPPv4N5faiss6ivflibE" title="faiss::ivflib">ivflib</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">SlidingIndexWindow</code><br /></dt>
+<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindowE"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindowE"></span><span id="faiss::ivflib::SlidingIndexWindow"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/IVFlib_8h.html#_CPPv4N5faiss6ivflibE" title="faiss::ivflib"><span class="pre">ivflib</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">SlidingIndexWindow</span></code><br /></dt>
 <dd><p>A set of IndexIVFs concatenated together in a FIFO fashion. at each “step”, the oldest index slice is removed and a new index is added. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss6ivflib18SlidingIndexWindow18SlidingIndexWindowEP5Index">
-<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow18SlidingIndexWindowEP5Index"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow18SlidingIndexWindowEP5Index"></span><span id="faiss::ivflib::SlidingIndexWindow::SlidingIndexWindow__IndexP"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6347809123313ca945defdc7ddcd1465"></span><code class="sig-name descname">SlidingIndexWindow</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> *<em>index</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow18SlidingIndexWindowEP5Index"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow18SlidingIndexWindowEP5Index"></span><span id="faiss::ivflib::SlidingIndexWindow::SlidingIndexWindow__IndexP"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6347809123313ca945defdc7ddcd1465"></span><code class="sig-name descname"><span class="pre">SlidingIndexWindow</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a> <span class="pre">*</span><em><span class="pre">index</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>index should be initially empty and trained </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss6ivflib18SlidingIndexWindow4stepEPK5Indexb">
-<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow4stepEPK5Indexb"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow4stepEPK5Indexb"></span><span id="faiss::ivflib::SlidingIndexWindow::step__IndexCP.b"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1accf1c7b8de188b74de0d6827beceac7c"></span>void <code class="sig-name descname">step</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> *<em>sub_index</em>, bool <em>remove_oldest</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow4stepEPK5Indexb"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow4stepEPK5Indexb"></span><span id="faiss::ivflib::SlidingIndexWindow::step__IndexCP.b"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1accf1c7b8de188b74de0d6827beceac7c"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">step</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a> <span class="pre">*</span><em><span class="pre">sub_index</span></em>, <span class="pre">bool</span> <em><span class="pre">remove_oldest</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>Add one index to the current index and remove the oldest one.</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -350,31 +349,31 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss6ivflib18SlidingIndexWindow5indexE">
-<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow5indexE"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow5indexE"></span><span id="faiss::ivflib::SlidingIndexWindow::index__IndexP"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1"></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a> *<code class="sig-name descname">index</code><br /></dt>
+<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow5indexE"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow5indexE"></span><span id="faiss::ivflib::SlidingIndexWindow::index__IndexP"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1"></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">index</span></code><br /></dt>
 <dd><p>common index that contains the sliding window </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss6ivflib18SlidingIndexWindow3ilsE">
-<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow3ilsE"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow3ilsE"></span><span id="faiss::ivflib::SlidingIndexWindow::ils__ArrayInvertedListsP"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a10d876a9c750bc95986a22a57cf4fdc7"></span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss18ArrayInvertedListsE" title="faiss::ArrayInvertedLists">ArrayInvertedLists</a> *<code class="sig-name descname">ils</code><br /></dt>
+<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow3ilsE"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow3ilsE"></span><span id="faiss::ivflib::SlidingIndexWindow::ils__ArrayInvertedListsP"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a10d876a9c750bc95986a22a57cf4fdc7"></span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss18ArrayInvertedListsE" title="faiss::ArrayInvertedLists"><span class="pre">ArrayInvertedLists</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">ils</span></code><br /></dt>
 <dd><p><a class="reference internal" href="structfaiss_1_1InvertedLists.html#structfaiss_1_1InvertedLists"><span class="std std-ref">InvertedLists</span></a> of index. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss6ivflib18SlidingIndexWindow7n_sliceE">
-<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow7n_sliceE"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow7n_sliceE"></span><span id="faiss::ivflib::SlidingIndexWindow::n_slice__i"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a8defa5121e371e64071c0eb956ad20d1"></span>int <code class="sig-name descname">n_slice</code><br /></dt>
+<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow7n_sliceE"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow7n_sliceE"></span><span id="faiss::ivflib::SlidingIndexWindow::n_slice__i"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a8defa5121e371e64071c0eb956ad20d1"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">n_slice</span></code><br /></dt>
 <dd><p>number of slices currently in index </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss6ivflib18SlidingIndexWindow5nlistE">
-<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow5nlistE"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow5nlistE"></span><span id="faiss::ivflib::SlidingIndexWindow::nlist__s"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1ac124372fd2b67bb901f0c71235165216"></span>size_t <code class="sig-name descname">nlist</code><br /></dt>
+<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow5nlistE"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow5nlistE"></span><span id="faiss::ivflib::SlidingIndexWindow::nlist__s"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1ac124372fd2b67bb901f0c71235165216"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">nlist</span></code><br /></dt>
 <dd><p>same as index-&gt;nlist </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss6ivflib18SlidingIndexWindow5sizesE">
-<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow5sizesE"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow5sizesE"></span><span id="faiss::ivflib::SlidingIndexWindow::sizes__std::vector:std::vector:s::"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6dfc430601d194c428c2a25e3afa4492"></span>std::vector&lt;std::vector&lt;size_t&gt;&gt; <code class="sig-name descname">sizes</code><br /></dt>
+<span id="_CPPv3N5faiss6ivflib18SlidingIndexWindow5sizesE"></span><span id="_CPPv2N5faiss6ivflib18SlidingIndexWindow5sizesE"></span><span id="faiss::ivflib::SlidingIndexWindow::sizes__std::vector:std::vector:s::"></span><span class="target" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6dfc430601d194c428c2a25e3afa4492"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">vector</span><span class="pre">&lt;</span><span class="pre">std</span><span class="pre">::</span><span class="pre">vector</span><span class="pre">&lt;</span><span class="pre">size_t</span><span class="pre">&gt;</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">sizes</span></code><br /></dt>
 <dd><p>cumulative list sizes at each slice </p>
 </dd></dl>
 

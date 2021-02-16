@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -321,14 +320,14 @@
 <h1>Struct faiss::VectorTransform<a class="headerlink" href="#struct-faiss-vectortransform" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
 <dt id="_CPPv4N5faiss15VectorTransformE">
-<span id="_CPPv3N5faiss15VectorTransformE"></span><span id="_CPPv2N5faiss15VectorTransformE"></span><span id="faiss::VectorTransform"></span><span class="target" id="structfaiss_1_1VectorTransform"></span><em class="property">struct </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss">faiss</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">VectorTransform</code><br /></dt>
+<span id="_CPPv3N5faiss15VectorTransformE"></span><span id="_CPPv2N5faiss15VectorTransformE"></span><span id="faiss::VectorTransform"></span><span class="target" id="structfaiss_1_1VectorTransform"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">VectorTransform</span></code><br /></dt>
 <dd><p>Any transformation applied on a set of vectors </p>
 <p>Subclassed by <a class="reference internal" href="structfaiss_1_1CenteringTransform.html#structfaiss_1_1CenteringTransform"><span class="std std-ref">faiss::CenteringTransform</span></a>, <a class="reference internal" href="structfaiss_1_1ITQTransform.html#structfaiss_1_1ITQTransform"><span class="std std-ref">faiss::ITQTransform</span></a>, <a class="reference internal" href="structfaiss_1_1LinearTransform.html#structfaiss_1_1LinearTransform"><span class="std std-ref">faiss::LinearTransform</span></a>, <a class="reference internal" href="structfaiss_1_1NormalizationTransform.html#structfaiss_1_1NormalizationTransform"><span class="std std-ref">faiss::NormalizationTransform</span></a>, <a class="reference internal" href="structfaiss_1_1RemapDimensionsTransform.html#structfaiss_1_1RemapDimensionsTransform"><span class="std std-ref">faiss::RemapDimensionsTransform</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss15VectorTransform5idx_tE">
-<span id="_CPPv3N5faiss15VectorTransform5idx_tE"></span><span id="_CPPv2N5faiss15VectorTransform5idx_tE"></span><span id="faiss::VectorTransform::idx_t"></span><span class="target" id="structfaiss_1_1VectorTransform_1a410516b4efdae041546d87f6bef2e422"></span><em class="property">typedef </em><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index">Index</a>::<a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t">idx_t</a> <code class="sig-name descname">idx_t</code><br /></dt>
+<span id="_CPPv3N5faiss15VectorTransform5idx_tE"></span><span id="_CPPv2N5faiss15VectorTransform5idx_tE"></span><span id="faiss::VectorTransform::idx_t"></span><span class="target" id="structfaiss_1_1VectorTransform_1a410516b4efdae041546d87f6bef2e422"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a><span class="pre">::</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t"><span class="pre">idx_t</span></a> <code class="sig-name descname"><span class="pre">idx_t</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -336,13 +335,13 @@
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15VectorTransform15VectorTransformEii">
-<span id="_CPPv3N5faiss15VectorTransform15VectorTransformEii"></span><span id="_CPPv2N5faiss15VectorTransform15VectorTransformEii"></span><span id="faiss::VectorTransform::VectorTransform__i.i"></span><span class="target" id="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858"></span><code class="sig-name descname">VectorTransform</code><span class="sig-paren">(</span>int <em>d_in</em> = 0, int <em>d_out</em> = 0<span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss15VectorTransform15VectorTransformEii"></span><span id="_CPPv2N5faiss15VectorTransform15VectorTransformEii"></span><span id="faiss::VectorTransform::VectorTransform__i.i"></span><span class="target" id="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">VectorTransform</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">d_in</span></em> <span class="pre">=</span> <span class="pre">0</span>, <span class="pre">int</span> <em><span class="pre">d_out</span></em> <span class="pre">=</span> <span class="pre">0</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>! output dimension </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15VectorTransform5trainE5idx_tPKf">
-<span id="_CPPv3N5faiss15VectorTransform5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss15VectorTransform5trainE5idx_tPKf"></span><span id="faiss::VectorTransform::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5"></span>void <code class="sig-name descname">train</code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15VectorTransform5idx_tE" title="faiss::VectorTransform::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss15VectorTransform5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss15VectorTransform5trainE5idx_tPKf"></span><span id="faiss::VectorTransform::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15VectorTransform5idx_tE" title="faiss::VectorTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>Perform training on a representative set of vectors. Does nothing by default.</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -356,7 +355,7 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss15VectorTransform5applyE5idx_tPKf">
-<span id="_CPPv3NK5faiss15VectorTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss15VectorTransform5applyE5idx_tPKf"></span><span id="faiss::VectorTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span>float *<code class="sig-name descname">apply</code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15VectorTransform5idx_tE" title="faiss::VectorTransform::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss15VectorTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss15VectorTransform5applyE5idx_tPKf"></span><span id="faiss::VectorTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15VectorTransform5idx_tE" title="faiss::VectorTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>apply the random roation, return new allocated matrix <dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
 </dd>
@@ -370,19 +369,19 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss15VectorTransform13apply_noallocE5idx_tPKfPf">
-<span id="_CPPv3NK5faiss15VectorTransform13apply_noallocE5idx_tPKfPf"></span><span id="_CPPv2NK5faiss15VectorTransform13apply_noallocE5idx_tPKfPf"></span><span id="faiss::VectorTransform::apply_noalloc__idx_t.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0"></span>void <code class="sig-name descname">apply_noalloc</code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15VectorTransform5idx_tE" title="faiss::VectorTransform::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>x</em>, float *<em>xt</em><span class="sig-paren">)</span> <em class="property">const</em> = 0<br /></dt>
+<span id="_CPPv3NK5faiss15VectorTransform13apply_noallocE5idx_tPKfPf"></span><span id="_CPPv2NK5faiss15VectorTransform13apply_noallocE5idx_tPKfPf"></span><span id="faiss::VectorTransform::apply_noalloc__idx_t.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">apply_noalloc</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15VectorTransform5idx_tE" title="faiss::VectorTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">xt</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <span class="pre">=</span> <span class="pre">0</span><br /></dt>
 <dd><p>same as apply, but result is pre-allocated </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss15VectorTransform17reverse_transformE5idx_tPKfPf">
-<span id="_CPPv3NK5faiss15VectorTransform17reverse_transformE5idx_tPKfPf"></span><span id="_CPPv2NK5faiss15VectorTransform17reverse_transformE5idx_tPKfPf"></span><span id="faiss::VectorTransform::reverse_transform__idx_t.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb"></span>void <code class="sig-name descname">reverse_transform</code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15VectorTransform5idx_tE" title="faiss::VectorTransform::idx_t">idx_t</a> <em>n</em>, <em class="property">const</em> float *<em>xt</em>, float *<em>x</em><span class="sig-paren">)</span> <em class="property">const</em><br /></dt>
+<span id="_CPPv3NK5faiss15VectorTransform17reverse_transformE5idx_tPKfPf"></span><span id="_CPPv2NK5faiss15VectorTransform17reverse_transformE5idx_tPKfPf"></span><span id="faiss::VectorTransform::reverse_transform__idx_t.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reverse_transform</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15VectorTransform5idx_tE" title="faiss::VectorTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">xt</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>reverse transformation. May not be implemented or may return approximate result </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15VectorTransformD0Ev">
-<span id="_CPPv3N5faiss15VectorTransformD0Ev"></span><span id="_CPPv2N5faiss15VectorTransformD0Ev"></span><span id="faiss::VectorTransform::~VectorTransform"></span><span class="target" id="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8"></span><code class="sig-name descname">~VectorTransform</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss15VectorTransformD0Ev"></span><span id="_CPPv2N5faiss15VectorTransformD0Ev"></span><span id="faiss::VectorTransform::~VectorTransform"></span><span class="target" id="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">virtual</span></em> <code class="sig-name descname"><span class="pre">~VectorTransform</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -390,18 +389,18 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss15VectorTransform4d_inE">
-<span id="_CPPv3N5faiss15VectorTransform4d_inE"></span><span id="_CPPv2N5faiss15VectorTransform4d_inE"></span><span id="faiss::VectorTransform::d_in__i"></span><span class="target" id="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6"></span>int <code class="sig-name descname">d_in</code><br /></dt>
+<span id="_CPPv3N5faiss15VectorTransform4d_inE"></span><span id="_CPPv2N5faiss15VectorTransform4d_inE"></span><span id="faiss::VectorTransform::d_in__i"></span><span class="target" id="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">d_in</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss15VectorTransform5d_outE">
-<span id="_CPPv3N5faiss15VectorTransform5d_outE"></span><span id="_CPPv2N5faiss15VectorTransform5d_outE"></span><span id="faiss::VectorTransform::d_out__i"></span><span class="target" id="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9"></span>int <code class="sig-name descname">d_out</code><br /></dt>
+<span id="_CPPv3N5faiss15VectorTransform5d_outE"></span><span id="_CPPv2N5faiss15VectorTransform5d_outE"></span><span id="faiss::VectorTransform::d_out__i"></span><span class="target" id="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">d_out</span></code><br /></dt>
 <dd><p>! input dimension </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss15VectorTransform10is_trainedE">
-<span id="_CPPv3N5faiss15VectorTransform10is_trainedE"></span><span id="_CPPv2N5faiss15VectorTransform10is_trainedE"></span><span id="faiss::VectorTransform::is_trained__b"></span><span class="target" id="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02"></span>bool <code class="sig-name descname">is_trained</code><br /></dt>
+<span id="_CPPv3N5faiss15VectorTransform10is_trainedE"></span><span id="_CPPv2N5faiss15VectorTransform10is_trainedE"></span><span id="faiss::VectorTransform::is_trained__b"></span><span class="target" id="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">is_trained</span></code><br /></dt>
 <dd><p>set if the <a class="reference internal" href="#structfaiss_1_1VectorTransform"><span class="std std-ref">VectorTransform</span></a> does not require training, or if training is done already </p>
 </dd></dl>
 

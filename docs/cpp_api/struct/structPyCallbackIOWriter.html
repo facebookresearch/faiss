@@ -34,7 +34,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -321,25 +320,25 @@
 <h1>Struct PyCallbackIOWriter<a class="headerlink" href="#struct-pycallbackiowriter" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
 <dt id="_CPPv418PyCallbackIOWriter">
-<span id="_CPPv318PyCallbackIOWriter"></span><span id="_CPPv218PyCallbackIOWriter"></span><span id="PyCallbackIOWriter"></span><span class="target" id="structPyCallbackIOWriter"></span><em class="property">struct </em><code class="sig-name descname">PyCallbackIOWriter</code> : <em class="property">public</em> IOWriter<br /></dt>
+<span id="_CPPv318PyCallbackIOWriter"></span><span id="_CPPv218PyCallbackIOWriter"></span><span id="PyCallbackIOWriter"></span><span class="target" id="structPyCallbackIOWriter"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">PyCallbackIOWriter</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <span class="pre">IOWriter</span><br /></dt>
 <dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N18PyCallbackIOWriter18PyCallbackIOWriterEP8PyObject6size_t">
-<span id="_CPPv3N18PyCallbackIOWriter18PyCallbackIOWriterEP8PyObject6size_t"></span><span id="_CPPv2N18PyCallbackIOWriter18PyCallbackIOWriterEP8PyObject6size_t"></span><span id="PyCallbackIOWriter::PyCallbackIOWriter__PyObjectP.s"></span><span class="target" id="structPyCallbackIOWriter_1ae185179b04cb71f49ee05d46505b124f"></span><code class="sig-name descname">PyCallbackIOWriter</code><span class="sig-paren">(</span>PyObject *<em>callback</em>, size_t <em>bs</em> = 1024 * 1024<span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N18PyCallbackIOWriter18PyCallbackIOWriterEP8PyObject6size_t"></span><span id="_CPPv2N18PyCallbackIOWriter18PyCallbackIOWriterEP8PyObject6size_t"></span><span id="PyCallbackIOWriter::PyCallbackIOWriter__PyObjectP.s"></span><span class="target" id="structPyCallbackIOWriter_1ae185179b04cb71f49ee05d46505b124f"></span><em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">PyCallbackIOWriter</span></code><span class="sig-paren">(</span><span class="pre">PyObject</span> <span class="pre">*</span><em><span class="pre">callback</span></em>, <span class="pre">size_t</span> <em><span class="pre">bs</span></em> <span class="pre">=</span> <span class="pre">1024</span> <span class="pre">*</span> <span class="pre">1024</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Callback: Python function that takes a bytes object and returns the number of bytes successfully written. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N18PyCallbackIOWriterclEPKv6size_t6size_t">
-<span id="_CPPv3N18PyCallbackIOWriterclEPKv6size_t6size_t"></span><span id="_CPPv2N18PyCallbackIOWriterclEPKv6size_t6size_t"></span><span id="PyCallbackIOWriter::call-operator__voidCP.s.s"></span><span class="target" id="structPyCallbackIOWriter_1afedd487fd01d398bd80042de7f700644"></span>size_t <code class="sig-name descname">operator()</code><span class="sig-paren">(</span><em class="property">const</em> void *<em>ptrv</em>, size_t <em>size</em>, size_t <em>nitems</em><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<span id="_CPPv3N18PyCallbackIOWriterclEPKv6size_t6size_t"></span><span id="_CPPv2N18PyCallbackIOWriterclEPKv6size_t6size_t"></span><span id="PyCallbackIOWriter::call-operator__voidCP.s.s"></span><span class="target" id="structPyCallbackIOWriter_1afedd487fd01d398bd80042de7f700644"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">operator()</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">ptrv</span></em>, <span class="pre">size_t</span> <em><span class="pre">size</span></em>, <span class="pre">size_t</span> <em><span class="pre">nitems</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N18PyCallbackIOWriterD0Ev">
-<span id="_CPPv3N18PyCallbackIOWriterD0Ev"></span><span id="_CPPv2N18PyCallbackIOWriterD0Ev"></span><span id="PyCallbackIOWriter::~PyCallbackIOWriter"></span><span class="target" id="structPyCallbackIOWriter_1a5b06cab97f45af7d67371f8359928259"></span><code class="sig-name descname">~PyCallbackIOWriter</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><br /></dt>
+<span id="_CPPv3N18PyCallbackIOWriterD0Ev"></span><span id="_CPPv2N18PyCallbackIOWriterD0Ev"></span><span id="PyCallbackIOWriter::~PyCallbackIOWriter"></span><span class="target" id="structPyCallbackIOWriter_1a5b06cab97f45af7d67371f8359928259"></span><code class="sig-name descname"><span class="pre">~PyCallbackIOWriter</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -347,12 +346,12 @@
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N18PyCallbackIOWriter8callbackE">
-<span id="_CPPv3N18PyCallbackIOWriter8callbackE"></span><span id="_CPPv2N18PyCallbackIOWriter8callbackE"></span><span id="PyCallbackIOWriter::callback__PyObjectP"></span><span class="target" id="structPyCallbackIOWriter_1a3808eb412223dd66bd460392d4a4c269"></span>PyObject *<code class="sig-name descname">callback</code><br /></dt>
+<span id="_CPPv3N18PyCallbackIOWriter8callbackE"></span><span id="_CPPv2N18PyCallbackIOWriter8callbackE"></span><span id="PyCallbackIOWriter::callback__PyObjectP"></span><span class="target" id="structPyCallbackIOWriter_1a3808eb412223dd66bd460392d4a4c269"></span><span class="pre">PyObject</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">callback</span></code><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N18PyCallbackIOWriter2bsE">
-<span id="_CPPv3N18PyCallbackIOWriter2bsE"></span><span id="_CPPv2N18PyCallbackIOWriter2bsE"></span><span id="PyCallbackIOWriter::bs__s"></span><span class="target" id="structPyCallbackIOWriter_1a312d146753310ac87aed1627873ce814"></span>size_t <code class="sig-name descname">bs</code><br /></dt>
+<span id="_CPPv3N18PyCallbackIOWriter2bsE"></span><span id="_CPPv2N18PyCallbackIOWriter2bsE"></span><span id="PyCallbackIOWriter::bs__s"></span><span class="target" id="structPyCallbackIOWriter_1a312d146753310ac87aed1627873ce814"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">bs</span></code><br /></dt>
 <dd></dd></dl>
 
 </div>
