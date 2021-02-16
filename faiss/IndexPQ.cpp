@@ -776,11 +776,11 @@ struct SemiSortedArray {
  * occasionally several t's are returned.
  *
  * @param x       size M * n, values to add up
- * @parms k       nb of results to retrieve
+ * @param k       nb of results to retrieve
  * @param M       nb of terms
  * @param n       nb of distinct values
  * @param sums    output, size k, sorted
- * @prarm terms   output, size k, with encoding as above
+ * @param terms   output, size k, with encoding as above
  *
  ******************************************/
 template <typename T, class SSA, bool use_seen>
