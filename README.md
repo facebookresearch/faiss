@@ -2,37 +2,9 @@
 
 Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size, up to ones that possibly do not fit in RAM. It also contains supporting code for evaluation and parameter tuning. Faiss is written in C++ with complete wrappers for Python/numpy. Some of the most useful algorithms are implemented on the GPU. It is developed by [Facebook AI Research](https://research.fb.com/category/facebook-ai-research-fair/).
 
-## NEWS
+## News
 
-*NEW: version 1.7.0 (2021-01-27) Support for in-register 4-bit PQ search*
-
-*NEW: version 1.6.5 (2020-11-20) pytorch / faiss interoperability improvements*
-
-*NEW: version 1.6.4 (2020-10-20) Move to cmake -- Windows support*
-
-*NEW: version 1.6.3 (2020-03-27) IndexBinaryHash, GPU support for alternative distances.*
-
-*NEW: version 1.6.1 (2019-11-29) bugfix.*
-
-*NEW: version 1.6.0 (2019-10-15) code structure reorg, support for codec interface.*
-
-*NEW: version 1.5.3 (2019-06-24) fix performance regression in IndexIVF.*
-
-*NEW: version 1.5.2 (2019-05-27) the license was relaxed to MIT from BSD+Patents. Read LICENSE for details.*
-
-*NEW: version 1.5.0 (2018-12-19) GPU binary flat index and binary HNSW index*
-
-*NEW: version 1.4.0 (2018-08-30) no more crashes in pure Python code*
-
-*NEW: version 1.3.0 (2018-07-12) support for binary indexes*
-
-*NEW: latest commit (2018-02-22) supports on-disk storage of inverted indexes, see demos/demo_ondisk_ivf.py*
-
-*NEW: latest commit (2018-01-09) includes an implementation of the HNSW indexing method, see benchs/bench_hnsw.py*
-
-*NEW: there is now a Facebook public discussion group for Faiss users at https://www.facebook.com/groups/faissusers/*
-
-*NEW: on 2017-07-30, the license on Faiss was relaxed to BSD from CC-BY-NC. Read LICENSE for details.*
+See [CHANGELOG.md](CHANGELOG.md) for detailed information about latest features.
 
 ## Introduction
 
