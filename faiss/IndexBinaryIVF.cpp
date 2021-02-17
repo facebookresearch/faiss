@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <omp.h>
 
+#include <algorithm>
 #include <memory>
 
 
