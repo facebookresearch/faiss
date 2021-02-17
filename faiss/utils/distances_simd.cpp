@@ -16,6 +16,7 @@
 
 #include <faiss/utils/simdlib.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/platform_macros.h>
 
 #ifdef __SSE3__
 #include <immintrin.h>
@@ -165,7 +166,7 @@ void fvec_inner_products_ny_ref (float * ip,
 static inline __m128 masked_read (int d, const float *x)
 {
     assert (0 <= d && d < 4);
-    __attribute__((__aligned__(16))) float buf[4] = {0, 0, 0, 0};
+    ALIGNED(16) float buf[4] = {0, 0, 0, 0};
     switch (d) {
       case 3:
         buf[2] = x[2];
@@ -987,7 +988,7 @@ void compute_PQ_dis_tables_dsub2(
 
             simd8float32 centroids[8];
             for (int k = 0; k < 8; k++) {
-                float centroid[8] __attribute__((aligned(32)));
+                ALIGNED(32) float centroid[8];
                 size_t wp = 0;
                 size_t rp = (m0 * ksub + k + k0) * 2;
                 for (int m = m0; m < m1; m++) {
