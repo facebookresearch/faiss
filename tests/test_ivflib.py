@@ -179,7 +179,7 @@ class TestSmallData(unittest.TestCase):
         ref_lims, ref_D, ref_I = index.range_search(xq, thresh)
         gt_index = faiss.IndexFlat(d)
         gt_index.add(xb)
-        lims, D, I = index.range_search(xq, thresh)
+        lims, D, I = gt_index.range_search(xq, thresh)
         assert np.all(lims == ref_lims)
         assert np.all(D == ref_D)
         assert np.all(I == ref_I)
