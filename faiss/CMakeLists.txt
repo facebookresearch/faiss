@@ -150,7 +150,15 @@ if(NOT WIN32)
 endif()
 
 if(FAISS_OPT_LEVEL STREQUAL "avx2")
-  target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mpopcnt>)
+  if(NOT WIN32)
+    target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mpopcnt>)
+  else()
+    # MSVC enables FMA with /arch:AVX2; no separate flags for F16C, POPCNT
+    # Ref. FMA (under /arch:AVX2): https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64
+    # Ref. F16C (2nd paragraph): https://walbourn.github.io/directxmath-avx2/
+    # Ref. POPCNT: https://docs.microsoft.com/en-us/cpp/intrinsics/popcnt16-popcnt-popcnt64
+    target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2>)
+  endif()
   set_target_properties(faiss PROPERTIES OUTPUT_NAME "faiss_avx2")
 elseif(FAISS_OPT_LEVEL STREQUAL "sse4")
   target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-msse4 -mpopcnt>)
