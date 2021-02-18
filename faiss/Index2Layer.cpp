@@ -14,6 +14,7 @@
 #include <cstdio>
 #include <cassert>
 #include <stdint.h>
+#include <faiss/impl/platform_macros.h>
 
 #ifdef __SSE3__
 #include <immintrin.h>
@@ -285,9 +286,9 @@ struct DistanceXPQ4 : Distance2Level {
 
         for (int m = 0; m < M; m++) {
             __m128 qi = _mm_loadu_ps(qa);
-            __m128 recons = l1_t[m] + pq_l2_t[*code++];
-            __m128 diff = qi - recons;
-            accu += diff * diff;
+            __m128 recons = _mm_add_ps (l1_t[m], pq_l2_t[*code++]);
+            __m128 diff = _mm_sub_ps (qi, recons);
+            accu = _mm_add_ps (accu, _mm_mul_ps (diff, diff));
             pq_l2_t += 256;
             qa += 4;
         }
@@ -338,9 +339,9 @@ struct Distance2xXPQ4 : Distance2Level {
 
             for (int m = 0; m < M_2; m++) {
                 __m128 qi = _mm_loadu_ps(qa);
-                __m128 recons = pq_l1[m] + pq_l2_t[*code++];
-                __m128 diff = qi - recons;
-                accu += diff * diff;
+                __m128 recons = _mm_add_ps (pq_l1[m], pq_l2_t[*code++]);
+                __m128 diff = _mm_sub_ps (qi, recons);
+                accu = _mm_add_ps (accu, _mm_mul_ps (diff, diff));
                 pq_l2_t += 256;
                 qa += 4;
             }
