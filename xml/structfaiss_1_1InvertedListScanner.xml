@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="320" column="5" bodyfile="faiss/IndexIVF.h" bodystart="320" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="328" column="5" bodyfile="faiss/IndexIVF.h" bodystart="328" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -35,7 +35,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="323" column="18"/>
+        <location file="faiss/IndexIVF.h" line="331" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1ae801ea7ba0086a05ace3b779c3acf305" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="326" column="18"/>
+        <location file="faiss/IndexIVF.h" line="334" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1ade9518f1b0ee00c2a43a2eb2ae350ae1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>float</type>
@@ -75,7 +75,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="329" column="19"/>
+        <location file="faiss/IndexIVF.h" line="337" column="19"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a218aeaf7cc45bf0bf27c3a8bfa44e303" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>size_t</type>
@@ -165,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="342" column="20"/>
+        <location file="faiss/IndexIVF.h" line="350" column="20"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -200,7 +200,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="352" column="18"/>
+        <location file="faiss/IndexIVF.h" line="360" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1aa660ce2637299466c486080f44fd9820" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -213,7 +213,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="358" column="13" bodyfile="faiss/IndexIVF.h" bodystart="358" bodyend="358"/>
+        <location file="faiss/IndexIVF.h" line="366" column="13" bodyfile="faiss/IndexIVF.h" bodystart="366" bodyend="366"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -221,7 +221,7 @@
     <detaileddescription>
 <para>Object that handles a query. The inverted lists to scan are provided externally. The object has a lot of state, but distance_to_code and scan_codes can be called in multiple threads </para>
     </detaileddescription>
-    <location file="faiss/IndexIVF.h" line="318" column="26" bodyfile="faiss/IndexIVF.h" bodystart="318" bodyend="360"/>
+    <location file="faiss/IndexIVF.h" line="326" column="26" bodyfile="faiss/IndexIVF.h" bodystart="326" bodyend="368"/>
     <listofallmembers>
       <member refid="structfaiss_1_1InvertedListScanner_1ade9518f1b0ee00c2a43a2eb2ae350ae1" prot="public" virt="pure-virtual"><scope>faiss::InvertedListScanner</scope><name>distance_to_code</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1a3839ad3afde506ac3cc7abdd69051759" prot="public" virt="non-virtual"><scope>faiss::InvertedListScanner</scope><name>idx_t</name></member>
