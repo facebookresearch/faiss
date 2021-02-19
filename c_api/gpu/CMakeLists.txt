@@ -5,6 +5,8 @@
 
 cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 
+project(faiss_c_gpu_library LANGUAGES C CXX)
+
 set(CMAKE_C_STANDARD 11)
 
 set(FAISS_C_SRC
@@ -18,7 +20,7 @@ set(FAISS_C_SRC
 target_sources(faiss_c PRIVATE ${FAISS_C_SRC})
 target_link_libraries(faiss_c PRIVATE faiss)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/faiss/c_api/gpu/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/faiss/gpu/
         FILES_MATCHING PATTERN "*.h")
 
 find_package(CUDAToolkit REQUIRED)
