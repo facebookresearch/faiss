@@ -40,6 +40,9 @@ endif()
 
 if(FAISS_ENABLE_C_API)
   add_subdirectory(c_api)
+  if(FAISS_ENABLE_GPU)
+    add_subdirectory(c_api/gpu)
+  endif()
 endif()
 
 add_subdirectory(demos)

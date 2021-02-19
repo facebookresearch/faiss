@@ -8,9 +8,9 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
-#include "DeviceUtils_c.h"
-#include "macros_impl.h"
+#include <faiss/gpu/DeviceUtils_c.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include "macros_impl.h"
 
 /// Returns the number of available GPU devices
 int faiss_get_num_gpus(int* p_output) {

@@ -8,7 +8,7 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
-#include "gpu/GpuResources_c.h"
+#include <faiss/gpu/GpuResources_c.h>
 #include <faiss/gpu/GpuResources.h>
 #include "macros_impl.h"
 

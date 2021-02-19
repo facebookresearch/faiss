@@ -18,6 +18,7 @@ WORKDIR /faiss
 
 RUN cmake -B build \
         -DFAISS_ENABLE_GPU=ON \
+        -DFAISS_ENABLE_C_API=ON \
         -DFAISS_ENABLE_PYTHON=ON \
         -DBUILD_TESTING=ON \
         -DCMAKE_CUDA_FLAGS="-gencode arch=compute_61,code=sm_61" \

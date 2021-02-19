@@ -9,7 +9,7 @@
 // -*- c++ -*-
 
 #include <faiss/gpu/GpuIndex.h>
-#include "GpuIndex_c.h"
+#include <faiss/gpu/GpuIndex_c.h>
 #include "macros_impl.h"
 
 using faiss::gpu::GpuIndexConfig;
