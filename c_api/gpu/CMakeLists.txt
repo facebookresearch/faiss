@@ -15,9 +15,9 @@ set(FAISS_C_SRC
   GpuResources_c.cpp
   StandardGpuResources_c.cpp
 )
-add_library(faiss_c ${FAISS_C_SRC})
+target_sources(faiss_c PRIVATE ${FAISS_C_SRC})
 target_link_libraries(faiss_c PRIVATE faiss)
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/gpu/
+install(DIRECTORY ${PROJECT_SOURCE_DIR}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/faiss/c_api/gpu/
         FILES_MATCHING PATTERN "*.h")
 
