@@ -410,9 +410,16 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss17IndexIVFFlatDedup8add_coreE5idx_tPKfPK7int64_tPK7int64_t">
-<span id="_CPPv3N5faiss17IndexIVFFlatDedup8add_coreE5idx_tPKfPK7int64_tPK7int64_t"></span><span id="_CPPv2N5faiss17IndexIVFFlatDedup8add_coreE5idx_tPKfPK7int64_tPK7int64_t"></span><span id="faiss::IndexIVFFlatDedup::add_core__idx_t.floatCP.int64_tCP.int64_tCP"></span><span class="target" id="structfaiss_1_1IndexIVFFlat_1a6b2a0d888235330d9192d267c260f338"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add_core</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss17IndexIVFFlatDedup5idx_tE" title="faiss::IndexIVFFlatDedup::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">int64_t</span> <span class="pre">*</span><em><span class="pre">xids</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">int64_t</span> <span class="pre">*</span><em><span class="pre">precomputed_idx</span></em><span class="sig-paren">)</span><br /></dt>
-<dd><p>same as add_with_ids, with precomputed coarse quantizer </p>
+<dt id="_CPPv4N5faiss17IndexIVFFlatDedup8add_coreE5idx_tPKfPK5idx_tPK5idx_t">
+<span id="_CPPv3N5faiss17IndexIVFFlatDedup8add_coreE5idx_tPKfPK5idx_tPK5idx_t"></span><span id="_CPPv2N5faiss17IndexIVFFlatDedup8add_coreE5idx_tPKfPK5idx_tPK5idx_t"></span><span id="faiss::IndexIVFFlatDedup::add_core__idx_t.floatCP.idx_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexIVFFlat_1a8b7cf5317033d7083e2df631ccbb9cf1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add_core</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss17IndexIVFFlatDedup5idx_tE" title="faiss::IndexIVFFlatDedup::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss17IndexIVFFlatDedup5idx_tE" title="faiss::IndexIVFFlatDedup::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">xids</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss17IndexIVFFlatDedup5idx_tE" title="faiss::IndexIVFFlatDedup::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">precomputed_idx</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
+<dd><p>Implementation of vector addition where the vector assignments are predefined. The default implementation hands over the code extraction to encode_vectors.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">precomputed_idx</span></code>: quantization indices for the input vectors (size n) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
