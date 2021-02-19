@@ -189,8 +189,17 @@ void IndexIVF::add (idx_t n, const float * x)
     add_with_ids (n, x, nullptr);
 }
 
-
 void IndexIVF::add_with_ids (idx_t n, const float * x, const idx_t *xids)
+{
+
+    std::unique_ptr<idx_t []> coarse_idx(new idx_t[n]);
+    quantizer->assign (n, x, coarse_idx.get());
+    add_core (n, x, xids, coarse_idx.get());
+}
+
+
+
+void IndexIVF::add_core (idx_t n, const float * x, const idx_t *xids, const idx_t *coarse_idx)
 {
     // do some blocking to avoid excessive allocs
     idx_t bs = 65536;
@@ -200,25 +209,26 @@ void IndexIVF::add_with_ids (idx_t n, const float * x, const idx_t *xids)
             if (verbose) {
                 printf("   IndexIVF::add_with_ids %" PRId64 ":%" PRId64 "\n", i0, i1);
             }
-            add_with_ids (i1 - i0, x + i0 * d,
-                          xids ? xids + i0 : nullptr);
+            add_core (
+                    i1 - i0, x + i0 * d,
+                    xids ? xids + i0 : nullptr,
+                    coarse_idx + i0
+            );
         }
         return;
     }
-
+    FAISS_THROW_IF_NOT (coarse_idx);
     FAISS_THROW_IF_NOT (is_trained);
     direct_map.check_can_add (xids);
 
-    std::unique_ptr<idx_t []> idx(new idx_t[n]);
-    quantizer->assign (n, x, idx.get());
     size_t nadd = 0, nminus1 = 0;
 
     for (size_t i = 0; i < n; i++) {
-        if (idx[i] < 0) nminus1++;
+        if (coarse_idx[i] < 0) nminus1++;
     }
 
     std::unique_ptr<uint8_t []> flat_codes(new uint8_t [n * code_size]);
-    encode_vectors (n, x, idx.get(), flat_codes.get());
+    encode_vectors (n, x, coarse_idx, flat_codes.get());
 
     DirectMapAdd dm_adder(direct_map, n, xids);
 
@@ -229,7 +239,7 @@ void IndexIVF::add_with_ids (idx_t n, const float * x, const idx_t *xids)
 
         // each thread takes care of a subset of lists
         for (size_t i = 0; i < n; i++) {
-            idx_t list_no = idx [i];
+            idx_t list_no = coarse_idx [i];
             if (list_no >= 0 && list_no % nt == rank) {
                 idx_t id = xids ? xids[i] : ntotal + i;
                 size_t ofs = invlists->add_entry (

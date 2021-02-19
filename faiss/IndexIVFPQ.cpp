@@ -181,9 +181,12 @@ void IndexIVFPQ::decode_multiple (size_t n, const idx_t *keys,
  * add                                                          */
 
 
-void IndexIVFPQ::add_with_ids (idx_t n, const float * x, const idx_t *xids)
+void IndexIVFPQ::add_core (
+        idx_t n, const float * x, const idx_t *xids,
+        const idx_t *coarse_idx)
 {
-    add_core_o (n, x, xids, nullptr);
+    add_core_o (n, x, xids, nullptr, coarse_idx);
+
 }
 
 

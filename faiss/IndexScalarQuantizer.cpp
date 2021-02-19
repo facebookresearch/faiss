@@ -242,14 +242,12 @@ void IndexIVFScalarQuantizer::sa_decode (idx_t n, const uint8_t *codes,
     }
 }
 
-
-
-void IndexIVFScalarQuantizer::add_with_ids
-       (idx_t n, const float * x, const idx_t *xids)
+void IndexIVFScalarQuantizer::add_core (
+        idx_t n, const float * x, const idx_t *xids,
+        const idx_t *coarse_idx)
 {
     FAISS_THROW_IF_NOT (is_trained);
-    std::unique_ptr<int64_t []> idx (new int64_t [n]);
-    quantizer->assign (n, x, idx.get());
+
     size_t nadd = 0;
     std::unique_ptr<ScalarQuantizer::Quantizer> squant(sq.select_quantizer ());
 
@@ -264,7 +262,7 @@ void IndexIVFScalarQuantizer::add_with_ids
 
         // each thread takes care of a subset of lists
         for (size_t i = 0; i < n; i++) {
-            int64_t list_no = idx [i];
+            int64_t list_no = coarse_idx [i];
             if (list_no >= 0 && list_no % nt == rank) {
                 int64_t id = xids ? xids[i] : ntotal + i;
 

@@ -105,7 +105,10 @@ struct IndexIVFScalarQuantizer: IndexIVF {
                         uint8_t * codes,
                         bool include_listnos=false) const override;
 
-    void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
+
+
+    void add_core (idx_t n, const float * x, const idx_t *xids,
+                   const idx_t *precomputed_idx) override;
 
     InvertedListScanner *get_InvertedListScanner (bool store_pairs)
         const override;

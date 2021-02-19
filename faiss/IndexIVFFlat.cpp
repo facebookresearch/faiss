@@ -35,33 +35,19 @@ IndexIVFFlat::IndexIVFFlat (Index * quantizer,
 }
 
 
-void IndexIVFFlat::add_with_ids (idx_t n, const float * x, const idx_t *xids)
-{
-    add_core (n, x, xids, nullptr);
-}
-
 void IndexIVFFlat::add_core (idx_t n, const float * x, const int64_t *xids,
-                             const int64_t *precomputed_idx)
+                             const int64_t *coarse_idx)
 
 {
     FAISS_THROW_IF_NOT (is_trained);
+    FAISS_THROW_IF_NOT (coarse_idx);
     assert (invlists);
     direct_map.check_can_add (xids);
-    const int64_t * idx;
-    ScopeDeleter<int64_t> del;
 
-    if (precomputed_idx) {
-        idx = precomputed_idx;
-    } else {
-        int64_t * idx0 = new int64_t [n];
-        del.set (idx0);
-        quantizer->assign (n, x, idx0);
-        idx = idx0;
-    }
     int64_t n_add = 0;
     for (size_t i = 0; i < n; i++) {
         idx_t id = xids ? xids[i] : ntotal + i;
-        idx_t list_no = idx [i];
+        idx_t list_no = coarse_idx [i];
         size_t offset;
 
         if (list_no >= 0) {

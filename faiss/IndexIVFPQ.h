@@ -60,8 +60,7 @@ struct IndexIVFPQ: IndexIVF {
             Index * quantizer, size_t d, size_t nlist,
             size_t M, size_t nbits_per_idx, MetricType metric = METRIC_L2);
 
-    void add_with_ids(idx_t n, const float* x, const idx_t* xids = nullptr)
-        override;
+
 
     void encode_vectors(idx_t n, const float* x,
                         const idx_t *list_nos,
@@ -71,10 +70,12 @@ struct IndexIVFPQ: IndexIVF {
     void sa_decode (idx_t n, const uint8_t *bytes,
                     float *x) const override;
 
+    void add_core (idx_t n, const float * x, const idx_t *xids,
+                const idx_t *precomputed_idx) override;
 
     /// same as add_core, also:
     /// - output 2nd level residuals if residuals_2 != NULL
-    /// - use precomputed list numbers if precomputed_idx != NULL
+    /// - accepts precomputed_idx = nullptr
     void add_core_o (idx_t n, const float *x,
                      const idx_t *xids, float *residuals_2,
                      const idx_t *precomputed_idx = nullptr);

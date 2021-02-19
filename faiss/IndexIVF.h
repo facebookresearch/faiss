@@ -145,6 +145,14 @@ struct IndexIVF: Index, Level1Quantizer {
     /// default implementation that calls encode_vectors
     void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
 
+    /** Implementation of vector addition where the vector assignments are predefined.
+     * The default implementation hands over the code extraction to encode_vectors.
+     *
+     * @param precomputed_idx    quantization indices for the input vectors (size n)
+     */
+    virtual void add_core (idx_t n, const float * x, const idx_t *xids,
+                           const idx_t *precomputed_idx);
+
     /** Encodes a set of vectors as they would appear in the inverted lists
      *
      * @param list_nos   inverted list ids as returned by the

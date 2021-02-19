@@ -76,7 +76,10 @@ struct IndexBinaryIVF : IndexBinary {
 
     void add_with_ids(idx_t n, const uint8_t *x, const idx_t *xids) override;
 
-    /// same as add_with_ids, with precomputed coarse quantizer
+    /** Implementation of vector addition where the vector assignments are predefined.
+     *
+     * @param precomputed_idx    quantization indices for the input vectors (size n)
+     */
     void add_core (idx_t n, const uint8_t * x, const idx_t *xids,
                    const idx_t *precomputed_idx);
 
