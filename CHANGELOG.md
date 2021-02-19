@@ -8,6 +8,7 @@ at the moment.
 ## [Unreleased]
 ### Added
 - Support for building C bindings through the `FAISS_ENABLE_C_API` CMake option.
+- Serializing the indexes with the python pickle module
 
 ### Changed
 - The order of xb an xq was different between `faiss.knn` and `faiss.knn_gpu`.
