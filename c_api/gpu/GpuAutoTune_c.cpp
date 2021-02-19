@@ -9,12 +9,12 @@
 // -*- c++ -*-
 
 #include <vector>
-#include <faiss/gpu/GpuAutoTune_c.h>
-#include <faiss/gpu/GpuClonerOptions_c.h>
 #include <faiss/gpu/GpuCloner.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/GpuAutoTune.h>
 #include <faiss/gpu/GpuClonerOptions.h>
+#include "GpuAutoTune_c.h"
+#include "GpuClonerOptions_c.h"
 #include "Index.h"
 #include "macros_impl.h"
 

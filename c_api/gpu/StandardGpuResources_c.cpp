@@ -8,8 +8,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
-#include <faiss/gpu/StandardGpuResources_c.h>
 #include <faiss/gpu/StandardGpuResources.h>
+#include "StandardGpuResources_c.h"
 #include "macros_impl.h"
 
 using faiss::gpu::StandardGpuResources;
