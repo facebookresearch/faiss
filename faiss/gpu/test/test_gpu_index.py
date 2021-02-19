@@ -61,8 +61,11 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         index.train(xt)
         ts.append(time.time())
 
-        # adding some ids because there was a bug in this case
-        index.add_with_ids(xb, np.arange(nb) * 3 + 12345)
+        # adding some ids because there was a bug in this case;
+        # those need to be cast to idx_t(= int64_t), because
+        # on windows the numpy int default is int32
+        ids = (np.arange(nb) * 3 + 12345).astype('int64')
+        index.add_with_ids(xb, ids)
         ts.append(time.time())
 
         index.nprobe = 4
