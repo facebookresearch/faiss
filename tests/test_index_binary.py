@@ -255,7 +255,7 @@ class TestBinaryIVF(unittest.TestCase):
 
     def test_ivf_nprobe(self):
         """Test in case of nprobe > nlist."""
-        d = self.xq.shape[1]
+        d = self.xq.shape[1] * 8
         xt, xb, xq = self.xt, self.xb, self.xq
 
         # nlist = 10
