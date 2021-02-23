@@ -109,7 +109,8 @@ IndexNSG::IndexNSG(Index *storage, int R) :
   Index(storage->d, storage->metric_type),
   nsg(R),
   own_fields(false),
-  storage(storage) {}
+  storage(storage),
+  is_built(false) {}
 
 IndexNSG::~IndexNSG() {
   if (own_fields) {
