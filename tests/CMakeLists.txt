@@ -11,6 +11,7 @@ add_executable(faiss_test
   test_ivfpq_indexing.cpp
   test_lowlevel_ivf.cpp
   test_merge.cpp
+  test_nsg.cpp
   test_omp_threads.cpp
   test_ondisk_ivf.cpp
   test_pairs_decoding.cpp
