@@ -105,7 +105,7 @@ TEST(NSG, accuracy) {
         double hnsw_recall = 1.0 * n_ok / nq;
         printf("HNSW Recall@%d: %lf\n", k, hnsw_recall);
 
-        // The degree of NSG and HNSW is the same.
+        // The degree of NSG is the same as HNSW.
         // But the NSG index is built upon an exact KNN graph,
         // it should be better than the HNSW index.
         EXPECT_GT(nsg_recall, hnsw_recall);

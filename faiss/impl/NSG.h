@@ -65,7 +65,7 @@ struct NSG {
 
   int enter_point; // enterpoint
 
-  std::vector<std::vector<int>> final_graph;
+  std::vector<int> final_graph;
   std::vector<int> compact_graph;
   bool is_built;
 
@@ -103,7 +103,7 @@ struct NSG {
 
   void find_root(Index *storage, VisitedTable &vt, int &root);
 
-  void compact(int width);
+  void compact();
 };
 
 } // namespace faiss

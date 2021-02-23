@@ -160,7 +160,7 @@ void NSG::search(DistanceComputer &dis, int k, idx_t *I, float *D,
   int pool_size = std::max(search_L, k);
 
   std::vector<Neighbor> retset, tmp;
-  search_on_graph<false>(compact_graph.data(), width, dis, vt,
+  search_on_graph<false>(compact_graph.data(), R, dis, vt,
                          enter_point, pool_size, retset, tmp);
   std::partial_sort(retset.begin(), retset.begin() + k,
                     retset.begin() + pool_size);
@@ -179,23 +179,22 @@ void NSG::build(Index *storage, idx_t n, int *knn_graph, int GK) {
   SimpleNeighbor *graph = new SimpleNeighbor[n * R];
   link(storage, knn_graph, GK, graph);
 
-  final_graph.resize(n);
+  final_graph.resize(n * R);
   for (int i = 0; i < n; i++) {
-    final_graph[i].reserve(R);
     for (int j = 0; j < R; j++) {
-      final_graph[i].push_back(graph[i * R + j].id);
+      final_graph[i * R + j] = graph[i * R + j].id;
     }
   }
   delete[] graph;
 
-  // tree_grow(storage);
+  tree_grow(storage);
   is_built = true;
 
   int max = 0, min = 1e6;
   double avg = 0;
   for (int i = 0; i < n; i++) {
     int size = 0;
-    while (size < final_graph[i].size() && final_graph[i][size] >= 0) {
+    while (size < R && final_graph[i * R + size] != EMPTY_ID) {
       size += 1;
     }
     max = std::max(size, max);
@@ -205,8 +204,7 @@ void NSG::build(Index *storage, idx_t n, int *knn_graph, int GK) {
   avg = avg / n;
   printf("Degree Statistics: Max = %d, Min = %d, Avg = %lf\n", max, min, avg);
 
-  width = max;
-  compact(width);
+  compact();
 }
 
 void NSG::reset() {
@@ -515,7 +513,8 @@ void NSG::dfs(VisitedTable &vt, int root, int &cnt) {
 
   while (!s.empty()) {
     int next = EMPTY_ID;
-    for (const int &id : final_graph[node]) {
+    for (int i = 0; i < R; i++) {
+      int id = final_graph[node * R + i];
       if (id != EMPTY_ID && !vt.get(id)) {
         next = id;
         break;
@@ -537,67 +536,62 @@ void NSG::dfs(VisitedTable &vt, int root, int &cnt) {
 }
 
 void NSG::find_root(Index *storage, VisitedTable &vt, int &root) {
-  // int id = EMPTY_ID;
-  // for (int i = 0; i < ntotal; i++) {
-  //   if (!vt.get(i)) {
-  //     id = i;
-  //     break;
-  //   }
-  // }
-
-  // if (id == EMPTY_ID)
-  //   return; // No Unlinked Node
-
-  // std::vector<Neighbor> tmp, pool;
-
-  // DistanceComputer *dis = storage_distance_computer(storage);
-  // ScopeDeleter1<DistanceComputer> del(dis);
-  // float *vec = new float[storage->d];
-  // ScopeDeleter<float> del(vec);
-
-  // storage->reconstruct(id, vec);
-  // dis->set_query(vec);
-
-  // {
-  //   VisitedTable vt2(ntotal);
-  //   search_on_graph<true>(final_graph.data(), R, *dis, vt2, enter_point, L, tmp, pool);
-  // }
-
-  // std::sort(pool.begin(), pool.end());
-
-  // int found = 0;
-  // for (int i = 0; i < pool.size(); i++) {
-  //   if (vt.get(pool[i].id)) {
-  //     root = pool[i].id;
-  //     found = 1;
-  //     break;
-  //   }
-  // }
-  // if (found == 0) {
-  //   while (true) {
-  //     int rid = rand() % ntotal;
-  //     if (vt.get(rid)) {
-  //       root = rid;
-  //       break;
-  //     }
-  //   }
-  // }
-  // final_graph[root].push_back(id);
-}
-
-void NSG::compact(int width) {
-  compact_graph.resize(ntotal * width);
+  int id = EMPTY_ID;
   for (int i = 0; i < ntotal; i++) {
-    for (int j = 0; j < width; j++) {
-      if (j < final_graph[i].size()) {
-        int id = final_graph[i][j];
-        compact_graph[i * width + j] = id;
-        FAISS_THROW_IF_NOT(id < ntotal && (id >= 0 || id == EMPTY_ID));
-      } else {
-        compact_graph[i * width + j] = EMPTY_ID;
+    if (!vt.get(i)) {
+      id = i;
+      break;
+    }
+  }
+
+  if (id == EMPTY_ID)
+    return; // No Unlinked Node
+
+  std::vector<Neighbor> tmp, pool;
+
+  DistanceComputer *dis = storage_distance_computer(storage);
+  ScopeDeleter1<DistanceComputer> del1(dis);
+  float *vec = new float[storage->d];
+  ScopeDeleter<float> del(vec);
+
+  storage->reconstruct(id, vec);
+  dis->set_query(vec);
+
+  {
+    VisitedTable vt2(ntotal);
+    search_on_graph<true>(final_graph.data(), R, *dis, vt2, enter_point, L, tmp, pool);
+  }
+
+  std::sort(pool.begin(), pool.end());
+
+  int found = 0;
+  for (int i = 0; i < pool.size(); i++) {
+    if (vt.get(pool[i].id)) {
+      root = pool[i].id;
+      found = 1;
+      break;
+    }
+  }
+  if (found == 0) {
+    while (true) {
+      int rid = rand() % ntotal;
+      if (vt.get(rid)) {
+        root = rid;
+        break;
       }
     }
-    final_graph[i].clear();
+  }
+  final_graph[root * R + R - 1] = id;
+}
+
+void NSG::compact() {
+  compact_graph.resize(ntotal * R);
+  for (int i = 0; i < ntotal; i++) {
+    for (int j = 0; j < R; j++) {
+      int id = final_graph[i * R + j];
+      compact_graph[i * R + j] = id;
+      FAISS_THROW_IF_NOT(id < ntotal && (id >= 0 || id == EMPTY_ID));
+    }
   }
   final_graph.clear();
 }
