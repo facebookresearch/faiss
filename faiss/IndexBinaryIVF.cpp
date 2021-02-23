@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <omp.h>
 
+#include <algorithm>
 #include <memory>
 
 
@@ -80,7 +81,7 @@ void IndexBinaryIVF::add_core(idx_t n, const uint8_t *x, const idx_t *xids,
     idx = scoped_idx.get();
   }
 
-  long n_add = 0;
+  idx_t n_add = 0;
   for (size_t i = 0; i < n; i++) {
     idx_t id = xids ? xids[i] : ntotal + i;
     idx_t list_no = idx[i];
@@ -120,6 +121,7 @@ void IndexBinaryIVF::set_direct_map_type (DirectMap::Type type)
 
 void IndexBinaryIVF::search(idx_t n, const uint8_t *x, idx_t k,
                             int32_t *distances, idx_t *labels) const {
+  const size_t nprobe = std::min(nlist, this->nprobe);
   std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
   std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe]);
 
@@ -162,6 +164,7 @@ void IndexBinaryIVF::reconstruct_n(idx_t i0, idx_t ni, uint8_t *recons) const {
 void IndexBinaryIVF::search_and_reconstruct(idx_t n, const uint8_t *x, idx_t k,
                                             int32_t *distances, idx_t *labels,
                                             uint8_t *recons) const {
+  const size_t nprobe = std::min(nlist, this->nprobe);
   std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
   std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe]);
 
@@ -360,8 +363,9 @@ void search_knn_hamming_heap(const IndexBinaryIVF& ivf,
                              bool store_pairs,
                              const IVFSearchParameters *params)
 {
-    long nprobe = params ? params->nprobe : ivf.nprobe;
-    long max_codes = params ? params->max_codes : ivf.max_codes;
+    idx_t nprobe = params ? params->nprobe : ivf.nprobe;
+    nprobe = std::min((idx_t)ivf.nlist, nprobe);
+    idx_t max_codes = params ? params->max_codes : ivf.max_codes;
     MetricType metric_type = ivf.metric_type;
 
     // almost verbatim copy from IndexIVF::search_preassigned
@@ -457,8 +461,9 @@ void search_knn_hamming_count(const IndexBinaryIVF& ivf,
   std::vector<int> all_counters(nx * nBuckets, 0);
   std::unique_ptr<idx_t[]> all_ids_per_dis(new idx_t[nx * nBuckets * k]);
 
-  long nprobe = params ? params->nprobe : ivf.nprobe;
-  long max_codes = params ? params->max_codes : ivf.max_codes;
+  idx_t nprobe = params ? params->nprobe : ivf.nprobe;
+  nprobe = std::min((idx_t)ivf.nlist, nprobe);
+  idx_t max_codes = params ? params->max_codes : ivf.max_codes;
 
   std::vector<HCounterState<HammingComputer>> cs;
   for (size_t i = 0; i < nx; ++i) {
@@ -615,7 +620,7 @@ void IndexBinaryIVF::range_search(
         idx_t n, const uint8_t *x, int radius,
         RangeSearchResult *res) const
 {
-
+    const size_t nprobe = std::min(nlist, this->nprobe);
     std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
     std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe]);
 
