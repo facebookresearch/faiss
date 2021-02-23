@@ -25,7 +25,8 @@ source:
 
 outputs:
   - name: libfaiss
-    script: build-lib.sh
+    script: build-lib.sh   # [not win]
+    script: build-lib.bat  # [win]
     build:
       string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}"
       run_exports:
@@ -54,7 +55,8 @@ outputs:
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
   - name: faiss-gpu
-    script: build-pkg.sh
+    script: build-pkg.sh   # [not win]
+    script: build-pkg.bat  # [win]
     build:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}"
     requirements:
@@ -77,8 +79,9 @@ outputs:
         - scipy
         - pytorch
       commands:
-        - python -m unittest discover tests/
-        - python -m unittest discover faiss/gpu/test/
+        - python -X faulthandler -m unittest discover -v -s tests -p "test_*"
+        - python -X faulthandler -m unittest discover -v -s tests -p "torch_*"
+        - python -X faulthandler -m unittest discover faiss/gpu/test/
       source_files:
         - tests/
         - faiss/gpu/test/

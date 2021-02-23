@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <algorithm>
 
 #include <faiss/gpu/impl/IVFFlatScan.cuh>
 #include <faiss/gpu/impl/DistanceUtils.cuh>
