@@ -18,58 +18,7 @@
 
 namespace faiss {
 
-
-/**************************************************************
- * Auxiliary structures
- **************************************************************/
-
-/// set implementation optimized for fast access.
-struct VisitedTable {
-  std::vector<uint8_t> visited;
-  int visno;
-
-  explicit VisitedTable(int size) : visited(size), visno(1) {}
-
-  /// set flog #no to true
-  void set(int no) { visited[no] = visno; }
-
-  /// get flag #no
-  bool get(int no) const { return visited[no] == visno; }
-
-  /// reset all flags to false
-  void advance() {
-    visno++;
-    if (visno == 250) {
-      // 250 rather than 255 because sometimes we use visno and visno+1
-      memset(visited.data(), 0, sizeof(visited[0]) * visited.size());
-      visno = 1;
-    }
-  }
-};
-
-/* Wrap the distance computer into one that negates the
-   distances. This makes supporting INNER_PRODUCE search easier */
-
-struct NegativeDistanceComputer : DistanceComputer {
-
-  /// owned by this
-  DistanceComputer *basedis;
-
-  explicit NegativeDistanceComputer(DistanceComputer *basedis)
-      : basedis(basedis) {}
-
-  void set_query(const float *x) override { basedis->set_query(x); }
-
-  /// compute distance of vector i to current query
-  float operator()(idx_t i) override { return -(*basedis)(i); }
-
-  /// compute distance between two stored vectors
-  float symmetric_dis(idx_t i, idx_t j) override {
-    return -basedis->symmetric_dis(i, j);
-  }
-
-  virtual ~NegativeDistanceComputer() { delete basedis; }
-};
+namespace nsg {
 
 DistanceComputer *storage_distance_computer(const Index *storage) {
   if (storage->metric_type == METRIC_INNER_PRODUCT) {
@@ -79,9 +28,9 @@ DistanceComputer *storage_distance_computer(const Index *storage) {
   }
 }
 
+}  // namespace faiss::nsg
 
-// It needs to be smaller than 0
-const int EMPTY_ID = -1;
+using namespace nsg;
 
 using LockGuard = std::lock_guard<std::mutex>;
 
@@ -150,6 +99,7 @@ inline int insert_into_pool(Neighbor *addr, int K, Neighbor nn) {
 NSG::NSG(int R) : R(R) {
   L = R;
   C = R * 10;
+  ntotal = 0;
   is_built = false;
 }
 
@@ -157,11 +107,13 @@ void NSG::search(DistanceComputer &dis, int k, idx_t *I, float *D,
                  VisitedTable &vt) const {
 
   FAISS_THROW_IF_NOT(is_built);
-  int pool_size = std::max(search_L, k);
+  FAISS_THROW_IF_NOT(final_graph);
 
+  int pool_size = std::max(search_L, k);
   std::vector<Neighbor> retset, tmp;
-  search_on_graph<false>(compact_graph.data(), R, dis, vt,
-                         enter_point, pool_size, retset, tmp);
+  search_on_graph<false, int>(*final_graph, dis, vt, enterpoint, pool_size,
+                              retset, tmp);
+
   std::partial_sort(retset.begin(), retset.begin() + k,
                     retset.begin() + pool_size);
 
@@ -171,49 +123,57 @@ void NSG::search(DistanceComputer &dis, int k, idx_t *I, float *D,
   }
 }
 
-void NSG::build(Index *storage, idx_t n, int *knn_graph, int GK) {
-  printf("R=%d, L=%d, C=%d\n", R, L, C);
+void NSG::build(Index *storage, idx_t n, const nsg::Graph<idx_t> &knn_graph, bool verbose) {
+  FAISS_THROW_IF_NOT(!is_built && ntotal == 0);
+
+  if (verbose) { 
+    printf("R=%d, L=%d, C=%d\n", R, L, C);
+  }
 
   ntotal = n;
-  init_graph(storage, knn_graph, GK);
-  SimpleNeighbor *graph = new SimpleNeighbor[n * R];
-  link(storage, knn_graph, GK, graph);
+  init_graph(storage, knn_graph);
 
-  final_graph.resize(n * R);
+  // SimpleNeighbor *graph = new SimpleNeighbor[n * R];
+  nsg::Graph<SimpleNeighbor> tmp_graph(n, R);
+
+  link(storage, knn_graph, tmp_graph);
+
+  final_graph = std::make_shared<nsg::Graph<int>>(n, R);
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < R; j++) {
-      final_graph[i * R + j] = graph[i * R + j].id;
+      final_graph->at(i, j) = tmp_graph.at(i, j).id;
     }
   }
-  delete[] graph;
 
   tree_grow(storage);
+  check_graph();
   is_built = true;
 
-  int max = 0, min = 1e6;
-  double avg = 0;
-  for (int i = 0; i < n; i++) {
-    int size = 0;
-    while (size < R && final_graph[i * R + size] != EMPTY_ID) {
-      size += 1;
+  if (verbose) { 
+    int max = 0, min = 1e6;
+    double avg = 0;
+    for (int i = 0; i < n; i++) {
+      int size = 0;
+      while (size < R && final_graph->at(i, size) != EMPTY_ID) {
+        size += 1;
+      }
+      max = std::max(size, max);
+      min = std::min(size, min);
+      avg += size;
     }
-    max = std::max(size, max);
-    min = std::min(size, min);
-    avg += size;
-  }
-  avg = avg / n;
-  printf("Degree Statistics: Max = %d, Min = %d, Avg = %lf\n", max, min, avg);
-
-  compact();
+    avg = avg / n;
+    printf("Degree Statistics: Max = %d, Min = %d, Avg = %lf\n",
+           max, min, avg);
+  }  
 }
 
 void NSG::reset() {
-  compact_graph.clear();
+  final_graph.reset();
   ntotal = 0;
   is_built = false;
 }
 
-void NSG::init_graph(Index *storage, int *knn_graph, int GK) {
+void NSG::init_graph(Index *storage, const nsg::Graph<idx_t> &knn_graph) {
   int d = storage->d;
   int n = storage->ntotal;
 
@@ -245,22 +205,22 @@ void NSG::init_graph(Index *storage, int *knn_graph, int GK) {
   VisitedTable vt(ntotal);
 
   // Do not collect the visited set
-  search_on_graph<false>(knn_graph, GK, *dis, vt, ep, L, retset, pool);
+  search_on_graph<false, idx_t>(knn_graph, *dis, vt, ep, L, retset, pool);
 
-  enter_point = retset[0].id;
+  enterpoint = retset[0].id;
 }
 
-template <bool collect_fullset>
-void NSG::search_on_graph(const int *graph, int GK, DistanceComputer &dis,
-                          VisitedTable &vt, int ep, int pool_size,
-                          std::vector<Neighbor> &retset,
+template <bool collect_fullset, class index_t>
+void NSG::search_on_graph(const nsg::Graph<index_t> &graph,
+                          DistanceComputer &dis, VisitedTable &vt, int ep,
+                          int pool_size, std::vector<Neighbor> &retset,
                           std::vector<Neighbor> &fullset) const {
   retset.resize(pool_size + 1);
   std::vector<int> init_ids(pool_size);
 
   int num_ids = 0;
-  for (int i = 0; i < init_ids.size() && i < GK; i++) {
-    int id = graph[ep * GK + i];
+  for (int i = 0; i < init_ids.size() && i < graph.K; i++) {
+    int id = (int)graph.at(ep, i);
     if (id < 0 || id >= ntotal)
       continue;
 
@@ -299,8 +259,8 @@ void NSG::search_on_graph(const int *graph, int GK, DistanceComputer &dis,
       retset[k].flag = false;
       int n = retset[k].id;
 
-      for (int m = 0; m < GK; m++) {
-        int id = graph[n * GK + m];
+      for (int m = 0; m < graph.K; m++) {
+        int id = (int)graph.at(n, m);
         if (id == EMPTY_ID || vt.get(id))
           continue;
         vt.set(id);
@@ -321,7 +281,8 @@ void NSG::search_on_graph(const int *graph, int GK, DistanceComputer &dis,
   }
 }
 
-void NSG::link(Index *storage, int *knn_graph, int GK, SimpleNeighbor *graph) {
+void NSG::link(Index *storage, const nsg::Graph<idx_t> &knn_graph,
+               nsg::Graph<SimpleNeighbor> &graph) {
 
 #pragma omp parallel
   {
@@ -338,9 +299,10 @@ void NSG::link(Index *storage, int *knn_graph, int GK, SimpleNeighbor *graph) {
       storage->reconstruct(i, vec);
       dis->set_query(vec);
 
-      search_on_graph<true>(knn_graph, GK, *dis, vt, enter_point, L, tmp, pool);
+      search_on_graph<true, idx_t>(knn_graph, *dis, vt, enterpoint, L, tmp,
+                                   pool);
 
-      sync_prune(i, pool, *dis, vt, knn_graph, GK, graph);
+      sync_prune(i, pool, *dis, vt, knn_graph, graph);
 
       pool.clear();
       tmp.clear();
@@ -361,11 +323,11 @@ void NSG::link(Index *storage, int *knn_graph, int GK, SimpleNeighbor *graph) {
 }
 
 void NSG::sync_prune(int q, std::vector<Neighbor> &pool, DistanceComputer &dis,
-                     VisitedTable &vt, const int *knn_graph, int GK,
-                     SimpleNeighbor *graph) {
+                     VisitedTable &vt, const nsg::Graph<idx_t> &knn_graph,
+                     nsg::Graph<SimpleNeighbor> &graph) {
 
-  for (int i = 0; i < GK; i++) {
-    int id = knn_graph[q * GK + i];
+  for (int i = 0; i < knn_graph.K; i++) {
+    int id = knn_graph.at(q, i);
     if (vt.get(id))
       continue;
 
@@ -400,99 +362,95 @@ void NSG::sync_prune(int q, std::vector<Neighbor> &pool, DistanceComputer &dis,
       result.push_back(p);
   }
 
-  SimpleNeighbor *neighbors = graph + q * R;
   for (size_t i = 0; i < R; i++) {
     if (i < result.size()) {
-      neighbors[i].id = result[i].id;
-      neighbors[i].distance = result[i].distance;
+      graph.at(q, i).id = result[i].id;
+      graph.at(q, i).distance = result[i].distance;
     } else {
-      neighbors[i].id = EMPTY_ID;
+      graph.at(q, i).id = EMPTY_ID;
     }
   }
 }
 
 void NSG::add_reverse_links(int q, std::vector<std::mutex> &locks,
                             DistanceComputer &dis,
-                            SimpleNeighbor *graph) {
-SimpleNeighbor *src_pool = graph + q * R;
+                            nsg::Graph<SimpleNeighbor> &graph) {
 
-for (size_t i = 0; i < R; i++) {
-  if (src_pool[i].id == EMPTY_ID)
-    break;
+  for (size_t i = 0; i < R; i++) {
+    if (graph.at(q, i).id == EMPTY_ID)
+      break;
 
-  SimpleNeighbor sn(q, src_pool[i].distance);
-  int des = src_pool[i].id;
-  SimpleNeighbor *des_pool = graph + des * R;
+    SimpleNeighbor sn(q, graph.at(q, i).distance);
+    int des = graph.at(q, i).id;
 
-  std::vector<SimpleNeighbor> tmp_pool;
-  int dup = 0;
-  {
-    LockGuard guard(locks[des]);
-    for (int j = 0; j < R; j++) {
-      if (des_pool[j].id == EMPTY_ID)
-        break;
-      if (q == des_pool[j].id) {
-        dup = 1;
-        break;
-      }
-      tmp_pool.push_back(des_pool[j]);
-    }
-  }
-
-  if (dup)
-    continue;
-
-  tmp_pool.push_back(sn);
-  if (tmp_pool.size() > R) {
-    std::vector<SimpleNeighbor> result;
-    int start = 0;
-    std::sort(tmp_pool.begin(), tmp_pool.end());
-    result.push_back(tmp_pool[start]);
-
-    while (result.size() < R && (++start) < tmp_pool.size()) {
-      auto &p = tmp_pool[start];
-      bool occlude = false;
-
-      for (int t = 0; t < result.size(); t++) {
-        if (p.id == result[t].id) {
-          occlude = true;
-          break;
-        }
-        float djk = dis.symmetric_dis(result[t].id, p.id);
-        if (djk < p.distance /* dik */) {
-          occlude = true;
-          break;
-        }
-      }
-      if (!occlude)
-        result.push_back(p);
-    }
+    std::vector<SimpleNeighbor> tmp_pool;
+    int dup = 0;
     {
       LockGuard guard(locks[des]);
-      for (int t = 0; t < result.size(); t++) {
-        des_pool[t] = result[t];
+      for (int j = 0; j < R; j++) {
+        if (graph.at(des, j).id == EMPTY_ID)
+          break;
+        if (q == graph.at(des, j).id) {
+          dup = 1;
+          break;
+        }
+        tmp_pool.push_back(graph.at(des, j));
       }
     }
-  } else {
-    LockGuard guard(locks[des]);
-    for (int t = 0; t < R; t++) {
-      if (des_pool[t].id == EMPTY_ID) {
-        des_pool[t] = sn;
-        if (t + 1 < R)
-          des_pool[t + 1].id = EMPTY_ID;
-        break;
+
+    if (dup)
+      continue;
+
+    tmp_pool.push_back(sn);
+    if (tmp_pool.size() > R) {
+      std::vector<SimpleNeighbor> result;
+      int start = 0;
+      std::sort(tmp_pool.begin(), tmp_pool.end());
+      result.push_back(tmp_pool[start]);
+
+      while (result.size() < R && (++start) < tmp_pool.size()) {
+        auto &p = tmp_pool[start];
+        bool occlude = false;
+
+        for (int t = 0; t < result.size(); t++) {
+          if (p.id == result[t].id) {
+            occlude = true;
+            break;
+          }
+          float djk = dis.symmetric_dis(result[t].id, p.id);
+          if (djk < p.distance /* dik */) {
+            occlude = true;
+            break;
+          }
+        }
+        if (!occlude)
+          result.push_back(p);
+      }
+      {
+        LockGuard guard(locks[des]);
+        for (int t = 0; t < result.size(); t++) {
+          graph.at(des, t) = result[t];
+        }
+      }
+    } else {
+      LockGuard guard(locks[des]);
+      for (int t = 0; t < R; t++) {
+        if (graph.at(des, t).id == EMPTY_ID) {
+          graph.at(des, t) = sn;
+          if (t + 1 < R)
+            graph.at(des, t + 1).id = EMPTY_ID;
+          break;
+        }
       }
     }
   }
-}
-
 }
 
 void NSG::tree_grow(Index *storage) {
-  int root = enter_point;
+  int root = enterpoint;
   VisitedTable vt(ntotal);
 
-  int cnt = 0;
+  int cnt;
   while (cnt < ntotal) {
     dfs(vt, root, cnt);
     if (cnt >= ntotal)
@@ -507,6 +465,7 @@ void NSG::dfs(VisitedTable &vt, int root, int &cnt) {
   std::stack<int> s;
   s.push(root);
 
+  cnt = 0;
   if (!vt.get(root))
     cnt++;
   vt.set(root);
@@ -514,7 +473,7 @@ void NSG::dfs(VisitedTable &vt, int root, int &cnt) {
   while (!s.empty()) {
     int next = EMPTY_ID;
     for (int i = 0; i < R; i++) {
-      int id = final_graph[node * R + i];
+      int id = final_graph->at(node, i);
       if (id != EMPTY_ID && !vt.get(id)) {
         next = id;
         break;
@@ -559,7 +518,8 @@ void NSG::find_root(Index *storage, VisitedTable &vt, int &root) {
 
   {
     VisitedTable vt2(ntotal);
-    search_on_graph<true>(final_graph.data(), R, *dis, vt2, enter_point, L, tmp, pool);
+    search_on_graph<true, int>(*final_graph, *dis, vt2, enterpoint, L, tmp,
+                               pool);
   }
 
   std::sort(pool.begin(), pool.end());
@@ -581,19 +541,16 @@ void NSG::find_root(Index *storage, VisitedTable &vt, int &root) {
       }
     }
   }
-  final_graph[root * R + R - 1] = id;
+  final_graph->at(root, R - 1) = id;
 }
 
-void NSG::compact() {
-  compact_graph.resize(ntotal * R);
+void NSG::check_graph() {
   for (int i = 0; i < ntotal; i++) {
     for (int j = 0; j < R; j++) {
-      int id = final_graph[i * R + j];
-      compact_graph[i * R + j] = id;
+      int id = final_graph->at(i, j);
       FAISS_THROW_IF_NOT(id < ntotal && (id >= 0 || id == EMPTY_ID));
     }
   }
-  final_graph.clear();
 }
 
 } // namespace faiss
