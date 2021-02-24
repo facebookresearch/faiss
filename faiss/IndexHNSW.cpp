@@ -1130,8 +1130,6 @@ void IndexHNSW2Level::search (idx_t n, const float *x, idx_t k,
                     nreorder += search_stats.nreorder;
 
                     vt.advance ();
-                    vt.advance ();
-
                 }
 
                 maxheap_reorder (k, simi, idxi);
