@@ -158,8 +158,8 @@ class TestAccuracy(unittest.TestCase):
         if 'Lattice' in highac:
             codec2 = faiss.deserialize_index(
                 faiss.serialize_index(codec))
-            codes = codec.sa_encode(x)
-            x3 = codec.sa_decode(codes)
+            codes = codec2.sa_encode(x)
+            x3 = codec2.sa_decode(codes)
             self.assertTrue(np.all(x2 == x3))
 
     def test_SQ(self):
@@ -208,8 +208,6 @@ class LatticeTest(unittest.TestCase):
             vecs = vec.copy()
             vecs.sort()
             repeats = faiss.Repeats(dim, swig_ptr(vecs))
-            rr = [repeats.repeats.at(i) for i in range(repeats.repeats.size())]
-            # print([(r.val, r.n) for r in rr])
             code = repeats.encode(swig_ptr(vec))
             #print(vec, code)
             vec2 = np.zeros(dim, dtype='float32')

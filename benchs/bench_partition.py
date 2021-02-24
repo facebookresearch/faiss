@@ -40,7 +40,7 @@ def do_partition(n, qin, maxval=65536, seed=123, id_type='int64'):
         else:
             q_min, q_max = qin
             q = np.array([-1], dtype='uint64')
-            thresh2 = faiss.CMax_uint16_partition_fuzzy(
+            faiss.CMax_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n,
                 q_min, q_max, sp(q)
             )

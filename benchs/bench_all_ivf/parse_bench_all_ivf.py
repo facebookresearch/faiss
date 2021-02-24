@@ -96,7 +96,7 @@ def parse_result_file(fname):
                     assert False
                 st = 1
             elif 'index size on disk:' in l:
-                index_size = int(l.split()[-1])
+                stats["index_size"] = int(l.split()[-1])
         elif st == 1:
             st = 2
         elif st == 2:
@@ -256,7 +256,6 @@ def plot_tradeoffs(db, allres, allstats, code_size, recall_rank):
     stat0 = next(iter(allstats.values()))
     d = stat0["d"]
     n_threads = stat0["n_threads"]
-    nq = stat0["nq"]
     recall_idx = stat0["ranks"].index(recall_rank)
     # times come after the perf measure
     times_idx = len(stat0["ranks"])

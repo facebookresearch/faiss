@@ -309,7 +309,6 @@ class TestIVFIndices(unittest.TestCase):
         res = faiss.StandardGpuResources()
         d = 128
         nb = 5000
-        nq = 10
         nlist = 10
 
         rs = np.random.RandomState(567)
@@ -341,7 +340,6 @@ class TestIVFIndices(unittest.TestCase):
         res = faiss.StandardGpuResources()
         d = 128
         nb = 5000
-        nq = 10
         nlist = 10
         M = 4
         nbits = 8
@@ -377,7 +375,6 @@ class TestIVFIndices(unittest.TestCase):
         res = faiss.StandardGpuResources()
         d = 128
         nb = 5000
-        nq = 10
         nlist = 10
         qtype = faiss.ScalarQuantizer.QT_4bit
 
