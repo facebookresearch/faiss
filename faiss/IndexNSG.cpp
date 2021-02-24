@@ -9,27 +9,13 @@
 
 #include <faiss/IndexNSG.h>
 
-#include <cassert>
-#include <cinttypes>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <omp.h>
-
-#include <queue>
-#include <unordered_set>
-
-#include <stdint.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
-#include <faiss/utils/random.h>
 
 namespace faiss {
 

@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <mutex>
 #include <stack>
-#include <string>
 
 #include <faiss/impl/AuxIndexStructures.h>
 
@@ -96,7 +95,7 @@ inline int insert_into_pool(Neighbor *addr, int K, Neighbor nn) {
   return right;
 }
 
-NSG::NSG(int R) : R(R) {
+NSG::NSG(int R) : R(R), rng(0x0903) {
   L = R;
   C = R * 10;
   ntotal = 0;
@@ -198,8 +197,9 @@ void NSG::init_graph(Index *storage, const nsg::Graph<idx_t> &knn_graph) {
 
   std::vector<Neighbor> retset;
   std::vector<Node> tmpset;
+
   // random initialize navigating point
-  int ep = rand() % n;
+  int ep = rng.rand_int(n);
   DistanceComputer *dis = storage_distance_computer(storage);
   ScopeDeleter1<DistanceComputer> del(dis);
 
@@ -232,7 +232,7 @@ void NSG::search_on_graph(const nsg::Graph<index_t> &graph,
   }
 
   while (num_ids < pool_size) {
-    int id = rand() % ntotal;
+    int id = rng.rand_int(ntotal);
     if (vt.get(id))
       continue;
 
@@ -465,15 +465,15 @@ void NSG::tree_grow(Index *storage) {
 
 void NSG::dfs(VisitedTable &vt, int root, int &cnt) {
   int node = root;
-  std::stack<int> s;
-  s.push(root);
+  std::stack<int> stack;
+  stack.push(root);
 
   cnt = 0;
   if (!vt.get(root))
     cnt++;
   vt.set(root);
 
-  while (!s.empty()) {
+  while (!stack.empty()) {
     int next = EMPTY_ID;
     for (int i = 0; i < R; i++) {
       int id = final_graph->at(node, i);
@@ -484,15 +484,15 @@ void NSG::dfs(VisitedTable &vt, int root, int &cnt) {
     }
 
     if (next == EMPTY_ID) {
-      s.pop();
-      if (s.empty())
+      stack.pop();
+      if (stack.empty())
         break;
-      node = s.top();
+      node = stack.top();
       continue;
     }
     node = next;
     vt.set(node);
-    s.push(node);
+    stack.push(node);
     cnt++;
   }
 }
@@ -536,9 +536,10 @@ void NSG::find_root(Index *storage, VisitedTable &vt, int &root) {
       break;
     }
   }
+
   if (found == 0) {
     while (true) {
-      int rid = rand() % ntotal;
+      int rid = rng.rand_int(ntotal);
       if (vt.get(rid)) {
         root = rid;
         break;

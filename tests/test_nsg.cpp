@@ -13,10 +13,8 @@
 
 #include <gtest/gtest.h>
 
-#include <faiss/IndexHNSW.h>
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexFlat.h>
-#include <faiss/index_io.h>
 #include <faiss/impl/NSG.h>
 
 using namespace std::chrono;

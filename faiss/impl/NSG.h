@@ -11,8 +11,6 @@
 
 #include <memory>
 #include <mutex>
-#include <queue>
-#include <unordered_set>
 #include <vector>
 
 #include <omp.h>
@@ -20,7 +18,6 @@
 #include <faiss/Index.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/random.h>
 
@@ -149,6 +146,8 @@ struct NSG {
 
   std::shared_ptr<nsg::Graph<int>> final_graph;
   bool is_built;
+
+  mutable RandomGenerator rng;
 
   explicit NSG(int R = 32);
 
