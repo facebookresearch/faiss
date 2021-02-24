@@ -592,6 +592,57 @@ class TestHNSW(unittest.TestCase):
         assert np.allclose(Dref[mask, 0], Dhnsw[mask, 0])
 
 
+class TestNSG(unittest.TestCase):
+
+    def __init__(self, *args, **kwargs):
+        unittest.TestCase.__init__(self, *args, **kwargs)
+        d = 32
+        nt = 0
+        nb = 1500
+        nq = 500
+        GK = 32
+
+        (_, self.xb, self.xq) = get_dataset_2(d, nt, nb, nq)
+        index = faiss.IndexFlatL2(d)
+        index.add(self.xb)
+        Dref, Iref = index.search(self.xq, 1)
+        self.Iref = Iref
+
+        # build knn graph by brute force search
+        _, knn_graph = index.search(self.xb, GK + 1)
+        self.knn_graph = knn_graph[:, 1:]
+
+    def test_nsg(self):
+        d = self.xq.shape[1]
+
+        index = faiss.IndexNSGFlat(d, 16)
+        index.build(self.xb, self.knn_graph)
+        Dnsg, Insg = index.search(self.xq, 1)
+
+        self.assertGreaterEqual((self.Iref == Insg).sum(), 460)
+
+    def test_nsg_IP(self):
+        d = self.xq.shape[1]
+
+        index_IP = faiss.IndexFlatIP(d)
+        index_IP.add(self.xb)
+        Dref, Iref = index_IP.search(self.xq, 1)
+
+        # build knn graph by brute force search
+        GK = 32
+        _, knn_graph = index_IP.search(self.xb, GK + 1)
+        knn_graph = knn_graph[:, 1:]
+
+        index = faiss.IndexNSGFlat(d, 16, faiss.METRIC_INNER_PRODUCT)
+        index.build(self.xb, knn_graph)
+        Dnsg, Insg = index.search(self.xq, 1)
+
+        print('nb equal: ', (Iref == Insg).sum())
+
+        self.assertGreaterEqual((Iref == Insg).sum(), 480)
+
+        mask = Iref[:, 0] == Insg[:, 0]
+        assert np.allclose(Dref[mask, 0], Dnsg[mask, 0])
 
 
 class TestDistancesPositive(unittest.TestCase):

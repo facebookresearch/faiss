@@ -73,34 +73,11 @@ struct Graph {
   inline node_t &at(int i, int j) { return data[i * K + j]; }
 };
 
-/// set implementation optimized for fast access.
-struct VisitedTable {
-  std::vector<uint8_t> visited;
-  int visno;
-
-  explicit VisitedTable(int size) : visited(size), visno(1) {}
-
-  /// set flog #no to true
-  void set(int no) { visited[no] = visno; }
-
-  /// get flag #no
-  bool get(int no) const { return visited[no] == visno; }
-
-  /// reset all flags to false
-  void advance() {
-    visno++;
-    if (visno == 250) {
-      // 250 rather than 255 because sometimes we use visno and visno+1
-      memset(visited.data(), 0, sizeof(visited[0]) * visited.size());
-      visno = 1;
-    }
-  }
-};
-
 /* Wrap the distance computer into one that negates the
    distances. This makes supporting INNER_PRODUCE search easier */
 
 struct NegativeDistanceComputer : DistanceComputer {
+  using idx_t = Index::idx_t;
 
   /// owned by this
   DistanceComputer *basedis;
@@ -157,13 +134,13 @@ struct NSG {
 
   /// search interface
   void search(DistanceComputer &dis, int k, idx_t *I, float *D,
-              nsg::VisitedTable &vt) const;
+              VisitedTable &vt) const;
 
   void init_graph(Index *storage, const nsg::Graph<idx_t> &knn_graph);
 
   template <bool collect_fullset, class index_t>
   void search_on_graph(const nsg::Graph<index_t> &graph, DistanceComputer &dis,
-                       nsg::VisitedTable &vt, int ep, int pool_size,
+                       VisitedTable &vt, int ep, int pool_size,
                        std::vector<Neighbor> &retset,
                        std::vector<Node> &fullset) const;
 
@@ -172,7 +149,7 @@ struct NSG {
                          nsg::Graph<Node> &graph);
 
   void sync_prune(int q, std::vector<Node> &pool, DistanceComputer &dis,
-                  nsg::VisitedTable &vt, const nsg::Graph<idx_t> &knn_graph,
+                  VisitedTable &vt, const nsg::Graph<idx_t> &knn_graph,
                   nsg::Graph<Node> &graph);
 
   void link(Index *storage, const nsg::Graph<idx_t> &knn_graph,
@@ -180,9 +157,9 @@ struct NSG {
 
   void tree_grow(Index *storage);
 
-  void dfs(nsg::VisitedTable &vt, int root, int &cnt);
+  void dfs(VisitedTable &vt, int root, int &cnt);
 
-  void find_root(Index *storage, nsg::VisitedTable &vt, int &root);
+  void find_root(Index *storage, VisitedTable &vt, int &root);
 
   void check_graph();
 };

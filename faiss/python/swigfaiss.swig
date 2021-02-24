@@ -87,6 +87,8 @@ typedef uint64_t size_t;
 #include <faiss/IndexReplicas.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/impl/NSG.h>
+#include <faiss/IndexNSG.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/IndexRefine.h>
 
@@ -397,6 +399,8 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/HNSW.h>
 %include  <faiss/IndexHNSW.h>
 %include  <faiss/IndexIVFFlat.h>
+%include  <faiss/impl/NSG.h>
+%include  <faiss/IndexNSG.h>
 
 #ifndef SWIGWIN
 %warnfilter(401) faiss::OnDiskInvertedListsIOHook;
@@ -542,6 +546,7 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexHNSWPQ )
     DOWNCAST ( IndexHNSWSQ )
     DOWNCAST ( IndexHNSW2Level )
+    DOWNCAST ( IndexNSGFlat )
     DOWNCAST ( Index2Layer )
 #ifdef GPU_WRAPPER
     DOWNCAST_GPU ( GpuIndexIVFPQ )
