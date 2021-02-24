@@ -44,7 +44,7 @@ namespace faiss {
 
 struct DistanceComputer; // from AuxIndexStructures
 struct Neighbor;
-struct SimpleNeighbor;
+struct Node;
 
 namespace nsg {
 
@@ -166,18 +166,18 @@ struct NSG {
   void search_on_graph(const nsg::Graph<index_t> &graph, DistanceComputer &dis,
                        nsg::VisitedTable &vt, int ep, int pool_size,
                        std::vector<Neighbor> &retset,
-                       std::vector<Neighbor> &fullset) const;
+                       std::vector<Node> &fullset) const;
 
   void add_reverse_links(int q, std::vector<std::mutex> &locks,
                          DistanceComputer &dis,
-                         nsg::Graph<SimpleNeighbor> &graph);
+                         nsg::Graph<Node> &graph);
 
-  void sync_prune(int q, std::vector<Neighbor> &pool, DistanceComputer &dis,
+  void sync_prune(int q, std::vector<Node> &pool, DistanceComputer &dis,
                   nsg::VisitedTable &vt, const nsg::Graph<idx_t> &knn_graph,
-                  nsg::Graph<SimpleNeighbor> &graph);
+                  nsg::Graph<Node> &graph);
 
   void link(Index *storage, const nsg::Graph<idx_t> &knn_graph,
-            nsg::Graph<SimpleNeighbor> &graph);
+            nsg::Graph<Node> &graph);
 
   void tree_grow(Index *storage);
 

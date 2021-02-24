@@ -6,6 +6,7 @@
  */
 
 
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <random>
@@ -17,6 +18,8 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/index_io.h>
 #include <faiss/impl/NSG.h>
+
+using namespace std::chrono;
 
 
 TEST(NSG, accuracy) {
@@ -30,10 +33,9 @@ TEST(NSG, accuracy) {
     // K of KNN graph
     int GK = 64;
 
-    int M = 16;  // graph degree
+    int R = 16;  // graph degree
 
-    faiss::IndexNSGFlat index (d, M * 2);
-    faiss::IndexHNSWFlat hnsw_index (d, M);
+    faiss::IndexNSGFlat index (d, R);
 
     // index that gives the ground-truth
     faiss::IndexFlatL2 index_gt (d);
@@ -41,7 +43,7 @@ TEST(NSG, accuracy) {
     std::mt19937 rng;
     std::uniform_real_distribution<> distrib;
 
-    { // building NSG and HNSW
+    { // building NSG
         std::vector <float> database (nb * d);
         for (size_t i = 0; i < nb * d; i++) {
             database[i] = distrib(rng);
@@ -56,12 +58,9 @@ TEST(NSG, accuracy) {
         index_gt.search (nb, database.data(), GK,
                          tmp.data(), knng.data());
 
-        index.nsg.L = 20;
-        index.nsg.C = 50;
+        index.nsg.L = 50;
+        index.nsg.C = 100;
         index.build(nb, database.data(), knng.data(), GK);
-
-        hnsw_index.hnsw.efConstruction = 20;
-        hnsw_index.add(nb, database.data());
     }
 
     int nq = 200;
@@ -94,31 +93,11 @@ TEST(NSG, accuracy) {
                 if (nns[q * k + i] == gt_nns[q])
                     n_ok++;
         }
-        double nsg_recall = 1.0 * n_ok / nq;
-        printf("NSG Recall@%d: %lf\n", k, nsg_recall);
+        double recall = 1.0 * n_ok / nq;
+        printf("NSG Recall-1@%d: %lf\n", k, recall);
 
-        hnsw_index.hnsw.efSearch = 10;
-        hnsw_index.search (nq, queries.data(), k, dis.data(), nns.data());
-
-        n_ok = 0;
-        for (int q = 0; q < nq; q++) {
-            for (int i = 0; i < k; i++)
-                if (nns[q * k + i] == gt_nns[q])
-                    n_ok++;
-        }
-        double hnsw_recall = 1.0 * n_ok / nq;
-        printf("HNSW Recall@%d: %lf\n", k, hnsw_recall);
-        printf("Degree: %d (NSG) vs %d (HNSW)\n", index.nsg.R,
-               hnsw_index.hnsw.nb_neighbors(0));
-
-        // NSG and HNSW use the same search strategy and
-        // the degree of NSG is the same as HNSW.
-        // But the NSG index is built upon an exact KNN graph,
-        // so in theory it would be better than HNSW.
-        // 0.95 (NSG) vs 0.91 (HNSW) is a resonable result.
-        EXPECT_EQ(index.nsg.search_L, hnsw_index.hnsw.efSearch);
-        EXPECT_EQ(index.nsg.R, hnsw_index.hnsw.nb_neighbors(0));
-        EXPECT_GT(nsg_recall, hnsw_recall);
+        // 0.93 is a resonable result.
+        EXPECT_GT(recall, 0.9);
     }
 
 }
@@ -248,8 +227,9 @@ TEST(NSG, knng) {
                     n_ok++;
         }
         double nsg_recall = 1.0 * n_ok / nq;
-        printf("NSG Recall@%d: %lf\n", k, nsg_recall);
+        printf("NSG Recall-1@%d: %lf\n", k, nsg_recall);
 
+        // 0.84 is a resonable result.
         EXPECT_GT(nsg_recall, 0.8);
     }
 

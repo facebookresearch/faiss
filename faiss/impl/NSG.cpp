@@ -48,14 +48,14 @@ struct Neighbor {
   }
 };
 
-struct SimpleNeighbor {
+struct Node {
   int id;
   float distance;
 
-  SimpleNeighbor() = default;
-  SimpleNeighbor(int id, float distance) : id(id), distance(distance) {}
+  Node() = default;
+  Node(int id, float distance) : id(id), distance(distance) {}
 
-  inline bool operator<(const SimpleNeighbor &other) const {
+  inline bool operator<(const Node &other) const {
     return distance < other.distance;
   }
 };
@@ -110,7 +110,8 @@ void NSG::search(DistanceComputer &dis, int k, idx_t *I, float *D,
   FAISS_THROW_IF_NOT(final_graph);
 
   int pool_size = std::max(search_L, k);
-  std::vector<Neighbor> retset, tmp;
+  std::vector<Neighbor> retset;
+  std::vector<Node> tmp;
   search_on_graph<false, int>(*final_graph, dis, vt, enterpoint, pool_size,
                               retset, tmp);
 
@@ -133,8 +134,8 @@ void NSG::build(Index *storage, idx_t n, const nsg::Graph<idx_t> &knn_graph, boo
   ntotal = n;
   init_graph(storage, knn_graph);
 
-  // SimpleNeighbor *graph = new SimpleNeighbor[n * R];
-  nsg::Graph<SimpleNeighbor> tmp_graph(n, R);
+  // Node *graph = new Node[n * R];
+  nsg::Graph<Node> tmp_graph(n, R);
 
   link(storage, knn_graph, tmp_graph);
 
@@ -195,7 +196,8 @@ void NSG::init_graph(Index *storage, const nsg::Graph<idx_t> &knn_graph) {
     center[i] /= n;
   }
 
-  std::vector<Neighbor> retset, pool;
+  std::vector<Neighbor> retset;
+  std::vector<Node> tmpset;
   // random initialize navigating point
   int ep = rand() % n;
   DistanceComputer *dis = storage_distance_computer(storage);
@@ -205,7 +207,7 @@ void NSG::init_graph(Index *storage, const nsg::Graph<idx_t> &knn_graph) {
   VisitedTable vt(ntotal);
 
   // Do not collect the visited set
-  search_on_graph<false, idx_t>(knn_graph, *dis, vt, ep, L, retset, pool);
+  search_on_graph<false, idx_t>(knn_graph, *dis, vt, ep, L, retset, tmpset);
 
   enterpoint = retset[0].id;
 }
@@ -214,7 +216,7 @@ template <bool collect_fullset, class index_t>
 void NSG::search_on_graph(const nsg::Graph<index_t> &graph,
                           DistanceComputer &dis, VisitedTable &vt, int ep,
                           int pool_size, std::vector<Neighbor> &retset,
-                          std::vector<Neighbor> &fullset) const {
+                          std::vector<Node> &fullset) const {
   retset.resize(pool_size + 1);
   std::vector<int> init_ids(pool_size);
 
@@ -246,7 +248,7 @@ void NSG::search_on_graph(const nsg::Graph<index_t> &graph,
     retset[i] = Neighbor(id, dist, true);
 
     if (collect_fullset)
-      fullset.push_back(retset[i]);
+      fullset.emplace_back(retset[i].id, retset[i].distance);
   }
 
   std::sort(retset.begin(), retset.begin() + pool_size);
@@ -268,7 +270,7 @@ void NSG::search_on_graph(const nsg::Graph<index_t> &graph,
         float dist = dis(id);
         Neighbor nn(id, dist, true);
         if (collect_fullset)
-          fullset.push_back(nn);
+          fullset.emplace_back(id, dist);
         if (dist >= retset[pool_size - 1].distance)
           continue;
         int r = insert_into_pool(retset.data(), pool_size, nn);
@@ -282,13 +284,14 @@ void NSG::search_on_graph(const nsg::Graph<index_t> &graph,
 }
 
 void NSG::link(Index *storage, const nsg::Graph<idx_t> &knn_graph,
-               nsg::Graph<SimpleNeighbor> &graph) {
+               nsg::Graph<Node> &graph) {
 
 #pragma omp parallel
   {
     float *vec = new float[storage->d];
     ScopeDeleter<float> del(vec);
-    std::vector<Neighbor> pool, tmp;
+    std::vector<Node> pool;
+    std::vector<Neighbor> tmp;
 
     VisitedTable vt(ntotal);
     DistanceComputer *dis = storage_distance_computer(storage);
@@ -322,9 +325,9 @@ void NSG::link(Index *storage, const nsg::Graph<idx_t> &knn_graph,
   }
 }
 
-void NSG::sync_prune(int q, std::vector<Neighbor> &pool, DistanceComputer &dis,
+void NSG::sync_prune(int q, std::vector<Node> &pool, DistanceComputer &dis,
                      VisitedTable &vt, const nsg::Graph<idx_t> &knn_graph,
-                     nsg::Graph<SimpleNeighbor> &graph) {
+                     nsg::Graph<Node> &graph) {
 
   for (int i = 0; i < knn_graph.K; i++) {
     int id = knn_graph.at(q, i);
@@ -332,12 +335,12 @@ void NSG::sync_prune(int q, std::vector<Neighbor> &pool, DistanceComputer &dis,
       continue;
 
     float dist = dis.symmetric_dis(q, id);
-    pool.push_back(Neighbor(id, dist, true));
+    pool.emplace_back(id, dist);
   }
 
   std::sort(pool.begin(), pool.end());
 
-  std::vector<Neighbor> result;
+  std::vector<Node> result;
 
   int start = 0;
   if (pool[start].id == q)
@@ -374,16 +377,16 @@ void NSG::sync_prune(int q, std::vector<Neighbor> &pool, DistanceComputer &dis,
 
 void NSG::add_reverse_links(int q, std::vector<std::mutex> &locks,
                             DistanceComputer &dis,
-                            nsg::Graph<SimpleNeighbor> &graph) {
+                            nsg::Graph<Node> &graph) {
 
   for (size_t i = 0; i < R; i++) {
     if (graph.at(q, i).id == EMPTY_ID)
       break;
 
-    SimpleNeighbor sn(q, graph.at(q, i).distance);
+    Node sn(q, graph.at(q, i).distance);
     int des = graph.at(q, i).id;
 
-    std::vector<SimpleNeighbor> tmp_pool;
+    std::vector<Node> tmp_pool;
     int dup = 0;
     {
       LockGuard guard(locks[des]);
@@ -403,7 +406,7 @@ void NSG::add_reverse_links(int q, std::vector<std::mutex> &locks,
 
     tmp_pool.push_back(sn);
     if (tmp_pool.size() > R) {
-      std::vector<SimpleNeighbor> result;
+      std::vector<Node> result;
       int start = 0;
       std::sort(tmp_pool.begin(), tmp_pool.end());
       result.push_back(tmp_pool[start]);
@@ -506,7 +509,8 @@ void NSG::find_root(Index *storage, VisitedTable &vt, int &root) {
   if (id == EMPTY_ID)
     return; // No Unlinked Node
 
-  std::vector<Neighbor> tmp, pool;
+  std::vector<Neighbor> tmp;
+  std::vector<Node> pool;
 
   DistanceComputer *dis = storage_distance_computer(storage);
   ScopeDeleter1<DistanceComputer> del1(dis);
