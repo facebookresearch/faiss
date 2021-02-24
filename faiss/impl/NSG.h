@@ -64,8 +64,9 @@ struct Graph {
   }
 
   ~Graph() {
-    if (own_fields)
+    if (own_fields) {
       delete[] data;
+    }
   }
 
   inline node_t at(int i, int j) const { return data[i * K + j]; }
@@ -73,34 +74,9 @@ struct Graph {
   inline node_t &at(int i, int j) { return data[i * K + j]; }
 };
 
-/* Wrap the distance computer into one that negates the
-   distances. This makes supporting INNER_PRODUCE search easier */
-
-struct NegativeDistanceComputer : DistanceComputer {
-  using idx_t = Index::idx_t;
-
-  /// owned by this
-  DistanceComputer *basedis;
-
-  explicit NegativeDistanceComputer(DistanceComputer *basedis)
-      : basedis(basedis) {}
-
-  void set_query(const float *x) override { basedis->set_query(x); }
-
-  /// compute distance of vector i to current query
-  float operator()(idx_t i) override { return -(*basedis)(i); }
-
-  /// compute distance between two stored vectors
-  float symmetric_dis(idx_t i, idx_t j) override {
-    return -basedis->symmetric_dis(i, j);
-  }
-
-  virtual ~NegativeDistanceComputer() { delete basedis; }
-};
-
 DistanceComputer *storage_distance_computer(const Index *storage);
 
-}  // namespace faiss::nsg
+} // namespace nsg
 
 struct NSG {
 
@@ -128,7 +104,8 @@ struct NSG {
 
   explicit NSG(int R = 32);
 
-  void build(Index *storage, idx_t n, const nsg::Graph<idx_t> &knn_graph, bool verbose);
+  void build(Index *storage, idx_t n, const nsg::Graph<idx_t> &knn_graph,
+             bool verbose);
 
   void reset();
 
@@ -145,8 +122,7 @@ struct NSG {
                        std::vector<Node> &fullset) const;
 
   void add_reverse_links(int q, std::vector<std::mutex> &locks,
-                         DistanceComputer &dis,
-                         nsg::Graph<Node> &graph);
+                         DistanceComputer &dis, nsg::Graph<Node> &graph);
 
   void sync_prune(int q, std::vector<Node> &pool, DistanceComputer &dis,
                   VisitedTable &vt, const nsg::Graph<idx_t> &knn_graph,

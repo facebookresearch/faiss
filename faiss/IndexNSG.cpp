@@ -23,7 +23,6 @@ using idx_t = Index::idx_t;
 using storage_idx_t = NSG::storage_idx_t;
 using namespace nsg;
 
-
 /**************************************************************
  * IndexNSG implementation
  **************************************************************/

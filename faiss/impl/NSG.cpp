@@ -19,6 +19,31 @@ namespace faiss {
 
 namespace nsg {
 
+/* Wrap the distance computer into one that negates the
+   distances. This makes supporting INNER_PRODUCE search easier */
+
+struct NegativeDistanceComputer : DistanceComputer {
+  using idx_t = Index::idx_t;
+
+  /// owned by this
+  DistanceComputer *basedis;
+
+  explicit NegativeDistanceComputer(DistanceComputer *basedis)
+      : basedis(basedis) {}
+
+  void set_query(const float *x) override { basedis->set_query(x); }
+
+  /// compute distance of vector i to current query
+  float operator()(idx_t i) override { return -(*basedis)(i); }
+
+  /// compute distance between two stored vectors
+  float symmetric_dis(idx_t i, idx_t j) override {
+    return -basedis->symmetric_dis(i, j);
+  }
+
+  virtual ~NegativeDistanceComputer() { delete basedis; }
+};
+
 DistanceComputer *storage_distance_computer(const Index *storage) {
   if (storage->metric_type == METRIC_INNER_PRODUCT) {
     return new NegativeDistanceComputer(storage->get_distance_computer());
@@ -27,7 +52,7 @@ DistanceComputer *storage_distance_computer(const Index *storage) {
   }
 }
 
-}  // namespace faiss::nsg
+} // namespace nsg
 
 using namespace nsg;
 
@@ -73,22 +98,26 @@ inline int insert_into_pool(Neighbor *addr, int K, Neighbor nn) {
   }
   while (left < right - 1) {
     int mid = (left + right) / 2;
-    if (addr[mid].distance > nn.distance)
+    if (addr[mid].distance > nn.distance) {
       right = mid;
-    else
+    } else {
       left = mid;
+    }
   }
   // check equal ID
 
   while (left > 0) {
-    if (addr[left].distance < nn.distance)
+    if (addr[left].distance < nn.distance) {
       break;
-    if (addr[left].id == nn.id)
+    }
+    if (addr[left].id == nn.id) {
       return K + 1;
+    }
     left--;
   }
-  if (addr[left].id == nn.id || addr[right].id == nn.id)
+  if (addr[left].id == nn.id || addr[right].id == nn.id) {
     return K + 1;
+  }
   memmove((char *)&addr[right + 1], &addr[right],
           (K - right) * sizeof(Neighbor));
   addr[right] = nn;
@@ -124,10 +153,11 @@ void NSG::search(DistanceComputer &dis, int k, idx_t *I, float *D,
   }
 }
 
-void NSG::build(Index *storage, idx_t n, const nsg::Graph<idx_t> &knn_graph, bool verbose) {
+void NSG::build(Index *storage, idx_t n, const nsg::Graph<idx_t> &knn_graph,
+                bool verbose) {
   FAISS_THROW_IF_NOT(!is_built && ntotal == 0);
 
-  if (verbose) { 
+  if (verbose) {
     printf("R=%d, L=%d, C=%d\n", R, L, C);
   }
 
@@ -150,7 +180,7 @@ void NSG::build(Index *storage, idx_t n, const nsg::Graph<idx_t> &knn_graph, boo
   check_graph();
   is_built = true;
 
-  if (verbose) { 
+  if (verbose) {
     int max = 0, min = 1e6;
     double avg = 0;
     for (int i = 0; i < n; i++) {
@@ -165,7 +195,7 @@ void NSG::build(Index *storage, idx_t n, const nsg::Graph<idx_t> &knn_graph, boo
     avg = avg / n;
     printf("Degree Statistics: Max = %d, Min = %d, Avg = %lf\n",
            max, min, avg);
-  }  
+  }
 }
 
 void NSG::reset() {
@@ -224,8 +254,9 @@ void NSG::search_on_graph(const nsg::Graph<index_t> &graph,
   int num_ids = 0;
   for (int i = 0; i < init_ids.size() && i < graph.K; i++) {
     int id = (int)graph.at(ep, i);
-    if (id < 0 || id >= ntotal)
+    if (id < 0 || id >= ntotal) {
       continue;
+    }
 
     init_ids[i] = id;
     vt.set(id);
@@ -234,8 +265,9 @@ void NSG::search_on_graph(const nsg::Graph<index_t> &graph,
 
   while (num_ids < pool_size) {
     int id = rng.rand_int(ntotal);
-    if (vt.get(id))
+    if (vt.get(id)) {
       continue;
+    }
 
     init_ids[num_ids] = id;
     num_ids++;
@@ -248,8 +280,9 @@ void NSG::search_on_graph(const nsg::Graph<index_t> &graph,
     float dist = dis(id);
     retset[i] = Neighbor(id, dist, true);
 
-    if (collect_fullset)
+    if (collect_fullset) {
       fullset.emplace_back(retset[i].id, retset[i].distance);
+    }
   }
 
   std::sort(retset.begin(), retset.begin() + pool_size);
@@ -264,16 +297,21 @@ void NSG::search_on_graph(const nsg::Graph<index_t> &graph,
 
       for (int m = 0; m < graph.K; m++) {
         int id = (int)graph.at(n, m);
-        if (id == EMPTY_ID || vt.get(id))
+        if (id == EMPTY_ID || vt.get(id)) {
           continue;
+        }
         vt.set(id);
 
         float dist = dis(id);
         Neighbor nn(id, dist, true);
-        if (collect_fullset)
+        if (collect_fullset) {
           fullset.emplace_back(id, dist);
-        if (dist >= retset[pool_size - 1].distance)
+        }
+
+        if (dist >= retset[pool_size - 1].distance) {
           continue;
+        }
+
         int r = insert_into_pool(retset.data(), pool_size, nn);
 
         updated_pos = std::min(updated_pos, r);
@@ -332,8 +370,9 @@ void NSG::sync_prune(int q, std::vector<Node> &pool, DistanceComputer &dis,
 
   for (int i = 0; i < knn_graph.K; i++) {
     int id = knn_graph.at(q, i);
-    if (vt.get(id))
+    if (vt.get(id)) {
       continue;
+    }
 
     float dist = dis.symmetric_dis(q, id);
     pool.emplace_back(id, dist);
@@ -344,8 +383,9 @@ void NSG::sync_prune(int q, std::vector<Node> &pool, DistanceComputer &dis,
   std::vector<Node> result;
 
   int start = 0;
-  if (pool[start].id == q)
+  if (pool[start].id == q) {
     start++;
+  }
   result.push_back(pool[start]);
 
   while (result.size() < R && (++start) < pool.size() && start < C) {
@@ -362,8 +402,9 @@ void NSG::sync_prune(int q, std::vector<Node> &pool, DistanceComputer &dis,
         break;
       }
     }
-    if (!occlude)
+    if (!occlude) {
       result.push_back(p);
+    }
   }
 
   for (size_t i = 0; i < R; i++) {
@@ -377,12 +418,12 @@ void NSG::sync_prune(int q, std::vector<Node> &pool, DistanceComputer &dis,
 }
 
 void NSG::add_reverse_links(int q, std::vector<std::mutex> &locks,
-                            DistanceComputer &dis,
-                            nsg::Graph<Node> &graph) {
+                            DistanceComputer &dis, nsg::Graph<Node> &graph) {
 
   for (size_t i = 0; i < R; i++) {
-    if (graph.at(q, i).id == EMPTY_ID)
+    if (graph.at(q, i).id == EMPTY_ID) {
       break;
+    }
 
     Node sn(q, graph.at(q, i).distance);
     int des = graph.at(q, i).id;
@@ -392,8 +433,9 @@ void NSG::add_reverse_links(int q, std::vector<std::mutex> &locks,
     {
       LockGuard guard(locks[des]);
       for (int j = 0; j < R; j++) {
-        if (graph.at(des, j).id == EMPTY_ID)
+        if (graph.at(des, j).id == EMPTY_ID) {
           break;
+        }
         if (q == graph.at(des, j).id) {
           dup = 1;
           break;
@@ -402,8 +444,9 @@ void NSG::add_reverse_links(int q, std::vector<std::mutex> &locks,
       }
     }
 
-    if (dup)
+    if (dup) {
       continue;
+    }
 
     tmp_pool.push_back(sn);
     if (tmp_pool.size() > R) {
@@ -427,22 +470,24 @@ void NSG::add_reverse_links(int q, std::vector<std::mutex> &locks,
             break;
           }
         }
-        if (!occlude)
+
+        if (!occlude) {
           result.push_back(p);
+        }
       }
+
       {
         LockGuard guard(locks[des]);
         for (int t = 0; t < result.size(); t++) {
           graph.at(des, t) = result[t];
         }
       }
+
     } else {
       LockGuard guard(locks[des]);
       for (int t = 0; t < R; t++) {
         if (graph.at(des, t).id == EMPTY_ID) {
           graph.at(des, t) = sn;
-          if (t + 1 < R)
-            graph.at(des, t + 1).id = EMPTY_ID;
           break;
         }
       }
@@ -457,8 +502,9 @@ void NSG::tree_grow(Index *storage) {
   int cnt;
   while (cnt < ntotal) {
     dfs(vt, root, cnt);
-    if (cnt >= ntotal)
+    if (cnt >= ntotal) {
       break;
+    }
 
     find_root(storage, vt, root);
   }
@@ -470,8 +516,9 @@ void NSG::dfs(VisitedTable &vt, int root, int &cnt) {
   stack.push(root);
 
   cnt = 0;
-  if (!vt.get(root))
+  if (!vt.get(root)) {
     cnt++;
+  }
   vt.set(root);
 
   while (!stack.empty()) {
@@ -486,8 +533,9 @@ void NSG::dfs(VisitedTable &vt, int root, int &cnt) {
 
     if (next == EMPTY_ID) {
       stack.pop();
-      if (stack.empty())
+      if (stack.empty()) {
         break;
+      }
       node = stack.top();
       continue;
     }
@@ -507,8 +555,9 @@ void NSG::find_root(Index *storage, VisitedTable &vt, int &root) {
     }
   }
 
-  if (id == EMPTY_ID)
+  if (id == EMPTY_ID) {
     return; // No Unlinked Node
+  }
 
   std::vector<Neighbor> tmp;
   std::vector<Node> pool;

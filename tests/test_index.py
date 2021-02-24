@@ -616,6 +616,7 @@ class TestNSG(unittest.TestCase):
         d = self.xq.shape[1]
 
         index = faiss.IndexNSGFlat(d, 16)
+        index.verbose = True
         index.build(self.xb, self.knn_graph)
         Dnsg, Insg = index.search(self.xq, 1)
 
@@ -634,6 +635,7 @@ class TestNSG(unittest.TestCase):
         knn_graph = knn_graph[:, 1:]
 
         index = faiss.IndexNSGFlat(d, 16, faiss.METRIC_INNER_PRODUCT)
+        index.verbose = True
         index.build(self.xb, knn_graph)
         Dnsg, Insg = index.search(self.xq, 1)
 
